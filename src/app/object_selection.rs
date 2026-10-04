@@ -51,6 +51,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "Circle FitPoints" {
+            return "Select at least three point objects; Enter fits the circle, Esc cancels";
+        }
         if self.description.command == "ShrinkTrimmedSrf"
             && self.phase == ObjectPromptPhase::Selecting
         {
@@ -356,10 +359,18 @@ impl VibocerosApp {
             self.log_object_prompt();
             return true;
         }
+        let required = if description.command == "Circle FitPoints" {
+            3
+        } else {
+            1
+        };
         let preselected = self
             .document
             .selected_objects()
-            .any(|o| description.filter.accepts_object(o));
+            .filter(|o| description.filter.accepts_object(o))
+            .take(required)
+            .count()
+            == required;
         if preselected {
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 return false;

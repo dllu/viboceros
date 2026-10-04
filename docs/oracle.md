@@ -29,7 +29,9 @@ commands and 250 point/curve-end maps. The retained
 [plane-basis experiments](plane-fit-basis.md) leave native orientation unresolved.
 The [Circle fit foundation](circle-fit.md) adds spatial-distance fitting on a
 PCA plane with retained native command/SDK evidence. Native basis conventions
-and near-collinear convergence remain unresolved before input integration.
+and near-collinear convergence remain unresolved. Circle's
+[point-object input](circle-fit-input.md) adds eight native selection workflows
+and replays the earlier 22 native command loci through the command adapter.
 The [Maelstrom foundation](maelstrom-geometry.md) retains 108 public SDK point
 maps and eight native point commands from private Xvfb. The Python/Rust
 `maelstrom_points` protocol replays validity, radial profiles and coordinates;

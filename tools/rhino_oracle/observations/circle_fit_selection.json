@@ -1,0 +1,1983 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-0",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "events": [
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 2
+              },
+              {
+                "circle": {
+                  "normal": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 2.0,
+                  "x": [
+                    1.0,
+                    0.0,
+                    -0.0
+                  ],
+                  "y": [
+                    -0.0,
+                    1.0,
+                    0.0
+                  ]
+                },
+                "kind": "circle",
+                "seam": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _Cancel _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-1",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 3
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "events": [
+          {
+            "name": "SelAll",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 2
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 3
+              },
+              {
+                "circle": {
+                  "normal": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 2.0,
+                  "x": [
+                    1.0,
+                    0.0,
+                    -0.0
+                  ],
+                  "y": [
+                    -0.0,
+                    1.0,
+                    0.0
+                  ]
+                },
+                "kind": "circle",
+                "seam": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nSelect points to build a circle from: _SelAll\n4 points added to selection.\nSelect points to build a circle from. Press Enter when done: _Enter\nSelect points to build a circle from. Press Enter when done\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _SelAll _Enter _Cancel _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-2",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          }
+        ],
+        "events": [
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 0
+              }
+            ],
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nSelect points to build a circle from: _Enter\nSelect points to build a circle from",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _Enter _Cancel _Cancel",
+        "success": false,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-3",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "events": [
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 2
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 3
+              }
+            ],
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nSelect points to build a circle from: _Enter\nSelect points to build a circle from",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _Enter _Cancel _Cancel",
+        "success": false,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-4",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": null
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": null
+          }
+        ],
+        "events": [
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 2
+              },
+              {
+                "end": [
+                  11.0,
+                  1.0,
+                  0.0
+                ],
+                "kind": "line",
+                "point": [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": null
+              },
+              {
+                "circle": {
+                  "normal": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 2.0,
+                  "x": [
+                    1.0,
+                    0.0,
+                    -0.0
+                  ],
+                  "y": [
+                    -0.0,
+                    1.0,
+                    0.0
+                  ]
+                },
+                "kind": "circle",
+                "seam": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _Cancel _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-5",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": null
+          }
+        ],
+        "events": [
+          {
+            "name": "SelAll",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": 1
+              },
+              {
+                "end": [
+                  11.0,
+                  1.0,
+                  0.0
+                ],
+                "kind": "line",
+                "point": [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              }
+            ],
+            "result": "Cancel",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nSelect points to build a circle from: _SelAll\n2 points added to selection.\nSelect points to build a circle from: _Enter\nSelect points to build a circle from",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _SelAll _Enter _Cancel _Cancel",
+        "success": false,
+        "undo": []
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-6",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 3
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": null
+          }
+        ],
+        "events": [
+          {
+            "name": "SelAll",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  -2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 2
+              },
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  -2.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 3
+              },
+              {
+                "end": [
+                  11.0,
+                  1.0,
+                  0.0
+                ],
+                "kind": "line",
+                "point": [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              },
+              {
+                "circle": {
+                  "normal": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "origin": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "radius": 2.0,
+                  "x": [
+                    1.0,
+                    0.0,
+                    -0.0
+                  ],
+                  "y": [
+                    -0.0,
+                    1.0,
+                    0.0
+                  ]
+                },
+                "kind": "circle",
+                "seam": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": false,
+                "source": null
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nSelect points to build a circle from: _SelAll\n4 points added to selection.\nSelect points to build a circle from. Press Enter when done: _Enter\nSelect points to build a circle from. Press Enter when done\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          },
+          {
+            "circle": {
+              "normal": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "origin": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 2.0,
+              "x": [
+                1.0,
+                0.0,
+                -0.0
+              ],
+              "y": [
+                -0.0,
+                1.0,
+                0.0
+              ]
+            },
+            "kind": "circle",
+            "seam": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _SelAll _Enter _Cancel _Cancel",
+        "success": true,
+        "undo": [
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          },
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 3
+          },
+          {
+            "end": [
+              11.0,
+              1.0,
+              0.0
+            ],
+            "kind": "line",
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": null
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "circle-fit-selection-7",
+      "value": {
+        "after": [
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "before": [
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": true,
+            "source": 2
+          }
+        ],
+        "events": [
+          {
+            "name": "Circle",
+            "objects": [
+              {
+                "kind": "point",
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 0
+              },
+              {
+                "kind": "point",
+                "point": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 1
+              },
+              {
+                "kind": "point",
+                "point": [
+                  2.0,
+                  0.0,
+                  0.0
+                ],
+                "selected": true,
+                "source": 2
+              }
+            ],
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          },
+          {
+            "name": "Cancel",
+            "result": "Success",
+            "selected": []
+          }
+        ],
+        "history": "Command: _Circle\nCenter of circle ( Deformable  Vertical  2Point  3Point  Tangent  AroundCurve  FitPoints ): _FitPoints\nCommand: _Cancel\nCommand: _Cancel",
+        "redo": [
+          {
+            "kind": "point",
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 0
+          },
+          {
+            "kind": "point",
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 1
+          },
+          {
+            "kind": "point",
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "selected": false,
+            "source": 2
+          }
+        ],
+        "script_macro": "_Circle _FitPoints _Cancel _Cancel",
+        "success": true,
+        "undo": []
+      }
+    }
+  ]
+}

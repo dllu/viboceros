@@ -64,6 +64,7 @@ Rhino's complete command set is still a work in progress.
 - [Volume selection](volume-selection.md)
 - [Model units](units.md)
 - [Model tolerances](../tolerances.md)
+- [Circle FitPoints input and limitations](../circle-fit-input.md)
 - [Native planar STEP export](export-step.md)
 - [Display modes and drafting controls](interface.md)
 - [Zoom, extents, and border settings](zoom.md)
@@ -85,6 +86,7 @@ Line 0,0,0 10,5,0
 Circle 0,0,0 5
 Circle 2Point -4,0,0 4,0,0
 Circle 3Point 4,0,0 0,4,0 -4,0,0
+Circle FitPoints
 Arc StartPoint 5,0,0 ThroughPoint 0,5,0 -5,0,0
 Ellipse 0,0 6,0 0,3
 Polyline 0,0 4,0 4,3 7,3

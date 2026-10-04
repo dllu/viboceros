@@ -74,11 +74,16 @@ cargo run --release -p viboceros-geometry --example profile_circle_fit
 
 ## Remaining compatibility work
 
+The [point-object input](circle-fit-input.md) now supports immediate
+preselection and filtered picking, cancellation, and native selection/history
+replay. Its command adapter creates an analytic Circle from the checked fitter.
+
 This is a fitting foundation, and **full native parity remains incomplete**.
 Native fitted normals can flip with the input data, and seams depend on the
 resulting plane basis. Solver bases are not yet a compatible substitute for
-those conventions. Circle's interactive FitPoints input, control-point/mesh
-vertex picking, and Maelstrom's FitPoints input still require this work.
+those conventions. Circle control-point/mesh vertex picking and Maelstrom's
+FitPoints input remain incomplete; the point-object path still has the native
+parameterization limitations.
 
 The diagnostic with a `1e-6` departure from collinearity retains a roughly
 `2.35e-6` difference in both center and radius. It remains an explicit failing

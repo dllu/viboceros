@@ -480,7 +480,7 @@ impl Document {
         Ok(())
     }
 
-    /// Commits the active transaction, returning whether it contained edits.
+    /// Commits the active transaction, returning whether it added an Undo entry.
     pub fn commit_transaction(&mut self) -> Result<bool, DocumentError> {
         if self
             .history
@@ -503,6 +503,32 @@ impl Document {
             self.previous_selection_order = transaction.selection_order_before.clone();
         }
         if transaction.edits.is_empty() {
+            return Ok(false);
+        }
+        if transaction
+            .edits
+            .iter()
+            .all(|edit| matches!(edit, Edit::SelectionReleasedOnReplay { .. }))
+        {
+            // A no-output command can leave picks selected without adding an
+            // Undo step. Release those picks before replaying the preceding
+            // entry so insertion edits do not remember them for Redo. Keep the
+            // model history label, version, changed-object set and Redo stack.
+            if let Some(entry) = self.history.undo.last_mut() {
+                for edit in transaction.edits {
+                    if let (
+                        Some(Edit::SelectionReleasedOnReplay { ids }),
+                        Edit::SelectionReleasedOnReplay { ids: next },
+                    ) = (entry.edits.last_mut(), &edit)
+                    {
+                        ids.extend(next);
+                        ids.sort_unstable();
+                        ids.dedup();
+                    } else {
+                        entry.edits.push(edit);
+                    }
+                }
+            }
             return Ok(false);
         }
         self.push_new_undo(HistoryEntry {

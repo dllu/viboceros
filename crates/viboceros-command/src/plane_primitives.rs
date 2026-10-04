@@ -62,6 +62,16 @@ impl Command for CircleCommand {
         &["C"]
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(
+            matches!(arguments, [option] if option_name_eq(option, "FitPoints"))
+                .then(circle_fit_points::selection_prompt),
+        )
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         self.run_in_context(document, arguments, CommandContext::default())
     }
@@ -72,6 +82,13 @@ impl Command for CircleCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        if arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "FitPoints"))
+        {
+            require_consumed(arguments, 1, "Circle FitPoints (select point objects)")?;
+            return circle_fit_points::run(document);
+        }
         let plane = context.construction_plane;
         let circle = if arguments
             .first()

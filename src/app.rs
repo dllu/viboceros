@@ -848,7 +848,7 @@ impl InteractiveCommand {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
             Self::Circle { center: None } => {
-                "Circle: pick the center or enter 2Point/3Point (Esc to cancel)"
+                "Circle: pick the center or enter 2Point/3Point/Vertical/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
                 "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
@@ -9066,6 +9066,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod circle_fit_points;
     mod command_line;
     mod construction_plane;
     mod copy_options;

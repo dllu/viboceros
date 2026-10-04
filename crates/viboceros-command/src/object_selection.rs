@@ -22,6 +22,7 @@ pub enum ObjectSelectionFilter {
     Cap,
     SurfaceComponents,
     Surfaces,
+    Points,
     PointCloudSources,
     PointCloudAddSources,
     PointCloudRemoveTarget,
@@ -53,6 +54,7 @@ impl ObjectSelectionFilter {
             Self::Any => true,
             Self::Grouped => !object.group_ids().is_empty(),
             Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
+            Self::Points => matches!(geometry, Geometry::Point(_)),
             Self::PointCloudAddSources => {
                 matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
             }

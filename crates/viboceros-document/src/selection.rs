@@ -30,6 +30,9 @@ impl Document {
     /// transaction; this marker alone should not represent an editing command.
     /// Call before replacement edits and release current selection before
     /// recording those replacements. Unrelated selections remain untouched.
+    /// A committed ordinary transaction containing only these markers folds
+    /// them into the preceding Undo entry without creating an entry or clearing
+    /// Redo; this preserves picking from commands that produce no geometry.
     pub fn release_command_selection_on_history_replay(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,

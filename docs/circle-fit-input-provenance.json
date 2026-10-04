@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleCircleFitSelection_20261004",
+  "native_selection_recipes": 8,
+  "earlier_native_circle_recipes": 22,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public command and SDK outputs were inspected.",
+    "Three preselected point objects accept immediately; insufficient preselection is cleared before point picking.",
+    "Completed Circle fits retain all accepted selection, including irrelevant preselected peers. Undo and Redo clear it.",
+    "Collinear/coincident fits finish without output or an Undo entry. Cancellation clears picking without geometry changes.",
+    "Application replay covers both direct Circle FitPoints and the center prompt option. Command replay compares the earlier 22 native circle loci and history.",
+    "Point-object input only. Native plane orientation/seam, control-point and mesh-vertex selection, near-collinear convergence and full performance remain incomplete."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/circle_fit_selection_probe.py": "e688ed0c291787f627fe2edad20fa9a4baefeb9d2035bc38f57818082c867068",
+    "tools/rhino_oracle/fixtures/circle_fit_selection.json": "ffc1bb6570bd796e3d51b120092c8bf1ceed6be6627ad96996e315833375f65e",
+    "tools/rhino_oracle/observations/circle_fit_selection.json": "0094d3a45c6ff61f8fc598a0b723613b4a1ce12afa0347853c372c45ade6c448",
+    "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
+    "tools/rhino_oracle/fixtures/circle_fit_points.json": "2a99fb059791d42534e62b35f2c80b66317da89d77c6a1f3b37ec33286ec4742",
+    "tools/rhino_oracle/observations/circle_fit_points.json": "4a791cacb4bf09c89d81b6f7055ba91055a8150c20a02dd22c429d6d3e152a65",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  }
+}

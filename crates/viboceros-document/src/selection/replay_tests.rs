@@ -1,6 +1,44 @@
 use super::*;
 
 #[test]
+fn no_output_pick_replay_metadata_preserves_history_and_redo_without_an_entry() {
+    let mut doc = Document::default();
+    let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());
+    doc.begin_transaction("Sources").unwrap();
+    let ids = [0., 1., 2.].map(|x| doc.add_geometry(point(x)).unwrap());
+    doc.commit_transaction().unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    doc.select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    for _ in 0..2 {
+        doc.begin_transaction("No output").unwrap();
+        doc.release_command_selection_on_history_replay(ids)
+            .unwrap();
+        assert!(!doc.commit_transaction().unwrap());
+    }
+    assert_eq!(doc.undo_label(), Some("Sources"));
+    assert_eq!(doc.selected_object_count(), 3);
+    assert_eq!(doc.undo().unwrap().as_deref(), Some("Sources"));
+    assert_eq!(doc.objects().len(), 0);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(doc.selected_object_count(), 0);
+    // Retaining another no-output pick does not consume an existing Redo entry.
+    doc.add_geometry(point(4.)).unwrap();
+    doc.undo().unwrap();
+    let redo = doc.redo_label().map(str::to_owned);
+    doc.select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    doc.begin_transaction("No output").unwrap();
+    doc.release_command_selection_on_history_replay(ids)
+        .unwrap();
+    assert!(!doc.commit_transaction().unwrap());
+    assert_eq!(doc.redo_label(), redo.as_deref());
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().len(), 4);
+}
+
+#[test]
 fn shrink_pick_release_preserves_unrelated_selection_and_rollback() {
     let mut doc = Document::default();
     let point = |x| Geometry::Point(Point3::try_new(x, 0., 0.).unwrap());

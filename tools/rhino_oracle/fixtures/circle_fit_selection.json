@@ -1,0 +1,218 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-0",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0,
+        1,
+        2
+      ],
+      "line": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-1",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0,
+        2
+      ],
+      "line": false,
+      "inputs": "all"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-2",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0
+      ],
+      "line": false,
+      "inputs": "enter"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-3",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "preselected": [],
+      "line": false,
+      "inputs": "enter"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-4",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0,
+        1,
+        2
+      ],
+      "line": true,
+      "inputs": "auto"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-5",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0,
+        1
+      ],
+      "line": true,
+      "inputs": "all"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-6",
+      "points": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          -2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      ],
+      "preselected": [],
+      "line": true,
+      "inputs": "all"
+    },
+    {
+      "op": "circle_fit_selection",
+      "id": "circle-fit-selection-7",
+      "points": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "preselected": [
+        0,
+        1,
+        2
+      ],
+      "line": false,
+      "inputs": "auto"
+    }
+  ]
+}

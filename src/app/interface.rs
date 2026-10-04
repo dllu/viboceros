@@ -1031,22 +1031,18 @@ impl VibocerosApp {
 
     pub(super) fn try_run_interface_command(&mut self, input: &str) -> bool {
         let mut tokens = input.split_whitespace();
-        if self.active_command.is_some()
-            && input.split_whitespace().next().is_some_and(|name| {
-                matches!(
-                    name.trim_start_matches(['\'', '_', '-'])
-                        .to_ascii_lowercase()
-                        .as_str(),
-                    "w" | "c"
-                )
-            })
+        let name = tokens
+            .next()
+            .unwrap_or("")
+            .trim_start_matches(['\'', '_', '-']);
+        // C with arguments is the Circle alias; bare C is crossing selection.
+        if (name.eq_ignore_ascii_case("C") && tokens.clone().next().is_some())
+            || (self.active_command.is_some()
+                && (name.eq_ignore_ascii_case("W") || name.eq_ignore_ascii_case("C")))
         {
             return false;
         }
-        if tokens.next().is_some_and(|name| {
-            name.trim_start_matches(['\'', '_', '-'])
-                .eq_ignore_ascii_case("Help")
-        }) {
+        if name.eq_ignore_ascii_case("Help") {
             self.push_log(format!("> {input}"));
             match tokens.collect::<Vec<_>>().as_slice() {
                 [] => {
