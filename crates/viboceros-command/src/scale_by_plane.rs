@@ -151,8 +151,11 @@ pub fn object_frame(
         geometry @ Geometry::NurbsSurface(_) if face.is_none_or(|index| index == 0) => {
             crate::construction_plane::frame_from_object(geometry, tolerance)
         }
-        Geometry::Point(point) if face.is_none() => {
-            return Ok(active.with_origin(*point));
+        geometry @ Geometry::Point(_) if face.is_none() => {
+            return crate::construction_plane::frame_from_object_in_plane(
+                geometry, active, tolerance,
+            )
+            .map_err(|_| usage());
         }
         geometry if face.is_none() && geometry.curve_ref().is_some() => {
             crate::construction_plane::frame_from_object(geometry, tolerance)

@@ -127,7 +127,7 @@ pub enum PlaneCommandError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
     #[error(
-        "CPlane Object requires a curve or surface; a mesh or multi-face polysurface requires Face=index"
+        "CPlane Object requires a point, curve or surface; a mesh or multi-face polysurface requires Face=index"
     )]
     UnsupportedObject,
 }
@@ -625,6 +625,19 @@ pub fn curve_perpendicular_frame(
     )?)
 }
 
+/// Point objects move the construction-plane origin while retaining its axes.
+/// Other geometry determines its own frame independently of the active plane.
+pub fn frame_from_object_in_plane(
+    geometry: &Geometry,
+    active: Frame3,
+    tolerance: Tolerance,
+) -> Result<Frame3, PlaneCommandError> {
+    match geometry {
+        Geometry::Point(point) => Ok(active.with_origin(*point)),
+        _ => frame_from_object(geometry, tolerance),
+    }
+}
+
 pub fn frame_from_object(
     geometry: &Geometry,
     tolerance: Tolerance,
@@ -639,8 +652,8 @@ pub fn frame_from_object(
         )?,
         Geometry::Arc(arc) => Frame3::try_from_directions(
             arc.center(),
-            arc.x_axis().as_vector(),
-            arc.y_axis().as_vector(),
+            arc.plane_x_axis().as_vector(),
+            arc.plane_y_axis()?.as_vector(),
             tolerance,
         )?,
         Geometry::Ellipse(ellipse) => Frame3::try_from_directions(
@@ -725,6 +738,14 @@ fn curve_object_frame(
         .evaluate_with_tangent(*curve.domain().start())?
         .tangent()
         .as_vector();
+    if let Some(center) = nurbs.circular_center(tolerance)? {
+        return Ok(Frame3::try_from_directions(
+            center,
+            center.vector_to(origin)?,
+            tangent,
+            tolerance,
+        )?);
+    }
     if !curve.is_planar(tolerance)? {
         let (_, _, curvature) = curve.evaluate_with_second_derivative(*curve.domain().start())?;
         let curvature_length = curvature.length()?;

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "settings_schemes": [
+    "VibocerosOracleCurvePlaneRecorded_20261004"
+  ],
+  "native_recipes": 64,
+  "application_replays": 128,
+  "point_cplane_replays": 20,
+  "native_3dm_round_trip_objects": 24,
+  "comparison_absolute_epsilon": 1e-09,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Only public Rhino commands and SDK outputs were inspected in empty owned documents at idle on private Xvfb.",
+    "16 curve representations cross world/tilted supporting frames and forward/reverse orientation. Independent CPlane Object witnesses predict four source points, with native command-end, post-macro, Undo and Redo snapshots.",
+    "Analytic ArcCurve supporting axes and angle intervals remain independent; exact NURBS circular loci use start radial/tangent axes. These differ on angularly offset and reversed partial arcs.",
+    "128 complete/incremental application replays check CPlane axes, ScaleByPlane output, metadata, selection, target invariance and history. Local CPlane Undo/Redo checks are not independent native history observations in this matrix.",
+    "20 additional point CPlane application replays reuse native witnesses in the preceding Object capture, referenced separately.",
+    "24 actual OpenNURBS file round-trip objects check supporting axes, angles, domains, geometry and standalone/single-PolyCurve analytic classes against native SDK recipes. This is a native open-source bridge check, not an additional Rhino reader capture.",
+    "Copy/Rigid behavior for these curve families, general B-rep face picking, extreme numeric ranges, timing and full parity remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/scale_by_plane_curve_probe.py": "edab07bd97b14b4b2e8b369c08a2aff1bd09086afe5add0ed3a8bee0a17ced4a",
+    "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/scale_by_plane_curve.json": "8b10ae38f4409c649f218d275929e52dc14e1ceadaf3b61a571356642780a850",
+    "tools/rhino_oracle/observations/scale_by_plane_curve.json": "393017b8c419a8bde30b55f0d943a0904380eaf425ea7b186750940966fa4240"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "a2ff58db03bc1183e6356b809120176d95037f565be1f8218c2e514cd44de520",
+    "tools/rhino_oracle/rhino_worker.py": "c6bde3fb45302e25dc42237cfbd03dd7f55706ce4f674524e0e6fdb64acd919b"
+  },
+  "point_cplane_provenance": "docs/scale-by-plane-object-provenance.json"
+}

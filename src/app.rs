@@ -9289,6 +9289,7 @@ mod tests {
     mod radius;
     mod rhino_curve_prompt;
     mod scale_by_plane;
+    mod scale_by_plane_curve;
     mod scale_nu;
     mod scale_positions;
     mod set_point;

@@ -8,10 +8,10 @@ fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();
     app.run_command();
 }
-fn p(v: &Value) -> Point3 {
+pub(super) fn p(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
 }
-fn frame(v: &Value) -> Frame3 {
+pub(super) fn frame(v: &Value) -> Frame3 {
     Frame3::try_from_directions(
         p(&v["origin"]),
         Vector3::try_from(serde_json::from_value::<[f64; 3]>(v["x_axis"].clone()).unwrap())
@@ -66,7 +66,11 @@ fn checked(
     );
 }
 
-fn object_plane_snapshot(app: &VibocerosApp, sources: &[ObjectId], target: ObjectId) -> Value {
+pub(super) fn object_plane_snapshot(
+    app: &VibocerosApp,
+    sources: &[ObjectId],
+    target: ObjectId,
+) -> Value {
     serde_json::json!(
         app.document
             .objects()

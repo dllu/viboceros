@@ -3164,6 +3164,128 @@ mod tests {
     }
 
     #[test]
+    fn recorded_rhino_arc_planes_and_angles_survive_native_3dm_round_trip() {
+        use serde_json::Value;
+        use viboceros_geometry::{Circle3, CurveSegment3};
+        let observations: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/scale_by_plane_curve.json"
+        ))
+        .unwrap();
+        let point = |v: &Value| {
+            Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
+        };
+        let leaf = |v: &Value| {
+            let a = &v["arc"];
+            let plane = &a["plane"];
+            let frame = Frame3::try_from_directions(
+                point(&plane["origin"]),
+                Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(plane["x_axis"].clone()).unwrap(),
+                )
+                .unwrap(),
+                Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(plane["y_axis"].clone()).unwrap(),
+                )
+                .unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            CircularArc3::try_from_circle_angles(
+                Circle3::try_from_frame(
+                    frame.origin(),
+                    a["radius"].as_f64().unwrap(),
+                    frame.x_axis(),
+                    frame.z_axis(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+                a["angles"][0].as_f64().unwrap()..=a["angles"][1].as_f64().unwrap(),
+            )
+            .unwrap()
+            .try_reparameterized(
+                v["curve"]["domain"][0].as_f64().unwrap()
+                    ..=v["curve"]["domain"][1].as_f64().unwrap(),
+            )
+            .unwrap()
+        };
+        let mut model = sample_model();
+        model.objects.clear();
+        for row in observations["results"].as_array().unwrap() {
+            let target = &row["value"]["target"];
+            let geometry = if target.get("arc").is_some() {
+                ThreeDmGeometry::Arc(leaf(target))
+            } else if let Some(segments) = target["segments"].as_array()
+                && segments.len() == 1
+                && segments[0].get("arc").is_some()
+            {
+                ThreeDmGeometry::PolyCurve(
+                    PolyCurve3::try_with_segment_domains(
+                        vec![CurveSegment3::Arc(leaf(&segments[0]))],
+                        serde_json::from_value(target["parameters"].clone()).unwrap(),
+                    )
+                    .unwrap(),
+                )
+            } else {
+                continue;
+            };
+            model.objects.push(ThreeDmObject::new(geometry, 0));
+        }
+        assert_eq!(model.objects.len(), 24);
+        let path = temporary_path("recorded-arc-planes.3dm");
+        let report = write_3dm_file(&path, &model).unwrap();
+        assert_eq!(report.written_object_count, 24);
+        let restored = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        fs::remove_file(path).unwrap();
+        assert_eq!(restored.unsupported_object_count(), 0);
+        assert_eq!(restored.objects.len(), 24);
+        for (source, result) in model.objects.iter().zip(&restored.objects) {
+            let (a, b) = match (&source.geometry, &result.geometry) {
+                (ThreeDmGeometry::Arc(a), ThreeDmGeometry::Arc(b)) => (*a, *b),
+                (ThreeDmGeometry::PolyCurve(a), ThreeDmGeometry::PolyCurve(b)) => {
+                    assert_eq!(a.parameters(), b.parameters());
+                    let (CurveSegment3::Arc(a), CurveSegment3::Arc(b)) =
+                        (&a.segments()[0], &b.segments()[0])
+                    else {
+                        panic!("lost analytic arc leaf")
+                    };
+                    (*a, *b)
+                }
+                _ => panic!("lost native curve class"),
+            };
+            assert_eq!(a.angle_domain(), b.angle_domain());
+            assert_eq!(a.domain(), b.domain());
+            for (x, y) in a
+                .plane_x_axis()
+                .as_vector()
+                .to_array()
+                .into_iter()
+                .zip(b.plane_x_axis().as_vector().to_array())
+            {
+                assert!((x - y).abs() < 1e-12);
+            }
+            for (x, y) in a
+                .plane_y_axis()
+                .unwrap()
+                .as_vector()
+                .to_array()
+                .into_iter()
+                .zip(b.plane_y_axis().unwrap().as_vector().to_array())
+            {
+                assert!((x - y).abs() < 1e-12);
+            }
+            for i in 0..=32 {
+                assert!(
+                    a.point_at(i as f64 / 32.0)
+                        .unwrap()
+                        .distance_to(b.point_at(i as f64 / 32.0).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+    }
+
+    #[test]
     fn native_polycurve_and_exploded_leaf_types_survive_3dm_round_trip() {
         use viboceros_geometry::CurveSegment3;
         let p = |x, y| Point3::try_new(x, y, 0.0).unwrap();

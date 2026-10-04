@@ -77,6 +77,16 @@ All six cases passed in Rhino 8 on 2026-09-04 at absolute `1e-10`, relative
 `1e-12`; the largest recorded numeric difference was `8.9e-16`. This includes
 32 written objects across the six files, with all attribute comparisons exact.
 
+## Analytic arc supporting planes
+
+Standalone arcs and PolyCurve arc leaves retain their original supporting-plane
+axes, angular interval, and independent curve domain through the OpenNURBS
+bridge. The kernel keeps geometric start directions separate from these axes.
+The [curve representation matrix](scale-by-plane-curve.md) includes 24 actual
+`.3dm` round-trip objects derived from public Rhino SDK recipes, including
+offset and reversed arcs. This extends frame fidelity beyond sampled locus
+agreement; it is not an additional Rhino reader capture.
+
 ## Remaining limits
 
 This adapter handles free curves, not B-rep edges/trims or full-order surface

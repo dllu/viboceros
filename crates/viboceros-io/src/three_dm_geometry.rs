@@ -300,16 +300,17 @@ impl Writer {
                 self.f64(*line.domain().end());
             }
             CurveSegment3::Arc(arc) => {
-                self.u8(2);
+                self.u8(5);
                 self.point3(arc.center());
-                for value in arc.x_axis().as_vector().to_array() {
+                for value in arc.plane_x_axis().as_vector().to_array() {
                     self.f64(value);
                 }
                 for value in arc.normal()?.as_vector().to_array() {
                     self.f64(value);
                 }
                 self.f64(arc.radius());
-                self.f64(arc.sweep_radians());
+                self.f64(*arc.angle_domain().start());
+                self.f64(*arc.angle_domain().end());
                 self.f64(*arc.domain().start());
                 self.f64(*arc.domain().end());
             }
@@ -470,19 +471,24 @@ impl Reader<'_> {
 
     fn segment(&mut self) -> Result<CurveSegment3, GeometryCodecError> {
         let tolerance = Tolerance::NUMERICAL_VALIDATION;
-        Ok(match self.u8()? {
+        let kind = self.u8()?;
+        Ok(match kind {
             1 => {
                 let line = LineSegment::try_new(self.point3()?, self.point3()?, tolerance)?;
                 CurveSegment3::Line(line.try_reparameterized(self.f64()?..=self.f64()?)?)
             }
-            2 => {
+            2 | 5 => {
                 let center = self.point3()?;
                 let x = Vector3::try_new(self.f64()?, self.f64()?, self.f64()?)?
                     .normalized_nonzero()?;
                 let normal = Vector3::try_new(self.f64()?, self.f64()?, self.f64()?)?
                     .normalized_nonzero()?;
                 let circle = Circle3::try_from_frame(center, self.f64()?, x, normal, tolerance)?;
-                let arc = CircularArc3::try_from_circle_sweep(circle, self.f64()?)?;
+                let arc = if kind == 5 {
+                    CircularArc3::try_from_circle_angles(circle, self.f64()?..=self.f64()?)?
+                } else {
+                    CircularArc3::try_from_circle_sweep(circle, self.f64()?)?
+                };
                 CurveSegment3::Arc(arc.try_reparameterized(self.f64()?..=self.f64()?)?)
             }
             3 => {
@@ -596,6 +602,17 @@ mod tests {
         )
         .unwrap();
         let arc = CircularArc3::try_from_circle_sweep(circle, 1.0).unwrap();
+        let mut legacy = Writer::default();
+        legacy.u32(VERSION);
+        legacy.u8(2);
+        legacy.point3(arc.center());
+        legacy.point3(Point3::try_from(arc.x_axis().as_vector().to_array()).unwrap());
+        legacy.point3(Point3::try_from(arc.normal().unwrap().as_vector().to_array()).unwrap());
+        legacy.f64(arc.radius());
+        legacy.f64(arc.sweep_radians());
+        legacy.f64(*arc.domain().start());
+        legacy.f64(*arc.domain().end());
+        assert_eq!(decode_arc(&legacy.bytes).unwrap(), arc);
         let bytes = encode_arc(arc).unwrap();
         assert_eq!(decode_arc(&bytes).unwrap(), arc);
         for length in 0..bytes.len() {

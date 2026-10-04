@@ -570,12 +570,10 @@ bool write_curve_segment(const ON_Curve& source, ByteWriter& writer) {
     point(line->PointAtStart()); point(line->PointAtEnd());
     writer.Double(line->Domain()[0]); writer.Double(line->Domain()[1]);
   } else if (const auto* curve = ON_ArcCurve::Cast(&source)) {
-    writer.U8(2);
+    writer.U8(5);
     const ON_Arc& arc = curve->m_arc;
-    const double start = arc.Domain()[0];
-    const ON_3dVector x = std::cos(start) * arc.plane.xaxis + std::sin(start) * arc.plane.yaxis;
-    point(arc.Center()); point(ON_3dPoint(x)); point(ON_3dPoint(arc.plane.zaxis));
-    writer.Double(arc.Radius()); writer.Double(arc.AngleRadians());
+    point(arc.Center()); point(ON_3dPoint(arc.plane.xaxis)); point(ON_3dPoint(arc.plane.zaxis));
+    writer.Double(arc.Radius()); writer.Double(arc.Domain()[0]); writer.Double(arc.Domain()[1]);
     writer.Double(curve->Domain()[0]); writer.Double(curve->Domain()[1]);
   } else if (const auto* polyline = ON_PolylineCurve::Cast(&source)) {
     writer.U8(3); writer.U64(static_cast<uint64_t>(polyline->m_pline.Count()));
@@ -1274,16 +1272,17 @@ std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& er
     ON_3dPoint start, end;
     if (!point(start) || !point(end)) { error = "invalid line segment"; return nullptr; }
     curve = std::make_unique<ON_LineCurve>(start, end);
-  } else if (kind == 2) {
+  } else if (kind == 2 || kind == 5) {
     ON_3dPoint center, x, normal;
-    double radius = 0, sweep = 0;
+    double radius = 0, angle0 = 0, angle1 = 0;
     if (!point(center) || !point(x) || !point(normal) || !reader.Double(radius) ||
-        !reader.Double(sweep) || !std::isfinite(radius) || !std::isfinite(sweep)) {
+        (kind == 5 && !reader.Double(angle0)) || !reader.Double(angle1) ||
+        !std::isfinite(radius) || !std::isfinite(angle0) || !std::isfinite(angle1)) {
       error = "invalid arc segment"; return nullptr;
     }
     const ON_3dVector xv(x), z(normal);
     ON_Plane plane(center, xv, ON_CrossProduct(z, xv));
-    ON_Arc arc(ON_Circle(plane, radius), sweep);
+    ON_Arc arc(ON_Circle(plane, radius), ON_Interval(angle0, angle1));
     if (!arc.IsValid()) { error = "invalid arc frame"; return nullptr; }
     curve = std::make_unique<ON_ArcCurve>(arc);
   } else if (kind == 3) {

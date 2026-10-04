@@ -1,0 +1,454 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-0",
+      "target": "circle",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-1",
+      "target": "circle",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-2",
+      "target": "circle",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-3",
+      "target": "circle",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-4",
+      "target": "arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-5",
+      "target": "arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-6",
+      "target": "arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-7",
+      "target": "arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-8",
+      "target": "offset_arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-9",
+      "target": "offset_arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-10",
+      "target": "offset_arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-11",
+      "target": "offset_arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-12",
+      "target": "ellipse",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-13",
+      "target": "ellipse",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-14",
+      "target": "ellipse",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-15",
+      "target": "ellipse",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-16",
+      "target": "nurbs_circle",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-17",
+      "target": "nurbs_circle",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-18",
+      "target": "nurbs_circle",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-19",
+      "target": "nurbs_circle",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-20",
+      "target": "nurbs_arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-21",
+      "target": "nurbs_arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-22",
+      "target": "nurbs_arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-23",
+      "target": "nurbs_arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-24",
+      "target": "nurbs_offset_arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-25",
+      "target": "nurbs_offset_arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-26",
+      "target": "nurbs_offset_arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-27",
+      "target": "nurbs_offset_arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-28",
+      "target": "nurbs_ellipse",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-29",
+      "target": "nurbs_ellipse",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-30",
+      "target": "nurbs_ellipse",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-31",
+      "target": "nurbs_ellipse",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-32",
+      "target": "single_circle",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-33",
+      "target": "single_circle",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-34",
+      "target": "single_circle",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-35",
+      "target": "single_circle",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-36",
+      "target": "single_arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-37",
+      "target": "single_arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-38",
+      "target": "single_arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-39",
+      "target": "single_arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-40",
+      "target": "single_offset_arc",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-41",
+      "target": "single_offset_arc",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-42",
+      "target": "single_offset_arc",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-43",
+      "target": "single_offset_arc",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-44",
+      "target": "single_ellipse",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-45",
+      "target": "single_ellipse",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-46",
+      "target": "single_ellipse",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-47",
+      "target": "single_ellipse",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-48",
+      "target": "poly_lines",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-49",
+      "target": "poly_lines",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-50",
+      "target": "poly_lines",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-51",
+      "target": "poly_lines",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-52",
+      "target": "poly_nurbs_line",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-53",
+      "target": "poly_nurbs_line",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-54",
+      "target": "poly_nurbs_line",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-55",
+      "target": "poly_nurbs_line",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-56",
+      "target": "poly_arc_line",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-57",
+      "target": "poly_arc_line",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-58",
+      "target": "poly_arc_line",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-59",
+      "target": "poly_arc_line",
+      "plane": "tilted",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-60",
+      "target": "poly_nonplanar",
+      "plane": "world",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-61",
+      "target": "poly_nonplanar",
+      "plane": "world",
+      "reverse": true
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-62",
+      "target": "poly_nonplanar",
+      "plane": "tilted",
+      "reverse": false
+    },
+    {
+      "op": "scale_by_plane_curve",
+      "id": "plane-curve-63",
+      "target": "poly_nonplanar",
+      "plane": "tilted",
+      "reverse": true
+    }
+  ]
+}

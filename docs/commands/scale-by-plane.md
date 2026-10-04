@@ -42,8 +42,10 @@ The chosen plane's axes are retained through reference picks and repeated
 copies. Its stored origin does not replace the scaling origin. Picking an Object
 target does not add it to the transform sources. Surface U/V derivatives at
 the parameter midpoint supply its frame, including for nonplanar surfaces.
-Curves use their start frame: planar curves combine the start tangent and plane
-normal; nonplanar curves combine the start tangent and curvature. A point uses
+Analytic circles and arcs retain their supporting plane axes, independently
+of an arc's start angle. Exact circular NURBS curves use radial/tangent axes
+at their physical start. Other planar curves combine the start tangent and
+plane normal; nonplanar curves combine the start tangent and curvature. A point uses
 the active construction-plane axes. Whole meshes selected by ID are rejected
 without a transform.
 
@@ -91,6 +93,11 @@ cover geometry definitions, object names, selected controls, object order,
 Copy, selection cleanup, and external Undo/Redo at absolute epsilon `1e-9`.
 The three Rigid grip recipes compare geometry and history while excluding the
 cursor-dependent display coordinates.
+
+The [curve representation matrix](../scale-by-plane-curve.md) adds 64 native
+recipes and 128 complete/incremental replays for analytic arcs, exact NURBS
+arcs/circles, ellipses, and mixed PolyCurves. It distinguishes supporting axes
+from physical-start axes on offset and reversed arcs.
 
 The application provides live affine previews using the same reference map as
 execution. Native preview appearance, prescribed mouse reference workflows,

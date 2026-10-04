@@ -104,7 +104,7 @@ impl PlanePrompt {
             }
             (PlanePromptKind::Rotate, _) => "CPlane Rotate: pick the second reference point",
             (PlanePromptKind::Object, _) => {
-                "CPlane Object: select a curve, surface, mesh face, or polysurface face"
+                "CPlane Object: select a point, curve, surface, mesh face, or polysurface face"
             }
             (PlanePromptKind::CurveSelect, _) => "CPlane Curve: select a curve",
             (PlanePromptKind::CurveOrigin, _) => {
@@ -428,9 +428,13 @@ impl VibocerosApp {
                 .filter(|_| self.document.is_object_selectable(id))
                 .ok_or_else(|| format!("object {id} is missing or cannot be selected"))
                 .and_then(|object| {
-                    cplane::frame_from_object(object.geometry(), self.document.tolerance())
-                        .map(PlaneAction::Set)
-                        .map_err(|error| error.to_string())
+                    cplane::frame_from_object_in_plane(
+                        object.geometry(),
+                        self.viewports[viewport].construction_plane(),
+                        self.document.tolerance(),
+                    )
+                    .map(PlaneAction::Set)
+                    .map_err(|error| error.to_string())
                 }),
             PlaneAction::ObjectFace(id, face) => self
                 .document

@@ -241,6 +241,8 @@ pub struct CircularArc3 {
     circle: CircleFrame3,
     sweep_radians: Real,
     domain: [Real; 2],
+    plane_x_axis: UnitVector3,
+    angles: [Real; 2],
 }
 
 impl CircularArc3 {
@@ -499,6 +501,22 @@ impl CircularArc3 {
         Self::try_from_frame_sweep(circle.frame(), sweep_radians)
     }
 
+    /// Retains the supporting circle's plane and an independent angular
+    /// interval, as in an OpenNURBS arc. Evaluation uses a cached start frame.
+    pub fn try_from_circle_angles(
+        circle: crate::Circle3,
+        angles: std::ops::RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        require_finite([*angles.start(), *angles.end()], "arc angle interval")?;
+        let mut arc = Self::try_from_frame_sweep(
+            circle.frame().rotated_seam(*angles.start())?,
+            *angles.end() - *angles.start(),
+        )?;
+        arc.plane_x_axis = circle.x_axis();
+        arc.angles = [*angles.start(), *angles.end()];
+        Ok(arc)
+    }
+
     fn try_from_frame_sweep(
         circle: CircleFrame3,
         sweep_radians: Real,
@@ -519,6 +537,8 @@ impl CircularArc3 {
             circle,
             sweep_radians,
             domain: [0.0, length],
+            plane_x_axis: circle.x_axis(),
+            angles: [0.0, sweep_radians],
         })
     }
 
@@ -535,6 +555,23 @@ impl CircularArc3 {
     #[inline]
     pub const fn sweep_radians(self) -> Real {
         self.sweep_radians
+    }
+
+    pub fn angle_domain(self) -> std::ops::RangeInclusive<Real> {
+        self.angles[0]..=self.angles[1]
+    }
+
+    /// Supporting-plane axes retain their orientation through trimming and
+    /// reversal. The geometric start directions remain available as x/y_axis.
+    pub const fn plane_x_axis(self) -> UnitVector3 {
+        self.plane_x_axis
+    }
+
+    pub fn plane_y_axis(self) -> Result<UnitVector3, GeometryError> {
+        self.normal()?
+            .as_vector()
+            .cross(self.plane_x_axis.as_vector())?
+            .normalized_nonzero()
     }
 
     /// Native curve interval, independent of the angular geometric parameter.
@@ -590,8 +627,13 @@ impl CircularArc3 {
                 Tolerance::DEFAULT.angular(),
             )?,
         )?;
-        Self::try_from_frame_sweep(circle, (last - first) * self.sweep_radians)?
-            .try_reparameterized(domain)
+        let mut arc = Self::try_from_frame_sweep(circle, (last - first) * self.sweep_radians)?;
+        arc.plane_x_axis = self.plane_x_axis;
+        arc.angles = [
+            self.angles[0] + first * self.sweep_radians,
+            self.angles[0] + last * self.sweep_radians,
+        ];
+        arc.try_reparameterized(domain)
     }
 
     /// Extends one end along the existing supporting circle to an angular
@@ -611,16 +653,20 @@ impl CircularArc3 {
         let span = *domain.end() - *domain.start();
         if at_end {
             let new_end = *domain.start() + span * angle / self.sweep_radians;
-            Self::try_from_frame_sweep(self.circle, angle)?
-                .try_reparameterized(*domain.start()..=new_end)
+            let mut arc = Self::try_from_frame_sweep(self.circle, angle)?;
+            arc.plane_x_axis = self.plane_x_axis;
+            arc.angles = [self.angles[0], self.angles[0] + angle];
+            arc.try_reparameterized(*domain.start()..=new_end)
         } else {
             let backwards = TAU - angle;
             let new_start = *domain.start() - span * backwards / self.sweep_radians;
-            Self::try_from_frame_sweep(
+            let mut arc = Self::try_from_frame_sweep(
                 self.circle.rotated_seam(-backwards)?,
                 self.sweep_radians + backwards,
-            )?
-            .try_reparameterized(new_start..=*domain.end())
+            )?;
+            arc.plane_x_axis = self.plane_x_axis;
+            arc.angles = [self.angles[0] - backwards, self.angles[1]];
+            arc.try_reparameterized(new_start..=*domain.end())
         }
     }
 
@@ -628,6 +674,7 @@ impl CircularArc3 {
     pub fn closed(self) -> Self {
         Self {
             sweep_radians: TAU,
+            angles: [self.angles[0], self.angles[0] + TAU],
             ..self
         }
     }
@@ -699,6 +746,8 @@ impl CircularArc3 {
             circle,
             sweep_radians,
             domain: self.domain,
+            plane_x_axis: circle.x_axis(),
+            angles: [0.0, sweep_radians],
         })
     }
 
@@ -719,7 +768,23 @@ impl CircularArc3 {
         } else {
             self.circle.rotated_seam(angle)?
         };
-        Self { circle, ..self }.try_reparameterized(parameter..=end)
+        // Moving the seam rotates the supporting plane as well, retaining its
+        // angular interval (the OpenNURBS ArcCurve seam rule).
+        let plane_x_axis = if wrapped == *domain.start() || wrapped == *domain.end() {
+            self.plane_x_axis
+        } else {
+            let (sine, cosine) = angle.sin_cos();
+            let x = self.plane_x_axis.as_vector().to_array();
+            let y = self.plane_y_axis()?.as_vector().to_array();
+            Vector3::try_from(std::array::from_fn(|i| x[i].mul_add(cosine, y[i] * sine)))?
+                .normalized_nonzero()?
+        };
+        Self {
+            circle,
+            plane_x_axis,
+            ..self
+        }
+        .try_reparameterized(parameter..=end)
     }
 
     pub fn start(self) -> Result<Point3, GeometryError> {
@@ -770,6 +835,8 @@ impl CircularArc3 {
             circle,
             sweep_radians: self.sweep_radians,
             domain: [-self.domain[1], -self.domain[0]],
+            plane_x_axis: self.plane_x_axis,
+            angles: [-self.angles[1], -self.angles[0]],
         })
     }
 
@@ -812,14 +879,18 @@ impl CircularArc3 {
         transform: AffineTransform3,
         tolerance: Tolerance,
     ) -> Result<Option<Self>, GeometryError> {
-        Ok(self
-            .circle
-            .transformed_similarity(transform, tolerance)?
-            .map(|circle| Self {
-                circle,
-                sweep_radians: self.sweep_radians,
-                domain: self.domain,
-            }))
+        let Some(circle) = self.circle.transformed_similarity(transform, tolerance)? else {
+            return Ok(None);
+        };
+        Ok(Some(Self {
+            circle,
+            sweep_radians: self.sweep_radians,
+            domain: self.domain,
+            plane_x_axis: transform
+                .transform_vector(self.plane_x_axis.as_vector())?
+                .normalized_nonzero()?,
+            angles: self.angles,
+        }))
     }
 }
 
@@ -968,6 +1039,82 @@ mod tests {
 
     fn z_axis() -> UnitVector3 {
         UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap()
+    }
+
+    #[test]
+    fn supporting_plane_and_angle_interval_survive_arc_operations() {
+        let circle =
+            Circle3::try_new(point(5.0, -4.0, 2.0), 2.0, z_axis(), Tolerance::DEFAULT).unwrap();
+        let arc = CircularArc3::try_from_circle_angles(circle, 0.35..=2.2)
+            .unwrap()
+            .try_reparameterized(10.0..=30.0)
+            .unwrap();
+        let reversed = arc.reversed(Tolerance::DEFAULT).unwrap();
+        assert_eq!(reversed.angle_domain(), -2.2..=-0.35);
+        assert_eq!(reversed.plane_x_axis(), circle.x_axis());
+        assert_eq!(reversed.plane_y_axis().unwrap(), circle.y_axis().opposite());
+        let trimmed = arc.try_trimmed(15.0..=25.0).unwrap();
+        assert_eq!(trimmed.plane_x_axis(), circle.x_axis());
+        assert_eq!(
+            trimmed.angle_domain(),
+            (0.35 + 0.25 * (2.2 - 0.35))..=(0.35 + 0.75 * (2.2 - 0.35))
+        );
+        let extended_end = arc.try_extended_to_circle_angle(2.5, true).unwrap();
+        assert_eq!(extended_end.angle_domain(), 0.35..=2.85);
+        let extended_start = arc.try_extended_to_circle_angle(5.0, false).unwrap();
+        assert_eq!(extended_start.angle_domain(), (0.35 - (TAU - 5.0))..=2.2);
+        let closed = arc.closed();
+        assert_eq!(closed.angle_domain(), 0.35..=(0.35 + TAU));
+        let shifted = closed.try_change_closed_seam(15.0).unwrap();
+        assert_eq!(shifted.angle_domain(), closed.angle_domain());
+        assert_eq!(closed.try_change_closed_seam(10.0).unwrap(), closed);
+        let rotation = AffineTransform3::try_rotation(point(0.0, 0.0, 0.0), z_axis(), 0.4).unwrap();
+        let transformed = arc
+            .transformed_similarity(rotation, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(transformed.angle_domain(), arc.angle_domain());
+        for value in [
+            arc,
+            reversed,
+            trimmed,
+            extended_start,
+            extended_end,
+            closed,
+            shifted,
+            transformed,
+        ] {
+            let support = Circle3::try_from_frame(
+                value.center(),
+                value.radius(),
+                value.plane_x_axis(),
+                value.normal().unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let angles = value.angle_domain();
+            for i in 0..=16 {
+                let fraction = i as f64 / 16.0;
+                let expected = support
+                    .point_at_angle(*angles.start() + fraction * (*angles.end() - *angles.start()))
+                    .unwrap();
+                assert!(
+                    expected
+                        .distance_to(value.point_at(fraction).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+        for angles in [
+            0.0..=0.0,
+            2.0..=1.0,
+            0.0..=(TAU + 0.1),
+            f64::NAN..=1.0,
+            0.0..=f64::INFINITY,
+        ] {
+            assert!(CircularArc3::try_from_circle_angles(circle, angles).is_err());
+        }
     }
 
     #[test]

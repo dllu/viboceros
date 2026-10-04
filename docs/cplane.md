@@ -92,11 +92,15 @@ or pick a face in a viewport; face indices are zero based. A single preselected
 mesh or multi-face polysurface waits for a face pick.
 At the bare `CPlane` origin prompt, type `Object` to enter the same selection
 prompt.
-Circles and arcs place the origin at their center with X toward the curve start.
+Point objects move the origin to the point while retaining the active plane axes.
+Analytic circles and arcs use their supporting circle center and original plane
+axes; an arc's angular interval can start above zero independently of those axes.
+Exact circular NURBS curves use their center, physical start radial direction
+for X, and start tangent for Y. Single-leaf PolyCurves use their leaf frame.
 Ellipses put the origin at their start point, with X along the start tangent.
 Lines use their start point and an OpenNURBS-style supporting plane: a line
 parallel to a world coordinate plane uses that plane, while an oblique line
-uses its direction for X. Polylines and NURBS curves use their start point and
+uses its direction for X. Other polylines and NURBS curves use their start point and
 starting tangent for X. Planar curves derive Z from their oriented control
 plane; nonplanar curves use the start curvature direction when available, with
 a deterministic perpendicular when the start curvature vanishes.
@@ -215,3 +219,8 @@ modeling command to construction planes are separate ongoing work. The
 existing view menu is not full `SetView`.
 The typed `Through All` macro has a documented/native discrepancy described in the
 [oracle notes](oracle.md), so its exact Rhino parity remains unverified.
+
+The [curve representation matrix](scale-by-plane-curve.md) records 64 native
+Object frames and corresponding ScaleByPlane outputs, with 128 application
+replays. Its supporting-plane evidence also covers analytic arc reversal and
+angular offsets; 20 additional point CPlane replays retain active axes.

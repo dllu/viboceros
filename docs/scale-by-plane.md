@@ -48,6 +48,10 @@ The [separate Object matrix](scale-by-plane-object.md) adds 64 native recipes
 and 120 application replays for planar/nonplanar curves and surfaces, points,
 and rejected whole-mesh ID picks.
 
+The [curve representation matrix](scale-by-plane-curve.md) adds 64 native
+recipes and 128 application replays, distinguishing supporting-plane axes of
+analytic arcs from radial/tangent axes of equivalent NURBS curves.
+
 The tests do not measure native reference-picking previews or speed. They do
 not verify every Object frame, grouped layouts, trimmed B-reps, or SubCrv.
 The provenance explicitly leaves full native parity unproven.
