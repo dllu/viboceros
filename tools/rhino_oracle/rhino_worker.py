@@ -6789,6 +6789,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'circle_fit_benchmark':
         from circle_fit_benchmark import run
         return run(operation, globals())
+    if kind == 'circle_fit_diagnostics':
+        from circle_fit_diagnostics import run
+        return run(operation, globals())
     if kind == 'maelstrom_input_command':
         from maelstrom_input_probe import run
         return run(operation, globals())

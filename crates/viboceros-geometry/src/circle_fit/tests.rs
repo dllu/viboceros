@@ -109,7 +109,7 @@ fn permutation_translation_and_scaling_preserve_the_fitted_locus() {
 }
 
 #[test]
-fn near_collinear_native_disagreement_remains_a_retained_diagnostic() {
+fn near_collinear_native_circle_is_recovered_within_sixteen_radius_ulps() {
     let (q, r) = inputs();
     let pts = q["operations"][21]["points"]
         .as_array()
@@ -119,6 +119,71 @@ fn near_collinear_native_disagreement_remains_a_retained_diagnostic() {
         .collect::<Vec<_>>();
     let fit = Circle3::try_fit_to_points(&pts).unwrap().unwrap();
     let native = &r["results"][21]["value"]["sdk"];
-    assert!(fit.center().distance_to(point(&native["origin"])).unwrap() > 1e7);
+    let radius = native["radius"].as_f64().unwrap();
+    let epsilon = 16. * (Real::from_bits(radius.to_bits() + 1) - radius);
+    assert!(
+        fit.center().distance_to(point(&native["origin"])).unwrap() + (fit.radius() - radius).abs()
+            <= epsilon
+    );
     assert!(fit.radius().is_finite() && fit.radius() > 0.);
+}
+
+#[test]
+fn circle_fit_diagnostics_cover_center_witnesses_thin_arcs_and_large_circles() {
+    for name in [
+        "circle_fit_diagnostics",
+        "circle_fit_distant_arcs",
+        "circle_fit_distant_noisy",
+    ] {
+        let root =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tools/rhino_oracle");
+        let q: Value = serde_json::from_str(
+            &std::fs::read_to_string(root.join("fixtures").join(format!("{name}.json"))).unwrap(),
+        )
+        .unwrap();
+        let r: Value = serde_json::from_str(
+            &std::fs::read_to_string(root.join("observations").join(format!("{name}.json")))
+                .unwrap(),
+        )
+        .unwrap();
+        for (i, (op, row)) in q["operations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(r["results"].as_array().unwrap())
+            .enumerate()
+        {
+            let pts = op["points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(point)
+                .collect::<Vec<_>>();
+            let native = &row["value"]["circle"];
+            let radius = native["radius"].as_f64().unwrap();
+            let fit = Circle3::try_fit_to_points(&pts).unwrap();
+            if radius == 0. {
+                assert!(fit.is_none());
+                continue;
+            }
+            let fit = fit.unwrap();
+            let error = fit.center().distance_to(point(&native["origin"])).unwrap()
+                + (fit.radius() - radius).abs();
+            if name == "circle_fit_diagnostics" && i == 24 {
+                // Native's epsilon=1e-6 convergence remains measurably different.
+                // Keep this gap explicit instead of widening the fit tolerance.
+                assert!(error > 1e-7 && error < 1e-5);
+                continue;
+            }
+            let epsilon = (16. * (Real::from_bits(radius.to_bits() + 1) - radius)).max(1e-7);
+            assert!(
+                error <= epsilon,
+                "{}: error {error} epsilon {epsilon}",
+                op["id"]
+            );
+            let normal = fit.normal().unwrap().as_vector();
+            let native_normal = Vector3::try_from(point(&native["normal"]).to_array()).unwrap();
+            assert!((normal.dot(native_normal).unwrap().abs() - 1.).abs() < 1e-12);
+        }
+    }
 }

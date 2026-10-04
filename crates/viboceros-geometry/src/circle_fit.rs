@@ -2,6 +2,8 @@
 use crate::{Circle3, FiniteSum, Frame3, GeometryError, Point3, Real, Tolerance, Vector3};
 use faer::Mat;
 use nalgebra::{Matrix2, Vector2};
+mod distant;
+mod seed;
 
 pub const MAX_CIRCLE_FIT_POINTS: usize = crate::MAX_PLANE_FIT_POINTS;
 const ITERATIONS: usize = 256;
@@ -71,7 +73,7 @@ impl Circle3 {
                 })
             })
             .collect::<Vec<_>>();
-        let seed = algebraic_seed(&coordinates, sigma[1] >= 0.001 * sigma[0])?;
+        let seed = seed::algebraic(&coordinates, sigma[1] >= 0.1 * sigma[0])?;
         let (location, radius) = refine(&coordinates, seed)?;
         let center = plane.point_at([scale * location.x, scale * location.y, 0.])?;
         Circle3::try_from_frame(
@@ -85,60 +87,6 @@ impl Circle3 {
     }
 }
 
-fn algebraic_seed(
-    points: &[[Real; 3]],
-    well_conditioned: bool,
-) -> Result<Vector2<Real>, GeometryError> {
-    if well_conditioned {
-        // A bounded condition number permits a compact covariance solve. Thin
-        // arcs retain the SVD path instead of squaring their condition number.
-        let mut mean = [0.; 3];
-        for p in points {
-            mean[0] += p[0];
-            mean[1] += p[1];
-            mean[2] += p.iter().map(|v| v * v).sum::<Real>();
-        }
-        mean.iter_mut().for_each(|v| *v /= points.len() as Real);
-        let mut matrix = Matrix2::zeros();
-        let mut rhs = Vector2::zeros();
-        for p in points {
-            let d = Vector2::new(p[0] - mean[0], p[1] - mean[1]);
-            matrix += d * d.transpose();
-            rhs += d * ((p.iter().map(|v| v * v).sum::<Real>() - mean[2]) * 0.5);
-        }
-        return matrix
-            .lu()
-            .solve(&rhs)
-            .filter(|v| v.iter().all(|x| x.is_finite()))
-            .ok_or(GeometryError::CircleFitDidNotConverge);
-    }
-    let design = Mat::from_fn(
-        points.len(),
-        3,
-        |r, c| if c < 2 { 2. * points[r][c] } else { 1. },
-    );
-    let seed = design
-        .thin_svd()
-        .map_err(|_| GeometryError::CircleFitDidNotConverge)?;
-    let values = seed.S().column_vector();
-    if (0..3).any(|i| !values[i].is_finite() || values[i] <= 0.) {
-        return Err(GeometryError::CircleFitDidNotConverge);
-    }
-    let mut solution = [0.; 3];
-    for j in 0..3 {
-        let dot = points
-            .iter()
-            .enumerate()
-            .map(|(r, p)| seed.U()[(r, j)] * p.iter().map(|v| v * v).sum::<Real>())
-            .sum::<Real>()
-            / values[j];
-        for (i, s) in solution.iter_mut().enumerate() {
-            *s += seed.V()[(i, j)] * dot;
-        }
-    }
-    Ok(Vector2::new(solution[0], solution[1]))
-}
-
 fn statistics(
     points: &[[Real; 3]],
     center: Vector2<Real>,
@@ -148,11 +96,10 @@ fn statistics(
     for p in points {
         let d = Vector2::new(center.x - p[0], center.y - p[1]);
         let distance = d.x.hypot(d.y).hypot(p[2]);
-        if distance == 0. {
-            return Err(GeometryError::CircleFitDidNotConverge);
-        }
         sum.add(distance)?;
-        derivative += d / distance;
+        if distance > 0. {
+            derivative += d / distance;
+        }
     }
     let radius = sum.mean()?;
     derivative /= points.len() as Real;
@@ -163,7 +110,13 @@ fn statistics(
         let d = Vector2::new(center.x - p[0], center.y - p[1]);
         let distance = d.x.hypot(d.y).hypot(p[2]);
         let residual = distance - radius;
-        let j = d / distance - derivative;
+        // Choose the zero subgradient at a center witness. Native symmetric
+        // sets retain that stationary center and include the zero distance.
+        let j = if distance > 0. {
+            d / distance
+        } else {
+            Vector2::zeros()
+        } - derivative;
         cost.add(residual * residual)?;
         gradient += j * residual;
         hessian += j * j.transpose();
@@ -180,6 +133,12 @@ fn refine(
     points: &[[Real; 3]],
     mut center: Vector2<Real>,
 ) -> Result<(Vector2<Real>, Real), GeometryError> {
+    if center.norm() > 16. {
+        // The retained thin/noisy native cases keep the algebraic center.
+        // Cartesian refinement changes those circles and loses small radial
+        // residuals. Preserve that estimate and compute its radius stably.
+        return Ok((center, distant::radius(points, center)?));
+    }
     let mut damping = 1e-6;
     let mut current = statistics(points, center)?;
     for _ in 0..ITERATIONS {

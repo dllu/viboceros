@@ -10,8 +10,10 @@ fewer than three points return an error. Input count and refinement are bounded.
 
 The implementation uses correctly rounded centroid means, isotropic scaling,
 faer's thin SVD for the plane, a covariance initial estimate on well-conditioned
-data (an SVD estimate for thin arcs), and damped
-Gauss–Newton refinement with nalgebra. Accepted steps retain their statistics
+data (a Taubin SVD estimate for thin arcs), and damped
+Gauss–Newton refinement with nalgebra for ordinary centers. Distant circles
+retain the algebraic center and use stable mean spatial radii; see the
+[conditioning evidence](circle-fit-conditioning.md). Accepted steps retain their statistics
 to avoid repeating distance and derivative scans. Eliminating the radius as the mean
 spatial distance leaves two center coordinates to refine. A finite orthonormal
 frame and checked Circle bounds validate the output.
@@ -37,6 +39,13 @@ The [provenance record](circle-fit-provenance.json) hashes the closed recipes,
 unmodified observations and helpers. All Rhino work uses owned private Xvfb.
 No proprietary source was inspected.
 
+44 additional public circle/plane API captures cover nearly collinear data,
+noisy thin arcs and symmetric sets containing their fitted center. Every native
+Circle frame exactly matches the public plane fitter's frame. The original
+large near-collinear mismatch is now within sixteen radius ULPs; a different
+thin input retains a small unresolved discrepancy. Details and numerical bounds
+are in the [conditioning record](circle-fit-conditioning.md).
+
 ## Local performance
 
 The [retained performance record](circle-fit-performance.json) measures prepared
@@ -55,6 +64,9 @@ took 2.219 ms. Reusing accepted-step statistics and using a compact seed solve
 on well-conditioned data reduced it to 1.206 ms without changing the retained
 loci. These measurements do not establish performance against untranslated
 Rhino or overall command performance.
+These are the original baseline measurements. Current conditioning checks
+retain both later runs and their timing variation in the
+[conditioning record](circle-fit-conditioning.md).
 
 ```sh
 cargo run --release -p viboceros-geometry --example profile_circle_fit
@@ -68,14 +80,12 @@ resulting plane basis. Solver bases are not yet a compatible substitute for
 those conventions. Circle's interactive FitPoints input, control-point/mesh
 vertex picking, and Maelstrom's FitPoints input still require this work.
 
-The last retained nearly collinear input yields a native circle of radius
-`199999999.99999982`. The independent fitter produces a substantially different
-circle. This is retained as a failing compatibility diagnostic, not absorbed
-into the regular-fit tolerance. Further work must reproduce the native
-convergence behavior before claiming this case passes.
+The diagnostic with a `1e-6` departure from collinearity retains a roughly
+`2.35e-6` difference in both center and radius. It remains an explicit failing
+compatibility case, separate from the regular-fit and floating-point bounds.
 
 Original native performance, tied plane singular values, extreme coordinate
-ranges and point sets containing the fitted center need further verification.
+ranges and nonsymmetric sets containing the fitted center need further verification.
 The fitter checks finite output bounds and rejects failed decompositions or
 exhausted refinement. A stalled descent can return its current finite estimate;
 this is not a certificate of a global minimum or native convergence behavior.

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "engine_version": "8.32.26160.13001",
+  "native_api_recipes": 44,
+  "full_native_parity": false,
+  "settings_schemes": [
+    "VibocerosOracleCircleFitDiagnostics_20261004",
+    "VibocerosOracleCircleFitDistantArcs_20261004",
+    "VibocerosOracleCircleFitDistantNoisy_20261004"
+  ],
+  "comparison": {
+    "regular_center_plus_radius_epsilon": 1e-07,
+    "large_circle_radius_ulps": 16,
+    "positive_radius_comparisons": 41,
+    "degenerate_no_output_comparisons": 2,
+    "remaining_diagnostics": 1
+  },
+  "scope_notes": [
+    "Public Circle and Plane SDK outputs only; no proprietary source inspection.",
+    "Every native circle basis equals its public fitted plane basis. Native orientation is not yet implemented.",
+    "Thin-input Taubin estimates and distant-radius arithmetic follow measured output behavior; switch boundaries require more coverage.",
+    "The epsilon=1e-6 near-collinear input retains a center and radius mismatch around 2.35e-6.",
+    "Circle and Maelstrom interactive FitPoints integration remains incomplete."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/circle_fit_diagnostics.py": "d9a96ebaa40ec476e86b3dee76322dc5ddfdf77b6ef458f8fd7a9207868dfde6",
+    "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/circle_fit_diagnostics.json": "72d1490b11dd73190d540b6298fb9392f2a2f1c2a3d78b90531e4eee06efe67c",
+    "tools/rhino_oracle/observations/circle_fit_diagnostics.json": "ba74ce7d012e45c57168263581ba500103effa9288d64317c8ec1c126b7ad93e",
+    "tools/rhino_oracle/fixtures/circle_fit_distant_arcs.json": "6fa60e2c182ccaafe70d231777db98c80becefe741519777846c89532defb5d7",
+    "tools/rhino_oracle/observations/circle_fit_distant_arcs.json": "6cd757949ed93ae9713314e4f10b2ca421a07be0e966400df46dee3a9eb6a45b",
+    "tools/rhino_oracle/fixtures/circle_fit_distant_noisy.json": "33f7ec88621d8ddbac1ab964cdec41a30998c5c20bc83c3ed64e7b682e61ed7d",
+    "tools/rhino_oracle/observations/circle_fit_distant_noisy.json": "f2fb4d1154d14bb1fcc690a8dadd37f19dceead19a777ecbd3c6f2f9e00b39fe"
+  },
+  "performance_check": {
+    "method": "Two release example invocations; each prebuilds points, warms up ten times, and reports the median of three complete fitter calls.",
+    "kernel_medians_ms": [
+      {
+        "points": 100,
+        "runs": [
+          0.062753,
+          0.062335999999999996
+        ]
+      },
+      {
+        "points": 10000,
+        "runs": [
+          2.228387,
+          1.225009
+        ]
+      }
+    ],
+    "native_reference": "docs/circle-fit-performance.json",
+    "full_native_performance_parity": false,
+    "note": "Observed run-to-run variation is retained; these measurements do not prove untranslated native performance or a consistent speedup."
+  }
+}
