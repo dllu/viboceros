@@ -1,0 +1,28 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-10,
+  "passed": true,
+  "operations": [
+    {
+      "id": "split-pretrimmed-nonaffine-surface-with-exact-curved-cutter",
+      "passed": true,
+      "max_absolute_error": 3.6784958412638957e-10,
+      "viboceros_ns_per_iteration": 13872182.0,
+      "rhino_ns_per_iteration": 598335266.0,
+      "rhino_to_viboceros_ratio": 43.13202248932432,
+      "differences": []
+    },
+    {
+      "id": "split-pretrimmed-nonaffine-surface-with-adaptive-curved-cutter",
+      "passed": true,
+      "max_absolute_error": 4.665140773685295e-10,
+      "viboceros_ns_per_iteration": 313855313.0,
+      "rhino_ns_per_iteration": 585807800.0,
+      "rhino_to_viboceros_ratio": 1.8664899899273013,
+      "differences": []
+    }
+  ],
+  "max_absolute_error": 4.665140773685295e-10,
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

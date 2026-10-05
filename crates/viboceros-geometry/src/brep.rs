@@ -6914,7 +6914,7 @@ fn surface_split_parameter_curve(
             // one cubic Bezier, while its bilinear path retains the source form.
             let delta_x = end.x() - start.x();
             let delta_y = end.y() - start.y();
-            return NurbsCurve2::try_new(
+            let cubic = NurbsCurve2::try_new(
                 3,
                 vec![
                     start,
@@ -6938,9 +6938,15 @@ fn surface_split_parameter_curve(
                     *curve_domain.end(),
                     *curve_domain.end(),
                 ],
-            );
+            )?;
+            if !parameter_curve_matches_spatial_curve(surface, &cubic, curve, tolerance)? {
+                return invalid(
+                    "a cubic surface split p-curve has no continuous model-space certificate",
+                );
+            }
+            return Ok(cubic);
         }
-        Err(_) => surface.try_pullback_curve(curve, tolerance)?,
+        Err(_) => surface.try_pullback_curve_certified(curve, tolerance)?,
     };
     let parameter_tolerance = [
         trim_parameter_epsilon(
@@ -6986,6 +6992,9 @@ fn surface_split_parameter_curve(
         }
         return Ok(adjusted);
     }
+    if !parameter_curve_matches_spatial_curve(surface, &parameter_curve, curve, tolerance)? {
+        return invalid("a surface split p-curve has no continuous model-space certificate");
+    }
     Ok(parameter_curve)
 }
 
@@ -6995,55 +7004,9 @@ fn parameter_curve_matches_spatial_curve(
     spatial_curve: &NurbsCurve,
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {
-    const SAMPLES_PER_SPAN: usize = 16;
-    let spatial_domain = spatial_curve.domain();
-    let parameter_domain = parameter_curve.domain();
-    let spatial_extent = *spatial_domain.end() - *spatial_domain.start();
-    let parameter_extent = *parameter_domain.end() - *parameter_domain.start();
-    require_finite(
-        [spatial_extent, parameter_extent],
-        "surface split curve parameter extents",
-    )?;
-    // A fitted p-curve may have many spans inside one spatial Bezier span.
-    // Sample both knot partitions so local fitting or endpoint-adjustment
-    // errors cannot hide between samples of the original spatial curve.
-    let mut breaks = vec![0.0, 1.0];
-    breaks.extend(
-        spatial_curve
-            .spans()
-            .map(|(_, end)| ((end - *spatial_domain.start()) / spatial_extent).clamp(0.0, 1.0)),
-    );
-    breaks.extend(
-        parameter_curve
-            .spans()
-            .map(|(_, end)| ((end - *parameter_domain.start()) / parameter_extent).clamp(0.0, 1.0)),
-    );
-    breaks.sort_by(Real::total_cmp);
-    breaks.dedup();
-    for interval in breaks.windows(2) {
-        for sample in 0..=SAMPLES_PER_SPAN {
-            let span_fraction = sample as Real / SAMPLES_PER_SPAN as Real;
-            let normalized = interval[0].mul_add(1.0 - span_fraction, interval[1] * span_fraction);
-            let spatial_parameter = spatial_curve.parameter_at(normalized)?;
-            let parameter = parameter_curve.parameter_at(normalized)?;
-            let uv = parameter_curve.evaluate(parameter)?;
-            let surface_point = surface.evaluate(uv.x(), uv.y())?;
-            let spatial_point = spatial_curve.evaluate(spatial_parameter)?;
-            let coordinate_scale = surface_point
-                .to_array()
-                .into_iter()
-                .chain(spatial_point.to_array())
-                .map(Real::abs)
-                .fold(1.0, Real::max);
-            let allowed = tolerance
-                .absolute()
-                .max(tolerance.relative() * coordinate_scale);
-            if surface_point.distance_to(spatial_point)? > allowed {
-                return Ok(false);
-            }
-        }
-    }
-    Ok(true)
+    Ok(surface
+        .parameter_curve_deviation_bound(parameter_curve, spatial_curve, tolerance.absolute())?
+        .is_some())
 }
 
 fn try_surface_cutting_face(
@@ -9915,6 +9878,49 @@ mod tests {
             !parameter_curve_matches_spatial_curve(&surface, &trim, &spatial, Tolerance::DEFAULT,)
                 .unwrap()
         );
+    }
+
+    #[test]
+    fn surface_split_requires_continuous_correspondence_between_sample_stations() {
+        let surface = crate::surface_pullback::certified_tests::station_excursion_surface();
+        let spatial = NurbsCurve::try_new(
+            1,
+            vec![point(0., 0., 0.), point(1., 1., 0.)],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        let start = Point2::try_new(0., 0.).unwrap();
+        let end = Point2::try_new(1., 1.).unwrap();
+        let uv = NurbsCurve2::try_line(start, end).unwrap();
+        let tolerance = Tolerance::try_new(1e-6, 1e-14, 1e-12).unwrap();
+        for i in 0..=16 {
+            let t = i as Real / 16.;
+            assert!(
+                surface
+                    .evaluate(t, t)
+                    .unwrap()
+                    .distance_to(spatial.evaluate(t).unwrap())
+                    .unwrap()
+                    < tolerance.absolute()
+            );
+        }
+        assert!(
+            !parameter_curve_matches_spatial_curve(&surface, &uv, &spatial, tolerance).unwrap()
+        );
+        let originals = (surface.clone(), spatial.clone());
+        assert!(
+            Brep::try_split_rectangular_surface_face_west_east(
+                surface.clone(),
+                0.0..=1.0,
+                0.0..=1.0,
+                [0., 1.],
+                spatial.clone(),
+                false,
+                tolerance
+            )
+            .is_err()
+        );
+        assert_eq!((surface, spatial), originals);
     }
 
     fn planar_polygon_brep(paths: &[Vec<Point3>]) -> Brep {

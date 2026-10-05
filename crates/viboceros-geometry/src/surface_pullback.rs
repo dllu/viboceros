@@ -3,6 +3,8 @@ use crate::{
     Point3, Real, Tolerance, Vector3, require_finite,
 };
 mod certificate;
+#[cfg(test)]
+pub(crate) mod certified_tests;
 
 const PULLBACK_DEGREE: usize = 3;
 const PULLBACK_SAMPLES_PER_SPAN: usize = 16;
@@ -29,6 +31,7 @@ struct PullbackFitter<'a> {
     tolerance: Tolerance,
     numerical_tolerance: Tolerance,
     segments: Vec<PullbackSegment>,
+    certificate: Option<certificate::PullbackCertificate>,
 }
 
 fn model_points_near(
@@ -217,7 +220,16 @@ impl PullbackFitter<'_> {
         depth: usize,
     ) -> Result<(), GeometryError> {
         let candidate = hermite_segment(start, end)?;
-        if segment_matches_curve(self.surface, self.curve, candidate, self.tolerance)? {
+        let matches = segment_matches_curve(self.surface, self.curve, candidate, self.tolerance)?;
+        let certified = if matches {
+            match &mut self.certificate {
+                Some(certificate) => certificate.segment(candidate, self.tolerance.absolute())?,
+                None => true,
+            }
+        } else {
+            false
+        };
+        if certified {
             if self.segments.len() == MAX_PULLBACK_SEGMENTS {
                 return Err(GeometryError::TooManySurfacePullbackControlPoints {
                     maximum: MAX_CURVE_DIVISION_POINTS,
@@ -318,9 +330,33 @@ impl NurbsSurface {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
-        if let Ok(exact) = self.try_pullback_exact_curve(curve, tolerance) {
+        self.pullback_curve(curve, tolerance, false)
+    }
+
+    fn pullback_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+        certified: bool,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        if let Ok(exact) = self.try_pullback_exact_curve(curve, tolerance)
+            && (!certified
+                || self
+                    .parameter_curve_deviation_bound(&exact, curve, tolerance.absolute())?
+                    .is_some())
+        {
             return Ok(exact);
         }
+
+        let certificate = if certified {
+            Some(certificate::PullbackCertificate::new(self, curve)?.ok_or(
+                GeometryError::SurfacePullbackDidNotConverge {
+                    tolerance: tolerance.absolute(),
+                },
+            )?)
+        } else {
+            None
+        };
 
         let curve_domain = curve.domain();
         let domain_start = *curve_domain.start();
@@ -331,6 +367,7 @@ impl NurbsSurface {
             tolerance,
             numerical_tolerance: numerical_pullback_tolerance(tolerance)?,
             segments: Vec::new(),
+            certificate,
         };
         for (span_start, span_end) in curve.spans() {
             let derivative_start = if span_start == domain_start {

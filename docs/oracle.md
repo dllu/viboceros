@@ -1328,6 +1328,10 @@ independently fitted curves whose knot counts and parameter speeds differ.
 Topology, edge domains, underlying surfaces, attributes, groups, and selection
 are still compared. The default retains complete trim control/knot comparisons.
 Sampling is bounded evidence of geometric agreement, not a continuous error proof.
+The [certified split follow-up](surface-curve-certificates.md) replays a fresh
+private-Xvfb capture of both recipes after requiring continuous certificates for
+the local cutting trims. Its [provenance](certified-surface-splits-provenance.json)
+records the full capture without claiming general curved Boolean parity.
 
 The `trimmed_mass_properties.json` fixture checks [nonplanar trimmed-face area
 and signed volume](mass-properties.md). Its `trimmed_surface_mass_properties`

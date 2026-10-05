@@ -9,11 +9,23 @@ The query returns `Some(bound)` only when the entire matched-parameter distance
 is within `limit`. `None` means the correspondence is outside the limit or could
 not be certified. It never establishes a match. Sources remain unchanged.
 
-`try_pullback_curve_certified` uses the existing regular pullback fitter, then
-requires this certificate at the caller's absolute tolerance. An inconclusive
-certificate returns an error. This supports trim construction that needs a proof
-of complete edge correspondence. General curved Boolean construction still needs
+`try_pullback_curve_certified` proposes cubic Hermite spans with the regular
+pullback fitter. Each proposed span must receive a continuous certificate at
+the caller's absolute tolerance; inconclusive proposals cause further fitting
+subdivision. The original spatial spline is restricted with exact polar forms,
+so rounded subcurve extraction cannot change the reference being certified.
+All fitting proposals reuse the exact spatial spline and tensor patches and
+share one work budget. The assembled UV curve receives a final complete check.
+Unsupported inputs or exhausted limits return an error. This supports trim
+construction that needs a proof of complete edge correspondence. General curved
+Boolean construction still needs
 face partitioning, material classification, and shell assembly.
+
+Surface cutting now requires the certificate for straight trim proposals,
+retained bilinear pullbacks, fitted trims, and endpoint adjustments. An interior
+excursion hidden at every old sample station cannot become a split boundary.
+The ordinary `try_pullback_curve` and existing B-rep validation retain their
+sampled behavior for callers that have not requested this stronger contract.
 
 ## Exact construction
 
@@ -47,7 +59,9 @@ cannot become successful certificates.
   knots are supported, including unclamped source curves.
 - Two million exact work units, 8,192 bits per checked rational, subdivision depth
   48, and at most 64 tensor patches in one crossing-box test. All spans and stages
-  share one work budget.
+  share one work budget. Certified fitting proposals share a separate budget of
+  the same size; the exact proposal check and final assembled-curve check each
+  use one ordinary certificate budget.
 
 Resource exhaustion returns `SurfaceCurveCertificateWorkLimit`. Unsupported
 certificates return `None`. A zero limit can prove exact correspondence, but
@@ -84,6 +98,25 @@ degree test exercises a degree-64 image compared with a degree-16 spatial curve,
 using degree-80 binomial coefficients beyond the machine integer range. An
 adversarial degree-16 surface vanishes at all 17 uniform stations within `1e-6`, but has large
 excursions between them; the continuous query rejects it.
+
+Fitting regressions also exercise a non-affine planar pullback whose sampled
+Hermite proposal passes while its true error exceeds tolerance between stations.
+Certified fitting refines that proposal and proves the resulting curve. A
+degree-(15,4) graph surface has a straight diagonal's endpoints, tangents, and
+all 17 sampled stations, but large intermediate excursions. Certified fitting
+and the actual surface-split constructor reject that spatial curve.
+
+The [two non-affine split command recipes](../tools/rhino_oracle/fixtures/surface_split_nonaffine_trimmed.json)
+were recaptured on private Xvfb in a fresh scheme. The
+[raw four-face output](../tools/rhino_oracle/observations/certified_surface_split.json)
+and [provenance](certified-surface-splits-provenance.json) retain full underlying
+surfaces, topology, edge domains, metadata, selection, and 65 equal-UV-arc-length
+stations per non-isoparametric trim. The local replay compares all output fields
+and preserves the two independently fitted parameterizations.
+The [Python API replay](../tools/rhino_oracle/observations/certified_surface_split_comparison.json)
+has a maximum numeric difference of `4.67e-10`. Its retained timings measure
+the complete harness workflows, including geometry extraction and Rhino's
+emulation/bridge overhead; they do not establish general kernel performance.
 
 This evidence does not prove general curved Boolean parity, arbitrary topology,
 closest-locus error bounds, or native performance.

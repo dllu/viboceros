@@ -73,7 +73,7 @@ impl NurbsSurface {
         spatial: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
-        let uv = self.try_pullback_curve(spatial, tolerance)?;
+        let uv = self.pullback_curve(spatial, tolerance, true)?;
         if self
             .parameter_curve_deviation_bound(&uv, spatial, tolerance.absolute())?
             .is_none()
@@ -93,15 +93,7 @@ fn certificate(
     limit: Real,
     budget: &mut Budget,
 ) -> Result<Option<Real>, GeometryError> {
-    if uv.degree() > MAX_DEGREE
-        || spatial.degree() > MAX_DEGREE
-        || surface.degree_u() > MAX_DEGREE
-        || surface.degree_v() > MAX_DEGREE
-        || uv
-            .degree()
-            .saturating_mul(surface.degree_u() + surface.degree_v())
-            > MAX_IMAGE_DEGREE
-    {
+    if !supported(surface, uv.degree(), spatial.degree()) {
         return Ok(None);
     }
     let Some(uv) = curve::Spline::uv(uv, budget)? else {
@@ -121,33 +113,112 @@ fn certificate(
     for interval in cuts.windows(2) {
         let uv = uv.extract(&interval[0], &interval[1], budget)?;
         let spatial = spatial.extract(&interval[0], &interval[1], budget)?;
-        let mut pending = vec![(uv, spatial, 0)];
-        while let Some((uv, spatial, depth)) = pending.pop() {
-            let bounds = curve::bounds(&uv, budget)?;
-            if !surface.in_domain(&bounds) {
-                if depth == MAX_DEPTH || !surface.endpoints_in_domain(&uv) {
-                    return Ok(None);
-                }
-            } else if let Some(patch) = surface.containing_patch(&bounds, budget)? {
-                let image = surface.compose(patch, &uv, budget)?;
-                let difference = algebra::difference(&image, &spatial, budget)?;
-                let Some(upper) = algebra::hull_bound(difference, limit, budget)? else {
-                    return Ok(None);
-                };
-                bound = bound.max(upper);
-                continue;
-            } else if let Some(upper) = surface.crossing_bound(&bounds, &spatial, limit, budget)? {
-                bound = bound.max(upper);
-                continue;
-            }
-            if depth == MAX_DEPTH {
+        let Some(upper) = piece_bound(&mut surface, uv, spatial, limit, budget)? else {
+            return Ok(None);
+        };
+        bound = bound.max(upper);
+    }
+    Ok(Some(bound))
+}
+
+fn supported(surface: &NurbsSurface, uv_degree: usize, spatial_degree: usize) -> bool {
+    uv_degree <= MAX_DEGREE
+        && spatial_degree <= MAX_DEGREE
+        && surface.degree_u() <= MAX_DEGREE
+        && surface.degree_v() <= MAX_DEGREE
+        && uv_degree.saturating_mul(surface.degree_u() + surface.degree_v()) <= MAX_IMAGE_DEGREE
+}
+
+/// Reuses the original exact spatial spline, tensor patches, and one budget for
+/// all proposed fitter segments. Spatial intervals are extracted exactly; a
+/// rounded `try_trimmed` curve must never replace the source being certified.
+pub(super) struct PullbackCertificate {
+    surface: surface::Surface,
+    spatial: curve::Spline<4>,
+    domain: [Rational; 2],
+    budget: Budget,
+}
+
+impl PullbackCertificate {
+    pub(super) fn new(
+        surface: &NurbsSurface,
+        spatial: &NurbsCurve,
+    ) -> Result<Option<Self>, GeometryError> {
+        if !supported(surface, PULLBACK_DEGREE, spatial.degree()) {
+            return Ok(None);
+        }
+        let mut budget = Budget(MAX_WORK);
+        let Some(surface) = surface::Surface::new(surface, &mut budget)? else {
+            return Ok(None);
+        };
+        let Some(exact) = curve::Spline::spatial(spatial, &mut budget)? else {
+            return Ok(None);
+        };
+        Ok(Some(Self {
+            surface,
+            spatial: exact,
+            domain: [
+                rational(*spatial.domain().start()),
+                rational(*spatial.domain().end()),
+            ],
+            budget,
+        }))
+    }
+
+    pub(super) fn segment(
+        &mut self,
+        segment: PullbackSegment,
+        limit: Real,
+    ) -> Result<bool, GeometryError> {
+        let width = &self.domain[1] - &self.domain[0];
+        let start = (rational(segment.start) - &self.domain[0]) / &width;
+        let end = (rational(segment.end) - &self.domain[0]) / &width;
+        // append_span subdivides one original spatial knot span at a time.
+        let spatial = self.spatial.extract(&start, &end, &mut self.budget)?;
+        self.budget.charge(3 * segment.controls.len())?;
+        let uv = segment
+            .controls
+            .iter()
+            .map(|p| [rational(p.x()), rational(p.y()), Rational::one()])
+            .collect();
+        Ok(piece_bound(&mut self.surface, uv, spatial, limit, &mut self.budget)?.is_some())
+    }
+}
+
+fn piece_bound(
+    surface: &mut surface::Surface,
+    uv: Vec<Uv>,
+    spatial: Vec<H>,
+    limit: Real,
+    budget: &mut Budget,
+) -> Result<Option<Real>, GeometryError> {
+    let mut bound = 0_f64;
+    let mut pending = vec![(uv, spatial, 0)];
+    while let Some((uv, spatial, depth)) = pending.pop() {
+        let bounds = curve::bounds(&uv, budget)?;
+        if !surface.in_domain(&bounds) {
+            if depth == MAX_DEPTH || !surface.endpoints_in_domain(&uv) {
                 return Ok(None);
             }
-            let (ua, ub) = algebra::split(&uv, budget)?;
-            let (sa, sb) = algebra::split(&spatial, budget)?;
-            pending.push((ub, sb, depth + 1));
-            pending.push((ua, sa, depth + 1));
+        } else if let Some(patch) = surface.containing_patch(&bounds, budget)? {
+            let image = surface.compose(patch, &uv, budget)?;
+            let difference = algebra::difference(&image, &spatial, budget)?;
+            let Some(upper) = algebra::hull_bound(difference, limit, budget)? else {
+                return Ok(None);
+            };
+            bound = bound.max(upper);
+            continue;
+        } else if let Some(upper) = surface.crossing_bound(&bounds, &spatial, limit, budget)? {
+            bound = bound.max(upper);
+            continue;
         }
+        if depth == MAX_DEPTH {
+            return Ok(None);
+        }
+        let (ua, ub) = algebra::split(&uv, budget)?;
+        let (sa, sb) = algebra::split(&spatial, budget)?;
+        pending.push((ub, sb, depth + 1));
+        pending.push((ua, sa, depth + 1));
     }
     Ok(Some(bound))
 }

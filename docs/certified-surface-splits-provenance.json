@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleCertifiedSplit_20261005",
+  "engine_version": "8.32.26160.13001",
+  "native_command_recipes": 2,
+  "result_faces": 4,
+  "uv_arc_length_stations_per_noniso_trim": 65,
+  "comparison_absolute_epsilon": 1e-09,
+  "comparison_relative_epsilon": 1e-10,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Two existing non-affine, pretrimmed surface Split recipes recaptured through public commands in an owned document on private Xvfb and a fresh settings scheme.",
+    "Complete output topology, full underlying surface definitions, edge domains, metadata, groups, selection and 65 equal-UV-arc-length stations are retained.",
+    "Independent fitted UV trims can differ in degree, knot count and parameter speed. Native point comparisons are bounded evidence, not continuous certificates or a general performance claim.",
+    "Local surface cutting requires exact rational continuous matched-parameter certificates at absolute document tolerance for every proposed cutting p-curve, including adjusted endpoints. Existing general B-rep validation and ordinary uncertified pullback retain sampled behavior.",
+    "This evidence does not establish curved Boolean construction, arbitrary trim topology or full native parity."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/fixtures/surface_split_nonaffine_trimmed.json": "187619f493c9322319af879403c3f0200882658e45013341e2e14c76f2eeab0f",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/observations/certified_surface_split.json": "57ef4f70acd100361d63192383b5ca67b0ab453a66a440906d816956400af388",
+    "tools/rhino_oracle/observations/certified_surface_split_local.json": "aba90ad21a2c8c3b8098fb791f1e984f8cda066ec8e6ea9c04980aa795781856",
+    "tools/rhino_oracle/observations/certified_surface_split_comparison.json": "58334607c2e70e3bca0072d20c9e64607fe2146fd01b3033743269c67740c5b2"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/rhino_worker.py": "9a04da47d78dcf6f7e3fcdc5076b036bfc58e97629debb3d8d2249656435ba6a",
+    "tools/rhino_oracle/client.py": "ef21bbd0c429cbeea1115e42edda9e1ddec1fea13955d7b740ef3f7923ff10a6"
+  },
+  "local_verification": {
+    "release_workspace": {
+      "passed": 5072,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 853
+    },
+    "new_kernel_regressions": 3,
+    "new_oracle_replay_tests": 1,
+    "post_lint_cleanup_certified_workflows": {
+      "passed": 14
+    },
+    "clippy": {
+      "baseline_commit": "0a7e3549",
+      "warning_categories_and_counts_unchanged": true
+    },
+    "python_api_replay": {
+      "passed": 2,
+      "max_absolute_error": 4.665140773685295e-10,
+      "comparison_record": "tools/rhino_oracle/observations/certified_surface_split_comparison.json"
+    }
+  },
+  "historical_implementation_sha256": {
+    "crates/viboceros-geometry/src/brep.rs": "1b8376c67fc1b79d9438a04eae56fa9e2904957714ad16f32ef8b7ded90c2fe7",
+    "crates/viboceros-geometry/src/surface_pullback.rs": "879b7d07e7eaa6e219b5d59af4eb27c02f071413540149c75e49fe67fd9a9d24",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "cea10319c768687e0ef8f3a8de0a539a84c5e18d4dae03c8ce2d45739b67d5ce"
+  }
+}

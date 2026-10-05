@@ -43,8 +43,10 @@ domain. Homogeneous-affine rational tensor-product faces are likewise inverted
 exactly without fitting; their UV weights absorb the surface's projective
 denominator while degree, knots, domain, and model-space locus remain exact.
 Other regular rectangular NURBS parameterizations use an adaptive piecewise-
-cubic Hermite pullback whose every span is verified in model space at document
-tolerance. Exact cubic parameter paths collapse to one span, while more
+cubic Hermite pullback whose every accepted span receives a
+[continuous model-space certificate](../surface-curve-certificates.md) at the
+document's absolute tolerance. Inconclusive proposals subdivide; certificate
+limits and unsupported inputs fail explicitly. Exact cubic parameter paths collapse to one span, while more
 nonlinear planar or rational paths subdivide without changing the spatial edge.
 Affine and genuinely warped non-rational bilinear faces also retain the source
 structure of supported geometrically straight multi-span and higher-degree
@@ -97,8 +99,9 @@ piecewise-Bezier knot multiplicities and normalized outer weights.
 For a non-affine surface, the p-curve may require an adaptive cubic fit.
 Independent pullbacks of a clipped spatial edge can differ slightly at its
 endpoints. The trim is clamped to the shared boundary locations when necessary,
-and the adjusted curve is checked in model space across both its own knot spans
-and the spatial edge's spans. Adjustments exceeding document tolerance fail.
+and the adjusted curve receives a complete model-space certificate across both
+its own knot spans and the spatial edge's spans. Adjustments exceeding document
+tolerance or lacking a certificate fail.
 The underlying surface and spatial edge remain unchanged.
 Rhino-compatible cutting-object output replaces the source with fresh selected
 pieces and leaves cutters unchanged and deselected. The curve fixture covers

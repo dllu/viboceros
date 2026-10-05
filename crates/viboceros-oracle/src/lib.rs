@@ -1,6 +1,8 @@
 //! Versioned compatibility-probe protocol used to compare Viboceros with Rhino.
 
 #[cfg(test)]
+mod certified_surface_split_tests;
+#[cfg(test)]
 mod fillet_corners_tests;
 #[cfg(test)]
 mod fillet_pair_tests;
