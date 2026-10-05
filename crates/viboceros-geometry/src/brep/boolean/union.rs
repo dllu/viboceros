@@ -7,7 +7,8 @@ const MAX_INPUTS: usize = 128;
 #[derive(Clone, Debug)]
 pub struct BrepUnionComponent {
     pub brep: Brep,
-    /// Input indices whose interiors belong to this body, in input order.
+    /// Inputs contributing material to this body, in input order. A polyhedral
+    /// input with disjoint shells can contribute to several components.
     pub source_indices: Vec<usize>,
     /// Inputs with a positive-area patch on the material boundary, including
     /// coplanar patches assigned to another input. Strict interior sources are

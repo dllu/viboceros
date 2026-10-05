@@ -7,7 +7,8 @@ mathematical union, intersection, or difference of two closed polyhedral B-reps.
 It returns separate material components, each retaining its cavity shells and
 original operand/face ownership. `Brep::try_boolean_polyhedral` returns the same
 result combined into one B-rep, or `None` when the region is empty. Inputs remain
-unchanged. The existing convex APIs and interactive command policies are separate.
+unchanged. The multiple-operand APIs use the same original-face arrangement;
+[interactive command policies](polyhedral-boolean-commands.md) are separate.
 The result represents solid material: isolated zero-volume face, edge or point
 intersection patches are discarded, and retained boundaries are closed.
 
@@ -41,7 +42,7 @@ exact plane certificate when Cartesian rounding affected its plane incidence.
 
 Supporting lines partition a concave or holed face into convex arrangement cells.
 Exact winding tests select cells in the original face region. Supporting planes
-of both operands then split their boundary patches. Coplanar patches are also
+of every original operand then split their boundary patches. Coplanar patches are also
 split at their bounded edges so competing source faces construct identical cells.
 
 Each cell has an exact interior witness and two exact normal offsets whose step

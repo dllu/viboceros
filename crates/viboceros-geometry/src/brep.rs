@@ -20,7 +20,9 @@ pub use boolean::{
     BrepPolyhedralBooleanComponent, BrepSetIntersection, BrepUnionComponent,
     boolean_polyhedral_breps, convex_brep_boundary_interactions,
     convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,
-    subtract_convex_breps, union_convex_breps,
+    intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
+    polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
+    subtract_convex_breps, subtract_polyhedral_breps, union_convex_breps, union_polyhedral_breps,
 };
 mod cap;
 mod combine;

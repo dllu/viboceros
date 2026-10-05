@@ -1,9 +1,6 @@
 //! BooleanIntersection common-set and two-set document policies.
 use super::*;
 use std::borrow::Cow;
-use viboceros_geometry::{
-    convex_brep_boundary_interactions, intersect_convex_brep_sets, intersect_convex_breps,
-};
 
 #[cfg(test)]
 mod tests;
@@ -114,7 +111,7 @@ impl BooleanIntersectionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let interactions = convex_brep_boundary_interactions(&refs)?;
+        let (kernel, interactions) = boolean_solids::interactions(&refs, doc.tolerance(), false)?;
         if !interactions
             .iter()
             .any(|p| common || (p[0] < first.len() && p[1] >= first.len()))
@@ -122,28 +119,53 @@ impl BooleanIntersectionCommand {
             return Err(CommandError::NothingIntersected);
         }
         let mut copies = Vec::new();
-        if common {
-            let result = intersect_convex_breps(&refs, doc.tolerance())?
-                .ok_or(CommandError::NothingIntersected)?;
-            let brep = boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
-            copies.push((
-                ids[0],
-                Geometry::Brep(brep),
-                objects[objects.len() - 1].geometry_user_text().clone(),
-            ));
+        if let Some(results) =
+            boolean_solids::compound_intersection(&refs, doc.tolerance(), common)?
+        {
+            for result in results {
+                let brep = boolean_solids::merged(
+                    result.component.brep,
+                    &result.component.face_sources,
+                    doc.tolerance(),
+                )?;
+                let text = result
+                    .geometry_owner
+                    .map(|i| objects[i].geometry_user_text().clone())
+                    .unwrap_or_default();
+                copies.push((ids[result.owner], Geometry::Brep(brep), text));
+            }
+        } else if common {
+            let results = kernel.common(&refs, doc.tolerance())?;
+            let text = if results.len() == 1 {
+                objects[objects.len() - 1].geometry_user_text().clone()
+            } else {
+                BTreeMap::new()
+            };
+            for result in results {
+                let brep =
+                    boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
+                copies.push((ids[0], Geometry::Brep(brep), text.clone()));
+            }
         } else {
-            for result in intersect_convex_brep_sets(
-                &refs[..first.len()],
-                &refs[first.len()..],
-                doc.tolerance(),
-            )? {
+            let results =
+                kernel.sets(&refs[..first.len()], &refs[first.len()..], doc.tolerance())?;
+            let mut counts = BTreeMap::new();
+            for result in &results {
+                *counts.entry(result.maximal_pairs[0][0]).or_insert(0usize) += 1;
+            }
+            for result in results {
                 let owner = result.maximal_pairs[0][0];
+                let geometry_owner = result.maximal_pairs.last().unwrap()[0];
                 let brep =
                     boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
                 copies.push((
                     ids[owner],
                     Geometry::Brep(brep),
-                    objects[owner].geometry_user_text().clone(),
+                    if counts[&owner] == 1 {
+                        objects[geometry_owner].geometry_user_text().clone()
+                    } else {
+                        BTreeMap::new()
+                    },
                 ));
             }
         }

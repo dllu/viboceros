@@ -46,11 +46,14 @@ bodies successfully union. Cancellation changes no geometry or model history.
 
 ## Current scope and native evidence
 
-Inputs must be individual closed, convex, manifold polyhedral shells satisfying
-an exact affine polygon certificate. Multiple original inputs can produce a
-nonconvex result, cavities, or separate material bodies. Curved, open, nonconvex,
-multi-shell, and singular input representations remain unsupported. Work and
-output limits return errors without partial model changes.
+Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
+cavities, and straight edges from earlier Boolean results. The convex certificate
+selects the faster construction when available; otherwise the general exact
+polyhedral certificate applies. Curved and open inputs, intersecting input
+shells, unsupported plane roundoff, resource exhaustion, and singular topology
+return errors before model edits. See [chained command scope and compound shell
+policies](../polyhedral-boolean-commands.md) for the additional native evidence
+and explicitly unresolved intersections.
 
 The [32 native command recipes](../../tools/rhino_oracle/fixtures/boolean_union_command.json)
 and [saved observations](../../tools/rhino_oracle/observations/boolean_union_command.json)

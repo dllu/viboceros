@@ -136,7 +136,7 @@ pub(super) fn certify_vertex_links(brep: &Brep, budget: &mut Budget) -> Result<(
     Ok(())
 }
 
-fn plane_section(
+pub(super) fn plane_section(
     polygon: &Polygon<'_>,
     plane: &Polygon<'_>,
     axis: usize,

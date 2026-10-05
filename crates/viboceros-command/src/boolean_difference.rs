@@ -1,7 +1,6 @@
-//! Native subtraction policies over exact convex polyhedral construction.
+//! Native subtraction policies over exact polyhedral construction.
 use super::*;
 use std::borrow::Cow;
-use viboceros_geometry::{convex_brep_subtraction_interactions, subtract_convex_breps};
 
 #[cfg(test)]
 mod tests;
@@ -106,7 +105,7 @@ impl BooleanDifferenceCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let interactions = convex_brep_subtraction_interactions(&refs)?;
+        let (kernel, interactions) = boolean_solids::interactions(&refs, doc.tolerance(), true)?;
         if !interactions
             .iter()
             .any(|p| p[0] < first.len() && p[1] >= first.len())
@@ -120,14 +119,35 @@ impl BooleanDifferenceCommand {
                 .filter(|p| p[0] == target && p[1] >= first.len())
                 .map(|p| refs[p[1]])
                 .collect::<Vec<_>>();
-            let pieces = subtract_convex_breps(refs[target], &cutters, doc.tolerance())?;
-            let text = if pieces.len() == 1 {
+            if cutters.is_empty() {
+                copies.push((
+                    id,
+                    Geometry::Brep(refs[target].clone()),
+                    objects[target].geometry_user_text().clone(),
+                ));
+                continue;
+            }
+            let local = std::iter::once(refs[target])
+                .chain(cutters.iter().copied())
+                .collect::<Vec<_>>();
+            let pairs = (1..local.len()).map(|i| [0, i]).collect::<Vec<_>>();
+            let active = boolean_solids::active_faces(&local, &pairs, doc.tolerance(), true)?;
+            let mut shells = Vec::new();
+            for piece in kernel.difference(refs[target], &cutters, doc.tolerance())? {
+                shells.extend(boolean_solids::participating_shells(
+                    piece.brep,
+                    &piece.face_sources,
+                    &active,
+                    doc.tolerance(),
+                )?);
+            }
+            let text = if shells.len() == 1 {
                 objects[target].geometry_user_text().clone()
             } else {
                 BTreeMap::new()
             };
-            for piece in pieces {
-                let b = boolean_solids::merged(piece.brep, &piece.face_sources, doc.tolerance())?;
+            for (brep, sources) in shells {
+                let b = boolean_solids::merged(brep, &sources, doc.tolerance())?;
                 copies.push((id, Geometry::Brep(b), text.clone()));
             }
         }

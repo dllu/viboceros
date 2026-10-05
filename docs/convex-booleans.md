@@ -12,8 +12,8 @@ The separate [polyhedral Boolean API](polyhedral-booleans.md) accepts concave
 faces, holes, and multiple shells, including certified earlier Boolean results.
 
 The [BooleanUnion command](commands/boolean-union.md) now adds selection,
-DeleteInput, remembered options, source metadata and history for the certified
-convex polyhedral scope. [BooleanIntersection](commands/boolean-intersection.md)
+DeleteInput, remembered options, source metadata and history. The convex path
+is retained alongside the [general polyhedral command adapters](polyhedral-boolean-commands.md). [BooleanIntersection](commands/boolean-intersection.md)
 adds common-set and two-set command workflows.
 [BooleanDifference](commands/boolean-difference.md) adds separate target/cutter
 sets and observed deletion, contact, metadata, and history policies.

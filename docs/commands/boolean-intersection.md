@@ -26,9 +26,10 @@ result is produced, including disjoint members of a two-set operation.
 
 Preselection uses document table order; command-first picking uses pick order.
 Common-set results inherit attributes, layer, color, and groups from the first
-input and geometry user text from the last. Two-set results inherit both kinds
-of metadata from the first first-set contributor whose pair region is not
-contained in another pair region. These policies reproduce the captured recipes;
+input and geometry user text from the last. Two-set results inherit attributes
+from the first maximal first-set contributor and geometry user text from the
+last maximal first-set contributor. A maximal pair region is not contained in
+another pair region within that output component. These policies reproduce the captured recipes;
 arbitrary overlapping contributor configurations remain unverified. Group
 memberships do not select unrelated peers.
 
@@ -48,12 +49,14 @@ replacement. Boundary-contained solids with an intersecting boundary can succeed
 
 ## Current scope and native evidence
 
-Each input must be a closed, convex, manifold polyhedral shell satisfying the
-exact affine polygon certificate. Two sets can produce nonconvex bodies,
-multiple material components, or enclosed cavities. Curved, open, nonconvex,
-multi-shell, singular, and input-hole representations remain unsupported.
-Unsupported geometry, exhausted work budgets, and unrepresentable topology
-return errors without partial model changes.
+Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
+cavities, and straight edges from earlier Boolean results. The convex certificate
+selects the faster construction when available; otherwise the general exact
+polyhedral certificate applies. Curved and open inputs, intersecting input
+shells, unsupported plane roundoff, resource exhaustion, and singular topology
+return errors before model edits. See [chained command scope and compound shell
+policies](../polyhedral-boolean-commands.md) for the additional native evidence
+and explicitly unresolved intersections.
 
 The [32 native recipes](../../tools/rhino_oracle/fixtures/boolean_intersection_command.json)
 and [saved observations](../../tools/rhino_oracle/observations/boolean_intersection_command.json)

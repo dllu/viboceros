@@ -1,7 +1,17 @@
 //! Plane arrangements and exact two-sided membership for closed polyhedra.
 use super::*;
 
+mod arrangement;
 mod embedding;
+mod interactions;
+mod reports;
+pub use interactions::{
+    polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
+};
+pub use reports::{
+    intersect_polyhedral_brep_sets, intersect_polyhedral_breps, subtract_polyhedral_breps,
+    union_polyhedral_breps,
+};
 mod input;
 #[cfg(test)]
 mod tests;
@@ -10,7 +20,7 @@ mod tests;
 #[derive(Clone, Debug)]
 pub struct BrepPolyhedralBooleanComponent {
     pub brep: Brep,
-    /// Original operand (0 or 1) and face index for each unmerged output face.
+    /// Original operand and face index for each unmerged output face.
     pub face_sources: Vec<[usize; 2]>,
 }
 
@@ -40,86 +50,25 @@ pub fn boolean_polyhedral_breps(
     tolerance: Tolerance,
 ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
     let mut budget = Budget(EXACT_WORK_LIMIT);
-    let operands = [
-        input::extract(first, tolerance, &mut budget)?,
-        input::extract(second, tolerance, &mut budget)?,
-    ];
-    let all = operands.iter().flatten().cloned().collect::<Vec<_>>();
-    let planes = supporting_planes(&all, &mut budget)?;
-    let indices = operands
-        .each_ref()
-        .map(|p| (0..p.len()).collect::<Vec<_>>());
-    let mut output = Vec::new();
-    let mut unique = BTreeSet::new();
-    for polygon in &all {
-        let mut cuts = planes.clone();
-        // Coplanar overlap needs subdivision at bounded patch edges, not just
-        // at supporting face planes. Include our own coplanar fragments so all
-        // owners construct the same minimal arrangement cells.
-        for other in &all {
-            budget.spend(1)?;
-            if zero(&cross(&polygon.normal, &other.normal))
-                && other.plane_side(&polygon.ring[0]).is_zero()
-            {
-                for i in 0..other.ring.len() {
-                    add_plane(
-                        &mut cuts,
-                        Plane {
-                            anchor: other.ring[i].clone(),
-                            normal: cross(
-                                &polygon.normal,
-                                &sub(&other.ring[(i + 1) % other.ring.len()], &other.ring[i]),
-                            ),
-                        },
-                        &mut budget,
-                    )?;
-                }
-            }
-        }
-        for ring in arrange(polygon.ring.clone(), &cuts, &mut budget)? {
-            let piece = polygon.with_ring(ring);
-            let center = mean(&piece.ring, &mut budget)?;
-            let [negative, positive] = side_points(&center, &piece.normal, &planes, &mut budget)?;
-            let mut values = [false; 2];
-            for (side, p) in [negative, positive].iter().enumerate() {
-                let a = union::contains(p, &indices[0], &operands[0], &mut budget)?;
-                let b = union::contains(p, &indices[1], &operands[1], &mut budget)?;
-                values[side] = match operation {
-                    BrepBooleanOperation::Union => a || b,
-                    BrepBooleanOperation::Intersection => a && b,
-                    BrepBooleanOperation::Difference => a && !b,
-                };
-            }
-            if values[0] == values[1] || !unique.insert(canonical_ring(&piece.ring)) {
-                continue;
-            }
-            output.push(if values[0] { piece } else { piece.reverse() });
-            if output.len() > MAX_OUTPUT_FACES {
-                return Err(GeometryError::BrepBooleanWorkLimit);
-            }
-        }
-    }
-    if output.is_empty() {
-        return Ok(Vec::new());
-    }
-    let sources = source_faces(&[first, second], &output, &mut budget)?;
-    union::material_components(&output, tolerance, &mut budget)?
+    let built = arrangement::build(&[first, second], tolerance, &mut budget)?;
+    let expression = match operation {
+        BrepBooleanOperation::Union => arrangement::Expression::Union,
+        BrepBooleanOperation::Intersection => arrangement::Expression::Common,
+        BrepBooleanOperation::Difference => arrangement::Expression::Difference,
+    };
+    let assembled = arrangement::assemble(&built, expression, tolerance, &mut budget)?;
+    Ok(assembled
+        .bodies
         .into_iter()
-        .map(|body| {
-            embedding::certify_vertex_links(&body.brep, &mut budget).map_err(
-                |error| match error {
-                    GeometryError::UnsupportedPolyhedralBrepBoolean { .. } => {
-                        GeometryError::UnrepresentableBrepBoolean
-                    }
-                    other => other,
-                },
-            )?;
-            Ok(BrepPolyhedralBooleanComponent {
-                brep: body.brep,
-                face_sources: body.faces.into_iter().map(|i| sources[i]).collect(),
-            })
+        .map(|body| BrepPolyhedralBooleanComponent {
+            brep: body.brep,
+            face_sources: body
+                .faces
+                .into_iter()
+                .map(|i| assembled.face_sources[i])
+                .collect(),
         })
-        .collect()
+        .collect())
 }
 
 impl Brep {

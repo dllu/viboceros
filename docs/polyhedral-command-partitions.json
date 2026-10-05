@@ -1,0 +1,93 @@
+[
+  {
+    "actual": [
+      16,
+      42
+    ],
+    "case": "u_concave",
+    "name": "source-0",
+    "native": [
+      18,
+      44
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      11,
+      23
+    ],
+    "case": "i_coplanar_concave",
+    "name": "source-0",
+    "native": [
+      10,
+      22
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      16,
+      43
+    ],
+    "case": "d_two_holes",
+    "name": "source-0",
+    "native": [
+      16,
+      42
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      17,
+      43
+    ],
+    "case": "d_singular_two_holes",
+    "name": "source-0",
+    "native": [
+      17,
+      42
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      16,
+      42
+    ],
+    "case": "u_concave_reverse",
+    "name": "source-1",
+    "native": [
+      18,
+      44
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      16,
+      42
+    ],
+    "case": "u_disjoint_member",
+    "name": "source-0",
+    "native": [
+      18,
+      44
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      16,
+      42
+    ],
+    "case": "u_two_components",
+    "name": "source-0",
+    "native": [
+      18,
+      44
+    ],
+    "source": null
+  }
+]

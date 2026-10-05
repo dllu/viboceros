@@ -1,6 +1,5 @@
-//! Convex polyhedral BooleanUnion command; exact construction stays in geometry.
+//! Polyhedral BooleanUnion command; exact construction stays in geometry.
 use super::*;
-use viboceros_geometry::{convex_brep_boundary_interactions, union_convex_breps};
 
 #[cfg(test)]
 pub(crate) mod tests;
@@ -88,11 +87,14 @@ impl BooleanUnionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().collect::<Vec<_>>();
-        let interactions = convex_brep_boundary_interactions(&refs)?;
+        let (kernel, interactions) =
+            boolean_solids::interactions(&refs, document.tolerance(), false)?;
         if interactions.is_empty() {
             return Err(CommandError::NothingUnioned);
         }
-        let components = union_convex_breps(&refs, document.tolerance())?;
+        let components = kernel.union(&refs, document.tolerance())?;
+        let active =
+            boolean_solids::active_faces(&refs, &interactions, document.tolerance(), false)?;
         let mut copies = Vec::new();
         let mut consumed = Vec::new();
         for component in components {
@@ -107,29 +109,30 @@ impl BooleanUnionCommand {
                 .boundary_source_indices
                 .last()
                 .expect("nonempty boundary");
-            let mut labels = BTreeMap::new();
-            let groups = component
-                .face_sources
-                .iter()
-                .map(|source| {
-                    let next = labels.len();
-                    if options.merge_coplanar {
-                        0
-                    } else {
-                        *labels.entry(*source).or_insert(next)
-                    }
-                })
-                .collect::<Vec<_>>();
-            let brep = component
-                .brep
-                .try_merge_coplanar_polygon_faces_in_groups(&groups, document.tolerance())?
-                .unwrap_or(component.brep)
-                .try_merge_all_edges(0., document.tolerance())?;
-            copies.push((
-                sources[owner].id(),
-                Geometry::Brep(brep),
-                sources[geometry_owner].geometry_user_text().clone(),
-            ));
+            let shells = boolean_solids::participating_shells(
+                component.brep,
+                &component.face_sources,
+                &active,
+                document.tolerance(),
+            )?;
+            let text = if shells.len() == 1 {
+                sources[geometry_owner].geometry_user_text().clone()
+            } else {
+                BTreeMap::new()
+            };
+            for (brep, sources_of_faces) in shells {
+                let brep = if options.merge_coplanar {
+                    brep.try_merge_coplanar_polygon_faces_in_groups(
+                        &vec![0; brep.faces().len()],
+                        document.tolerance(),
+                    )?
+                    .unwrap_or(brep)
+                    .try_merge_all_edges(0., document.tolerance())?
+                } else {
+                    boolean_solids::merged(brep, &sources_of_faces, document.tolerance())?
+                };
+                copies.push((sources[owner].id(), Geometry::Brep(brep), text.clone()));
+            }
             consumed.extend(component.source_indices.iter().map(|&i| sources[i].id()));
         }
         if copies.is_empty() {

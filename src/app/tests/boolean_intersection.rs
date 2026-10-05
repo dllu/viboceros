@@ -258,3 +258,119 @@ fn successful_options_are_remembered_and_failed_common_intersection_ends_selecti
     assert_eq!(app.document.objects().len(), 4);
     assert_eq!(app.document.selected_object_count(), 3);
 }
+
+#[test]
+fn polyhedral_boolean_commands_pick_chained_holes_and_replay_selection_history() {
+    use viboceros_geometry::BrepBooleanOperation;
+    for (command, volume) in [
+        ("BooleanUnion", 26.),
+        ("BooleanIntersection", 2.),
+        ("BooleanDifference", 22.),
+    ] {
+        for pre in [false, true] {
+            let mut app = test_app();
+            let tolerance = Tolerance::DEFAULT;
+            let frame = Frame3::try_from_directions(
+                point(0., 0., 0.),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Vector3::try_new(0., 1., 0.).unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            let block = Brep::try_box(frame, [[0., 3.]; 3], tolerance).unwrap();
+            let column = Brep::try_box(frame, [[1., 2.], [1., 2.], [-1., 4.]], tolerance).unwrap();
+            let raw = block
+                .try_boolean_convex(&column, BrepBooleanOperation::Difference, tolerance)
+                .unwrap()
+                .unwrap();
+            let hole = raw
+                .try_merge_coplanar_polygon_faces_in_groups(&vec![0; raw.faces().len()], tolerance)
+                .unwrap()
+                .unwrap_or(raw)
+                .try_merge_all_edges(0., tolerance)
+                .unwrap();
+            assert!(hole.faces().iter().any(|f| f.loops().len() > 1));
+            let a = app
+                .document
+                .add_geometry(Geometry::Brep(hole.clone()))
+                .unwrap();
+            let b = app
+                .document
+                .add_geometry(Geometry::Brep(
+                    Brep::try_box(frame, [[1.5, 3.5], [1.5, 3.5], [1., 2.]], tolerance).unwrap(),
+                ))
+                .unwrap();
+            let peer = app
+                .document
+                .add_geometry(Geometry::Point(point(20., 0., 0.)))
+                .unwrap();
+            if pre {
+                app.document
+                    .select_objects_direct([a], SelectionMode::Replace)
+                    .unwrap();
+                if command == "BooleanUnion" {
+                    app.document
+                        .select_objects_direct([b], SelectionMode::Add)
+                        .unwrap();
+                }
+            }
+            enter(&mut app, command);
+            if !pre {
+                pick(&mut app, peer);
+                assert!(!app.document.is_selected(peer));
+                pick(&mut app, a);
+            }
+            if command == "BooleanUnion" {
+                if !pre {
+                    pick(&mut app, b);
+                    enter(&mut app, "");
+                }
+                assert!(
+                    app.object_prompt.is_none(),
+                    "{command}: {:?}",
+                    app.command_log
+                );
+            } else {
+                if !pre {
+                    enter(&mut app, "");
+                }
+                pick(&mut app, b);
+                enter(&mut app, "");
+                assert!(
+                    app.intersection_prompt.is_none(),
+                    "{command}: {:?}",
+                    app.command_log
+                );
+            }
+            assert_eq!(
+                app.document.objects().len(),
+                2,
+                "{command}: {:?}",
+                app.command_log
+            );
+            let output = app.document.objects().find(|o| o.id() != peer).unwrap();
+            let id = output.id();
+            let geometry = output.geometry().clone();
+            let Geometry::Brep(result) = &geometry else {
+                panic!("{command}");
+            };
+            assert!(
+                (result.signed_volume(tolerance).unwrap() - volume).abs() < 1e-10,
+                "{command}"
+            );
+            assert_eq!(app.document.is_selected(id), pre, "{command}");
+            for _ in 0..2 {
+                enter(&mut app, "Undo");
+                assert_eq!(
+                    app.document.object(a).unwrap().geometry(),
+                    &Geometry::Brep(hole.clone())
+                );
+                assert!(app.document.object(b).is_some());
+                assert_eq!(app.document.is_selected(a), pre);
+                enter(&mut app, "Redo");
+                assert_eq!(app.document.object(id).unwrap().geometry(), &geometry);
+                assert_eq!(app.document.is_selected(id), pre);
+            }
+        }
+    }
+}

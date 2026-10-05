@@ -25,7 +25,10 @@ uses exact plane arrangements and two-sided material classification for concave
 faces, holes, cavities, and multiple shells. Model-space certificates admit
 bounded UV roundoff in earlier results, while rejecting intersecting input faces
 and nonmanifold vertex links. This API is available through the Python oracle;
-interactive adapters still use the convex command certificates.
+the [interactive adapters](polyhedral-boolean-commands.md) now accept those
+certificates after the convex path, preserving original-face contributor reports
+and captured shell participation policies. Mixed inward compound intersections
+with extra objects remain explicitly uncertified.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
 The registered command supports atomic object/grip edits, remembered options,

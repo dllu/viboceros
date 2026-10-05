@@ -60,13 +60,14 @@ replay.
 
 ## Current scope and native evidence
 
-Inputs must be individual closed, convex, manifold polyhedral shells satisfying
-the exact affine polygon certificate. Multiple original cutters can produce
-nonconvex remainders and separate material components. Curved, open, nonconvex,
-multi-shell, input-hole, and singular input representations remain unsupported.
-Resource exhaustion and unresolved topology return errors without partial model
-changes. The geometry API also supports mathematical enclosed cavities; the
-command follows Rhino's captured boundary-interaction policies.
+Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
+cavities, and straight edges from earlier Boolean results. The convex certificate
+selects the faster construction when available; otherwise the general exact
+polyhedral certificate applies. Curved and open inputs, intersecting input
+shells, unsupported plane roundoff, resource exhaustion, and singular topology
+return errors before model edits. See [chained command scope and compound shell
+policies](../polyhedral-boolean-commands.md) for the additional native evidence
+and explicitly unresolved intersections.
 
 The [40 native recipes](../../tools/rhino_oracle/fixtures/boolean_difference_command.json)
 and [saved observations](../../tools/rhino_oracle/observations/boolean_difference_command.json)

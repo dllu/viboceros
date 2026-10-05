@@ -1,0 +1,331 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_concave",
+      "case": "u_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_hole",
+      "case": "u_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_cavity",
+      "case": "u_cavity"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_island",
+      "case": "u_island"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_disjoint_shells",
+      "case": "u_disjoint_shells"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_two_holes",
+      "case": "u_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_rounded_uv",
+      "case": "u_rounded_uv"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_reversed_hole",
+      "case": "u_reversed_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_coplanar_concave",
+      "case": "u_coplanar_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_singular_two_holes",
+      "case": "u_singular_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_concave",
+      "case": "i_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole",
+      "case": "i_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_cavity",
+      "case": "i_cavity"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_island",
+      "case": "i_island"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_disjoint_shells",
+      "case": "i_disjoint_shells"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_two_holes",
+      "case": "i_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_rounded_uv",
+      "case": "i_rounded_uv"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_reversed_hole",
+      "case": "i_reversed_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_coplanar_concave",
+      "case": "i_coplanar_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_singular_two_holes",
+      "case": "i_singular_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_concave",
+      "case": "d_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole",
+      "case": "d_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_cavity",
+      "case": "d_cavity"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_island",
+      "case": "d_island"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_disjoint_shells",
+      "case": "d_disjoint_shells"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_two_holes",
+      "case": "d_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_rounded_uv",
+      "case": "d_rounded_uv"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_reversed_hole",
+      "case": "d_reversed_hole"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_coplanar_concave",
+      "case": "d_coplanar_concave"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_singular_two_holes",
+      "case": "d_singular_two_holes"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_hole_pre",
+      "case": "u_hole_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_hole_keep",
+      "case": "u_hole_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_hole_nomerge",
+      "case": "u_hole_nomerge"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_concave_reverse",
+      "case": "u_concave_reverse"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_disjoint_member",
+      "case": "u_disjoint_member"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_partial_multishell",
+      "case": "u_partial_multishell"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_partial_multishell_keep",
+      "case": "u_partial_multishell_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_partial_multishell_pre",
+      "case": "u_partial_multishell_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_hole_three",
+      "case": "u_hole_three"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole_common",
+      "case": "i_hole_common"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole_pre",
+      "case": "i_hole_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole_keep",
+      "case": "i_hole_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole_three_common",
+      "case": "i_hole_three_common"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_hole_three_sets",
+      "case": "i_hole_three_sets"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_disjoint_shells_keep",
+      "case": "i_disjoint_shells_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_disjoint_shells_pre",
+      "case": "i_disjoint_shells_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_pre",
+      "case": "d_hole_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_keep",
+      "case": "d_hole_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_keep_cutters",
+      "case": "d_hole_keep_cutters"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_split",
+      "case": "d_hole_split"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_split_pre",
+      "case": "d_hole_split_pre"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_hole_three_cutters",
+      "case": "d_hole_three_cutters"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_two_targets",
+      "case": "d_two_targets"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_noninteracting_target",
+      "case": "d_noninteracting_target"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_disjoint_shells_keep",
+      "case": "d_disjoint_shells_keep"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_two_components",
+      "case": "u_two_components"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_two_components",
+      "case": "i_two_components"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_u_cavity_unopened",
+      "case": "u_cavity_unopened"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_cavity_unopened",
+      "case": "i_cavity_unopened"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_cavity_unopened",
+      "case": "d_cavity_unopened"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_disjoint_shells_common",
+      "case": "i_disjoint_shells_common"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_two_targets_split",
+      "case": "d_two_targets_split"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_cavity_first_multi",
+      "case": "i_cavity_first_multi"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_i_cavity_second_multi",
+      "case": "i_cavity_second_multi"
+    },
+    {
+      "op": "polyhedral_boolean_command",
+      "id": "polycmd_d_partial_multishell",
+      "case": "d_partial_multishell"
+    }
+  ]
+}

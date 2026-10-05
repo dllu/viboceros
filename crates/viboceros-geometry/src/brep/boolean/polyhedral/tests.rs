@@ -306,3 +306,5 @@ fn exact_loop_certificate_rejects_crossings_touching_and_nested_holes() {
 }
 
 mod native;
+
+mod multiple;

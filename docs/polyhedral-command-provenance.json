@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOraclePolyhedralCommandsFinalB_20261004",
+  "engine_version": "8.32.26160.13001",
+  "command_witnesses": 65,
+  "physical_command_replays": 62,
+  "full_native_parity": false,
+  "uncertified_recipes": [
+    "i_singular_two_holes",
+    "i_cavity_first_multi",
+    "i_cavity_second_multi"
+  ],
+  "scope_notes": [
+    "Public command execution at idle in an empty owned document on private Xvfb, with private settings.",
+    "Physical geometry comparisons check volume, centroid, area and finite bidirectional polygon-boundary witnesses. Metadata, groups, selection, source retention and recorded Undo/Redo are checked.",
+    "Component order and internal coplanar seams may differ; singular open and mixed inward multi-object intersections remain uncertified.",
+    "Continuous boundary error, arbitrary curved input geometry and native performance remain unproven."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/polyhedral_command_probe.py": "36061c49185ce3f276940c0051abe06beacdaca53476761195c17ab836495b67",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/polyhedral_boolean_command.json": "bd5dd45dbc5b6f54d1200a7b30909e425062d88236423ef185159fbb644ab0bb",
+    "tools/rhino_oracle/observations/polyhedral_boolean_command.json": "3d1714a83ba41f9c1d3cc511dc992f72cb021dd7ab6d671b08c2a7894511070a",
+    "docs/polyhedral-command-partitions.json": "2d51f16ad340f9d72f41007ecc0c8522420f316aa120000b46308dfd962f2289"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "1fa3a31e4cc5b06dcb9719e763f5d6df1fd9d04091db3839e0fe3ccd67d1a6b8",
+    "tools/rhino_oracle/rhino_worker.py": "0cbcfdf759add85d5fc6eaeae9a7650af3a1442e10b5b553f03f96b5300327db"
+  },
+  "output_partition_differences": 7
+}
