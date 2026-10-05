@@ -18,7 +18,8 @@ mod difference;
 pub use difference::{BrepDifferenceComponent, subtract_convex_breps};
 mod polyhedral;
 pub use polyhedral::{
-    BrepPolyhedralBooleanComponent, boolean_polyhedral_breps, intersect_polyhedral_brep_sets,
+    BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralRegion,
+    BrepPolyhedralShell, boolean_polyhedral_breps, intersect_polyhedral_brep_sets,
     intersect_polyhedral_breps, polyhedral_brep_boundary_interactions,
     polyhedral_brep_subtraction_interactions, subtract_polyhedral_breps, union_polyhedral_breps,
 };
@@ -434,17 +435,16 @@ fn clean_ring(
     }
 }
 
-fn rebuild(
-    mut polygons: Vec<Polygon<'_>>,
-    tolerance: Tolerance,
+fn subdivide(
+    polygons: &mut [Polygon<'_>],
     budget: &mut Budget,
-) -> Result<Brep, GeometryError> {
+) -> Result<BTreeSet<ExactPoint>, GeometryError> {
     let points = polygons
         .iter()
         .flat_map(|p| p.ring.iter().cloned())
         .collect::<BTreeSet<_>>();
     // Exact shared subdivisions resolve T-junctions created by successive cuts.
-    for polygon in &mut polygons {
+    for polygon in polygons.iter_mut() {
         let mut split_ring = Vec::new();
         for i in 0..polygon.ring.len() {
             let a = &polygon.ring[i];
@@ -475,6 +475,15 @@ fn rebuild(
         }
         polygon.ring = split_ring;
     }
+    Ok(points)
+}
+
+fn rebuild(
+    mut polygons: Vec<Polygon<'_>>,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Brep, GeometryError> {
+    let points = subdivide(&mut polygons, budget)?;
     let mut vertices = Vec::new();
     let mut rounded = BTreeSet::new();
     let mut vertex_map = BTreeMap::new();

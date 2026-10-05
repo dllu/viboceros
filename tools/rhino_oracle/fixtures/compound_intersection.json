@@ -1,0 +1,211 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_cross",
+      "case": "sdk_inner_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_cross",
+      "case": "pair_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_unopened",
+      "case": "sdk_inner_unopened"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_unopened",
+      "case": "pair_unopened"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_contains_inner",
+      "case": "sdk_inner_contains_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_contains_inner",
+      "case": "pair_contains_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_inside_inner",
+      "case": "sdk_inner_inside_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_inside_inner",
+      "case": "pair_inside_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_equal_inner",
+      "case": "sdk_inner_equal_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_equal_inner",
+      "case": "pair_equal_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_enclosing",
+      "case": "sdk_inner_enclosing"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_enclosing",
+      "case": "pair_enclosing"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_boundary_inner",
+      "case": "sdk_inner_boundary_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_boundary_inner",
+      "case": "pair_boundary_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_touches_inner",
+      "case": "sdk_inner_touches_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_touches_inner",
+      "case": "pair_touches_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_sdk_inner_other",
+      "case": "sdk_inner_other"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_equal_outer",
+      "case": "pair_equal_outer"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_two_cavities",
+      "case": "pair_two_cavities"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_pair_two_cavities_reverse",
+      "case": "pair_two_cavities_reverse"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_contains_inner",
+      "case": "first_contains_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_inside_inner",
+      "case": "first_inside_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_disjoint",
+      "case": "first_disjoint"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_extra_cross",
+      "case": "first_extra_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_extra_disjoint_cross",
+      "case": "first_extra_disjoint_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_contains_inner",
+      "case": "second_contains_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_inside_inner",
+      "case": "second_inside_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_disjoint",
+      "case": "second_disjoint"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_extra_cross",
+      "case": "second_extra_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_extra_disjoint_cross",
+      "case": "second_extra_disjoint_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_contains_inner_reverse",
+      "case": "first_contains_inner_reverse"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_contains_inner_pre",
+      "case": "first_contains_inner_pre"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_first_contains_inner_keep",
+      "case": "first_contains_inner_keep"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_contains_inner_reverse",
+      "case": "second_contains_inner_reverse"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_contains_inner_pre",
+      "case": "second_contains_inner_pre"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_second_contains_inner_keep",
+      "case": "second_contains_inner_keep"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_common_contains_inner",
+      "case": "common_contains_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_common_inside_inner",
+      "case": "common_inside_inner"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_common_extra_cross",
+      "case": "common_extra_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_common_extra_disjoint_cross",
+      "case": "common_extra_disjoint_cross"
+    },
+    {
+      "op": "compound_intersection",
+      "id": "compound_island_second_contains",
+      "case": "island_second_contains"
+    }
+  ]
+}

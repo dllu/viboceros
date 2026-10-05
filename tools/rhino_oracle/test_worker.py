@@ -97,6 +97,14 @@ class RhinoWorkerTests(unittest.TestCase):
                     "commands": ["NewViewport"], "source_display_mode": "Rendered"})
             run.assert_not_called()
 
+    def test_compound_intersection_dispatch_receives_the_operation_and_host(self):
+        operation = dict(op="compound_intersection", id="owned", case="sdk_inner_cross")
+        run = Mock(return_value=({"geometry": "recorded"}, 0))
+        with patch.dict("sys.modules", {"compound_intersection_probe": SimpleNamespace(run=run)}):
+            result = self.worker._execute(operation, 1, {})
+        self.assertEqual(result, ({"geometry": "recorded"}, 0))
+        run.assert_called_once_with(operation, vars(self.worker))
+
     def test_solid_orientation_reads_uninserted_geometry_and_disposes_its_file(self):
         class Brep:
             IsValid = True

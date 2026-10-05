@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleCompoundIntersectionFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "sdk_pair_witnesses": 9,
+  "command_witnesses": 32,
+  "physical_command_records": 31,
+  "source_preservation_failure_records": 1,
+  "previous_capture_physical_replays": 64,
+  "previous_capture_singular_rejections": 1,
+  "full_native_parity": false,
+  "retained_differences": [
+    "second_extra_disjoint_cross: native failure adds two ! TextDots; kernel preserves inputs without markers",
+    "Native Failure/Nothing classifications and command histories are retained; local error classes are not identical",
+    "Output face partitions are checked separately from physical boundaries",
+    "Interacting inward/inward pairs and inconsistent compound orientations remain uncertified"
+  ],
+  "scope_notes": [
+    "One owned document at idle on a private Xvfb display and private settings; public SDK calls and command macros only.",
+    "SDK set unions are diagnostics and never supplied as command inputs; before/after source records are asserted.",
+    "31 physical command records include successes and unchanged no-result/failure states; they do not establish complete command event parity.",
+    "Finite boundary witnesses do not certify continuous error bounds, arbitrary curved input, broad compound behavior or native performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/compound_intersection_probe.py": "898477e6e536802943b1000cfc0eb6269c86941dcd9f6d80f08f447f364ebf43",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/compound_intersection.json": "ed4eea06f274bb39f4541268ddbbf3d77a800aa7049c27a7803674d4e95fe8e0",
+    "tools/rhino_oracle/observations/compound_intersection.json": "8628778b280df9e607af0f2dd3f0b7bda2a1a957752cae2ba6090680c62b95aa",
+    "docs/compound-intersection-partitions.json": "5cae0966d337d7df46a640564f7e9e7bb32f1d854a21b874180729a7e0532321"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "6592df7c045e216278050f8adb2218551d166786cb4bc82573b240b12a091e85",
+    "tools/rhino_oracle/rhino_worker.py": "c3a0343704f1ff43a5028e8ce8b5049a9011b272710f3715f79efbd2c6010084"
+  },
+  "output_partition_differences": 1
+}

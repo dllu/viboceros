@@ -1,0 +1,9 @@
+[
+  {
+    "actual": [12, 30],
+    "case": "first_extra_cross",
+    "name": "source-0",
+    "native": [10, 24],
+    "source": null
+  }
+]

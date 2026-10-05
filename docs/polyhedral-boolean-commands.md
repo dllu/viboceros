@@ -40,7 +40,8 @@ These policies can produce a different region from the mathematical API.
 | --- | --- |
 | Union | Split the constructed result into boundary shells, keep shells with an interacting original source face, and insert each as an outward object. Untouched shells within a consumed original can disappear. |
 | Difference | Subtract interacting cutters per target, keep participating boundary shells, and insert each outward. A target with no interacting cutter is copied whole if another target succeeds. |
-| Intersection, two objects | Intersect original shells separately. An inward shell within a compound input denotes its exterior; a single reversed input is normalized. Separate shell-pair results remain separate objects. |
+| Intersection, compound two sets | Combine each set using measured union participation and boundary-enclosure rules, then process oriented shell pairs separately. A single reversed input is normalized. Shell-pair results remain separate objects. |
+| Common intersection, three or more inputs | Intersect odd/even material regions using one original-face arrangement. |
 
 Union clears geometry user text when a material result exports multiple shells.
 Difference clears it when a target exports multiple pieces. Intersection clears
@@ -51,10 +52,11 @@ first-set contributor and geometry text from the last maximal first-set
 contributor. Existing option memory, selection phases, deletion, and history
 policies continue to apply.
 
-Mixed inward compound shells with more than two accepted objects, or a pair of
-compound inward shells, are not certified for native Intersection behavior and
-return an error before editing the document. The mathematical multi-operand APIs
-remain available for their independently defined material expressions.
+Compound two-set processing uses exact intermediate regions; details and new
+native witnesses are in [compound intersections](compound-intersections.md).
+Interacting pairs of two inward compound shells and compound orientations that
+contradict material nesting still require a native compatibility certificate.
+Those cases return errors before editing the document.
 
 ## Retained native evidence
 
@@ -69,34 +71,28 @@ includes concave and holed earlier results, cavities, nested islands, disconnect
 shells, reversed inputs, multiple targets/cutters, multiple intersection sets,
 selection modes, input retention, and Undo/Redo.
 
-Three native successes remain outside the command certificate:
+The historical capture provenance records 62 physical replays at its original
+commit. Current command tests replay 64 of its 65 recipes: the two mixed cavity
+sets are now covered by the exact compound pipeline. `i_singular_two_holes`
+remains unsupported because Rhino returns a valid open B-rep and the kernel
+rejects its singular non-solid boundary.
 
-- `i_singular_two_holes`: Rhino returns a valid open B-rep; the kernel rejects
-  the singular non-solid result.
-- `i_cavity_first_multi`: Rhino returns two overlapping outward objects with
-  volumes 2.25 and 3.75.
-- `i_cavity_second_multi`: Rhino returns one solid of volume 5.0625. Its measured
-  handling of the cavity differs from the preceding multi-object recipe.
+Physical comparisons use volume and centroid epsilon `1e-10`, area epsilon
+`1e-9`, and finite bidirectional boundary witnesses at `1e-7`. They check
+attributes, geometry user text, groups, retained source IDs, selection, outward
+output orientation, and captured history twice. Source face and edge counts
+agree. Seven output seam/count differences are asserted against the
+[explicit partition record](polyhedral-command-partitions.json). The singular
+recipe checks unchanged objects, selection, Undo and a usable Redo entry.
+Application tests also exercise actual picking and preselection of an earlier
+holed result through all three commands.
+See [historical capture provenance](polyhedral-command-provenance.json) and
+[current compound provenance](compound-intersection-provenance.json).
 
-Command tests replay the other 62 recipes with volume and centroid epsilon
-`1e-10`, area epsilon `1e-9`, and finite bidirectional boundary witnesses at
-`1e-7`. They check attributes, geometry user text, groups, retained source IDs,
-selection, outward output orientation, and captured history twice. Source face
-and edge counts agree. Seven output seam/count differences are asserted against
-the [explicit partition record](polyhedral-command-partitions.json), while all
-physical and metadata comparisons remain in force. The three uncertified
-recipes check unchanged objects, selection, Undo, and a usable Redo entry.
-Application tests cover actual picking and preselection of an earlier holed
-result through all three commands, filtering, selection, and history.
-See [capture provenance](polyhedral-command-provenance.json).
-
-Compound pair construction additionally limits work to 128 shell pairs and
-4,096 total output faces; each exact construction has the kernel work budget.
-
-The latter two mixed-shell recipes are deliberately retained as unresolved
-compatibility evidence. No coordinate-specific exception selects their results.
-Continuous boundary error, arbitrary compound contributor configurations,
-wireframe seam parity, and native component ordering remain unproven.
+Compound two-set construction limits work to 128 shell pairs and 4,096 cumulative
+exported patches, with one cumulative exact work budget. Continuous boundary
+error, arbitrary compound contributor configurations, wireframe seam parity,
+native component ordering, curved inputs and native performance remain unproven.
 
 ```sh
 cargo test --release -p viboceros-command boolean_solids::tests -- --nocapture

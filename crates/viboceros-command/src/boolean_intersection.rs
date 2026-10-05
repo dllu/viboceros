@@ -111,16 +111,27 @@ impl BooleanIntersectionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let (kernel, interactions) = boolean_solids::interactions(&refs, doc.tolerance(), false)?;
-        if !interactions
-            .iter()
-            .any(|p| common || (p[0] < first.len() && p[1] >= first.len()))
+        let compound_sets = !common
+            && refs
+                .iter()
+                .any(|b| b.edge_connected_face_components().len() > 1);
+        let (kernel, interactions) = if compound_sets {
+            // The compound plan certifies all inputs and tests its oriented
+            // shells. Avoid constructing an unused material-only arrangement.
+            (boolean_solids::Kernel::Polyhedral, Vec::new())
+        } else {
+            boolean_solids::interactions(&refs, doc.tolerance(), false)?
+        };
+        if !compound_sets
+            && !interactions
+                .iter()
+                .any(|p| common || (p[0] < first.len() && p[1] >= first.len()))
         {
             return Err(CommandError::NothingIntersected);
         }
         let mut copies = Vec::new();
         if let Some(results) =
-            boolean_solids::compound_intersection(&refs, doc.tolerance(), common)?
+            boolean_solids::compound_intersection(&refs, doc.tolerance(), common, first.len())?
         {
             for result in results {
                 let brep = boolean_solids::merged(

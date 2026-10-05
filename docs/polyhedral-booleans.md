@@ -59,6 +59,34 @@ arrangement or output, two million work units, and 8,192 bits per checked ration
 Exhaustion is an explicit error. Coplanar fragments remain separate; the existing
 face merging API can merge them by original source or across source faces.
 
+## Exact intermediate regions
+
+`BrepPolyhedralBooleanPlan` constructs one arrangement from the original inputs.
+Its opaque `BrepPolyhedralRegion` values support union, common intersection, and
+subtraction. Regions from different plans cannot be mixed. Complete volume
+containment and boundary enclosure are distinct queries: a box can have all its
+boundary inside another object's material while enclosing that object's cavity.
+
+`shells` splits exact boundary patches by shared, subdivided rational edges and
+classifies each shell's finite enclosed region. `inward` retains its boundary
+orientation separately. Intermediate shells never become rounded B-rep operands.
+`export` is the only rounding step, preserves original supporting surfaces and
+face ownership, and validates the final topology. All operations share the plan's
+cumulative work budget; cumulative exported patches are limited to 4,096.
+`boundary_faces` retains equivalent original-face aliases for participation
+checks, while exported faces keep canonical ownership.
+`export_with_boundary_faces` restricts canonical ownership to participating
+original faces and rejects a whitelist that does not cover every boundary
+patch. Coplanar faces of an excluded shell therefore cannot introduce seams
+into a staged result.
+
+Tests include a stretched tetrahedron clipped at a non-binary rational vertex,
+then clipped again using its exact intermediate shell after an earlier export.
+They check analytic volumes, original surfaces, source purity, foreign-plan
+rejection, equivalent face aliases, restricted export ownership, independently
+checked shell parity, budget exhaustion and an intermediate union
+with singular shared edges.
+
 ## Verification
 
 Focused tests compare mathematical volumes for chained concave, holed and cavity

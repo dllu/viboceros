@@ -3,6 +3,7 @@ use crate::boolean_union::tests::{Boundary, box_brep, compare, regions, snapshot
 use serde_json::{Value, json};
 use viboceros_document::{GroupId, LayerId};
 use viboceros_geometry::{BrepBooleanOperation, BrepSolidOrientation};
+mod compound;
 
 fn one(a: Brep, b: Brep, op: BrepBooleanOperation) -> Brep {
     let tolerance = Tolerance::DEFAULT;
@@ -123,10 +124,14 @@ fn sources(case: &str) -> Vec<Brep> {
 }
 
 fn setup(case: &str) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
+    setup_sources(sources(case))
+}
+
+fn setup_sources(sources: Vec<Brep>) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
     let mut doc = Document::default();
     let mut ids = Vec::new();
     let mut layers = Vec::new();
-    for (i, b) in sources(case).into_iter().enumerate() {
+    for (i, b) in sources.into_iter().enumerate() {
         let layer = doc
             .add_layer(format!("Source {i}"), ColorRgb::BLACK)
             .unwrap();
@@ -247,10 +252,7 @@ fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
             "{case}: source topology partition"
         );
         let registry = CommandRegistry::with_builtins();
-        let uncertified = matches!(
-            case,
-            "i_singular_two_holes" | "i_cavity_first_multi" | "i_cavity_second_multi"
-        );
+        let uncertified = case == "i_singular_two_holes";
         if uncertified {
             registry.execute(&mut doc, "Point 100,100,100").unwrap();
             registry.execute(&mut doc, "Undo").unwrap();
@@ -350,7 +352,7 @@ fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
             }
         }
     }
-    assert_eq!(matched, 62);
+    assert_eq!(matched, 64);
     let expected: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../docs/polyhedral-command-partitions.json"
     ))

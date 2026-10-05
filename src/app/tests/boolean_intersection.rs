@@ -374,3 +374,124 @@ fn polyhedral_boolean_commands_pick_chained_holes_and_replay_selection_history()
         }
     }
 }
+
+#[test]
+fn compound_intersection_picks_both_set_directions_and_common_material() {
+    // First-set union, second-set union, and common intersection have different
+    // captured regions. Exercise the actual picking phases and history for each.
+    for mode in 0..3 {
+        for pre in [false, true] {
+            let mut app = test_app();
+            let tolerance = Tolerance::DEFAULT;
+            let frame = Frame3::try_from_directions(
+                point(0., 0., 0.),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Vector3::try_new(0., 1., 0.).unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            let cube = |bounds| Brep::try_box(frame, bounds, tolerance).unwrap();
+            let sources = [
+                Brep::try_disjoint_union(
+                    vec![cube([[0., 3.]; 3]), cube([[1., 2.]; 3]).reversed()],
+                    tolerance,
+                )
+                .unwrap(),
+                cube([[1.5, 3.5], [1.5, 3.5], [1., 2.]]),
+                cube([[0.75, 2.25]; 3]),
+            ];
+            let ids = sources
+                .iter()
+                .map(|b| {
+                    app.document
+                        .add_geometry(Geometry::Brep(b.clone()))
+                        .unwrap()
+                })
+                .collect::<Vec<_>>();
+            for (i, &id) in ids.iter().enumerate() {
+                app.document
+                    .set_object_geometry_user_text([id], "Code", Some(&format!("geometry-{i}")))
+                    .unwrap();
+            }
+            let (first, second) = match mode {
+                0 => (vec![0, 2], vec![1]),
+                1 => (vec![0], vec![1, 2]),
+                _ => (vec![0, 1, 2], vec![]),
+            };
+            if pre {
+                app.document
+                    .select_objects_direct(first.iter().map(|&i| ids[i]), SelectionMode::Replace)
+                    .unwrap();
+            }
+            enter(&mut app, "BooleanIntersection");
+            if !pre {
+                for &i in &first {
+                    pick(&mut app, ids[i]);
+                }
+                enter(&mut app, "");
+            }
+            for &i in &second {
+                pick(&mut app, ids[i]);
+            }
+            enter(&mut app, "");
+            assert!(
+                app.intersection_prompt.is_none(),
+                "{mode}/{pre}: {:?}",
+                app.command_log
+            );
+            let outputs = app
+                .document
+                .objects()
+                .map(|o| (o.id(), o.geometry().clone(), o.geometry_user_text().clone()))
+                .collect::<Vec<_>>();
+            let mut volumes = outputs
+                .iter()
+                .map(|(_, g, _)| {
+                    let Geometry::Brep(b) = g else {
+                        panic!("B-rep")
+                    };
+                    b.signed_volume(tolerance).unwrap()
+                })
+                .collect::<Vec<_>>();
+            volumes.sort_by(f64::total_cmp);
+            let expected = match mode {
+                0 => vec![2.25, 3.75],
+                1 => vec![5.0625],
+                _ => vec![0.3125],
+            };
+            assert_eq!(
+                volumes.len(),
+                expected.len(),
+                "{mode}/{pre}: {:?}",
+                app.command_log
+            );
+            for (actual, expected) in volumes.into_iter().zip(expected) {
+                assert!((actual - expected).abs() < 1e-10);
+            }
+            for (id, _, text) in &outputs {
+                assert_eq!(app.document.is_selected(*id), pre && mode != 2);
+                assert_eq!(
+                    text.get("Code").map(String::as_str),
+                    if mode == 2 { Some("geometry-2") } else { None }
+                );
+            }
+            for _ in 0..2 {
+                enter(&mut app, "Undo");
+                assert_eq!(app.document.objects().len(), 3);
+                for (i, &id) in ids.iter().enumerate() {
+                    assert_eq!(
+                        app.document.object(id).unwrap().geometry(),
+                        &Geometry::Brep(sources[i].clone())
+                    );
+                    assert_eq!(app.document.is_selected(id), pre && first.contains(&i));
+                }
+                enter(&mut app, "Redo");
+                assert_eq!(app.document.objects().len(), outputs.len());
+                for (id, g, _) in &outputs {
+                    assert_eq!(app.document.object(*id).unwrap().geometry(), g);
+                    assert_eq!(app.document.is_selected(*id), pre && mode != 2);
+                }
+            }
+        }
+    }
+}

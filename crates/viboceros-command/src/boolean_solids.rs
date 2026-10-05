@@ -4,6 +4,7 @@ use viboceros_geometry::{
     BrepDifferenceComponent, BrepPolyhedralBooleanComponent, BrepSetIntersection,
     BrepUnionComponent,
 };
+mod compound;
 
 /// Only an unsupported convex certificate selects the polyhedral path. Work,
 /// arithmetic and output-topology failures are never swallowed as fallbacks.
@@ -184,12 +185,21 @@ pub(super) fn compound_intersection(
     breps: &[&Brep],
     tolerance: Tolerance,
     common: bool,
+    first_count: usize,
 ) -> Result<Option<Vec<ShellIntersection>>, GeometryError> {
     let components = breps
         .iter()
         .map(|b| b.edge_connected_face_components())
         .collect::<Vec<_>>();
     if components.iter().all(|c| c.len() == 1) {
+        return Ok(None);
+    }
+    if !common {
+        return compound::sets(breps, first_count, tolerance).map(Some);
+    }
+    // The captured common intersection of three compound inputs follows
+    // ordinary material membership, rather than the oriented pair pipeline.
+    if breps.len() != 2 {
         return Ok(None);
     }
     let mut shells = Vec::new();
@@ -206,14 +216,6 @@ pub(super) fn compound_intersection(
             ));
         }
         shells.push(parts);
-    }
-    if breps.len() != 2 {
-        if shells.iter().flatten().any(|(_, _, inward)| *inward) {
-            return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-                context: "multi-object intersection with compound inward shells requires a native compatibility certificate",
-            });
-        }
-        return Ok(None);
     }
     if shells[0].len().saturating_mul(shells[1].len()) > 128 {
         return Err(GeometryError::BrepBooleanWorkLimit);

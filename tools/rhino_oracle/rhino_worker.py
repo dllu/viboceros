@@ -6831,6 +6831,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'polyhedral_boolean':
         from polyhedral_boolean_probe import run
         return run(operation,globals())
+    if kind == 'compound_intersection':
+        from compound_intersection_probe import run
+        return run(operation, globals())
     if kind == 'polyhedral_boolean_command':
         from polyhedral_command_probe import run
         return run(operation,globals())
@@ -16660,7 +16663,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane", "scale_by_plane_object", "scale_by_plane_curve", "smooth_command", "smooth_frames", "smooth_uvn", "smooth_workflow", "grip_alias", "convex_boolean", "polyhedral_boolean", "polyhedral_boolean_command", "boolean_union_command", "boolean_intersection_command", "boolean_difference_command", "boolean_difference_order_command") for op in request.get("operations", [])):
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane", "scale_by_plane_object", "scale_by_plane_curve", "smooth_command", "smooth_frames", "smooth_uvn", "smooth_workflow", "grip_alias", "convex_boolean", "polyhedral_boolean", "polyhedral_boolean_command", "compound_intersection", "boolean_union_command", "boolean_intersection_command", "boolean_difference_command", "boolean_difference_order_command") for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

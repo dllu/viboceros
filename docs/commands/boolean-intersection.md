@@ -26,12 +26,18 @@ result is produced, including disjoint members of a two-set operation.
 
 Preselection uses document table order; command-first picking uses pick order.
 Common-set results inherit attributes, layer, color, and groups from the first
-input and geometry user text from the last. Two-set results inherit attributes
+input and geometry user text from the last when there is one output; multiple
+outputs clear that text. Ordinary two-set results inherit attributes
 from the first maximal first-set contributor and geometry user text from the
 last maximal first-set contributor. A maximal pair region is not contained in
 another pair region within that output component. These policies reproduce the captured recipes;
 arbitrary overlapping contributor configurations remain unverified. Group
 memberships do not select unrelated peers.
+
+Compound two-set inputs use the measured [oriented shell
+pipeline](../compound-intersections.md). Each set is combined before shell-pair
+processing. Enclosed or disjoint copies can retain their own intermediate
+metadata, and separate output objects can overlap.
 
 Common-set outputs are unselected. Two-set outputs are selected when the first
 set was preselected; command-first outputs are unselected. Retained originals
