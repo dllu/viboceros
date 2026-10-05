@@ -37,12 +37,13 @@ work units, and 8,192 bits per checked rational.
 Interactive commands additionally follow the measured native policies below.
 These policies can produce a different region from the mathematical API.
 
-| Command | Compound shell policy in the captured cases |
+| Command | Policy in the captured cases |
 | --- | --- |
 | Union | Split the constructed result into boundary shells, keep shells with an interacting original source face, and insert each as an outward object. Untouched shells within a consumed original can disappear. |
 | Difference | Subtract interacting cutters per target, keep participating boundary shells, and insert each outward. A target with no interacting cutter is copied whole if another target succeeds. |
 | Intersection, compound two sets | Combine each set using measured union participation and boundary-enclosure rules, then process oriented shell pairs separately. A single reversed input is normalized. Shell-pair results remain separate objects. |
 | Common compound intersection, two or more inputs | Construct odd/even material intersection, export participating connected boundaries, and turn inward solid boundaries outward. Non-solid boundaries retain their winding. |
+| Common ordinary intersection | Reduce exact regions in input order, skip untouched enclosing inputs, and let an untouched smaller input replace the current region. Proper interaction is required somewhere in the reduction; surviving contributors determine metadata. |
 
 Union clears geometry user text when a material result exports multiple shells.
 Difference clears it when a target exports multiple pieces. Intersection clears
@@ -59,6 +60,9 @@ Interacting inward pairs and common boundary participation are measured in the
 [54-recipe follow-up](compound-pairs.md). Compound orientations that contradict
 material nesting still require a native compatibility certificate and return
 errors before editing the document.
+The [ordinary common follow-up](common-intersection.md) retains 80 box recipes,
+including every ordering of two crossing boxes, a strict inner box, and an
+enclosing box. Mathematical common-region APIs retain their independent policy.
 
 ## Retained native evidence
 

@@ -3,6 +3,7 @@ use crate::boolean_union::tests::{Boundary, box_brep, compare, regions, snapshot
 use serde_json::{Value, json};
 use viboceros_document::{GroupId, LayerId};
 use viboceros_geometry::{BrepBooleanOperation, BrepSolidOrientation};
+mod common;
 mod compound;
 mod pairs;
 

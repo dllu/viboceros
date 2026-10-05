@@ -73,6 +73,15 @@ pair fragments are limited to 4,096 in addition to the shared work/output limits
 The kernel implements mathematical nested/equal intersections; the native
 command adapter applies its separately observed boundary-interaction policy.
 
+`BrepConvexBooleanPlan` certifies up to 128 original inputs once and creates
+opaque exact regions for containment, boundary interaction, and repeated
+intersection. Region handles share one work budget and retain original supporting
+surfaces; only final export rounds coordinates. Handles from another plan are
+rejected. Exports retain original input/face ownership and share a cumulative
+4,096-patch limit. The [ordered common command](common-intersection.md) uses this
+plan without recertifying rounded intermediate operands. Kernel tests check
+independent box containment and staged tetrahedral cuts with rational vertices.
+
 `subtract_convex_breps` subtracts the union of original cutters from one target.
 Exact target-clipped cutter regions are compared first to remove redundant
 contained regions, retaining partial coplanar ownership. Target faces are

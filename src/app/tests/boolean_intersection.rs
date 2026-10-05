@@ -166,6 +166,158 @@ fn common_postselection_uses_pick_order_but_preselection_uses_document_order() {
 }
 
 #[test]
+fn ordered_common_picking_and_preselection_replay_owners_retention_and_atomic_failures() {
+    // Different pick and table orders exercise strict containment, contributor
+    // pruning, an equal prefix, and four inputs through the actual UI controller.
+    for mode in 0..6 {
+        for pre in [false, true] {
+            for keep in [false, true] {
+                let mut app = test_app();
+                let tolerance = Tolerance::DEFAULT;
+                let frame = Frame3::try_from_directions(
+                    point(0., 0., 0.),
+                    Vector3::try_new(1., 0., 0.).unwrap(),
+                    Vector3::try_new(0., 1., 0.).unwrap(),
+                    tolerance,
+                )
+                .unwrap();
+                let mut bounds = vec![
+                    [[0., 2.]; 3],
+                    [[1., 3.]; 3],
+                    match mode {
+                        0 => [[-1., 4.]; 3],
+                        1 => [[1.5, 2.]; 3],
+                        2 => [[-1., 2.], [-1., 4.], [-1., 4.]],
+                        3 | 4 => [[1.2, 1.8]; 3],
+                        _ => [[0., 2.]; 3],
+                    },
+                ];
+                if mode == 4 {
+                    bounds.push([[-1., 4.]; 3]);
+                }
+                let ids = bounds
+                    .into_iter()
+                    .map(|bounds| {
+                        app.document
+                            .add_geometry(Geometry::Brep(
+                                Brep::try_box(frame, bounds, tolerance).unwrap(),
+                            ))
+                            .unwrap()
+                    })
+                    .collect::<Vec<_>>();
+                for (i, &id) in ids.iter().enumerate() {
+                    app.document
+                        .set_object_names([(id, Some(format!("source-{i}")))])
+                        .unwrap();
+                    app.document
+                        .set_object_geometry_user_text([id], "Code", Some(&format!("geometry-{i}")))
+                        .unwrap();
+                }
+                enter(&mut app, "Point 100,100,100");
+                enter(&mut app, "Undo");
+                let before = app.document.objects().cloned().collect::<Vec<_>>();
+                let undo = app.document.undo_label().map(str::to_owned);
+                let redo = app.document.redo_label().map(str::to_owned);
+                let order = match mode {
+                    0 | 3 | 5 => vec![2, 0, 1],
+                    1 => vec![1, 0, 2],
+                    2 => vec![2, 1, 0],
+                    _ => vec![3, 0, 1, 2],
+                };
+                if pre {
+                    // Preselection deliberately ignores this insertion order
+                    // and presents the sources in their document table order.
+                    app.document
+                        .select_objects_direct(
+                            order.iter().map(|&i| ids[i]),
+                            SelectionMode::Replace,
+                        )
+                        .unwrap();
+                }
+                enter(
+                    &mut app,
+                    if keep {
+                        "BooleanIntersection DeleteInput=No"
+                    } else {
+                        "BooleanIntersection DeleteInput=Yes"
+                    },
+                );
+                if !pre {
+                    for &i in &order {
+                        pick(&mut app, ids[i]);
+                    }
+                    enter(&mut app, "");
+                }
+                enter(&mut app, "");
+                assert!(
+                    app.intersection_prompt.is_none(),
+                    "{mode}/{pre}/{keep}: {:?}",
+                    app.command_log
+                );
+                if !pre && matches!(mode, 3 | 5) {
+                    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                    assert_eq!(app.document.selected_object_count(), ids.len());
+                    assert_eq!(app.document.undo_label(), undo.as_deref());
+                    assert_eq!(app.document.redo_label(), redo.as_deref());
+                    enter(&mut app, "Redo");
+                    assert_eq!(app.document.objects().len(), ids.len() + 1);
+                    continue;
+                }
+                let (owner, geometry_owner, volume) = match mode {
+                    0 => (0, 1, 1.),
+                    1 => (0, 2, 0.125),
+                    2 if pre => (0, 2, 1.),
+                    2 => (1, 0, 1.),
+                    3 | 4 => (2, 2, 0.216),
+                    _ => (1, 2, 1.),
+                };
+                let result = app
+                    .document
+                    .objects()
+                    .find(|o| !ids.contains(&o.id()))
+                    .unwrap();
+                assert_eq!(
+                    result.attributes().name(),
+                    Some(format!("source-{owner}").as_str())
+                );
+                assert_eq!(
+                    result.geometry_user_text().get("Code").map(String::as_str),
+                    Some(format!("geometry-{geometry_owner}").as_str())
+                );
+                let Geometry::Brep(b) = result.geometry() else {
+                    panic!("common result");
+                };
+                assert!((b.signed_volume(tolerance).unwrap() - volume).abs() < 1e-10);
+                assert!(!app.document.is_selected(result.id()));
+                assert_eq!(
+                    app.document.selected_object_count(),
+                    if keep { ids.len() } else { 0 }
+                );
+                assert_eq!(
+                    app.document.objects().len(),
+                    if keep { ids.len() + 1 } else { 1 }
+                );
+                let after = app.document.objects().cloned().collect::<Vec<_>>();
+                for _ in 0..2 {
+                    enter(&mut app, "Undo");
+                    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                    assert_eq!(
+                        app.document.selected_object_count(),
+                        if pre { ids.len() } else { 0 }
+                    );
+                    enter(&mut app, "Redo");
+                    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+                    assert_eq!(
+                        app.document.selected_object_count(),
+                        if keep && pre { ids.len() } else { 0 }
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn cancellations_discard_options_and_second_phase_retains_first_set() {
     let (mut app, ids) = fixture();
     let before = app.document.objects().cloned().collect::<Vec<_>>();

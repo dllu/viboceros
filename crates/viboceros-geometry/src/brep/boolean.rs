@@ -29,7 +29,9 @@ mod merge;
 pub use intersection::{
     BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,
 };
+mod convex_plan;
 mod union;
+pub use convex_plan::{BrepConvexBooleanPlan, BrepConvexRegion};
 pub use union::{
     BrepUnionComponent, convex_brep_boundary_interactions, convex_brep_subtraction_interactions,
     union_convex_breps,

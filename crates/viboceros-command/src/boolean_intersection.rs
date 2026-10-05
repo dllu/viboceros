@@ -114,28 +114,34 @@ impl BooleanIntersectionCommand {
         let compound_sets = refs
             .iter()
             .any(|b| b.edge_connected_face_components().len() > 1);
-        let (kernel, interactions) = if compound_sets {
-            // The compound plan certifies all inputs and tests its oriented
-            // shells. Avoid constructing an unused material-only arrangement.
+        let (kernel, interactions) = if compound_sets || common {
+            // Each specialized pipeline certifies inputs and tests its exact
+            // regions. Avoid constructing an unused interaction arrangement.
             (boolean_solids::Kernel::Polyhedral, Vec::new())
         } else {
             boolean_solids::interactions(&refs, doc.tolerance(), false)?
         };
         if !compound_sets
+            && !common
             && !interactions
                 .iter()
-                .any(|p| common || (p[0] < first.len() && p[1] >= first.len()))
+                .any(|p| p[0] < first.len() && p[1] >= first.len())
         {
             return Err(CommandError::NothingIntersected);
         }
         let mut copies = Vec::new();
-        if let Some(results) = boolean_solids::compound_intersection(
-            &refs,
-            doc.tolerance(),
-            common,
-            first.len(),
-            kernel,
-        )? {
+        let staged = if common {
+            Some(boolean_solids::common_intersection(&refs, doc.tolerance())?)
+        } else {
+            boolean_solids::compound_intersection(
+                &refs,
+                doc.tolerance(),
+                common,
+                first.len(),
+                kernel,
+            )?
+        };
+        if let Some(results) = staged {
             for result in results {
                 let brep = if common {
                     let b = result.component.brep;
@@ -161,18 +167,6 @@ impl BooleanIntersectionCommand {
                     .map(|i| objects[i].geometry_user_text().clone())
                     .unwrap_or_default();
                 copies.push((ids[result.owner], Geometry::Brep(brep), text));
-            }
-        } else if common {
-            let results = kernel.common(&refs, doc.tolerance())?;
-            let text = if results.len() == 1 {
-                objects[objects.len() - 1].geometry_user_text().clone()
-            } else {
-                BTreeMap::new()
-            };
-            for result in results {
-                let brep =
-                    boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
-                copies.push((ids[0], Geometry::Brep(brep), text.clone()));
             }
         } else {
             let results =

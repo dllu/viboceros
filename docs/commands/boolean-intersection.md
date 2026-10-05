@@ -25,9 +25,13 @@ result is produced, including disjoint members of a two-set operation.
 ## Document behavior
 
 Preselection uses document table order; command-first picking uses pick order.
-Ordinary common-set results inherit attributes, layer, color, and groups from
-the first input and geometry user text from the last when there is one output; multiple
-outputs clear that text. Ordinary two-set results inherit attributes
+Ordinary common-set processing reduces inputs in order. Untouched enclosing
+inputs are skipped; a smaller input can replace an earlier intersected region
+and take its metadata. Boundary interaction determines the surviving
+contributors: the first supplies attributes, layer, color, and groups, and the
+last supplies geometry user text for one output. Multiple outputs clear that
+text. See [ordered common intersection](../common-intersection.md) for the exact
+rules and 80 native witnesses. Ordinary two-set results inherit attributes
 from the first maximal first-set contributor and geometry user text from the
 last maximal first-set contributor. A maximal pair region is not contained in
 another pair region within that output component. These policies reproduce the captured recipes;

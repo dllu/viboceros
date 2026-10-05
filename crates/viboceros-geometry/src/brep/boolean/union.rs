@@ -73,7 +73,7 @@ fn boundary_interactions(
     Ok(pairs)
 }
 
-fn face_interaction(
+pub(super) fn face_interaction(
     polygons: &[Polygon<'_>],
     cutters: &[Polygon<'_>],
     budget: &mut Budget,

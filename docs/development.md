@@ -19,6 +19,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Command adapters and compound shell evidence](polyhedral-boolean-commands.md)
 - [BooleanUnion command workflows and native evidence](commands/boolean-union.md)
 - [BooleanIntersection common-set and two-set workflows](commands/boolean-intersection.md)
+- [Ordered common intersection and metadata contributors](common-intersection.md)
 - [BooleanDifference targets, cutters, and native policies](commands/boolean-difference.md)
 - [Viewport caching and performance](viewport-caching.md)
 - [Opt-in offscreen GPU tests](gpu-tests.md)

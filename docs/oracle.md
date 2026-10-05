@@ -13,6 +13,11 @@ Compound follow-ups retain [41 set recipes](compound-intersections.md) and
 31 and 46 complete physical/metadata records respectively; the historical native
 failure-marker discrepancy is retained separately. Two additional seam/count
 differences, failure classifications and native performance remain explicit limits.
+The [ordinary common follow-up](common-intersection.md) adds 80 ordered public-box
+commands from a fresh private Xvfb scheme. Every record is replayed for geometry,
+metadata, selection and retention, with four history recipes and no face/edge
+count discrepancies. Native success can depend on selection order; finite
+boundary witnesses and box recipes do not establish general geometry parity.
 
 The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
 recipes from private Xvfb and 289 application replays. Complete geometry, tight

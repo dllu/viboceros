@@ -4,7 +4,15 @@ use viboceros_geometry::{
     BrepDifferenceComponent, BrepPolyhedralBooleanComponent, BrepSetIntersection,
     BrepUnionComponent,
 };
+mod common;
 mod compound;
+
+pub(super) fn common_intersection(
+    breps: &[&Brep],
+    tolerance: Tolerance,
+) -> Result<Vec<ShellIntersection>, GeometryError> {
+    common::intersection(breps, tolerance)
+}
 
 /// Only an unsupported convex certificate selects the polyhedral path. Work,
 /// arithmetic and output-topology failures are never swallowed as fallbacks.
@@ -47,24 +55,6 @@ impl Kernel {
         match self {
             Self::Convex => viboceros_geometry::union_convex_breps(breps, tolerance),
             Self::Polyhedral => viboceros_geometry::union_polyhedral_breps(breps, tolerance),
-        }
-    }
-    pub(super) fn common(
-        self,
-        breps: &[&Brep],
-        tolerance: Tolerance,
-    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
-        match self {
-            Self::Convex => Ok(
-                viboceros_geometry::intersect_convex_breps(breps, tolerance)?
-                    .into_iter()
-                    .map(|r| BrepPolyhedralBooleanComponent {
-                        brep: r.brep,
-                        face_sources: r.face_sources,
-                    })
-                    .collect(),
-            ),
-            Self::Polyhedral => viboceros_geometry::intersect_polyhedral_breps(breps, tolerance),
         }
     }
     pub(super) fn sets(

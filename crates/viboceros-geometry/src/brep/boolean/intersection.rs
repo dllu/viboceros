@@ -175,7 +175,7 @@ pub fn intersect_convex_brep_sets(
     )
 }
 
-fn contained(
+pub(super) fn contained(
     inner: &[Polygon<'_>],
     outer: &[Polygon<'_>],
     budget: &mut Budget,

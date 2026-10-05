@@ -93,12 +93,13 @@ pub use units::{LengthUnitSystem, UnitError};
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
-    Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexIntersection,
-    BrepDifferenceComponent, BrepEdge, BrepEdgeMergeScope, BrepFace, BrepHoleRemoval,
-    BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepPolyhedralBooleanComponent,
-    BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
-    BrepPolyhedralShell, BrepSetIntersection, BrepSolidOrientation, BrepSurfaceShrinkMode,
-    BrepTrim, BrepTrimType, BrepUnionComponent, BrepVertex, BrepWireCage, RectangularSurfaceCorner,
+    Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexBooleanPlan,
+    BrepConvexIntersection, BrepConvexRegion, BrepDifferenceComponent, BrepEdge,
+    BrepEdgeMergeScope, BrepFace, BrepHoleRemoval, BrepJoinComponent, BrepJoinReport, BrepLoop,
+    BrepLoopType, BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan,
+    BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion, BrepPolyhedralShell,
+    BrepSetIntersection, BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim, BrepTrimType,
+    BrepUnionComponent, BrepVertex, BrepWireCage, RectangularSurfaceCorner,
     RectangularSurfaceCornerCut, SurfaceIso, boolean_polyhedral_breps,
     convex_brep_boundary_interactions, convex_brep_subtraction_interactions,
     intersect_convex_brep_sets, intersect_convex_breps, intersect_polyhedral_brep_sets,

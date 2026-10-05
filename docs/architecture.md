@@ -16,7 +16,9 @@ set/SDK differences. [BooleanUnion](commands/boolean-union.md) adapts exact
 multiple-operand construction, material/cavity separation, coplanar face merging,
 source metadata, selection and history. [BooleanIntersection](commands/boolean-intersection.md)
 adds common-set and two-set policies, with exact pair regions combined before
-rounding and 32 native command witnesses. [BooleanDifference](commands/boolean-difference.md)
+rounding and 32 native command witnesses. Its [ordered common reducer](common-intersection.md)
+retains exact intermediate regions and follows metadata and success decisions
+from 80 additional native recipes. [BooleanDifference](commands/boolean-difference.md)
 subtracts multiple original cutters and applies target, metadata, deletion, and
 selection policies from 40 native witnesses. The commands share a two-phase
 selection controller with separate option-memory policies. General curved Boolean commands remain
@@ -27,8 +29,9 @@ bounded UV roundoff in earlier results, while rejecting intersecting input faces
 and nonmanifold vertex links. This API is available through the Python oracle;
 the [interactive adapters](polyhedral-boolean-commands.md) now accept those
 certificates after the convex path, preserving original-face contributor reports
-and captured shell participation policies. Mixed inward compound intersections
-with extra objects remain explicitly uncertified.
+and captured shell participation policies. [Compound sets](compound-intersections.md)
+and [oriented pairs](compound-pairs.md) have separate measured pipelines;
+arbitrary compound contributor configurations remain uncertified.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
 The registered command supports atomic object/grip edits, remembered options,

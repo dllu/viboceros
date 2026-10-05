@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleCommonParticipationFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "command_witnesses": 80,
+  "physical_command_records": 80,
+  "history_recipes": 4,
+  "full_native_parity": false,
+  "output_partition_differences": 0,
+  "retained_differences": [
+    "Native Failure/Nothing event classifications are retained; local command error classes are not identical.",
+    "General nonconvex common-command policy, arbitrary contributors, curved inputs and native performance remain unproven."
+  ],
+  "scope_notes": [
+    "One empty owned document at idle on private Xvfb with a fresh private settings scheme; public SDK geometry and interactive command macros only.",
+    "80 outward-box recipes: input-order permutations, strict and boundary containment, enclosing inputs, duplicates, contact, metadata, selection, retention and history.",
+    "SDK unions are diagnostics only and never supplied as command inputs; source records are checked around SDK calls.",
+    "Exact mathematical common-region APIs keep their independent policy; ordinary commands reduce exact regions in input order. Compound inputs retain their separately measured boundary policy.",
+    "All 80 command outcomes compare independently constructed sources, full metadata, selection, mass properties and finite bidirectional boundary witnesses. Four history recipes replay twice.",
+    "Finite witnesses do not certify continuous boundary error or full native parity."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/common_participation_probe.py": "9bb8738f68ca9fb56b88c2c67ae7f7931f68f0227080a68f57ca05ba0658a1ae",
+    "tools/rhino_oracle/compound_recipe_probe.py": "e432722d32ab05d2fd28cc8664c5317220f9df2b97cf0784677cba57e183f4b3",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/common_participation.json": "5cd819ce55ef1d13a360adbe9b6c41bbbf10ccecde0303bace30125ced64a56e",
+    "tools/rhino_oracle/observations/common_participation.json": "0324af46dad9626f4acc1d06bd2e0989fb0d961a9d796f9861281c39e9a40bc3"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "5bd5fd2db5384305ad9f544b0c59dd54b328697a3e3c7ba1113836227663a5d8",
+    "tools/rhino_oracle/rhino_worker.py": "3a8920c4e247651479edc848de76906907e3be6ea95f49d60d9a09b4a5a626d4"
+  },
+  "successful_commands": 47,
+  "native_nothing_commands": 26,
+  "native_failure_commands": 7,
+  "local_verification": {
+    "release_workspace": {
+      "passed": 5057,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 847
+    },
+    "application_ordered_workflows": 24,
+    "clippy": {
+      "baseline_commit": "06ec22fa",
+      "warning_categories_and_counts_unchanged": true
+    }
+  }
+}

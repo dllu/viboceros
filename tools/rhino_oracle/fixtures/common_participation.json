@@ -1,0 +1,406 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "common_participation",
+      "id": "common_two_b_01",
+      "case": "two_b_01"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_b_10",
+      "case": "two_b_10"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_touch_01",
+      "case": "two_touch_01"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_touch_10",
+      "case": "two_touch_10"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_inside_01",
+      "case": "two_inside_01"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_inside_10",
+      "case": "two_inside_10"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_a_01",
+      "case": "two_a_01"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_a_10",
+      "case": "two_a_10"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_012",
+      "case": "enclosing_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_021",
+      "case": "enclosing_021"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_102",
+      "case": "enclosing_102"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_120",
+      "case": "enclosing_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_201",
+      "case": "enclosing_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_210",
+      "case": "enclosing_210"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_012",
+      "case": "boundary_inside_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_021",
+      "case": "boundary_inside_021"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_102",
+      "case": "boundary_inside_102"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_120",
+      "case": "boundary_inside_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_201",
+      "case": "boundary_inside_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_boundary_inside_210",
+      "case": "boundary_inside_210"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_012",
+      "case": "shared_plane_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_021",
+      "case": "shared_plane_021"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_102",
+      "case": "shared_plane_102"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_120",
+      "case": "shared_plane_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_201",
+      "case": "shared_plane_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_shared_plane_210",
+      "case": "shared_plane_210"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_0123",
+      "case": "double_0123"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_2013",
+      "case": "double_2013"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_2301",
+      "case": "double_2301"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_3102",
+      "case": "double_3102"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_1320",
+      "case": "double_1320"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_0231",
+      "case": "double_0231"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_2130",
+      "case": "double_2130"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_double_3210",
+      "case": "double_3210"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_inside_012",
+      "case": "inside_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_inside_201",
+      "case": "inside_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_inside_120",
+      "case": "inside_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_disjoint_012",
+      "case": "disjoint_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_disjoint_201",
+      "case": "disjoint_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_disjoint_120",
+      "case": "disjoint_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_face_012",
+      "case": "face_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_face_201",
+      "case": "face_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_face_120",
+      "case": "face_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_point_012",
+      "case": "point_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_point_201",
+      "case": "point_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_point_120",
+      "case": "point_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_a_012",
+      "case": "duplicate_a_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_a_201",
+      "case": "duplicate_a_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_a_120",
+      "case": "duplicate_a_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_b_012",
+      "case": "duplicate_b_012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_b_201",
+      "case": "duplicate_b_201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_duplicate_b_120",
+      "case": "duplicate_b_120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_b_01_pre",
+      "case": "two_b_01_pre"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_two_b_01_keep",
+      "case": "two_b_01_keep"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_201_pre",
+      "case": "enclosing_201_pre"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_enclosing_201_keep",
+      "case": "enclosing_201_keep"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0123",
+      "case": "four_inside_0123"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0132",
+      "case": "four_inside_0132"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0213",
+      "case": "four_inside_0213"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0231",
+      "case": "four_inside_0231"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0312",
+      "case": "four_inside_0312"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_0321",
+      "case": "four_inside_0321"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1023",
+      "case": "four_inside_1023"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1032",
+      "case": "four_inside_1032"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1203",
+      "case": "four_inside_1203"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1230",
+      "case": "four_inside_1230"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1302",
+      "case": "four_inside_1302"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_1320",
+      "case": "four_inside_1320"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2013",
+      "case": "four_inside_2013"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2031",
+      "case": "four_inside_2031"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2103",
+      "case": "four_inside_2103"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2130",
+      "case": "four_inside_2130"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2301",
+      "case": "four_inside_2301"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_2310",
+      "case": "four_inside_2310"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3012",
+      "case": "four_inside_3012"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3021",
+      "case": "four_inside_3021"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3102",
+      "case": "four_inside_3102"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3120",
+      "case": "four_inside_3120"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3201",
+      "case": "four_inside_3201"
+    },
+    {
+      "op": "common_participation",
+      "id": "common_four_inside_3210",
+      "case": "four_inside_3210"
+    }
+  ]
+}
