@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_warped_exact",
+      "case": "warped_exact"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_warped_offset",
+      "case": "warped_offset"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_warped_bump",
+      "case": "warped_bump"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_rational_speed",
+      "case": "rational_speed"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_tensor_cross",
+      "case": "tensor_cross"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_tensor_dyadic",
+      "case": "tensor_dyadic"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_transformed",
+      "case": "transformed"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_negative_gauge",
+      "case": "negative_gauge"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_cylinder_quarter",
+      "case": "cylinder_quarter"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_cylinder_knot_cross",
+      "case": "cylinder_knot_cross"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_sphere_oblique",
+      "case": "sphere_oblique"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_sphere_seam",
+      "case": "sphere_seam"
+    },
+    {
+      "op": "surface_curve_image",
+      "id": "surface_image_torus_diagonal",
+      "case": "torus_diagonal"
+    }
+  ]
+}

@@ -363,6 +363,9 @@ pub enum GeometryError {
     #[error("surface pullback did not converge at absolute model tolerance {tolerance}")]
     SurfacePullbackDidNotConverge { tolerance: Real },
 
+    #[error("surface/parameter-curve certificate exceeds its exact work or arithmetic limit")]
+    SurfaceCurveCertificateWorkLimit,
+
     #[error("surface pullback would create more than {maximum} control points")]
     TooManySurfacePullbackControlPoints { maximum: usize },
 

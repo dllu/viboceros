@@ -2,6 +2,7 @@ use crate::{
     GeometryError, MAX_CURVE_DIVISION_POINTS, NurbsCurve, NurbsCurve2, NurbsSurface, Point2,
     Point3, Real, Tolerance, Vector3, require_finite,
 };
+mod certificate;
 
 const PULLBACK_DEGREE: usize = 3;
 const PULLBACK_SAMPLES_PER_SPAN: usize = 16;

@@ -22,7 +22,9 @@ from 80 additional native recipes. [BooleanDifference](commands/boolean-differen
 subtracts multiple original cutters and applies target, metadata, deletion, and
 selection policies from 40 native witnesses. The commands share a two-phase
 selection controller with separate option-memory policies. General curved Boolean commands remain
-unimplemented. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
+unimplemented. The [continuous surface/trim certificate](surface-curve-certificates.md)
+now proves complete matched-parameter edge correspondence with exact rational
+tensor composition and conservative bounds at knot crossings. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
 uses exact plane arrangements and two-sided material classification for concave
 faces, holes, cavities, and multiple shells. Model-space certificates admit
 bounded UV roundoff in earlier results, while rejecting intersecting input faces

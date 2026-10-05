@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSurfaceImageFinal_20261005",
+  "engine_version": "8.32.26160.13001",
+  "sdk_recipes": 13,
+  "pushup_recipes": 5,
+  "certified_native_records": 10,
+  "paired_sample_stations_per_recipe": 129,
+  "full_native_parity": false,
+  "retained_parameterization_differences": [
+    "sphere_seam"
+  ],
+  "intentional_uniform_error_rejections": [
+    "warped_offset",
+    "warped_bump",
+    "sphere_seam"
+  ],
+  "scope_notes": [
+    "Public SDK geometry only, at idle in an empty owned document on private Xvfb and a fresh private settings scheme.",
+    "Every source is checked for validity on construction and recorded before and after SDK queries; all 13 retained source-purity checks agree.",
+    "Surface, UV and spatial control definitions and both matched-parameter and closest-point sample errors are retained. Pushup produces five public native spatial curves used as test inputs, never as implementation tables.",
+    "Local exact rational Bernstein certificates prove a complete bound only under affine normalized curve-domain correspondence. Native sphere_seam has small sampled locus error but larger uniform parameter error; that discrepancy is not normalized away.",
+    "Finite native samples do not themselves certify continuous errors. Exact local certificates do not establish arbitrary reparameterization, topology, general curved Booleans or native performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_curve_image_probe.py": "cdc4155cb15fa6fe1da1392e35395d74f2d30ceb52099cb5ac2dd8dcc4adb4d2",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/surface_curve_image.json": "004ba5eb50eb0ab333d665abcf8d817d4573e716bbcf87d6390cd5ad3b0d8e19",
+    "tools/rhino_oracle/observations/surface_curve_image.json": "71c2a91712471f6507c265262e93ea50e9f5b0ab7d6ee4031e54837317dcf4b3"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "ef21bbd0c429cbeea1115e42edda9e1ddec1fea13955d7b740ef3f7923ff10a6",
+    "tools/rhino_oracle/rhino_worker.py": "9a04da47d78dcf6f7e3fcdc5076b036bfc58e97629debb3d8d2249656435ba6a"
+  },
+  "local_verification": {
+    "release_workspace": {
+      "passed": 5068,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 851
+    },
+    "new_kernel_tests": 9,
+    "new_oracle_tests": 2,
+    "clippy": {
+      "baseline_commit": "e87ae71a",
+      "warning_categories_and_counts_unchanged": true
+    }
+  }
+}

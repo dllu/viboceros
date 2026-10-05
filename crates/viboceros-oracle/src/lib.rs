@@ -98,6 +98,8 @@ mod polyhedral_boolean;
 mod remove_holes;
 mod shrink_trimmed;
 mod solid_orientation;
+mod surface_curve_image;
+pub use surface_curve_image::SurfaceCurveDeviationFixture;
 #[cfg(test)]
 mod test_json;
 mod trimmed_brep;
@@ -1840,6 +1842,11 @@ pub enum Operation {
         u: f64,
         v: f64,
     },
+    SurfaceCurveDeviation {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceCurveDeviationFixture,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -2322,7 +2329,8 @@ impl Operation {
             | Self::MeshTorus { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
-            | Self::NurbsSurfaceEvaluate { id, .. } => id,
+            | Self::NurbsSurfaceEvaluate { id, .. }
+            | Self::SurfaceCurveDeviation { id, .. } => id,
         }
     }
 }
@@ -6141,6 +6149,9 @@ fn execute(
                 json!(points.into_iter().map(Point3::to_array).collect::<Vec<_>>()),
                 elapsed,
             )
+        }
+        Operation::SurfaceCurveDeviation { fixture, .. } => {
+            surface_curve_image::run(fixture, iterations)?
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
