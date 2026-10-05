@@ -2,11 +2,11 @@ use super::*;
 use viboceros_document::SelectionMode;
 use viboceros_geometry::{Brep, Frame3, Tolerance, Vector3};
 
-fn enter(app: &mut VibocerosApp, input: &str) {
+pub(super) fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
-fn fixture() -> (VibocerosApp, [ObjectId; 3]) {
+pub(super) fn fixture() -> (VibocerosApp, [ObjectId; 3]) {
     let mut app = test_app();
     let frame = Frame3::try_from_directions(
         point(0., 0., 0.),
@@ -33,7 +33,7 @@ fn fixture() -> (VibocerosApp, [ObjectId; 3]) {
         .unwrap();
     (app, [boxes[0], boxes[1], peer])
 }
-fn pick(app: &mut VibocerosApp, id: ObjectId) {
+pub(super) fn pick(app: &mut VibocerosApp, id: ObjectId) {
     app.apply_selection_click(SelectionClick {
         object_id: Some(id),
         mode: SelectionMode::Replace,

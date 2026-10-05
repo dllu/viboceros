@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_split_y",
+      "case": "split_y"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_split_z",
+      "case": "split_z"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_split_asymmetric",
+      "case": "split_asymmetric"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_three_x",
+      "case": "three_x"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_cross_xy",
+      "case": "cross_xy"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_cross_xyz",
+      "case": "cross_xyz"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_three_x_reversed",
+      "case": "three_x_reversed"
+    },
+    {
+      "op": "boolean_difference_order_command",
+      "id": "boolean_difference_order_coplanar_cutters",
+      "case": "coplanar_cutters"
+    }
+  ]
+}

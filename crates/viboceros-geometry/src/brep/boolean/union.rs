@@ -36,27 +36,33 @@ fn inputs<'a>(
 pub fn convex_brep_boundary_interactions(
     breps: &[&Brep],
 ) -> Result<Vec<[usize; 2]>, GeometryError> {
+    boundary_interactions(breps, false)
+}
+
+/// Boundary interactions including positive-length edge contacts for subtraction.
+/// Equal regions and point-only contacts remain excluded. Native Difference can
+/// replace a target after an edge contact even if its material volume is unchanged.
+pub fn convex_brep_subtraction_interactions(
+    breps: &[&Brep],
+) -> Result<Vec<[usize; 2]>, GeometryError> {
+    boundary_interactions(breps, true)
+}
+
+fn boundary_interactions(
+    breps: &[&Brep],
+    include_edges: bool,
+) -> Result<Vec<[usize; 2]>, GeometryError> {
     let mut budget = Budget(EXACT_WORK_LIMIT);
     let operands = inputs(breps, &mut budget)?;
     let mut pairs = Vec::new();
     for a in 0..operands.len() {
         for b in a + 1..operands.len() {
-            let mut interacts = false;
-            for (polygons, cutters) in [(&operands[a], &operands[b]), (&operands[b], &operands[a])]
-            {
-                for polygon in polygons {
-                    let (outside, inside) = partition(polygon, cutters, &mut budget)?;
-                    if inside.is_some()
-                        && (!outside.is_empty()
-                            || coplanar_sense(polygon, cutters, &mut budget)? == Some(false))
-                    {
-                        interacts = true;
-                        break;
-                    }
-                }
-                if interacts {
-                    break;
-                }
+            let (left, right) = (&operands[a], &operands[b]);
+            let mut interacts = face_interaction(left, right, &mut budget)?
+                || face_interaction(right, left, &mut budget)?;
+            if !interacts && include_edges && !equal_planes(left, right, &mut budget)? {
+                interacts = edge_contact(left, right, &mut budget)?
+                    || edge_contact(right, left, &mut budget)?;
             }
             if interacts {
                 pairs.push([a, b]);
@@ -66,13 +72,93 @@ pub fn convex_brep_boundary_interactions(
     Ok(pairs)
 }
 
+fn face_interaction(
+    polygons: &[Polygon<'_>],
+    cutters: &[Polygon<'_>],
+    budget: &mut Budget,
+) -> Result<bool, GeometryError> {
+    for polygon in polygons {
+        let (outside, inside) = partition(polygon, cutters, budget)?;
+        if inside.is_some()
+            && (!outside.is_empty() || coplanar_sense(polygon, cutters, budget)? == Some(false))
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+fn equal_planes(
+    left: &[Polygon<'_>],
+    right: &[Polygon<'_>],
+    budget: &mut Budget,
+) -> Result<bool, GeometryError> {
+    for (polygons, cutters) in [(left, right), (right, left)] {
+        for p in polygons {
+            if coplanar_sense(p, cutters, budget)? != Some(true) {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+
+fn edge_contact(
+    polygons: &[Polygon<'_>],
+    cutters: &[Polygon<'_>],
+    budget: &mut Budget,
+) -> Result<bool, GeometryError> {
+    for p in polygons {
+        for i in 0..p.ring.len() {
+            let (a, b) = (&p.ring[i], &p.ring[(i + 1) % p.ring.len()]);
+            let (mut lo, mut hi) = (Rational::zero(), rational(1.));
+            let mut empty = false;
+            for plane in cutters {
+                budget.spend(1)?;
+                let (sa, sb) = (plane.plane_side(a), plane.plane_side(b));
+                if sa.is_positive() && sb.is_positive() {
+                    empty = true;
+                    break;
+                }
+                if sa.is_positive() || sb.is_positive() {
+                    let t = &sa / (&sa - &sb);
+                    check_scalar(&t)?;
+                    if sa.is_positive() {
+                        lo = lo.max(t);
+                    } else {
+                        hi = hi.min(t);
+                    }
+                }
+                if hi <= lo {
+                    empty = true;
+                    break;
+                }
+            }
+            if empty {
+                continue;
+            }
+            let start = std::array::from_fn(|j| &a[j] + &lo * (&b[j] - &a[j]));
+            let end = std::array::from_fn(|j| &a[j] + &hi * (&b[j] - &a[j]));
+            check_point(&start)?;
+            check_point(&end)?;
+            for plane in cutters {
+                budget.spend(1)?;
+                if plane.plane_side(&start).is_zero() && plane.plane_side(&end).is_zero() {
+                    return Ok(true);
+                }
+            }
+        }
+    }
+    Ok(false)
+}
+
 /// Union of up to 128 certified convex polyhedral operands.
 ///
 /// Each original face is clipped against the other original bodies. Nonconvex
 /// intermediate results are never passed through a convex-input certificate.
 /// Coplanar patches are owned by the earliest input. Disconnected bodies and
 /// enclosed voids are separated using exact shell volume and retried exact ray
-/// containment, before geometry is rounded. Each material component retains its
+/// containment, using retained exact face fragments and validated shared topology. Each material component retains its
 /// cavities. Supporting surfaces and shared edge subdivisions are preserved.
 ///
 /// Input certificates and resource/output limits match `try_boolean_convex`.
@@ -213,14 +299,18 @@ pub(super) fn interior_witness(
     Ok(p)
 }
 
-pub(super) fn assemble_union(
-    output: Vec<Polygon<'_>>,
-    witnesses: &[ExactPoint],
+pub(super) struct MaterialBody {
+    pub(super) brep: Brep,
+    pub(super) faces: Vec<usize>,
+}
+
+pub(super) fn material_components(
+    output: &[Polygon<'_>],
     tolerance: Tolerance,
     budget: &mut Budget,
-) -> Result<Vec<UnionBody>, GeometryError> {
-    let exact = output.clone();
-    let result = rebuild(output, tolerance, budget)?;
+) -> Result<Vec<MaterialBody>, GeometryError> {
+    let exact = output;
+    let result = rebuild(output.to_vec(), tolerance, budget)?;
     let shells = result.edge_connected_face_components();
     let mut outer = Vec::new();
     let mut cavities = Vec::new();
@@ -231,6 +321,7 @@ pub(super) fn assemble_union(
             budget.spend(ring.len())?;
             for i in 1..ring.len() - 1 {
                 volume += dot(&ring[0], &cross(&ring[i], &ring[i + 1]));
+                check_scalar(&volume)?;
             }
         }
         if volume.is_positive() {
@@ -246,7 +337,7 @@ pub(super) fn assemble_union(
         let p = &exact[cavity[0]].ring[0];
         let mut candidates = Vec::new();
         for (index, faces) in outer.iter().enumerate() {
-            if contains(p, faces, &exact, budget)? {
+            if contains(p, faces, exact, budget)? {
                 candidates.push(index);
             }
         }
@@ -256,7 +347,7 @@ pub(super) fn assemble_union(
             let mut innermost = true;
             for &other in &candidates {
                 if other != candidate {
-                    innermost &= contains(witness, &outer[other], &exact, budget)?;
+                    innermost &= contains(witness, &outer[other], exact, budget)?;
                 }
             }
             if innermost && owner.replace(candidate).is_some() {
@@ -265,23 +356,6 @@ pub(super) fn assemble_union(
         }
         attached[owner.ok_or(GeometryError::UnrepresentableBrepBoolean)?].push(cavity.clone());
     }
-    let mut sources = vec![Vec::new(); outer.len()];
-    for (input, p) in witnesses.iter().enumerate() {
-        let mut owner = None;
-        for (index, faces) in outer.iter().enumerate() {
-            if !contains(p, faces, &exact, budget)? {
-                continue;
-            }
-            let mut inside_void = false;
-            for cavity in &attached[index] {
-                inside_void |= contains(p, cavity, &exact, budget)?;
-            }
-            if !inside_void && owner.replace(index).is_some() {
-                return Err(GeometryError::UnrepresentableBrepBoolean);
-            }
-        }
-        sources[owner.ok_or(GeometryError::UnrepresentableBrepBoolean)?].push(input);
-    }
     let mut components = Vec::new();
     for (index, mut faces) in outer.into_iter().enumerate() {
         for cavity in &attached[index] {
@@ -289,13 +363,40 @@ pub(super) fn assemble_union(
         }
         faces.sort_unstable();
         let brep = result.duplicate_faces(&faces, tolerance)?;
-        if !brep.is_solid() || sources[index].is_empty() {
+        if !brep.is_solid() {
+            return Err(GeometryError::UnrepresentableBrepBoolean);
+        }
+        components.push(MaterialBody { brep, faces });
+    }
+    Ok(components)
+}
+
+pub(super) fn assemble_union(
+    output: Vec<Polygon<'_>>,
+    witnesses: &[ExactPoint],
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Vec<UnionBody>, GeometryError> {
+    let bodies = material_components(&output, tolerance, budget)?;
+    let mut sources = vec![Vec::new(); bodies.len()];
+    for (input, p) in witnesses.iter().enumerate() {
+        let mut owner = None;
+        for (index, body) in bodies.iter().enumerate() {
+            if contains(p, &body.faces, &output, budget)? && owner.replace(index).is_some() {
+                return Err(GeometryError::UnrepresentableBrepBoolean);
+            }
+        }
+        sources[owner.ok_or(GeometryError::UnrepresentableBrepBoolean)?].push(input);
+    }
+    let mut components = Vec::new();
+    for (index, body) in bodies.into_iter().enumerate() {
+        if sources[index].is_empty() {
             return Err(GeometryError::UnrepresentableBrepBoolean);
         }
         components.push(UnionBody {
-            brep,
+            brep: body.brep,
+            faces: body.faces,
             operand_indices: std::mem::take(&mut sources[index]),
-            faces,
         });
     }
     components.sort_by_key(|component| component.operand_indices[0]);

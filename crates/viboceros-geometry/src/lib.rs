@@ -93,13 +93,14 @@ pub use units::{LengthUnitSystem, UnitError};
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
-    Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexIntersection, BrepEdge,
-    BrepEdgeMergeScope, BrepFace, BrepHoleRemoval, BrepJoinComponent, BrepJoinReport, BrepLoop,
-    BrepLoopType, BrepSetIntersection, BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim,
-    BrepTrimType, BrepUnionComponent, BrepVertex, BrepWireCage, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceIso, convex_brep_boundary_interactions,
+    Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexIntersection,
+    BrepDifferenceComponent, BrepEdge, BrepEdgeMergeScope, BrepFace, BrepHoleRemoval,
+    BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType, BrepSetIntersection,
+    BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepUnionComponent,
+    BrepVertex, BrepWireCage, RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso,
+    convex_brep_boundary_interactions, convex_brep_subtraction_interactions,
     intersect_convex_brep_sets, intersect_convex_breps, join_breps, join_breps_with_report,
-    union_convex_breps,
+    subtract_convex_breps, union_convex_breps,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,

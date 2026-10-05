@@ -9,13 +9,44 @@ pub(super) struct TwoSetsPrompt {
     pub(super) first: Option<Vec<ObjectId>>,
     pub(super) output_layer: &'static str,
     pub(super) original_selection: Vec<ObjectId>,
-    pub(super) boolean: Option<BooleanIntersectionOptions>,
+    pub(super) boolean: Option<BooleanOptions>,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum BooleanPromptKind {
+    Intersection,
+    Difference,
+}
+impl BooleanPromptKind {
+    pub(super) fn name(self) -> &'static str {
+        match self {
+            Self::Intersection => "BooleanIntersection",
+            Self::Difference => "BooleanDifference",
+        }
+    }
+}
 #[derive(Clone, Debug)]
-pub(super) struct BooleanIntersectionOptions {
+pub(super) struct BooleanOptions {
+    pub(super) kind: BooleanPromptKind,
     pub(super) delete_input: bool,
+    pub(super) delete_cutters: bool,
     pub(super) preselected_first: bool,
+}
+impl BooleanOptions {
+    pub(super) fn command_line(&self, include_hidden: bool) -> String {
+        let mut command = format!(
+            "{} DeleteInput={}",
+            self.kind.name(),
+            if self.delete_input { "Yes" } else { "No" }
+        );
+        if self.kind == BooleanPromptKind::Difference && (include_hidden || self.delete_input) {
+            command.push_str(&format!(
+                " DeleteCutters={}",
+                if self.delete_cutters { "Yes" } else { "No" }
+            ));
+        }
+        command
+    }
 }
 
 impl TwoSetsPrompt {
@@ -27,7 +58,17 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
-        if self.boolean.is_some() && self.first.is_some() {
+        if self
+            .boolean
+            .as_ref()
+            .is_some_and(|o| o.kind == BooleanPromptKind::Difference)
+        {
+            if self.first.is_some() {
+                "Select cutters; Enter subtracts, Esc cancels"
+            } else {
+                "Select targets; Enter continues, Esc cancels"
+            }
+        } else if self.boolean.is_some() && self.first.is_some() {
             "Select second set; empty Enter intersects the first set, Esc cancels"
         } else if self.first.is_some() {
             "Select second set; Enter intersects, Esc cancels"
@@ -56,7 +97,7 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
-        if self.try_start_boolean_intersection_prompt(input) {
+        if self.try_start_boolean_solids_prompt(input) {
             return true;
         }
         let mut words = input.split_whitespace();
@@ -102,9 +143,9 @@ impl VibocerosApp {
         if let Some(prompt) = &self.intersection_prompt {
             if let Some(options) = &prompt.boolean {
                 self.push_log(format!(
-                    "BooleanIntersection: {}; DeleteInput={}",
-                    prompt.hint(),
-                    if options.delete_input { "Yes" } else { "No" }
+                    "{}: {}",
+                    options.command_line(false),
+                    prompt.hint()
                 ));
                 return;
             }
@@ -121,7 +162,7 @@ impl VibocerosApp {
             return false;
         };
         if prompt.boolean.is_some() {
-            return self.continue_boolean_intersection_prompt(prompt, input);
+            return self.continue_boolean_solids_prompt(prompt, input);
         }
         if input.is_empty() {
             let selected = self
@@ -223,7 +264,7 @@ impl VibocerosApp {
     ) {
         if let Some(prompt) = &self.intersection_prompt {
             if prompt.boolean.is_some() {
-                self.select_boolean_intersection_objects(ids, mode);
+                self.select_boolean_solids_objects(ids, mode);
                 return;
             }
         } else {
@@ -251,12 +292,12 @@ impl VibocerosApp {
     pub(super) fn cancel_intersection_prompt(&mut self, announce: bool) {
         if let Some(prompt) = self.intersection_prompt.take() {
             self.command_input.clear();
-            if prompt.boolean.is_some() {
+            if let Some(options) = prompt.boolean {
                 let _ = self
                     .document
                     .select_command_results(prompt.first.unwrap_or_default());
                 if announce {
-                    self.push_log("Cancelled BooleanIntersection".into());
+                    self.push_log(format!("Cancelled {}", options.kind.name()));
                 }
                 return;
             }

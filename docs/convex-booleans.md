@@ -11,8 +11,9 @@ outer shells or an inward cavity.
 The [BooleanUnion command](commands/boolean-union.md) now adds selection,
 DeleteInput, remembered options, source metadata and history for the certified
 convex polyhedral scope. [BooleanIntersection](commands/boolean-intersection.md)
-adds common-set and two-set command workflows. BooleanDifference command
-workflows remain unimplemented.
+adds common-set and two-set command workflows.
+[BooleanDifference](commands/boolean-difference.md) adds separate target/cutter
+sets and observed deletion, contact, metadata, and history policies.
 
 ## Supported inputs and construction
 
@@ -30,7 +31,8 @@ coordinates are rounded once before ordinary B-rep validation at the caller's
 tolerance. Coplanar fragments remain separate faces.
 
 Limits are 256 faces per input, 4,096 output fragments, two million units of exact
-predicate/subdivision work, and 8,192 bits per constructed rational coordinate.
+predicate/subdivision work, and 8,192 bits per constructed rational coordinate
+or shell-volume accumulator.
 Collapsed rounded vertices, unsupported input certificates, exhausted budgets,
 and unresolved/nonmanifold output return errors. Curved, open, nonconvex,
 multi-shell, singular-trim, and input-hole cases are unsupported. Exact affine
@@ -67,6 +69,24 @@ union. Combined original input count is limited to 128, and total intermediate
 pair fragments are limited to 4,096 in addition to the shared work/output limits.
 The kernel implements mathematical nested/equal intersections; the native
 command adapter applies its separately observed boundary-interaction policy.
+
+`subtract_convex_breps` subtracts the union of original cutters from one target.
+Exact target-clipped cutter regions are compared first to remove redundant
+contained regions, retaining partial coplanar ownership. Target faces are
+clipped outside every cutter; exposed cutter patches inside the
+target reverse orientation to become the new material boundary. The shared
+material decomposition separates disconnected remainders and attaches cavities
+using exact shell volumes and exact ray containment on face fragments. It needs
+no original-target interior witness, which may lie in removed material. Up to
+127 cutters are accepted, with the same certificate, work, and fragment limits.
+Original input/face ownership is retained. Native commands process targets
+separately and ignore noninteracting enclosed cutters; the kernel computes the
+mathematical difference and can retain enclosed voids.
+
+`convex_brep_subtraction_interactions` includes positive-length boundary edge
+contacts, in addition to the face interactions used by union and intersection.
+Exact segment clipping distinguishes edge contacts from point-only contacts;
+equivalent convex regions remain excluded.
 
 ## Verification
 

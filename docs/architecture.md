@@ -16,7 +16,10 @@ set/SDK differences. [BooleanUnion](commands/boolean-union.md) adapts exact
 multiple-operand construction, material/cavity separation, coplanar face merging,
 source metadata, selection and history. [BooleanIntersection](commands/boolean-intersection.md)
 adds common-set and two-set policies, with exact pair regions combined before
-rounding and 32 native command witnesses. General curved Boolean commands remain
+rounding and 32 native command witnesses. [BooleanDifference](commands/boolean-difference.md)
+subtracts multiple original cutters and applies target, metadata, deletion, and
+selection policies from 40 native witnesses. The commands share a two-phase
+selection controller with separate option-memory policies. General curved Boolean commands remain
 unimplemented.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

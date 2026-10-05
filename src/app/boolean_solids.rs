@@ -1,18 +1,23 @@
-//! Native common-set and two-set BooleanIntersection selection phases.
-use super::intersect_two_sets::{BooleanIntersectionOptions, TwoSetsPrompt};
+//! Two-phase BooleanIntersection and BooleanDifference picking.
+use super::intersect_two_sets::{BooleanOptions, BooleanPromptKind, TwoSetsPrompt};
 use super::*;
 use viboceros_command::ObjectSelectionFilter;
 use viboceros_document::{ObjectId, SelectionMode};
 
 impl VibocerosApp {
-    pub(super) fn try_start_boolean_intersection_prompt(&mut self, input: &str) -> bool {
+    pub(super) fn try_start_boolean_solids_prompt(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();
-        if !words.first().is_some_and(|n| {
-            n.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("BooleanIntersection")
-        }) {
+        let Some(name) = words.first() else {
             return false;
-        }
+        };
+        let name = name.trim_start_matches(['_', '-']);
+        let kind = if name.eq_ignore_ascii_case("BooleanIntersection") {
+            BooleanPromptKind::Intersection
+        } else if name.eq_ignore_ascii_case("BooleanDifference") {
+            BooleanPromptKind::Difference
+        } else {
+            return false;
+        };
         // Explicit sets are available to scripts through the command backend.
         if words.iter().skip(1).any(|w| {
             w.trim_start_matches('_')
@@ -28,6 +33,12 @@ impl VibocerosApp {
             Ok(Some(p)) => p,
             _ => return false,
         };
+        if kind == BooleanPromptKind::Difference
+            && let Err(error) = self.commands.accept_object_selection_input(input)
+        {
+            self.push_log(format!("Error: {error}"));
+            return true;
+        }
         let first = self
             .document
             .objects()
@@ -44,7 +55,13 @@ impl VibocerosApp {
             first: preselected_first.then_some(first),
             output_layer: "Current",
             original_selection: vec![],
-            boolean: Some(BooleanIntersectionOptions {
+            boolean: Some(BooleanOptions {
+                kind,
+                delete_cutters: description
+                    .options
+                    .iter()
+                    .find(|o| o.name == "DeleteCutters")
+                    .is_none_or(|o| o.value),
                 delete_input: description.options[0].value,
                 preselected_first,
             }),
@@ -55,7 +72,7 @@ impl VibocerosApp {
         true
     }
 
-    pub(super) fn continue_boolean_intersection_prompt(
+    pub(super) fn continue_boolean_solids_prompt(
         &mut self,
         mut prompt: TwoSetsPrompt,
         input: &str,
@@ -79,7 +96,10 @@ impl VibocerosApp {
                 })
                 .collect::<Vec<_>>();
             if let Some(first) = &prompt.first {
-                if picked.is_empty() && first.len() < 2 {
+                if picked.is_empty()
+                    && (first.len() < 2
+                        || prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Difference)
+                {
                     self.push_log(
                         "Select at least one object in the second set; Esc cancels".into(),
                     );
@@ -93,11 +113,8 @@ impl VibocerosApp {
                         .collect::<Vec<_>>()
                         .join(",")
                 };
-                let display = format!(
-                    "BooleanIntersection DeleteInput={}",
-                    if options.delete_input { "Yes" } else { "No" }
-                );
-                let mut command = format!("{display} FirstSet={}", ids(first));
+                let display = options.command_line(false);
+                let mut command = format!("{} FirstSet={}", options.command_line(true), ids(first));
                 if !picked.is_empty() {
                     command.push_str(&format!(" SecondSet={}", ids(&picked)));
                 }
@@ -127,30 +144,46 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        if normalized
-            .split(['=', ' '])
-            .next()
-            .is_some_and(|n| n.eq_ignore_ascii_case("DeleteInput"))
+        let option = normalized.split(['=', ' ']).next().unwrap_or("");
+        let cutters = option.eq_ignore_ascii_case("DeleteCutters");
+        if option.eq_ignore_ascii_case("DeleteInput")
+            || (cutters && prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Difference)
         {
-            let option_words = input.split_whitespace().collect::<Vec<_>>();
-            let value = match option_words.as_slice() {
-                [word] => word.split_once('=').map(|(_, value)| value),
-                [_, value] => Some(*value),
+            if cutters && !prompt.boolean.as_ref().unwrap().delete_input {
+                self.push_log("DeleteCutters is available when DeleteInput=Yes".into());
+                self.command_input.clear();
+                return true;
+            }
+            let words = input.split_whitespace().collect::<Vec<_>>();
+            let value = match words.as_slice() {
+                [word] => word.split_once('=').map(|(_, v)| v),
+                [_, v] => Some(*v),
                 _ => None,
             }
             .map(|v| v.trim_start_matches('_'));
-            match value {
-                Some(v) if v.eq_ignore_ascii_case("Yes") => {
-                    prompt.boolean.as_mut().unwrap().delete_input = true
-                }
-                Some(v) if v.eq_ignore_ascii_case("No") => {
-                    prompt.boolean.as_mut().unwrap().delete_input = false
-                }
+            let value = match value {
+                Some(v) if v.eq_ignore_ascii_case("Yes") => true,
+                Some(v) if v.eq_ignore_ascii_case("No") => false,
                 _ => {
-                    self.push_log("DeleteInput must be Yes or No".into());
+                    self.push_log(format!("{option} must be Yes or No"));
                     self.command_input.clear();
                     return true;
                 }
+            };
+            let options = prompt.boolean.as_mut().unwrap();
+            if cutters {
+                options.delete_cutters = value;
+            } else {
+                options.delete_input = value;
+            }
+            if options.kind == BooleanPromptKind::Difference
+                && let Err(error) = self
+                    .commands
+                    .accept_object_selection_input(&options.command_line(true))
+            {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
             }
             self.intersection_prompt = Some(prompt);
             self.log_intersection_prompt();
@@ -170,7 +203,7 @@ impl VibocerosApp {
                 .selectable_objects()
                 .map(|o| o.id())
                 .collect::<Vec<_>>();
-            self.select_boolean_intersection_objects(ids, SelectionMode::Add);
+            self.select_boolean_solids_objects(ids, SelectionMode::Add);
             self.command_input.clear();
             return true;
         }
@@ -186,7 +219,7 @@ impl VibocerosApp {
             .map(str::parse::<ObjectId>)
             .collect::<Result<Vec<_>, _>>()
         {
-            Ok(ids) => self.select_boolean_intersection_objects(ids, SelectionMode::Add),
+            Ok(ids) => self.select_boolean_solids_objects(ids, SelectionMode::Add),
             Err(_) => {
                 self.push_log("Pick objects, type object IDs, or press Enter to continue".into())
             }
@@ -195,7 +228,7 @@ impl VibocerosApp {
         true
     }
 
-    pub(super) fn select_boolean_intersection_objects(
+    pub(super) fn select_boolean_solids_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,

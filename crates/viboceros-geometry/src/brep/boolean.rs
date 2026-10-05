@@ -14,13 +14,18 @@ const MAX_INPUT_FACES: usize = 256;
 const MAX_OUTPUT_FACES: usize = 4096;
 const EXACT_WORK_LIMIT: usize = 2_000_000;
 const MAX_RATIONAL_BITS: u64 = 8192;
+mod difference;
+pub use difference::{BrepDifferenceComponent, subtract_convex_breps};
 mod intersection;
 mod merge;
 pub use intersection::{
     BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,
 };
 mod union;
-pub use union::{BrepUnionComponent, convex_brep_boundary_interactions, union_convex_breps};
+pub use union::{
+    BrepUnionComponent, convex_brep_boundary_interactions, convex_brep_subtraction_interactions,
+    union_convex_breps,
+};
 
 /// Set operation on two supported closed convex polygonal B-reps.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -365,6 +370,13 @@ fn split(
         }
     }
     Ok((clean_ring(inside, budget)?, clean_ring(outside, budget)?))
+}
+
+fn check_scalar(value: &Rational) -> Result<(), GeometryError> {
+    if value.numer().bits() > MAX_RATIONAL_BITS || value.denom().bits() > MAX_RATIONAL_BITS {
+        return Err(GeometryError::BrepBooleanWorkLimit);
+    }
+    Ok(())
 }
 
 fn check_point(p: &ExactPoint) -> Result<(), GeometryError> {

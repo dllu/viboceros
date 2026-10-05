@@ -51,7 +51,7 @@ pub fn intersect_convex_breps(
     }))
 }
 
-fn common_polygons<'a>(
+pub(super) fn common_polygons<'a>(
     operands: &[&[Polygon<'a>]],
     budget: &mut Budget,
 ) -> Result<Vec<Polygon<'a>>, GeometryError> {
@@ -145,18 +145,7 @@ pub fn intersect_convex_brep_sets(
     if regions.is_empty() {
         return Ok(Vec::new());
     }
-    let mut maximal = vec![true; regions.len()];
-    for a in 0..regions.len() {
-        for b in 0..regions.len() {
-            if a != b
-                && contained(&regions[a], &regions[b], &mut budget)?
-                && (b < a || !contained(&regions[b], &regions[a], &mut budget)?)
-            {
-                maximal[a] = false;
-                break;
-            }
-        }
-    }
+    let maximal = maximal_regions(&regions, &mut budget)?;
     let kept = regions
         .iter()
         .zip(&maximal)
@@ -204,4 +193,29 @@ fn contained(
         }
     }
     Ok(true)
+}
+
+pub(super) fn maximal_regions(
+    regions: &[Vec<Polygon<'_>>],
+    budget: &mut Budget,
+) -> Result<Vec<bool>, GeometryError> {
+    let mut maximal = regions.iter().map(|r| !r.is_empty()).collect::<Vec<_>>();
+    for a in 0..regions.len() {
+        if regions[a].is_empty() {
+            continue;
+        }
+        for b in 0..regions.len() {
+            if regions[b].is_empty() {
+                continue;
+            }
+            if a != b
+                && contained(&regions[a], &regions[b], budget)?
+                && (b < a || !contained(&regions[b], &regions[a], budget)?)
+            {
+                maximal[a] = false;
+                break;
+            }
+        }
+    }
+    Ok(maximal)
 }

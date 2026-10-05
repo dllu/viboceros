@@ -1,0 +1,206 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_defaults",
+      "case": "defaults"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_corner",
+      "case": "corner"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_delete_no",
+      "case": "delete_no"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_keep_cutters",
+      "case": "keep_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_delete_no_delete_cutters",
+      "case": "delete_no_delete_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_post_reverse_cutters",
+      "case": "post_reverse_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_pre_target",
+      "case": "pre_target"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_pre_targets_reverse",
+      "case": "pre_targets_reverse"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_multi_cutters",
+      "case": "multi_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_overlapping_cutters",
+      "case": "overlapping_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_disjoint_cutter",
+      "case": "disjoint_cutter"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_disjoint_target",
+      "case": "disjoint_target"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_overlapping_targets",
+      "case": "overlapping_targets"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_targets_reverse",
+      "case": "targets_reverse"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_contained",
+      "case": "contained"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_contains",
+      "case": "contains"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_equal",
+      "case": "equal"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_boundary_contained",
+      "case": "boundary_contained"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_touch",
+      "case": "touch"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_split",
+      "case": "split"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cavities",
+      "case": "cavities"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cancel_selection",
+      "case": "cancel_selection"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cancel_options",
+      "case": "cancel_options"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cancel_picked",
+      "case": "cancel_picked"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cancel_cutters",
+      "case": "cancel_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_undo_redo",
+      "case": "undo_redo"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_remember",
+      "case": "remember"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_pre_delete_no",
+      "case": "pre_delete_no"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_touch_edge",
+      "case": "touch_edge"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_mixed",
+      "case": "mixed"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_pre_undo_redo",
+      "case": "pre_undo_redo"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_cover_by_cutters",
+      "case": "cover_by_cutters"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_internal_and_cutting",
+      "case": "internal_and_cutting"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_keep_cutters_disjoint",
+      "case": "keep_cutters_disjoint"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_delete_no_split",
+      "case": "delete_no_split"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_pre_delete_no_split",
+      "case": "pre_delete_no_split"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_touch_point",
+      "case": "touch_point"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_corner_reverse",
+      "case": "corner_reverse"
+    },
+    {
+      "op": "boolean_difference_command",
+      "id": "boolean_difference_undo_keep_cutters",
+      "case": "undo_keep_cutters"
+    }
+  ]
+}

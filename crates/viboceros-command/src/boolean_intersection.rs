@@ -38,9 +38,9 @@ impl BooleanIntersectionCommand {
                 result.delete_input = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
                 delete_seen = true;
             } else if option_name_eq(name, "FirstSet") && result.first.is_none() {
-                result.first = Some(parse_ids(value)?);
+                result.first = Some(boolean_solids::parse_ids(value, USAGE)?);
             } else if option_name_eq(name, "SecondSet") && result.second.is_none() {
-                result.second = Some(parse_ids(value)?);
+                result.second = Some(boolean_solids::parse_ids(value, USAGE)?);
             } else {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -125,7 +125,7 @@ impl BooleanIntersectionCommand {
         if common {
             let result = intersect_convex_breps(&refs, doc.tolerance())?
                 .ok_or(CommandError::NothingIntersected)?;
-            let brep = merged(result.brep, &result.face_sources, doc.tolerance())?;
+            let brep = boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
             copies.push((
                 ids[0],
                 Geometry::Brep(brep),
@@ -138,7 +138,8 @@ impl BooleanIntersectionCommand {
                 doc.tolerance(),
             )? {
                 let owner = result.maximal_pairs[0][0];
-                let brep = merged(result.brep, &result.face_sources, doc.tolerance())?;
+                let brep =
+                    boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
                 copies.push((
                     ids[owner],
                     Geometry::Brep(brep),
@@ -174,30 +175,6 @@ impl BooleanIntersectionCommand {
             outputs.len()
         ))
     }
-}
-fn parse_ids(value: &str) -> Result<Vec<ObjectId>, CommandError> {
-    let ids = value
-        .split(',')
-        .map(str::parse)
-        .collect::<Result<Vec<ObjectId>, _>>()
-        .map_err(|_| CommandError::Usage(USAGE))?;
-    if ids.is_empty() || ids.iter().collect::<BTreeSet<_>>().len() != ids.len() {
-        return Err(CommandError::Usage(USAGE));
-    }
-    Ok(ids)
-}
-fn merged(brep: Brep, sources: &[[usize; 2]], tolerance: Tolerance) -> Result<Brep, GeometryError> {
-    let mut labels = BTreeMap::new();
-    let groups = sources
-        .iter()
-        .map(|source| {
-            let next = labels.len();
-            *labels.entry(*source).or_insert(next)
-        })
-        .collect::<Vec<_>>();
-    brep.try_merge_coplanar_polygon_faces_in_groups(&groups, tolerance)?
-        .unwrap_or(brep)
-        .try_merge_all_edges(0., tolerance)
 }
 impl Command for BooleanIntersectionCommand {
     fn name(&self) -> &'static str {

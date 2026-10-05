@@ -601,3 +601,159 @@ fn interior_witness_bounds_rational_accumulation_before_next_addition() {
         Err(GeometryError::BrepBooleanWorkLimit)
     ));
 }
+
+#[test]
+fn multiple_cutters_preserve_separate_material_bodies_cavities_and_original_faces() {
+    let cases = [
+        (
+            [[0., 3.], [0., 1.], [0., 1.]],
+            vec![
+                [[0.5, 1.], [-1., 2.], [-1., 2.]],
+                [[2., 2.5], [-1., 2.], [-1., 2.]],
+            ],
+            3,
+            2.,
+            14.,
+            3,
+        ),
+        (
+            [[0., 2.]; 3],
+            vec![
+                [[1., 3.], [0., 2.], [0., 2.]],
+                [[0., 2.], [1., 3.], [0., 2.]],
+            ],
+            1,
+            2.,
+            10.,
+            1,
+        ),
+        (
+            [[0., 4.]; 3],
+            vec![[[0.5, 1.5]; 3], [[2.5, 3.5]; 3]],
+            1,
+            62.,
+            108.,
+            3,
+        ),
+        (
+            [[0., 4.]; 3],
+            vec![
+                [[1., 3.], [-1., 5.], [-1., 5.]],
+                [[-1., 5.], [1., 3.], [-1., 5.]],
+            ],
+            4,
+            16.,
+            72.,
+            4,
+        ),
+        (
+            [[0., 2.]; 3],
+            vec![
+                [[-1., 1.25], [-1., 3.], [-1., 3.]],
+                [[0.75, 3.], [-1., 3.], [-1., 3.]],
+            ],
+            0,
+            0.,
+            0.,
+            0,
+        ),
+        ([[0., 2.]; 3], vec![[[10., 11.]; 3]], 1, 8., 24., 1),
+        ([[0., 2.]; 3], vec![[[0., 2.]; 3]], 0, 0., 0., 0),
+    ];
+    for (bounds, cuts, bodies, volume, area, shells) in cases {
+        for inward in [false, true] {
+            let target = cube(bounds);
+            let cutters = cuts
+                .iter()
+                .enumerate()
+                .map(|(i, &bounds)| {
+                    let b = cube(bounds);
+                    if inward && i % 2 == 0 {
+                        b.reversed()
+                    } else {
+                        b
+                    }
+                })
+                .collect::<Vec<_>>();
+            let before = cutters.clone();
+            let refs = cutters.iter().collect::<Vec<_>>();
+            let result = subtract_convex_breps(&target, &refs, Tolerance::DEFAULT).unwrap();
+            assert_eq!(result.len(), bodies);
+            assert!(
+                (result
+                    .iter()
+                    .map(|r| r.brep.signed_volume(Tolerance::DEFAULT).unwrap())
+                    .sum::<f64>()
+                    - volume)
+                    .abs()
+                    < 1e-10
+            );
+            assert!(
+                (result
+                    .iter()
+                    .map(|r| r.brep.area(Tolerance::DEFAULT).unwrap())
+                    .sum::<f64>()
+                    - area)
+                    .abs()
+                    < 1e-10
+            );
+            assert_eq!(
+                result
+                    .iter()
+                    .map(|r| r.brep.edge_connected_face_components().len())
+                    .sum::<usize>(),
+                shells
+            );
+            for body in result {
+                assert!(body.brep.is_solid());
+                assert_eq!(body.face_sources.len(), body.brep.faces().len());
+                for (face, source) in body.brep.faces().iter().zip(body.face_sources) {
+                    let original = if source[0] == 0 {
+                        &target
+                    } else {
+                        &cutters[source[0] - 1]
+                    };
+                    assert_eq!(face.surface(), original.faces()[source[1]].surface());
+                }
+            }
+            assert_eq!(cutters, before);
+        }
+    }
+    let target = cube([[0., 2.]; 3]);
+    let before = target.clone();
+    assert_eq!(
+        subtract_convex_breps(&target, &[], Tolerance::DEFAULT)
+            .unwrap()
+            .len(),
+        1
+    );
+    assert!(matches!(
+        subtract_convex_breps(&target, &vec![&target; 128], Tolerance::DEFAULT),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+    let open = target.sub_brep(&[0], Tolerance::DEFAULT).unwrap();
+    assert!(matches!(
+        subtract_convex_breps(&target, &[&open], Tolerance::DEFAULT),
+        Err(GeometryError::UnsupportedConvexBrepBoolean { .. })
+    ));
+    assert_eq!(target, before);
+}
+
+#[test]
+fn subtraction_interactions_include_edges_but_exclude_points_equal_and_strict_nesting() {
+    let target = cube([[0., 2.]; 3]);
+    for (bounds, expected) in [
+        ([[2., 4.], [0., 2.], [0., 2.]], true),
+        ([[2., 4.], [2., 4.], [0., 2.]], true),
+        ([[2., 4.]; 3], false),
+        ([[0., 2.]; 3], false),
+        ([[0.5, 1.5]; 3], false),
+        ([[-1., 3.]; 3], false),
+        ([[0., 1.]; 3], true),
+        ([[1., 3.]; 3], true),
+    ] {
+        let cutter = cube(bounds);
+        let pairs = convex_brep_subtraction_interactions(&[&target, &cutter]).unwrap();
+        assert_eq!(!pairs.is_empty(), expected, "{bounds:?}");
+    }
+}

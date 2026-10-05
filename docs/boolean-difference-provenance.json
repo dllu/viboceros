@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleBooleanDifferenceFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "command_witnesses": 40,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Public BooleanDifference commands ran at idle in an empty owned document on private Xvfb. No proprietary implementation was inspected.",
+    "Fresh-scheme defaults were measured first; later recipes seeded deterministic DeleteInput and DeleteCutters values with owned overlapping solids.",
+    "Targets are processed separately. Disjoint targets are copied when another target cuts successfully; noninteracting interior cutters are ignored.",
+    "Split results lose geometry user text; other results retain target text. Accepted options survive cancellation. DeleteCutters is hidden when DeleteInput is No.",
+    "EndCommand and script-return snapshots retain source retention, attributes, groups, selection, cancellation, option memory and undo/redo.",
+    "These convex-polyhedral witnesses do not establish arbitrary curved geometry parity, continuous boundary error, all internal face partitions or native kernel speed.",
+    "Eight supplemental public commands measure axis splits, multiple disconnected components, reversed cutter picks, and partial coplanar cutter partitions. Raw disconnected-piece order is retained; replays match components within their target by location and report ordering differences.",
+    "One partial coplanar recipe retains 13 faces in both implementations but 31 kernel edges versus 33 native edges. The replay asserts this recorded seam-ownership difference explicitly and compares all other counts, metadata, mass properties and physical boundary witnesses."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_difference_probe.py": "53761007b23d7665590777922ff34572de903c3647b13a4e814f2e80c06a83b9",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/boolean_difference_command.json": "0abe17e9ee7fd2d1e20457469e3fd9919653ae094f9a7485ad931cd325484271",
+    "tools/rhino_oracle/observations/boolean_difference_command.json": "2d2041f48e54f1d844bd39999b13c9eb24b807ec892a92ddaf5cca3215c597c2",
+    "tools/rhino_oracle/boolean_difference_order_probe.py": "92ddc0f5bbba595541966dec909a8d071e543df7a4a66da1018c805a6faebf34",
+    "tools/rhino_oracle/fixtures/boolean_difference_order_command.json": "fed4b94ac7ce0b1966556b3d6e3dce6e825bf55d063b7dbea21d2fdd7c2c62dc",
+    "tools/rhino_oracle/observations/boolean_difference_order_command.json": "2d62676df0050e73a2929dd5139d37eebda79f8b5a89014b7a26d01eb6415935"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "e8f4dcb7313bea22e421a83fd9a88411299de9acb9f785c73ab0ddde89946d2f",
+    "tools/rhino_oracle/rhino_worker.py": "6db6e01e8ada8b0765c89b9c9ec8f740782f11c400a46c170538337c7e46d51d"
+  },
+  "supplemental_witnesses": 8,
+  "ordering_settings_scheme": "VibocerosOracleBooleanDifferenceOrderFinalB_20261004",
+  "ordering_historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "7a1a7850f57996447ac8e70e4ce845fd7d0b8910e18b3da4aabc8d3af648381e",
+    "tools/rhino_oracle/rhino_worker.py": "eb4c1a6ec96593ca232f16f9d5adc0481f6f144a7ad68a3eaa1bf1641e15d889"
+  }
+}
