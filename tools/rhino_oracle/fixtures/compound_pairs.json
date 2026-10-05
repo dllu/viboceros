@@ -1,0 +1,276 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_crossing",
+      "case": "sdk_crossing"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_crossing",
+      "case": "pair_crossing"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_nested",
+      "case": "sdk_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_nested",
+      "case": "pair_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_equal",
+      "case": "sdk_equal"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_equal",
+      "case": "pair_equal"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_face",
+      "case": "sdk_face"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_face",
+      "case": "pair_face"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_edge",
+      "case": "sdk_edge"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_edge",
+      "case": "pair_edge"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_point",
+      "case": "sdk_point"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_point",
+      "case": "pair_point"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_disjoint",
+      "case": "sdk_disjoint"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_disjoint",
+      "case": "pair_disjoint"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_sdk_boundary_nested",
+      "case": "sdk_boundary_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_boundary_nested",
+      "case": "pair_boundary_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_contained_outer",
+      "case": "pair_contained_outer"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_equal_outer",
+      "case": "pair_equal_outer"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_crossing_reverse",
+      "case": "pair_crossing_reverse"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_nested_reverse",
+      "case": "pair_nested_reverse"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_face_reverse",
+      "case": "pair_face_reverse"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_crossing_pre",
+      "case": "pair_crossing_pre"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_pair_crossing_keep",
+      "case": "pair_crossing_keep"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cross",
+      "case": "common_cross"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_unopened",
+      "case": "common_unopened"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_contains_inner",
+      "case": "common_contains_inner"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_inside_inner",
+      "case": "common_inside_inner"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_equal_inner",
+      "case": "common_equal_inner"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_enclosing",
+      "case": "common_enclosing"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_touches_inner",
+      "case": "common_touches_inner"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_crossing",
+      "case": "common_cavities_crossing"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_nested",
+      "case": "common_cavities_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_disjoint",
+      "case": "common_cavities_disjoint"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_face",
+      "case": "common_cavities_face"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_equal",
+      "case": "common_cavities_equal"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_edge",
+      "case": "common_cavities_edge"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_point",
+      "case": "common_cavities_point"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_boundary_nested",
+      "case": "common_cavities_boundary_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_contained_outer",
+      "case": "common_cavities_contained_outer"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_equal_outer",
+      "case": "common_cavities_equal_outer"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_island",
+      "case": "common_island"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cross_pre",
+      "case": "common_cross_pre"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cross_keep",
+      "case": "common_cross_keep"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_cavities",
+      "case": "common_three_cavities"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_first_multi",
+      "case": "first_multi"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_second_multi",
+      "case": "second_multi"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_enclosing_crossing",
+      "case": "common_three_enclosing_crossing"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_enclosing_nested",
+      "case": "common_three_enclosing_nested"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_enclosing_disjoint",
+      "case": "common_three_enclosing_disjoint"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_enclosing_first",
+      "case": "common_three_enclosing_first"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_three_touch",
+      "case": "common_three_touch"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cross_reverse",
+      "case": "common_cross_reverse"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_touches_inner_reverse",
+      "case": "common_touches_inner_reverse"
+    },
+    {
+      "op": "compound_pairs",
+      "id": "pairs_common_cavities_crossing_reverse",
+      "case": "common_cavities_crossing_reverse"
+    }
+  ]
+}

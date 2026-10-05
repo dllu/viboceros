@@ -161,6 +161,45 @@ fn rejects_singular_intermediate_shells_before_export() {
 }
 
 #[test]
+fn original_shell_classification_uses_material_sides_independently_of_raw_winding() {
+    // The mathematical API treats nested shells by odd/even membership.
+    // Raw input winding must not decide the optimized shell enclosure masks.
+    let original = Brep::try_disjoint_union(
+        vec![
+            cube([[0., 4.]; 3]),
+            cube([[1., 3.]; 3]),
+            cube([[1.5, 2.5]; 3]),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let reversed = original.reversed();
+    let cutter = cube([[2., 5.]; 3]);
+    for operand in [&original, &reversed] {
+        let mut plan =
+            BrepPolyhedralBooleanPlan::try_new(&[operand, &cutter], Tolerance::DEFAULT).unwrap();
+        let region = plan.input(0).unwrap();
+        let shells = plan.shells(&region).unwrap();
+        assert_eq!(shells.len(), 3);
+        assert_eq!(
+            shells.iter().map(|s| s.inward).collect::<Vec<_>>(),
+            [false, true, false]
+        );
+        let (mut polygons, _) = plan.boundary(&region).unwrap();
+        let groups = exact_shells(&mut polygons, &mut Budget(EXACT_WORK_LIMIT)).unwrap();
+        for (shell, faces) in shells.iter().zip(groups) {
+            let mut reference = Budget(usize::MAX);
+            for (i, sample) in plan.built.samples.iter().enumerate() {
+                assert_eq!(
+                    shell.region.mask[i],
+                    union::contains(&sample.point, &faces, &polygons, &mut reference).unwrap()
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn staged_face_ownership_excludes_unrelated_coplanar_cavity_faces() {
     let a = Brep::try_disjoint_union(
         vec![cube([[0., 3.]; 3]), cube([[1., 2.]; 3]).reversed()],
@@ -191,4 +230,81 @@ fn staged_face_ownership_excludes_unrelated_coplanar_cavity_faces() {
         plan.export_with_boundary_faces(&region, &[[0, 0]]),
         Err(GeometryError::UnsupportedPolyhedralBrepBoolean { .. })
     ));
+}
+
+#[test]
+fn boundary_export_retains_nonmanifold_edges_without_claiming_a_material_solid() {
+    let a = cube([[0., 1.]; 3]);
+    let b = cube([[1., 2.], [1., 2.], [0., 1.]]);
+    let before = (a.clone(), b.clone());
+    let operands = [&a, &b];
+    let mut plan = BrepPolyhedralBooleanPlan::try_new(&operands, Tolerance::DEFAULT).unwrap();
+    let left = plan.input(0).unwrap();
+    let right = plan.input(1).unwrap();
+    assert!(!plan.boundary_interacts(&left, &right).unwrap());
+    assert!(plan.boundaries_share_line(&left, &right).unwrap());
+    let region = plan
+        .combine(BrepBooleanOperation::Union, &[&left, &right])
+        .unwrap();
+    assert!(matches!(
+        plan.export(&region),
+        Err(GeometryError::UnrepresentableBrepBoolean)
+    ));
+    let output = plan.export_boundary(&region).unwrap();
+    assert_eq!(output.len(), 1);
+    let exported = &output[0].brep;
+    assert!(!exported.is_solid());
+    assert!(!exported.is_manifold());
+    assert!(exported.edge_use_counts().contains(&4));
+    assert!((exported.area(Tolerance::DEFAULT).unwrap() - 12.).abs() < 1e-10);
+    assert!(output[0].boundary_equal_inputs.is_empty());
+    for (face, [owner, index]) in exported.faces().iter().zip(&output[0].face_sources) {
+        assert_eq!(face.surface(), operands[*owner].faces()[*index].surface());
+    }
+    assert_eq!((&a, &b), (&before.0, &before.1));
+}
+
+#[test]
+fn boundary_export_preserves_cavity_winding_and_reports_complete_input_aliases() {
+    let a = Brep::try_disjoint_union(
+        vec![cube([[0., 3.]; 3]), cube([[1., 2.]; 3]).reversed()],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let b = a.clone();
+    let mut plan = BrepPolyhedralBooleanPlan::try_new(&[&a, &b], Tolerance::DEFAULT).unwrap();
+    let region = plan.input(0).unwrap();
+    let outputs = plan.export_boundary(&region).unwrap();
+    assert_eq!(outputs.len(), 2);
+    let mut volumes = outputs
+        .iter()
+        .map(|o| o.brep.signed_volume(Tolerance::DEFAULT).unwrap())
+        .collect::<Vec<_>>();
+    volumes.sort_by(f64::total_cmp);
+    assert_eq!(volumes, vec![-1., 27.]);
+    assert!(outputs.iter().all(|o| o.boundary_equal_inputs.is_empty()));
+    let plain = cube([[0., 1.]; 3]);
+    let duplicate = plain.clone();
+    let mut plan =
+        BrepPolyhedralBooleanPlan::try_new(&[&plain, &duplicate], Tolerance::DEFAULT).unwrap();
+    let region = plan.input(0).unwrap();
+    let allowed = (0..6).map(|f| [1, f]).collect::<Vec<_>>();
+    let output = plan.export_boundary_with_faces(&region, &allowed).unwrap();
+    assert_eq!(output[0].boundary_equal_inputs, vec![0, 1]);
+    assert!(output[0].boundary_faces.iter().all(|f| f[0] == 1));
+    assert!(output[0].face_sources.iter().all(|f| f[0] == 1));
+    assert!(
+        plan.export_boundary_with_faces(&region, &allowed[..1])
+            .is_err()
+    );
+}
+
+#[test]
+fn positive_length_boundary_query_excludes_point_only_contacts() {
+    let a = cube([[0., 1.]; 3]);
+    let b = cube([[1., 2.]; 3]);
+    let mut plan = BrepPolyhedralBooleanPlan::try_new(&[&a, &b], Tolerance::DEFAULT).unwrap();
+    let a = plan.input(0).unwrap();
+    let b = plan.input(1).unwrap();
+    assert!(!plan.boundaries_share_line(&a, &b).unwrap());
 }

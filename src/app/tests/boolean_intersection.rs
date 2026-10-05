@@ -495,3 +495,149 @@ fn compound_intersection_picks_both_set_directions_and_common_material() {
         }
     }
 }
+
+#[test]
+fn compound_common_and_inward_pairs_pick_exported_boundaries_and_replay_history() {
+    for mode in 0..5 {
+        for pre in [false, true] {
+            let mut app = test_app();
+            let tolerance = Tolerance::DEFAULT;
+            let frame = Frame3::try_from_directions(
+                point(0., 0., 0.),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Vector3::try_new(0., 1., 0.).unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            let cube = |bounds| Brep::try_box(frame, bounds, tolerance).unwrap();
+            let common = matches!(mode, 0 | 2 | 4);
+            let edge = mode >= 3;
+            let sources = [
+                Brep::try_disjoint_union(
+                    vec![cube([[0., 3.]; 3]), cube([[1., 2.]; 3]).reversed()],
+                    tolerance,
+                )
+                .unwrap(),
+                if mode == 0 {
+                    cube([[1.5, 3.5], [1.5, 3.5], [1., 2.]])
+                } else {
+                    Brep::try_disjoint_union(
+                        vec![
+                            cube([[0.5, 3.5]; 3]),
+                            cube(if edge {
+                                [[2., 2.5], [2., 2.5], [1., 2.]]
+                            } else {
+                                [[1.5, 2.5]; 3]
+                            })
+                            .reversed(),
+                        ],
+                        tolerance,
+                    )
+                    .unwrap()
+                },
+            ];
+            let ids = sources
+                .iter()
+                .map(|b| {
+                    app.document
+                        .add_geometry(Geometry::Brep(b.clone()))
+                        .unwrap()
+                })
+                .collect::<Vec<_>>();
+            for (i, &id) in ids.iter().enumerate() {
+                app.document
+                    .set_object_geometry_user_text([id], "Code", Some(&format!("geometry-{i}")))
+                    .unwrap();
+            }
+            let first = if common { vec![0, 1] } else { vec![0] };
+            if pre {
+                app.document
+                    .select_objects_direct(first.iter().map(|&i| ids[i]), SelectionMode::Replace)
+                    .unwrap();
+            }
+            enter(&mut app, "BooleanIntersection");
+            if !pre {
+                for &i in &first {
+                    pick(&mut app, ids[i]);
+                }
+                enter(&mut app, "");
+            }
+            if !common {
+                pick(&mut app, ids[1]);
+            }
+            enter(&mut app, "");
+            assert!(
+                app.intersection_prompt.is_none(),
+                "{mode}/{pre}: {:?}",
+                app.command_log
+            );
+            assert!(
+                ids.iter().all(|&id| app.document.object(id).is_none()),
+                "{mode}/{pre}: {:?}",
+                app.command_log
+            );
+            let outputs = app
+                .document
+                .objects()
+                .map(|o| (o.id(), o.geometry().clone()))
+                .collect::<Vec<_>>();
+            assert_eq!(outputs.len(), if mode == 0 { 1 } else { 2 });
+            let mut volumes = Vec::new();
+            let mut non_solid = 0;
+            for (id, geometry) in &outputs {
+                let Geometry::Brep(brep) = geometry else {
+                    panic!("B-rep");
+                };
+                if brep.is_solid() {
+                    volumes.push(brep.signed_volume(tolerance).unwrap());
+                } else {
+                    non_solid += 1;
+                    assert!(!brep.is_manifold());
+                    assert!(brep.edge_use_counts().contains(&4));
+                    assert_eq!((brep.faces().len(), brep.edges().len()), (12, 23));
+                    assert!(brep.signed_volume(tolerance).is_err());
+                }
+                assert_eq!(app.document.is_selected(*id), pre && !common);
+                assert_eq!(
+                    app.document
+                        .object(*id)
+                        .unwrap()
+                        .geometry_user_text()
+                        .get("Code")
+                        .map(String::as_str),
+                    if mode == 0 { Some("geometry-1") } else { None }
+                );
+            }
+            volumes.sort_by(f64::total_cmp);
+            let expected = if mode == 0 {
+                vec![2.]
+            } else if edge {
+                vec![15.625]
+            } else {
+                vec![1.875, 15.625]
+            };
+            assert_eq!(volumes.len(), expected.len());
+            for (volume, expected) in volumes.into_iter().zip(expected) {
+                assert!((volume - expected).abs() < 1e-10);
+            }
+            assert_eq!(non_solid, usize::from(edge));
+            for _ in 0..2 {
+                enter(&mut app, "Undo");
+                assert_eq!(app.document.objects().len(), 2);
+                for (i, &id) in ids.iter().enumerate() {
+                    assert_eq!(
+                        app.document.object(id).unwrap().geometry(),
+                        &Geometry::Brep(sources[i].clone())
+                    );
+                    assert_eq!(app.document.is_selected(id), pre && first.contains(&i));
+                }
+                enter(&mut app, "Redo");
+                assert_eq!(app.document.objects().len(), outputs.len());
+                for (id, geometry) in &outputs {
+                    assert_eq!(app.document.object(*id).unwrap().geometry(), geometry);
+                    assert_eq!(app.document.is_selected(*id), pre && !common);
+                }
+            }
+        }
+    }
+}

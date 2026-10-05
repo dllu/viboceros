@@ -105,6 +105,14 @@ class RhinoWorkerTests(unittest.TestCase):
         self.assertEqual(result, ({"geometry": "recorded"}, 0))
         run.assert_called_once_with(operation, vars(self.worker))
 
+    def test_compound_pairs_dispatch_receives_the_operation_and_host(self):
+        operation = dict(op="compound_pairs", id="owned", case="sdk_crossing")
+        run = Mock(return_value=({"geometry": "recorded"}, 0))
+        with patch.dict("sys.modules", {"compound_pairs_probe": SimpleNamespace(run=run)}):
+            result = self.worker._execute(operation, 1, {})
+        self.assertEqual(result, ({"geometry": "recorded"}, 0))
+        run.assert_called_once_with(operation, vars(self.worker))
+
     def test_solid_orientation_reads_uninserted_geometry_and_disposes_its_file(self):
         class Brep:
             IsValid = True

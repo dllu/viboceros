@@ -18,10 +18,11 @@ mod difference;
 pub use difference::{BrepDifferenceComponent, subtract_convex_breps};
 mod polyhedral;
 pub use polyhedral::{
-    BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralRegion,
-    BrepPolyhedralShell, boolean_polyhedral_breps, intersect_polyhedral_brep_sets,
-    intersect_polyhedral_breps, polyhedral_brep_boundary_interactions,
-    polyhedral_brep_subtraction_interactions, subtract_polyhedral_breps, union_polyhedral_breps,
+    BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent,
+    BrepPolyhedralRegion, BrepPolyhedralShell, boolean_polyhedral_breps,
+    intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
+    polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
+    subtract_polyhedral_breps, union_polyhedral_breps,
 };
 mod intersection;
 mod merge;
@@ -479,6 +480,40 @@ fn subdivide(
 }
 
 fn rebuild(
+    polygons: Vec<Polygon<'_>>,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Brep, GeometryError> {
+    let result = rebuild_boundary(polygons, tolerance, budget)?;
+    if !result.is_solid() {
+        return Err(GeometryError::UnrepresentableBrepBoolean);
+    }
+    // Solid expressions reject point-shared disconnected shells.
+    let mut owners = BTreeMap::new();
+    for (component, faces) in result.edge_connected_face_components().iter().enumerate() {
+        for &face in faces {
+            for vertex in result.faces[face]
+                .loops
+                .iter()
+                .flat_map(|l| &l.trims)
+                .flat_map(|t| t.vertices)
+            {
+                if owners
+                    .insert(vertex, component)
+                    .is_some_and(|previous| previous != component)
+                {
+                    return Err(GeometryError::UnrepresentableBrepBoolean);
+                }
+            }
+        }
+    }
+    Ok(result)
+}
+
+/// Validated boundary topology, including intentional nonmanifold contacts.
+/// Exact point collapse during rounding is still rejected. Solid callers add
+/// their manifold certificates separately.
+fn rebuild_boundary(
     mut polygons: Vec<Polygon<'_>>,
     tolerance: Tolerance,
     budget: &mut Budget,
@@ -545,34 +580,10 @@ fn rebuild(
             vec![trims],
         )?);
     }
-    if edge_uses.iter().any(|&n| n != 2) {
+    if edge_uses.iter().any(|&n| n < 2) {
         return Err(GeometryError::UnrepresentableBrepBoolean);
     }
-    let result = Brep::try_new(vertices, edges, faces, tolerance)?;
-    if !result.is_solid() {
-        return Err(GeometryError::UnrepresentableBrepBoolean);
-    }
-    // A point shared between disconnected shells is a singular contact rather
-    // than an ordinary disjoint/cavity result. Do not silently join that point.
-    let mut owners = BTreeMap::new();
-    for (component, faces) in result.edge_connected_face_components().iter().enumerate() {
-        for &face in faces {
-            for vertex in result.faces[face]
-                .loops
-                .iter()
-                .flat_map(|l| &l.trims)
-                .flat_map(|t| t.vertices)
-            {
-                if owners
-                    .insert(vertex, component)
-                    .is_some_and(|previous| previous != component)
-                {
-                    return Err(GeometryError::UnrepresentableBrepBoolean);
-                }
-            }
-        }
-    }
-    Ok(result)
+    Brep::try_new(vertices, edges, faces, tolerance)
 }
 
 fn uv(surface: &NurbsSurface, p: &ExactPoint) -> Result<Point2, GeometryError> {

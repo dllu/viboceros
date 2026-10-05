@@ -77,14 +77,36 @@ fn interactions(
     Ok(result)
 }
 
-fn edge_contact(
+pub(super) fn edge_contact(
     left: &[Polygon<'_>],
     right: &[Polygon<'_>],
     budget: &mut Budget,
 ) -> Result<bool, GeometryError> {
-    for a in left {
-        for b in right {
+    let bounds = |polygons: &[Polygon<'_>]| {
+        polygons
+            .iter()
+            .map(|p| {
+                std::array::from_fn::<_, 3, _>(|i| {
+                    [
+                        p.ring.iter().map(|v| v[i].clone()).min().unwrap(),
+                        p.ring.iter().map(|v| v[i].clone()).max().unwrap(),
+                    ]
+                })
+            })
+            .collect::<Vec<_>>()
+    };
+    budget.spend(left.iter().chain(right).map(|p| p.ring.len()).sum())?;
+    let left_bounds = bounds(left);
+    let right_bounds = bounds(right);
+    for (i, a) in left.iter().enumerate() {
+        for (j, b) in right.iter().enumerate() {
             budget.spend(1)?;
+            if (0..3).any(|k| {
+                left_bounds[i][k][1] < right_bounds[j][k][0]
+                    || right_bounds[j][k][1] < left_bounds[i][k][0]
+            }) {
+                continue;
+            }
             let direction = cross(&a.normal, &b.normal);
             if zero(&direction) {
                 if !a.plane_side(&b.ring[0]).is_zero() {

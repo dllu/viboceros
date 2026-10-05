@@ -2,7 +2,7 @@ use super::*;
 
 // Explicit public-box recipes, independently constructed from the probe's
 // shape definitions. Captured result coordinates never construct local inputs.
-fn shape(name: &str) -> Brep {
+pub(super) fn shape(name: &str) -> Brep {
     let pieces = match name {
         "cavity" => vec![box_brep([[0., 3.]; 3]), box_brep([[1., 2.]; 3]).reversed()],
         "island" => vec![
@@ -196,7 +196,7 @@ fn inconsistent_raw_compound_orientation_is_rejected_during_staging() {
     let a = shape("cavity").reversed();
     let b = shape("cross");
     let before = (a.clone(), b.clone());
-    let result = compound_intersection(&[&a, &b], Tolerance::DEFAULT, false, 1);
+    let result = compound_intersection(&[&a, &b], Tolerance::DEFAULT, false, 1, Kernel::Polyhedral);
     assert!(
         matches!(
             &result,

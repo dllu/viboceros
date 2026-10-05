@@ -4,6 +4,7 @@ use serde_json::{Value, json};
 use viboceros_document::{GroupId, LayerId};
 use viboceros_geometry::{BrepBooleanOperation, BrepSolidOrientation};
 mod compound;
+mod pairs;
 
 fn one(a: Brep, b: Brep, op: BrepBooleanOperation) -> Brep {
     let tolerance = Tolerance::DEFAULT;
@@ -157,7 +158,8 @@ fn setup_sources(sources: Vec<Brep>) -> (Document, Vec<ObjectId>, Vec<LayerId>, 
 }
 
 // Runtime object order and coplanar face partitions are recorded independently
-// of physical geometry. Pair objects by original identity or metadata/centroid.
+// of physical geometry. Pair objects by identity or metadata/mass properties;
+// separate overlapping boundary shells can have the same centroid.
 fn match_rows(actual: &Value, expected: &Value, case: &str) -> Vec<usize> {
     let a = actual.as_array().unwrap();
     let e = expected.as_array().unwrap();
@@ -176,12 +178,20 @@ fn match_rows(actual: &Value, expected: &Value, case: &str) -> Vec<usize> {
                     !used.contains(i)
                         && row["source"] == native["source"]
                         && row["name"] == native["name"]
-                        && row["centroid"]
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .zip(native["centroid"].as_array().unwrap())
-                            .all(|(a, b)| (a.as_f64().unwrap() - b.as_f64().unwrap()).abs() < 1e-10)
+                        && match (row["volume"].as_f64(), native["volume"].as_f64()) {
+                            (Some(a), Some(b)) => (a - b).abs() < 1e-10,
+                            (None, None) => row["volume"].is_null() && native["volume"].is_null(),
+                            _ => false,
+                        }
+                        && match (row["centroid"].as_array(), native["centroid"].as_array()) {
+                            (Some(a), Some(b)) => a.iter().zip(b).all(|(a, b)| {
+                                (a.as_f64().unwrap() - b.as_f64().unwrap()).abs() < 1e-10
+                            }),
+                            (None, None) => {
+                                row["centroid"].is_null() && native["centroid"].is_null()
+                            }
+                            _ => false,
+                        }
                 })
                 .map(|(i, _)| i)
                 .unwrap_or_else(|| {
@@ -220,7 +230,7 @@ fn compare_physical(
         let captured = serde_json::from_value::<Boundary>(native["face_regions"].clone()).unwrap();
         witnesses(&own, &captured, case);
         witnesses(&captured, &own, case);
-        if native["source"].is_null() {
+        if native["source"].is_null() && native["solid"] == true {
             assert_eq!(
                 b.solid_orientation().unwrap(),
                 BrepSolidOrientation::Outward,
@@ -232,7 +242,7 @@ fn compare_physical(
 }
 
 #[test]
-fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
+fn replays_native_polyhedral_commands_including_nonmanifold_boundary() {
     let capture: Value = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/observations/polyhedral_boolean_command.json"
     ))
@@ -252,11 +262,6 @@ fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
             "{case}: source topology partition"
         );
         let registry = CommandRegistry::with_builtins();
-        let uncertified = case == "i_singular_two_holes";
-        if uncertified {
-            registry.execute(&mut doc, "Point 100,100,100").unwrap();
-            registry.execute(&mut doc, "Undo").unwrap();
-        }
         let first = serde_json::from_value::<Vec<usize>>(value["first"].clone()).unwrap();
         let second = serde_json::from_value::<Vec<usize>>(value["second"].clone()).unwrap();
         let set = |indices: &[usize]| {
@@ -306,33 +311,11 @@ fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
             ),
             _ => unreachable!(),
         };
-        let before = doc.objects().cloned().collect::<Vec<_>>();
-        let selection = doc.selected_object_ids().collect::<Vec<_>>();
-        let undo = doc.undo_label().map(str::to_owned);
-        let redo = doc.redo_label().map(str::to_owned);
         let result = if case.ends_with("_pre") {
             registry.execute(&mut doc, &command)
         } else {
             registry.execute_postselected(&mut doc, &command, Default::default())
         };
-        if uncertified {
-            assert!(result.is_err(), "{case}: uncertified native semantics");
-            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
-            assert_eq!(doc.selected_object_ids().collect::<Vec<_>>(), selection);
-            assert_eq!(doc.undo_label(), undo.as_deref());
-            assert_eq!(doc.redo_label(), redo.as_deref());
-            if case != "i_singular_two_holes" {
-                assert!(matches!(
-                    result,
-                    Err(CommandError::Geometry(
-                        GeometryError::UnsupportedPolyhedralBrepBoolean { .. }
-                    ))
-                ));
-            }
-            registry.execute(&mut doc, "Redo").unwrap();
-            assert_eq!(doc.objects().len(), ids.len() + 1);
-            continue;
-        }
         assert!(result.is_ok(), "{case}: {result:?}");
         partitions.extend(compare_physical(
             &doc,
@@ -352,7 +335,7 @@ fn replays_native_polyhedral_commands_and_retains_uncertified_countercases() {
             }
         }
     }
-    assert_eq!(matched, 64);
+    assert_eq!(matched, 65);
     let expected: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../docs/polyhedral-command-partitions.json"
     ))

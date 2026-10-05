@@ -25,8 +25,8 @@ result is produced, including disjoint members of a two-set operation.
 ## Document behavior
 
 Preselection uses document table order; command-first picking uses pick order.
-Common-set results inherit attributes, layer, color, and groups from the first
-input and geometry user text from the last when there is one output; multiple
+Ordinary common-set results inherit attributes, layer, color, and groups from
+the first input and geometry user text from the last when there is one output; multiple
 outputs clear that text. Ordinary two-set results inherit attributes
 from the first maximal first-set contributor and geometry user text from the
 last maximal first-set contributor. A maximal pair region is not contained in
@@ -38,6 +38,11 @@ Compound two-set inputs use the measured [oriented shell
 pipeline](../compound-intersections.md). Each set is combined before shell-pair
 processing. Enclosed or disjoint copies can retain their own intermediate
 metadata, and separate output objects can overlap.
+Compound common intersection exports participating connected boundaries of its
+material intersection. Complete unchanged boundaries take attributes from their
+matching input, and inactive enclosing inputs supply no result metadata. Measured
+inward pairs and non-solid edge contacts are documented in
+[oriented pairs and common intersection](../compound-pairs.md).
 
 Common-set outputs are unselected. Two-set outputs are selected when the first
 set was preselected; command-first outputs are unselected. Retained originals
@@ -59,7 +64,7 @@ Closed embedded polyhedral inputs can have concave faces, holes, multiple shells
 cavities, and straight edges from earlier Boolean results. The convex certificate
 selects the faster construction when available; otherwise the general exact
 polyhedral certificate applies. Curved and open inputs, intersecting input
-shells, unsupported plane roundoff, resource exhaustion, and singular topology
+shells, unsupported plane roundoff, resource exhaustion, and uncertified singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence
 and explicitly unresolved intersections.

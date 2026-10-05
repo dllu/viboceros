@@ -9,6 +9,9 @@ type Boundary<'a> = (Vec<Polygon<'a>>, Vec<[usize; 2]>);
 pub struct BrepPolyhedralRegion {
     plan: Arc<()>,
     mask: Vec<bool>,
+    // Only original operands can use their certified unsplit face polygons
+    // for shell classification. Combined regions retain arrangement cells.
+    origin: Option<usize>,
 }
 
 /// One connected boundary shell before output rounding. Its region denotes the
@@ -19,6 +22,18 @@ pub struct BrepPolyhedralShell {
     pub inward: bool,
     /// Original operand/face indices of the exact unmerged boundary patches.
     pub face_sources: Vec<[usize; 2]>,
+}
+
+/// One connected boundary, including valid nonmanifold edge contacts. It may
+/// be inward or non-solid; no material volume is promised for this topology.
+#[derive(Clone, Debug)]
+pub struct BrepPolyhedralBoundaryComponent {
+    pub brep: Brep,
+    pub face_sources: Vec<[usize; 2]>,
+    /// All equivalent original faces on this connected boundary.
+    pub boundary_faces: Vec<[usize; 2]>,
+    /// Original inputs with exactly the same complete unoriented boundary.
+    pub boundary_equal_inputs: Vec<usize>,
 }
 
 /// Reusable polyhedral Boolean expressions over one original-face arrangement.
@@ -55,13 +70,16 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             return Err(unsupported("plan input index out of range"));
         }
         self.budget.spend(self.built.samples.len())?;
-        Ok(self.region(self.built.samples.iter().map(|s| s.inside[index]).collect()))
+        let mut region = self.region(self.built.samples.iter().map(|s| s.inside[index]).collect());
+        region.origin = Some(index);
+        Ok(region)
     }
 
     fn region(&self, mask: Vec<bool>) -> BrepPolyhedralRegion {
         BrepPolyhedralRegion {
             plan: self.identity.clone(),
             mask,
+            origin: None,
         }
     }
     fn check(&self, region: &BrepPolyhedralRegion) -> Result<(), GeometryError> {
@@ -231,6 +249,18 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         Ok(false)
     }
 
+    /// Positive-length common boundary, including edge-only contact. Isolated
+    /// point contacts are excluded. Equality is not implicitly excluded.
+    pub fn boundaries_share_line(
+        &mut self,
+        a: &BrepPolyhedralRegion,
+        b: &BrepPolyhedralRegion,
+    ) -> Result<bool, GeometryError> {
+        let (left, _) = self.boundary(a)?;
+        let (right, _) = self.boundary(b)?;
+        interactions::edge_contact(&left, &right, &mut self.budget)
+    }
+
     fn boundary(&mut self, region: &BrepPolyhedralRegion) -> Result<Boundary<'a>, GeometryError> {
         self.boundary_from_faces(region, None)
     }
@@ -277,7 +307,11 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         &mut self,
         region: &BrepPolyhedralRegion,
     ) -> Result<Vec<BrepPolyhedralShell>, GeometryError> {
-        let (mut polygons, sources) = self.boundary(region)?;
+        let (mut polygons, sources) = if let Some(index) = region.origin {
+            self.original_boundary(region, index)?
+        } else {
+            self.boundary(region)?
+        };
         let groups = exact_shells(&mut polygons, &mut self.budget)?;
         // A bounded region's membership is the XOR of its finite shell
         // enclosures. Classify all but the largest shell, then recover its
@@ -322,6 +356,48 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             result[index].region.mask = remaining;
         }
         Ok(result)
+    }
+
+    fn original_boundary(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        index: usize,
+    ) -> Result<Boundary<'a>, GeometryError> {
+        self.check(region)?;
+        // Input embedding is already certified. Its material side is constant
+        // across each original face, including decomposed faces with holes.
+        // Check all cells before using unsplit polygons for exact shell rays.
+        let mut faces = BTreeMap::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if cell.source[0] != index {
+                continue;
+            }
+            let sides = cell.sides.map(|i| region.mask[i]);
+            if sides[0] == sides[1] {
+                return Err(GeometryError::UnrepresentableBrepBoolean);
+            }
+            let key = std::ptr::from_ref(cell.polygon.source);
+            let value = (cell.source, sides[0]);
+            if faces.insert(key, value).is_some_and(|old| old != value) {
+                return Err(GeometryError::UnrepresentableBrepBoolean);
+            }
+        }
+        let mut polygons = Vec::new();
+        let mut sources = Vec::new();
+        for polygon in &self.built.operands[index] {
+            self.budget.spend(polygon.ring.len())?;
+            let &(source, forward) = faces
+                .get(&std::ptr::from_ref(polygon.source))
+                .ok_or(GeometryError::UnrepresentableBrepBoolean)?;
+            polygons.push(if forward {
+                polygon.clone()
+            } else {
+                polygon.clone().reverse()
+            });
+            sources.push(source);
+        }
+        Ok((polygons, sources))
     }
 
     pub fn export(
@@ -373,6 +449,95 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             result.push(BrepPolyhedralBooleanComponent {
                 brep: body.brep,
                 face_sources: body.faces.iter().map(|&f| sources[f]).collect(),
+            });
+        }
+        Ok(result)
+    }
+
+    /// Export separate connected boundaries, retaining inward orientation and
+    /// intentional nonmanifold contacts. Every face is geometrically validated
+    /// after the sole rounding step. Unlike `export`, this does not require a
+    /// manifold material solid or attach cavities to their enclosing body.
+    pub fn export_boundary(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
+        self.export_boundary_from_faces(region, None)
+    }
+
+    /// Boundary export with complete original-face coverage checked before
+    /// rebuilding topology. See `export_with_boundary_faces` for ownership.
+    pub fn export_boundary_with_faces(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        faces: &[[usize; 2]],
+    ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
+        if faces.len() > MAX_OUTPUT_FACES {
+            return Err(GeometryError::BrepBooleanWorkLimit);
+        }
+        self.budget.spend(faces.len())?;
+        self.export_boundary_from_faces(region, Some(&faces.iter().copied().collect()))
+    }
+
+    fn export_boundary_from_faces(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        allowed: Option<&BTreeSet<[usize; 2]>>,
+    ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
+        let (polygons, sources) = self.boundary_from_faces(region, allowed)?;
+        self.exported_faces += polygons.len();
+        if self.exported_faces > MAX_OUTPUT_FACES {
+            return Err(GeometryError::BrepBooleanWorkLimit);
+        }
+        if polygons.is_empty() {
+            return Ok(Vec::new());
+        }
+        let keys = polygons
+            .iter()
+            .map(|p| canonical_ring(&p.ring))
+            .collect::<Vec<_>>();
+        let mut aliases = BTreeMap::<Vec<ExactPoint>, BTreeSet<[usize; 2]>>::new();
+        let mut originals = vec![BTreeSet::new(); self.built.operands.len()];
+        for cell in &self.built.cells {
+            self.budget.spend(originals.len() + 1)?;
+            let key = canonical_ring(&cell.polygon.ring);
+            if region.mask[cell.sides[0]] != region.mask[cell.sides[1]]
+                && allowed.is_none_or(|a| a.contains(&cell.source))
+            {
+                aliases.entry(key.clone()).or_default().insert(cell.source);
+            }
+            for (i, own) in originals.iter_mut().enumerate() {
+                if self.built.samples[cell.sides[0]].inside[i]
+                    != self.built.samples[cell.sides[1]].inside[i]
+                {
+                    own.insert(key.clone());
+                }
+            }
+        }
+        let built = rebuild_boundary(polygons, self.tolerance, &mut self.budget)?;
+        let mut result = Vec::new();
+        for faces in built.edge_connected_face_components() {
+            self.budget.spend(faces.len() + originals.len())?;
+            let own = faces
+                .iter()
+                .map(|&f| keys[f].clone())
+                .collect::<BTreeSet<_>>();
+            let boundary_faces = faces
+                .iter()
+                .flat_map(|&f| aliases[&keys[f]].iter())
+                .copied()
+                .collect::<BTreeSet<_>>()
+                .into_iter()
+                .collect();
+            result.push(BrepPolyhedralBoundaryComponent {
+                brep: built.duplicate_faces(&faces, self.tolerance)?,
+                face_sources: faces.iter().map(|&f| sources[f]).collect(),
+                boundary_faces,
+                boundary_equal_inputs: originals
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, keys)| (keys == &own).then_some(i))
+                    .collect(),
             });
         }
         Ok(result)

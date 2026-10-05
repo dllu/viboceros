@@ -10,9 +10,10 @@ geometry and metadata are prepared before the document transaction changes objec
 Concave faces, face holes, straight spline edges from earlier results, separate
 shells, cavities, and nested islands are accepted under the
 [polyhedral input certificates](polyhedral-booleans.md#input-certificates).
-Curved or open inputs, overlapping shells within one input, unsupported Cartesian
-roundoff, and singular output topology remain outside this scope. General curved
-Boolean parity and native performance are unproven.
+Curved or open inputs, overlapping shells within one input, and unsupported Cartesian
+roundoff remain outside this scope. Captured intersection edge contacts
+can produce valid nonmanifold boundaries; other singular outputs remain
+unsupported. General curved Boolean parity and native performance are unproven.
 
 ## Geometry API and command policies
 
@@ -41,7 +42,7 @@ These policies can produce a different region from the mathematical API.
 | Union | Split the constructed result into boundary shells, keep shells with an interacting original source face, and insert each as an outward object. Untouched shells within a consumed original can disappear. |
 | Difference | Subtract interacting cutters per target, keep participating boundary shells, and insert each outward. A target with no interacting cutter is copied whole if another target succeeds. |
 | Intersection, compound two sets | Combine each set using measured union participation and boundary-enclosure rules, then process oriented shell pairs separately. A single reversed input is normalized. Shell-pair results remain separate objects. |
-| Common intersection, three or more inputs | Intersect odd/even material regions using one original-face arrangement. |
+| Common compound intersection, two or more inputs | Construct odd/even material intersection, export participating connected boundaries, and turn inward solid boundaries outward. Non-solid boundaries retain their winding. |
 
 Union clears geometry user text when a material result exports multiple shells.
 Difference clears it when a target exports multiple pieces. Intersection clears
@@ -54,9 +55,10 @@ policies continue to apply.
 
 Compound two-set processing uses exact intermediate regions; details and new
 native witnesses are in [compound intersections](compound-intersections.md).
-Interacting pairs of two inward compound shells and compound orientations that
-contradict material nesting still require a native compatibility certificate.
-Those cases return errors before editing the document.
+Interacting inward pairs and common boundary participation are measured in the
+[54-recipe follow-up](compound-pairs.md). Compound orientations that contradict
+material nesting still require a native compatibility certificate and return
+errors before editing the document.
 
 ## Retained native evidence
 
@@ -72,22 +74,23 @@ shells, reversed inputs, multiple targets/cutters, multiple intersection sets,
 selection modes, input retention, and Undo/Redo.
 
 The historical capture provenance records 62 physical replays at its original
-commit. Current command tests replay 64 of its 65 recipes: the two mixed cavity
-sets are now covered by the exact compound pipeline. `i_singular_two_holes`
-remains unsupported because Rhino returns a valid open B-rep and the kernel
-rejects its singular non-solid boundary.
+commit. Current command tests replay all 65 recipes: the two mixed cavity sets
+use the exact compound pipeline, and `i_singular_two_holes` uses the validated
+boundary exporter for Rhino's non-solid result. Its 12 faces, 23 edges, area and
+metadata match. Mathematical material-solid APIs continue to reject that boundary.
 
 Physical comparisons use volume and centroid epsilon `1e-10`, area epsilon
 `1e-9`, and finite bidirectional boundary witnesses at `1e-7`. They check
 attributes, geometry user text, groups, retained source IDs, selection, outward
-output orientation, and captured history twice. Source face and edge counts
-agree. Seven output seam/count differences are asserted against the
-[explicit partition record](polyhedral-command-partitions.json). The singular
-recipe checks unchanged objects, selection, Undo and a usable Redo entry.
+solid-output orientation, non-solid outputs, and captured history twice.
+Source face and edge counts agree. Seven output seam/count differences are asserted
+against the [explicit partition record](polyhedral-command-partitions.json).
 Application tests also exercise actual picking and preselection of an earlier
 holed result through all three commands.
 See [historical capture provenance](polyhedral-command-provenance.json) and
 [current compound provenance](compound-intersection-provenance.json).
+The follow-up adds 46 command records and eight SDK signed-pair witnesses;
+see [oriented-pair provenance](compound-pairs-provenance.json).
 
 Compound two-set construction limits work to 128 shell pairs and 4,096 cumulative
 exported patches, with one cumulative exact work budget. Continuous boundary

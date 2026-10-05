@@ -70,6 +70,10 @@ boundary inside another object's material while enclosing that object's cavity.
 `shells` splits exact boundary patches by shared, subdivided rational edges and
 classifies each shell's finite enclosed region. `inward` retains its boundary
 orientation separately. Intermediate shells never become rounded B-rep operands.
+Original-input shell classification uses certified unsplit face polygons and
+checks their material side against every arrangement cell. Combined regions use
+the global cells. Exact ray parity classifies all but one enclosure; XOR with
+the known material membership recovers the remaining enclosure without rays.
 `export` is the only rounding step, preserves original supporting surfaces and
 face ownership, and validates the final topology. All operations share the plan's
 cumulative work budget; cumulative exported patches are limited to 4,096.
@@ -79,6 +83,15 @@ checks, while exported faces keep canonical ownership.
 original faces and rejects a whitelist that does not cover every boundary
 patch. Coplanar faces of an excluded shell therefore cannot introduce seams
 into a staged result.
+
+`boundaries_share_line` detects positive-length contact and excludes isolated
+points. `export_boundary` and `export_boundary_with_faces` export separate
+edge-connected boundaries, retaining inward winding and intentional nonmanifold
+edges. They validate rounded geometry without declaring a material solid.
+Reports include truthful original face owners, equivalent boundary aliases, and
+complete unoriented boundary equality with original inputs. Ordinary `export`
+continues to require manifold material components. Command participation and
+metadata policies are documented in [oriented compound pairs](compound-pairs.md).
 
 Tests include a stretched tetrahedron clipped at a non-binary rational vertex,
 then clipped again using its exact intermediate shell after an earlier export.

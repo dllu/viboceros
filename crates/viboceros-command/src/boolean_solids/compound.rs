@@ -20,6 +20,49 @@ fn root(parents: &[usize], mut i: usize) -> usize {
     i
 }
 
+fn original_shells(
+    plan: &mut Plan<'_>,
+    breps: &[&Brep],
+    inputs: &[Region],
+    indices: &[usize],
+    tolerance: Tolerance,
+) -> Result<Vec<Vec<Shell>>, GeometryError> {
+    let mut originals = Vec::new();
+    for &i in indices {
+        let parts = plan.shells(&inputs[i])?;
+        // A reversed single closed shell is normalized. Unmeasured compound
+        // orientations must not silently acquire odd/even command semantics.
+        let original_faces = breps[i].edge_connected_face_components();
+        if original_faces.len() > 1 {
+            for shell in &parts {
+                let aliases = plan.boundary_faces(&shell.region)?;
+                let faces = original_faces
+                    .iter()
+                    .find(|faces| aliases.iter().any(|s| s[0] == i && faces.contains(&s[1])))
+                    .ok_or(GeometryError::UnrepresentableBrepBoolean)?;
+                let inward = breps[i]
+                    .duplicate_faces(faces, tolerance)?
+                    .solid_orientation()?
+                    == BrepSolidOrientation::Inward;
+                if inward != shell.inward {
+                    return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
+                        context: "compound orientations inconsistent with material nesting require a native command certificate",
+                    });
+                }
+            }
+        }
+        originals.push(parts);
+    }
+    Ok(originals)
+}
+
+fn contact(plan: &mut Plan<'_>, a: &Region, b: &Region) -> Result<bool, GeometryError> {
+    if plan.covered_by(a, b)? && plan.covered_by(b, a)? {
+        return Ok(false);
+    }
+    Ok(plan.boundary_interacts(a, b)? || plan.boundaries_share_line(a, b)?)
+}
+
 /// Prune boundary-enclosed objects, union each set, and retain participating
 /// original shells of consumed objects. Independent objects remain separate.
 /// Metadata belongs to the connected original-object union, even if one input
@@ -50,32 +93,7 @@ fn preprocess(
             retained.push(i);
         }
     }
-    let mut originals = Vec::new();
-    for &i in &retained {
-        let parts = plan.shells(&inputs[i])?;
-        // A reversed single closed shell is normalized. Unmeasured compound
-        // orientations must not silently acquire odd/even command semantics.
-        let original_faces = breps[i].edge_connected_face_components();
-        if original_faces.len() > 1 {
-            for shell in &parts {
-                let aliases = plan.boundary_faces(&shell.region)?;
-                let faces = original_faces
-                    .iter()
-                    .find(|faces| aliases.iter().any(|s| s[0] == i && faces.contains(&s[1])))
-                    .ok_or(GeometryError::UnrepresentableBrepBoolean)?;
-                let inward = breps[i]
-                    .duplicate_faces(faces, tolerance)?
-                    .solid_orientation()?
-                    == BrepSolidOrientation::Inward;
-                if inward != shell.inward {
-                    return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-                        context: "compound orientations inconsistent with material nesting require a native command certificate",
-                    });
-                }
-            }
-        }
-        originals.push(parts);
-    }
+    let mut originals = original_shells(plan, breps, inputs, &retained, tolerance)?;
     let mut parents = (0..breps.len()).collect::<Vec<_>>();
     let mut interacting = vec![false; breps.len()];
     let mut active = breps
@@ -200,6 +218,9 @@ pub(super) fn sets(
     for a in &first {
         for b in &second {
             interacts |= plan.boundary_interacts(&a.shell.region, &b.shell.region)?;
+            if a.shell.inward && b.shell.inward {
+                interacts |= plan.boundaries_share_line(&a.shell.region, &b.shell.region)?;
+            }
         }
     }
     if !interacts {
@@ -214,6 +235,9 @@ pub(super) fn sets(
             let b_inside = plan.covered_by(right, left)?;
             let (region, metadata) = match (a.shell.inward, b.shell.inward) {
                 (false, false) => {
+                    if a_inside && b_inside {
+                        return Err(GeometryError::UnrepresentableBrepBoolean);
+                    }
                     if !crossing && a_inside {
                         (left.clone(), a)
                     } else if !crossing && b_inside {
@@ -223,13 +247,18 @@ pub(super) fn sets(
                     }
                 }
                 (true, true) => {
-                    let overlap = plan.combine(Op::Intersection, &[left, right])?;
-                    if !crossing && plan.is_empty(&overlap)? {
+                    if a_inside && b_inside {
+                        return Err(GeometryError::UnrepresentableBrepBoolean);
+                    }
+                    if a_inside {
+                        (right.clone(), b)
+                    } else if b_inside {
+                        (left.clone(), a)
+                    } else if crossing || plan.boundaries_share_line(left, right)? {
+                        (plan.combine(Op::Union, &[left, right])?, a)
+                    } else {
                         continue;
                     }
-                    return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-                        context: "interacting compound inward shell pairs require a native command certificate",
-                    });
                 }
                 _ => {
                     if (a_inside || b_inside) && plan.boundaries_overlap(left, right)? {
@@ -260,13 +289,24 @@ pub(super) fn sets(
                 .collect::<BTreeSet<_>>()
                 .into_iter()
                 .collect::<Vec<_>>();
-            let outputs = plan.export_with_boundary_faces(&region, &faces)?;
+            let outputs = plan.export_boundary_with_faces(&region, &faces)?;
             let geometry_owner = if outputs.len() == 1 {
                 metadata.geometry_owner
             } else {
                 None
             };
-            for component in outputs {
+            for output in outputs {
+                // Native inward/inward intersection leaves non-solid SDK
+                // boundaries inward; only solid outputs are turned outward.
+                let brep = if a.shell.inward && b.shell.inward && !output.brep.is_solid() {
+                    output.brep.reversed()
+                } else {
+                    output.brep
+                };
+                let component = BrepPolyhedralBooleanComponent {
+                    brep,
+                    face_sources: output.face_sources,
+                };
                 result.push(ShellIntersection {
                     component,
                     owner: metadata.owner,
@@ -276,4 +316,75 @@ pub(super) fn sets(
         }
     }
     Ok(result)
+}
+
+/// Common intersection constructs material once, exports participating
+/// connected boundaries, and turns inward solid cavities outward. Enclosing
+/// inactive inputs do not supply result metadata. Nonmanifold boundaries retain
+/// their winding and have no declared solid orientation.
+pub(super) fn common(
+    breps: &[&Brep],
+    tolerance: Tolerance,
+) -> Result<Vec<ShellIntersection>, GeometryError> {
+    let mut plan = Plan::try_new(breps, tolerance)?;
+    let inputs = (0..breps.len())
+        .map(|i| plan.input(i))
+        .collect::<Result<Vec<_>, _>>()?;
+    let indices = (0..breps.len()).collect::<Vec<_>>();
+    let originals = original_shells(&mut plan, breps, &inputs, &indices, tolerance)?;
+    let mut active = breps
+        .iter()
+        .map(|b| vec![false; b.faces().len()])
+        .collect::<Vec<_>>();
+    let mut owners = BTreeSet::new();
+    for a in 0..breps.len() {
+        for b in a + 1..breps.len() {
+            for left in &originals[a] {
+                for right in &originals[b] {
+                    if contact(&mut plan, &left.region, &right.region)? {
+                        owners.extend([a, b]);
+                        for (owner, shell) in [(a, left), (b, right)] {
+                            for [source, face] in plan.boundary_faces(&shell.region)? {
+                                if source == owner {
+                                    active[source][face] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    let Some(&first) = owners.first() else {
+        return Ok(Vec::new());
+    };
+    let region = plan.combine(Op::Intersection, &inputs.iter().collect::<Vec<_>>())?;
+    let mut outputs = plan.export_boundary(&region)?;
+    outputs.retain(|o| o.boundary_faces.iter().any(|s| active[s[0]][s[1]]));
+    let geometry_owner = if outputs.len() == 1 {
+        owners.last().copied()
+    } else {
+        None
+    };
+    outputs
+        .into_iter()
+        .map(|output| {
+            let owner = output
+                .boundary_equal_inputs
+                .into_iter()
+                .find(|i| owners.contains(i))
+                .unwrap_or(first);
+            let brep = if output.brep.solid_orientation()? == BrepSolidOrientation::Inward {
+                output.brep.reversed()
+            } else {
+                output.brep
+            };
+            let face_sources = output.face_sources;
+            Ok(ShellIntersection {
+                component: BrepPolyhedralBooleanComponent { brep, face_sources },
+                owner,
+                geometry_owner,
+            })
+        })
+        .collect()
 }

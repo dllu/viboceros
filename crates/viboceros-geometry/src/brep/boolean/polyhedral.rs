@@ -9,7 +9,10 @@ mod reports;
 pub use interactions::{
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
 };
-pub use plan::{BrepPolyhedralBooleanPlan, BrepPolyhedralRegion, BrepPolyhedralShell};
+pub use plan::{
+    BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
+    BrepPolyhedralShell,
+};
 pub use reports::{
     intersect_polyhedral_brep_sets, intersect_polyhedral_breps, subtract_polyhedral_breps,
     union_polyhedral_breps,

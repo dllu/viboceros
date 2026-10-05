@@ -3,11 +3,16 @@
 [Project overview](../README.md)
 
 The [polyhedral Boolean commands](polyhedral-boolean-commands.md) retain 65
-native command recipes from private Xvfb. Rust command tests replay 62 physical
-and document outcomes, including history; three uncertified intersections and
+native command recipes from private Xvfb. Rust command tests replay all 65 physical
+and document outcomes, including history and the non-solid two-hole intersection;
 seven coplanar seam differences stay explicit. The `polyhedral_boolean_command`
 operation runs the closed native recipes. Mathematical SDK comparison uses the
 separate [Rust/Python polyhedral API](polyhedral-booleans.md).
+Compound follow-ups retain [41 set recipes](compound-intersections.md) and
+[54 oriented-pair/common recipes](compound-pairs.md). Command tests compare
+31 and 46 complete physical/metadata records respectively; the historical native
+failure-marker discrepancy is retained separately. Two additional seam/count
+differences, failure classifications and native performance remain explicit limits.
 
 The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
 recipes from private Xvfb and 289 application replays. Complete geometry, tight

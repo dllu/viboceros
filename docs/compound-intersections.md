@@ -5,8 +5,9 @@
 The measured two-set command first combines each populated set, then processes
 its oriented closed shells separately. This can produce overlapping output
 objects. Results of different shell pairs are retained independently.
-Common intersection of three inputs instead matches intersection of their
-odd/even material regions in the captured cases.
+Common intersection constructs odd/even material, then exports participating
+connected boundaries. See [oriented pairs and common intersection](compound-pairs.md)
+for the follow-up two-input and multiple-input evidence.
 
 ## Combining each set
 
@@ -42,13 +43,11 @@ coverage is certified for every retained patch.
 | --- | --- |
 | Outward / outward | Intersect when boundaries interact. For strict nesting, copy the enclosed shell with its intermediate metadata. Disjoint regions produce nothing. |
 | Inward / outward, or outward / inward | For interaction, subtract the inward shell's finite enclosure from the outward region, using first-set metadata. Disjoint shells copy the outward region with its own metadata. Strict nesting produces nothing. Coincident nested boundaries are rejected. |
-| Inward / inward, disjoint | Produce nothing. |
-| Inward / inward, interacting or nested | Still requires a native command compatibility certificate; reject before document edits. |
+| Inward / inward | Crossing and face/edge contact union the finite enclosures; nesting copies the enclosing shell. Equality fails, while disjoint and point-only contact produce nothing. See the [follow-up capture](compound-pairs.md). |
 
 A reversed single shell is normalized. Compound orientations inconsistent with
-material nesting remain uncertified. The legacy two-input common-intersection
-policy is retained; the new set pipeline does not establish every common-pair
-behavior.
+material nesting remain uncertified. Common intersection has a separate
+participation and metadata policy, documented with its follow-up evidence.
 
 Metadata is also cleared when one pair operation produces multiple components.
 Original object IDs, layers, colors, attribute user text, geometry user text,
@@ -77,8 +76,9 @@ markers. The raw marker records remain in the capture and are asserted by replay
 Native Failure versus Nothing event codes are retained; local command errors do
 not reproduce every native failure classification.
 
-The original 65-case polyhedral command capture now has 64 physical replays.
-Its singular open intersection remains unsupported. The new compound replay
+The original 65-case polyhedral command capture now has 65 physical replays,
+including the non-solid two-hole intersection through the boundary exporter.
+The historical compound replay
 compares 31 complete physical/metadata command records and separately asserts
 source preservation and the two-marker discrepancy for the remaining failure.
 One new seam/count difference is asserted: `first_extra_cross` has 12 faces and

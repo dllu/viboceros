@@ -84,11 +84,14 @@ pub(crate) fn snapshot(
             "attribute_text":a.user_text().get("Code"),"geometry_text":o.geometry_user_text().get("Code")});
         match o.geometry() {
             Geometry::Brep(b) => {
-                let m = b.volume_mass_properties(doc.tolerance()).unwrap();
                 row["kind"] = json!("Brep"); row["valid"] = json!(true); row["solid"] = json!(b.is_solid());
                 row["faces"] = json!(b.faces().len()); row["edges"] = json!(b.edges().len());
-                row["volume"] = json!(m.signed_volume().unwrap()); row["area"] = json!(b.area(doc.tolerance()).unwrap());
-                row["centroid"] = json!(m.centroid().unwrap().to_array());
+                row["area"] = json!(b.area(doc.tolerance()).unwrap());
+                if b.is_solid() {
+                    let m=b.volume_mass_properties(doc.tolerance()).unwrap();
+                    row["volume"] = json!(m.signed_volume().unwrap());
+                    row["centroid"] = json!(m.centroid().unwrap().to_array());
+                }else {row["volume"]=Value::Null;row["centroid"]=Value::Null;}
             }
             Geometry::Point(p) => { row["kind"]=json!("Point");row["point"]=json!(p.to_array()); }
             _ => panic!("closed recipe"),

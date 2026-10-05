@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleCompoundPairsOrientedFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "sdk_pair_witnesses": 8,
+  "command_witnesses": 46,
+  "physical_command_records": 46,
+  "history_recipes": 4,
+  "non_solid_command_outputs": 2,
+  "full_native_parity": false,
+  "output_partition_differences": 1,
+  "retained_differences": [
+    "Native Failure/Nothing event classifications are retained; local command error classes are not identical.",
+    "Output face partitions are checked separately from finite physical boundary witnesses.",
+    "Historical set-preprocessing failure-marker discrepancy remains recorded in compound-intersection-provenance.json.",
+    "Compound orientations inconsistent with material nesting remain uncertified."
+  ],
+  "scope_notes": [
+    "One empty owned document at idle, on a private Xvfb display and fresh private settings scheme; public SDK calls and interactive command macros only.",
+    "54 closed recipes: eight SDK inward/inward pairs and 46 command cases, including two-input and multiple-input common intersection, both set directions, nesting, equality, face/edge/point contacts, metadata, selection, retention and history.",
+    "SDK set unions are diagnostics only and never supplied as command inputs; source records are checked around SDK calls.",
+    "Raw face_reversed flags preserve measured winding of non-solid boundaries. Neither SDK nor command records invent mass properties for non-solid outputs.",
+    "Finite boundary witnesses and oriented boundary integrals do not certify continuous error bounds, arbitrary curved input, general compound behavior, component ordering or native performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/compound_pairs_probe.py": "15f7eb270ed85c560e13a4c0a87597d95d53c564a811f3ba02f249acd7b53e9d",
+    "tools/rhino_oracle/compound_recipe_probe.py": "e432722d32ab05d2fd28cc8664c5317220f9df2b97cf0784677cba57e183f4b3",
+    "tools/rhino_oracle/compound_intersection_probe.py": "898477e6e536802943b1000cfc0eb6269c86941dcd9f6d80f08f447f364ebf43",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/compound_pairs.json": "c3ff7c45b00b9642903318376ca6ed14ab6e09a844dd77e35c03e7af9a8f146e",
+    "tools/rhino_oracle/observations/compound_pairs.json": "18400e15fecd55db6517128956f61ec35d318dbdbd5cfd1bf947506d803860c0",
+    "docs/compound-pairs-partitions.json": "44f975d278cd5243331670a0b6166c4073a95804e574a9da6edfb8a8717a9c31",
+    "tools/rhino_oracle/polyhedral_command_probe.py": "36061c49185ce3f276940c0051abe06beacdaca53476761195c17ab836495b67",
+    "tools/rhino_oracle/observations/polyhedral_boolean_command.json": "3d1714a83ba41f9c1d3cc511dc992f72cb021dd7ab6d671b08c2a7894511070a",
+    "docs/polyhedral-command-partitions.json": "2d51f16ad340f9d72f41007ecc0c8522420f316aa120000b46308dfd962f2289"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "067c757b3c5153ebebc9ff936f48fb0bd7c980a1a662aa5003c76615924a8389",
+    "tools/rhino_oracle/rhino_worker.py": "cd5d611a8d81016976a285feb0de7a14a1670d4549c57608f84b98009dd8d5a2"
+  },
+  "previous_capture_physical_replays": 65,
+  "previous_capture_non_solid_outputs": 1,
+  "local_verification": {
+    "release_workspace": {
+      "passed": 5053,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 842
+    },
+    "clippy": {
+      "baseline_commit": "10c83ea6",
+      "warning_categories_and_counts_unchanged": true
+    }
+  }
+}

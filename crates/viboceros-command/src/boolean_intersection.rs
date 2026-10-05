@@ -111,10 +111,9 @@ impl BooleanIntersectionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let compound_sets = !common
-            && refs
-                .iter()
-                .any(|b| b.edge_connected_face_components().len() > 1);
+        let compound_sets = refs
+            .iter()
+            .any(|b| b.edge_connected_face_components().len() > 1);
         let (kernel, interactions) = if compound_sets {
             // The compound plan certifies all inputs and tests its oriented
             // shells. Avoid constructing an unused material-only arrangement.
@@ -130,15 +129,33 @@ impl BooleanIntersectionCommand {
             return Err(CommandError::NothingIntersected);
         }
         let mut copies = Vec::new();
-        if let Some(results) =
-            boolean_solids::compound_intersection(&refs, doc.tolerance(), common, first.len())?
-        {
+        if let Some(results) = boolean_solids::compound_intersection(
+            &refs,
+            doc.tolerance(),
+            common,
+            first.len(),
+            kernel,
+        )? {
             for result in results {
-                let brep = boolean_solids::merged(
-                    result.component.brep,
-                    &result.component.face_sources,
-                    doc.tolerance(),
-                )?;
+                let brep = if common {
+                    let b = result.component.brep;
+                    // Common intersection merges coplanar boundary faces across
+                    // original owners. Two-set pairs retain their source seams.
+                    boolean_solids::finish_boundary(
+                        b.try_merge_coplanar_polygon_faces_in_groups(
+                            &vec![0; b.faces().len()],
+                            doc.tolerance(),
+                        )?
+                        .unwrap_or(b),
+                        doc.tolerance(),
+                    )?
+                } else {
+                    boolean_solids::merged(
+                        result.component.brep,
+                        &result.component.face_sources,
+                        doc.tolerance(),
+                    )?
+                };
                 let text = result
                     .geometry_owner
                     .map(|i| objects[i].geometry_user_text().clone())

@@ -177,111 +177,26 @@ pub(super) struct ShellIntersection {
     pub(super) geometry_owner: Option<usize>,
 }
 
-/// The native two-object command intersects each oriented shell separately.
-/// An inward shell of a compound input denotes its exterior. A wholly reversed
-/// single shell is normalized instead. This compatibility policy intentionally
-/// stays outside the geometry API's odd/even material definition.
+/// Native compound policies stay outside the mathematical geometry API.
 pub(super) fn compound_intersection(
     breps: &[&Brep],
     tolerance: Tolerance,
     common: bool,
     first_count: usize,
+    kernel: Kernel,
 ) -> Result<Option<Vec<ShellIntersection>>, GeometryError> {
-    let components = breps
+    if breps
         .iter()
-        .map(|b| b.edge_connected_face_components())
-        .collect::<Vec<_>>();
-    if components.iter().all(|c| c.len() == 1) {
+        .all(|b| b.edge_connected_face_components().len() == 1)
+        && (common || breps.len() != 2 || matches!(kernel, Kernel::Convex))
+    {
         return Ok(None);
     }
-    if !common {
-        return compound::sets(breps, first_count, tolerance).map(Some);
+    if common {
+        compound::common(breps, tolerance).map(Some)
+    } else {
+        compound::sets(breps, first_count, tolerance).map(Some)
     }
-    // The captured common intersection of three compound inputs follows
-    // ordinary material membership, rather than the oriented pair pipeline.
-    if breps.len() != 2 {
-        return Ok(None);
-    }
-    let mut shells = Vec::new();
-    for (input, faces) in components.iter().enumerate() {
-        let mut parts = Vec::new();
-        for indices in faces {
-            let shell = breps[input].duplicate_faces(indices, tolerance)?;
-            let inward =
-                shell.solid_orientation()? == viboceros_geometry::BrepSolidOrientation::Inward;
-            parts.push((
-                if inward { shell.reversed() } else { shell },
-                indices,
-                inward && faces.len() > 1,
-            ));
-        }
-        shells.push(parts);
-    }
-    if shells[0].len().saturating_mul(shells[1].len()) > 128 {
-        return Err(GeometryError::BrepBooleanWorkLimit);
-    }
-    let mut result = Vec::new();
-    let mut output_faces = 0usize;
-    for (a, a_faces, a_negative) in &shells[0] {
-        for (b, b_faces, b_negative) in &shells[1] {
-            let (first, second, operation, owners) = match (*a_negative, *b_negative) {
-                (false, false) => (
-                    a,
-                    b,
-                    viboceros_geometry::BrepBooleanOperation::Intersection,
-                    [0, 1],
-                ),
-                (true, false) => (
-                    b,
-                    a,
-                    viboceros_geometry::BrepBooleanOperation::Difference,
-                    [1, 0],
-                ),
-                (false, true) => (
-                    a,
-                    b,
-                    viboceros_geometry::BrepBooleanOperation::Difference,
-                    [0, 1],
-                ),
-                (true, true) => {
-                    return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-                        context: "intersection of two compound inward shells is not certified for native command semantics",
-                    });
-                }
-            };
-            for mut component in
-                viboceros_geometry::boolean_polyhedral_breps(first, second, operation, tolerance)?
-            {
-                output_faces += component.face_sources.len();
-                if output_faces > 4096 {
-                    return Err(GeometryError::BrepBooleanWorkLimit);
-                }
-                for source in &mut component.face_sources {
-                    source[0] = owners[source[0]];
-                    source[1] = [a_faces, b_faces][source[0]][source[1]];
-                }
-                let owner = component
-                    .face_sources
-                    .iter()
-                    .map(|s| s[0])
-                    .min()
-                    .ok_or(GeometryError::UnrepresentableBrepBoolean)?;
-                result.push(ShellIntersection {
-                    component,
-                    owner,
-                    geometry_owner: Some(if common { 1 } else { owner }),
-                });
-            }
-        }
-    }
-    if result.len() > 1 {
-        for r in &mut result {
-            if r.owner == 0 || common {
-                r.geometry_owner = None;
-            }
-        }
-    }
-    Ok(Some(result))
 }
 
 #[cfg(test)]
@@ -311,7 +226,20 @@ pub(super) fn merged(
             *labels.entry(*source).or_insert(next)
         })
         .collect::<Vec<_>>();
-    brep.try_merge_coplanar_polygon_faces_in_groups(&groups, tolerance)?
-        .unwrap_or(brep)
-        .try_merge_all_edges(0., tolerance)
+    finish_boundary(
+        brep.try_merge_coplanar_polygon_faces_in_groups(&groups, tolerance)?
+            .unwrap_or(brep),
+        tolerance,
+    )
+}
+
+pub(super) fn finish_boundary(brep: Brep, tolerance: Tolerance) -> Result<Brep, GeometryError> {
+    if brep.is_manifold() {
+        brep.try_merge_all_edges(0., tolerance)
+    } else {
+        // The exact boundary exporter retains intentional four-use edges.
+        // Generic edge coalescing only certifies manifold inputs; preserve
+        // these valid boundaries instead of rejecting a native command result.
+        Ok(brep)
+    }
 }
