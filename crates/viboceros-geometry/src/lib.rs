@@ -95,9 +95,9 @@ pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepEdge, BrepEdgeMergeScope, BrepFace,
     BrepHoleRemoval, BrepJoinComponent, BrepJoinReport, BrepLoop, BrepLoopType,
-    BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepVertex, BrepWireCage,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso, join_breps,
-    join_breps_with_report,
+    BrepSolidOrientation, BrepSurfaceShrinkMode, BrepTrim, BrepTrimType, BrepUnionComponent,
+    BrepVertex, BrepWireCage, RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso,
+    convex_brep_boundary_interactions, join_breps, join_breps_with_report, union_convex_breps,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,

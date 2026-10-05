@@ -9263,6 +9263,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod boolean_union;
     mod circle_fit_grips;
     mod circle_fit_points;
     mod command_line;

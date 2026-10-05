@@ -180,8 +180,23 @@ impl Document {
         &mut self,
         pieces: impl IntoIterator<Item = (ObjectId, Geometry)>,
     ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_object_pieces_with_metadata_into_source_groups(
+            pieces
+                .into_iter()
+                .map(|(id, geometry)| (id, geometry, BTreeMap::new())),
+        )
+    }
+
+    /// Atomically inserts replacement pieces with caller-staged geometry user
+    /// text. Attributes and ordered group memberships come from each source;
+    /// geometry metadata can belong to a different contributing object. All
+    /// sources, metadata and geometry are validated before insertion.
+    pub fn copy_object_pieces_with_metadata_into_source_groups(
+        &mut self,
+        pieces: impl IntoIterator<Item = (ObjectId, Geometry, BTreeMap<String, String>)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
         let pieces = pieces.into_iter().collect::<Vec<_>>();
-        let indices = self.resolve_object_indices(pieces.iter().map(|(id, _)| *id))?;
+        let indices = self.resolve_object_indices(pieces.iter().map(|(id, _, _)| *id))?;
         for &index in &indices {
             self.ensure_object_editable(&self.objects[index])?;
         }
@@ -192,8 +207,17 @@ impl Document {
             .collect::<BTreeMap<_, _>>();
         let staged = pieces
             .into_iter()
-            .map(|(id, geometry)| Ok((by_id[&id], object_admission::normalize_geometry(geometry)?)))
-            .collect::<Result<Vec<_>, GeometryError>>()?;
+            .map(|(id, geometry, text)| {
+                for (key, value) in &text {
+                    validate_user_text(key, Some(value))?;
+                }
+                Ok((
+                    by_id[&id],
+                    object_admission::normalize_geometry(geometry)?,
+                    Some(text),
+                ))
+            })
+            .collect::<Result<Vec<_>, DocumentError>>()?;
         self.commit_source_group_copies(staged.into_iter(), false)
     }
 
@@ -230,7 +254,7 @@ impl Document {
         self.commit_source_group_copies(
             staged
                 .into_iter()
-                .map(|(index, _, geometry)| (index, geometry)),
+                .map(|(index, _, geometry)| (index, geometry, None)),
             preserve_geometry_user_text,
         )
     }
@@ -239,7 +263,7 @@ impl Document {
     // only appends may change the object table before memberships are assigned.
     fn commit_source_group_copies(
         &mut self,
-        staged: impl ExactSizeIterator<Item = (usize, Geometry)>,
+        staged: impl ExactSizeIterator<Item = (usize, Geometry, Option<BTreeMap<String, String>>)>,
         preserve_geometry_user_text: bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         if staged.len() == 0 {
@@ -254,7 +278,7 @@ impl Document {
         }
 
         let mut copied = Vec::with_capacity(staged.len());
-        for (source_index, geometry) in staged {
+        for (source_index, geometry, text) in staged {
             let source = &self.objects[source_index];
             let attributes = source.attributes.clone();
             let copy_id = ObjectId::new();
@@ -262,11 +286,13 @@ impl Document {
             self.objects.push(Object {
                 id: copy_id,
                 geometry: geometry.into(),
-                geometry_user_text: if preserve_geometry_user_text {
-                    source.geometry_user_text.clone()
-                } else {
-                    BTreeMap::new()
-                },
+                geometry_user_text: text.unwrap_or_else(|| {
+                    if preserve_geometry_user_text {
+                        source.geometry_user_text.clone()
+                    } else {
+                        BTreeMap::new()
+                    }
+                }),
                 attributes,
                 isolation: ObjectIsolation::None,
                 group_ids: Vec::new(),

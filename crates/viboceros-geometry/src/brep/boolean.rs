@@ -14,6 +14,9 @@ const MAX_INPUT_FACES: usize = 256;
 const MAX_OUTPUT_FACES: usize = 4096;
 const EXACT_WORK_LIMIT: usize = 2_000_000;
 const MAX_RATIONAL_BITS: u64 = 8192;
+mod merge;
+mod union;
+pub use union::{BrepUnionComponent, convex_brep_boundary_interactions, union_convex_breps};
 
 /// Set operation on two supported closed convex polygonal B-reps.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -509,6 +512,11 @@ fn rebuild(
 }
 
 fn uv(surface: &NurbsSurface, p: &ExactPoint) -> Result<Point2, GeometryError> {
+    let values = uv_exact(surface, p)?;
+    Point2::try_new(scalar(&values[0])?, scalar(&values[1])?)
+}
+
+fn uv_exact(surface: &NurbsSurface, p: &ExactPoint) -> Result<[Rational; 2], GeometryError> {
     let c = surface.control_points();
     let origin = point(c[0].point());
     let u = sub(&point(c[1].point()), &origin);
@@ -524,13 +532,13 @@ fn uv(surface: &NurbsSurface, p: &ExactPoint) -> Result<Point2, GeometryError> {
             (&delta[a] * &v[b] - &delta[b] * &v[a]) / &determinant,
             (&u[a] * &delta[b] - &u[b] * &delta[a]) / &determinant,
         ];
-        let mut values = [0.; 2];
+        let mut values = std::array::from_fn(|_| Rational::zero());
         for (i, domain) in [surface.domain_u(), surface.domain_v()].iter().enumerate() {
             let value = rational(*domain.start())
                 + &fractions[i] * (rational(*domain.end()) - rational(*domain.start()));
-            values[i] = scalar(&value)?;
+            values[i] = value;
         }
-        return Point2::try_new(values[0], values[1]);
+        return Ok(values);
     }
     Err(GeometryError::UnrepresentableBrepBoolean)
 }

@@ -15,7 +15,9 @@ use crate::{
 
 mod boolean;
 mod borders;
-pub use boolean::BrepBooleanOperation;
+pub use boolean::{
+    BrepBooleanOperation, BrepUnionComponent, convex_brep_boundary_interactions, union_convex_breps,
+};
 mod cap;
 mod combine;
 mod components;

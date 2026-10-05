@@ -187,3 +187,44 @@ fn replacement_copy_sets_keep_order_groups_and_reject_duplicates_atomically() {
     assert_eq!(doc.objects, before);
     assert_eq!(doc.groups, groups);
 }
+
+#[test]
+fn replacement_pieces_validate_all_metadata_before_insertion_and_replay_source_groups() {
+    let mut doc = Document::default();
+    let source = doc.add_geometry(point(0.)).unwrap();
+    let group = doc.add_group(Some("Source".into()), [source]).unwrap();
+    doc.set_object_geometry_user_text([source], "Code", Some("source"))
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.objects.clone();
+    let before_groups = doc.groups.clone();
+    let text = BTreeMap::from([("Code".into(), "other geometry owner".into())]);
+    let invalid = BTreeMap::from([("".into(), "invalid".into())]);
+    assert!(
+        doc.copy_object_pieces_with_metadata_into_source_groups([
+            (source, point(1.), text.clone()),
+            (source, point(2.), invalid)
+        ])
+        .is_err()
+    );
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, before_groups);
+    assert!(!doc.can_undo());
+    let result = doc
+        .copy_object_pieces_with_metadata_into_source_groups([(source, point(1.), text.clone())])
+        .unwrap()[0];
+    assert_eq!(doc.object(result).unwrap().geometry_user_text(), &text);
+    assert_eq!(doc.object(result).unwrap().group_ids(), [group]);
+    assert_eq!(
+        doc.object(source).unwrap().geometry_user_text()["Code"],
+        "source"
+    );
+    let after = doc.objects.clone();
+    let after_groups = doc.groups.clone();
+    doc.undo().unwrap();
+    assert_eq!(doc.objects, before);
+    assert_eq!(doc.groups, before_groups);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects, after);
+    assert_eq!(doc.groups, after_groups);
+}

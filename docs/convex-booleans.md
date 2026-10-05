@@ -8,8 +8,10 @@ the first operand minus the second. Inputs remain unchanged. The returned
 `Option<Brep>` is `None` for an empty region; a nonempty B-rep can contain separate
 outer shells or an inward cavity.
 
-This is a kernel capability. Rhino Boolean commands, selection workflows,
-DeleteInput, history, and coplanar face merging are not registered through it yet.
+The [BooleanUnion command](commands/boolean-union.md) now adds selection,
+DeleteInput, remembered options, source metadata and history for the certified
+convex polyhedral scope. BooleanIntersection and BooleanDifference command
+workflows remain unimplemented.
 
 ## Supported inputs and construction
 
@@ -34,6 +36,25 @@ multi-shell, singular-trim, and input-hole cases are unsupported. Exact affine
 certification can reject control nets affected by ordinary transformation
 roundoff; this API does not widen tolerance to accept them. Singular edge/point
 contacts are rejected when they would join shells nonmanifoldly.
+
+## Multiple operands and face merging
+
+`union_convex_breps` accepts up to 128 original certified convex operands. Each
+face is clipped against original bodies; a nonconvex intermediate is never
+treated as convex. Exact signed shell volumes and retried exact ray containment
+separate material components and attach each cavity to its innermost surrounding
+outer shell. Nested material islands retain their own cavities. Reports retain
+source indices, boundary contributors, and original face ownership. Strict
+interior inputs are distinguished from boundary contributors for command
+metadata. Coplanar overlap ownership uses earliest input order.
+
+`try_merge_coplanar_polygon_faces_in_groups` combines eligible adjacent affine
+planar polygon faces within caller-assigned groups. It removes interior edges,
+reconstructs exterior and hole loops, extends an affine supporting surface when
+needed, and keeps exterior edge curves. Collinear exterior subdivisions can be
+removed with `try_merge_all_edges`. Ambiguous junctions fail explicitly. Kernel
+tests cover multiple-body chains, contact and nesting classification, coplanar
+faces and through-holes, enclosed cavities, and nested islands.
 
 ## Verification
 

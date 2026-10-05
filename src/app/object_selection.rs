@@ -55,6 +55,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if self.description.command == "BooleanUnion" {
+            return "Select at least two surfaces or polysurfaces, or type options; Enter unions, Esc cancels";
+        }
         if self.description.command == "Smooth" {
             return match self.phase {
                 ObjectPromptPhase::Selecting => {
@@ -383,10 +386,10 @@ impl VibocerosApp {
             self.log_object_prompt();
             return true;
         }
-        let required = if description.command == "Circle FitPoints" {
-            3
-        } else {
-            1
+        let required = match description.command {
+            "Circle FitPoints" => 3,
+            "BooleanUnion" => 2,
+            _ => 1,
         };
         let selected_objects = self
             .document
@@ -616,6 +619,19 @@ impl VibocerosApp {
                 return true;
             }
             if pending.phase == ObjectPromptPhase::Selecting {
+                if pending.description.command == "BooleanUnion"
+                    && self
+                        .document
+                        .selected_objects()
+                        .filter(|o| pending.description.filter.accepts_object(o))
+                        .count()
+                        == 1
+                {
+                    self.push_log(
+                        "Select at least two surfaces or polysurfaces; Esc cancels".into(),
+                    );
+                    return true;
+                }
                 let has_eligible_picks =
                     self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
@@ -723,6 +739,9 @@ impl VibocerosApp {
                     self.push_log(message);
                 }
                 Err(error) => {
+                    if pending.description.command == "BooleanUnion" {
+                        self.object_prompt = None;
+                    }
                     if matches!(error, viboceros_command::CommandError::OperationDeclined) {
                         self.object_prompt = None;
                         self.push_log(format!("{} declined", pending.description.command));
