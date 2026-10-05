@@ -2,9 +2,9 @@
 use super::*;
 use serde_json::Value;
 
-type Boundary = Vec<Vec<Vec<[Real; 3]>>>;
+pub(in super::super) type Boundary = Vec<Vec<Vec<[Real; 3]>>>;
 
-fn xyz(value: &Value) -> [Real; 3] {
+pub(in super::super) fn xyz(value: &Value) -> [Real; 3] {
     std::array::from_fn(|i| value[i].as_f64().unwrap())
 }
 
@@ -40,7 +40,7 @@ fn source(case: &str) -> (Brep, Brep) {
     (a, b)
 }
 
-fn boundary(brep: &Brep) -> Boundary {
+pub(in super::super) fn boundary(brep: &Brep) -> Boundary {
     brep.faces
         .iter()
         .map(|face| {
@@ -70,7 +70,7 @@ fn dot_f(a: [Real; 3], b: [Real; 3]) -> Real {
 
 /// A finite boundary witness, including concave native loops and inner holes.
 /// This intentionally does not assert equal face/edge counts or parameterization.
-fn on_boundary(p: [Real; 3], boundary: &Boundary) -> bool {
+pub(in super::super) fn on_boundary(p: [Real; 3], boundary: &Boundary) -> bool {
     boundary.iter().any(|face| {
         let ring = &face[0];
         let Some(normal) = (1..ring.len() - 1)

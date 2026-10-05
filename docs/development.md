@@ -15,6 +15,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 ## Focused checks
 
 - [Convex polyhedral Boolean kernel and native evidence](convex-booleans.md)
+- [Chained polyhedral Booleans with concave faces, holes and multiple shells](polyhedral-booleans.md)
 - [BooleanUnion command workflows and native evidence](commands/boolean-union.md)
 - [BooleanIntersection common-set and two-set workflows](commands/boolean-intersection.md)
 - [BooleanDifference targets, cutters, and native policies](commands/boolean-difference.md)

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOraclePolyhedralBooleanFinalB_20261004",
+  "engine_version": "8.32.26160.13001",
+  "sdk_witnesses": 30,
+  "nonempty_geometry_replays": 24,
+  "full_native_parity": false,
+  "commands_registered": false,
+  "scope_notes": [
+    "Public SDK operations on owned inputs ran at idle on private Xvfb in an empty document. Only public APIs were used.",
+    "24 outputs match physical volume, area, centroid, tight bounds, and finite bidirectional boundary witnesses, allowing face partitions and separate native cavity shells.",
+    "Native mixed-shell intersections, all three reversed-hole operations, and a native open two-hole intersection remain visible semantic differences. The kernel defines odd/even shell material independently of orientation and rejects singular results.",
+    "This capability does not establish general curved Boolean parity, interactive command workflows, continuous boundary error bounds, or native performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/polyhedral_boolean_probe.py": "e1a6c68ce36a06d8486149463ab30aa0c1629537cdc3943a7a62475a0dc0b421",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/polyhedral_boolean.json": "2477638561e3278772dfe7084b81e77b241ad698352406b1f3db49fc8ce8f999",
+    "tools/rhino_oracle/observations/polyhedral_boolean.json": "dc401b84093a01f1f6c67f3566d75ed533b077e6d71d50afc667712410e9aff4"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "b13dd949c680c2392db85d1e6ca0d7a3700eb031f99295ecd42ddc645a33ba6e",
+    "tools/rhino_oracle/rhino_worker.py": "288a2c1f01956bd6c56778c761d7dd68a428bd7021e2d3d4114de827bb0fd347"
+  }
+}

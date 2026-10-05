@@ -404,7 +404,7 @@ pub(super) fn assemble_union(
 }
 
 /// Exact ray parity on convex face fragments; ambiguous rays are retried.
-fn contains(
+pub(super) fn contains(
     p: &ExactPoint,
     faces: &[usize],
     polygons: &[Polygon<'_>],

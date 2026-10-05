@@ -16,9 +16,11 @@ use crate::{
 mod boolean;
 mod borders;
 pub use boolean::{
-    BrepBooleanOperation, BrepConvexIntersection, BrepDifferenceComponent, BrepSetIntersection,
-    BrepUnionComponent, convex_brep_boundary_interactions, convex_brep_subtraction_interactions,
-    intersect_convex_brep_sets, intersect_convex_breps, subtract_convex_breps, union_convex_breps,
+    BrepBooleanOperation, BrepConvexIntersection, BrepDifferenceComponent,
+    BrepPolyhedralBooleanComponent, BrepSetIntersection, BrepUnionComponent,
+    boolean_polyhedral_breps, convex_brep_boundary_interactions,
+    convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,
+    subtract_convex_breps, union_convex_breps,
 };
 mod cap;
 mod combine;

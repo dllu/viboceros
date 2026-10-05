@@ -16,6 +16,8 @@ const EXACT_WORK_LIMIT: usize = 2_000_000;
 const MAX_RATIONAL_BITS: u64 = 8192;
 mod difference;
 pub use difference::{BrepDifferenceComponent, subtract_convex_breps};
+mod polyhedral;
+pub use polyhedral::{BrepPolyhedralBooleanComponent, boolean_polyhedral_breps};
 mod intersection;
 mod merge;
 pub use intersection::{
@@ -27,7 +29,7 @@ pub use union::{
     union_convex_breps,
 };
 
-/// Set operation on two supported closed convex polygonal B-reps.
+/// Set operation on two supported closed polygonal B-reps.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BrepBooleanOperation {
     Union,
@@ -340,8 +342,20 @@ fn split(
     plane: &Polygon<'_>,
     budget: &mut Budget,
 ) -> Result<RingSplit, GeometryError> {
+    split_plane(ring, &plane.ring[0], &plane.normal, budget)
+}
+
+fn split_plane(
+    ring: &[ExactPoint],
+    anchor: &ExactPoint,
+    normal: &ExactPoint,
+    budget: &mut Budget,
+) -> Result<RingSplit, GeometryError> {
     budget.spend(ring.len())?;
-    let sides = ring.iter().map(|p| plane.plane_side(p)).collect::<Vec<_>>();
+    let sides = ring
+        .iter()
+        .map(|p| dot(normal, &sub(p, anchor)))
+        .collect::<Vec<_>>();
     if sides.iter().all(|s| !s.is_positive()) {
         return Ok((Some(ring.to_vec()), None));
     }

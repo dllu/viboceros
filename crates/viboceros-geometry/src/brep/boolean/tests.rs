@@ -1,6 +1,6 @@
 use super::*;
-mod native;
-fn frame() -> Frame3 {
+pub(super) mod native;
+pub(super) fn frame() -> Frame3 {
     Frame3::try_from_directions(
         Point3::try_new(0., 0., 0.).unwrap(),
         Vector3::try_new(1., 0., 0.).unwrap(),
@@ -10,11 +10,11 @@ fn frame() -> Frame3 {
     .unwrap()
 }
 
-fn cube(intervals: [[Real; 2]; 3]) -> Brep {
+pub(super) fn cube(intervals: [[Real; 2]; 3]) -> Brep {
     Brep::try_box(frame(), intervals, Tolerance::DEFAULT).unwrap()
 }
 
-fn measure(result: Option<Brep>, expected_volume: Real, expected_area: Option<Real>) {
+pub(super) fn measure(result: Option<Brep>, expected_volume: Real, expected_area: Option<Real>) {
     if expected_volume == 0. {
         assert!(result.is_none());
         return;
@@ -185,7 +185,7 @@ fn exact_work_and_rational_size_limits_are_errors() {
     );
 }
 
-fn tetra(offset: [Real; 3]) -> Brep {
+pub(super) fn tetra(offset: [Real; 3]) -> Brep {
     let points = [[0., 0., 0.], [3., 0., 0.], [0., 3., 0.], [0., 0., 3.]]
         .map(|p| Point3::try_from(std::array::from_fn(|i| p[i] + offset[i])).unwrap());
     let vertices = points

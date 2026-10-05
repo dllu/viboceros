@@ -1,0 +1,186 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_concave_union",
+      "case": "concave",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_concave_intersection",
+      "case": "concave",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_concave_difference",
+      "case": "concave",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_hole_union",
+      "case": "hole",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_hole_intersection",
+      "case": "hole",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_hole_difference",
+      "case": "hole",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_cavity_union",
+      "case": "cavity",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_cavity_intersection",
+      "case": "cavity",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_cavity_difference",
+      "case": "cavity",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_island_union",
+      "case": "island",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_island_intersection",
+      "case": "island",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_island_difference",
+      "case": "island",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_disjoint_shells_union",
+      "case": "disjoint_shells",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_disjoint_shells_intersection",
+      "case": "disjoint_shells",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_disjoint_shells_difference",
+      "case": "disjoint_shells",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_two_holes_union",
+      "case": "two_holes",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_two_holes_intersection",
+      "case": "two_holes",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_two_holes_difference",
+      "case": "two_holes",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_singular_two_holes_union",
+      "case": "singular_two_holes",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_singular_two_holes_intersection",
+      "case": "singular_two_holes",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_singular_two_holes_difference",
+      "case": "singular_two_holes",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_rounded_uv_union",
+      "case": "rounded_uv",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_rounded_uv_intersection",
+      "case": "rounded_uv",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_rounded_uv_difference",
+      "case": "rounded_uv",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_reversed_hole_union",
+      "case": "reversed_hole",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_reversed_hole_intersection",
+      "case": "reversed_hole",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_reversed_hole_difference",
+      "case": "reversed_hole",
+      "operation": "difference"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_coplanar_concave_union",
+      "case": "coplanar_concave",
+      "operation": "union"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_coplanar_concave_intersection",
+      "case": "coplanar_concave",
+      "operation": "intersection"
+    },
+    {
+      "op": "polyhedral_boolean",
+      "id": "polyhedral_coplanar_concave_difference",
+      "case": "coplanar_concave",
+      "operation": "difference"
+    }
+  ]
+}

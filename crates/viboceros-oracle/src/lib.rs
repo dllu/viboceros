@@ -94,6 +94,7 @@ mod mesh_picking;
 mod object_layout;
 mod object_source;
 mod plane_arrays;
+mod polyhedral_boolean;
 mod remove_holes;
 mod shrink_trimmed;
 mod solid_orientation;
@@ -197,6 +198,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PolyhedralBoolean {
+        id: String,
+        #[serde(flatten)]
+        fixture: polyhedral_boolean::PolyhedralBooleanFixture,
+    },
     CopyOptionsCommand {
         id: String,
         #[serde(flatten)]
@@ -2067,7 +2073,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::VolumeCommand { id, .. }
+            Self::PolyhedralBoolean { id, .. }
+            | Self::VolumeCommand { id, .. }
             | Self::DocumentBrepImport { id, .. }
             | Self::DocumentBrep { id, .. }
             | Self::BrepSolidOrientation { id, .. }
@@ -2568,6 +2575,9 @@ fn execute(
         }
         Operation::BrepSolidOrientation { fixture, .. } => {
             solid_orientation::run(fixture, iterations, tolerance)?
+        }
+        Operation::PolyhedralBoolean { fixture, .. } => {
+            polyhedral_boolean::run(fixture, iterations, tolerance)?
         }
         Operation::VolumeCommand { fixture, .. } => {
             centroid_command::run(fixture, tolerance, centroid_command::Measure::ScalarVolume)?

@@ -20,7 +20,12 @@ rounding and 32 native command witnesses. [BooleanDifference](commands/boolean-d
 subtracts multiple original cutters and applies target, metadata, deletion, and
 selection policies from 40 native witnesses. The commands share a two-phase
 selection controller with separate option-memory policies. General curved Boolean commands remain
-unimplemented.
+unimplemented. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
+uses exact plane arrangements and two-sided material classification for concave
+faces, holes, cavities, and multiple shells. Model-space certificates admit
+bounded UV roundoff in earlier results, while rejecting intersecting input faces
+and nonmanifold vertex links. This API is available through the Python oracle;
+interactive adapters still use the convex command certificates.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
 The registered command supports atomic object/grip edits, remembered options,
