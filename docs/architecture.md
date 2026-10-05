@@ -14,7 +14,9 @@ half-space clipping and shared edge subdivisions, retaining editable face
 surfaces and trims. It replays 26 nonempty public SDK results and records six
 set/SDK differences. [BooleanUnion](commands/boolean-union.md) adapts exact
 multiple-operand construction, material/cavity separation, coplanar face merging,
-source metadata, selection and history. General curved Boolean commands remain
+source metadata, selection and history. [BooleanIntersection](commands/boolean-intersection.md)
+adds common-set and two-set policies, with exact pair regions combined before
+rounding and 32 native command witnesses. General curved Boolean commands remain
 unimplemented.
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

@@ -87,54 +87,11 @@ pub fn union_convex_breps(
     }
     let mut budget = Budget(EXACT_WORK_LIMIT);
     let operands = inputs(breps, &mut budget)?;
-    let mut output = Vec::new();
-    for (owner, polygons) in operands.iter().enumerate() {
-        for polygon in polygons {
-            let mut pieces = vec![polygon.clone()];
-            for (other, cutters) in operands.iter().enumerate() {
-                if owner == other
-                    || (owner < other
-                        && coplanar_sense(polygon, cutters, &mut budget)? == Some(true))
-                {
-                    continue;
-                }
-                let mut next = Vec::new();
-                for piece in pieces {
-                    next.extend(partition(&piece, cutters, &mut budget)?.0);
-                    if next.len() + output.len() > MAX_OUTPUT_FACES {
-                        return Err(GeometryError::BrepBooleanWorkLimit);
-                    }
-                }
-                pieces = next;
-                if pieces.is_empty() {
-                    break;
-                }
-            }
-            output.extend(pieces);
-            if output.len() > MAX_OUTPUT_FACES {
-                return Err(GeometryError::BrepBooleanWorkLimit);
-            }
-        }
-    }
+    let output = union_polygons(&operands, &mut budget)?;
     if output.is_empty() {
         return Ok(Vec::new());
     }
-    let exact = output.clone();
-    let face_sources = exact
-        .iter()
-        .map(|p| {
-            breps
-                .iter()
-                .enumerate()
-                .find_map(|(input, b)| {
-                    b.faces
-                        .iter()
-                        .position(|f| std::ptr::eq(f, p.source))
-                        .map(|face| [input, face])
-                })
-                .expect("each fragment retains an original face")
-        })
-        .collect::<Vec<_>>();
+    let face_sources = source_faces(breps, &output, &mut budget)?;
     let mut boundary_sources = vec![false; breps.len()];
     for source in &face_sources {
         boundary_sources[source[0]] = true;
@@ -167,7 +124,103 @@ pub fn union_convex_breps(
             }
         }
     }
-    let result = rebuild(output, tolerance, &mut budget)?;
+    let witnesses = operands
+        .iter()
+        .map(|p| interior_witness(p, &mut budget))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(assemble_union(output, &witnesses, tolerance, &mut budget)?
+        .into_iter()
+        .map(|body| BrepUnionComponent {
+            brep: body.brep,
+            boundary_source_indices: body
+                .operand_indices
+                .iter()
+                .copied()
+                .filter(|&i| boundary_sources[i])
+                .collect(),
+            source_indices: body.operand_indices,
+            face_sources: body.faces.iter().map(|&i| face_sources[i]).collect(),
+        })
+        .collect())
+}
+
+pub(super) fn union_polygons<'a>(
+    operands: &[Vec<Polygon<'a>>],
+    budget: &mut Budget,
+) -> Result<Vec<Polygon<'a>>, GeometryError> {
+    let mut output = Vec::new();
+    for (owner, polygons) in operands.iter().enumerate() {
+        for polygon in polygons {
+            let mut pieces = vec![polygon.clone()];
+            for (other, cutters) in operands.iter().enumerate() {
+                if owner == other
+                    || (owner < other && coplanar_sense(polygon, cutters, budget)? == Some(true))
+                {
+                    continue;
+                }
+                let mut next = Vec::new();
+                for piece in pieces {
+                    next.extend(partition(&piece, cutters, budget)?.0);
+                    if next.len() + output.len() > MAX_OUTPUT_FACES {
+                        return Err(GeometryError::BrepBooleanWorkLimit);
+                    }
+                }
+                pieces = next;
+                if pieces.is_empty() {
+                    break;
+                }
+            }
+            output.extend(pieces);
+            if output.len() > MAX_OUTPUT_FACES {
+                return Err(GeometryError::BrepBooleanWorkLimit);
+            }
+        }
+    }
+    Ok(output)
+}
+
+pub(super) struct UnionBody {
+    pub(super) brep: Brep,
+    pub(super) operand_indices: Vec<usize>,
+    pub(super) faces: Vec<usize>,
+}
+
+pub(super) fn interior_witness(
+    polygons: &[Polygon<'_>],
+    budget: &mut Budget,
+) -> Result<ExactPoint, GeometryError> {
+    let vertices = polygons
+        .iter()
+        .flat_map(|p| p.ring.iter().cloned())
+        .collect::<BTreeSet<_>>();
+    budget.spend(vertices.len())?;
+    if vertices.is_empty() {
+        return Err(GeometryError::UnrepresentableBrepBoolean);
+    }
+    let mut p: ExactPoint = std::array::from_fn(|_| Rational::zero());
+    for vertex in &vertices {
+        for (sum, value) in p.iter_mut().zip(vertex) {
+            *sum += value;
+        }
+        // Pair intersections can introduce unrelated rational denominators.
+        // Bound the accumulator before another addition grows it further.
+        check_point(&p)?;
+    }
+    for value in &mut p {
+        *value /= Rational::from_integer(vertices.len().into());
+    }
+    check_point(&p)?;
+    Ok(p)
+}
+
+pub(super) fn assemble_union(
+    output: Vec<Polygon<'_>>,
+    witnesses: &[ExactPoint],
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Vec<UnionBody>, GeometryError> {
+    let exact = output.clone();
+    let result = rebuild(output, tolerance, budget)?;
     let shells = result.edge_connected_face_components();
     let mut outer = Vec::new();
     let mut cavities = Vec::new();
@@ -193,7 +246,7 @@ pub fn union_convex_breps(
         let p = &exact[cavity[0]].ring[0];
         let mut candidates = Vec::new();
         for (index, faces) in outer.iter().enumerate() {
-            if contains(p, faces, &exact, &mut budget)? {
+            if contains(p, faces, &exact, budget)? {
                 candidates.push(index);
             }
         }
@@ -203,7 +256,7 @@ pub fn union_convex_breps(
             let mut innermost = true;
             for &other in &candidates {
                 if other != candidate {
-                    innermost &= contains(witness, &outer[other], &exact, &mut budget)?;
+                    innermost &= contains(witness, &outer[other], &exact, budget)?;
                 }
             }
             if innermost && owner.replace(candidate).is_some() {
@@ -213,27 +266,15 @@ pub fn union_convex_breps(
         attached[owner.ok_or(GeometryError::UnrepresentableBrepBoolean)?].push(cavity.clone());
     }
     let mut sources = vec![Vec::new(); outer.len()];
-    for (input, brep) in breps.iter().enumerate() {
-        // The average of all vertices lies strictly inside a full-dimensional
-        // convex operand, so it cannot be on the resulting union boundary.
-        let mut p: ExactPoint = std::array::from_fn(|_| Rational::zero());
-        budget.spend(brep.vertices.len())?;
-        for vertex in &brep.vertices {
-            for (sum, value) in p.iter_mut().zip(point(vertex.point)) {
-                *sum += value;
-            }
-        }
-        for value in &mut p {
-            *value /= Rational::from_integer(brep.vertices.len().into());
-        }
+    for (input, p) in witnesses.iter().enumerate() {
         let mut owner = None;
         for (index, faces) in outer.iter().enumerate() {
-            if !contains(&p, faces, &exact, &mut budget)? {
+            if !contains(p, faces, &exact, budget)? {
                 continue;
             }
             let mut inside_void = false;
             for cavity in &attached[index] {
-                inside_void |= contains(&p, cavity, &exact, &mut budget)?;
+                inside_void |= contains(p, cavity, &exact, budget)?;
             }
             if !inside_void && owner.replace(index).is_some() {
                 return Err(GeometryError::UnrepresentableBrepBoolean);
@@ -251,18 +292,13 @@ pub fn union_convex_breps(
         if !brep.is_solid() || sources[index].is_empty() {
             return Err(GeometryError::UnrepresentableBrepBoolean);
         }
-        components.push(BrepUnionComponent {
+        components.push(UnionBody {
             brep,
-            boundary_source_indices: sources[index]
-                .iter()
-                .copied()
-                .filter(|&source| boundary_sources[source])
-                .collect(),
-            source_indices: std::mem::take(&mut sources[index]),
-            face_sources: faces.iter().map(|&i| face_sources[i]).collect(),
+            operand_indices: std::mem::take(&mut sources[index]),
+            faces,
         });
     }
-    components.sort_by_key(|component| component.source_indices[0]);
+    components.sort_by_key(|component| component.operand_indices[0]);
     Ok(components)
 }
 

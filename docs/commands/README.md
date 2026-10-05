@@ -24,6 +24,7 @@ Rhino's complete command set is still a work in progress.
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
 - [Union convex polyhedral solids](boolean-union.md)
+- [Intersect convex polyhedral solids and sets](boolean-intersection.md)
 - [Extract individual surface faces](extract-srf.md)
 - [Circular pipe surfaces and solids](pipe.md)
 - [Cap planar surface, B-rep, and mesh holes](cap.md)

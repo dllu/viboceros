@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_defaults",
+      "case": "defaults"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_corner",
+      "case": "corner"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_delete_no",
+      "case": "delete_no"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_post_reverse",
+      "case": "post_reverse"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_pre_reverse",
+      "case": "pre_reverse"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets",
+      "case": "two_sets"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_reverse",
+      "case": "two_sets_reverse"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_pre_single",
+      "case": "pre_single"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_three_chain",
+      "case": "three_chain"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_three_common",
+      "case": "three_common"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_three_disjoint",
+      "case": "three_disjoint"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_contained",
+      "case": "contained"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_contains",
+      "case": "contains"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_equal",
+      "case": "equal"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_boundary_contained",
+      "case": "boundary_contained"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_touch",
+      "case": "touch"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_single",
+      "case": "single"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_cancel_selection",
+      "case": "cancel_selection"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_cancel_options",
+      "case": "cancel_options"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_cancel_picked",
+      "case": "cancel_picked"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_undo_redo",
+      "case": "undo_redo"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_remember",
+      "case": "remember"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_multi",
+      "case": "two_sets_multi"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_disjoint",
+      "case": "two_sets_disjoint"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_one_disjoint",
+      "case": "two_sets_one_disjoint"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_partial_coplanar",
+      "case": "partial_coplanar"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_first_reverse",
+      "case": "two_sets_first_reverse"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_common",
+      "case": "two_sets_common"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_delete_no",
+      "case": "two_sets_delete_no"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_two_sets_cancel",
+      "case": "two_sets_cancel"
+    },
+    {
+      "op": "boolean_intersection_command",
+      "id": "boolean_intersection_pre_delete_no_multiple",
+      "case": "pre_delete_no_multiple"
+    }
+  ]
+}

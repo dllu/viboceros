@@ -16,6 +16,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 
 - [Convex polyhedral Boolean kernel and native evidence](convex-booleans.md)
 - [BooleanUnion command workflows and native evidence](commands/boolean-union.md)
+- [BooleanIntersection common-set and two-set workflows](commands/boolean-intersection.md)
 - [Viewport caching and performance](viewport-caching.md)
 - [Opt-in offscreen GPU tests](gpu-tests.md)
 - [Imported surface shading and mesh checks](imported-shading.md)

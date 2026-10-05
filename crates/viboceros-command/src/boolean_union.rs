@@ -3,7 +3,7 @@ use super::*;
 use viboceros_geometry::{convex_brep_boundary_interactions, union_convex_breps};
 
 #[cfg(test)]
-mod tests;
+pub(crate) mod tests;
 
 const USAGE: &str = "BooleanUnion [DeleteInput=Yes|No] [MergeCoplanarFaces=Yes|No]";
 

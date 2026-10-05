@@ -2,7 +2,7 @@ use super::*;
 use serde_json::{Value, json};
 use viboceros_document::{GroupId, LayerId};
 
-fn box_brep(bounds: [[f64; 2]; 3]) -> Brep {
+pub(crate) fn box_brep(bounds: [[f64; 2]; 3]) -> Brep {
     let frame = Frame3::try_from_directions(
         Point3::try_from([0.; 3]).unwrap(),
         Vector3::try_new(1., 0., 0.).unwrap(),
@@ -20,7 +20,7 @@ fn capture() -> Value {
     .unwrap()
 }
 
-fn setup(before: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
+pub(crate) fn setup(before: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
     let mut doc = Document::default();
     let mut ids = Vec::new();
     let mut layers = Vec::new();
@@ -69,7 +69,12 @@ fn setup(before: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>
     (doc, ids, layers, groups)
 }
 
-fn snapshot(doc: &Document, ids: &[ObjectId], layers: &[LayerId], groups: &[GroupId]) -> Value {
+pub(crate) fn snapshot(
+    doc: &Document,
+    ids: &[ObjectId],
+    layers: &[LayerId],
+    groups: &[GroupId],
+) -> Value {
     Value::Array(doc.objects().map(|o| {
         let a = o.attributes();
         let c = a.object_color();
@@ -92,7 +97,7 @@ fn snapshot(doc: &Document, ids: &[ObjectId], layers: &[LayerId], groups: &[Grou
     }).collect())
 }
 
-fn compare(actual: &Value, expected: &Value, path: &str) {
+pub(crate) fn compare(actual: &Value, expected: &Value, path: &str) {
     match (actual, expected) {
         (Value::Number(a), Value::Number(b)) => {
             let epsilon = if path.ends_with("volume") || path.contains("centroid") {
@@ -120,8 +125,8 @@ fn compare(actual: &Value, expected: &Value, path: &str) {
     }
 }
 
-type Boundary = Vec<Vec<Vec<[f64; 3]>>>;
-fn regions(b: &Brep) -> Boundary {
+pub(crate) type Boundary = Vec<Vec<Vec<[f64; 3]>>>;
+pub(crate) fn regions(b: &Brep) -> Boundary {
     b.faces()
         .iter()
         .map(|f| {
@@ -180,7 +185,7 @@ fn on_boundary(p: [f64; 3], regions: &Boundary) -> bool {
         inside
     })
 }
-fn witnesses(a: &Boundary, b: &Boundary, label: &str) {
+pub(crate) fn witnesses(a: &Boundary, b: &Boundary, label: &str) {
     for face in a {
         for ring in face {
             for i in 0..ring.len() {

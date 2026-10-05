@@ -14,7 +14,11 @@ const MAX_INPUT_FACES: usize = 256;
 const MAX_OUTPUT_FACES: usize = 4096;
 const EXACT_WORK_LIMIT: usize = 2_000_000;
 const MAX_RATIONAL_BITS: u64 = 8192;
+mod intersection;
 mod merge;
+pub use intersection::{
+    BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,
+};
 mod union;
 pub use union::{BrepUnionComponent, convex_brep_boundary_interactions, union_convex_breps};
 
@@ -65,6 +69,27 @@ impl Polygon<'_> {
             ..self.clone()
         }
     }
+}
+
+fn source_faces(
+    breps: &[&Brep],
+    output: &[Polygon<'_>],
+    budget: &mut Budget,
+) -> Result<Vec<[usize; 2]>, GeometryError> {
+    let mut sources = BTreeMap::new();
+    for (input, brep) in breps.iter().enumerate() {
+        budget.spend(brep.faces.len())?;
+        for (face, value) in brep.faces.iter().enumerate() {
+            sources
+                .entry(std::ptr::from_ref(value))
+                .or_insert([input, face]);
+        }
+    }
+    budget.spend(output.len())?;
+    Ok(output
+        .iter()
+        .map(|p| sources[&std::ptr::from_ref(p.source)])
+        .collect())
 }
 
 impl Brep {

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleBooleanIntersectionFinal_20261004",
+  "engine_version": "8.32.26160.13001",
+  "command_witnesses": 32,
+  "full_native_parity": false,
+  "scope_notes": [
+    "Public BooleanIntersection commands ran at idle in an empty owned document on private Xvfb. No proprietary implementation was inspected.",
+    "Fresh private-scheme defaults were measured first; other recipes seeded DeleteInput with owned overlapping boxes.",
+    "An empty second set computes the common intersection of the entire first set. A populated second set intersects the union of each set.",
+    "Snapshots retain EndCommand and script-return state, original retention, metadata, groups, selection, cancellation, remembered options and undo/redo.",
+    "These convex polyhedral witnesses do not establish arbitrary curved geometry parity, continuous boundary error, internal coplanar seam ownership or native kernel speed."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_intersection_probe.py": "f1a3ef18bd4f722f4465b5261f2ee4c76f322cd09f94458819aa3ebee4093be0",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/fixtures/boolean_intersection_command.json": "4e06232c76bf3188812597ada004e64d92f4b8035e172c41f1ee54582c2ab27a",
+    "tools/rhino_oracle/observations/boolean_intersection_command.json": "7985823a0627c9871828e9ce7f9437d586c72b962097a86a6e80a132f63c247d"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "59e68f701c85e48fb9ba46d3a102be5fafe6aa195e211b899594b43016d35b18",
+    "tools/rhino_oracle/rhino_worker.py": "18057feb4c0891df53b199a3e3ca14f015e3e64969d0ce8b800aa3c13010d659"
+  }
+}

@@ -481,3 +481,123 @@ fn boundary_sources_include_owned_coplanar_patches_but_exclude_consumed_interior
     assert_eq!(report.boundary_source_indices, [0, 1]);
     assert!(report.face_sources.iter().all(|source| source[0] != 2));
 }
+
+#[test]
+fn common_intersection_clips_original_operands_once_and_preserves_face_ownership() {
+    for (bounds, volume) in [
+        (vec![[[0., 3.]; 3], [[1., 4.]; 3], [[2., 5.]; 3]], 1.),
+        (vec![[[0., 2.]; 3], [[1., 3.]; 3], [[2., 4.]; 3]], 0.),
+        (
+            vec![[[0., 2.]; 3], [[0.5, 1.5]; 3], [[0.75, 1.25]; 3]],
+            0.125,
+        ),
+        (vec![[[0., 2.]; 3]; 3], 8.),
+    ] {
+        let operands = bounds
+            .into_iter()
+            .enumerate()
+            .map(|(i, b)| {
+                let brep = cube(b);
+                if i % 2 == 0 { brep } else { brep.reversed() }
+            })
+            .collect::<Vec<_>>();
+        let before = operands.clone();
+        let result =
+            intersect_convex_breps(&operands.iter().collect::<Vec<_>>(), Tolerance::DEFAULT)
+                .unwrap();
+        if let Some(result) = &result {
+            assert_eq!(result.face_sources.len(), result.brep.faces.len());
+            for (face, [owner, source]) in result.brep.faces.iter().zip(&result.face_sources) {
+                assert_eq!(face.surface, operands[*owner].faces[*source].surface);
+            }
+        }
+        measure(result.map(|r| r.brep), volume, None);
+        assert_eq!(operands, before);
+    }
+    assert!(
+        intersect_convex_breps(&[], Tolerance::DEFAULT)
+            .unwrap()
+            .is_none()
+    );
+    let a = cube([[0., 2.]; 3]);
+    assert!(matches!(
+        intersect_convex_breps(&vec![&a; 129], Tolerance::DEFAULT),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+}
+
+#[test]
+fn set_intersections_keep_union_coverage_maximal_pairs_disjoint_bodies_and_cavities() {
+    let a = cube([[0., 2.]; 3]);
+    let b = cube([[1., 3.]; 3]);
+    let c = cube([[0.5, 1.5]; 3]);
+    let report = intersect_convex_brep_sets(&[&a], &[&b, &c], Tolerance::DEFAULT)
+        .unwrap()
+        .remove(0);
+    assert_eq!(report.pairs, [[0, 0], [0, 1]]);
+    assert_eq!(report.maximal_pairs, [[0, 0], [0, 1]]);
+    measure(Some(report.brep), 1.875, Some(10.5));
+    let a = cube([[0., 3.]; 3]);
+    let b = cube([[1., 4.]; 3]);
+    let c = cube([[2., 5.]; 3]);
+    let report = intersect_convex_brep_sets(&[&a, &b], &[&c], Tolerance::DEFAULT)
+        .unwrap()
+        .remove(0);
+    assert_eq!(report.pairs, [[0, 0], [1, 0]]);
+    assert_eq!(report.maximal_pairs, [[1, 0]]);
+    measure(Some(report.brep), 8., Some(24.));
+    let targets = [cube([[0., 2.]; 3]), cube([[3., 5.], [0., 2.], [0., 2.]])];
+    let cutter = cube([[1., 4.], [0., 2.], [0., 2.]]);
+    let reports = intersect_convex_brep_sets(
+        &targets.iter().collect::<Vec<_>>(),
+        &[&cutter],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(reports.len(), 2);
+    for (i, report) in reports.into_iter().enumerate() {
+        assert_eq!(report.pairs, [[i, 0]]);
+        measure(Some(report.brep), 4., Some(16.));
+    }
+    let outer = cube([[0., 4.]; 3]);
+    let cutters = walls(0., 4., 1., 3.);
+    let before = cutters.clone();
+    let report = intersect_convex_brep_sets(
+        &[&outer],
+        &cutters.iter().collect::<Vec<_>>(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .remove(0);
+    assert_eq!(report.brep.edge_connected_face_components().len(), 2);
+    let labels = vec![0; report.brep.faces.len()];
+    let result = report
+        .brep
+        .try_merge_coplanar_polygon_faces_in_groups(&labels, Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+    measure(Some(result), 56., Some(120.));
+    assert_eq!(cutters, before);
+}
+
+#[test]
+fn interior_witness_bounds_rational_accumulation_before_next_addition() {
+    use num_bigint::BigInt;
+    let brep = cube([[0., 2.]; 3]);
+    let mut budget = Budget(EXACT_WORK_LIMIT);
+    let mut polygons = extract(&brep, &mut budget).unwrap();
+    let fraction = |bits: usize| Rational::new(BigInt::from(1), (BigInt::from(1) << bits) - 1);
+    polygons[0].ring = vec![
+        [fraction(8191), Rational::zero(), Rational::zero()],
+        [fraction(8190), Rational::zero(), Rational::zero()],
+        [
+            Rational::zero(),
+            Rational::from_integer(1.into()),
+            Rational::zero(),
+        ],
+    ];
+    assert!(matches!(
+        union::interior_witness(&polygons[..1], &mut budget),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+}

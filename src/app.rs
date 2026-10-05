@@ -139,6 +139,7 @@ mod angle;
 mod circle;
 use circle::CircleSizeMode;
 mod bend_prompt;
+mod boolean_intersection;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -9263,6 +9264,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod boolean_intersection;
     mod boolean_union;
     mod circle_fit_grips;
     mod circle_fit_points;

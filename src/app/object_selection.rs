@@ -206,8 +206,8 @@ impl VibocerosApp {
         if self.group_prompt == Some(group_prompt::GroupPrompt::Target) {
             return Some(ObjectSelectionFilter::Grouped);
         }
-        if self.intersection_prompt.is_some() {
-            return Some(ObjectSelectionFilter::Parametric);
+        if let Some(prompt) = &self.intersection_prompt {
+            return Some(prompt.filter());
         }
         self.object_prompt
             .as_ref()

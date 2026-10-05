@@ -10,7 +10,8 @@ outer shells or an inward cavity.
 
 The [BooleanUnion command](commands/boolean-union.md) now adds selection,
 DeleteInput, remembered options, source metadata and history for the certified
-convex polyhedral scope. BooleanIntersection and BooleanDifference command
+convex polyhedral scope. [BooleanIntersection](commands/boolean-intersection.md)
+adds common-set and two-set command workflows. BooleanDifference command
 workflows remain unimplemented.
 
 ## Supported inputs and construction
@@ -55,6 +56,17 @@ needed, and keeps exterior edge curves. Collinear exterior subdivisions can be
 removed with `try_merge_all_edges`. Ambiguous junctions fail explicitly. Kernel
 tests cover multiple-body chains, contact and nesting classification, coplanar
 faces and through-holes, enclosed cavities, and nested islands.
+
+`intersect_convex_breps` clips each original face inside all other operands to
+construct their common convex region, retaining original face ownership.
+`intersect_convex_brep_sets` intersects every original cross-set pair exactly,
+removes redundant contained pair regions, then unions those exact regions before
+rounding once. Reports retain all nonempty pairs, maximal pairs, and original
+face sources. Material components and cavities use the same decomposition as
+union. Combined original input count is limited to 128, and total intermediate
+pair fragments are limited to 4,096 in addition to the shared work/output limits.
+The kernel implements mathematical nested/equal intersections; the native
+command adapter applies its separately observed boundary-interaction policy.
 
 ## Verification
 

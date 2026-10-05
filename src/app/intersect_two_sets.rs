@@ -8,12 +8,28 @@ use viboceros_document::{ObjectId, SelectionMode};
 pub(super) struct TwoSetsPrompt {
     pub(super) first: Option<Vec<ObjectId>>,
     pub(super) output_layer: &'static str,
-    original_selection: Vec<ObjectId>,
+    pub(super) original_selection: Vec<ObjectId>,
+    pub(super) boolean: Option<BooleanIntersectionOptions>,
+}
+
+#[derive(Clone, Debug)]
+pub(super) struct BooleanIntersectionOptions {
+    pub(super) delete_input: bool,
+    pub(super) preselected_first: bool,
 }
 
 impl TwoSetsPrompt {
+    pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.boolean.is_some() {
+            ObjectSelectionFilter::SurfaceComponents
+        } else {
+            ObjectSelectionFilter::Parametric
+        }
+    }
     pub(super) fn hint(&self) -> &'static str {
-        if self.first.is_some() {
+        if self.boolean.is_some() && self.first.is_some() {
+            "Select second set; empty Enter intersects the first set, Esc cancels"
+        } else if self.first.is_some() {
             "Select second set; Enter intersects, Esc cancels"
         } else {
             "Select first set; Enter continues, Esc cancels"
@@ -40,6 +56,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_boolean_intersection_prompt(input) {
+            return true;
+        }
         let mut words = input.split_whitespace();
         if !words.next().is_some_and(|name| {
             name.trim_start_matches(['_', '-'])
@@ -71,6 +90,7 @@ impl VibocerosApp {
             first: (!first.is_empty()).then_some(first),
             output_layer,
             original_selection,
+            boolean: None,
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));
@@ -78,8 +98,16 @@ impl VibocerosApp {
         true
     }
 
-    fn log_intersection_prompt(&mut self) {
+    pub(super) fn log_intersection_prompt(&mut self) {
         if let Some(prompt) = &self.intersection_prompt {
+            if let Some(options) = &prompt.boolean {
+                self.push_log(format!(
+                    "BooleanIntersection: {}; DeleteInput={}",
+                    prompt.hint(),
+                    if options.delete_input { "Yes" } else { "No" }
+                ));
+                return;
+            }
             self.push_log(format!(
                 "IntersectTwoSets: {}; OutputLayer={}",
                 prompt.hint(),
@@ -92,6 +120,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.boolean.is_some() {
+            return self.continue_boolean_intersection_prompt(prompt, input);
+        }
         if input.is_empty() {
             let selected = self
                 .document
@@ -190,7 +221,12 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
-        if self.intersection_prompt.is_none() {
+        if let Some(prompt) = &self.intersection_prompt {
+            if prompt.boolean.is_some() {
+                self.select_boolean_intersection_objects(ids, mode);
+                return;
+            }
+        } else {
             return;
         }
         let requested = ids.into_iter().collect::<std::collections::BTreeSet<_>>();
@@ -215,6 +251,15 @@ impl VibocerosApp {
     pub(super) fn cancel_intersection_prompt(&mut self, announce: bool) {
         if let Some(prompt) = self.intersection_prompt.take() {
             self.command_input.clear();
+            if prompt.boolean.is_some() {
+                let _ = self
+                    .document
+                    .select_command_results(prompt.first.unwrap_or_default());
+                if announce {
+                    self.push_log("Cancelled BooleanIntersection".into());
+                }
+                return;
+            }
             if announce {
                 let _ = self
                     .document
