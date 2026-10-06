@@ -4931,14 +4931,14 @@ impl VibocerosApp {
             if !self.start_taper_session(picked_sources) {
                 return true;
             }
-        } else if translation_prompt::supports(command) {
-            if !self.start_translation_session(
+        } else if translation_prompt::supports(command)
+            && !self.start_translation_session(
                 command,
                 picked_sources,
                 translation_options.unwrap().0,
-            ) {
-                return true;
-            }
+            )
+        {
+            return true;
         }
         if let InteractiveCommand::EvaluateUv { options } = command {
             self.push_log(options.command_line());
@@ -8705,9 +8705,10 @@ impl eframe::App for VibocerosApp {
             .plane_prompt
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
-        let face_pick = if self.selecting_move_normal_reference() {
-            Some(FacePickMode::SurfaceAndBrepAny)
-        } else if self.picking_mirror_object() || self.picking_scale_by_plane_object() {
+        let face_pick = if self.selecting_move_normal_reference()
+            || self.picking_mirror_object()
+            || self.picking_scale_by_plane_object()
+        {
             Some(FacePickMode::SurfaceAndBrepAny)
         } else if plane_object_pick && !plane_curve_pick {
             Some(if plane_surface_pick {
@@ -8719,9 +8720,8 @@ impl eframe::App for VibocerosApp {
             .hole_prompt
             .as_ref()
             .is_some_and(untrim_holes::HolePrompt::picking_faces)
+            || self.picking_extract_faces()
         {
-            Some(FacePickMode::SurfaceAndBrepAny)
-        } else if self.picking_extract_faces() {
             Some(FacePickMode::SurfaceAndBrepAny)
         } else if matches!(
             self.active_command,
@@ -8752,10 +8752,7 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         }
-        .filter(|_| {
-            (model_input_active || plane_object_pick)
-                && (self.plane_prompt.is_none() || plane_object_pick)
-        });
+        .filter(|_| plane_object_pick || model_input_active && self.plane_prompt.is_none());
         let edge_pick = (self
             .edge_prompt
             .as_ref()

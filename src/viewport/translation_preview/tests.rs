@@ -41,9 +41,11 @@ pub(crate) fn captured_destination(
             view.last_rect.unwrap(),
             document,
             input.drafting,
-            input.point_filter,
-            input.point_constraint,
-            input.translation_constraint,
+            drafting::CursorConstraints {
+                filter: input.point_filter,
+                point: input.point_constraint,
+                translation: input.translation_constraint,
+            },
         )
         .unwrap();
     let preview = view

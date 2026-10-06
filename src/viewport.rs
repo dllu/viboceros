@@ -1520,24 +1520,23 @@ impl Viewport {
             && !input
                 .point_filter
                 .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+            && let Some(pointer) = response.hover_pos()
         {
-            if let Some(pointer) = response.hover_pos() {
-                let explicit = drafting_cursor
-                    .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
-                let point = explicit
-                    .map(|cursor| cursor.point)
-                    .or_else(|| self.normal_surface_point(pointer, rect, document, target));
-                drafting_cursor = point.map(|point| drafting::DraftingCursor {
-                    pointer,
-                    source_point: point,
-                    point,
-                    object_snap: explicit.and_then(|cursor| cursor.object_snap),
-                    track: None,
-                    ortho: false,
-                    ortho_z: false,
-                    grid_snapped: false,
-                });
-            }
+            let explicit = drafting_cursor
+                .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
+            let point = explicit
+                .map(|cursor| cursor.point)
+                .or_else(|| self.normal_surface_point(pointer, rect, document, target));
+            drafting_cursor = point.map(|point| drafting::DraftingCursor {
+                pointer,
+                source_point: point,
+                point,
+                object_snap: explicit.and_then(|cursor| cursor.object_snap),
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            });
         }
         if (drafting.active
             || input.zoom_window
@@ -1739,8 +1738,7 @@ impl Viewport {
             rect,
             document,
             viewport_index,
-            input.selection_preview,
-            input.selection_preview_ids,
+            (input.selection_preview, input.selection_preview_ids),
             object_preview,
         );
         self.paint_component_highlights(&painter, rect, document, input.component_highlights);

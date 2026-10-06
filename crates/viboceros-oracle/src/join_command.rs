@@ -22,7 +22,7 @@ pub struct JoinFixture {
 #[serde(untagged)]
 enum Source {
     Brep {
-        brep: crate::brep_source::BrepSourceFixture,
+        brep: Box<crate::brep_source::BrepSourceFixture>,
     },
     Mesh {
         vertices: Vec<[f64; 3]>,

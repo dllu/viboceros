@@ -8,6 +8,12 @@ pub(super) struct FilterOutputOptions {
     pub border_only: bool,
 }
 
+pub(super) struct FilterErrors {
+    pub unsupported: CommandError,
+    pub no_matches: CommandError,
+    pub no_borders: CommandError,
+}
+
 struct Plan {
     source: ObjectId,
     remainder: Option<TriangleMesh>,
@@ -59,9 +65,11 @@ pub(super) fn extract_filtered_mesh_faces(
         document,
         command,
         output,
-        unsupported,
-        no_matches,
-        no_borders,
+        FilterErrors {
+            unsupported,
+            no_matches,
+            no_borders,
+        },
         None,
         |_, mesh| {
             let mut indices = Vec::new();
@@ -79,12 +87,15 @@ pub(super) fn extract_selected_mesh_faces(
     document: &mut Document,
     command: &'static str,
     output: FilterOutputOptions,
-    unsupported: CommandError,
-    no_matches: CommandError,
-    no_borders: CommandError,
+    errors: FilterErrors,
     target: Option<ObjectId>,
     mut select: impl FnMut(ObjectId, &TriangleMesh) -> Result<Vec<usize>, GeometryError>,
 ) -> Result<String, CommandError> {
+    let FilterErrors {
+        unsupported,
+        no_matches,
+        no_borders,
+    } = errors;
     let tolerance = document.tolerance();
     let mut source_count = 0;
     let mut face_count = 0_usize;

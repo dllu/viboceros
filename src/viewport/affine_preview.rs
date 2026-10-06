@@ -182,9 +182,11 @@ impl Viewport {
             rect,
             document,
             drafting,
-            filter,
-            constraint,
-            input.translation_constraint.or(line),
+            drafting::CursorConstraints {
+                filter,
+                point: constraint,
+                translation: input.translation_constraint.or(line),
+            },
         );
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))

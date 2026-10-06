@@ -357,9 +357,9 @@ fn apply_step(
             .collect::<Result<Vec<_>, _>>()?;
         let faces = faces
             .iter()
-            .map(|indices| match indices.as_slice() {
-                &[a, b, c] => Ok(MeshFace::Triangle([a, b, c])),
-                &[a, b, c, d] => Ok(MeshFace::Quad([a, b, c, d])),
+            .map(|indices| match *indices.as_slice() {
+                [a, b, c] => Ok(MeshFace::Triangle([a, b, c])),
+                [a, b, c, d] => Ok(MeshFace::Quad([a, b, c, d])),
                 _ => Err(ProbeError::FixtureInvariant(
                     "mesh face needs three or four vertices",
                 )),

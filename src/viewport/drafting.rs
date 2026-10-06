@@ -20,6 +20,13 @@ pub(super) struct DraftingCursor {
     pub(super) grid_snapped: bool,
 }
 
+#[derive(Clone, Copy, Default)]
+pub(super) struct CursorConstraints {
+    pub(super) filter: Option<viboceros_drafting::PointFilterSession>,
+    pub(super) point: Option<viboceros_drafting::PointConstraintState>,
+    pub(super) translation: Option<viboceros_command::translation::DestinationConstraint>,
+}
+
 impl Viewport {
     /// Translation line picks remain usable when the CPlane is edge-on. A
     /// free mouse pick follows the closest point to the viewing line; object snaps
@@ -30,10 +37,13 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         input: DraftingInput,
-        filter: Option<viboceros_drafting::PointFilterSession>,
-        point_constraint: Option<viboceros_drafting::PointConstraintState>,
-        translation: Option<viboceros_command::translation::DestinationConstraint>,
+        constraints: CursorConstraints,
     ) -> Option<DraftingCursor> {
+        let CursorConstraints {
+            filter,
+            point: point_constraint,
+            translation,
+        } = constraints;
         let translation = translation.filter(|_| {
             !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
         });
@@ -53,7 +63,7 @@ impl Viewport {
             return cursor;
         };
         let projected = if filter.is_none()
-            && !cursor.is_some_and(|cursor| cursor.object_snap.is_some())
+            && cursor.is_none_or(|cursor| cursor.object_snap.is_none())
         {
             self.drafting_view_line_relative_to(translation.anchor, pointer, rect)
                 .and_then(|(origin, direction)| translation.project_view_line(origin, direction))

@@ -2,8 +2,7 @@
 use super::*;
 use serde_json::{Value, json};
 
-#[path = "../../../crates/viboceros-oracle/src/test_json.rs"]
-mod test_json;
+use crate::test_json;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

@@ -32,9 +32,10 @@ fn vertical_mouse_picks_work_with_an_edge_on_cplane_and_keep_explicit_snap_sourc
             rect,
             &document,
             input,
-            None,
-            None,
-            Some(translation),
+            CursorConstraints {
+                translation: Some(translation),
+                ..Default::default()
+            },
         )
         .unwrap();
     let expected = Point3::try_new(1., 2., 9.).unwrap();
@@ -52,9 +53,10 @@ fn vertical_mouse_picks_work_with_an_edge_on_cplane_and_keep_explicit_snap_sourc
             rect,
             &document,
             input,
-            None,
-            None,
-            Some(translation),
+            CursorConstraints {
+                translation: Some(translation),
+                ..Default::default()
+            },
         )
         .unwrap();
     assert_eq!(cursor.source_point, aimed);
@@ -68,9 +70,11 @@ fn vertical_mouse_picks_work_with_an_edge_on_cplane_and_keep_explicit_snap_sourc
             rect,
             &document,
             input,
-            Some(filter),
-            None,
-            Some(translation),
+            CursorConstraints {
+                filter: Some(filter),
+                translation: Some(translation),
+                ..Default::default()
+            },
         )
         .unwrap();
     assert_eq!(cursor.source_point, aimed);
@@ -102,13 +106,14 @@ fn translation_line_mouse_picks_keep_camera_local_precision_at_large_origins() {
                     anchor: Some(anchor),
                     ..Default::default()
                 },
-                None,
-                None,
-                Some(DestinationConstraint {
-                    anchor,
-                    direction: Some(plane.z_axis()),
-                    distance: None,
-                }),
+                CursorConstraints {
+                    translation: Some(DestinationConstraint {
+                        anchor,
+                        direction: Some(plane.z_axis()),
+                        distance: None,
+                    }),
+                    ..Default::default()
+                },
             )
             .unwrap();
         assert!(

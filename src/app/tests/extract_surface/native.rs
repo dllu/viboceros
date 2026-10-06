@@ -8,8 +8,7 @@ use egui::{PointerButton, Pos2, Rect, Vec2};
 use serde_json::{Value, json};
 use viboceros_oracle::{ExtractFixture, observe_component_document};
 
-#[path = "../../../../crates/viboceros-oracle/src/test_json.rs"]
-mod test_json;
+use crate::test_json;
 
 fn frame(
     app: &VibocerosApp,

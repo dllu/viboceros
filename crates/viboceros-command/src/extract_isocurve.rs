@@ -59,13 +59,13 @@ impl Command for ExtractIsocurveCommand {
             match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
                     if let Some(point) = options.point {
-                        if let Some((_, face)) = options.target {
-                            if face != 0 {
-                                return Err(CommandError::ExtractIsocurveFaceIndexOutOfRange {
-                                    face,
-                                    face_count: 1,
-                                });
-                            }
+                        if let Some((_, face)) = options.target
+                            && face != 0
+                        {
+                            return Err(CommandError::ExtractIsocurveFaceIndexOutOfRange {
+                                face,
+                                face_count: 1,
+                            });
                         }
                         let (u, v) = surface.closest_parameters(point, document.tolerance())?;
                         append_surface_isocurves_at(&mut curves, surface, u, v, options.direction)?;

@@ -774,10 +774,10 @@ fn cplane_object_aligns_to_a_joined_polycurve() {
 fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     let mut app = test_app();
     enter(&mut app, "CPlane All=Yes");
-    assert_eq!(app.cplane_options.origin_all, true);
+    assert!(app.cplane_options.origin_all);
     app.cancel_plane_prompt();
     enter(&mut app, "CPlane Through w1,2,3");
-    assert_eq!(app.cplane_options.through_all, false);
+    assert!(!app.cplane_options.through_all);
     assert_eq!(
         app.viewports[0].construction_plane().origin(),
         point(0., 0., 3.)
@@ -804,7 +804,7 @@ fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
         point(4., 8., 6.)
     );
     enter(&mut app, "CPlane All=No w0,0,0");
-    assert_eq!(app.cplane_options.origin_all, false);
+    assert!(!app.cplane_options.origin_all);
     assert_eq!(
         app.viewports[0].construction_plane().origin(),
         point(0., 0., 0.)
@@ -815,7 +815,7 @@ fn cplane_all_settings_survive_prompts_and_apply_to_later_commands() {
     );
     enter(&mut app, "CPlane Through All=No");
     app.cancel_plane_prompt();
-    assert_eq!(app.cplane_options.through_all, false);
+    assert!(!app.cplane_options.through_all);
 }
 
 #[test]

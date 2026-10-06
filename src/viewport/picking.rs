@@ -686,8 +686,6 @@ mod tests {
         let empty_output = frame(vec![event(empty, false)]);
         assert!(empty_output.face_click.is_none());
         assert!(empty_output.picked_point.is_none());
-        drop(frame);
-
         document.clear_selection();
         assert_eq!(
             view.pick_selected_face(pointer, rect, &document, FacePickMode::MeshAndBrepAny),

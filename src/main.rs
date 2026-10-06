@@ -1,5 +1,8 @@
 mod app;
 mod sidebar;
+#[cfg(test)]
+#[path = "../crates/viboceros-oracle/src/test_json.rs"]
+mod test_json;
 mod viewport;
 mod viewport_gpu;
 

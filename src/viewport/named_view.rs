@@ -311,7 +311,7 @@ mod tests {
         source.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(705.0, 365.0)));
         let mut encoded =
             Viewport::named_view_to_3dm(source.named_view_snapshot(), "Clip".into()).unwrap();
-        let half_width = 55.861660601873735;
+        let half_width = 55.861_660_601_873_74;
         let half_height = half_width * 365.0 / 705.0;
         encoded.frustum = [
             -half_width,

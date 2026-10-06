@@ -17,6 +17,14 @@ enum PipeCap {
     Round,
 }
 
+#[derive(Clone, Copy)]
+struct PipeOptions {
+    blend: SweepBlend,
+    fit_rail: bool,
+    cap: PipeCap,
+    wall_thickness: Option<Real>,
+}
+
 impl Command for PipeCommand {
     fn name(&self) -> &'static str {
         "Pipe"
@@ -143,6 +151,12 @@ impl Command for PipeCommand {
         } else {
             cap
         };
+        let options = PipeOptions {
+            blend,
+            fit_rail,
+            cap,
+            wall_thickness,
+        };
         if !document.is_object_selectable(source_id) {
             return Err(CommandError::Usage(USAGE));
         }
@@ -177,10 +191,7 @@ impl Command for PipeCommand {
                     &polycurve,
                     [start_radius, end_radius],
                     &stations,
-                    blend,
-                    fit_rail,
-                    cap,
-                    wall_thickness,
+                    options,
                     tolerance,
                 )?)
             }
@@ -202,10 +213,7 @@ impl Command for PipeCommand {
                     polycurve,
                     [start_radius, end_radius],
                     &stations,
-                    blend,
-                    fit_rail,
-                    cap,
-                    wall_thickness,
+                    options,
                     tolerance,
                 )?)
             }
@@ -214,9 +222,7 @@ impl Command for PipeCommand {
                 rail,
                 [start_radius, end_radius],
                 &stations,
-                blend,
-                cap,
-                wall_thickness,
+                options,
                 tolerance,
             )?,
             Geometry::Line(line) => {
@@ -408,12 +414,15 @@ fn segmented_polycurve_pipe(
     polycurve: &PolyCurve3,
     endpoint_radii: [Real; 2],
     stations: &[(Real, Real)],
-    blend: SweepBlend,
-    fit_rail: bool,
-    cap: PipeCap,
-    wall_thickness: Option<Real>,
+    options: PipeOptions,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
+    let PipeOptions {
+        blend,
+        fit_rail,
+        cap,
+        wall_thickness,
+    } = options;
     if rail.is_closed()? {
         if fit_rail
             && stations.is_empty()
@@ -1152,11 +1161,15 @@ fn station_pipe(
     rail: CurveRef<'_>,
     endpoint_radii: [Real; 2],
     stations: &[(Real, Real)],
-    blend: SweepBlend,
-    cap: PipeCap,
-    wall_thickness: Option<Real>,
+    options: PipeOptions,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
+    let PipeOptions {
+        blend,
+        cap,
+        wall_thickness,
+        ..
+    } = options;
     if rail.is_closed()? {
         return Err(CommandError::Usage(USAGE));
     }

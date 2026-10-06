@@ -49,9 +49,11 @@ impl Command for ExtractConnectedMeshFacesCommand {
                 make_copy: options.make_copy,
                 border_only: options.border_only,
             },
-            CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
-            CommandError::NoConnectedMeshFaces,
-            CommandError::NoConnectedMeshFaceBorders,
+            mesh_face_filter::FilterErrors {
+                unsupported: CommandError::UnsupportedExtractConnectedMeshFacesGeometry,
+                no_matches: CommandError::NoConnectedMeshFaces,
+                no_borders: CommandError::NoConnectedMeshFaceBorders,
+            },
             options.object,
             |id, mesh| {
                 let face = if let Some((picked_id, face)) = picked {

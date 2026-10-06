@@ -312,33 +312,28 @@ pub fn open_3dm_with_named_views(
     Ok((document, message, named_views))
 }
 
-pub fn open_3dm_with_views(
-    path: &str,
-) -> Result<
-    (
-        Document,
-        String,
-        Vec<ThreeDmNamedView>,
-        Vec<ThreeDmViewport>,
-    ),
-    CommandError,
-> {
+pub type Opened3dmWithViews = (
+    Document,
+    String,
+    Vec<ThreeDmNamedView>,
+    Vec<ThreeDmViewport>,
+);
+pub type Opened3dmWithViewsAndCplanes = (
+    Document,
+    String,
+    Vec<ThreeDmNamedView>,
+    Vec<ThreeDmViewport>,
+    Vec<ThreeDmNamedCPlane>,
+);
+
+pub fn open_3dm_with_views(path: &str) -> Result<Opened3dmWithViews, CommandError> {
     let (document, message, views, viewports, _) = open_3dm_with_views_and_cplanes(path)?;
     Ok((document, message, views, viewports))
 }
 
 pub fn open_3dm_with_views_and_cplanes(
     path: &str,
-) -> Result<
-    (
-        Document,
-        String,
-        Vec<ThreeDmNamedView>,
-        Vec<ThreeDmViewport>,
-        Vec<ThreeDmNamedCPlane>,
-    ),
-    CommandError,
-> {
+) -> Result<Opened3dmWithViewsAndCplanes, CommandError> {
     let mut model = viboceros_io::read_3dm_file_with_model_tolerance(path)?;
     let views = std::mem::take(&mut model.named_views);
     let viewports = std::mem::take(&mut model.viewports);

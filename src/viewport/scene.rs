@@ -273,10 +273,10 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         viewport_index: usize,
-        preview: Option<ObjectSelectionFilter>,
-        preview_ids: &[ObjectId],
+        selection_preview: (Option<ObjectSelectionFilter>, &[ObjectId]),
         transform: Option<ObjectPreview<'_>>,
     ) {
+        let (preview, preview_ids) = selection_preview;
         crate::viewport_gpu::paint(
             painter,
             rect,

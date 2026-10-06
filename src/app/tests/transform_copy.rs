@@ -6,8 +6,7 @@ use viboceros_geometry::{
     Brep, Circle3, CircularArc3, LineSegment, NurbsSurface, Polyline3, Vector3,
 };
 
-#[path = "../../../crates/viboceros-oracle/src/test_json.rs"]
-mod test_json;
+use crate::test_json;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.to_owned();
@@ -876,11 +875,9 @@ fn replay_native(request: &str, observed: &str, count: usize, invocation: Invoca
                     viboceros_document::ObjectAttributes::on_layer(app.document.current_layer_id())
                         .with_name(format!("source-{index}"))
                         .with_object_color(ColorRgb::new(10 + index as u8, 30, 50));
-                let id = app
-                    .document
+                app.document
                     .add_geometry_with_attributes(Geometry::Point(point), attributes)
-                    .unwrap();
-                id
+                    .unwrap()
             })
             .collect::<Vec<_>>();
         if operation["grouped"].as_bool().unwrap() {

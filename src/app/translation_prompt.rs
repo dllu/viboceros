@@ -267,7 +267,7 @@ impl VibocerosApp {
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             if session.normal.is_some() && session.placement.is_none() {
                 self.cancel_interactive_command(true);
-            } else if session.placement.is_none() && !(session.vertical && !session.copy) {
+            } else if session.placement.is_none() && (!session.vertical || session.copy) {
                 match viboceros_command::selected_bounding_box_center(
                     &self.document,
                     viboceros_command::CommandContext::default().construction_plane,

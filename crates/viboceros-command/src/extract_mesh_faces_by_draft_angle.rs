@@ -32,9 +32,11 @@ impl Command for ExtractMeshFacesByDraftAngleCommand {
                 make_copy: options.make_copy,
                 border_only: options.border_only,
             },
-            CommandError::UnsupportedExtractMeshFacesByDraftAngleGeometry,
-            CommandError::NoMeshFacesInDraftAngleRange,
-            CommandError::NoMeshFaceDraftAngleBorders,
+            mesh_face_filter::FilterErrors {
+                unsupported: CommandError::UnsupportedExtractMeshFacesByDraftAngleGeometry,
+                no_matches: CommandError::NoMeshFacesInDraftAngleRange,
+                no_borders: CommandError::NoMeshFaceDraftAngleBorders,
+            },
             None,
             |_, mesh| mesh.faces_by_draft_angle(options.viewward, options.start, options.end),
         )

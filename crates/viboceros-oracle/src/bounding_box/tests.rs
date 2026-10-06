@@ -42,9 +42,7 @@ fn permanent_commands_check_output_topology_selection_groups_and_report_counts()
                 value["reported_boxes"],
                 if failure {
                     0
-                } else if partial {
-                    1
-                } else if fixture.cumulative {
+                } else if partial || fixture.cumulative {
                     1
                 } else {
                     fixture.sources.len()

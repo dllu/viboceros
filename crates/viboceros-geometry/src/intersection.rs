@@ -642,14 +642,24 @@ pub fn surface_surface_intersection_events(
         && let Some(plane) = second.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
-            first, frame, radius, height, second, plane, true, tolerance,
+            first,
+            (frame, radius, height),
+            second,
+            plane,
+            true,
+            tolerance,
         );
     }
     if let Some((frame, radius, height)) = second_cylinder
         && let Some(plane) = first.plane(tolerance)?
     {
         return cylinder_planar_surface_intersection_events(
-            second, frame, radius, height, first, plane, false, tolerance,
+            second,
+            (frame, radius, height),
+            first,
+            plane,
+            false,
+            tolerance,
         );
     }
     if let (Some(first_data), Some(second_data)) = (first_cylinder, second_cylinder) {
@@ -1037,14 +1047,13 @@ fn sphere_planar_surface_intersection_events(
 
 fn cylinder_planar_surface_intersection_events(
     cylinder_surface: &NurbsSurface,
-    frame: crate::Frame3,
-    radius: Real,
-    height: Real,
+    cylinder: (crate::Frame3, Real, Real),
     planar_surface: &NurbsSurface,
     plane: Plane,
     cylinder_first: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let (frame, radius, height) = cylinder;
     let axis = frame.z_axis().as_vector();
     let normal = plane.normal().as_vector();
     let parallel = axis.cross(normal)?.length()? <= tolerance.angular();

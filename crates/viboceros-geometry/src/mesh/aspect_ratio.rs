@@ -181,9 +181,9 @@ mod tests {
                         .iter()
                         .map(|value| value.as_u64().unwrap() as u32)
                         .collect::<Vec<_>>();
-                    match values.as_slice() {
-                        &[a, b, c] => MeshFace::Triangle([a, b, c]),
-                        &[a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                    match *values.as_slice() {
+                        [a, b, c] => MeshFace::Triangle([a, b, c]),
+                        [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
                         _ => panic!("{id}: unsupported face"),
                     }
                 })

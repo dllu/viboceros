@@ -509,8 +509,7 @@ pub fn surface_frame_with_flip(
     surface_frame_at_parameters(
         surface,
         reversed,
-        u,
-        v,
+        [u, v],
         origin_pick.is_some(),
         x_pick,
         flip,
@@ -549,8 +548,7 @@ pub fn surface_frame_on_brep_face(
     surface_frame_at_parameters(
         face.surface(),
         face.is_reversed(),
-        u,
-        v,
+        [u, v],
         true,
         x_pick,
         flip,
@@ -561,13 +559,13 @@ pub fn surface_frame_on_brep_face(
 fn surface_frame_at_parameters(
     surface: &NurbsSurface,
     reversed: bool,
-    u: f64,
-    v: f64,
+    parameters: [f64; 2],
     picked_origin: bool,
     x_pick: Option<Point3>,
     flip: bool,
     tolerance: Tolerance,
 ) -> Result<Frame3, PlaneCommandError> {
+    let [u, v] = parameters;
     let (origin, x, y) = surface.evaluate_with_derivatives(u, v)?;
     let y = if reversed ^ (flip && picked_origin) {
         y.scaled(-1.0)?

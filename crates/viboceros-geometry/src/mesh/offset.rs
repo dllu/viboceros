@@ -610,9 +610,9 @@ mod tests {
                         .iter()
                         .map(|index| index.as_u64().unwrap() as u32)
                         .collect::<Vec<_>>();
-                    match indices.as_slice() {
-                        &[a, b, c] => MeshFace::Triangle([a, b, c]),
-                        &[a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                    match *indices.as_slice() {
+                        [a, b, c] => MeshFace::Triangle([a, b, c]),
+                        [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
                         _ => panic!("{id}: invalid face size"),
                     }
                 })

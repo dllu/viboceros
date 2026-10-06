@@ -27,8 +27,10 @@ impl SetPointOptions {
     }
 
     pub fn parse_with_copy_default(arguments: &[&str], copy: bool) -> Result<Self, CommandError> {
-        let mut options = Self::default();
-        options.copy = copy;
+        let mut options = Self {
+            copy,
+            ..Self::default()
+        };
         let mut seen = [false; 5];
         for argument in arguments {
             let field = options.update(argument)?;
