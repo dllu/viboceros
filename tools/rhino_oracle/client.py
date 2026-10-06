@@ -408,6 +408,11 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('Surface curve image requires a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
+            from .surface_pullback_endpoints_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Pullback endpoints requires a private Rhino settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'compound_pairs' for op in request.get('operations', [])):
             from .compound_pairs_probe import validate_request
             if self.settings_scheme is None:
@@ -777,6 +782,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
             if any(op.get('op') == 'surface_curve_image' for op in request.get('operations', [])):
                 for name in ('surface_curve_image_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
+                for name in ('surface_pullback_endpoints_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
             if any(op.get('op') == 'compound_pairs' for op in request.get('operations', [])):
                 for name in ('compound_pairs_probe.py', 'compound_recipe_probe.py', 'compound_intersection_probe.py', 'join_probe.py', 'merge_edges_probe.py'):

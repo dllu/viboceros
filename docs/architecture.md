@@ -26,7 +26,8 @@ unimplemented. The [continuous surface/trim certificate](surface-curve-certifica
 now proves complete matched-parameter edge correspondence with exact rational
 tensor composition and conservative bounds at knot crossings. Surface cutting
 requires these proofs for retained, fitted, and endpoint-adjusted cutting trims;
-the certified fitter refines inconclusive proposals. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
+the [fixed-endpoint fitter](constrained-surface-pullbacks.md) refines inconclusive
+proposals while retaining shared topological endpoints. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
 uses exact plane arrangements and two-sided material classification for concave
 faces, holes, cavities, and multiple shells. Model-space certificates admit
 bounded UV roundoff in earlier results, while rejecting intersecting input faces

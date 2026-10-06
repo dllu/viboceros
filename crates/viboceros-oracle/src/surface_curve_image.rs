@@ -1,6 +1,8 @@
 //! Continuous surface/UV certificates in the Python debugging protocol.
 use super::*;
 use viboceros_geometry::{Point2, WeightedPoint2};
+#[cfg(test)]
+mod pullback_tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct SurfaceCurveDeviationFixture {
@@ -8,6 +10,52 @@ pub struct SurfaceCurveDeviationFixture {
     parameter_curve: NurbsCurveDefinition,
     spatial_curve: NurbsCurveDefinition,
     limit: f64,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct SurfacePullbackFixture {
+    surface: NurbsSurfaceDefinition,
+    spatial_curve: NurbsCurveDefinition,
+    limit: f64,
+    endpoints: Option<[[f64; 2]; 2]>,
+}
+
+pub(super) fn pullback(
+    f: &SurfacePullbackFixture,
+    tolerance: Tolerance,
+    iterations: u32,
+) -> Result<(Value, u64), ProbeError> {
+    let surface = nurbs_surface_from_definition(&f.surface)?;
+    let spatial = nurbs_curve_from_definition(&f.spatial_curve)?;
+    let tolerance = Tolerance::try_new(f.limit, tolerance.relative(), tolerance.angular())?;
+    let endpoints = f
+        .endpoints
+        .map(|p| -> Result<[Point2; 2], GeometryError> {
+            Ok([Point2::try_from(p[0])?, Point2::try_from(p[1])?])
+        })
+        .transpose()?;
+    let ((uv, bound), elapsed) = measure(iterations, || {
+        let uv = match endpoints {
+            Some(points) => {
+                surface.try_pullback_curve_certified_with_endpoints(&spatial, points, tolerance)?
+            }
+            None => surface.try_pullback_curve_certified(&spatial, tolerance)?,
+        };
+        let bound = surface
+            .parameter_curve_deviation_bound(&uv, &spatial, tolerance.absolute())?
+            .ok_or(GeometryError::SurfacePullbackDidNotConverge {
+                tolerance: tolerance.absolute(),
+            })?;
+        Ok::<_, GeometryError>((uv, bound))
+    })?;
+    Ok((
+        json!({"parameter_curve":{
+        "degree":uv.degree(),"domain":[*uv.domain().start(),*uv.domain().end()],"knots":uv.knots(),
+        "control_points":uv.control_points().iter().map(|p|json!({"point":[p.point().x(),p.point().y(),0.],"weight":p.weight()})).collect::<Vec<_>>()
+    },"bound":bound,"certified":true,"fixed_endpoints":f.endpoints,
+       "correspondence":"normalized_curve_domains"}),
+        elapsed,
+    ))
 }
 
 pub(super) fn run(

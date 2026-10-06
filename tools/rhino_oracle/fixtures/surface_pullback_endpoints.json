@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_planar_forward",
+      "case": "planar_forward"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_planar_reverse",
+      "case": "planar_reverse"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_cylinder_forward",
+      "case": "cylinder_forward"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_cylinder_reverse",
+      "case": "cylinder_reverse"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_sphere_forward",
+      "case": "sphere_forward"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_sphere_reverse",
+      "case": "sphere_reverse"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_torus_forward",
+      "case": "torus_forward"
+    },
+    {
+      "op": "surface_pullback_endpoints",
+      "id": "pullback_endpoints_torus_reverse",
+      "case": "torus_reverse"
+    }
+  ]
+}

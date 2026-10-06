@@ -1,6 +1,6 @@
 use crate::{
     GeometryError, MAX_CURVE_DIVISION_POINTS, NurbsCurve, NurbsCurve2, NurbsSurface, Point2,
-    Point3, Real, Tolerance, Vector3, require_finite,
+    Point3, Real, Tolerance, Vector3, WeightedPoint2, require_finite,
 };
 mod certificate;
 #[cfg(test)]
@@ -172,6 +172,60 @@ fn hermite_segment(
     })
 }
 
+fn fixed_pullback_node(
+    surface: &NurbsSurface,
+    curve: &NurbsCurve,
+    parameter: Real,
+    derivative_parameter: Real,
+    point: Point2,
+    tolerance: Tolerance,
+    numerical_tolerance: Tolerance,
+) -> Result<PullbackNode, GeometryError> {
+    if surface
+        .evaluate(point.x(), point.y())?
+        .distance_to(curve.evaluate(parameter)?)?
+        > tolerance.absolute()
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "fixed pullback endpoint exceeds the model-space tolerance",
+        });
+    }
+    let (_, tangent) = curve.evaluate_with_derivative(derivative_parameter)?;
+    Ok(PullbackNode {
+        parameter,
+        point,
+        derivative: pullback_derivative(surface, point, tangent, numerical_tolerance)?,
+    })
+}
+
+pub(crate) fn constrain_curve_endpoints(
+    curve: NurbsCurve2,
+    endpoints: [Point2; 2],
+) -> Result<Option<NurbsCurve2>, GeometryError> {
+    if curve.start_point()? == endpoints[0] && curve.end_point()? == endpoints[1] {
+        return Ok(Some(curve));
+    }
+    let domain = curve.domain();
+    let order = curve.degree() + 1;
+    let knots = curve.knots();
+    if !knots[..order].iter().all(|k| *k == *domain.start())
+        || !knots[knots.len() - order..]
+            .iter()
+            .all(|k| *k == *domain.end())
+    {
+        return Ok(None);
+    }
+    let mut controls = curve.control_points().to_vec();
+    let last = controls.len() - 1;
+    controls[0] = WeightedPoint2::try_new(endpoints[0], controls[0].weight())?;
+    controls[last] = WeightedPoint2::try_new(endpoints[1], controls[last].weight())?;
+    Ok(Some(NurbsCurve2::try_new_rational(
+        curve.degree(),
+        controls,
+        knots.to_vec(),
+    )?))
+}
+
 fn evaluate_cubic(controls: [Point2; 4], parameter: Real) -> Result<Point2, GeometryError> {
     let complement = 1.0 - parameter;
     let start_weight = complement * complement * complement;
@@ -330,7 +384,7 @@ impl NurbsSurface {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
-        self.pullback_curve(curve, tolerance, false)
+        self.pullback_curve(curve, tolerance, false, None)
     }
 
     fn pullback_curve(
@@ -338,14 +392,66 @@ impl NurbsSurface {
         curve: &NurbsCurve,
         tolerance: Tolerance,
         certified: bool,
+        endpoints: Option<[Point2; 2]>,
     ) -> Result<NurbsCurve2, GeometryError> {
-        if let Ok(exact) = self.try_pullback_exact_curve(curve, tolerance)
+        if let Some(points) = endpoints {
+            for (point, parameter) in points
+                .into_iter()
+                .zip([*curve.domain().start(), *curve.domain().end()])
+            {
+                if !self.domain_u().contains(&point.x()) || !self.domain_v().contains(&point.y()) {
+                    return Err(GeometryError::InvalidControlNet {
+                        context: "fixed pullback endpoints must lie in the natural surface domain",
+                    });
+                }
+                if self
+                    .evaluate(point.x(), point.y())?
+                    .distance_to(curve.evaluate(parameter)?)?
+                    > tolerance.absolute()
+                {
+                    return Err(GeometryError::InvalidControlNet {
+                        context: "fixed pullback endpoint exceeds the model-space tolerance",
+                    });
+                }
+            }
+        }
+        let proposal = match self.try_pullback_exact_curve(curve, tolerance) {
+            Ok(exact) => match endpoints {
+                Some(points) => constrain_curve_endpoints(exact, points)?,
+                None => Some(exact),
+            },
+            Err(_) => None,
+        };
+        if let Some(exact) = proposal
             && (!certified
                 || self
                     .parameter_curve_deviation_bound(&exact, curve, tolerance.absolute())?
                     .is_some())
         {
             return Ok(exact);
+        }
+
+        if let Some(points) = endpoints {
+            // A full closed isocurve has distinct UV seam endpoints even
+            // though its spatial endpoints coincide. This generic proposal
+            // needs neither primitive recognition nor closest-point guesses.
+            let domain = curve.domain();
+            let line = NurbsCurve2::try_new(
+                1,
+                points.to_vec(),
+                vec![
+                    *domain.start(),
+                    *domain.start(),
+                    *domain.end(),
+                    *domain.end(),
+                ],
+            )?;
+            if self
+                .parameter_curve_deviation_bound(&line, curve, tolerance.absolute())?
+                .is_some()
+            {
+                return Ok(line);
+            }
         }
 
         let certificate = if certified {
@@ -380,22 +486,46 @@ impl NurbsSurface {
             } else {
                 span_end.next_down().max(span_start)
             };
-            let start = pullback_node(
-                self,
-                curve,
-                span_start,
-                derivative_start,
-                tolerance,
-                fitter.numerical_tolerance,
-            )?;
-            let end = pullback_node(
-                self,
-                curve,
-                span_end,
-                derivative_end,
-                tolerance,
-                fitter.numerical_tolerance,
-            )?;
+            let start = if let Some(points) = endpoints.filter(|_| span_start == domain_start) {
+                fixed_pullback_node(
+                    self,
+                    curve,
+                    span_start,
+                    derivative_start,
+                    points[0],
+                    tolerance,
+                    fitter.numerical_tolerance,
+                )?
+            } else {
+                pullback_node(
+                    self,
+                    curve,
+                    span_start,
+                    derivative_start,
+                    tolerance,
+                    fitter.numerical_tolerance,
+                )?
+            };
+            let end = if let Some(points) = endpoints.filter(|_| span_end == domain_end) {
+                fixed_pullback_node(
+                    self,
+                    curve,
+                    span_end,
+                    derivative_end,
+                    points[1],
+                    tolerance,
+                    fitter.numerical_tolerance,
+                )?
+            } else {
+                pullback_node(
+                    self,
+                    curve,
+                    span_end,
+                    derivative_end,
+                    tolerance,
+                    fitter.numerical_tolerance,
+                )?
+            };
             fitter.append_span(start, end, 0)?;
         }
         let parameter_curve = piecewise_cubic(&fitter.segments)?;

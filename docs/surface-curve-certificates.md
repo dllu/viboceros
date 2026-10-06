@@ -130,6 +130,11 @@ become the kernel's separate `NurbsCurve2` type. Results contain `certified`,
 `bound`, `limit`, and the explicit `normalized_curve_domains` correspondence.
 The closed native capture operation is `surface_curve_image`.
 
+The companion [`surface_pullback_certified` operation](constrained-surface-pullbacks.md#python-debugging-api)
+fits a UV curve, optionally with both endpoints fixed, and returns its full
+definition and continuous bound. Surface cutting uses this fitter when merely
+adjusting endpoint controls cannot obtain a certificate.
+
 ```sh
 cargo test --release -p viboceros-geometry surface_pullback
 cargo test --release -p viboceros-oracle surface_curve_image

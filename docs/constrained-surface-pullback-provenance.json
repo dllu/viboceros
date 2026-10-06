@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOraclePullbackEndpoints_20261005",
+  "engine_version": "8.32.26160.13001",
+  "native_sdk_records": 8,
+  "native_pullback_successes": 8,
+  "source_purity_agreements": 8,
+  "sample_stations_per_record": 129,
+  "full_native_parity": false,
+  "retained_native_parameterization_differences": [
+    "planar_forward",
+    "planar_reverse"
+  ],
+  "scope_notes": [
+    "Eight closed public SDK recipes at idle in an empty owned document on private Xvfb and a fresh private scheme.",
+    "Public Surface.Pullback and IsoCurve, full surface/spatial/native UV definitions, source purity, paired and closest-locus samples, and independent fixed-endpoint image witnesses are retained.",
+    "Surface.Pullback specifies a geometric closest-locus fit, not affine correspondence of curve domains. The two planar native curves have large matched-parameter sample error while retaining small locus errors; this discrepancy is not normalized away.",
+    "The fixed endpoints are caller constraints for the independent local certified fitter. Native Pullback does not accept those constraints. Native data checks source definitions and endpoint geometry, not equivalence of the two fit contracts.",
+    "This evidence does not establish arbitrary periodic chart tracking, singular fitting, trim topology, curved Boolean construction or general native performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_pullback_endpoints_probe.py": "b0abf38b4b6c20c5edaf7ba1d1a5e565ab609ca6b23447dd2bc95d081ee292d3",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/surface_pullback_endpoints.json": "4d940abf33c521a935dd70f4773e5f5046eb0c98af6e56a431b7156b9c89dddd",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "tools/rhino_oracle/observations/surface_pullback_endpoints.json": "71593c8aa90b81679ed1a196a5a25fd9738ecd9febdc71cd237934a3e0e436a0"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "ca18a4dd0733411dac0b08a3cbff90263156eebc20defb9ca3c9475942d04165",
+    "tools/rhino_oracle/rhino_worker.py": "d3e3f4d67ff64ba450806fcd0f764dda031e8cedaf3e6e4bf5a181910f532ebb"
+  }
+}

@@ -59,7 +59,11 @@ pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
 mod tolerance;
 use tolerance::scaled_tolerance;
+mod surface_cut_pullback;
 mod surface_edit;
+#[cfg(test)]
+use surface_cut_pullback::parameter_curve_matches_spatial_curve;
+use surface_cut_pullback::surface_split_parameter_curve;
 mod trim_image;
 mod trim_iso;
 mod trim_region;
@@ -6885,130 +6889,6 @@ fn canonical_surface_split_curve(curve: &NurbsCurve) -> Result<NurbsCurve, Geome
     curve.try_trimmed_with_normalized_end_weights(curve.domain())
 }
 
-fn surface_split_parameter_curve(
-    surface: &NurbsSurface,
-    curve: &NurbsCurve,
-    start: Point2,
-    end: Point2,
-    tolerance: Tolerance,
-) -> Result<NurbsCurve2, GeometryError> {
-    let curve_domain = curve.domain();
-    let line = NurbsCurve2::try_new(
-        1,
-        vec![start, end],
-        vec![
-            *curve_domain.start(),
-            *curve_domain.start(),
-            *curve_domain.end(),
-            *curve_domain.end(),
-        ],
-    )?;
-    let line_matches = parameter_curve_matches_spatial_curve(surface, &line, curve, tolerance)?;
-    let parameter_curve = match surface.try_pullback_bilinear_curve(curve, tolerance) {
-        Ok(_) if curve.degree() == 1 && curve.control_points().len() == 2 && line_matches => {
-            return Ok(line);
-        }
-        Ok(parameter_curve) => parameter_curve,
-        Err(_) if line_matches => {
-            // Rhino's general-surface pullback stores an exact straight trim as
-            // one cubic Bezier, while its bilinear path retains the source form.
-            let delta_x = end.x() - start.x();
-            let delta_y = end.y() - start.y();
-            let cubic = NurbsCurve2::try_new(
-                3,
-                vec![
-                    start,
-                    Point2::try_new(
-                        delta_x.mul_add(1.0 / 3.0, start.x()),
-                        delta_y.mul_add(1.0 / 3.0, start.y()),
-                    )?,
-                    Point2::try_new(
-                        delta_x.mul_add(2.0 / 3.0, start.x()),
-                        delta_y.mul_add(2.0 / 3.0, start.y()),
-                    )?,
-                    end,
-                ],
-                vec![
-                    *curve_domain.start(),
-                    *curve_domain.start(),
-                    *curve_domain.start(),
-                    *curve_domain.start(),
-                    *curve_domain.end(),
-                    *curve_domain.end(),
-                    *curve_domain.end(),
-                    *curve_domain.end(),
-                ],
-            )?;
-            if !parameter_curve_matches_spatial_curve(surface, &cubic, curve, tolerance)? {
-                return invalid(
-                    "a cubic surface split p-curve has no continuous model-space certificate",
-                );
-            }
-            return Ok(cubic);
-        }
-        Err(_) => surface.try_pullback_curve_certified(curve, tolerance)?,
-    };
-    let parameter_tolerance = [
-        trim_parameter_epsilon(
-            [*surface.domain_u().start(), *surface.domain_u().end()],
-            tolerance,
-        ),
-        trim_parameter_epsilon(
-            [*surface.domain_v().start(), *surface.domain_v().end()],
-            tolerance,
-        ),
-    ];
-    let actual_start = parameter_curve.start_point()?;
-    let actual_end = parameter_curve.end_point()?;
-    if !parameter_points_near(actual_start, start, parameter_tolerance)
-        || !parameter_points_near(actual_end, end, parameter_tolerance)
-    {
-        // Clipping an approximate pullback and pulling back the clipped edge
-        // independently need not produce identical endpoint parameters. Keep
-        // the shared topological endpoints and qualify the adjusted trim in
-        // model space, where the caller's approximation budget is defined.
-        let domain = parameter_curve.domain();
-        let end_knots = parameter_curve.degree() + 1;
-        if !parameter_curve.knots()[..end_knots]
-            .iter()
-            .all(|knot| *knot == *domain.start())
-            || !parameter_curve.knots()[parameter_curve.knots().len() - end_knots..]
-                .iter()
-                .all(|knot| *knot == *domain.end())
-        {
-            return invalid("a surface split p-curve must be clamped to adjust its endpoints");
-        }
-        let mut controls = parameter_curve.control_points().to_vec();
-        let last = controls.len() - 1;
-        controls[0] = WeightedPoint2::try_new(start, controls[0].weight())?;
-        controls[last] = WeightedPoint2::try_new(end, controls[last].weight())?;
-        let adjusted = NurbsCurve2::try_new_rational(
-            parameter_curve.degree(),
-            controls,
-            parameter_curve.knots().to_vec(),
-        )?;
-        if !parameter_curve_matches_spatial_curve(surface, &adjusted, curve, tolerance)? {
-            return invalid("a surface split p-curve endpoint adjustment exceeds model tolerance");
-        }
-        return Ok(adjusted);
-    }
-    if !parameter_curve_matches_spatial_curve(surface, &parameter_curve, curve, tolerance)? {
-        return invalid("a surface split p-curve has no continuous model-space certificate");
-    }
-    Ok(parameter_curve)
-}
-
-fn parameter_curve_matches_spatial_curve(
-    surface: &NurbsSurface,
-    parameter_curve: &NurbsCurve2,
-    spatial_curve: &NurbsCurve,
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    Ok(surface
-        .parameter_curve_deviation_bound(parameter_curve, spatial_curve, tolerance.absolute())?
-        .is_some())
-}
-
 fn try_surface_cutting_face(
     surface: NurbsSurface,
     reversed: bool,
@@ -9840,6 +9720,83 @@ mod tests {
             surface_split_parameter_curve(&surface, &curve, start, wrong_end, Tolerance::DEFAULT,)
                 .is_err()
         );
+    }
+
+    #[test]
+    fn valid_shared_endpoint_adjustment_refits_instead_of_rejecting_the_cut() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(0.75, 1., 0.),
+            point(0., 1., 0.),
+        ])
+        .unwrap();
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0., 0., 0.),
+                point(7. / 16., 0., 0.),
+                point(7. / 8., 0.5, 0.),
+            ],
+            vec![2., 2., 2., 5., 5., 5.],
+        )
+        .unwrap();
+        let proposal = NurbsCurve2::try_new(
+            3,
+            vec![
+                Point2::try_new(0., 0.).unwrap(),
+                Point2::try_new(7. / 24., 0.).unwrap(),
+                Point2::try_new(4. / 7., 1. / 6.).unwrap(),
+                Point2::try_new(1., 0.5).unwrap(),
+            ],
+            vec![2., 2., 2., 2., 5., 5., 5., 5.],
+        )
+        .unwrap();
+        let maximum = (0..=2048)
+            .map(|i| {
+                let t = curve.parameter_at(i as Real / 2048.).unwrap();
+                let uv = proposal.evaluate(t).unwrap();
+                surface
+                    .evaluate(uv.x(), uv.y())
+                    .unwrap()
+                    .distance_to(curve.evaluate(t).unwrap())
+                    .unwrap()
+            })
+            .fold(0_f64, Real::max);
+        let tolerance = Tolerance::try_new(maximum * 1.0001, 1e-14, 1e-12).unwrap();
+        let original = surface
+            .try_pullback_curve_certified(&curve, tolerance)
+            .unwrap();
+        assert_eq!(original.control_points().len(), 4);
+        let start = Point2::try_new(0., 0.).unwrap();
+        let end = Point2::try_new(1., 0.5 + tolerance.absolute() / 4.).unwrap();
+        assert!(
+            surface
+                .evaluate(end.x(), end.y())
+                .unwrap()
+                .distance_to(curve.evaluate(*curve.domain().end()).unwrap())
+                .unwrap()
+                < tolerance.absolute()
+        );
+        let mut controls = original.control_points().to_vec();
+        let last = controls.len() - 1;
+        controls[last] = WeightedPoint2::try_new(end, controls[last].weight()).unwrap();
+        let adjusted =
+            NurbsCurve2::try_new_rational(original.degree(), controls, original.knots().to_vec())
+                .unwrap();
+        assert!(
+            !parameter_curve_matches_spatial_curve(&surface, &adjusted, &curve, tolerance).unwrap()
+        );
+        let sources = (surface.clone(), curve.clone());
+        let result =
+            surface_split_parameter_curve(&surface, &curve, start, end, tolerance).unwrap();
+        assert_eq!(result.start_point().unwrap(), start);
+        assert_eq!(result.end_point().unwrap(), end);
+        assert_eq!(result.domain(), curve.domain());
+        assert!(
+            parameter_curve_matches_spatial_curve(&surface, &result, &curve, tolerance).unwrap()
+        );
+        assert_eq!((surface, curve), sources);
     }
 
     #[test]

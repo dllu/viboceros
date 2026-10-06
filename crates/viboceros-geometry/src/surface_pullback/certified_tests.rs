@@ -136,3 +136,97 @@ fn certified_fitting_rejects_a_surface_excursion_hidden_at_every_sample_station(
     );
     assert_eq!((surface, spatial), originals);
 }
+
+#[test]
+fn fixed_seam_endpoints_unwrap_closed_isocurves_in_both_directions() {
+    let frame = crate::Frame3::try_from_x_and_normal(
+        p(0., 0., 0.),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 1e-14, 1e-12).unwrap();
+    for (surface, v) in [
+        (NurbsSurface::try_cylinder(frame, 2., 0., 3.).unwrap(), 1.5),
+        (NurbsSurface::try_sphere(frame, 2.).unwrap(), 0.),
+        (NurbsSurface::try_torus(frame, 4., 1.).unwrap(), 0.),
+    ] {
+        let iso = surface.isocurve_u(v).unwrap();
+        for reverse in [false, true] {
+            let curve = if reverse {
+                iso.reversed().unwrap()
+            } else {
+                iso.clone()
+            };
+            let mut endpoints = [
+                Point2::try_new(*surface.domain_u().start(), v).unwrap(),
+                Point2::try_new(*surface.domain_u().end(), v).unwrap(),
+            ];
+            if reverse {
+                endpoints.reverse();
+            }
+            let sources = (surface.clone(), curve.clone());
+            let uv = surface
+                .try_pullback_curve_certified_with_endpoints(&curve, endpoints, tolerance)
+                .unwrap();
+            assert_eq!(
+                [uv.start_point().unwrap(), uv.end_point().unwrap()],
+                endpoints
+            );
+            assert_ne!(endpoints[0], endpoints[1]);
+            assert_eq!(uv.domain(), curve.domain());
+            assert!(
+                surface
+                    .parameter_curve_deviation_bound(&uv, &curve, tolerance.absolute())
+                    .unwrap()
+                    .is_some()
+            );
+            assert_eq!((&surface, &curve), (&sources.0, &sources.1));
+        }
+    }
+}
+
+#[test]
+fn fixed_endpoints_preserve_unclamped_sources_and_reject_invalid_constraints() {
+    let surface =
+        NurbsSurface::try_bilinear([p(0., 0., 0.), p(2., 0., 0.), p(2., 1., 0.), p(0., 1., 0.)])
+            .unwrap();
+    let curve = NurbsCurve::try_new(
+        2,
+        vec![p(0., 0., 0.), p(1., 0.5, 0.), p(2., 1., 0.)],
+        vec![0., 0., 1., 2., 3., 3.],
+    )
+    .unwrap();
+    let tolerance = Tolerance::try_new(1e-6, 10., 1e-12).unwrap();
+    let endpoints = [
+        Point2::try_new(0.25 + 1e-8, 0.25).unwrap(),
+        Point2::try_new(0.75 - 1e-8, 0.75).unwrap(),
+    ];
+    let sources = (surface.clone(), curve.clone());
+    let uv = surface
+        .try_pullback_curve_certified_with_endpoints(&curve, endpoints, tolerance)
+        .unwrap();
+    assert_eq!(
+        [uv.start_point().unwrap(), uv.end_point().unwrap()],
+        endpoints
+    );
+    assert_eq!(uv.domain(), 1.0..=2.0);
+    assert!(
+        surface
+            .parameter_curve_deviation_bound(&uv, &curve, tolerance.absolute())
+            .unwrap()
+            .is_some()
+    );
+    for bad in [
+        Point2::try_new(1.01, 0.75).unwrap(),
+        Point2::try_new(0.74, 0.75).unwrap(),
+    ] {
+        assert!(
+            surface
+                .try_pullback_curve_certified_with_endpoints(&curve, [endpoints[0], bad], tolerance)
+                .is_err()
+        );
+    }
+    assert_eq!((surface, curve), sources);
+}

@@ -100,8 +100,11 @@ For a non-affine surface, the p-curve may require an adaptive cubic fit.
 Independent pullbacks of a clipped spatial edge can differ slightly at its
 endpoints. The trim is clamped to the shared boundary locations when necessary,
 and the adjusted curve receives a complete model-space certificate across both
-its own knot spans and the spatial edge's spans. Adjustments exceeding document
-tolerance or lacking a certificate fail.
+its own knot spans and the spatial edge's spans. An inconclusive or excessive
+interior error triggers [fixed-endpoint fitting](../constrained-surface-pullbacks.md),
+which refines the trim while retaining the shared endpoints. A cut fails if
+the endpoint images exceed absolute tolerance or the fit cannot obtain a
+continuous certificate at that tolerance.
 The underlying surface and spatial edge remain unchanged.
 Rhino-compatible cutting-object output replaces the source with fresh selected
 pieces and leaves cutters unchanged and deselected. The curve fixture covers

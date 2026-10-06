@@ -24,6 +24,13 @@ and a torus. The local `surface_curve_deviation` operation proves continuous
 matched-parameter error with exact rational bounds. The native sphere boundary
 crossing's different parameter speed remains a recorded diagnostic.
 
+The [fixed-endpoint follow-up](constrained-surface-pullbacks.md) retains eight
+public `Surface.Pullback` and closed-isocurve records. The local
+`surface_pullback_certified` operation accepts optional UV endpoint constraints
+and proves its complete spatial error at absolute tolerance. Native planar
+pullbacks have different parameter speeds; their geometric locus samples and
+the independent endpoint image witnesses remain explicit in the records.
+
 The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
 recipes from private Xvfb and 289 application replays. Complete geometry, tight
 center translations, overlapping groups, metadata, grip display, numeric getter

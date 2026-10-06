@@ -73,7 +73,36 @@ impl NurbsSurface {
         spatial: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
-        let uv = self.pullback_curve(spatial, tolerance, true)?;
+        self.certified_pullback(spatial, tolerance, None)
+    }
+
+    /// Pulls back a spatial curve with both UV endpoints fixed. Exact inverse
+    /// proposals retain their control structure when an endpoint adjustment
+    /// certifies. A straight UV proposal can unwrap a closed spatial isocurve
+    /// across a periodic seam. Otherwise cubic fitting incorporates the fixed
+    /// endpoints into its nodes and refines until the complete image certifies
+    /// at absolute tolerance. The spatial curve and its domain are unchanged.
+    ///
+    /// Endpoints must lie in the natural surface domain and within model-space
+    /// tolerance of the respective spatial endpoints. This proves normalized
+    /// parameter correspondence, not trim simplicity or topology. The regular
+    /// fitter and certificate resource limits also apply.
+    pub fn try_pullback_curve_certified_with_endpoints(
+        &self,
+        spatial: &NurbsCurve,
+        endpoints: [Point2; 2],
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        self.certified_pullback(spatial, tolerance, Some(endpoints))
+    }
+
+    fn certified_pullback(
+        &self,
+        spatial: &NurbsCurve,
+        tolerance: Tolerance,
+        endpoints: Option<[Point2; 2]>,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        let uv = self.pullback_curve(spatial, tolerance, true, endpoints)?;
         if self
             .parameter_curve_deviation_bound(&uv, spatial, tolerance.absolute())?
             .is_none()
