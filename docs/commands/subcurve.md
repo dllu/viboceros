@@ -43,7 +43,9 @@ zero and missing confirmation remain native cancellations. Command and app
 replays compare loci and directed endpoints at `1e-6`, metadata, source retention
 and history. See [provenance](../standalone-subcurve-provenance.json).
 
-Direction locking, FromMidpoint, MarkEnds, B-rep edge references and complete
+[`Mode=MarkEnds`](../subcurve-mark-ends.md) creates default endpoint points while
+retaining the source, with current-layer output and unselected history states.
+Direction locking, FromMidpoint, B-rep edge references and complete
 native Copy-option memory remain outstanding. The recorded cases do not establish
 arbitrary-curve or preview parity.
 

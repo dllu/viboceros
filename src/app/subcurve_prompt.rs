@@ -8,6 +8,7 @@ pub(super) struct SubcurvePrompt {
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
     pub(super) copy: bool,
+    pub(super) mode: viboceros_command::subcurve_input::SubcurveMode,
 }
 impl SubcurvePrompt {
     pub(super) fn hint(&self) -> &'static str {
@@ -24,7 +25,11 @@ impl SubcurvePrompt {
     }
 }
 impl VibocerosApp {
-    pub(super) fn begin_subcurve_prompt(&mut self, copy: bool) {
+    pub(super) fn begin_subcurve_prompt(
+        &mut self,
+        copy: bool,
+        mode: viboceros_command::subcurve_input::SubcurveMode,
+    ) {
         let sources = self
             .document
             .selected_objects()
@@ -41,6 +46,7 @@ impl VibocerosApp {
             start: None,
             length: None,
             copy,
+            mode,
         });
         self.active_command = source.map(|_| InteractiveCommand::SubCrv { start: None, copy });
         if source.is_none() {
@@ -78,6 +84,18 @@ impl VibocerosApp {
         };
         if input.is_empty() {
             self.cancel_interactive_command(true);
+            return true;
+        }
+        if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+            && name.eq_ignore_ascii_case("Mode")
+        {
+            if let Some(mode) = viboceros_command::subcurve_input::SubcurveMode::parse(value) {
+                self.subcurve_prompt.as_mut().unwrap().mode = mode;
+                self.command_input.clear();
+                self.push_log(format!("SubCrv Mode={}", mode.option()));
+            } else {
+                self.push_log("Mode expects Shorten or MarkEnds".into());
+            }
             return true;
         }
         if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
@@ -175,7 +193,7 @@ impl VibocerosApp {
                 self.push_log(prompt.hint().into());
                 return Ok(());
             };
-            let input = if let Some(length) = prompt.length {
+            let mut input = if let Some(length) = prompt.length {
                 format!(
                     "SubCrv Numeric={start},{length},{parameter} Copy={}",
                     if prompt.copy { "Yes" } else { "No" }
@@ -191,6 +209,7 @@ impl VibocerosApp {
                     if prompt.copy { "Yes" } else { "No" }
                 )
             };
+            input.push_str(&format!(" Mode={}", prompt.mode.option()));
             self.document.select_command_results([source])?;
             self.commands.execute(&mut self.document, &input)?;
             self.subcurve_prompt = None;

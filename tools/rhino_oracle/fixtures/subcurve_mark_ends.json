@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_point_forward",
+      "case": "point_forward"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_point_backward",
+      "case": "point_backward"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_forward_copy",
+      "case": "forward_copy"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_forward_replace",
+      "case": "forward_replace"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_backward_copy",
+      "case": "backward_copy"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_backward_replace",
+      "case": "backward_replace"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_negative",
+      "case": "negative"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_clamp",
+      "case": "clamp"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_quadratic",
+      "case": "quadratic"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_closed_forward",
+      "case": "closed_forward"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_closed_backward",
+      "case": "closed_backward"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_closed_full",
+      "case": "closed_full"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_zero",
+      "case": "zero"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_no_confirmation",
+      "case": "no_confirmation"
+    },
+    {
+      "op": "subcurve_mark_ends",
+      "id": "mark_ends_postselect",
+      "case": "postselect"
+    }
+  ]
+}

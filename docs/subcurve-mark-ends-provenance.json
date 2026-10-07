@@ -1,0 +1,26 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleMarkEnds20261007",
+  "recipes": 15,
+  "successful_commands": 13,
+  "markers": 26,
+  "retained_cancellations": [
+    "zero",
+    "no_confirmation"
+  ],
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Public standalone SubCrv Mode=MarkEnds commands in an empty owned document. No proprietary code read.",
+  "limits": [
+    "direction locking and FromMidpoint",
+    "B-rep edges",
+    "native mode memory and reactive History"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_mark_ends_probe.py": "1706d34f74487da2f7e09784d6581a99f78bda3d12ef355dfb762c5f03cd5e73",
+    "tools/rhino_oracle/fixtures/subcurve_mark_ends.json": "00b300c0ae73f8487168c6445637cf788797271bbfc6aa781a227f6bdbfbf305",
+    "tools/rhino_oracle/observations/subcurve_mark_ends.json": "23bfa445685c42e77bdbf72d7a9ee003b7d209400625b2f44ca37624a822928d"
+  }
+}

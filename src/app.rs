@@ -4284,12 +4284,22 @@ impl VibocerosApp {
         } else if normalized == "subcrv" {
             let mut copy = false;
             let mut copy_seen = false;
+            let mut mode_seen = false;
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Mode") {
+                    if mode_seen
+                        || viboceros_command::subcurve_input::SubcurveMode::parse(value).is_none()
+                    {
+                        return false;
+                    }
+                    mode_seen = true;
+                    continue;
+                }
                 if !name.eq_ignore_ascii_case("Copy") || copy_seen {
                     return false;
                 }
@@ -4815,7 +4825,22 @@ impl VibocerosApp {
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
         if let InteractiveCommand::SubCrv { copy, .. } = command {
-            self.begin_subcurve_prompt(copy);
+            let mode = input
+                .split_whitespace()
+                .skip(1)
+                .find_map(|option| {
+                    option
+                        .split_once('=')
+                        .filter(|(name, _)| {
+                            name.trim_start_matches(['_', '-'])
+                                .eq_ignore_ascii_case("Mode")
+                        })
+                        .and_then(|(_, value)| {
+                            viboceros_command::subcurve_input::SubcurveMode::parse(value)
+                        })
+                })
+                .unwrap_or_default();
+            self.begin_subcurve_prompt(copy, mode);
             return true;
         }
         if let InteractiveCommand::ExtractSrf {
@@ -9334,6 +9359,7 @@ mod tests {
     mod smooth;
     mod split_edge;
     mod standalone_subcurve;
+    mod subcurve_mark_ends;
     mod taper;
     mod transform_copy;
     mod translation_preview;

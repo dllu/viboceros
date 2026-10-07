@@ -73,7 +73,7 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
-pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No]";
+pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SubcurveLocation {
@@ -86,6 +86,7 @@ enum SubcurveLocation {
 struct SubcurveOptions {
     location: SubcurveLocation,
     copy: bool,
+    mode: subcurve_input::SubcurveMode,
 }
 
 pub(super) struct SubcurveCommand;
@@ -153,7 +154,15 @@ impl Command for SubcurveCommand {
             }
         };
         document.release_command_selection_on_history_replay([id])?;
-        if options.copy {
+        if options.mode == subcurve_input::SubcurveMode::MarkEnds {
+            let curve = geometry.curve_ref().expect("subcurve result is a curve");
+            let markers = [curve.start_point()?, curve.end_point()?];
+            for point in markers {
+                document.add_geometry(Geometry::Point(point))?;
+            }
+            document.clear_selection();
+            return Ok("Marked both subcurve ends; retained the input".into());
+        } else if options.copy {
             let outputs = document.copy_object_geometries_into_source_groups([(id, geometry)])?;
             document.select_command_results(outputs)?;
         } else {
@@ -224,8 +233,17 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
 
     let mut copy = false;
     let mut copy_seen = false;
+    let mut mode = subcurve_input::SubcurveMode::Shorten;
+    let mut mode_seen = false;
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
+        if option_name_eq(name, "Mode") && !mode_seen {
+            mode = subcurve_input::SubcurveMode::parse(value)
+                .ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
+            mode_seen = true;
+            index += consumed;
+            continue;
+        }
         if !option_name_eq(name, "Copy") || copy_seen {
             return Err(CommandError::Usage(SUBCURVE_USAGE));
         }
@@ -233,7 +251,11 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
         copy_seen = true;
         index += consumed;
     }
-    Ok(SubcurveOptions { location, copy })
+    Ok(SubcurveOptions {
+        location,
+        copy,
+        mode,
+    })
 }
 
 pub(super) const REPARAMETERIZE_USAGE: &str = "Reparameterize Automatic | Reparameterize start end | Reparameterize u_start u_end v_start v_end";

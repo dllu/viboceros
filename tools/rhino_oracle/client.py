@@ -438,6 +438,10 @@ class OracleClient:
             from .standalone_subcurve_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('standalone SubCrv requires a private settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'subcurve_mark_ends' for op in request.get('operations', [])):
+            from .subcurve_mark_ends_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('MarkEnds requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
             from .surface_pullback_endpoints_probe import validate_request
             if self.settings_scheme is None:
@@ -855,6 +859,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'standalone_subcurve' for op in request.get('operations', [])):
                 for name in ('standalone_subcurve_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'subcurve_mark_ends' for op in request.get('operations', [])):
+                for name in ('subcurve_mark_ends_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'curve_subcurve_arc_length' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('curve_length_subcurve_probe.py'),job_path/'curve_length_subcurve_probe.py')

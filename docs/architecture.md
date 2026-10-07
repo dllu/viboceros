@@ -61,6 +61,8 @@ The [inline numeric getter](subcurve-length-confirmation.md) separately owns
 confirmation, orientation and open-end clamping policies.
 The [standalone SubCrv controller](commands/subcurve.md) shares that command
 policy, with separate source picking and native copy/replacement selection.
+Its [MarkEnds mode](subcurve-mark-ends.md) stages default marker points without
+copying source attributes or modifying the original curve.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
