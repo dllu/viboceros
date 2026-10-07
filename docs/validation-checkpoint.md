@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `a9ab0d47` with Rust 1.95.0 after
-[inline UV subcurve numeric confirmation](subcurve-length-confirmation.md).
+The October 7, 2026 audit tested code at `d494240a` with Rust 1.95.0 after
+[standalone SubCrv source picking and numeric confirmation](commands/subcurve.md).
 
 ## Commands and results
 
@@ -16,25 +16,42 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,146 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,150 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 954 | 17 |
-| Command | 1,147 | 2 |
+| App | 956 | 17 |
+| Command | 1,149 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 891 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 894 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 29-recipe command capture ran on private Xvfb with settings scheme
+A fresh 17-recipe standalone SubCrv capture ran on private Xvfb with settings
+scheme `VibocerosOracleStandaloneSubcurveFinal20261007`. Fifteen commands succeed;
+zero and missing confirmation remain native cancellations. The
+[raw records](../tools/rhino_oracle/observations/standalone_subcurve.json) retain
+full source/output definitions, 33 stations per curve, names, layers, user text,
+groups, selection, events and Undo/Redo. Command and application replays compare
+every locus and directed endpoint at `1e-6`, with metadata and history checks.
+The app additionally accepts starting without preselection and choosing a source
+by viewport or ID. Copy results use the original layer/groups and are selected;
+replacement retains identity and clears selection. Standalone open point picks
+retain source orientation, and numeric full closed traversals remain geometry.
+The inline getter retains its separate full-traversal omission policy.
+Explicit `Parameter` edits remain directed mathematical intervals. Direction
+locking, FromMidpoint, MarkEnds, B-rep edges and complete Copy memory remain
+outstanding. See [scope](commands/subcurve.md) and
+[provenance](standalone-subcurve-provenance.json).
+
+The preceding 29-recipe command capture ran on private Xvfb with settings scheme
 `VibocerosOracleSubcurveConfirmCommands20261007`. Twenty-eight commands succeed;
 the standalone object-ID reference attempt remains a native cancellation.
 [Raw records](../tools/rhino_oracle/observations/subcurve_numeric_followup.json)
@@ -47,7 +64,7 @@ backward orientation, curved sources, closed seams, nonuniform segment lengths,
 open-end clamping, empty Enter and zero input. Drafting tests preserve units,
 calculator expressions and point/angle routing. A self-crossing kernel regression
 checks the original-domain endpoint without assuming which tied branch a
-closest-point query would select. Standalone numeric UI, direction locking and
+closest-point query would select. Direction locking and
 B-rep edges remain unimplemented. See [scope](subcurve-length-confirmation.md)
 and [provenance](subcurve-length-confirmation-provenance.json).
 
@@ -216,8 +233,9 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 29 numeric getter/command recipes, including
-one retained cancellation. The preceding signed-length SDK capture covers 20
+The newest native capture covers 17 standalone SubCrv recipes with two retained
+cancellations. The preceding capture covers 29 numeric getter/command recipes,
+including one retained cancellation. The signed-length SDK capture covers 20
 independent geometry queries. The earlier command capture
 covers 14 successful endpoint-input SubCrv recipes.
 The preceding face capture retains two rejected coordinate-input attempts.
