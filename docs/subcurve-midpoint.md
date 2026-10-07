@@ -38,7 +38,7 @@ check loci and directed endpoints or marker points at `1e-6`, metadata, source
 retention and history. See [provenance](subcurve-midpoint-provenance.json).
 
 The solver inherits numerical integration and parameter-resolution limits.
-Arbitrary-curve parity, live preview, midpoint-and-direction-lock combinations,
+Arbitrary-curve parity, native preview-style parity, midpoint-and-direction-lock combinations,
 B-rep edge input, restart preference persistence and reactive History remain
 outstanding.
 [Session option memory](subcurve-option-memory.md) is shared by the registry
@@ -48,3 +48,6 @@ and GUI and survives cancellation and document history.
 cargo test -p viboceros-command --release midpoint
 cargo test --release --bin viboceros subcurve_midpoint
 ```
+
+[Cached viewport previews](subcurve-preview.md) display the pending curve or
+endpoint markers without document edits.

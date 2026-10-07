@@ -325,6 +325,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_remove_target: Option<ObjectId>,
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
+    pub preview_points: &'a [Point3],
     pub mirror_preview: Option<MirrorPreview<'a>>,
     pub translation_preview: Option<TranslationPreview<'a>>,
     pub affine_preview: Option<AffinePreview<'a>>,
@@ -387,6 +388,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_remove_target: None,
             point_cloud_highlights: &[],
             preview_curve: None,
+            preview_points: &[],
             mirror_preview: None,
             translation_preview: None,
             affine_preview: None,
@@ -1865,6 +1867,13 @@ impl Viewport {
                 painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
             }
         }
+        if drafting.active {
+            for &point in input.preview_points {
+                if let Some(position) = self.project_selection_point(point, rect) {
+                    painter.circle_filled(position, 3.5, Color32::from_rgb(20, 115, 190));
+                }
+            }
+        }
         if let Some(cursor) = drafting_cursor {
             // Radius guides display the radial projection even when an
             // edge-on fallback or object snap supplies an off-plane point.
@@ -2376,6 +2385,77 @@ mod tests {
             assert_eq!(document.objects().len(), 0);
             assert!(!document.can_undo());
         }
+    }
+
+    #[test]
+    fn subcurve_curve_and_endpoint_overlays_paint_in_every_mode_and_view_without_hover() {
+        let mut document = Document::default();
+        let endpoints = [point(2., 3., 1.), point(3., 4.5, 1.5)];
+        let curve = viboceros_geometry::LineSegment::try_new(
+            endpoints[0],
+            endpoints[1],
+            document.tolerance(),
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsCurve(curve.clone()))
+            .unwrap();
+        document.clear_history().unwrap();
+        let blue = Color32::from_rgb(20, 115, 190);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                let context = egui::Context::default();
+                let mut viewport = Viewport::new(kind);
+                viewport.display_mode = mode;
+                for (active, show_curve) in [(true, true), (true, false), (false, true)] {
+                    let output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(Rect::from_min_size(
+                                Pos2::ZERO,
+                                Vec2::new(800., 600.),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| {
+                            viewport.show(
+                                ui,
+                                &document,
+                                ViewportInput {
+                                    drafting: DraftingInput {
+                                        active,
+                                        ..Default::default()
+                                    },
+                                    preview_curve: show_curve.then_some(&curve),
+                                    preview_points: &endpoints,
+                                    ..Default::default()
+                                },
+                                &[],
+                                0,
+                                true,
+                            );
+                        },
+                    );
+                    let curves = output.shapes.iter().filter(|s| matches!(&s.shape, egui::Shape::LineSegment {stroke, ..} if stroke.color == blue)).count();
+                    let markers = output.shapes.iter().filter(|s| matches!(&s.shape, egui::Shape::Circle(c) if c.fill == blue && c.radius == 3.5)).count();
+                    output.drop_without_applying_deltas();
+                    assert_eq!(curves > 0, active && show_curve, "{kind:?} {mode:?}");
+                    assert_eq!(markers, if active { 2 } else { 0 }, "{kind:?} {mode:?}");
+                }
+            }
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert!(!document.can_undo());
     }
 
     fn viewport_frame_with_modifiers(

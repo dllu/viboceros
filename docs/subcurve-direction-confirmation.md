@@ -47,7 +47,7 @@ exercise both explicit closed directions and the skewed endpoint choice.
 See [provenance](subcurve-direction-confirmation-provenance.json).
 
 Arbitrary closed charts, exact endpoint ties, complete locked traversals,
-midpoint-plus-lock combinations, live preview and B-rep edge input need wider
+midpoint-plus-lock combinations, native preview-style parity and B-rep edge input need wider
 native coverage. The station comparisons do not certify a continuous locus or
 establish general performance parity.
 
@@ -56,3 +56,6 @@ cargo test --release --bin viboceros subcurve
 cargo test -p viboceros-command --release direction
 python3 -m unittest tools.rhino_oracle.test_subcurve_direction_grid
 ```
+
+[Cached viewport previews](subcurve-preview.md) display the pending curve or
+endpoint markers without document edits.

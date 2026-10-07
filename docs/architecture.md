@@ -71,6 +71,8 @@ option edits independently of document history and the global Copy switch.
 numeric extraction in standalone and inline getters.
 [Closed numeric confirmation](subcurve-direction-confirmation.md) retains the
 source and length in a point getter and chooses between prospective endpoints.
+[SubCrv previews](subcurve-preview.md) cache the derived curve and endpoints
+without editing the document, sharing geometry across viewports.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

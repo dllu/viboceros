@@ -174,6 +174,7 @@ mod set_view;
 mod smooth;
 mod snapping;
 mod subcurve_direction;
+mod subcurve_preview;
 mod subcurve_prompt;
 mod taper_prompt;
 mod toolbar;
@@ -8738,6 +8739,12 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         };
+        let subcurve_preview = if model_input_active {
+            self.subcurve_draft_preview()
+        } else {
+            None
+        };
+        let subcurve_hover = self.subcurve_preview_hover();
         let mirror_preview = self
             .transform_session
             .as_ref()
@@ -9148,7 +9155,15 @@ impl eframe::App for VibocerosApp {
                             selection_preview_ids: &selection_preview_ids,
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
-                            preview_curve: preview_curve.as_deref(),
+                            preview_curve: preview_curve.as_deref().or_else(|| {
+                                subcurve_preview
+                                    .as_ref()
+                                    .filter(|p| p.show_curve)
+                                    .map(|p| &p.geometry.curve)
+                            }),
+                            preview_points: subcurve_preview
+                                .as_ref()
+                                .map_or(&[], |p| &p.geometry.endpoints),
                             mirror_preview,
                             translation_preview,
                             affine_preview,
@@ -9274,6 +9289,9 @@ impl eframe::App for VibocerosApp {
                 handled_action = self.handle_viewport_action(output);
             }
         }
+        if subcurve_hover != self.subcurve_preview_hover() {
+            ui.ctx().request_repaint();
+        }
     }
 }
 
@@ -9393,6 +9411,7 @@ mod tests {
     mod subcurve_mark_ends;
     mod subcurve_midpoint;
     mod subcurve_preferences;
+    mod subcurve_preview;
     mod taper;
     mod transform_copy;
     mod translation_preview;

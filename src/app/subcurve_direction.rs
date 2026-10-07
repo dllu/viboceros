@@ -98,19 +98,19 @@ impl VibocerosApp {
         let Some((source, _)) = reference else {
             return;
         };
-        let parameter = self
-            .document
-            .object(source)
-            .and_then(|o| o.geometry().curve_ref())
-            .and_then(|c| c.closest_parameter(point, self.document.tolerance()).ok());
+        let snapshot = self.document.object(source).map(|o| o.geometry_snapshot());
         if let Some(p) = self.subcurve_prompt.as_mut() {
-            p.hover_parameter = parameter;
+            p.hover_parameter = p
+                .preview
+                .parameter(snapshot, point, self.document.tolerance());
         } else if let Some(p) = self
             .intersection_prompt
             .as_mut()
             .and_then(|p| p.uv_subcurves.pending.as_mut())
         {
-            p.hover_parameter = parameter;
+            p.hover_parameter = p
+                .preview
+                .parameter(snapshot, point, self.document.tolerance());
         }
     }
 }

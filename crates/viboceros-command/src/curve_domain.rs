@@ -166,14 +166,6 @@ impl Command for SubcurveCommand {
                     ],
                     SubcurveLocation::Numeric(_) => unreachable!(),
                 };
-                if !options.from_midpoint
-                    && !curve.as_ref().is_closed()?
-                    && let Some(forward) = options.locked_forward
-                    && (start == end || (end > start) != forward)
-                {
-                    document.clear_selection();
-                    return Ok("No subcurve created on the locked side".into());
-                }
                 if options.from_midpoint {
                     let radius = subcurve_input::midpoint_radius(
                         curve.as_ref(),
@@ -194,13 +186,16 @@ impl Command for SubcurveCommand {
                     let domain = piece.as_ref().domain();
                     (Geometry::from(piece), *domain.start(), *domain.end())
                 } else {
-                    let [start, end] = if matches!(location, SubcurveLocation::Points(_))
-                        && !curve.as_ref().is_closed()?
-                        && start > end
-                    {
-                        [end, start]
-                    } else {
-                        [start, end]
+                    let Some([start, end]) = subcurve_input::point_parameters(
+                        curve.as_ref(),
+                        start,
+                        end,
+                        options.locked_forward,
+                        matches!(location, SubcurveLocation::Points(_)),
+                    )?
+                    else {
+                        document.clear_selection();
+                        return Ok("No subcurve created on the locked side".into());
                     };
                     (Geometry::from(curve.try_subcurve(start, end)?), start, end)
                 }

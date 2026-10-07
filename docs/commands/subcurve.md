@@ -3,6 +3,7 @@
 [Curve commands](curves.md) · [Numeric UV inputs](../subcurve-length-confirmation.md)
 
 Start `SubCrv`, select a curve if none is preselected, and pick its start.
+The [viewport preview](../subcurve-preview.md) shows the pending curve and endpoints.
 Then pick an end location or enter a length followed by a direction-confirmation
 location. A new number replaces the pending length; units and calculator
 expressions use the shared point-input parser. `Copy=Yes|No` can be supplied at
@@ -54,7 +55,7 @@ pick, with immediate half-length entry or symmetric endpoint picking.
 numeric entry and is shared with inline UV input. Some closed lengths retain a
 [point confirmation](../subcurve-direction-confirmation.md). B-rep edge
 references and restart preference persistence remain outstanding. The recorded
-cases do not establish arbitrary-curve or preview parity.
+cases do not establish arbitrary-curve or native preview-style parity.
 
 ```sh
 cargo test -p viboceros-command --release standalone

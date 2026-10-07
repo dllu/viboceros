@@ -49,11 +49,13 @@ See [provenance](subcurve-direction-provenance.json).
 Application replay compares all recorded curve stations and directed endpoints
 or marker coordinates at `1e-6`, plus source retention, selection and history.
 This capture covers lines, a closed polyline and a rational circle; it does not
-establish arbitrary-curve or midpoint-and-lock combinations, live
-preview, edge input, restart preference persistence or reactive History.
+establish arbitrary-curve or midpoint-and-lock combinations, native preview-style parity, edge input, restart preference persistence or reactive History.
 
 ```sh
 cargo test --release --bin viboceros subcurve_direction
 cargo test -p viboceros-command --release locked_subcurve
 python3 -m unittest tools.rhino_oracle.test_subcurve_direction
 ```
+
+[Cached viewport previews](subcurve-preview.md) display the pending curve or
+endpoint markers without document edits.

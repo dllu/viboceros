@@ -147,6 +147,30 @@ pub fn cursor_forward(
     Ok(cursor > anchor)
 }
 
+/// Resolve endpoint order and the locked open side before trimming.
+/// Native point input retains source orientation; explicit parameter input may
+/// request a reversed open interval.
+pub fn point_parameters(
+    curve: CurveRef<'_>,
+    start: Real,
+    end: Real,
+    locked_forward: Option<bool>,
+    retain_orientation: bool,
+) -> Result<Option<[Real; 2]>, GeometryError> {
+    let closed = curve.is_closed()?;
+    if !closed
+        && let Some(forward) = locked_forward
+        && (start == end || (end > start) != forward)
+    {
+        return Ok(None);
+    }
+    Ok(Some(if retain_orientation && !closed && start > end {
+        [end, start]
+    } else {
+        [start, end]
+    }))
+}
+
 /// Some closed-chart numeric inputs leave the getter waiting for a point.
 /// Keep this input-phase policy separate from extracting a valid curve piece.
 pub fn locked_numeric_requires_confirmation(

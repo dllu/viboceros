@@ -12,6 +12,7 @@ pub(super) struct SubcurvePrompt {
     pub(super) from_midpoint: bool,
     pub(super) hover_parameter: Option<f64>,
     pub(super) locked_forward: Option<bool>,
+    pub(super) preview: super::subcurve_preview::Cache,
 }
 impl SubcurvePrompt {
     pub(super) fn hint(&self) -> &'static str {
@@ -64,6 +65,7 @@ impl VibocerosApp {
             from_midpoint,
             hover_parameter: None,
             locked_forward: None,
+            preview: super::subcurve_preview::Cache::default(),
         });
         self.active_command = source.map(|_| InteractiveCommand::SubCrv { start: None, copy });
         if source.is_none() {

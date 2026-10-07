@@ -22,6 +22,7 @@ pub(super) struct PendingSubcurve {
     pub(super) length: Option<f64>,
     pub(super) hover_parameter: Option<f64>,
     pub(super) locked_forward: Option<bool>,
+    pub(super) preview: super::subcurve_preview::Cache,
 }
 
 impl SubcurveInputs {
