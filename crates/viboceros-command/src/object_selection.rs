@@ -16,6 +16,7 @@ pub enum ObjectSelectionFilter {
     Smooth,
     PolygonCount,
     Curves,
+    ApplyCurves,
     Join,
     ToNurbs,
     Beziers,
@@ -73,6 +74,9 @@ impl ObjectSelectionFilter {
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
             ),
             Self::Curves => geometry.curve_ref().is_some(),
+            Self::ApplyCurves => {
+                matches!(geometry, Geometry::Point(_)) || geometry.curve_ref().is_some()
+            }
             Self::Join => {
                 geometry.curve_ref().is_some()
                     || matches!(

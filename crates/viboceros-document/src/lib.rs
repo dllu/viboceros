@@ -472,6 +472,7 @@ impl Document {
             label
         };
         self.history.active = Some(PendingTransaction {
+            retain_created_groups_on_undo: false,
             group: None,
             label,
             edits: Vec::new(),
@@ -496,11 +497,14 @@ impl Document {
         {
             return Err(DocumentError::HistoryGroupStale);
         }
-        let transaction = self
+        let mut transaction = self
             .history
             .active
             .take()
             .ok_or(DocumentError::NoActiveTransaction)?;
+        if transaction.retain_created_groups_on_undo {
+            self.retain_inserted_group_definitions(&mut transaction);
+        }
         if transaction.selection_before.is_subset(&self.selection) {
             self.previous_selection = transaction.previous_selection_before;
             self.previous_selection_order = transaction.previous_selection_order_before;
@@ -545,6 +549,29 @@ impl Document {
             updates_last_changed_objects: false,
         });
         Ok(true)
+    }
+
+    /// Retains this transaction's accepted new group definitions across Undo,
+    /// while object memberships replay normally. Rollback still removes all
+    /// new groups: insertion edits are converted only at successful commit.
+    /// This keeps ordinary no-output selection markers from becoming Undo steps.
+    pub fn retain_created_group_definitions_on_undo(&mut self) -> Result<(), DocumentError> {
+        self.history
+            .active
+            .as_mut()
+            .ok_or(DocumentError::NoActiveTransaction)?
+            .retain_created_groups_on_undo = true;
+        Ok(())
+    }
+
+    fn retain_inserted_group_definitions(&self, transaction: &mut PendingTransaction) {
+        for edit in &mut transaction.edits {
+            if let Edit::GroupInserted { id, .. } = edit
+                && self.group(*id).is_some()
+            {
+                *edit = Edit::GroupDefinitionRetained { id: *id };
+            }
+        }
     }
 
     /// Reverses every edit in the active transaction without adding history.

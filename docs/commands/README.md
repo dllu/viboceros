@@ -23,6 +23,7 @@ Rhino's complete command set is still a work in progress.
 - [Bézier conversion](beziers.md)
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
+- [Apply World-XY curves and points onto surfaces](apply-curves.md)
 - [Union convex polyhedral solids](boolean-union.md)
 - [Intersect convex polyhedral solids and sets](boolean-intersection.md)
 - [Subtract convex polyhedral cutters from solids](boolean-difference.md)

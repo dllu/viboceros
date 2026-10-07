@@ -87,6 +87,7 @@ mod document_brep;
 mod document_units;
 mod extract_surface;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
+mod apply_curves;
 mod group_memberships;
 mod group_picking;
 mod join_command;
@@ -101,6 +102,7 @@ mod remove_holes;
 mod shrink_trimmed;
 mod solid_orientation;
 mod surface_curve_image;
+pub use apply_curves::ApplyCurvesFixture;
 pub use surface_curve_image::{
     SurfaceCurveDeviationFixture, SurfacePullbackFixture, SurfacePushupFixture,
 };
@@ -1861,6 +1863,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfacePushupFixture,
     },
+    ApplyUvCurves {
+        id: String,
+        #[serde(flatten)]
+        fixture: ApplyCurvesFixture,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -2346,7 +2353,8 @@ impl Operation {
             | Self::NurbsSurfaceEvaluate { id, .. }
             | Self::SurfaceCurveDeviation { id, .. }
             | Self::SurfacePullbackCertified { id, .. }
-            | Self::SurfacePushupCertified { id, .. } => id,
+            | Self::SurfacePushupCertified { id, .. }
+            | Self::ApplyUvCurves { id, .. } => id,
         }
     }
 }
@@ -6174,6 +6182,9 @@ fn execute(
         }
         Operation::SurfacePushupCertified { fixture, .. } => {
             surface_curve_image::pushup(fixture, tolerance, iterations)?
+        }
+        Operation::ApplyUvCurves { fixture, .. } => {
+            apply_curves::run(fixture, tolerance, iterations)?
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,

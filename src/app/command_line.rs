@@ -175,8 +175,8 @@ impl VibocerosApp {
                         prompt.label()
                     } else if self.group_prompt.is_some() {
                         "AddToGroup"
-                    } else if self.intersection_prompt.is_some() {
-                        "IntersectTwoSets"
+                    } else if let Some(prompt) = &self.intersection_prompt {
+                        prompt.name()
                     } else if let Some(prompt) = &self.edge_prompt {
                         prompt.name()
                     } else if let Some(prompt) = &self.hole_prompt {

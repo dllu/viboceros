@@ -9,8 +9,9 @@ deviation bound. Each returned curve keeps the UV curve's native domain and
 affine normalized parameter correspondence. Acceptance uses the caller's
 absolute tolerance. The surface and UV source remain unchanged.
 
-This is a geometry-kernel and debugging-protocol API. A document `Pushup` command
-adapter is still outstanding.
+This geometry-kernel and debugging-protocol API now backs the document
+[`ApplyCrv` / `ApplyCurves` workflow](commands/apply-curves.md), which maps
+World-XY source bounds onto a target surface. `Pushup` is the SDK operation name.
 
 ## Construction and proof
 

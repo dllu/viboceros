@@ -20,6 +20,7 @@ pub(super) struct HistoryEntry {
 
 #[derive(Clone, Debug)]
 pub(super) struct PendingTransaction {
+    pub(super) retain_created_groups_on_undo: bool,
     pub group: Option<Uuid>,
     pub label: String,
     pub edits: Vec<Edit>,

@@ -1,0 +1,71 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_rectangle",
+      "case": "rectangle"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_without_rectangle",
+      "case": "without_rectangle"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_points",
+      "case": "points"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_horizontal",
+      "case": "horizontal"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_near_xy",
+      "case": "near_xy"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_off_xy",
+      "case": "off_xy"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_rational",
+      "case": "rational"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_preselection",
+      "case": "preselection"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_rational_without_rectangle",
+      "case": "rational_without_rectangle"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_off_xy_outside",
+      "case": "off_xy_outside"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_single_point",
+      "case": "single_point"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_cylinder",
+      "case": "cylinder"
+    },
+    {
+      "op": "apply_uv_curves_command",
+      "id": "apply_uv_rotated_cplane",
+      "case": "rotated_cplane"
+    }
+  ]
+}

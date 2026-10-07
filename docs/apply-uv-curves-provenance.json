@@ -1,0 +1,37 @@
+{
+  "capture_date": "2026-10-06",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleApplyUVPurity20261006",
+  "private_xvfb": true,
+  "owned_empty_document": true,
+  "idle_public_commands": true,
+  "history_cleared_before_each_recipe": true,
+  "recipes": 13,
+  "created_curves": 17,
+  "created_points": 9,
+  "native_curve_stations": 561,
+  "source_geometry_and_attributes_unchanged": true,
+  "full_native_parity": false,
+  "checked_epsilon": 1e-06,
+  "no_output_recipes": [
+    "horizontal",
+    "single_point"
+  ],
+  "groups_survive_undo": true,
+  "point_output_memberships_omitted": true,
+  "timing_scope": "Local command execution includes certification and edits, excludes setup/snapshots; native capture timing unmeasured.",
+  "remaining_limits": [
+    "multi-face targets",
+    "inline SubCrv",
+    "CreateUVCrv",
+    "ideal exact-extremum XY rectangle and unrounded remapping",
+    "kernel degree, weight, domain and resource limits"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/apply_uv_curves_probe.py": "36d77ebe52cc92a1fbb3f19b25d25b287bf61303b3d86fb5a189746ced6b10f2",
+    "tools/rhino_oracle/fixtures/apply_uv_curves_command.json": "4139b5bdca9a35bcfac4e9e1b498ee1ad4624fda74d026fdc4d2a96d43fe5b28",
+    "tools/rhino_oracle/fixtures/apply_uv_curves_local.json": "d2dbd15fd197a966273c05c1d0815f3b2e2128cf133ffd697bf561bb6111fe1b",
+    "tools/rhino_oracle/observations/apply_uv_curves_command.json": "3de4fda40c8be1406be0a319826c70fe7d46a12d139d6ee82e81e67600647e9c",
+    "docs/apply-uv-curves-local.json": "e0ed89b00ca851c41a8dfbf9c6fd33a3539b4338dd5f7967a8462413eba104c4"
+  }
+}

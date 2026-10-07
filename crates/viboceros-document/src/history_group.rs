@@ -1,5 +1,7 @@
 //! Incrementally committed commands with one external Undo and local checkpoints.
 use super::*;
+#[cfg(test)]
+mod created_group_retention_tests;
 
 #[cfg(test)]
 mod replay_tests;
@@ -156,14 +158,8 @@ impl Document {
             }
         }
         let mut transaction = self.history.active.take().unwrap();
-        if group.keep_created_groups {
-            for edit in &mut transaction.edits {
-                if let Edit::GroupInserted { id, .. } = edit
-                    && self.group(*id).is_some()
-                {
-                    *edit = Edit::GroupDefinitionRetained { id: *id };
-                }
-            }
+        if group.keep_created_groups || transaction.retain_created_groups_on_undo {
+            self.retain_inserted_group_definitions(&mut transaction);
         }
         if transaction.selection_before.is_subset(&self.selection) {
             self.previous_selection = transaction.previous_selection_before;

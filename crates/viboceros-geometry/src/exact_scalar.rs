@@ -15,6 +15,35 @@ pub(crate) fn scalar(value: &Rational) -> Result<Real, GeometryError> {
     Ok(value)
 }
 
+/// Maps a finite scalar affinely between two finite endpoint intervals, with
+/// one final binary64 rounding. Extrapolation and reversed intervals are
+/// supported. The source endpoints must differ. Intermediate interval widths,
+/// products or ratios may exceed the binary64 range without losing a finite
+/// result; a genuinely nonfinite result remains an error.
+pub fn remap_scalar(
+    value: Real,
+    source: [Real; 2],
+    target: [Real; 2],
+) -> Result<Real, GeometryError> {
+    require_finite(
+        source.into_iter().chain(target).chain([value]),
+        "scalar interval mapping",
+    )?;
+    if source[0] == source[1] {
+        return Err(GeometryError::InvalidInterpolationParameter);
+    }
+    if value == source[0] {
+        return Ok(target[0]);
+    }
+    if value == source[1] {
+        return Ok(target[1]);
+    }
+    let a = rational(source[0]);
+    let b = rational(source[1]);
+    let t = rational(value);
+    scalar(&((rational(target[0]) * (&b - &t) + rational(target[1]) * (&t - &a)) / (b - a)))
+}
+
 /// Linearly interpolate finite values at a parameter between two distinct
 /// finite endpoint parameters. The endpoint order may be reversed.
 ///
@@ -94,6 +123,23 @@ pub fn scaled_quotient(value: Real, scale: Real, divisor: Real) -> Result<Real, 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn interval_mapping_retains_extrapolation_reversal_and_extreme_ranges() {
+        for (value, source, target, expected) in [
+            (2., [0., 1.], [3., 5.], 7.),
+            (0.25, [1., 0.], [2., 6.], 5.),
+            (0., [-Real::MAX, Real::MAX], [0., 1.], 0.5),
+            (400., [0., 1e24], [0., 1e24], 400.),
+            (Real::from_bits(1), [0., Real::from_bits(2)], [0., 1.], 0.5),
+            (1., [0., 1.], [-Real::MAX, Real::MAX], Real::MAX),
+        ] {
+            assert_eq!(remap_scalar(value, source, target).unwrap(), expected);
+        }
+        assert!(remap_scalar(0., [1., 1.], [0., 1.]).is_err());
+        assert!(remap_scalar(Real::NAN, [0., 1.], [0., 1.]).is_err());
+        assert!(remap_scalar(2., [0., 1.], [0., Real::MAX]).is_err());
+    }
 
     #[test]
     fn scalar_interpolation_retains_small_coordinates_and_extreme_ranges() {

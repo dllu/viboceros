@@ -138,6 +138,7 @@ mod align;
 mod angle;
 mod circle;
 use circle::CircleSizeMode;
+mod apply_curves;
 mod bend_prompt;
 mod boolean_solids;
 mod construction_plane;
@@ -9258,6 +9259,7 @@ mod tests {
     mod affine_preview;
     mod align;
     mod angle;
+    mod apply_curves;
     mod area;
     mod bend;
     mod bezier_selection;

@@ -22,6 +22,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Ordered common intersection and metadata contributors](common-intersection.md)
 - [Continuous surface/UV correspondence certificates](surface-curve-certificates.md)
 - [Certified UV-to-spatial curve images](certified-surface-pushups.md)
+- [ApplyCrv document mapping, picking and native evidence](commands/apply-curves.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
 - [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [Derivative-free fitting for nonlinear singular-endpoint paths](derivative-free-surface-pullbacks.md)

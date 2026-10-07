@@ -11,6 +11,14 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_apply_uv_curves_dispatch_receives_the_closed_operation_and_host(self):
+        operation = dict(op='apply_uv_curves_command', id='owned', case='rectangle')
+        run = Mock(return_value=({'source':'closed'},0))
+        with patch.dict('sys.modules', {'apply_uv_curves_probe':SimpleNamespace(run=run)}):
+            self.assertEqual(self.worker._execute(operation,1,{}),({'source':'closed'},0))
+        self.assertEqual(run.call_args.args[0],operation)
+        self.assertIs(run.call_args.args[1]['Rhino'],self.worker.Rhino)
+
     def test_viewport_arrangement_probe_records_public_views_and_bounds_commands(self):
         rectangle = lambda a, b, c, d: SimpleNamespace(Left=a, Top=b, Right=c, Bottom=d)
         point = lambda x, y, z: SimpleNamespace(X=x, Y=y, Z=z)

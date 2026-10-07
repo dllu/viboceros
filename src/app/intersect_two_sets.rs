@@ -10,6 +10,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) output_layer: &'static str,
     pub(super) original_selection: Vec<ObjectId>,
     pub(super) boolean: Option<BooleanOptions>,
+    pub(super) apply_curves: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -50,15 +51,36 @@ impl BooleanOptions {
 }
 
 impl TwoSetsPrompt {
+    pub(super) fn name(&self) -> &'static str {
+        if self.apply_curves {
+            "ApplyCrv"
+        } else {
+            self.boolean
+                .as_ref()
+                .map_or("IntersectTwoSets", |o| o.kind.name())
+        }
+    }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
-        if self.boolean.is_some() {
+        if self.apply_curves {
+            if self.first.is_some() {
+                ObjectSelectionFilter::Surfaces
+            } else {
+                ObjectSelectionFilter::ApplyCurves
+            }
+        } else if self.boolean.is_some() {
             ObjectSelectionFilter::SurfaceComponents
         } else {
             ObjectSelectionFilter::Parametric
         }
     }
     pub(super) fn hint(&self) -> &'static str {
-        if self
+        if self.apply_curves {
+            if self.first.is_some() {
+                "Select target surface; Esc cancels"
+            } else {
+                "Select World-XY curves and points; Enter continues, Esc cancels"
+            }
+        } else if self
             .boolean
             .as_ref()
             .is_some_and(|o| o.kind == BooleanPromptKind::Difference)
@@ -97,6 +119,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_apply_curves_prompt(input) {
+            return true;
+        }
         if self.try_start_boolean_solids_prompt(input) {
             return true;
         }
@@ -132,6 +157,7 @@ impl VibocerosApp {
             output_layer,
             original_selection,
             boolean: None,
+            apply_curves: false,
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));
@@ -141,6 +167,10 @@ impl VibocerosApp {
 
     pub(super) fn log_intersection_prompt(&mut self) {
         if let Some(prompt) = &self.intersection_prompt {
+            if prompt.apply_curves {
+                self.push_log(format!("ApplyCrv: {}", prompt.hint()));
+                return;
+            }
             if let Some(options) = &prompt.boolean {
                 self.push_log(format!(
                     "{}: {}",
@@ -161,6 +191,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.apply_curves {
+            return self.continue_apply_curves_prompt(prompt, input);
+        }
         if prompt.boolean.is_some() {
             return self.continue_boolean_solids_prompt(prompt, input);
         }
@@ -263,6 +296,10 @@ impl VibocerosApp {
         mode: SelectionMode,
     ) {
         if let Some(prompt) = &self.intersection_prompt {
+            if prompt.apply_curves {
+                self.select_apply_curves_objects(ids, mode);
+                return;
+            }
             if prompt.boolean.is_some() {
                 self.select_boolean_solids_objects(ids, mode);
                 return;
@@ -292,6 +329,7 @@ impl VibocerosApp {
     pub(super) fn cancel_intersection_prompt(&mut self, announce: bool) {
         if let Some(prompt) = self.intersection_prompt.take() {
             self.command_input.clear();
+            let name = prompt.name();
             if let Some(options) = prompt.boolean {
                 let _ = self
                     .document
@@ -305,7 +343,7 @@ impl VibocerosApp {
                 let _ = self
                     .document
                     .select_objects_direct(prompt.original_selection, SelectionMode::Replace);
-                self.push_log("Cancelled IntersectTwoSets".into());
+                self.push_log(format!("Cancelled {name}"));
             }
         }
     }
