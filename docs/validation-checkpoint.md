@@ -3,9 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 6, 2026 audit tested code at `01feb80b` with Rust 1.95.0 after
-[derivative-free nonlinear pullback fitting](derivative-free-surface-pullbacks.md)
-through singular endpoints.
+The October 6, 2026 audit tested code at `01455eee` with Rust 1.95.0 after
+[certified UV-to-spatial curve construction](certified-surface-pushups.md).
 
 ## Commands and results
 
@@ -15,10 +14,10 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pullback_interpolation_certified.json --timeout 600 --output /tmp/interpolated-pullbacks-local.json
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pushup_certified.json --timeout 600 --output docs/certified-surface-pushup-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,091 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,102 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
@@ -26,23 +25,40 @@ All commands completed successfully. The ordinary Rust suite passed 5,091 tests:
 | Command | 1,135 | 2 |
 | Document | 183 | 5 |
 | Drafting | 157 | 6 |
-| Geometry | 2,005 | 8 |
+| Geometry | 2,014 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 479 | 0 |
+| Oracle | 481 | 0 |
 
-The Python suite passed 865 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 868 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new standalone Python run certified all ten nonlinear singular-endpoint
+The standalone Python pushup run certified images of all 13 original UV sources,
+retaining their original domains. Eight diagnostic images have zero certified
+error; the five curved primitive images have complete bounds at most `3.501e-16`,
+below their requested limit `1e-6`. The Rust replay checks 1,677 returned-curve
+stations against native surface-image witnesses and independently recomputes
+every assembled result's continuous certificate.
+
+A fresh 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+scheme `VibocerosOraclePushup20261006`. Its
+[raw records](../tools/rhino_oracle/observations/surface_pushup_certified.json)
+retain 1,677 source/image stations, all source-purity agreements, five successful
+native `Surface.Pushup` operations, and the sphere-seam parameter-speed
+discrepancy. The other eight sources retain diagnostic reference curves. See
+[provenance](certified-surface-pushup-provenance.json) for source hashes and
+contract boundaries. The public kernel API and Python protocol are implemented;
+the document `Pushup` command adapter remains outstanding.
+
+The preceding standalone Python run certified all ten nonlinear singular-endpoint
 source definitions without endpoint constraints, retaining each original
 spatial domain. The polynomial recipes report bounds below `9e-16`; the
 square-root boundary recipes refine to 103 controls with complete bounds about
 `9.87e-7`, below their input limit `1e-6`.
 
-A fresh ten-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+The preceding ten-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
 scheme `VibocerosOracleInterpolatedPullbackFinal_20261006`. Its
 [raw records](../tools/rhino_oracle/observations/surface_pullback_interpolation.json)
 retain 1,290 source/image stations and ten source-purity agreements. Eight native
@@ -93,11 +109,12 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers ten SDK recipes. Other recorded-output
+The newest native capture covers 13 SDK recipes. Other recorded-output
 replays are not fresh cross-engine measurements, and tests that merely execute
 fixtures with finite output do not establish numerical agreement with Rhino.
-Native `Surface.Pullback` follows a geometric locus and does not promise the
-local fitter's normalized-parameter correspondence or fixed UV endpoints.
+Native `Surface.Pullback` and `Surface.Pushup` follow geometric loci and do not
+promise these local fitters' normalized-parameter correspondence or fixed UV
+endpoint constraints.
 Passing these cases does not establish all-command coverage, arbitrary-geometry
 epsilon agreement, general curved Booleans, general STEP B-rep interchange,
 other graphics backends, or performance parity. Those remain subject to the
