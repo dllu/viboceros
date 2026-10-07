@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `0b12ae48` with Rust 1.95.0 after
-[closed SubCrv numeric confirmation](subcurve-direction-confirmation.md).
+The October 7, 2026 audit tested code at `84bdc26b` with Rust 1.95.0 after
+[cached SubCrv viewport previews](subcurve-preview.md).
 
 ## Commands and results
 
@@ -16,11 +16,11 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,171 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,175 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 967 | 17 |
+| App | 971 | 17 |
 | Command | 1,159 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
@@ -34,7 +34,18 @@ passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 32-recipe closed SubCrv numeric workflow ran on private Xvfb under
+The new SubCrv preview checks ten pending workflows against saved native
+confirmed results: 330 stations and directed endpoints at `1e-6`. Repeated
+preview calls preserve source snapshot identity, attributes, selection and
+history, reuse cached geometry, and cover Copy, MarkEnds, locked-side rejection,
+midpoint symmetry and cancellation. The CPU egui check covers four viewport
+orientations in Wireframe, Shaded and Ghosted, including no hovered viewport and
+inactive input. A fresh private-Xvfb application inspection through the production
+wgpu/egui renderer confirms trim overlays, marker-only mode and removal after
+Escape. The [saved image and scope](subcurve-preview.md) document that inspection;
+this does not add a new opt-in GPU raster test or a native preview measurement.
+
+A preceding 32-recipe closed SubCrv numeric workflow ran on private Xvfb under
 `VibocerosOracleClosedDirectionComplete20261007`. The
 [raw records](../tools/rhino_oracle/observations/subcurve_direction_grid.json)
 retain 16 intermediate snapshots with public InGetPoint=true and
