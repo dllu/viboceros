@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `95eac922` with Rust 1.95.0 after
-[SubCrv option lifetime and command-specific memory](subcurve-option-memory.md).
+The October 7, 2026 audit tested code at `8fc9a7ba` with Rust 1.95.0 after
+[SubCrv cursor direction locking](subcurve-direction.md).
 
 ## Commands and results
 
@@ -16,25 +16,40 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,162 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,168 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 962 | 17 |
-| Command | 1,155 | 2 |
+| App | 966 | 17 |
+| Command | 1,157 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 903 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 908 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 37-step SubCrv preference workflow ran on private Xvfb in settings
+A fresh 18-recipe SubCrv direction workflow ran on private Xvfb under
+`VibocerosOracleDirectionVerified20261007`. The
+[raw records](../tools/rhino_oracle/observations/subcurve_direction.json)
+retain actual motion, locked/unlocked getter prompts, every public
+SendKeystrokes input, command events, source/output definitions and independent
+Undo/Redo states. Ten commands succeed; four opposite-side open point inputs
+end with Failure and four closed numeric inputs with Cancel. App replay checks
+330 output curve stations and two markers at `1e-6`, directed endpoints, source
+purity, selection and history. The backward seam-crossing polyline numeric case
+succeeds; other closed numeric outcomes remain a policy inferred from five
+recorded cases, without arbitrary closed-chart parity. Inline open numeric
+input shares the policy, with source purity and parent-owned history. A CPU
+viewport test confirms that hover reports a location without accepting a point
+or editing history. See [scope and provenance](subcurve-direction.md).
+
+A preceding 37-step SubCrv preference workflow ran on private Xvfb in settings
 scheme `VibocerosOracleSubcurvePreferenceFinal20261007`. The
 [raw records](../tools/rhino_oracle/observations/subcurve_preferences.json)
 retain default queries, accepted/cancelled option changes, completed geometry,
@@ -278,8 +293,10 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers a 37-step preference sequence with raw cancelled
-queries and option edits. The preceding capture covers 22 FromMidpoint recipes with three retained
+The newest native capture covers 18 cursor-direction recipes with four retained
+failures and four cancellations. The preceding capture covers a 37-step
+preference sequence with raw cancelled queries and option edits. The preceding
+capture covers 22 FromMidpoint recipes with three retained
 cancellations. The preceding capture covers 15 MarkEnds recipes with two retained
 cancellations. The preceding standalone capture covers 17 SubCrv recipes. The
 numeric getter/command capture covers 29 recipes,
