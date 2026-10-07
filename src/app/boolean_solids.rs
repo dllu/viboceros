@@ -52,7 +52,7 @@ impl VibocerosApp {
         let preselected_first = !first.is_empty();
         let _ = self.document.select_command_results(first.iter().copied());
         self.intersection_prompt = Some(TwoSetsPrompt {
-            apply_curves: false,
+            uv_mapping: None,
             first: preselected_first.then_some(first),
             output_layer: "Current",
             original_selection: vec![],

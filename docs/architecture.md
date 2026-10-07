@@ -49,6 +49,9 @@ UV splines with exact rational composition or adaptive cubic fitting, retaining
 native domains and proving the complete normalized-parameter error bound.
 [ApplyCrv](commands/apply-curves.md) maps World-XY curves and points through
 selected bounds, with separate source/target picking and atomic document copies.
+[CreateUVCrv](commands/create-uv-curves.md) supplies the reverse workflow with
+trim contours, optional spatial inputs and independent group/history handling;
+native coarse sizing and off-surface projection have explicit accuracy limits.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

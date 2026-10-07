@@ -1,0 +1,41 @@
+{
+  "capture_date": "2026-10-06",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleCreateUVFinal20261006",
+  "recipes": 11,
+  "native_curves": 17,
+  "native_points": 4,
+  "local_python_untrimmed_sources": 9,
+  "full_native_parity": false,
+  "native_rectangle_fractional_length_tolerance_diagnostics": [
+    0.01,
+    0.001,
+    0.0001
+  ],
+  "retained_sizing_difference": {
+    "cylinder_native_width": 12.566670662317494,
+    "cylinder_local_width": 12.566370614359172,
+    "comparison_ceiling": 0.001
+  },
+  "retained_off_surface_projection_difference": {
+    "maximum_paired_sample_difference": 0.00685560153723199,
+    "comparison_ceiling": 0.01
+  },
+  "ordinary_flat_geometry_comparison_ceiling": 1e-06,
+  "roundtrip_comparison_ceiling": 1e-06,
+  "source": "Public SDK geometry and actual CreateUVCrv command only; no proprietary code read.",
+  "limits": [
+    "native coarse rectangle-sizing parity",
+    "global off-surface closest-locus certificate and native projection parity",
+    "multi-face reference picking",
+    "inline SubCrv selection"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/create_uv_curves_probe.py": "6de63bdd349a2c618b40d87e24f0acb461742c948ad9071e784cd66e7c9c220b",
+    "tools/rhino_oracle/fixtures/create_uv_curves_command.json": "c5f5132434f3f28aebdf0b790482cd5a10b62e4f2598d9e7c995754044379336",
+    "tools/rhino_oracle/fixtures/create_uv_curves_local.json": "48143d9ef13a20d8e43dbb062897def59c154be2eeab91df785253c123d2d9f2",
+    "tools/rhino_oracle/observations/create_uv_curves_command.json": "285c32e0ec2ac85480244505ce574942f32bbfbc193084749e1771d750d41bb3",
+    "docs/create-uv-curves-local.json": "ce1ef9b0c9e574d5be87e1ac06dacf8f9e8f57a6446ee9b4c3d1ccd4cfeeb7b8"
+  }
+}

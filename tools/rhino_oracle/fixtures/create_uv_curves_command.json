@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_warped",
+      "case": "warped"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_planar",
+      "case": "planar"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_cylinder",
+      "case": "cylinder"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_sphere",
+      "case": "sphere"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_extras",
+      "case": "extras"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_off_point",
+      "case": "off_point"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_off_curve",
+      "case": "off_curve"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_preselection",
+      "case": "preselection"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_rotated_cplane",
+      "case": "rotated_cplane"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_trim_warped",
+      "case": "trim_warped"
+    },
+    {
+      "op": "create_uv_curves_command",
+      "id": "create_uv_holed_plane",
+      "case": "holed_plane"
+    }
+  ]
+}

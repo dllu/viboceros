@@ -30,7 +30,24 @@ pub(super) fn run(
     tolerance: Tolerance,
     iterations: u32,
 ) -> Result<(Value, u64), ProbeError> {
-    if !(1..=64).contains(&f.inputs.len()) {
+    run_command(f, tolerance, iterations, "ApplyCrv")
+}
+
+pub(super) fn create(
+    f: &ApplyCurvesFixture,
+    tolerance: Tolerance,
+    iterations: u32,
+) -> Result<(Value, u64), ProbeError> {
+    run_command(f, tolerance, iterations, "CreateUVCrv")
+}
+
+fn run_command(
+    f: &ApplyCurvesFixture,
+    tolerance: Tolerance,
+    iterations: u32,
+    command: &str,
+) -> Result<(Value, u64), ProbeError> {
+    if f.inputs.len() > 64 || (command == "ApplyCrv" && f.inputs.is_empty()) {
         return Err(ProbeError::FixtureInvariant(
             "ApplyCrv requires 1 to 64 input curves/points",
         ));
@@ -72,7 +89,7 @@ pub(super) fn run(
         doc.select_objects_direct(sources[1..].iter().copied(), SelectionMode::Replace)?;
         let before = snapshot(&doc, &sources)?;
         let start = Instant::now();
-        registry.execute(&mut doc, &format!("ApplyCrv Surface={target}"))?;
+        registry.execute(&mut doc, &format!("{command} Surface={target}"))?;
         elapsed += start.elapsed().as_nanos();
         let after = snapshot(&doc, &sources)?;
         let group_count = doc.groups().len();

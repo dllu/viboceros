@@ -9271,6 +9271,7 @@ mod tests {
     mod command_line;
     mod construction_plane;
     mod copy_options;
+    mod create_uv_curves;
     mod distance;
     mod distribute;
     mod domain;

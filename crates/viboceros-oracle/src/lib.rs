@@ -1868,6 +1868,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: ApplyCurvesFixture,
     },
+    CreateUvCurves {
+        id: String,
+        #[serde(flatten)]
+        fixture: ApplyCurvesFixture,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -2354,7 +2359,8 @@ impl Operation {
             | Self::SurfaceCurveDeviation { id, .. }
             | Self::SurfacePullbackCertified { id, .. }
             | Self::SurfacePushupCertified { id, .. }
-            | Self::ApplyUvCurves { id, .. } => id,
+            | Self::ApplyUvCurves { id, .. }
+            | Self::CreateUvCurves { id, .. } => id,
         }
     }
 }
@@ -6185,6 +6191,9 @@ fn execute(
         }
         Operation::ApplyUvCurves { fixture, .. } => {
             apply_curves::run(fixture, tolerance, iterations)?
+        }
+        Operation::CreateUvCurves { fixture, .. } => {
+            apply_curves::create(fixture, tolerance, iterations)?
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,

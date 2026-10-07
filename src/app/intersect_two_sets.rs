@@ -10,7 +10,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) output_layer: &'static str,
     pub(super) original_selection: Vec<ObjectId>,
     pub(super) boolean: Option<BooleanOptions>,
-    pub(super) apply_curves: bool,
+    pub(super) uv_mapping: Option<super::apply_curves::UvMappingKind>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -52,8 +52,8 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
-        if self.apply_curves {
-            "ApplyCrv"
+        if let Some(kind) = self.uv_mapping {
+            kind.name()
         } else {
             self.boolean
                 .as_ref()
@@ -61,12 +61,8 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
-        if self.apply_curves {
-            if self.first.is_some() {
-                ObjectSelectionFilter::Surfaces
-            } else {
-                ObjectSelectionFilter::ApplyCurves
-            }
+        if let Some(kind) = self.uv_mapping {
+            kind.filter(self.first.is_some())
         } else if self.boolean.is_some() {
             ObjectSelectionFilter::SurfaceComponents
         } else {
@@ -74,12 +70,8 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
-        if self.apply_curves {
-            if self.first.is_some() {
-                "Select target surface; Esc cancels"
-            } else {
-                "Select World-XY curves and points; Enter continues, Esc cancels"
-            }
+        if let Some(kind) = self.uv_mapping {
+            kind.hint(self.first.is_some())
         } else if self
             .boolean
             .as_ref()
@@ -157,7 +149,7 @@ impl VibocerosApp {
             output_layer,
             original_selection,
             boolean: None,
-            apply_curves: false,
+            uv_mapping: None,
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));
@@ -167,8 +159,8 @@ impl VibocerosApp {
 
     pub(super) fn log_intersection_prompt(&mut self) {
         if let Some(prompt) = &self.intersection_prompt {
-            if prompt.apply_curves {
-                self.push_log(format!("ApplyCrv: {}", prompt.hint()));
+            if prompt.uv_mapping.is_some() {
+                self.push_log(format!("{}: {}", prompt.name(), prompt.hint()));
                 return;
             }
             if let Some(options) = &prompt.boolean {
@@ -191,7 +183,7 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
-        if prompt.apply_curves {
+        if prompt.uv_mapping.is_some() {
             return self.continue_apply_curves_prompt(prompt, input);
         }
         if prompt.boolean.is_some() {
@@ -296,7 +288,7 @@ impl VibocerosApp {
         mode: SelectionMode,
     ) {
         if let Some(prompt) = &self.intersection_prompt {
-            if prompt.apply_curves {
+            if prompt.uv_mapping.is_some() {
                 self.select_apply_curves_objects(ids, mode);
                 return;
             }
