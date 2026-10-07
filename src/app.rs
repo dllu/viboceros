@@ -173,6 +173,7 @@ mod set_point;
 mod set_view;
 mod smooth;
 mod snapping;
+mod subcurve_direction;
 mod subcurve_prompt;
 mod taper_prompt;
 mod toolbar;
@@ -2211,6 +2212,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_group_prompt(&input) {
+            return;
+        }
+        if self.continue_subcurve_direction(&input) {
             return;
         }
         if self.try_continue_intersection_prompt(&input) {
@@ -8246,6 +8250,9 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(point) = output.drafting_hover.take() {
+            self.update_subcurve_hover(point);
+        }
         if self.picking_scale_by_plane_view() {
             if output.source_viewport_click {
                 self.accept_scale_by_plane_view(self.active_viewport);
@@ -9381,6 +9388,7 @@ mod tests {
     mod smooth;
     mod split_edge;
     mod standalone_subcurve;
+    mod subcurve_direction;
     mod subcurve_mark_ends;
     mod subcurve_midpoint;
     mod subcurve_preferences;

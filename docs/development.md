@@ -32,6 +32,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [SubCrv MarkEnds source purity, marker attributes and history](subcurve-mark-ends.md)
 - [SubCrv FromMidpoint radius entry, clamping and seam replay](subcurve-midpoint.md)
 - [SubCrv Copy, Mode and FromMidpoint lifetime](subcurve-option-memory.md)
+- [SubCrv cursor direction locking and immediate numeric entry](subcurve-direction.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
 - [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [Derivative-free fitting for nonlinear singular-endpoint paths](derivative-free-surface-pullbacks.md)

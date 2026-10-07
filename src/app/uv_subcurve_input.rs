@@ -20,6 +20,8 @@ pub(super) struct PendingSubcurve {
     pub(super) object: Option<ObjectId>,
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
+    pub(super) hover_parameter: Option<f64>,
+    pub(super) locked_forward: Option<bool>,
 }
 
 impl SubcurveInputs {
@@ -35,6 +37,13 @@ impl SubcurveInputs {
             .collect()
     }
     pub(super) fn hint(&self) -> Option<&'static str> {
+        if self
+            .pending
+            .as_ref()
+            .is_some_and(|p| p.start.is_some() && p.locked_forward.is_some())
+        {
+            return Some("Pick the locked-side end or enter a length; Direction=Free unlocks");
+        }
         self.pending.as_ref().map(|p| match (p.object, p.start,p.length) {
             (None, _,_) => "Select curve to temporarily shorten; Enter returns, Esc cancels",
             (Some(_), None,_) => "Pick start of temporary subcurve; Esc cancels",
@@ -79,6 +88,23 @@ impl VibocerosApp {
                                     .unwrap()
                                     .length = Some(length.abs());
                                 self.command_input.clear();
+                                if pending.locked_forward.is_some() {
+                                    let point = self
+                                        .document
+                                        .object(pending.object.unwrap())
+                                        .unwrap()
+                                        .geometry()
+                                        .curve_ref()
+                                        .unwrap()
+                                        .evaluate(pending.start.unwrap());
+                                    match point {
+                                        Ok(point) => {
+                                            self.accept_uv_subcurve_point(point);
+                                        }
+                                        Err(error) => self.push_log(format!("Error: {error}")),
+                                    }
+                                    return true;
+                                }
                                 self.log_intersection_prompt();
                             }
                             Some(Err(error)) => self.push_log(format!("Error: {error}")),
@@ -192,15 +218,35 @@ impl VibocerosApp {
                 ))?;
             let parameter = curve.closest_parameter(point, self.document.tolerance())?;
             if let Some(start) = pending.start {
+                if pending.length.is_none()
+                    && !curve.is_closed()?
+                    && let Some(forward) = pending.locked_forward
+                    && (start == parameter || (parameter > start) != forward)
+                {
+                    prompt.uv_subcurves.pending = None;
+                    self.active_command = None;
+                    self.drafting_plane = None;
+                    return Ok(());
+                }
                 let parameters = if let Some(length) = pending.length {
-                    let Some(parameters) = length_confirmation::interval(
-                        curve,
-                        start,
-                        parameter,
-                        length,
-                        self.document.tolerance(),
-                    )?
-                    else {
+                    let result = if let Some(forward) = pending.locked_forward {
+                        viboceros_command::subcurve_input::interval_in_direction(
+                            curve,
+                            start,
+                            length,
+                            forward,
+                            self.document.tolerance(),
+                        )
+                    } else {
+                        length_confirmation::interval(
+                            curve,
+                            start,
+                            parameter,
+                            length,
+                            self.document.tolerance(),
+                        )
+                    };
+                    let Some(parameters) = result? else {
                         prompt.uv_subcurves.pending = None;
                         self.active_command = None;
                         self.drafting_plane = None;

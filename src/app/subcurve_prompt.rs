@@ -10,6 +10,8 @@ pub(super) struct SubcurvePrompt {
     pub(super) copy: bool,
     pub(super) mode: viboceros_command::subcurve_input::SubcurveMode,
     pub(super) from_midpoint: bool,
+    pub(super) hover_parameter: Option<f64>,
+    pub(super) locked_forward: Option<bool>,
 }
 impl SubcurvePrompt {
     pub(super) fn hint(&self) -> &'static str {
@@ -19,6 +21,9 @@ impl SubcurvePrompt {
             } else {
                 "SubCrv: pick a symmetric end or enter the half-length (Esc cancels)"
             };
+        }
+        if self.start.is_some() && self.locked_forward.is_some() {
+            return "SubCrv: pick the locked-side end or enter a length; Direction=Free unlocks";
         }
         match (self.source, self.start, self.length) {
             (None, _, _) => "SubCrv: select one curve; Esc cancels",
@@ -57,6 +62,8 @@ impl VibocerosApp {
             copy,
             mode,
             from_midpoint,
+            hover_parameter: None,
+            locked_forward: None,
         });
         self.active_command = source.map(|_| InteractiveCommand::SubCrv { start: None, copy });
         if source.is_none() {
@@ -177,7 +184,7 @@ impl VibocerosApp {
                         Some(Ok(total)) if length.abs() <= total => {
                             self.subcurve_prompt.as_mut().unwrap().length = Some(length.abs());
                             self.command_input.clear();
-                            if prompt.from_midpoint {
+                            if prompt.from_midpoint || prompt.locked_forward.is_some() {
                                 let point = self
                                     .document
                                     .object(source)
@@ -242,6 +249,22 @@ impl VibocerosApp {
                 self.push_log(prompt.hint().into());
                 return Ok(());
             };
+            let restart_selection = if let Some((length, forward)) =
+                prompt.length.zip(prompt.locked_forward)
+                && !prompt.from_midpoint
+                && curve.is_closed()?
+            {
+                viboceros_command::subcurve_input::locked_piece(
+                    curve,
+                    start,
+                    length,
+                    forward,
+                    self.document.tolerance(),
+                )?
+                .is_none()
+            } else {
+                false
+            };
             let mut input = if let Some(length) = prompt.length {
                 format!(
                     "SubCrv Numeric={start},{length},{parameter} Copy={}",
@@ -263,12 +286,21 @@ impl VibocerosApp {
                 " FromMidpoint={}",
                 if prompt.from_midpoint { "Yes" } else { "No" }
             ));
+            if let Some(forward) = prompt.locked_forward {
+                input.push_str(&format!(
+                    " Locked={}",
+                    if forward { "Forward" } else { "Backward" }
+                ));
+            }
             self.document.select_command_results([source])?;
             self.commands.execute(&mut self.document, &input)?;
             self.subcurve_prompt = None;
             self.active_command = None;
             self.drafting_plane = None;
             self.push_log(format!("> {input}"));
+            if restart_selection {
+                self.begin_subcurve_prompt(prompt.copy, prompt.mode, prompt.from_midpoint);
+            }
             Ok(())
         })();
         match result {

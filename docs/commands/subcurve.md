@@ -49,8 +49,10 @@ and history. See [provenance](../standalone-subcurve-provenance.json).
 retaining the source, with current-layer output and unselected history states.
 [`FromMidpoint=Yes`](../subcurve-midpoint.md) builds an interval around the first
 pick, with immediate half-length entry or symmetric endpoint picking.
-Direction locking, B-rep edge references and restart preference persistence
-remain outstanding. The recorded cases do not establish
+[Direction locking](../subcurve-direction.md) captures the hovered side for
+immediate numeric entry and is shared with inline UV input. B-rep edge
+references and restart preference persistence remain outstanding. The recorded
+cases do not establish
 arbitrary-curve or preview parity.
 
 ```sh

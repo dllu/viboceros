@@ -92,12 +92,53 @@ pub fn interval(
     length: Real,
     tolerance: Tolerance,
 ) -> Result<Option<[Real; 2]>, GeometryError> {
-    let domain = curve.domain();
     let closed = curve.is_closed()?;
     if closed && length == curve.length(tolerance)? {
         return Ok(None);
     }
-    let forward = if closed {
+    let forward = forward(curve, anchor, confirmation, tolerance)?;
+    endpoint_interval(curve, anchor, length, forward, tolerance)
+}
+
+/// Standalone numeric extraction using the getter's captured direction.
+pub fn locked_piece(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    length: Real,
+    forward: bool,
+    tolerance: Tolerance,
+) -> Result<Option<Curve3>, GeometryError> {
+    if !curve.domain().contains(&anchor) {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    if length == 0. {
+        return Ok(None);
+    }
+    if !length.is_finite() || length.abs() > curve.length(tolerance)? {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    let Some([start, end]) =
+        interval_in_direction(curve, anchor, length.abs(), forward, tolerance)?
+    else {
+        return Ok(None);
+    };
+    if curve.is_closed()? && (forward || start <= end) {
+        // Retain the measured closed-getter outcomes: the backward seam
+        // traversal succeeds; the other captured charts return to selection.
+        // This is a command policy, separate from signed kernel extraction.
+        return Ok(None);
+    }
+    Ok(Some(curve.to_owned().try_subcurve(start, end)?))
+}
+
+/// Choose the open side or the shorter closed arc toward the cursor parameter.
+pub fn forward(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    confirmation: Real,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    Ok(if curve.is_closed()? {
         confirmation != anchor
             && curve
                 .to_owned()
@@ -107,7 +148,31 @@ pub fn interval(
                 <= curve.length(tolerance)? * 0.5
     } else {
         confirmation > anchor
-    };
+    })
+}
+
+/// Inline numeric extraction; a full closed traversal produces no interval.
+pub fn interval_in_direction(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    length: Real,
+    forward: bool,
+    tolerance: Tolerance,
+) -> Result<Option<[Real; 2]>, GeometryError> {
+    if curve.is_closed()? && length == curve.length(tolerance)? {
+        return Ok(None);
+    }
+    endpoint_interval(curve, anchor, length, forward, tolerance)
+}
+
+fn endpoint_interval(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    length: Real,
+    forward: bool,
+    tolerance: Tolerance,
+) -> Result<Option<[Real; 2]>, GeometryError> {
+    let domain = curve.domain();
     let signed = if forward { length } else { -length };
     let result = curve
         .to_owned()

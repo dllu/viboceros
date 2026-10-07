@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_direction",
+      "id": "direction_forward_point",
+      "case": "forward_point"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_backward_point",
+      "case": "backward_point"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_forward_numeric",
+      "case": "forward_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_backward_numeric",
+      "case": "backward_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_forward",
+      "case": "closed_forward"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_backward",
+      "case": "closed_backward"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_unlock_point",
+      "case": "unlock_point"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_direction_option",
+      "case": "direction_option"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_inline_forward",
+      "case": "inline_forward"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_mark_forward",
+      "case": "mark_forward"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_mark_numeric",
+      "case": "mark_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_inline_numeric",
+      "case": "inline_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_forward_numeric",
+      "case": "closed_forward_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_backward_numeric",
+      "case": "closed_backward_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_same_side_point",
+      "case": "same_side_point"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_circle_numeric",
+      "case": "closed_circle_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_circle_early_numeric",
+      "case": "closed_circle_early_numeric"
+    },
+    {
+      "op": "subcurve_direction",
+      "id": "direction_closed_early_backward_numeric",
+      "case": "closed_early_backward_numeric"
+    }
+  ]
+}

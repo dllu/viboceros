@@ -450,6 +450,12 @@ class OracleClient:
             from .subcurve_preferences_probe import validate_request
             if self.settings_scheme is None:raise OracleProtocolError('SubCrv preferences require a private settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'subcurve_direction' for op in request.get('operations', [])):
+            from .subcurve_direction_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('direction locking requires a private settings scheme')
+            validate_request(request)
+            from .subcurve_direction_input import SubcurveDirectionPicker
+            interaction=SubcurveDirectionPicker(request)
         if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
             from .surface_pullback_endpoints_probe import validate_request
             if self.settings_scheme is None:
@@ -877,6 +883,9 @@ class OracleClient:
             if any(op.get('op') == 'subcurve_preferences' for op in request.get('operations', [])):
                 for name in ('subcurve_preferences_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'subcurve_direction' for op in request.get('operations', [])):
+                for name in ('subcurve_direction_probe.py','join_probe.py','merge_edges_probe.py','shrink_face_input.py','snap_environment.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'curve_subcurve_arc_length' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('curve_length_subcurve_probe.py'),job_path/'curve_length_subcurve_probe.py')
             if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):
@@ -1150,7 +1159,8 @@ class OracleClient:
                             and time.monotonic() >= startup_deadline):
                         startup_failed = True
                         break
-                    if not fallback_sent and _ui_fallback_enabled():
+                    if (not fallback_sent and _ui_fallback_enabled()
+                            and not _read_optional_text(job_path / "worker-progress.log")):
                         candidate = _rhino_window_for_pids(owned_pids)
                         if candidate is not None and owned_window != candidate:
                             owned_window = candidate

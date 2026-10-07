@@ -73,7 +73,7 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
-pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No]";
+pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No] [Locked=Forward|Backward]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SubcurveLocation {
@@ -88,6 +88,7 @@ struct SubcurveOptions {
     copy: bool,
     mode: subcurve_input::SubcurveMode,
     from_midpoint: bool,
+    locked_forward: Option<bool>,
 }
 
 pub(super) struct SubcurveCommand(pub(super) subcurve_input::SubcurvePreferences);
@@ -128,6 +129,14 @@ impl Command for SubcurveCommand {
                         length,
                         document.tolerance(),
                     )
+                } else if let Some(forward) = options.locked_forward {
+                    subcurve_input::locked_piece(
+                        curve.as_ref(),
+                        anchor,
+                        length,
+                        forward,
+                        document.tolerance(),
+                    )
                 } else {
                     subcurve_input::piece(
                         curve.as_ref(),
@@ -157,6 +166,14 @@ impl Command for SubcurveCommand {
                     ],
                     SubcurveLocation::Numeric(_) => unreachable!(),
                 };
+                if !options.from_midpoint
+                    && !curve.as_ref().is_closed()?
+                    && let Some(forward) = options.locked_forward
+                    && (start == end || (end > start) != forward)
+                {
+                    document.clear_selection();
+                    return Ok("No subcurve created on the locked side".into());
+                }
                 if options.from_midpoint {
                     let radius = subcurve_input::midpoint_radius(
                         curve.as_ref(),
@@ -276,8 +293,23 @@ fn parse_subcurve_options(
     let mut mode_seen = false;
     let mut from_midpoint = defaults.from_midpoint;
     let mut midpoint_seen = false;
+    let mut locked_forward = None;
+    let mut locked_seen = false;
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
+        if option_name_eq(name, "Locked") && !locked_seen {
+            let value = value.trim_start_matches('_');
+            locked_forward = Some(if value.eq_ignore_ascii_case("Forward") {
+                true
+            } else if value.eq_ignore_ascii_case("Backward") {
+                false
+            } else {
+                return Err(CommandError::Usage(SUBCURVE_USAGE));
+            });
+            locked_seen = true;
+            index += consumed;
+            continue;
+        }
         if option_name_eq(name, "FromMidpoint") && !midpoint_seen {
             from_midpoint = parse_yes_no(value).ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
             midpoint_seen = true;
@@ -303,6 +335,7 @@ fn parse_subcurve_options(
         copy,
         mode,
         from_midpoint,
+        locked_forward,
     })
 }
 

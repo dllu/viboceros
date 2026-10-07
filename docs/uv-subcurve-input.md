@@ -58,3 +58,6 @@ cargo test -p viboceros-command --release uv_inputs
 cargo test --release --bin viboceros app::tests::uv_subcurve_input
 python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/uv_subcurve_input_local.json --timeout 600 --output docs/uv-subcurve-input-local.json
 ```
+
+[Direction locking](subcurve-direction.md) shares the standalone hover capture
+and immediately accepts numeric lengths on the captured side.

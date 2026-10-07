@@ -1,0 +1,23 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleDirectionVerified20261007",
+  "recipes": 18,
+  "successful_commands": 10,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Public SubCrv and CreateUVCrv getters in an empty owned document; X11 mouse motion is acknowledged, bounded tokens use RhinoApp.SendKeystrokes, and failures remain raw.",
+  "limits": [
+    "General closed numeric direction policy is inferred from five cases; arbitrary closed charts are unverified.",
+    "Inline closed numeric and FromMidpoint-plus-Direction combinations are unverified.",
+    "B-rep edge input, live preview and reactive History remain outstanding.",
+    "Station and endpoint replay is not a continuous locus certificate."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_direction_probe.py": "f451b76cfc3ca5771db5a81ded6c7e8ef5653132454a9d007c8ca41894cfc57b",
+    "tools/rhino_oracle/subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "tools/rhino_oracle/fixtures/subcurve_direction.json": "4e8d8d8f1036520ec3989e0bfa8e79b59c6a54301611a5a316b604197fb0bc74",
+    "tools/rhino_oracle/observations/subcurve_direction.json": "7b47aba0a2564e167dde61c1cbd74d2fc714a8d3501fa5c393b6b5ebe1aecd00"
+  }
+}

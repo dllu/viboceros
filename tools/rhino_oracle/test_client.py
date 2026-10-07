@@ -36,6 +36,29 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_started_worker_prevents_startup_macro_from_being_resent(self):
+        client = OracleClient(launcher="/bin/true")
+        def launch(*args):
+            (args[3].parent / "worker-progress.log").write_text("worker: started\n")
+            return subprocess.CompletedProcess(["true"], 0, stdout="", stderr="")
+        ticks = iter(range(100))
+        with (
+            patch("tools.rhino_oracle.client._run_logged", side_effect=launch),
+            patch("tools.rhino_oracle.client._rhino_process_ids", return_value={2_000_000_000}),
+            patch("tools.rhino_oracle.client._wait_for_process_exit", return_value=False),
+            patch("tools.rhino_oracle.client._owned_worker_exited", return_value=False),
+            patch("tools.rhino_oracle.client._rhino_window_for_pids", return_value="owned"),
+            patch("tools.rhino_oracle.client._ui_fallback_enabled", return_value=True),
+            patch("tools.rhino_oracle.client._send_rhino_macro") as send,
+            patch("tools.rhino_oracle.client.time.monotonic", side_effect=lambda: next(ticks)),
+            patch("tools.rhino_oracle.client.time.sleep"),
+            patch("tools.rhino_oracle.client._terminate_owned_rhino_processes"),
+            patch.dict(os.environ, {"DISPLAY": ":101", "VIBOCEROS_ORACLE_HEADLESS": ":101"}),
+            self.assertRaises(OracleError),
+        ):
+            client.run_rhino(dict(protocol_version=1, operations=[]), 20)
+        send.assert_not_called()
+
     def test_private_settings_scheme_names_are_bounded_and_cannot_inject_arguments(self):
         self.assertEqual(OracleClient(settings_scheme='VibocerosOracleCopy_1').settings_scheme,'VibocerosOracleCopy_1')
         self.assertIsNone(OracleClient().settings_scheme)

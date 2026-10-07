@@ -428,6 +428,9 @@ pub struct ViewportOutput {
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
+    /// Resolved hovered drafting location, without accepting a point or editing
+    /// the model. Commands can use it for cursor-dependent options.
+    pub drafting_hover: Option<Point3>,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
     pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
@@ -2076,6 +2079,10 @@ impl Viewport {
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
+            drafting_hover: response
+                .hovered()
+                .then(|| drafting_cursor.map(|cursor| cursor.source_point))
+                .flatten(),
             selection_click,
             selection_choice,
             selection_window,
@@ -2315,6 +2322,60 @@ mod tests {
         events: Vec<egui::Event>,
     ) -> ViewportOutput {
         viewport_frame_with_modifiers(egui::Modifiers::NONE, context, viewport, document, events)
+    }
+
+    #[test]
+    fn drafting_hover_emits_a_location_without_accepting_a_point() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let document = Document::default();
+        viewport_frame(&context, &mut viewport, &document, Vec::new());
+        for (active, pointer, expected) in [
+            (true, Pos2::new(400., 300.), true),
+            (true, Pos2::new(900., 300.), false),
+            (false, Pos2::new(400., 300.), false),
+        ] {
+            let mut result = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        events: vec![egui::Event::PointerMoved(pointer)],
+                        ..Default::default()
+                    },
+                    |ui| {
+                        result = viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            assert_eq!(result.drafting_hover.is_some(), expected);
+            if let Some(point) = result.drafting_hover {
+                assert!(
+                    viewport
+                        .project(point, viewport.last_rect.unwrap())
+                        .unwrap()
+                        .distance(pointer)
+                        < 0.01
+                );
+            }
+            assert!(result.picked_point.is_none());
+            assert!(result.selection_click.is_none());
+            assert_eq!(document.objects().len(), 0);
+            assert!(!document.can_undo());
+        }
     }
 
     fn viewport_frame_with_modifiers(
