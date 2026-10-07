@@ -1,0 +1,1869 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_forward",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_reverse",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              5.408326913195984,
+              1.8027756377319948
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_rectangle",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ]
+          ]
+        },
+        {
+          "kind": "curve",
+          "name": "rectangle",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              4.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              3.0,
+              4.0,
+              4.0
+            ]
+          }
+        }
+      ],
+      "groups": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_mixed",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ]
+          ]
+        },
+        {
+          "kind": "curve",
+          "name": "rectangle",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              4.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              3.0,
+              4.0,
+              4.0
+            ]
+          }
+        },
+        {
+          "kind": "point",
+          "name": "point",
+          "point": [
+            2.0,
+            3.0,
+            0.0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_forward",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_reverse",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              5.408326913195984,
+              1.8027756377319948
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_warped",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  3.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  2.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 2,
+            "domain": [
+              2.0,
+              5.0
+            ],
+            "knots": [
+              2.0,
+              2.0,
+              2.0,
+              5.0,
+              5.0,
+              5.0
+            ]
+          },
+          "subcurves": [
+            [
+              2.75,
+              4.25
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_mixed",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ]
+          ]
+        },
+        {
+          "kind": "point",
+          "name": "point",
+          "point": [
+            2.0,
+            3.0,
+            0.0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_twice",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ],
+            [
+              2.8844410203711917,
+              4.3266615305567875
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_twice",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [
+            [
+              1.8027756377319948,
+              5.408326913195984
+            ],
+            [
+              2.8844410203711917,
+              4.3266615305567875
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_closed",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              4.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              3.0,
+              4.0,
+              4.0
+            ]
+          },
+          "subcurves": [
+            [
+              3.2,
+              0.6
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_closed",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              4.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              3.0,
+              4.0,
+              4.0
+            ]
+          },
+          "subcurves": [
+            [
+              3.2,
+              0.6
+            ]
+          ]
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "apply_uv_curves",
+      "id": "uv_subcurve_apply_clear",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [],
+          "selected": false
+        },
+        {
+          "kind": "curve",
+          "name": "rectangle",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              4.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              3.0,
+              4.0,
+              4.0
+            ]
+          }
+        }
+      ],
+      "groups": [
+        [
+          1
+        ],
+        [
+          2
+        ]
+      ],
+      "limit": 1e-06
+    },
+    {
+      "op": "create_uv_curves",
+      "id": "uv_subcurve_create_clear",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          2.0,
+          5.0
+        ],
+        "domain_v": [
+          -3.0,
+          1.0
+        ]
+      },
+      "inputs": [
+        {
+          "kind": "curve",
+          "name": "partial",
+          "definition": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              7.211102550927979
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              7.211102550927979,
+              7.211102550927979
+            ]
+          },
+          "subcurves": [],
+          "selected": false
+        }
+      ],
+      "groups": [
+        [
+          1
+        ]
+      ],
+      "limit": 1e-06
+    }
+  ]
+}

@@ -6,8 +6,7 @@ use viboceros_geometry::{NurbsCurve2, Point2, WeightedPoint2, remap_scalar};
 #[cfg(test)]
 mod tests;
 
-pub(super) const USAGE: &str =
-    "ApplyCrv Surface=surface-uuid [Face=index] (select World-XY curves and points)";
+pub(super) const USAGE: &str = "ApplyCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] (select World-XY curves and points)";
 pub(super) struct ApplyCurvesCommand;
 
 impl Command for ApplyCurvesCommand {
@@ -22,7 +21,11 @@ impl Command for ApplyCurvesCommand {
         let reference = uv_reference::resolve(document, arguments, USAGE)?;
         let target = reference.object;
         let surface = reference.surface;
-        let selected = selected_ids(document)?;
+        let inputs = uv_inputs::resolve(document, target, &reference.subcurves, USAGE)?;
+        let selected = document
+            .selected_object_ids()
+            .chain(reference.subcurves.iter().map(|s| s.object))
+            .collect::<Vec<_>>();
         let tolerance = document.tolerance();
         let numerical = Tolerance::try_new(
             (tolerance.absolute() * 1e-4).max(Real::MIN_POSITIVE),
@@ -32,20 +35,14 @@ impl Command for ApplyCurvesCommand {
         let mut sources = Vec::new();
         let mut bounds: Option<BoundingBox3> = None;
         let mut skipped = 0;
-        for id in selected.iter().copied().filter(|id| *id != target) {
-            let object = document.object(id).unwrap();
-            if !matches!(object.geometry(), Geometry::Point(_))
-                && object.geometry().curve_ref().is_none()
-            {
-                continue;
-            }
-            let box3 = object.geometry().tight_bounds(numerical)?;
+        for input in inputs {
+            let box3 = input.geometry.tight_bounds(numerical)?;
             if box3.min().z() < -tolerance.absolute() || box3.max().z() > tolerance.absolute() {
                 skipped += 1;
                 continue;
             }
             bounds = Some(bounds.map_or(Ok(box3), |old| old.union(box3))?);
-            sources.push((id, object.geometry()));
+            sources.push(input);
         }
         let Some(bounds) = bounds else {
             return Err(CommandError::Usage(USAGE));
@@ -61,8 +58,10 @@ impl Command for ApplyCurvesCommand {
                     remap_scalar(p.y(), [bounds.min().y(), bounds.max().y()], v)?,
                 )
             };
-            for (id, geometry) in sources {
-                if let Geometry::Point(p) = geometry {
+            for input in sources {
+                let id = (!input.temporary).then_some(input.object);
+                let geometry = input.geometry;
+                if let Geometry::Point(p) = geometry.as_ref() {
                     let uv = map(*p)?;
                     points.push((id, Geometry::Point(surface.evaluate(uv.x(), uv.y())?)));
                 } else {
@@ -89,10 +88,19 @@ impl Command for ApplyCurvesCommand {
             selected.iter().copied().chain([target]),
         )?;
         let curve_count = curves.len();
-        let outputs = document.copy_object_geometries_with_groups(
-            curves.into_iter().chain(points),
-            CopyGroupPolicy::Preserve,
-        )?;
+        let staged = curves.into_iter().chain(points).collect::<Vec<_>>();
+        let unique = staged
+            .iter()
+            .filter_map(|(id, _)| *id)
+            .collect::<BTreeSet<_>>();
+        let outputs = if unique.len() == staged.len() {
+            document.copy_object_geometries_with_groups(
+                staged.into_iter().map(|(id, g)| (id.unwrap(), g)),
+                CopyGroupPolicy::Preserve,
+            )?
+        } else {
+            uv_inputs::copy_outputs(document, staged)?
+        };
         // Native ApplyCrv allocates corresponding group definitions even for
         // point-only input, but only its curve outputs retain memberships.
         document.clear_object_group_memberships(outputs[curve_count..].iter().copied())?;

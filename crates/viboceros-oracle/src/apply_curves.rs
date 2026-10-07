@@ -10,6 +10,8 @@ pub struct ApplyCurvesFixture {
     inputs: Vec<Input>,
     #[serde(default)]
     grouped: bool,
+    #[serde(default)]
+    groups: Vec<Vec<usize>>,
     limit: Real,
 }
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -18,11 +20,19 @@ enum Input {
     Curve {
         name: String,
         definition: NurbsCurveDefinition,
+        #[serde(default)]
+        subcurves: Vec<[Real; 2]>,
+        #[serde(default = "selected_input")]
+        selected: bool,
     },
     Point {
         name: String,
         point: [Real; 3],
     },
+}
+
+fn selected_input() -> bool {
+    true
 }
 
 pub(super) fn run(
@@ -63,33 +73,75 @@ fn run_command(
             &f.surface,
         )?))?;
         let mut sources = vec![target];
+        let mut selected = Vec::new();
+        let mut input_options = String::new();
         for input in &f.inputs {
             let (name, geometry) = match input {
-                Input::Curve { name, definition } => (
+                Input::Curve {
+                    name, definition, ..
+                } => (
                     name,
                     Geometry::NurbsCurve(nurbs_curve_from_definition(definition)?),
                 ),
                 Input::Point { name, point } => (name, Geometry::Point(Point3::try_from(*point)?)),
             };
-            sources.push(
-                doc.add_geometry_with_attributes(
-                    geometry,
-                    ObjectAttributes::on_layer(input_layer)
-                        .with_name(name.clone())
-                        .try_with_user_text("viboceros-source", name.clone())?,
-                )?,
-            );
+            let id = doc.add_geometry_with_attributes(
+                geometry,
+                ObjectAttributes::on_layer(input_layer)
+                    .with_name(name.clone())
+                    .try_with_user_text("viboceros-source", name.clone())?,
+            )?;
+            sources.push(id);
+            if let Input::Curve {
+                subcurves,
+                selected,
+                ..
+            } = input
+            {
+                if subcurves.len() > 64 {
+                    return Err(ProbeError::FixtureInvariant(
+                        "at most 64 temporary subcurves per source",
+                    ));
+                }
+                for [start, end] in subcurves {
+                    input_options.push_str(&format!(" SubCrv={id},{start},{end}"));
+                }
+                if !subcurves.is_empty() || !selected {
+                    continue;
+                }
+            }
+            selected.push(id);
         }
         if f.grouped {
             doc.add_group(Some("source".into()), sources.iter().copied())?;
         }
+        if f.groups.len() > 64 {
+            return Err(ProbeError::FixtureInvariant("at most 64 input groups"));
+        }
+        for (i, group) in f.groups.iter().enumerate() {
+            if group.is_empty()
+                || group.len() > 65
+                || group.iter().any(|index| *index >= sources.len())
+            {
+                return Err(ProbeError::FixtureInvariant(
+                    "group source index must reference an input object",
+                ));
+            }
+            doc.add_group(
+                Some(format!("source_group_{i}")),
+                group.iter().map(|index| sources[*index]),
+            )?;
+        }
         let output_layer = doc.add_layer("output", ColorRgb::BLACK)?;
         doc.set_current_layer(output_layer)?;
         doc.clear_history()?;
-        doc.select_objects_direct(sources[1..].iter().copied(), SelectionMode::Replace)?;
+        doc.select_objects_direct(selected, SelectionMode::Replace)?;
         let before = snapshot(&doc, &sources)?;
         let start = Instant::now();
-        registry.execute(&mut doc, &format!("{command} Surface={target}"))?;
+        registry.execute(
+            &mut doc,
+            &format!("{command} Surface={target}{input_options}"),
+        )?;
         elapsed += start.elapsed().as_nanos();
         let after = snapshot(&doc, &sources)?;
         let group_count = doc.groups().len();

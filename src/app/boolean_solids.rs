@@ -54,6 +54,7 @@ impl VibocerosApp {
         self.intersection_prompt = Some(TwoSetsPrompt {
             uv_mapping: None,
             uv_face: None,
+            uv_subcurves: Default::default(),
             first: preselected_first.then_some(first),
             output_layer: "Current",
             original_selection: vec![],

@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_forward",
+      "case": "apply_forward"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_reverse",
+      "case": "apply_reverse"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_rectangle",
+      "case": "apply_rectangle"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_mixed",
+      "case": "apply_mixed"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_forward",
+      "case": "create_forward"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_reverse",
+      "case": "create_reverse"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_warped",
+      "case": "create_warped"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_mixed",
+      "case": "create_mixed"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_twice",
+      "case": "apply_twice"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_twice",
+      "case": "create_twice"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_closed",
+      "case": "apply_closed"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_closed",
+      "case": "create_closed"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_apply_clear",
+      "case": "apply_clear"
+    },
+    {
+      "op": "uv_subcurve_input_command",
+      "id": "uv_subcurve_create_clear",
+      "case": "create_clear"
+    }
+  ]
+}

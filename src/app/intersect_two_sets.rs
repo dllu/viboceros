@@ -12,6 +12,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) boolean: Option<BooleanOptions>,
     pub(super) uv_mapping: Option<super::apply_curves::UvMappingKind>,
     pub(super) uv_face: Option<usize>,
+    pub(super) uv_subcurves: super::uv_subcurve_input::SubcurveInputs,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -63,6 +64,9 @@ impl TwoSetsPrompt {
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
         if let Some(kind) = self.uv_mapping {
+            if self.uv_subcurves.pending.is_some() {
+                return ObjectSelectionFilter::Curves;
+            }
             kind.filter(self.first.is_some())
         } else if self.boolean.is_some() {
             ObjectSelectionFilter::SurfaceComponents
@@ -71,6 +75,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(hint) = self.uv_subcurves.hint() {
+            return hint;
+        }
         if let Some(kind) = self.uv_mapping {
             kind.hint(self.first.is_some())
         } else if self
@@ -152,6 +159,7 @@ impl VibocerosApp {
             boolean: None,
             uv_mapping: None,
             uv_face: None,
+            uv_subcurves: Default::default(),
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));

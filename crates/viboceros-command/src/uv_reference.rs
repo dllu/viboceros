@@ -8,6 +8,7 @@ pub(super) struct UvReference<'a> {
     pub(super) object: ObjectId,
     pub(super) surface: &'a NurbsSurface,
     pub(super) face: Option<&'a BrepFace>,
+    pub(super) subcurves: Vec<uv_inputs::SubcurveInput>,
 }
 
 pub(super) fn resolve<'a>(
@@ -17,6 +18,7 @@ pub(super) fn resolve<'a>(
 ) -> Result<UvReference<'a>, CommandError> {
     let mut object = None;
     let mut face = None;
+    let mut subcurves = Vec::new();
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(usage))?;
         if option_name_eq(name, "Surface") && object.is_none() {
@@ -31,6 +33,8 @@ pub(super) fn resolve<'a>(
                     .parse::<usize>()
                     .map_err(|_| CommandError::Usage(usage))?,
             );
+        } else if option_name_eq(name, "SubCrv") {
+            subcurves.push(uv_inputs::SubcurveInput::parse(value, usage)?);
         } else {
             return Err(CommandError::Usage(usage));
         }
@@ -58,5 +62,6 @@ pub(super) fn resolve<'a>(
         object,
         surface,
         face,
+        subcurves,
     })
 }

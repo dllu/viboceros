@@ -5,8 +5,7 @@ mod projection;
 #[cfg(test)]
 mod tests;
 
-pub(super) const USAGE: &str =
-    "CreateUVCrv Surface=surface-uuid [Face=index] (optionally select curves/points on surface)";
+pub(super) const USAGE: &str = "CreateUVCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] (optionally select curves/points on surface)";
 pub(super) struct CreateUvCurvesCommand;
 
 impl Command for CreateUvCurvesCommand {
@@ -37,33 +36,36 @@ impl Command for CreateUvCurvesCommand {
                     && natural_loop(&curves, &rectangle)?;
                 if is_natural {
                     natural_outer = true;
-                    staged.push((target, chart.loop_curve(&rectangle, tolerance)?));
+                    staged.push((Some(target), chart.loop_curve(&rectangle, tolerance)?));
                 } else {
-                    staged.push((target, chart.loop_curve(&curves, tolerance)?));
+                    staged.push((Some(target), chart.loop_curve(&curves, tolerance)?));
                 }
             }
         }
         if !natural_outer {
-            staged.push((target, chart.loop_curve(&rectangle, tolerance)?));
+            staged.push((Some(target), chart.loop_curve(&rectangle, tolerance)?));
         }
-        let sources = document
-            .selected_objects()
-            .filter(|o| {
-                o.id() != target
-                    && (o.geometry().curve_ref().is_some()
-                        || matches!(o.geometry(), Geometry::Point(_)))
-            })
-            .map(|o| (o.id(), o.geometry()))
+        let sources = uv_inputs::resolve(document, target, &reference.subcurves, USAGE)?;
+        let source_ids = sources
+            .iter()
+            .filter(|s| !s.temporary)
+            .map(|s| s.object)
             .collect::<Vec<_>>();
-        let source_ids = sources.iter().map(|(id, _)| *id).collect::<Vec<_>>();
+        let temporary_ids = sources
+            .iter()
+            .filter(|s| s.temporary)
+            .map(|s| s.object)
+            .collect::<Vec<_>>();
         let numerical = Tolerance::try_new(
             (tolerance.absolute() * 1e-4).max(Real::MIN_POSITIVE),
             Real::EPSILON * 8.,
             tolerance.angular(),
         )?;
         let mut distant = 0;
-        for (id, geometry) in sources {
-            if let Geometry::Point(p) = geometry {
+        for input in sources {
+            let id = (!input.temporary).then_some(input.object);
+            let geometry = input.geometry;
+            if let Geometry::Point(p) = geometry.as_ref() {
                 let (u, v) = surface.closest_parameters(*p, numerical)?;
                 if surface.evaluate(u, v)?.distance_to(*p)? > tolerance.absolute() * 2. {
                     distant += 1;
@@ -93,27 +95,15 @@ impl Command for CreateUvCurvesCommand {
             }
         }
         document.release_command_selection_on_history_replay(
-            source_ids.iter().copied().chain([target]),
+            source_ids
+                .iter()
+                .copied()
+                .chain(temporary_ids)
+                .chain([target]),
         )?;
         // Multiple surface border outputs share one recreated source group,
         // while extra objects participate in the same source-group remapping.
-        let outputs = document.copy_object_pieces_into_source_groups(staged)?;
-        let mut group_map = BTreeMap::new();
-        for &id in &outputs {
-            let memberships = document.object(id).unwrap().group_ids().to_vec();
-            let mut copies = Vec::new();
-            for group in memberships {
-                let new_group = if let Some(&copy) = group_map.get(&group) {
-                    copy
-                } else {
-                    let copy = document.add_empty_group(Some(document.next_unused_group_name()))?;
-                    group_map.insert(group, copy);
-                    copy
-                };
-                copies.push(new_group);
-            }
-            document.set_object_group_memberships(id, copies)?;
-        }
+        let outputs = uv_inputs::copy_outputs(document, staged)?;
         document.retain_created_group_definitions_on_undo()?;
         document.select_command_results(outputs.iter().copied().chain(source_ids))?;
         Ok(format!(

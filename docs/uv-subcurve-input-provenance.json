@@ -1,0 +1,27 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleUVSubcurveClear20261007",
+  "recipes": 14,
+  "native_curves": 24,
+  "native_points": 2,
+  "native_curve_stations": 792,
+  "full_native_parity": false,
+  "geometric_locus_comparison_ceiling": 1e-06,
+  "retained_closed_parameter_speed_discrepancy": 0.50625,
+  "source": "Independent public inline SubCrv and UV commands with full original source definitions; no proprietary code read.",
+  "limits": [
+    "inline length entry and direction locking",
+    "B-rep edge input references",
+    "native closed-curve parameter-speed parity",
+    "existing native coarse UV-sizing and off-surface projection discrepancies"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/uv_subcurve_input_probe.py": "b8c59f014421265da748ef9cf4a0cab80d5c3f26d2e2d1719fa7e0131a7bcc68",
+    "tools/rhino_oracle/fixtures/uv_subcurve_input_command.json": "07b6cd848ca4d4114894462790de863971ec05f610c1d87cd0d99710de7afb50",
+    "tools/rhino_oracle/fixtures/uv_subcurve_input_local.json": "bdee8795f6e1f44b59dd094964995b4909792fb023035e2b87d143292bd3163a",
+    "tools/rhino_oracle/observations/uv_subcurve_input_command.json": "dd2e40db8ee68bd1946e80cf49db2b23da45463f5ce5afa3ccc818a9fbfb80eb",
+    "docs/uv-subcurve-input-local.json": "5aad175b3c28a71e82a5a204ba5aa99736a2ae5f07d6b2711dc1dac807b6a5ec"
+  }
+}

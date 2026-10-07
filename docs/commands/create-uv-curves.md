@@ -55,7 +55,8 @@ per candidate cubic and refines to depth 24; it is a numerical approximation,
 not a continuous certificate of the global nearest-point locus. Ambiguous
 periodic charts, singular projection branches and discontinuous source curves
 may fail or remain unsupported. [Multi-face references](../uv-face-references.md) support viewport hits and
-explicit `Face=index`; inline `SubCrv` selection remains outstanding. Full native sizing and projection parity remain
+explicit `Face=index`; [inline `SubCrv` selection](../uv-subcurve-input.md) accepts
+temporary directed ranges. Full native sizing and projection parity remain
 outstanding.
 
 ## Native evidence

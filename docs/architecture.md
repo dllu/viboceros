@@ -52,6 +52,9 @@ selected bounds, with separate source/target picking and atomic document copies.
 [CreateUVCrv](commands/create-uv-curves.md) supplies the reverse workflow with
 trim contours, optional spatial inputs and independent group/history handling;
 native coarse sizing and off-surface projection have explicit accuracy limits.
+Both commands share nonmutating [temporary SubCrv inputs](uv-subcurve-input.md),
+with nested curve/endpoint picking, native default output attributes and parent
+command history.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

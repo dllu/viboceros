@@ -181,6 +181,7 @@ mod translation_prompt;
 mod twist_prompt;
 mod unjoin_edge;
 mod untrim_holes;
+mod uv_subcurve_input;
 mod viewport_layout;
 mod zoom_target;
 use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
@@ -5028,6 +5029,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_uv_subcurve_point(point) {
+            return accepted;
+        }
         let Some(command) = self.active_command else {
             return false;
         };
@@ -9316,6 +9320,7 @@ mod tests {
     mod unjoin_edge;
     mod untrim_edge;
     mod untrim_holes;
+    mod uv_subcurve_input;
     use super::*;
     use std::collections::BTreeSet;
     use viboceros_document::{ColorRgb, Geometry};

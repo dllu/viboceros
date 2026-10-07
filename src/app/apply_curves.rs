@@ -84,7 +84,10 @@ impl VibocerosApp {
                     .uv_face
                     .map(|face| format!(" Face={face}"))
                     .unwrap_or_default();
-                if !self.try_execute_command(&format!("CreateUVCrv Surface={surface}{qualifier}")) {
+                let subcurves = prompt.uv_subcurves.arguments();
+                if !self.try_execute_command(&format!(
+                    "CreateUVCrv Surface={surface}{qualifier}{subcurves}"
+                )) {
                     self.intersection_prompt = Some(prompt);
                 }
             } else {
@@ -99,6 +102,11 @@ impl VibocerosApp {
                 .eq_ignore_ascii_case("SelNone")
             {
                 self.document.clear_selection();
+                if !self.picking_uv_reference()
+                    && let Some(p) = self.intersection_prompt.as_mut()
+                {
+                    p.uv_subcurves.ranges.clear();
+                }
             } else {
                 let ids = self
                     .document
@@ -192,6 +200,7 @@ impl VibocerosApp {
             boolean: None,
             uv_mapping: Some(kind),
             uv_face: face_preselection.map(|(_, face)| face),
+            uv_subcurves: Default::default(),
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));
@@ -204,6 +213,9 @@ impl VibocerosApp {
         mut prompt: TwoSetsPrompt,
         input: &str,
     ) -> bool {
+        if self.try_continue_uv_subcurve(&prompt, input) {
+            return true;
+        }
         if prompt.uv_mapping == Some(UvMappingKind::Create) {
             return self.continue_create_uv_curves_prompt(prompt, input);
         }
@@ -219,7 +231,7 @@ impl VibocerosApp {
                     .filter(|o| prompt.filter().accepts_object(o))
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
-                if ids.is_empty() {
+                if ids.is_empty() && prompt.uv_subcurves.ranges.is_empty() {
                     self.push_log("Select World-XY curves or points; Esc cancels".into());
                 } else {
                     prompt.first = Some(ids);
@@ -247,6 +259,11 @@ impl VibocerosApp {
         if matches!(normalized.as_str(), "selall" | "selnone") {
             if normalized == "selnone" {
                 self.document.clear_selection();
+                if !self.picking_uv_reference()
+                    && let Some(p) = self.intersection_prompt.as_mut()
+                {
+                    p.uv_subcurves.ranges.clear();
+                }
             } else {
                 let ids = self
                     .document
@@ -286,6 +303,9 @@ impl VibocerosApp {
         let requested = requested
             .into_iter()
             .collect::<std::collections::BTreeSet<_>>();
+        if self.pick_uv_subcurve_source(requested.iter().copied()) {
+            return;
+        }
         let ids = self
             .document
             .selectable_objects()
@@ -358,7 +378,8 @@ impl VibocerosApp {
             return;
         }
         let qualifier = face.map(|f| format!(" Face={f}")).unwrap_or_default();
-        if !self.try_execute_command(&format!("ApplyCrv Surface={target}{qualifier}")) {
+        let subcurves = prompt.uv_subcurves.arguments();
+        if !self.try_execute_command(&format!("ApplyCrv Surface={target}{qualifier}{subcurves}")) {
             self.document.clear_selection();
             self.intersection_prompt = Some(prompt);
             self.push_log("Select another target surface or Esc to cancel".into());

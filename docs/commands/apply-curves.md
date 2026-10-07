@@ -48,7 +48,8 @@ or differ from native mapping; the checked native cases below have ordinary
 coordinate ranges. Kernel degree, sign-coherent weight, natural-domain and work
 limits also apply. A trimmed target uses its underlying surface without clipping
 the output to trim loops. [Multi-face references](../uv-face-references.md) now accept viewport hits and
-explicit face indices. Inline `SubCrv` selection is not implemented. [`CreateUVCrv`](create-uv-curves.md) can now generate the
+explicit face indices. [Inline `SubCrv` selection](../uv-subcurve-input.md) accepts
+temporary directed ranges without changing their sources. [`CreateUVCrv`](create-uv-curves.md) can now generate the
 reference UV rectangle, trim contours and optional flattened spatial inputs.
 
 ## Native evidence
