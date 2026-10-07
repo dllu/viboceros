@@ -88,6 +88,7 @@ mod document_units;
 mod extract_surface;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
+mod curve_length_subcurve;
 mod group_memberships;
 mod group_picking;
 mod join_command;
@@ -1372,6 +1373,12 @@ pub enum Operation {
         start: f64,
         end: f64,
     },
+    CurveSubcurveArcLength {
+        id: String,
+        curve: NurbsCurveDefinition,
+        start: f64,
+        length: f64,
+    },
     CurveSplitGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2309,6 +2316,7 @@ impl Operation {
             | Self::CurveExtendCommand { id, .. }
             | Self::CurveExtendBoundaryCommand { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
+            | Self::CurveSubcurveArcLength { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveSplitCommand { id, .. }
@@ -5023,6 +5031,12 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveSubcurveArcLength {
+            curve,
+            start,
+            length,
+            ..
+        } => curve_length_subcurve::run(curve, *start, *length, tolerance, iterations)?,
         Operation::CurveSplitGeometry {
             curve, parameter, ..
         } => {

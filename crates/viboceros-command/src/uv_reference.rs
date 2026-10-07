@@ -35,6 +35,8 @@ pub(super) fn resolve<'a>(
             );
         } else if option_name_eq(name, "SubCrv") {
             subcurves.push(uv_inputs::SubcurveInput::parse(value, usage)?);
+        } else if option_name_eq(name, "SubCrvLength") {
+            subcurves.push(uv_inputs::SubcurveInput::parse_length(value, usage)?);
         } else {
             return Err(CommandError::Usage(usage));
         }

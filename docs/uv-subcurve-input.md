@@ -47,6 +47,8 @@ knot spacing: paired normalized stations differ by up to `0.50625`. This is a
 retained parameter-speed discrepancy; all captured loci agree within `1e-6`.
 Inline length input, direction locking and B-rep edge references are not yet
 supported. Existing native UV-sizing and off-surface projection limits still apply.
+[Signed-length script inputs](signed-length-subcurves.md) now provide
+`SubCrvLength=curve,anchor,signed-length` independently of the inline getter.
 
 Public reference: [McNeel inline SubCrv input](https://docs.mcneel.com/rhino/8/help/en-us/commands/subcrv.htm).
 

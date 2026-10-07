@@ -12879,6 +12879,10 @@ def _execute(operation, iterations, tolerance):
             for boundary in boundaries:
                 boundary.Dispose()
 
+    if kind == "curve_subcurve_arc_length":
+        from curve_length_subcurve_probe import run
+        return run(operation,globals(),iterations)
+
     if kind == "curve_subcurve_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])
         start = _finite(operation["start"], "subcurve start parameter")

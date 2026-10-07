@@ -55,6 +55,8 @@ native coarse sizing and off-surface projection have explicit accuracy limits.
 Both commands share nonmutating [temporary SubCrv inputs](uv-subcurve-input.md),
 with nested curve/endpoint picking, native default output attributes and parent
 command history.
+Their [signed-length script inputs](signed-length-subcurves.md) share a separate
+geometry module that extracts anchor-relative intervals before integration.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

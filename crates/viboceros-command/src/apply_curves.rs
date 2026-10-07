@@ -6,7 +6,7 @@ use viboceros_geometry::{NurbsCurve2, Point2, WeightedPoint2, remap_scalar};
 #[cfg(test)]
 mod tests;
 
-pub(super) const USAGE: &str = "ApplyCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] (select World-XY curves and points)";
+pub(super) const USAGE: &str = "ApplyCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] [SubCrvLength=curve-uuid,start,signed-length] (select World-XY curves and points)";
 pub(super) struct ApplyCurvesCommand;
 
 impl Command for ApplyCurvesCommand {

@@ -29,6 +29,7 @@ mod curve_fillet_pair;
 mod curve_fit;
 mod curve_frame;
 mod curve_join;
+mod curve_length_subcurve;
 mod curve_match;
 mod curve_offset;
 mod curve_pair_support;

@@ -8,6 +8,7 @@ mod tests;
 pub(super) struct SubcurveInput {
     pub(super) object: ObjectId,
     pub(super) parameters: [Real; 2],
+    arc_length: bool,
 }
 
 pub(super) struct Input<'a> {
@@ -25,7 +26,13 @@ impl SubcurveInput {
         Ok(Self {
             object: id.parse().map_err(|_| CommandError::Usage(usage))?,
             parameters: [parse_finite_real(start)?, parse_finite_real(end)?],
+            arc_length: false,
         })
+    }
+    pub(super) fn parse_length(value: &str, usage: &'static str) -> Result<Self, CommandError> {
+        let mut input = Self::parse(value, usage)?;
+        input.arc_length = true;
+        Ok(input)
     }
 }
 
@@ -56,9 +63,19 @@ pub(super) fn resolve<'a>(
             .and_then(|o| o.geometry().curve_ref())
             .ok_or(CommandError::Usage(usage))?;
         let [start, end] = input.parameters;
+        let piece = if input.arc_length {
+            curve
+                .to_owned()
+                .try_subcurve_at_arc_length(start, end, document.tolerance())?
+                .ok_or(CommandError::Usage(
+                    "Subcurve length exceeds the available curve",
+                ))?
+        } else {
+            curve.to_owned().try_subcurve(start, end)?
+        };
         inputs.push(Input {
             object: input.object,
-            geometry: Cow::Owned(Geometry::from(curve.to_owned().try_subcurve(start, end)?)),
+            geometry: Cow::Owned(Geometry::from(piece)),
             temporary: true,
         });
     }

@@ -22,6 +22,8 @@ enum Input {
         definition: NurbsCurveDefinition,
         #[serde(default)]
         subcurves: Vec<[Real; 2]>,
+        #[serde(default)]
+        subcurve_lengths: Vec<[Real; 2]>,
         #[serde(default = "selected_input")]
         selected: bool,
     },
@@ -94,11 +96,12 @@ fn run_command(
             sources.push(id);
             if let Input::Curve {
                 subcurves,
+                subcurve_lengths,
                 selected,
                 ..
             } = input
             {
-                if subcurves.len() > 64 {
+                if subcurves.len() + subcurve_lengths.len() > 64 {
                     return Err(ProbeError::FixtureInvariant(
                         "at most 64 temporary subcurves per source",
                     ));
@@ -106,7 +109,10 @@ fn run_command(
                 for [start, end] in subcurves {
                     input_options.push_str(&format!(" SubCrv={id},{start},{end}"));
                 }
-                if !subcurves.is_empty() || !selected {
+                for [start, length] in subcurve_lengths {
+                    input_options.push_str(&format!(" SubCrvLength={id},{start},{length}"));
+                }
+                if !subcurves.is_empty() || !subcurve_lengths.is_empty() || !selected {
                     continue;
                 }
             }

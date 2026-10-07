@@ -1,0 +1,31 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSignedLengthFinal20261007",
+  "sdk_recipes": 20,
+  "returned_curves": 16,
+  "unavailable_cases": 4,
+  "curve_stations": 528,
+  "maximum_paired_difference": 1.0503088373751292e-07,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "inline_length_parity": false,
+  "historical_scripted_cases": 16,
+  "historical_cursor_cases": 3,
+  "historical_getter_producers_retained": false,
+  "source": "Independent public SDK reverse/seam/trim/LengthParameter calls on original declared NURBS sources. No proprietary code read.",
+  "limits": [
+    "accuracy-controlled numerical integration, not a continuous length certificate",
+    "inherited domain and parameter-resolution limits",
+    "inline numeric input remains unresolved; historical diagnostics are not command-parity evidence"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/curve_length_subcurve_probe.py": "b8139dd57c274c669b28307bb3a195581d3be5147f6040b073ea1db0a0eaa530",
+    "tools/rhino_oracle/fixtures/signed_length_subcurves.json": "d438247229fa523ada9a6f4c76df0a08170c1b2baf0a7c61e4fa5d2264200405",
+    "tools/rhino_oracle/observations/signed_length_subcurves.json": "948cbe6b4c9e1781d9d58ad97b1a4e1874f857d4309075d82ce22fa4e5d93c11",
+    "docs/signed-length-subcurves-local.json": "89e6319e19535df62d7f7dc878d374e51fdc4ff5a630d8e58fa9b9ede5fcdf73",
+    "tools/rhino_oracle/observations/subcurve_length_scripted_diagnostic.json": "286ffa794bca0f2403c12d49213eca6b661c153b93db333ab6ada2410543f2b8",
+    "tools/rhino_oracle/observations/subcurve_length_cursor_diagnostic.json": "fa7e840901166abd68b4c11be5782672afaadd09914888abdcf65239442cee9c"
+  }
+}

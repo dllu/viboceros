@@ -5,7 +5,7 @@ mod projection;
 #[cfg(test)]
 mod tests;
 
-pub(super) const USAGE: &str = "CreateUVCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] (optionally select curves/points on surface)";
+pub(super) const USAGE: &str = "CreateUVCrv Surface=surface-uuid [Face=index] [SubCrv=curve-uuid,start,end] [SubCrvLength=curve-uuid,start,signed-length] (optionally select curves/points on surface)";
 pub(super) struct CreateUvCurvesCommand;
 
 impl Command for CreateUvCurvesCommand {

@@ -840,6 +840,8 @@ class OracleClient:
             if any(op.get('op') == 'uv_subcurve_input_command' for op in request.get('operations', [])):
                 for name in ('uv_subcurve_input_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'curve_subcurve_arc_length' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('curve_length_subcurve_probe.py'),job_path/'curve_length_subcurve_probe.py')
             if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):
                 for name in ('grip_alias_probe.py','smooth_probe.py','join_probe.py','merge_edges_probe.py','grip_transform_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

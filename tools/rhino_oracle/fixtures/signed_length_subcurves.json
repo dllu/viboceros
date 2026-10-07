@@ -1,0 +1,1166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_line_forward",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          20.0,
+          20.0,
+          30.0,
+          30.0
+        ]
+      },
+      "start": 22.5,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_line_backward",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          20.0,
+          20.0,
+          30.0,
+          30.0
+        ]
+      },
+      "start": 27.5,
+      "length": -2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_line_zero",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          20.0,
+          20.0,
+          30.0,
+          30.0
+        ]
+      },
+      "start": 22.5,
+      "length": 0.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_line_unavailable",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          20.0,
+          20.0,
+          30.0,
+          30.0
+        ]
+      },
+      "start": 22.5,
+      "length": 20.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_line_tail",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          20.0,
+          20.0,
+          30.0,
+          30.0
+        ]
+      },
+      "start": 29.0,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_quadratic_forward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "start": 2.75,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_quadratic_backward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              3.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              2.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "start": 4.25,
+      "length": -2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_polyline_forward",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "start": 3.2,
+      "length": 8.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_polyline_backward",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "start": 3.2,
+      "length": -8.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_polyline_full",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "start": 3.2,
+      "length": 20.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_polyline_over",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          4.0
+        ]
+      },
+      "start": 3.2,
+      "length": 25.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_circle_forward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          10.0,
+          10.0,
+          10.0,
+          12.0,
+          12.0,
+          14.0,
+          14.0,
+          16.0,
+          16.0,
+          18.0,
+          18.0,
+          18.0
+        ]
+      },
+      "start": 17.0,
+      "length": 3.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_circle_backward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          10.0,
+          10.0,
+          10.0,
+          12.0,
+          12.0,
+          14.0,
+          14.0,
+          16.0,
+          16.0,
+          18.0,
+          18.0,
+          18.0
+        ]
+      },
+      "start": 17.0,
+      "length": -3.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_ellipse_forward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -5.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -5.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          10.0,
+          10.0,
+          10.0,
+          12.0,
+          12.0,
+          14.0,
+          14.0,
+          16.0,
+          16.0,
+          18.0,
+          18.0,
+          18.0
+        ]
+      },
+      "start": 12.56,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_ellipse_backward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -5.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -5.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              -2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              5.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          10.0,
+          10.0,
+          10.0,
+          12.0,
+          12.0,
+          14.0,
+          14.0,
+          16.0,
+          16.0,
+          18.0,
+          18.0,
+          18.0
+        ]
+      },
+      "start": 16.0,
+      "length": -2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_arc",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          10.0,
+          10.0,
+          10.0,
+          12.0,
+          12.0,
+          14.0,
+          14.0,
+          14.0
+        ]
+      },
+      "start": 11.0,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_piecewise",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              2.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "start": 1.5,
+      "length": 2.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_cubic_forward",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -5.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -7.0,
+          -7.0,
+          -7.0,
+          -7.0,
+          13.0,
+          13.0,
+          13.0,
+          13.0
+        ]
+      },
+      "start": -2.0,
+      "length": 1.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_cubic_backward",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              5.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              3.0,
+              -5.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          -7.0,
+          -7.0,
+          -7.0,
+          -7.0,
+          13.0,
+          13.0,
+          13.0,
+          13.0
+        ]
+      },
+      "start": 8.0,
+      "length": -1.0
+    },
+    {
+      "op": "curve_subcurve_arc_length",
+      "id": "signed_length_singular",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              4.0,
+              6.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "start": 2.0,
+      "length": 2.0
+    }
+  ]
+}

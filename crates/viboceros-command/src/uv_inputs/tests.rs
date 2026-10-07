@@ -241,3 +241,78 @@ fn bad_ephemeral_ranges_roll_back_without_geometry_selection_or_history_changes(
         }
     }
 }
+
+#[test]
+fn arc_length_inputs_map_local_intervals_without_changing_original_sources() {
+    let registry = CommandRegistry::with_builtins();
+    for name in ["ApplyCrv", "CreateUVCrv"] {
+        let mut doc = Document::default();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0")
+            .unwrap();
+        let target = doc.objects().last().unwrap().id();
+        registry.execute(&mut doc, "Line 0,0 4,6").unwrap();
+        let source = doc.objects().last().unwrap().id();
+        let original = doc.object(source).unwrap().geometry().clone();
+        let length = 52_f64.sqrt();
+        let start = length * 0.25;
+        registry.execute(&mut doc, "Rectangle 0,0 4,6").unwrap();
+        let rectangle = doc.objects().last().unwrap().id();
+        doc.select_objects_direct([rectangle], SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        registry
+            .execute(
+                &mut doc,
+                &format!("{name} Surface={target} SubCrvLength={source},{start},2"),
+            )
+            .unwrap();
+        let end = point(&serde_json::json!([
+            1. + 8. / length,
+            1.5 + 12. / length,
+            0.
+        ]));
+        assert!(
+            doc.selected_objects()
+                .filter_map(|o| o.geometry().curve_ref())
+                .any(|c| c
+                    .start_point()
+                    .unwrap()
+                    .distance_to(Point3::try_new(1., 1.5, 0.).unwrap())
+                    .unwrap()
+                    < 1e-8
+                    && c.end_point().unwrap().distance_to(end).unwrap() < 1e-8)
+        );
+        assert_eq!(doc.object(source).unwrap().geometry(), &original);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().len(), 3);
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(doc.object(source).unwrap().geometry(), &original);
+    }
+}
+
+#[test]
+fn zero_unavailable_and_nonfinite_length_inputs_fail_atomically() {
+    let mut doc = Document::default();
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0")
+        .unwrap();
+    let target = doc.objects().last().unwrap().id();
+    registry.execute(&mut doc, "Line 0,0 4,6").unwrap();
+    let source = doc.objects().last().unwrap().id();
+    for name in ["ApplyCrv", "CreateUVCrv"] {
+        for length in ["0", "20", "-20", "NaN", "inf"] {
+            let before = format!("{doc:?}");
+            assert!(
+                registry
+                    .execute(
+                        &mut doc,
+                        &format!("{name} Surface={target} SubCrvLength={source},2,{length}")
+                    )
+                    .is_err()
+            );
+            assert_eq!(format!("{doc:?}"), before);
+        }
+    }
+}
