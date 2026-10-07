@@ -68,7 +68,9 @@ original center, sharing parameter-preserving endpoint recovery with the kernel.
 Its [command-specific preferences](subcurve-option-memory.md) persist accepted
 option edits independently of document history and the global Copy switch.
 [Direction locking](subcurve-direction.md) captures viewport hover state for
-immediate numeric extraction in standalone and inline getters.
+numeric extraction in standalone and inline getters.
+[Closed numeric confirmation](subcurve-direction-confirmation.md) retains the
+source and length in a point getter and chooses between prospective endpoints.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

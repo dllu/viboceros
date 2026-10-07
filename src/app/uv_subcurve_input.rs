@@ -88,6 +88,22 @@ impl VibocerosApp {
                                     .unwrap()
                                     .length = Some(length.abs());
                                 self.command_input.clear();
+                                if let Some(forward) = pending.locked_forward {
+                                    match viboceros_command::subcurve_input::locked_numeric_requires_confirmation(
+                                        curve.unwrap(), pending.start.unwrap(), length.abs(), forward, self.document.tolerance(),
+                                    ) {
+                                        Ok(true) => {
+                                            self.intersection_prompt.as_mut().unwrap().uv_subcurves.pending.as_mut().unwrap().locked_forward = None;
+                                            self.log_intersection_prompt();
+                                            return true;
+                                        }
+                                        Ok(false) => {}
+                                        Err(error) => {
+                                            self.push_log(format!("Error: {error}"));
+                                            return true;
+                                        }
+                                    }
+                                }
                                 if pending.locked_forward.is_some() {
                                     let point = self
                                         .document

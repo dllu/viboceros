@@ -9389,6 +9389,7 @@ mod tests {
     mod split_edge;
     mod standalone_subcurve;
     mod subcurve_direction;
+    mod subcurve_direction_grid;
     mod subcurve_mark_ends;
     mod subcurve_midpoint;
     mod subcurve_preferences;

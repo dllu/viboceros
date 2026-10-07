@@ -60,4 +60,5 @@ python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/uv_subcurve_
 ```
 
 [Direction locking](subcurve-direction.md) shares the standalone hover capture
-and immediately accepts numeric lengths on the captured side.
+and accepts numeric lengths on the captured side, with retained
+[closed point confirmation](subcurve-direction-confirmation.md) when required.

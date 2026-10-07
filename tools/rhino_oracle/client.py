@@ -456,6 +456,12 @@ class OracleClient:
             validate_request(request)
             from .subcurve_direction_input import SubcurveDirectionPicker
             interaction=SubcurveDirectionPicker(request)
+        if any(op.get('op') == 'subcurve_direction_grid' for op in request.get('operations', [])):
+            from .subcurve_direction_grid_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('direction matrix requires a private settings scheme')
+            validate_request(request)
+            from .subcurve_direction_grid_input import DirectionGridPicker
+            interaction=DirectionGridPicker(request)
         if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
             from .surface_pullback_endpoints_probe import validate_request
             if self.settings_scheme is None:
@@ -885,6 +891,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'subcurve_direction' for op in request.get('operations', [])):
                 for name in ('subcurve_direction_probe.py','join_probe.py','merge_edges_probe.py','shrink_face_input.py','snap_environment.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'subcurve_direction_grid' for op in request.get('operations', [])):
+                for name in ('subcurve_direction_grid_probe.py','join_probe.py','merge_edges_probe.py','shrink_face_input.py','snap_environment.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'curve_subcurve_arc_length' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('curve_length_subcurve_probe.py'),job_path/'curve_length_subcurve_probe.py')

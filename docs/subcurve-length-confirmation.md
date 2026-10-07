@@ -11,7 +11,9 @@ until the parent command finishes.
 
 Numeric inputs use their magnitude. Results retain the source's orientation,
 including when the chosen interval extends backward from the start. Closed
-curves choose the shorter arc toward the confirmation location. The length must
+curves choose the nearer of the two prospective numeric endpoints. The
+[closed direction follow-up](subcurve-direction-confirmation.md) covers nearby
+branches and pending locked input. The length must
 not exceed the whole source curve; an open interval clamps at its chosen endpoint.
 A coincident confirmation chooses backward. A complete closed traversal produces
 no temporary input. Zero and empty Enter abandon the current nested getter and
@@ -35,7 +37,8 @@ curved inputs, closed seams, nonuniform segment lengths, clamping and no-input
 transitions. Application tests replay all 27 UV-command cases through the actual
 controller, checking loci and directed endpoints at `1e-6`, source purity and
 Undo/Redo. [Standalone SubCrv](commands/subcurve.md) now has its own source and
-numeric controller. Direction locking and B-rep edge input remain outstanding.
+numeric controller. [Direction locking](subcurve-direction.md) is shared by
+standalone and inline input; B-rep edge input remains outstanding.
 See [provenance](subcurve-length-confirmation-provenance.json).
 
 The geometry kernel additionally returns the endpoint in the original native

@@ -1,0 +1,24 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleClosedDirectionComplete20261007",
+  "recipes": 32,
+  "successful_commands": 26,
+  "pending_point_getters": 16,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Owned public SubCrv/CreateUVCrv getters; real mouse motion and bounded SendKeystrokes tokens, with point/object getter flags and original document snapshots before confirmation.",
+  "limits": [
+    "The chart-midpoint transition is inferred from recorded rectangular, circular and skewed sources; arbitrary closed charts and midpoint/lock combinations remain unverified.",
+    "No continuous locus certificate or general performance claim follows from station replay.",
+    "Native complete traversal and exact tie behavior need wider locked-getter coverage."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_direction_grid_probe.py": "8bb5620733b04294339a9e5c161b1710e21364479d5cb6dafb6d288ef52340ea",
+    "tools/rhino_oracle/subcurve_direction_grid_input.py": "74b0e6722b75b088312f077ff18a2766e54d7e24fff7fa1a162a90f66106386d",
+    "tools/rhino_oracle/subcurve_direction_input.py": "97950ac37640e41a3fc7b3a716f6f7598bff596210d0afd99662cca0cee0e3bc",
+    "tools/rhino_oracle/fixtures/subcurve_direction_grid.json": "48017e6de34b61fa3b1a2ee41979c196425b9391a3f051cce70c2ad228293636",
+    "tools/rhino_oracle/observations/subcurve_direction_grid.json": "02dbb46e6f15f3dbe9567f1f57999678c1f107fc45802a280f60a76d43b71cbc"
+  }
+}

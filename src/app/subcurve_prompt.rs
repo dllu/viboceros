@@ -184,6 +184,32 @@ impl VibocerosApp {
                         Some(Ok(total)) if length.abs() <= total => {
                             self.subcurve_prompt.as_mut().unwrap().length = Some(length.abs());
                             self.command_input.clear();
+                            if !prompt.from_midpoint
+                                && let Some(forward) = prompt.locked_forward
+                            {
+                                let curve = self
+                                    .document
+                                    .object(source)
+                                    .unwrap()
+                                    .geometry()
+                                    .curve_ref()
+                                    .unwrap();
+                                match viboceros_command::subcurve_input::locked_numeric_requires_confirmation(
+                                    curve, prompt.start.unwrap(), length.abs(), forward, self.document.tolerance(),
+                                ) {
+                                    Ok(true) => {
+                                        self.subcurve_prompt.as_mut().unwrap().locked_forward = None;
+                                        self.document.clear_selection();
+                                        self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
+                                        return true;
+                                    }
+                                    Ok(false) => {}
+                                    Err(error) => {
+                                        self.push_log(format!("Error: {error}"));
+                                        return true;
+                                    }
+                                }
+                            }
                             if prompt.from_midpoint || prompt.locked_forward.is_some() {
                                 let point = self
                                     .document
@@ -249,22 +275,6 @@ impl VibocerosApp {
                 self.push_log(prompt.hint().into());
                 return Ok(());
             };
-            let restart_selection = if let Some((length, forward)) =
-                prompt.length.zip(prompt.locked_forward)
-                && !prompt.from_midpoint
-                && curve.is_closed()?
-            {
-                viboceros_command::subcurve_input::locked_piece(
-                    curve,
-                    start,
-                    length,
-                    forward,
-                    self.document.tolerance(),
-                )?
-                .is_none()
-            } else {
-                false
-            };
             let mut input = if let Some(length) = prompt.length {
                 format!(
                     "SubCrv Numeric={start},{length},{parameter} Copy={}",
@@ -298,9 +308,6 @@ impl VibocerosApp {
             self.active_command = None;
             self.drafting_plane = None;
             self.push_log(format!("> {input}"));
-            if restart_selection {
-                self.begin_subcurve_prompt(prompt.copy, prompt.mode, prompt.from_midpoint);
-            }
             Ok(())
         })();
         match result {

@@ -13,7 +13,8 @@ memory: accepted changes survive cancellation and document history.
 
 Open point intervals retain the source's orientation, regardless of pick order.
 Closed point intervals follow the source through its seam. Numeric lengths use
-their magnitude and the shorter closed arc toward the confirmation. Open numeric
+their magnitude; closed confirmation chooses the nearer prospective endpoint.
+Open numeric
 intervals clamp at the chosen endpoint; a number exceeding the whole curve is
 rejected for retry. A full closed traversal is retained by standalone SubCrv,
 while the inline UV getter omits that temporary input.
@@ -50,10 +51,10 @@ retaining the source, with current-layer output and unselected history states.
 [`FromMidpoint=Yes`](../subcurve-midpoint.md) builds an interval around the first
 pick, with immediate half-length entry or symmetric endpoint picking.
 [Direction locking](../subcurve-direction.md) captures the hovered side for
-immediate numeric entry and is shared with inline UV input. B-rep edge
+numeric entry and is shared with inline UV input. Some closed lengths retain a
+[point confirmation](../subcurve-direction-confirmation.md). B-rep edge
 references and restart preference persistence remain outstanding. The recorded
-cases do not establish
-arbitrary-curve or preview parity.
+cases do not establish arbitrary-curve or preview parity.
 
 ```sh
 cargo test -p viboceros-command --release standalone

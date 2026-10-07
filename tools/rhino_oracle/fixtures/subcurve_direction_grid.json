@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_forward_l2_numeric",
+      "case": "closed_poly_a20_forward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_forward_l8_numeric",
+      "case": "closed_poly_a20_forward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_backward_l2_numeric",
+      "case": "closed_poly_a20_backward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_backward_l8_numeric",
+      "case": "closed_poly_a20_backward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_forward_l2_numeric",
+      "case": "closed_poly_a80_forward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_forward_l8_numeric",
+      "case": "closed_poly_a80_forward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_backward_l2_numeric",
+      "case": "closed_poly_a80_backward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_backward_l8_numeric",
+      "case": "closed_poly_a80_backward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_forward_l2_numeric",
+      "case": "closed_circle_a20_forward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_forward_l8_numeric",
+      "case": "closed_circle_a20_forward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_backward_l2_numeric",
+      "case": "closed_circle_a20_backward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_backward_l8_numeric",
+      "case": "closed_circle_a20_backward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_forward_l2_numeric",
+      "case": "closed_circle_a80_forward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_forward_l8_numeric",
+      "case": "closed_circle_a80_forward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_backward_l2_numeric",
+      "case": "closed_circle_a80_backward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_backward_l8_numeric",
+      "case": "closed_circle_a80_backward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_forward_l8_confirm_numeric",
+      "case": "closed_poly_a20_forward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_backward_l8_confirm_numeric",
+      "case": "closed_poly_a80_backward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_forward_l8_confirm_numeric",
+      "case": "closed_circle_a20_forward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_backward_l8_confirm_numeric",
+      "case": "closed_circle_a80_backward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a20_forward_l8_opposite_confirm_numeric",
+      "case": "closed_poly_a20_forward_l8_opposite_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_poly_a80_backward_l8_opposite_confirm_numeric",
+      "case": "closed_poly_a80_backward_l8_opposite_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a20_forward_l8_opposite_confirm_numeric",
+      "case": "closed_circle_a20_forward_l8_opposite_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_circle_a80_backward_l8_opposite_confirm_numeric",
+      "case": "closed_circle_a80_backward_l8_opposite_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a20_forward_l2_numeric",
+      "case": "closed_skew_a20_forward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a20_forward_l8_numeric",
+      "case": "closed_skew_a20_forward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a80_backward_l2_numeric",
+      "case": "closed_skew_a80_backward_l2_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a80_backward_l8_numeric",
+      "case": "closed_skew_a80_backward_l8_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a20_forward_l8_confirm_numeric",
+      "case": "closed_skew_a20_forward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_closed_skew_a80_backward_l8_confirm_numeric",
+      "case": "closed_skew_a80_backward_l8_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_inline_closed_poly_a20_forward_l8_opposite_confirm_numeric",
+      "case": "inline_closed_poly_a20_forward_l8_opposite_confirm_numeric"
+    },
+    {
+      "op": "subcurve_direction_grid",
+      "id": "grid_inline_closed_poly_a80_forward_l8_numeric",
+      "case": "inline_closed_poly_a80_forward_l8_numeric"
+    }
+  ]
+}

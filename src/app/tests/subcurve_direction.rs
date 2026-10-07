@@ -1,14 +1,14 @@
 use super::*;
 use serde_json::Value;
 
-fn enter(app: &mut VibocerosApp, input: &str) {
+pub(super) fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
-fn position(v: &Value) -> Point3 {
+pub(super) fn position(v: &Value) -> Point3 {
     Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
 }
-fn geometry(row: &Value) -> Geometry {
+pub(super) fn geometry(row: &Value) -> Geometry {
     let d = &row["definition"];
     let controls = d["control_points"]
         .as_array()
@@ -46,7 +46,7 @@ fn geometry(row: &Value) -> Geometry {
         )
     }
 }
-fn compare(app: &VibocerosApp, rows: &Value, case: &str) {
+pub(super) fn compare(app: &VibocerosApp, rows: &Value, case: &str) {
     assert_eq!(
         app.document.objects().len(),
         rows.as_array().unwrap().len(),
@@ -175,15 +175,16 @@ fn subcurve_direction_replays_native_hover_lock_numeric_completion_and_history()
             };
             assert!(app.accept_drafting_point(p), "{case}");
         }
-        assert!(app.active_command.is_none(), "{case}");
         if !v["finish_prompts"].as_array().unwrap().is_empty() {
-            assert!(
-                app.subcurve_prompt.as_ref().unwrap().source.is_none(),
-                "{case}"
-            );
+            let pending = app.subcurve_prompt.as_ref().unwrap();
+            assert_eq!(pending.source, Some(ids[0]), "{case}");
+            assert!(pending.start.is_some(), "{case}");
+            assert_eq!(pending.length, Some(8.), "{case}");
+            assert!(pending.locked_forward.is_none(), "{case}");
             assert!(!app.document.can_undo(), "{case}");
             enter(&mut app, "");
         }
+        assert!(app.active_command.is_none(), "{case}");
         if inline {
             enter(&mut app, "");
         }

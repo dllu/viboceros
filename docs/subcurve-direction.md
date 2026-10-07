@@ -15,12 +15,11 @@ CreateUVCrv/ApplyCrv input share this direction policy. A typed endpoint on the
 opposite side of a locked open source produces no piece; closed typed endpoints
 use the ordinary source-forward interval.
 
-The recorded backward seam-crossing polyline numeric input succeeds. The other
-four closed numeric inputs return to source selection without geometry or
-history; Enter then cancels. The application preserves both outcomes. This
-closed command policy is inferred from these cases; other closed curves and
-charts remain unverified. Signed seam-wrapped extraction remains a separate
-kernel API.
+Closed numeric input can complete immediately or retain its length for a
+confirmation point. The source and anchor stay intact; confirmation can choose
+a new side. The generic `Select curve` prompt remains a point getter. See the
+[closed confirmation follow-up](subcurve-direction-confirmation.md), which
+corrects the earlier interpretation of cancelled numeric inputs.
 
 The scripting adapter accepts an explicit direction without requiring a cursor:
 
@@ -43,16 +42,14 @@ point inputs ended with Failure and four closed numeric inputs with Cancel.
 retain motion acknowledgements, locked/unlocked prompts, command-end events,
 original and output definitions, curve stations, markers, selection and
 Undo/Redo. The input driver acknowledges real motion in the owned window. The
-worker
-then sends the fixed tokens through public `RhinoApp.SendKeystrokes`, waits for
+worker then sends the fixed tokens through public `RhinoApp.SendKeystrokes`, waits for
 the corresponding prompts and records every token without repeating endpoints.
 See [provenance](subcurve-direction-provenance.json).
 
 Application replay compares all recorded curve stations and directed endpoints
 or marker coordinates at `1e-6`, plus source retention, selection and history.
 This capture covers lines, a closed polyline and a rational circle; it does not
-establish
-arbitrary-curve, inline closed numeric or midpoint-and-lock combinations, live
+establish arbitrary-curve or midpoint-and-lock combinations, live
 preview, edge input, restart preference persistence or reactive History.
 
 ```sh

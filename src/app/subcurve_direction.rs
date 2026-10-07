@@ -48,14 +48,7 @@ impl VibocerosApp {
                 .document
                 .object(source)
                 .and_then(|o| o.geometry().curve_ref())
-                .map(|c| {
-                    viboceros_command::subcurve_input::forward(
-                        c,
-                        start,
-                        hover,
-                        self.document.tolerance(),
-                    )
-                });
+                .map(|c| viboceros_command::subcurve_input::cursor_forward(c, start, hover));
             match result {
                 Some(Ok(forward)) => Some(forward),
                 Some(Err(error)) => {

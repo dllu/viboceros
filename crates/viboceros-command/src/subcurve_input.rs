@@ -96,7 +96,10 @@ pub fn interval(
     if closed && length == curve.length(tolerance)? {
         return Ok(None);
     }
-    let forward = forward(curve, anchor, confirmation, tolerance)?;
+    if closed && confirmation != anchor {
+        return confirmed_closed_interval(curve, anchor, confirmation, length, tolerance);
+    }
+    let forward = cursor_forward(curve, anchor, confirmation)?;
     endpoint_interval(curve, anchor, length, forward, tolerance)
 }
 
@@ -117,18 +120,83 @@ pub fn locked_piece(
     if !length.is_finite() || length.abs() > curve.length(tolerance)? {
         return Err(GeometryError::InvalidCurveTrimInterval);
     }
+    if curve.is_closed()? && length.abs() == curve.length(tolerance)? {
+        return curve
+            .to_owned()
+            .try_subcurve_at_arc_length(anchor, length.abs(), tolerance);
+    }
     let Some([start, end]) =
         interval_in_direction(curve, anchor, length.abs(), forward, tolerance)?
     else {
         return Ok(None);
     };
-    if curve.is_closed()? && (forward || start <= end) {
-        // Retain the measured closed-getter outcomes: the backward seam
-        // traversal succeeds; the other captured charts return to selection.
-        // This is a command policy, separate from signed kernel extraction.
-        return Ok(None);
-    }
     Ok(Some(curve.to_owned().try_subcurve(start, end)?))
+}
+
+/// The locked cursor side follows the current native parameter chart.
+/// Free numeric confirmation separately chooses a candidate endpoint.
+pub fn cursor_forward(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    cursor: Real,
+) -> Result<bool, GeometryError> {
+    let domain = curve.domain();
+    if !domain.contains(&anchor) || !domain.contains(&cursor) {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    Ok(cursor > anchor)
+}
+
+/// Some closed-chart numeric inputs leave the getter waiting for a point.
+/// Keep this input-phase policy separate from extracting a valid curve piece.
+pub fn locked_numeric_requires_confirmation(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    length: Real,
+    forward: bool,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    if !curve.domain().contains(&anchor) || !length.is_finite() || length < 0. {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    if length == 0. {
+        return Ok(false);
+    }
+    if !curve.is_closed()? {
+        return Ok(false);
+    }
+    let Some([start, end]) = interval_in_direction(curve, anchor, length, forward, tolerance)?
+    else {
+        return Ok(true);
+    };
+    let domain = curve.domain();
+    let middle = domain.start().midpoint(*domain.end());
+    Ok(if start < end {
+        start < middle && middle < end
+    } else {
+        middle > start || middle < end
+    })
+}
+
+fn confirmed_closed_interval(
+    curve: CurveRef<'_>,
+    anchor: Real,
+    confirmation: Real,
+    length: Real,
+    tolerance: Tolerance,
+) -> Result<Option<[Real; 2]>, GeometryError> {
+    let point = curve.evaluate(confirmation)?;
+    let forward = endpoint_interval(curve, anchor, length, true, tolerance)?
+        .ok_or(GeometryError::InvalidCurveTrimInterval)?;
+    let backward = endpoint_interval(curve, anchor, length, false, tolerance)?
+        .ok_or(GeometryError::InvalidCurveTrimInterval)?;
+    let forward_distance = curve.evaluate(forward[1])?.distance_to(point)?;
+    let backward_distance = curve.evaluate(backward[0])?.distance_to(point)?;
+    Ok(Some(if forward_distance < backward_distance {
+        forward
+    } else {
+        backward
+    }))
 }
 
 /// Choose the open side or the shorter closed arc toward the cursor parameter.
