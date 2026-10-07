@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `f1752aa5` with Rust 1.95.0 after
-[SubCrv MarkEnds output and history](subcurve-mark-ends.md).
+The October 7, 2026 audit tested code at `5f6f601e` with Rust 1.95.0 after
+[SubCrv FromMidpoint radius and endpoint workflows](subcurve-midpoint.md).
 
 ## Commands and results
 
@@ -16,25 +16,41 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,154 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,158 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 958 | 17 |
-| Command | 1,151 | 2 |
+| App | 960 | 17 |
+| Command | 1,153 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 897 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 900 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 15-recipe SubCrv MarkEnds capture ran on private Xvfb with settings
+A fresh 22-recipe FromMidpoint capture ran on private Xvfb with settings scheme
+`VibocerosOracleSubcurveMidpointFinal20261007`. Nineteen commands succeed; zero
+and half/full-perimeter coincident endpoints remain native cancellations.
+The [raw records](../tools/rhino_oracle/observations/subcurve_midpoint.json)
+retain original/output curves, stations, marker points, metadata, groups,
+selection, events and Undo/Redo. Numeric inputs are half-lengths and finish
+immediately; point inputs derive that radius along the source. Open sides clamp
+independently, while closed endpoints wrap and keep their forward interval,
+including the over-half-perimeter remainder. Command/app replays compare every
+locus, directed endpoint and marker at `1e-6`, with metadata and history checks.
+They cover curved input, Copy/replacement, endpoint centers, option changes and
+MarkEnds. Midpoint policy inherits numerical integration and parameter-resolution
+limits; direction locking, live preview, B-rep edges, native option memory and
+reactive History remain outstanding. See [scope](subcurve-midpoint.md) and
+[provenance](subcurve-midpoint-provenance.json).
+
+The preceding 15-recipe SubCrv MarkEnds capture ran on private Xvfb with settings
 scheme `VibocerosOracleMarkEnds20261007`. Thirteen commands produce 26 endpoint
 markers; zero and missing confirmation remain native cancellations. The
 [raw records](../tools/rhino_oracle/observations/subcurve_mark_ends.json) retain
@@ -60,7 +76,7 @@ replacement retains identity and clears selection. Standalone open point picks
 retain source orientation, and numeric full closed traversals remain geometry.
 The inline getter retains its separate full-traversal omission policy.
 Explicit `Parameter` edits remain directed mathematical intervals. Direction
-locking, FromMidpoint, B-rep edges and complete Copy memory remain
+locking, B-rep edges and complete Copy memory remain
 outstanding. See [scope](commands/subcurve.md) and
 [provenance](standalone-subcurve-provenance.json).
 
@@ -246,7 +262,8 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 15 MarkEnds recipes with two retained
+The newest native capture covers 22 FromMidpoint recipes with three retained
+cancellations. The preceding capture covers 15 MarkEnds recipes with two retained
 cancellations. The preceding standalone capture covers 17 SubCrv recipes. The
 numeric getter/command capture covers 29 recipes,
 including one retained cancellation. The signed-length SDK capture covers 20
