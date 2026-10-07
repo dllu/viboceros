@@ -3,9 +3,9 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 6, 2026 audit tested code at `3cbe2b1b` with Rust 1.95.0 after
-[automatic certified pullback branches](automatic-surface-pullbacks.md), exact
-linear knot crossings, and one-dimensional surface restrictions.
+The October 6, 2026 audit tested code at `01feb80b` with Rust 1.95.0 after
+[derivative-free nonlinear pullback fitting](derivative-free-surface-pullbacks.md)
+through singular endpoints.
 
 ## Commands and results
 
@@ -15,10 +15,10 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pullback_linear_certified.json --timeout 600 --output /tmp/automatic-pullbacks-local.json
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pullback_interpolation_certified.json --timeout 600 --output /tmp/interpolated-pullbacks-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,085 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,091 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
@@ -26,23 +26,39 @@ All commands completed successfully. The ordinary Rust suite passed 5,085 tests:
 | Command | 1,135 | 2 |
 | Document | 183 | 5 |
 | Drafting | 157 | 6 |
-| Geometry | 2,000 | 8 |
+| Geometry | 2,005 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 478 | 0 |
+| Oracle | 479 | 0 |
 
-The Python suite passed 861 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 865 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The standalone Python pullback run certified all 24 new native sources without
+The new standalone Python run certified all ten nonlinear singular-endpoint
+source definitions without endpoint constraints, retaining each original
+spatial domain. The polynomial recipes report bounds below `9e-16`; the
+square-root boundary recipes refine to 103 controls with complete bounds about
+`9.87e-7`, below their input limit `1e-6`.
+
+A fresh ten-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+scheme `VibocerosOracleInterpolatedPullbackFinal_20261006`. Its
+[raw records](../tools/rhino_oracle/observations/surface_pullback_interpolation.json)
+retain 1,290 source/image stations and ten source-purity agreements. Eight native
+pullbacks succeed geometrically with different parameter speeds; both singular
+cubic directions return no native pullback. The retained local before-change
+audit failed on all ten recipes. See
+[provenance](derivative-free-pullback-provenance.json) for source hashes and
+contract boundaries.
+
+The preceding standalone Python pullback run certified all 24 native sources without
 endpoint constraints, returning two UV controls and each original spatial
 parameter domain. All reported continuous bounds were below `1e-12`, with a
 maximum of `8.86e-16`. The run used 16 iterations per source, retaining the
 successful bound without recomputing its certificate.
 
-A fresh 24-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+The preceding 24-recipe Rhino capture ran on private Xvfb with settings
 scheme `VibocerosOracleLinearPullbackFinal_20261006`. Its
 [raw records](../tools/rhino_oracle/observations/surface_pullback_linear.json)
 retain full source definitions, source purity, 129 stations per recipe, 20
@@ -68,14 +84,16 @@ The current checked cases cover geometry, document transactions, commands,
 interchange, CPU viewport behavior, and Python orchestration. The historical
 GPU evidence above separately covers production GPU rendering.
 The complete workspace test process was observed to finish with exit status 0.
-The new pullback tests replay full native source definitions and check 3,096
+The nonlinear pullback replay adds 1,290 source and image stations at `1e-11`,
+with independent recomputation of the final assembled-curve certificates.
+Earlier automatic pullback tests check 3,096
 paired spatial and surface-image stations at `1e-11`, independently recomputing
 the local continuous bounds. Earlier fixed-endpoint tests retain another 1,032
 stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The new native capture covers 24 SDK recipes. Other recorded-output
+The newest native capture covers ten SDK recipes. Other recorded-output
 replays are not fresh cross-engine measurements, and tests that merely execute
 fixtures with finite output do not establish numerical agreement with Rhino.
 Native `Surface.Pullback` follows a geometric locus and does not promise the
