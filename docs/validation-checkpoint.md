@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `8fc9a7ba` with Rust 1.95.0 after
-[SubCrv cursor direction locking](subcurve-direction.md).
+The October 7, 2026 audit tested code at `0b12ae48` with Rust 1.95.0 after
+[closed SubCrv numeric confirmation](subcurve-direction-confirmation.md).
 
 ## Commands and results
 
@@ -16,25 +16,40 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,168 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,171 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 966 | 17 |
-| Command | 1,157 | 2 |
+| App | 967 | 17 |
+| Command | 1,159 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 908 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 912 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 18-recipe SubCrv direction workflow ran on private Xvfb under
+A fresh 32-recipe closed SubCrv numeric workflow ran on private Xvfb under
+`VibocerosOracleClosedDirectionComplete20261007`. The
+[raw records](../tools/rhino_oracle/observations/subcurve_direction_grid.json)
+retain 16 intermediate snapshots with public InGetPoint=true and
+InGetObject=false, intact sources and no created geometry. The generic Select
+curve prompt keeps a pending number; it does not start a new source selection.
+Twenty-six commands succeed and six cancel an unconfirmed length. Application
+replay checks original input tokens, pending source/start/length, released source
+selection and absent history, then 924 output curve stations and endpoints at
+`1e-6`, selection and independent Undo/Redo states. Opposite-side confirmation
+can override the original lock; a skewed polyline distinguishes nearest candidate
+endpoints from the shorter arc toward the pick. Two nested UV workflows preserve
+parent-owned history. Explicit script regressions retain valid closed lengths
+in both directions. See [scope and provenance](subcurve-direction-confirmation.md).
+
+A preceding 18-recipe SubCrv direction workflow ran on private Xvfb under
 `VibocerosOracleDirectionVerified20261007`. The
 [raw records](../tools/rhino_oracle/observations/subcurve_direction.json)
 retain actual motion, locked/unlocked getter prompts, every public
@@ -43,9 +58,9 @@ Undo/Redo states. Ten commands succeed; four opposite-side open point inputs
 end with Failure and four closed numeric inputs with Cancel. App replay checks
 330 output curve stations and two markers at `1e-6`, directed endpoints, source
 purity, selection and history. The backward seam-crossing polyline numeric case
-succeeds; other closed numeric outcomes remain a policy inferred from five
-recorded cases, without arbitrary closed-chart parity. Inline open numeric
-input shares the policy, with source purity and parent-owned history. A CPU
+succeeds. The four cancelled closed numbers remained in a point getter; the
+follow-up above corrects the earlier interpretation as a source restart. Inline
+open numeric input shares the policy, with source purity and parent-owned history. A CPU
 viewport test confirms that hover reports a location without accepting a point
 or editing history. See [scope and provenance](subcurve-direction.md).
 
@@ -293,8 +308,9 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 18 cursor-direction recipes with four retained
-failures and four cancellations. The preceding capture covers a 37-step
+The newest native capture covers 32 closed numeric recipes, 16 retained pending
+point getters, and six cancellations. The preceding direction capture covers 18
+recipes with four retained failures and four cancellations. The preceding capture covers a 37-step
 preference sequence with raw cancelled queries and option edits. The preceding
 capture covers 22 FromMidpoint recipes with three retained
 cancellations. The preceding capture covers 15 MarkEnds recipes with two retained
