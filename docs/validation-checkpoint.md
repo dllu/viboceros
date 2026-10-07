@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `d494240a` with Rust 1.95.0 after
-[standalone SubCrv source picking and numeric confirmation](commands/subcurve.md).
+The October 7, 2026 audit tested code at `f1752aa5` with Rust 1.95.0 after
+[SubCrv MarkEnds output and history](subcurve-mark-ends.md).
 
 ## Commands and results
 
@@ -16,25 +16,38 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,150 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,154 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 956 | 17 |
-| Command | 1,149 | 2 |
+| App | 958 | 17 |
+| Command | 1,151 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 894 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 897 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 17-recipe standalone SubCrv capture ran on private Xvfb with settings
+A fresh 15-recipe SubCrv MarkEnds capture ran on private Xvfb with settings
+scheme `VibocerosOracleMarkEnds20261007`. Thirteen commands produce 26 endpoint
+markers; zero and missing confirmation remain native cancellations. The
+[raw records](../tools/rhino_oracle/observations/subcurve_mark_ends.json) retain
+full original curves, point coordinates, attributes, groups, selection, command
+events and Undo/Redo. Command and app tests replay all marker coordinates at
+`1e-6`, with source purity and default-attribute checks. Both Copy choices produce
+ungrouped, unselected current-layer points; a full closed traversal retains two
+coincident markers. The app can change Mode during input without edits, and bad
+modes or geometry fail atomically. Undo/Redo restore marker IDs and empty
+selection. Native mode memory and reactive History remain unimplemented; see
+[scope](subcurve-mark-ends.md) and [provenance](subcurve-mark-ends-provenance.json).
+
+The preceding 17-recipe standalone SubCrv capture ran on private Xvfb with settings
 scheme `VibocerosOracleStandaloneSubcurveFinal20261007`. Fifteen commands succeed;
 zero and missing confirmation remain native cancellations. The
 [raw records](../tools/rhino_oracle/observations/standalone_subcurve.json) retain
@@ -47,7 +60,7 @@ replacement retains identity and clears selection. Standalone open point picks
 retain source orientation, and numeric full closed traversals remain geometry.
 The inline getter retains its separate full-traversal omission policy.
 Explicit `Parameter` edits remain directed mathematical intervals. Direction
-locking, FromMidpoint, MarkEnds, B-rep edges and complete Copy memory remain
+locking, FromMidpoint, B-rep edges and complete Copy memory remain
 outstanding. See [scope](commands/subcurve.md) and
 [provenance](standalone-subcurve-provenance.json).
 
@@ -233,8 +246,9 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 17 standalone SubCrv recipes with two retained
-cancellations. The preceding capture covers 29 numeric getter/command recipes,
+The newest native capture covers 15 MarkEnds recipes with two retained
+cancellations. The preceding standalone capture covers 17 SubCrv recipes. The
+numeric getter/command capture covers 29 recipes,
 including one retained cancellation. The signed-length SDK capture covers 20
 independent geometry queries. The earlier command capture
 covers 14 successful endpoint-input SubCrv recipes.
