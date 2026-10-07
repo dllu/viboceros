@@ -1,0 +1,28 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSubcurveConfirmCommands20261007",
+  "recipes": 29,
+  "successful_commands": 28,
+  "retained_native_cancellations": [
+    "standalone_reference"
+  ],
+  "output_curves": 50,
+  "curve_stations": 1650,
+  "application_uv_replays": 27,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Public SubCrv/CreateUVCrv/ApplyCrv commands with prescribed typed coordinates and real owned viewport confirmation picks; original geometry is retained.",
+  "limits": [
+    "standalone SubCrv numeric UI",
+    "direction locking and B-rep edge inputs",
+    "arbitrary-curve numeric direction and fitting parity",
+    "native UV sizing and off-surface projection limits"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_numeric_followup_probe.py": "53985d9a1d8126d755eb705457e57dcf0708975607e49d981421aa4d2f49cfc7",
+    "tools/rhino_oracle/fixtures/subcurve_numeric_followup.json": "1c66b7833a078393ccf34f33020708232791f838a9a4aac70584ad1491b76591",
+    "tools/rhino_oracle/observations/subcurve_numeric_followup.json": "f360c9e423d057ff03c95cbf826ca576c222b5c5022c03a6a69966828e2ce136"
+  }
+}

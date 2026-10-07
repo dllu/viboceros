@@ -27,6 +27,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [UV command face references and native component captures](uv-face-references.md)
 - [Temporary SubCrv inputs and native UV command workflows](uv-subcurve-input.md)
 - [Signed arc-length subcurves and public SDK replay](signed-length-subcurves.md)
+- [Inline numeric length confirmation and native getter replay](subcurve-length-confirmation.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
 - [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [Derivative-free fitting for nonlinear singular-endpoint paths](derivative-free-surface-pullbacks.md)

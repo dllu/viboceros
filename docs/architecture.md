@@ -57,6 +57,8 @@ with nested curve/endpoint picking, native default output attributes and parent
 command history.
 Their [signed-length script inputs](signed-length-subcurves.md) share a separate
 geometry module that extracts anchor-relative intervals before integration.
+The [inline numeric getter](subcurve-length-confirmation.md) separately owns
+confirmation, orientation and open-end clamping policies.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

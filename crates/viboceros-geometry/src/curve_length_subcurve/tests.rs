@@ -158,3 +158,45 @@ fn subcurve_length_after_large_prefix_retains_short_local_spans() {
         assert_eq!(result.as_ref().end_point().unwrap(), end);
     }
 }
+
+#[test]
+fn original_endpoint_parameters_survive_closed_seams_and_self_crossings() {
+    let c = Curve3::Polyline(
+        Polyline3::try_with_parameters(
+            vec![p(0., 0.), p(2., 2.), p(0., 2.), p(2., 0.), p(0., 0.)],
+            vec![0., 1., 2., 3., 4.],
+            tol(),
+        )
+        .unwrap(),
+    );
+    for (anchor, length) in [(2., 2_f64.sqrt()), (3., -2_f64.sqrt())] {
+        let (piece, end) = c
+            .try_subcurve_at_arc_length_with_endpoint(anchor, length, tol())
+            .unwrap()
+            .unwrap();
+        assert!((end - 2.5).abs() < 1e-12);
+        assert!(
+            piece
+                .as_ref()
+                .end_point()
+                .unwrap()
+                .distance_to(p(1., 1.))
+                .unwrap()
+                < 1e-12
+        );
+        assert!(
+            c.as_ref()
+                .evaluate(0.5)
+                .unwrap()
+                .distance_to(p(1., 1.))
+                .unwrap()
+                < 1e-12
+        );
+        assert!((end - 0.5).abs() > 1.);
+    }
+    let (_, end) = c
+        .try_subcurve_at_arc_length_with_endpoint(3.5, 2., tol())
+        .unwrap()
+        .unwrap();
+    assert!(end < 1.);
+}

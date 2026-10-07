@@ -428,6 +428,12 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('UV SubCrv requires a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'subcurve_numeric_followup' for op in request.get('operations', [])):
+            from .subcurve_numeric_followup_probe import validate_request
+            if self.settings_scheme is None:raise OracleProtocolError('numeric followup requires a private Rhino settings scheme')
+            validate_request(request)
+            from .group_picking import IdlePicker
+            interaction=IdlePicker()
         if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
             from .surface_pullback_endpoints_probe import validate_request
             if self.settings_scheme is None:
@@ -840,6 +846,9 @@ class OracleClient:
             if any(op.get('op') == 'uv_subcurve_input_command' for op in request.get('operations', [])):
                 for name in ('uv_subcurve_input_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'subcurve_numeric_followup' for op in request.get('operations', [])):
+                for name in ('subcurve_numeric_followup_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'curve_subcurve_arc_length' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('curve_length_subcurve_probe.py'),job_path/'curve_length_subcurve_probe.py')
             if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):

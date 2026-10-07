@@ -44,13 +44,15 @@ and four unavailable cases. Replay checks every native station and directed
 endpoint within `1e-6`; these finite cases do not certify arbitrary-curve length
 inversion. See [provenance](signed-length-subcurves-provenance.json).
 
-Numeric input in Rhino's inline getter remains unresolved. Historical
+The [inline numeric getter follow-up](subcurve-length-confirmation.md) establishes
+the required confirmation pick. Historical
 [16 scripted attempts](../tools/rhino_oracle/observations/subcurve_length_scripted_diagnostic.json)
 and [three cursor-assisted attempts](../tools/rhino_oracle/observations/subcurve_length_cursor_diagnostic.json)
-did not produce temporary curves for the tested positive lengths. Some parent
+did not supply that confirmation and produced no temporary curves for the tested positive lengths. Some parent
 commands succeeded with only their other inputs; others failed. These are raw
 diagnostics, not native length-entry parity evidence. Their original producer
-snapshots were not retained. The current inline UI continues to use endpoint picks.
+snapshots were not retained. The current UV inline UI supports endpoint picks
+and numeric lengths followed by a confirmation location.
 
 ```sh
 cargo test -p viboceros-geometry --release curve_length_subcurve

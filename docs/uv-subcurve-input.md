@@ -45,8 +45,9 @@ index the surface at zero and subsequent input objects from one.
 One closed CreateUVCrv result has identical ordered linear controls but different
 knot spacing: paired normalized stations differ by up to `0.50625`. This is a
 retained parameter-speed discrepancy; all captured loci agree within `1e-6`.
-Inline length input, direction locking and B-rep edge references are not yet
-supported. Existing native UV-sizing and off-surface projection limits still apply.
+[Inline length input](subcurve-length-confirmation.md) now accepts a number followed
+by a direction confirmation. Direction locking and B-rep edge references remain
+unsupported. Existing native UV-sizing and off-surface projection limits still apply.
 [Signed-length script inputs](signed-length-subcurves.md) now provide
 `SubCrvLength=curve,anchor,signed-length` independently of the inline getter.
 

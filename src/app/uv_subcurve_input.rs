@@ -1,6 +1,7 @@
 //! Nested, nonmutating SubCrv input for the UV source getter.
 use super::*;
 use viboceros_document::ObjectId;
+mod length_confirmation;
 
 #[derive(Clone, Debug)]
 pub(super) struct CurveRange {
@@ -18,6 +19,7 @@ pub(super) struct SubcurveInputs {
 pub(super) struct PendingSubcurve {
     pub(super) object: Option<ObjectId>,
     pub(super) start: Option<f64>,
+    pub(super) length: Option<f64>,
 }
 
 impl SubcurveInputs {
@@ -33,10 +35,11 @@ impl SubcurveInputs {
             .collect()
     }
     pub(super) fn hint(&self) -> Option<&'static str> {
-        self.pending.as_ref().map(|p| match (p.object, p.start) {
-            (None, _) => "Select curve to temporarily shorten; Esc cancels",
-            (Some(_), None) => "Pick start of temporary subcurve; Esc cancels",
-            (Some(_), Some(_)) => "Pick directed end of temporary subcurve; Esc cancels",
+        self.pending.as_ref().map(|p| match (p.object, p.start,p.length) {
+            (None, _,_) => "Select curve to temporarily shorten; Enter returns, Esc cancels",
+            (Some(_), None,_) => "Pick start of temporary subcurve; Esc cancels",
+            (Some(_), Some(_),None) => "Pick directed end or type a curve length; Esc cancels",
+            (Some(_), Some(_),Some(_)) => "Confirm the length direction on the curve; type a new length or Enter to return",
         })
     }
 }
@@ -48,6 +51,46 @@ impl VibocerosApp {
         input: &str,
     ) -> bool {
         if let Some(pending) = &prompt.uv_subcurves.pending {
+            if input.is_empty() {
+                self.finish_empty_uv_subcurve();
+                return true;
+            }
+            if pending.start.is_some()
+                && let Some(quantity) = viboceros_drafting::PointInput::parse_length_with_units(
+                    input,
+                    self.document.units(),
+                )
+            {
+                match quantity {
+                    Ok(0.) => self.finish_empty_uv_subcurve(),
+                    Ok(length) => {
+                        let curve = self
+                            .document
+                            .object(pending.object.unwrap())
+                            .and_then(|o| o.geometry().curve_ref());
+                        match curve.map(|c| c.length(self.document.tolerance())) {
+                            Some(Ok(total)) if length.abs() <= total => {
+                                self.intersection_prompt
+                                    .as_mut()
+                                    .unwrap()
+                                    .uv_subcurves
+                                    .pending
+                                    .as_mut()
+                                    .unwrap()
+                                    .length = Some(length.abs());
+                                self.command_input.clear();
+                                self.log_intersection_prompt();
+                            }
+                            Some(Err(error)) => self.push_log(format!("Error: {error}")),
+                            _ => {
+                                self.push_log("Curve length exceeds the whole source curve".into())
+                            }
+                        }
+                    }
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+                return true;
+            }
             if pending.object.is_some()
                 && (self.try_continue_point_constraint(input)
                     || self.try_continue_point_filter(input)
@@ -84,6 +127,18 @@ impl VibocerosApp {
             return true;
         }
         false
+    }
+
+    fn finish_empty_uv_subcurve(&mut self) {
+        if let Some(prompt) = self.intersection_prompt.as_mut() {
+            prompt.uv_subcurves.pending = None;
+        }
+        self.active_command = None;
+        self.drafting_plane = None;
+        self.point_filter = None;
+        self.point_constraint = None;
+        self.command_input.clear();
+        self.log_intersection_prompt();
     }
 
     pub(super) fn pick_uv_subcurve_source(
@@ -137,11 +192,31 @@ impl VibocerosApp {
                 ))?;
             let parameter = curve.closest_parameter(point, self.document.tolerance())?;
             if let Some(start) = pending.start {
-                curve.to_owned().try_subcurve(start, parameter)?;
-                prompt.uv_subcurves.ranges.push(CurveRange {
-                    object,
-                    parameters: [start, parameter],
-                });
+                let parameters = if let Some(length) = pending.length {
+                    let Some(parameters) = length_confirmation::interval(
+                        curve,
+                        start,
+                        parameter,
+                        length,
+                        self.document.tolerance(),
+                    )?
+                    else {
+                        prompt.uv_subcurves.pending = None;
+                        self.active_command = None;
+                        self.drafting_plane = None;
+                        return Ok(());
+                    };
+                    parameters
+                } else {
+                    [start, parameter]
+                };
+                curve
+                    .to_owned()
+                    .try_subcurve(parameters[0], parameters[1])?;
+                prompt
+                    .uv_subcurves
+                    .ranges
+                    .push(CurveRange { object, parameters });
                 prompt.uv_subcurves.pending = None;
                 self.active_command = None;
                 self.drafting_plane = None;
@@ -156,6 +231,10 @@ impl VibocerosApp {
         })();
         match result {
             Ok(()) => {
+                if self.active_command.is_none() {
+                    self.point_filter = None;
+                    self.point_constraint = None;
+                }
                 self.intersection_prompt = Some(prompt);
                 self.log_intersection_prompt();
                 Some(true)

@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_point_control",
+      "case": "point_control"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_number_only",
+      "case": "number_only"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_number_reference",
+      "case": "number_reference"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_standalone_reference",
+      "case": "standalone_reference"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_number_click",
+      "case": "number_click"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_standalone_click",
+      "case": "standalone_click"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_empty_nested",
+      "case": "empty_nested"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_zero",
+      "case": "zero"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_coordinates",
+      "case": "confirm_coordinates"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_reverse",
+      "case": "confirm_reverse"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_negative",
+      "case": "confirm_negative"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_quadratic",
+      "case": "confirm_quadratic"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_closed_forward",
+      "case": "confirm_closed_forward"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_closed_backward",
+      "case": "confirm_closed_backward"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_closed_full",
+      "case": "confirm_closed_full"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_unavailable",
+      "case": "confirm_unavailable"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_tail",
+      "case": "confirm_tail"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_negative_forward",
+      "case": "negative_forward"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_negative_backward",
+      "case": "negative_backward"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_negative_closed",
+      "case": "negative_closed"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_replace_number",
+      "case": "replace_number"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_empty",
+      "case": "confirm_empty"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_nonuniform",
+      "case": "confirm_nonuniform"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_clamp",
+      "case": "confirm_clamp"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_confirm_same",
+      "case": "confirm_same"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_apply_forward",
+      "case": "apply_forward"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_apply_reverse",
+      "case": "apply_reverse"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_apply_closed",
+      "case": "apply_closed"
+    },
+    {
+      "op": "subcurve_numeric_followup",
+      "id": "numeric_followup_apply_clamp",
+      "case": "apply_clamp"
+    }
+  ]
+}

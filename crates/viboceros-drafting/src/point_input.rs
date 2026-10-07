@@ -1,6 +1,8 @@
 //! Typed point syntax, separate from document edits and viewport interaction.
 
 mod calculator;
+#[cfg(test)]
+mod length_quantity_tests;
 
 use thiserror::Error;
 use viboceros_geometry::{Frame3, GeometryError, LengthUnitSystem, Point3, Real};
@@ -66,6 +68,23 @@ pub enum PointInputError {
 }
 
 impl PointInput {
+    /// Parses a scalar length using the point prompt's calculator and units,
+    /// including zero. Coordinate, angle, world and relative point syntax is
+    /// left to the corresponding point/constraint parser.
+    pub fn parse_length_with_units(
+        text: &str,
+        units: &LengthUnitSystem,
+    ) -> Option<Result<Real, PointInputError>> {
+        let text = text.trim();
+        if text.contains([',', '<']) || text.starts_with(['w', 'W', 'r', 'R', '@']) {
+            return None;
+        }
+        match Self::parse_with_units(text, units)? {
+            Ok(_) | Err(PointInputError::DistanceConstraint) => Some(number(text, units)),
+            Err(error) => Some(Err(error)),
+        }
+    }
+
     /// Parses a point-like token, returning `None` for ordinary command text.
     /// Coordinates have no internal whitespace. R/@ and W prefixes may be
     /// combined in either order; unsuffixed angles are decimal degrees.
