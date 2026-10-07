@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 6, 2026 audit tested code at `ad14bb7e` with Rust 1.95.0 after
-[ApplyCrv document mapping and interactive selection](commands/apply-curves.md).
+The October 6, 2026 audit tested code at `142f7a92` with Rust 1.95.0 after
+[CreateUVCrv surface/trim flattening and optional input projection](commands/create-uv-curves.md).
 
 ## Commands and results
 
@@ -14,28 +14,49 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/apply_uv_curves_local.json --timeout 600 --output docs/apply-uv-curves-local.json
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/create_uv_curves_local.json --timeout 600 --output docs/create-uv-curves-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,113 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,118 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 941 | 17 |
-| Command | 1,138 | 2 |
+| App | 944 | 17 |
+| Command | 1,140 | 2 |
 | Document | 185 | 5 |
 | Drafting | 157 | 6 |
 | Geometry | 2,015 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 482 | 0 |
 
-The Python suite passed 874 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 878 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The standalone Python command run reproduces all 13 original surface/input
+The latest standalone Python run reproduces nine original untrimmed CreateUVCrv
+surface/input definitions. The Rust command replay additionally reconstructs
+the two trimmed sources from their original UV curves. A create/apply roundtrip
+recovers the original spatial curve within `1e-6`; application tests exercise
+surface-first picking, optional point selection, preselection, cancellation and
+World-XY output under a rotated construction plane.
+
+A fresh 11-recipe native capture ran on private Xvfb with settings scheme
+`VibocerosOracleCreateUVFinal20261006`, creating 17 UV curves and four points.
+The [raw records](../tools/rhino_oracle/observations/create_uv_curves_command.json)
+retain full inputs, trim curves, isocurve-length diagnostics, output stations,
+properties, groups, selection and independent history states. The native coarse
+rectangle size differs from accurate integration by about `3.00e-4` for the
+radius-two cylinder. The off-surface curve's maximum paired discrepancy is about
+`0.00686`; its endpoint also differs from the local closest-parameter projection.
+These differences remain explicit in [provenance](create-uv-curves-provenance.json)
+and [scope documentation](commands/create-uv-curves.md). Replay uses `1e-6` for
+ordinary cases, `1e-3` for native primitive sizing differences and `0.01` for that
+off-surface projection case. This does not establish full native sizing or
+projection parity, or a continuous global nearest-locus certificate.
+
+The preceding standalone Python command run reproduces all 13 original surface/input
 fixtures, producing 17 curves and nine points. Undo and Redo replay outputs and
 retain copied group definitions, including empty definitions for point-only
 input. The two degenerate mapping rectangles produce no geometry or Undo entry;
@@ -43,7 +64,7 @@ input. The two degenerate mapping rectangles produce no geometry or Undo entry;
 prove that retaining accepted group definitions never retains groups after a
 failed transaction's rollback.
 
-A fresh 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+The preceding 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
 scheme `VibocerosOracleApplyUVPurity20261006`. Every recipe starts at idle in an
 empty owned document with independently cleared Undo history. The
 [raw records](../tools/rhino_oracle/observations/apply_uv_curves_command.json)
@@ -130,7 +151,7 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 13 actual `ApplyCrv` command recipes. Other recorded-output
+The newest native capture covers 11 actual `CreateUVCrv` command recipes. Other recorded-output
 replays are not fresh cross-engine measurements, and tests that merely execute
 fixtures with finite output do not establish numerical agreement with Rhino.
 Native `Surface.Pullback` and `Surface.Pushup` follow geometric loci and do not
