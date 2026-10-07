@@ -1,5 +1,39 @@
 //! Numeric getter orientation and open-end clamping, separate from length math.
+use std::sync::{Arc, Mutex};
 use viboceros_geometry::{Curve3, CurveRef, GeometryError, Real, Tolerance};
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct SubcurveDefaults {
+    pub copy: bool,
+    pub mode: SubcurveMode,
+    pub from_midpoint: bool,
+}
+
+#[derive(Clone, Default)]
+pub(crate) struct SubcurvePreferences(Arc<Mutex<SubcurveDefaults>>);
+impl SubcurvePreferences {
+    pub(crate) fn get(&self) -> SubcurveDefaults {
+        *self.0.lock().expect("SubCrv preference lock")
+    }
+    pub(crate) fn update(
+        &self,
+        copy: Option<bool>,
+        mode: Option<SubcurveMode>,
+        midpoint: Option<bool>,
+    ) -> SubcurveDefaults {
+        let mut state = self.0.lock().expect("SubCrv preference lock");
+        if let Some(copy) = copy {
+            state.copy = copy;
+        }
+        if let Some(mode) = mode {
+            state.mode = mode;
+        }
+        if let Some(midpoint) = midpoint {
+            state.from_midpoint = midpoint;
+        }
+        *state
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SubcurveMode {

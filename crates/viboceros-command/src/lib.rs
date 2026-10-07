@@ -481,6 +481,7 @@ pub struct CommandRegistry {
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
+    subcurve_preferences: subcurve_input::SubcurvePreferences,
     twist_preferences: std::sync::Arc<twist::TwistPreferences>,
     bend_preferences: std::sync::Arc<bend::BendPreferences>,
     taper_preferences: std::sync::Arc<taper::TaperPreferences>,
@@ -1028,7 +1029,7 @@ impl CommandRegistry {
             .register(ExtendSurfaceCommand)
             .expect("unique built-in command");
         registry
-            .register(SubcurveCommand)
+            .register(SubcurveCommand(registry.subcurve_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(SplitCurveCommand)
@@ -1550,6 +1551,20 @@ impl CommandRegistry {
     /// Application-wide switch, shared across this registry's commands/documents.
     pub fn remember_copy_options(&self) -> bool {
         self.copy_preferences.enabled()
+    }
+
+    /// SubCrv options have command-specific lifetime independent of the global
+    /// RememberCopyOptions switch and document Undo/Redo.
+    pub fn subcurve_defaults(&self) -> subcurve_input::SubcurveDefaults {
+        self.subcurve_preferences.get()
+    }
+    pub fn set_subcurve_options(
+        &self,
+        copy: Option<bool>,
+        mode: Option<subcurve_input::SubcurveMode>,
+        midpoint: Option<bool>,
+    ) -> subcurve_input::SubcurveDefaults {
+        self.subcurve_preferences.update(copy, mode, midpoint)
     }
 
     /// Read a Copy default for a prompt without accepting or starting a command.

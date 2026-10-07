@@ -108,6 +108,7 @@ impl VibocerosApp {
             };
             if let Some(flag) = flag {
                 self.subcurve_prompt.as_mut().unwrap().from_midpoint = flag;
+                self.commands.set_subcurve_options(None, None, Some(flag));
                 self.command_input.clear();
                 self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
             } else {
@@ -120,6 +121,7 @@ impl VibocerosApp {
         {
             if let Some(mode) = viboceros_command::subcurve_input::SubcurveMode::parse(value) {
                 self.subcurve_prompt.as_mut().unwrap().mode = mode;
+                self.commands.set_subcurve_options(None, Some(mode), None);
                 self.command_input.clear();
                 self.push_log(format!("SubCrv Mode={}", mode.option()));
             } else {
@@ -139,6 +141,7 @@ impl VibocerosApp {
             };
             if let Some(copy) = copy {
                 self.subcurve_prompt.as_mut().unwrap().copy = copy;
+                self.commands.set_subcurve_options(Some(copy), None, None);
                 if let Some(InteractiveCommand::SubCrv { start, .. }) = self.active_command {
                     self.active_command = Some(InteractiveCommand::SubCrv { start, copy });
                 }

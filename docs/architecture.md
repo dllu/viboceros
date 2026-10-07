@@ -65,6 +65,8 @@ Its [MarkEnds mode](subcurve-mark-ends.md) stages default marker points without
 copying source attributes or modifying the original curve.
 The [FromMidpoint policy](subcurve-midpoint.md) queries both sides from the
 original center, sharing parameter-preserving endpoint recovery with the kernel.
+Its [command-specific preferences](subcurve-option-memory.md) persist accepted
+option edits independently of document history and the global Copy switch.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

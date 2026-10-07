@@ -32,8 +32,10 @@ events, and Undo/Redo. Command/app replays compare every point within `1e-6`,
 source purity, default attributes and history. Numeric curved inputs retain the
 existing integration and native fitting limits. [FromMidpoint](subcurve-midpoint.md)
 also supports MarkEnds. Direction locking,
-B-rep edge references, native mode memory and reactive Rhino History remain
+B-rep edge references, restart preference persistence and reactive Rhino History remain
 outstanding. See [provenance](subcurve-mark-ends-provenance.json).
+[Mode memory](subcurve-option-memory.md) now follows accepted option changes,
+including cancelled getters.
 
 ```sh
 cargo test -p viboceros-command --release mark_ends

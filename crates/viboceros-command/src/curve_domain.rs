@@ -90,7 +90,7 @@ struct SubcurveOptions {
     from_midpoint: bool,
 }
 
-pub(super) struct SubcurveCommand;
+pub(super) struct SubcurveCommand(pub(super) subcurve_input::SubcurvePreferences);
 
 impl Command for SubcurveCommand {
     fn name(&self) -> &'static str {
@@ -98,7 +98,12 @@ impl Command for SubcurveCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_subcurve_options(arguments)?;
+        let options = parse_subcurve_options(arguments, self.0.get())?;
+        self.0.update(
+            Some(options.copy),
+            Some(options.mode),
+            Some(options.from_midpoint),
+        );
         let mut candidates = document
             .selected_objects()
             .filter_map(|object| {
@@ -211,7 +216,10 @@ impl Command for SubcurveCommand {
     }
 }
 
-fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, CommandError> {
+fn parse_subcurve_options(
+    arguments: &[&str],
+    defaults: subcurve_input::SubcurveDefaults,
+) -> Result<SubcurveOptions, CommandError> {
     let Some(first) = arguments.first() else {
         return Err(CommandError::Usage(SUBCURVE_USAGE));
     };
@@ -262,11 +270,11 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
         )
     };
 
-    let mut copy = false;
+    let mut copy = defaults.copy;
     let mut copy_seen = false;
-    let mut mode = subcurve_input::SubcurveMode::Shorten;
+    let mut mode = defaults.mode;
     let mut mode_seen = false;
-    let mut from_midpoint = false;
+    let mut from_midpoint = defaults.from_midpoint;
     let mut midpoint_seen = false;
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;

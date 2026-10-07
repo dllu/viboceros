@@ -4282,7 +4282,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::SrfSeam { direction }
         } else if normalized == "subcrv" {
-            let mut copy = false;
+            let mut copy = self.commands.subcurve_defaults().copy;
             let mut copy_seen = false;
             let mut mode_seen = false;
             let mut midpoint_seen = false;
@@ -4849,16 +4849,19 @@ impl VibocerosApp {
                             viboceros_command::subcurve_input::SubcurveMode::parse(value)
                         })
                 })
-                .unwrap_or_default();
+                .unwrap_or(self.commands.subcurve_defaults().mode);
             let from_midpoint = input
                 .split_whitespace()
                 .skip(1)
                 .filter_map(|o| o.split_once('='))
-                .any(|(name, value)| {
+                .find(|(name, _)| {
                     name.trim_start_matches(['_', '-'])
                         .eq_ignore_ascii_case("FromMidpoint")
-                        && value.trim_start_matches('_').eq_ignore_ascii_case("Yes")
-                });
+                })
+                .map(|(_, value)| value.trim_start_matches('_').eq_ignore_ascii_case("Yes"))
+                .unwrap_or(self.commands.subcurve_defaults().from_midpoint);
+            self.commands
+                .set_subcurve_options(Some(copy), Some(mode), Some(from_midpoint));
             self.begin_subcurve_prompt(copy, mode, from_midpoint);
             return true;
         }
@@ -9380,6 +9383,7 @@ mod tests {
     mod standalone_subcurve;
     mod subcurve_mark_ends;
     mod subcurve_midpoint;
+    mod subcurve_preferences;
     mod taper;
     mod transform_copy;
     mod translation_preview;

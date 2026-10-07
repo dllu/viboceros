@@ -1,0 +1,20 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSubcurvePreferenceFinal20261007",
+  "workflow_steps": 37,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Public SubCrv and RememberCopyOptions commands in a new owned profile; cancelled queries and hidden Mode fields remain raw.",
+  "limits": [
+    "restart persistence",
+    "direction-option and B-rep edge preference lifetime",
+    "complete native failure timing"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_preferences_probe.py": "ea354e2657090a2300360e9a7e5a200efe2999a9a737606d1161d379f384a9a6",
+    "tools/rhino_oracle/fixtures/subcurve_preferences.json": "1bc595376700d047083d8625528d6f963f522bfaf74ed1c8d88279b19568fe59",
+    "tools/rhino_oracle/observations/subcurve_preferences.json": "279bc523bac9fabca74b956f47adf0032646d87498f44468868ad3071db093dc"
+  }
+}

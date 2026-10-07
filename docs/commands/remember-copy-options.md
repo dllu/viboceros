@@ -34,6 +34,10 @@ The shared policy currently applies to these implemented commands:
 | Scale, Scale1D, Scale2D, ScaleNU, ScalePositions | No |
 | Rotate, Rotate3D, Shear, SetPt | No |
 
+[SubCrv](../subcurve-option-memory.md) uses separate option memory in the captured
+Rhino version: its accepted Copy choice survives cancellation and is not reset
+by this global switch.
+
 Aliases use the same saved choice. A registry retains preferences across its
 documents; separate registries are independent. Settings and queries create no
 model history and preserve redo. Geometry Undo/Redo does not revert preferences.

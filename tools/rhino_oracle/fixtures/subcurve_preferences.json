@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_preferences",
+      "id": "subcurve_preferences",
+      "case": "lifetime"
+    }
+  ]
+}

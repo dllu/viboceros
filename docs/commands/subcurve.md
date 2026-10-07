@@ -8,6 +8,8 @@ location. A new number replaces the pending length; units and calculator
 expressions use the shared point-input parser. `Copy=Yes|No` can be supplied at
 start or changed during the getter. Zero, empty Enter and Escape cancel without
 geometry or history changes and release source selection.
+[Copy, Mode and FromMidpoint](../subcurve-option-memory.md) use independent session
+memory: accepted changes survive cancellation and document history.
 
 Open point intervals retain the source's orientation, regardless of pick order.
 Closed point intervals follow the source through its seam. Numeric lengths use
@@ -47,8 +49,8 @@ and history. See [provenance](../standalone-subcurve-provenance.json).
 retaining the source, with current-layer output and unselected history states.
 [`FromMidpoint=Yes`](../subcurve-midpoint.md) builds an interval around the first
 pick, with immediate half-length entry or symmetric endpoint picking.
-Direction locking, B-rep edge references and complete
-native Copy-option memory remain outstanding. The recorded cases do not establish
+Direction locking, B-rep edge references and restart preference persistence
+remain outstanding. The recorded cases do not establish
 arbitrary-curve or preview parity.
 
 ```sh
