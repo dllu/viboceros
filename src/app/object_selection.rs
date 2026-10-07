@@ -182,6 +182,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.subcurve_prompt.is_some() {
+            return Some(ObjectSelectionFilter::Curves);
+        }
         if self.picking_scale_by_plane_object() {
             return Some(ObjectSelectionFilter::Any);
         }

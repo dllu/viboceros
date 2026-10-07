@@ -267,6 +267,7 @@ mod edge_surface;
 mod loft;
 mod point_arguments;
 mod point_cloud;
+pub mod subcurve_input;
 use point_arguments::parse_point;
 mod point_grid;
 mod point_matrix;
@@ -24275,7 +24276,7 @@ mod tests {
         let object = document.object(id).unwrap();
         assert_eq!(object.geometry(), &Geometry::Line(expected));
         assert_eq!(object.attributes(), before.attributes());
-        assert!(document.is_selected(id));
+        assert!(!document.is_selected(id));
         assert!(
             document
                 .group_by_name("Directed")
@@ -24295,7 +24296,7 @@ mod tests {
     }
 
     #[test]
-    fn subcurve_point_order_reverses_open_curves_and_copy_retains_groups() {
+    fn subcurve_point_order_retains_open_orientation_and_copy_retains_groups() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry.execute(&mut document, "Line 0,0 10,0").unwrap();
@@ -24326,15 +24327,15 @@ mod tests {
             panic!("SubCrv must retain the native line")
         };
         assert!(curve.evaluate(*curve.domain().start()).unwrap().is_near(
-            Point3::try_new(8.0, 0.0, 0.0).unwrap(),
-            document.tolerance()
-        ));
-        assert!(curve.evaluate(*curve.domain().end()).unwrap().is_near(
             Point3::try_new(2.0, 0.0, 0.0).unwrap(),
             document.tolerance()
         ));
-        assert!(document.is_selected(source_id));
-        assert!(!document.is_selected(copy_id));
+        assert!(curve.evaluate(*curve.domain().end()).unwrap().is_near(
+            Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(!document.is_selected(source_id));
+        assert!(document.is_selected(copy_id));
         let members = document
             .group_by_name("SubcurveCopies")
             .unwrap()

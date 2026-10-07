@@ -1,4 +1,5 @@
 use super::*;
+mod standalone;
 
 #[test]
 fn reparameterized_circle_edits_use_native_parameters_and_retain_document_state() {

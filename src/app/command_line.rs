@@ -252,6 +252,8 @@ impl VibocerosApp {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.intersection_prompt {
                                 prompt.hint()
+                            } else if let Some(prompt) = &self.subcurve_prompt {
+                                prompt.hint()
                             } else if let Some(prompt) = &self.edge_prompt {
                                 prompt.hint()
                             } else if let Some(prompt) = &self.hole_prompt {

@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleStandaloneSubcurveFinal20261007",
+  "recipes": 17,
+  "successful_commands": 15,
+  "retained_cancellations": [
+    "zero",
+    "no_confirmation"
+  ],
+  "full_native_parity": false,
+  "comparison_ceiling": 1e-06,
+  "limits": [
+    "direction locking",
+    "FromMidpoint and MarkEnds",
+    "B-rep edge references",
+    "native Copy-option memory and preview parity"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/standalone_subcurve_probe.py": "78862f567c8478c7373b2fcebe2f94da50c26ffd6e4d640be827bc26434a42b3",
+    "tools/rhino_oracle/fixtures/standalone_subcurve.json": "4d1686c6f5b8bafdcb292c0c3abe9eb0bb9e610260ba2a88aed31e4af904ec43",
+    "tools/rhino_oracle/observations/standalone_subcurve.json": "51569e941cdf4e81771b72835abf93096c3aad5cef6265df70a09c6b82117cf4"
+  }
+}

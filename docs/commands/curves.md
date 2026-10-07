@@ -313,13 +313,15 @@ For exact tangent rounding of selected polyline corners, see
 ## Subcurves
 
 `SubCrv start_point end_point` replaces one selected curve with the exact
-directed portion between the closest curve locations; omit both points for two
-viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
-the point order reverses an open result and crosses the existing seam on a
-closed curve, matching Rhino/OpenNURBS trim behavior. `Copy=Yes` retains the
+portion between the closest curve locations, retaining the source's open-curve
+orientation. Omit both points for source/endpoint picking or numeric length
+confirmation, or use `Parameter=start,end` for directed native parameters.
+Decreasing explicit parameters reverse an open result; decreasing closed
+intervals cross the existing seam. `Copy=Yes` retains the
 source and adds an attribute-preserving result to its groups. Numeric parameters
 refer to the native source, without changing angular parameterization first.
 Lines, arcs, polylines, and polycurves retain native leaves; partial circles become
 arcs and ellipses use their parameter-equivalent NURBS form. A seam-crossing result
 is a polycurve containing both trimmed portions. Replacement preserves identity,
-attributes, groups, selection, and undo. See [native domain editing](../curve-domain-editing.md).
+attributes, groups and undo. Selection follows the native copy/replacement
+policy. See [standalone SubCrv](subcurve.md) and [native domain editing](../curve-domain-editing.md).

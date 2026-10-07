@@ -73,13 +73,13 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
-pub(super) const SUBCURVE_USAGE: &str =
-    "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No]";
+pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SubcurveLocation {
     Parameters([Real; 2]),
     Points([Point3; 2]),
+    Numeric([Real; 3]),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -112,22 +112,53 @@ impl Command for SubcurveCommand {
             });
         }
         let (id, curve) = candidates.pop().expect("one subcurve source was required");
-        let [start, end] = match options.location {
-            SubcurveLocation::Parameters(parameters) => parameters,
-            SubcurveLocation::Points(points) => [
-                curve
-                    .as_ref()
-                    .closest_parameter(points[0], document.tolerance())?,
-                curve
-                    .as_ref()
-                    .closest_parameter(points[1], document.tolerance())?,
-            ],
+        let (geometry, start, end) = match options.location {
+            SubcurveLocation::Numeric([anchor, length, confirmation]) => {
+                let Some(piece) = subcurve_input::piece(
+                    curve.as_ref(),
+                    anchor,
+                    confirmation,
+                    length,
+                    document.tolerance(),
+                )?
+                else {
+                    document.clear_selection();
+                    return Ok("No subcurve created".into());
+                };
+                let domain = piece.as_ref().domain();
+                (Geometry::from(piece), *domain.start(), *domain.end())
+            }
+            location => {
+                let [start, end] = match location {
+                    SubcurveLocation::Parameters(parameters) => parameters,
+                    SubcurveLocation::Points(points) => [
+                        curve
+                            .as_ref()
+                            .closest_parameter(points[0], document.tolerance())?,
+                        curve
+                            .as_ref()
+                            .closest_parameter(points[1], document.tolerance())?,
+                    ],
+                    SubcurveLocation::Numeric(_) => unreachable!(),
+                };
+                let [start, end] = if matches!(location, SubcurveLocation::Points(_))
+                    && !curve.as_ref().is_closed()?
+                    && start > end
+                {
+                    [end, start]
+                } else {
+                    [start, end]
+                };
+                (Geometry::from(curve.try_subcurve(start, end)?), start, end)
+            }
         };
-        let geometry = Geometry::from(curve.try_subcurve(start, end)?);
+        document.release_command_selection_on_history_replay([id])?;
         if options.copy {
-            document.copy_object_geometries_into_source_groups([(id, geometry)])?;
+            let outputs = document.copy_object_geometries_into_source_groups([(id, geometry)])?;
+            document.select_command_results(outputs)?;
         } else {
             document.replace_object_geometries([(id, geometry)])?;
+            document.clear_selection();
         }
         Ok(format!(
             "Created a directed subcurve from parameter {start} to {end}, {} the input",
@@ -145,7 +176,21 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
         return Err(CommandError::Usage(SUBCURVE_USAGE));
     };
     let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
-    let (location, mut index) = if option_name_eq(first_name, "Parameter") {
+    let (location, mut index) = if option_name_eq(first_name, "Numeric") {
+        let (_, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
+        let values = value.split(',').collect::<Vec<_>>();
+        let [anchor, length, confirmation] = values.as_slice() else {
+            return Err(CommandError::Usage(SUBCURVE_USAGE));
+        };
+        (
+            SubcurveLocation::Numeric([
+                parse_finite_real(anchor)?,
+                parse_finite_real(length)?,
+                parse_finite_real(confirmation)?,
+            ]),
+            consumed,
+        )
+    } else if option_name_eq(first_name, "Parameter") {
         let (name, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
         if !option_name_eq(name, "Parameter") {
             return Err(CommandError::Usage(SUBCURVE_USAGE));

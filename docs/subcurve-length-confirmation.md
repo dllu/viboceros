@@ -34,8 +34,9 @@ typed-coordinate cases cover both directions, negative/replacement numbers,
 curved inputs, closed seams, nonuniform segment lengths, clamping and no-input
 transitions. Application tests replay all 27 UV-command cases through the actual
 controller, checking loci and directed endpoints at `1e-6`, source purity and
-Undo/Redo. Standalone SubCrv numeric UI, direction locking and B-rep edge input
-remain outside this implementation. See [provenance](subcurve-length-confirmation-provenance.json).
+Undo/Redo. [Standalone SubCrv](commands/subcurve.md) now has its own source and
+numeric controller. Direction locking and B-rep edge input remain outstanding.
+See [provenance](subcurve-length-confirmation-provenance.json).
 
 The geometry kernel additionally returns the endpoint in the original native
 domain alongside the arc-length piece. Seam crossings use parameter wrapping,

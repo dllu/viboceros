@@ -1,0 +1,91 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_forward_copy",
+      "case": "forward_copy"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_forward_replace",
+      "case": "forward_replace"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_backward_copy",
+      "case": "backward_copy"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_backward_replace",
+      "case": "backward_replace"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_negative",
+      "case": "negative"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_clamp",
+      "case": "clamp"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_quadratic",
+      "case": "quadratic"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_closed_forward",
+      "case": "closed_forward"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_closed_backward",
+      "case": "closed_backward"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_closed_full",
+      "case": "closed_full"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_zero",
+      "case": "zero"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_no_confirmation",
+      "case": "no_confirmation"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_point_forward",
+      "case": "point_forward"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_point_backward",
+      "case": "point_backward"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_postselect",
+      "case": "postselect"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_closed_point_forward",
+      "case": "closed_point_forward"
+    },
+    {
+      "op": "standalone_subcurve",
+      "id": "subcurve_closed_point_backward",
+      "case": "closed_point_backward"
+    }
+  ]
+}

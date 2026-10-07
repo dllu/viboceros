@@ -173,6 +173,7 @@ mod set_point;
 mod set_view;
 mod smooth;
 mod snapping;
+mod subcurve_prompt;
 mod taper_prompt;
 mod toolbar;
 mod transform_prompt;
@@ -1961,6 +1962,7 @@ pub struct VibocerosApp {
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
+    subcurve_prompt: Option<subcurve_prompt::SubcurvePrompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2056,6 +2058,7 @@ impl VibocerosApp {
             object_prompt: None,
             group_prompt: None,
             intersection_prompt: None,
+            subcurve_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -2211,6 +2214,9 @@ impl VibocerosApp {
             return;
         }
         if self.try_continue_intersection_prompt(&input) {
+            return;
+        }
+        if self.continue_subcurve_prompt(&input) {
             return;
         }
         if self.try_continue_component_choice(&input)
@@ -4808,6 +4814,10 @@ impl VibocerosApp {
 
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
+        if let InteractiveCommand::SubCrv { copy, .. } = command {
+            self.begin_subcurve_prompt(copy);
+            return true;
+        }
         if let InteractiveCommand::ExtractSrf {
             copy,
             output_on_current_layer,
@@ -4967,6 +4977,9 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        if self.subcurve_prompt.take().is_some() {
+            self.document.clear_selection();
+        }
         let transform_applied = self.finish_maelstrom_session()
             | self.finish_transform_session()
             | self
@@ -5029,6 +5042,9 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
+        if let Some(accepted) = self.accept_standalone_subcurve_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_uv_subcurve_point(point) {
             return accepted;
         }
@@ -7640,6 +7656,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_subcurve_source(click.object_id) {
+            return;
+        }
         if self.selecting_move_normal_reference() {
             if let Some(id) = click.object_id {
                 self.accept_move_normal_reference(id, None);
@@ -8484,6 +8503,7 @@ impl VibocerosApp {
         } else if self.plane_prompt.is_some() {
             self.cancel_plane_prompt();
         } else if self.active_command.is_some()
+            || self.subcurve_prompt.is_some()
             || self.object_prompt.is_some()
             || self.group_prompt.is_some()
             || self.intersection_prompt.is_some()
@@ -9313,6 +9333,7 @@ mod tests {
     mod single_span_selection;
     mod smooth;
     mod split_edge;
+    mod standalone_subcurve;
     mod taper;
     mod transform_copy;
     mod translation_preview;
@@ -9384,6 +9405,7 @@ mod tests {
             curve_points: Vec::new(),
             group_prompt: None,
             intersection_prompt: None,
+            subcurve_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -12058,13 +12080,13 @@ mod tests {
             curve
                 .evaluate(*curve.domain().start())
                 .unwrap()
-                .is_near(point(8.0, 0.0, 0.0), app.document.tolerance())
+                .is_near(point(2.0, 0.0, 0.0), app.document.tolerance())
         );
         assert!(
             curve
                 .evaluate(*curve.domain().end())
                 .unwrap()
-                .is_near(point(2.0, 0.0, 0.0), app.document.tolerance())
+                .is_near(point(8.0, 0.0, 0.0), app.document.tolerance())
         );
         assert_eq!(app.document.undo_label(), Some("SubCrv"));
 
@@ -12073,7 +12095,8 @@ mod tests {
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("SubCrv"));
         assert_eq!(app.active_command, None);
-        assert!(app.command_log.back().unwrap().contains("no objects"));
+        assert!(app.subcurve_prompt.as_ref().unwrap().source.is_none());
+        assert!(app.command_log.back().unwrap().contains("select one curve"));
     }
 
     #[test]
