@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 
 mod algebra;
 mod curve;
+mod pushup;
 mod surface;
 #[cfg(test)]
 mod tests;
@@ -47,8 +48,9 @@ impl NurbsSurface {
     /// controls, weights and knots without rounded knot insertion or sampling.
     /// Tensor knot crossings use restricted surface hulls and exact dyadic
     /// subdivision. Positive or uniformly negative weight gauges are supported;
-    /// mixed signs, interior full-order surface knots, degrees above 16, and
-    /// composed degrees above 64 are uncertified. UV must stay in the natural
+    /// mixed signs, interior full-order surface knots, surface or UV degrees
+    /// above 16, spatial degrees above 64, and composed degrees above 64 are
+    /// uncertified. UV must stay in the natural
     /// surface domain. Work, rational sizes and subdivision depth are bounded.
     /// Sources remain unchanged; this does not certify topology or injectivity.
     pub fn parameter_curve_deviation_bound(
@@ -138,7 +140,7 @@ impl NurbsSurface {
 
 fn supported(surface: &NurbsSurface, uv_degree: usize, spatial_degree: usize) -> bool {
     uv_degree <= MAX_DEGREE
-        && spatial_degree <= MAX_DEGREE
+        && spatial_degree <= MAX_IMAGE_DEGREE
         && surface.degree_u() <= MAX_DEGREE
         && surface.degree_v() <= MAX_DEGREE
         && uv_degree.saturating_mul(surface.degree_u() + surface.degree_v()) <= MAX_IMAGE_DEGREE

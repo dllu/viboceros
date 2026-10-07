@@ -101,7 +101,9 @@ mod remove_holes;
 mod shrink_trimmed;
 mod solid_orientation;
 mod surface_curve_image;
-pub use surface_curve_image::{SurfaceCurveDeviationFixture, SurfacePullbackFixture};
+pub use surface_curve_image::{
+    SurfaceCurveDeviationFixture, SurfacePullbackFixture, SurfacePushupFixture,
+};
 #[cfg(test)]
 mod test_json;
 mod trimmed_brep;
@@ -1854,6 +1856,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfacePullbackFixture,
     },
+    SurfacePushupCertified {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfacePushupFixture,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -2338,7 +2345,8 @@ impl Operation {
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. }
             | Self::SurfaceCurveDeviation { id, .. }
-            | Self::SurfacePullbackCertified { id, .. } => id,
+            | Self::SurfacePullbackCertified { id, .. }
+            | Self::SurfacePushupCertified { id, .. } => id,
         }
     }
 }
@@ -6163,6 +6171,9 @@ fn execute(
         }
         Operation::SurfacePullbackCertified { fixture, .. } => {
             surface_curve_image::pullback(fixture, tolerance, iterations)?
+        }
+        Operation::SurfacePushupCertified { fixture, .. } => {
+            surface_curve_image::pushup(fixture, tolerance, iterations)?
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,

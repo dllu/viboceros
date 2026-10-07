@@ -1,0 +1,28 @@
+{
+  "capture_date": "2026-10-06",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOraclePushup20261006",
+  "sdk_recipes": 13,
+  "native_pushup_recipes": 5,
+  "certified_local_images": 13,
+  "source_stations": 1677,
+  "sources_unchanged": true,
+  "full_native_parity": false,
+  "local_contract": "continuous affine normalized-parameter surface-image bound",
+  "native_contract": "geometric curve fitting; normalized speed may differ",
+  "retained_parameterization_differences": [
+    "sphere_seam"
+  ],
+  "maximum_local_bound": 3.5004931981062833e-16,
+  "capture_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/surface_curve_image.json --scheme VibocerosOraclePushup20261006 --timeout 600 --output tools/rhino_oracle/observations/surface_pushup_certified.json",
+  "local_command": "python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pushup_certified.json --timeout 600 --output docs/certified-surface-pushup-local.json",
+  "timing_limit": "Single-iteration local observations include exact proof; native recipes include construction and witnesses. No performance parity claim.",
+  "sha256": {
+    "tools/rhino_oracle/surface_curve_image_probe.py": "cdc4155cb15fa6fe1da1392e35395d74f2d30ceb52099cb5ac2dd8dcc4adb4d2",
+    "tools/rhino_oracle/fixtures/surface_curve_image.json": "004ba5eb50eb0ab333d665abcf8d817d4573e716bbcf87d6390cd5ad3b0d8e19",
+    "tools/rhino_oracle/fixtures/surface_pushup_certified.json": "648d1c60783815f730cd86e29b98940adc59876bc33c226ed046b30d93686ed6",
+    "tools/rhino_oracle/observations/surface_pushup_certified.json": "71c2a91712471f6507c265262e93ea50e9f5b0ab7d6ee4031e54837317dcf4b3",
+    "docs/certified-surface-pushup-local.json": "3feaaef3c8eee42e2bff270b69463f2aa937353efe9bad570e329bf0a0b82f5c"
+  }
+}

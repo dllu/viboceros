@@ -20,7 +20,9 @@ count discrepancies. Native success can depend on selection order; finite
 boundary witnesses and box recipes do not establish general geometry parity.
 The [surface/UV follow-up](surface-curve-certificates.md) retains 13 public SDK
 recipes, including five native `Surface.Pushup` curves on cylinders, spheres,
-and a torus. The local `surface_curve_deviation` operation proves continuous
+and a torus. The local `surface_pushup_certified` operation constructs certified
+spatial images from original UV definitions; see [pushup evidence](certified-surface-pushups.md).
+The local `surface_curve_deviation` operation proves continuous
 matched-parameter error with exact rational bounds. The native sphere boundary
 crossing's different parameter speed remains a recorded diagnostic.
 

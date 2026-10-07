@@ -1,0 +1,806 @@
+{
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 97760,
+      "id": "surface_image_warped_exact",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 95601,
+      "id": "surface_image_warped_offset",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 95120,
+      "id": "surface_image_warped_bump",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 54544,
+      "id": "surface_image_rational_speed",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 248704,
+      "id": "surface_image_tensor_cross",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.3,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.3,
+            0.3,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 133488,
+      "id": "surface_image_tensor_dyadic",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.25,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.5,
+            0.5,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 121168,
+      "id": "surface_image_transformed",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                4.0,
+                -2.0,
+                7.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.5,
+                -0.375,
+                7.625
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.5,
+                0.75,
+                12.25
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            2.0,
+            5.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 99792,
+      "id": "surface_image_negative_gauge",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 3153493,
+      "id": "surface_image_cylinder_quarter",
+      "value": {
+        "bound": 1.0605480095355324e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                1.965319958595479,
+                0.37083346713351556,
+                0.25
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.8331881844156481,
+                1.0710971595330925,
+                1.0825040745323655
+              ],
+              "weight": 0.9008964916133178
+            },
+            {
+              "point": [
+                1.374034172764669,
+                1.623748111549038,
+                1.6906143938601723
+              ],
+              "weight": 0.8864392245229182
+            },
+            {
+              "point": [
+                0.6949146050453313,
+                1.8753916102229664,
+                2.5
+              ],
+              "weight": 0.9566281987288013
+            }
+          ],
+          "degree": 3,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 5621689,
+      "id": "surface_image_cylinder_knot_cross",
+      "value": {
+        "bound": 9.59604087481014e-17,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.6949146050453313,
+                1.8753916102229664,
+                1.5
+              ],
+              "weight": 0.8943629589849742
+            },
+            {
+              "point": [
+                0.35862935926898504,
+                2.0,
+                1.5
+              ],
+              "weight": 0.9308607183333815
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                1.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                2.0,
+                1.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -0.31577065640716895,
+                2.0,
+                1.5
+              ],
+              "weight": 0.9386161516642987
+            },
+            {
+              "point": [
+                -0.6161812832782652,
+                1.9027140158567053,
+                1.5
+              ],
+              "weight": 0.9029616585643719
+            }
+          ],
+          "degree": 2,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.5297090382784237,
+            0.5297090382784237,
+            0.5297090382784237,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 8855886,
+      "id": "surface_image_sphere_oblique",
+      "value": {
+        "bound": 1.152807004523177e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                1.9570666251045232,
+                0.36927615721027657,
+                0.18309927530714715
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.8205925171729334,
+                0.9065336818915686,
+                0.5582647562299038
+              ],
+              "weight": 0.8666595413606143
+            },
+            {
+              "point": [
+                1.433366608766316,
+                1.299903657876873,
+                0.8689134926876271
+              ],
+              "weight": 0.8074289753129128
+            },
+            {
+              "point": [
+                0.9295543813410313,
+                1.439870473811777,
+                1.1634719510741918
+              ],
+              "weight": 0.7983632002060195
+            },
+            {
+              "point": [
+                0.4837528743679188,
+                1.3055216791013604,
+                1.4358259998819987
+              ],
+              "weight": 0.8461269117574185
+            }
+          ],
+          "degree": 4,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 37199932,
+      "id": "surface_image_sphere_seam",
+      "value": {
+        "bound": 8.5671461422313e-17,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                -1.9406010233907072,
+                0.44781952100923184,
+                0.18309927530714715
+              ],
+              "weight": 0.9593981651496652
+            },
+            {
+              "point": [
+                -1.9617938019752295,
+                0.3331935356843179,
+                0.23883420935687838
+              ],
+              "weight": 0.9658250716744697
+            },
+            {
+              "point": [
+                -1.971296128259585,
+                0.21943496062074744,
+                0.295090179746624
+              ],
+              "weight": 0.9747846811207801
+            },
+            {
+              "point": [
+                -1.9696458644621264,
+                0.10793318953977867,
+                0.3521593132718656
+              ],
+              "weight": 0.9861885764556625
+            },
+            {
+              "point": [
+                -1.957474553940097,
+                0.0,
+                0.4102357501206079
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.957474553940097,
+                0.0,
+                0.4102357501206079
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.9494397358186994,
+                -0.07125145198167775,
+                0.44857456387233197
+              ],
+              "weight": 0.9795189775340394
+            },
+            {
+              "point": [
+                -1.937017919733419,
+                -0.14200445338226544,
+                0.4863826881033969
+              ],
+              "weight": 0.9605229403720223
+            },
+            {
+              "point": [
+                -1.9202407758236957,
+                -0.21190700768434909,
+                0.5237394178076135
+              ],
+              "weight": 0.9429541868276249
+            },
+            {
+              "point": [
+                -1.8991698229125216,
+                -0.28061208395844006,
+                0.5607234987718306
+              ],
+              "weight": 0.9267645632791278
+            }
+          ],
+          "degree": 4,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.6039816339744831,
+            0.6039816339744831,
+            0.6039816339744831,
+            0.6039816339744831,
+            0.6039816339744831,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 10194928,
+      "id": "surface_image_torus_diagonal",
+      "value": {
+        "bound": 3.5004931981062833e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "spatial_curve": {
+          "control_points": [
+            {
+              "point": [
+                4.990645651003366,
+                0.22688931799619286,
+                0.09154963765357356
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.954945275120527,
+                0.5430132167342725,
+                0.3233034445940043
+              ],
+              "weight": 0.9019012556315892
+            },
+            {
+              "point": [
+                4.826604179364744,
+                0.8162578847560218,
+                0.5407371692507159
+              ],
+              "weight": 0.8440278257354388
+            },
+            {
+              "point": [
+                4.621533884120827,
+                1.0546281773076975,
+                0.7214420121225483
+              ],
+              "weight": 0.8208046099911
+            },
+            {
+              "point": [
+                4.349458925549082,
+                1.270370879524963,
+                0.8472560272285312
+              ],
+              "weight": 0.8296675155116997
+            }
+          ],
+          "degree": 4,
+          "domain": [
+            0.0,
+            1.0
+          ],
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      }
+    }
+  ]
+}

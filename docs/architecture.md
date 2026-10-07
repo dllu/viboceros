@@ -44,6 +44,9 @@ preparation, and returns its bound without duplicate work.
 The [derivative-free fallback](derivative-free-surface-pullbacks.md) also fits
 eligible nonlinear paths through singular nodes, with original-knot-aware
 fractional proofs and a final assembled-curve certificate.
+[Certified pushup](certified-surface-pushups.md) constructs spatial images from
+UV splines with exact rational composition or adaptive cubic fitting, retaining
+native domains and proving the complete normalized-parameter error bound.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

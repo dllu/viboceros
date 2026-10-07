@@ -52,7 +52,9 @@ cannot become successful certificates.
 
 ## Scope and limits
 
-- Surface and curve degrees up to 16; composed surface-image degree up to 64.
+- Surface and UV degrees up to 16; spatial curve and composed surface-image
+  degrees up to 64. [Certified pushup](certified-surface-pushups.md) constructs
+  spatial images and independently qualifies their rounded control definitions.
 - Sign-coherent nonzero weights; mixed signs are uncertified.
 - UV remains in the natural surface domain. Interior full-order surface knots
   are currently uncertified. Regular multiple knots and arbitrary source-curve

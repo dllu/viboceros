@@ -7,6 +7,8 @@ mod interpolation_tests;
 mod linear_tests;
 #[cfg(test)]
 mod pullback_tests;
+#[cfg(test)]
+mod pushup_tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct SurfaceCurveDeviationFixture {
@@ -22,6 +24,54 @@ pub struct SurfacePullbackFixture {
     spatial_curve: NurbsCurveDefinition,
     limit: f64,
     endpoints: Option<[[f64; 2]; 2]>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct SurfacePushupFixture {
+    surface: NurbsSurfaceDefinition,
+    parameter_curve: NurbsCurveDefinition,
+    limit: f64,
+}
+
+fn parameter_curve(definition: &NurbsCurveDefinition) -> Result<NurbsCurve2, ProbeError> {
+    if definition.control_points.iter().any(|c| c.point[2] != 0.) {
+        return Err(ProbeError::FixtureInvariant(
+            "parameter-curve controls must have zero Z",
+        ));
+    }
+    let parameters = nurbs_curve_from_definition(definition)?;
+    Ok(NurbsCurve2::try_new_rational(
+        parameters.degree(),
+        parameters
+            .control_points()
+            .iter()
+            .map(|c| {
+                WeightedPoint2::try_new(Point2::try_new(c.point().x(), c.point().y())?, c.weight())
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?,
+        parameters.knots().to_vec(),
+    )?)
+}
+
+pub(super) fn pushup(
+    f: &SurfacePushupFixture,
+    tolerance: Tolerance,
+    iterations: u32,
+) -> Result<(Value, u64), ProbeError> {
+    let surface = nurbs_surface_from_definition(&f.surface)?;
+    let uv = parameter_curve(&f.parameter_curve)?;
+    let tolerance = Tolerance::try_new(f.limit, tolerance.relative(), tolerance.angular())?;
+    let ((spatial, bound), elapsed) = measure(iterations, || {
+        surface.try_pushup_curve_certified_with_bound(&uv, tolerance)
+    })?;
+    Ok((
+        json!({"spatial_curve":{
+        "degree":spatial.degree(),"domain":[*spatial.domain().start(),*spatial.domain().end()],
+        "knots":spatial.knots(),"control_points":spatial.control_points().iter().map(|p|
+            json!({"point":p.point().to_array(),"weight":p.weight()})).collect::<Vec<_>>()
+    },"bound":bound,"certified":true,"correspondence":"normalized_curve_domains"}),
+        elapsed,
+    ))
 }
 
 pub(super) fn pullback(
@@ -55,28 +105,8 @@ pub(super) fn run(
     f: &SurfaceCurveDeviationFixture,
     iterations: u32,
 ) -> Result<(Value, u64), ProbeError> {
-    if f.parameter_curve
-        .control_points
-        .iter()
-        .any(|c| c.point[2] != 0.)
-    {
-        return Err(ProbeError::FixtureInvariant(
-            "parameter-curve controls must have zero Z",
-        ));
-    }
     let surface = nurbs_surface_from_definition(&f.surface)?;
-    let parameters = nurbs_curve_from_definition(&f.parameter_curve)?;
-    let uv = NurbsCurve2::try_new_rational(
-        parameters.degree(),
-        parameters
-            .control_points()
-            .iter()
-            .map(|c| {
-                WeightedPoint2::try_new(Point2::try_new(c.point().x(), c.point().y())?, c.weight())
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?,
-        parameters.knots().to_vec(),
-    )?;
+    let uv = parameter_curve(&f.parameter_curve)?;
     let spatial = nurbs_curve_from_definition(&f.spatial_curve)?;
     let (bound, elapsed) = measure(iterations, || {
         surface.parameter_curve_deviation_bound(&uv, &spatial, black_box(f.limit))
