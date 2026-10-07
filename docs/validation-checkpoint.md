@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 6, 2026 audit tested code at `01455eee` with Rust 1.95.0 after
-[certified UV-to-spatial curve construction](certified-surface-pushups.md).
+The October 6, 2026 audit tested code at `ad14bb7e` with Rust 1.95.0 after
+[ApplyCrv document mapping and interactive selection](commands/apply-curves.md).
 
 ## Commands and results
 
@@ -14,43 +14,64 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_pushup_certified.json --timeout 600 --output docs/certified-surface-pushup-local.json
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/apply_uv_curves_local.json --timeout 600 --output docs/apply-uv-curves-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,102 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,113 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 937 | 17 |
-| Command | 1,135 | 2 |
-| Document | 183 | 5 |
+| App | 941 | 17 |
+| Command | 1,138 | 2 |
+| Document | 185 | 5 |
 | Drafting | 157 | 6 |
-| Geometry | 2,014 | 8 |
+| Geometry | 2,015 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 481 | 0 |
+| Oracle | 482 | 0 |
 
-The Python suite passed 868 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 874 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The standalone Python pushup run certified images of all 13 original UV sources,
+The standalone Python command run reproduces all 13 original surface/input
+fixtures, producing 17 curves and nine points. Undo and Redo replay outputs and
+retain copied group definitions, including empty definitions for point-only
+input. The two degenerate mapping rectangles produce no geometry or Undo entry;
+`Undo` then reports nothing to undo and clears picking. Additional document tests
+prove that retaining accepted group definitions never retains groups after a
+failed transaction's rollback.
+
+A fresh 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+scheme `VibocerosOracleApplyUVPurity20261006`. Every recipe starts at idle in an
+empty owned document with independently cleared Undo history. The
+[raw records](../tools/rhino_oracle/observations/apply_uv_curves_command.json)
+retain full source and target definitions before/after the command, command-end
+events, 561 output curve stations, nine output points, properties, selection,
+active group definitions and Undo/Redo states. Source and target geometry and
+attributes remain unchanged. Rust replay compares the complete set of output
+stations at `1e-6`, checks properties/group structure and exercises the actual
+document adapter. Application tests verify source/target picking, preselection,
+group filtering, aliases, cancellation and World-XY mapping under a rotated
+construction plane. See [provenance](apply-uv-curves-provenance.json).
+
+The preceding standalone Python pushup run certified images of all 13 original UV sources,
 retaining their original domains. Eight diagnostic images have zero certified
 error; the five curved primitive images have complete bounds at most `3.501e-16`,
 below their requested limit `1e-6`. The Rust replay checks 1,677 returned-curve
 stations against native surface-image witnesses and independently recomputes
 every assembled result's continuous certificate.
 
-A fresh 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
+The preceding 13-recipe Rhino 8.32.26160.13001 capture ran on private Xvfb with settings
 scheme `VibocerosOraclePushup20261006`. Its
 [raw records](../tools/rhino_oracle/observations/surface_pushup_certified.json)
 retain 1,677 source/image stations, all source-purity agreements, five successful
 native `Surface.Pushup` operations, and the sphere-seam parameter-speed
 discrepancy. The other eight sources retain diagnostic reference curves. See
 [provenance](certified-surface-pushup-provenance.json) for source hashes and
-contract boundaries. The public kernel API and Python protocol are implemented;
-the document `Pushup` command adapter remains outstanding.
+contract boundaries. That kernel API now backs the `ApplyCrv` / `ApplyCurves`
+document workflow; `Pushup` is the SDK operation name.
 
 The preceding standalone Python run certified all ten nonlinear singular-endpoint
 source definitions without endpoint constraints, retaining each original
@@ -109,7 +130,7 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 13 SDK recipes. Other recorded-output
+The newest native capture covers 13 actual `ApplyCrv` command recipes. Other recorded-output
 replays are not fresh cross-engine measurements, and tests that merely execute
 fixtures with finite output do not establish numerical agreement with Rhino.
 Native `Surface.Pullback` and `Surface.Pushup` follow geometric loci and do not
