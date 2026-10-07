@@ -22,6 +22,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Ordered common intersection and metadata contributors](common-intersection.md)
 - [Continuous surface/UV correspondence certificates](surface-curve-certificates.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
+- [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [BooleanDifference targets, cutters, and native policies](commands/boolean-difference.md)
 - [Viewport caching and performance](viewport-caching.md)
 - [Opt-in offscreen GPU tests](gpu-tests.md)

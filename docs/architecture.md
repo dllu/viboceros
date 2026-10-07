@@ -37,6 +37,11 @@ certificates after the convex path, preserving original-face contributor reports
 and captured shell participation policies. [Compound sets](compound-intersections.md)
 and [oriented pairs](compound-pairs.md) have separate measured pipelines;
 arbitrary compound contributor configurations remain uncertified.
+
+[Automatic pullback discovery](automatic-surface-pullbacks.md) certifies eligible
+straight UV branches at seams and collapsed boundaries, reuses exact proof
+preparation, and returns its bound without duplicate work.
+
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.
 The registered command supports atomic object/grip edits, remembered options,

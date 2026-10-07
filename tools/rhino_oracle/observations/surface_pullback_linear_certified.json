@@ -1,0 +1,992 @@
+{
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 16,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 19581647,
+      "id": "pullback_linear_cylinder_u_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.283185307179586,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 19556254,
+      "id": "pullback_linear_cylinder_u_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                6.283185307179586,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 63717091,
+      "id": "pullback_linear_cylinder_u_relocated_forward",
+      "value": {
+        "bound": 8.852363856723912e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                -7.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                19.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 63177266,
+      "id": "pullback_linear_cylinder_u_relocated_reverse",
+      "value": {
+        "bound": 8.852363856723912e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                19.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -7.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 28631933,
+      "id": "pullback_linear_sphere_u_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                6.283185307179586,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 28623900,
+      "id": "pullback_linear_sphere_u_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                6.283185307179586,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 10970609,
+      "id": "pullback_linear_sphere_pole_u_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 10971425,
+      "id": "pullback_linear_sphere_pole_u_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 25042999,
+      "id": "pullback_linear_sphere_v_forward",
+      "value": {
+        "bound": 1.468820499949756e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                2.356194490192345,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.356194490192345,
+                1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 24959383,
+      "id": "pullback_linear_sphere_v_reverse",
+      "value": {
+        "bound": 1.468820499949756e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                2.356194490192345,
+                1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.356194490192345,
+                -1.5707963267948966,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 55085542,
+      "id": "pullback_linear_sphere_v_relocated_forward",
+      "value": {
+        "bound": 2.220446049250313e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                2.75,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.75,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 54922405,
+      "id": "pullback_linear_sphere_v_relocated_reverse",
+      "value": {
+        "bound": 2.220446049250313e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                2.75,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.75,
+                -3.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 25276983,
+      "id": "pullback_linear_sphere_v_swapped_forward",
+      "value": {
+        "bound": 1.468820499949756e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                -1.5707963267948966,
+                2.356194490192345,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.5707963267948966,
+                2.356194490192345,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 25144455,
+      "id": "pullback_linear_sphere_v_swapped_reverse",
+      "value": {
+        "bound": 1.468820499949756e-16,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                1.5707963267948966,
+                2.356194490192345,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -1.5707963267948966,
+                2.356194490192345,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 43112867,
+      "id": "pullback_linear_torus_u_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                25.132741228718345,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 43097235,
+      "id": "pullback_linear_torus_u_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                25.132741228718345,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 42947891,
+      "id": "pullback_linear_torus_v_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                6.283185307179586,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 42918850,
+      "id": "pullback_linear_torus_v_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                6.283185307179586,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 5149672,
+      "id": "pullback_linear_two_poles_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.375,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.375,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 5171784,
+      "id": "pullback_linear_two_poles_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.375,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.375,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 4832455,
+      "id": "pullback_linear_two_poles_swapped_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.375,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                0.375,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 4849943,
+      "id": "pullback_linear_two_poles_swapped_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                0.375,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.375,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 2427939,
+      "id": "pullback_linear_singular_diagonal_forward",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            2.0,
+            5.0
+          ],
+          "knots": [
+            2.0,
+            2.0,
+            5.0,
+            5.0
+          ]
+        }
+      }
+    },
+    {
+      "elapsed_ns": 2426468,
+      "id": "pullback_linear_singular_diagonal_reverse",
+      "value": {
+        "bound": 0.0,
+        "certified": true,
+        "correspondence": "normalized_curve_domains",
+        "fixed_endpoints": null,
+        "parameter_curve": {
+          "control_points": [
+            {
+              "point": [
+                1.0,
+                1.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ],
+          "degree": 1,
+          "domain": [
+            -5.0,
+            -2.0
+          ],
+          "knots": [
+            -5.0,
+            -5.0,
+            -2.0,
+            -2.0
+          ]
+        }
+      }
+    }
+  ]
+}

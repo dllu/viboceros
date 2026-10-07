@@ -2,6 +2,8 @@
 use super::*;
 use viboceros_geometry::{Point2, WeightedPoint2};
 #[cfg(test)]
+mod linear_tests;
+#[cfg(test)]
 mod pullback_tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -35,18 +37,7 @@ pub(super) fn pullback(
         })
         .transpose()?;
     let ((uv, bound), elapsed) = measure(iterations, || {
-        let uv = match endpoints {
-            Some(points) => {
-                surface.try_pullback_curve_certified_with_endpoints(&spatial, points, tolerance)?
-            }
-            None => surface.try_pullback_curve_certified(&spatial, tolerance)?,
-        };
-        let bound = surface
-            .parameter_curve_deviation_bound(&uv, &spatial, tolerance.absolute())?
-            .ok_or(GeometryError::SurfacePullbackDidNotConverge {
-                tolerance: tolerance.absolute(),
-            })?;
-        Ok::<_, GeometryError>((uv, bound))
+        surface.try_pullback_curve_certified_with_bound(&spatial, endpoints, tolerance)
     })?;
     Ok((
         json!({"parameter_curve":{

@@ -7,7 +7,7 @@ fn capture() -> Value {
     .unwrap()
 }
 
-fn operation(row: &Value) -> Value {
+pub(super) fn operation(row: &Value) -> Value {
     let v = &row["value"];
     let s = &v["surface"];
     json!({
@@ -25,7 +25,7 @@ fn operation(row: &Value) -> Value {
     })
 }
 
-fn request(operations: Vec<Value>) -> ProbeRequest {
+pub(super) fn request(operations: Vec<Value>) -> ProbeRequest {
     serde_json::from_value(json!({
         "protocol_version":PROTOCOL_VERSION, "iterations":1,
         "operations":operations

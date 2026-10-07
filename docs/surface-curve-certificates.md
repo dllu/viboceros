@@ -134,6 +134,9 @@ The companion [`surface_pullback_certified` operation](constrained-surface-pullb
 fits a UV curve, optionally with both endpoints fixed, and returns its full
 definition and continuous bound. Surface cutting uses this fitter when merely
 adjusting endpoint controls cannot obtain a certificate.
+Without constraints it first tries [certified automatic branches](automatic-surface-pullbacks.md)
+at seams and singular endpoints. Successful proposals share exact reference
+extraction and retain their bound, avoiding repeated proofs in the Python API.
 
 ```sh
 cargo test --release -p viboceros-geometry surface_pullback

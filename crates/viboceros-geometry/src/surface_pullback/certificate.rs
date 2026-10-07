@@ -60,10 +60,15 @@ impl NurbsSurface {
         if !limit.is_finite() || limit < 0. {
             return Err(GeometryError::InvalidTolerance);
         }
-        certificate(self, uv, spatial, limit, &mut Budget(MAX_WORK))
+        let Some(mut certificate) = PullbackCertificate::with_degree(self, spatial, uv.degree())?
+        else {
+            return Ok(None);
+        };
+        certificate.curve(uv, limit)
     }
 
-    /// Fits a regular pullback, then proves its complete model-space image is
+    /// Discovers a certified straight UV path when possible, otherwise fits
+    /// a regular pullback, then proves its complete model-space image is
     /// within the caller's absolute tolerance of the original spatial curve.
     /// An inconclusive certificate returns an error; sampled acceptance alone
     /// is insufficient. Parameter-domain and certificate limits are those of
@@ -102,52 +107,33 @@ impl NurbsSurface {
         tolerance: Tolerance,
         endpoints: Option<[Point2; 2]>,
     ) -> Result<NurbsCurve2, GeometryError> {
-        let uv = self.pullback_curve(spatial, tolerance, true, endpoints)?;
-        if self
-            .parameter_curve_deviation_bound(&uv, spatial, tolerance.absolute())?
-            .is_none()
-        {
-            return Err(GeometryError::SurfacePullbackDidNotConverge {
-                tolerance: tolerance.absolute(),
-            });
-        }
-        Ok(uv)
+        self.try_pullback_curve_certified_with_bound(spatial, endpoints, tolerance)
+            .map(|(uv, _)| uv)
     }
-}
 
-fn certificate(
-    surface: &NurbsSurface,
-    uv: &NurbsCurve2,
-    spatial: &NurbsCurve,
-    limit: Real,
-    budget: &mut Budget,
-) -> Result<Option<Real>, GeometryError> {
-    if !supported(surface, uv.degree(), spatial.degree()) {
-        return Ok(None);
-    }
-    let Some(uv) = curve::Spline::uv(uv, budget)? else {
-        return Ok(None);
-    };
-    let Some(spatial) = curve::Spline::spatial(spatial, budget)? else {
-        return Ok(None);
-    };
-    let Some(mut surface) = surface::Surface::new(surface, budget)? else {
-        return Ok(None);
-    };
-    let mut cuts = uv.cuts();
-    cuts.extend(spatial.cuts());
-    cuts.sort();
-    cuts.dedup();
-    let mut bound = 0_f64;
-    for interval in cuts.windows(2) {
-        let uv = uv.extract(&interval[0], &interval[1], budget)?;
-        let spatial = spatial.extract(&interval[0], &interval[1], budget)?;
-        let Some(upper) = piece_bound(&mut surface, uv, spatial, limit, budget)? else {
-            return Ok(None);
+    /// Returns a certified pullback and its complete model-space deviation
+    /// bound. Optional endpoints have the same meaning as
+    /// [`Self::try_pullback_curve_certified_with_endpoints`]. Already certified
+    /// inverse and straight proposals retain their proof; assembled Hermite
+    /// fits receive a final certificate across all original source knot spans.
+    /// This avoids repeating exact arithmetic merely to report the bound.
+    pub fn try_pullback_curve_certified_with_bound(
+        &self,
+        spatial: &NurbsCurve,
+        endpoints: Option<[Point2; 2]>,
+        tolerance: Tolerance,
+    ) -> Result<(NurbsCurve2, Real), GeometryError> {
+        let (uv, bound) = self.pullback_curve(spatial, tolerance, true, endpoints)?;
+        let bound = match bound {
+            Some(bound) => bound,
+            None => self
+                .parameter_curve_deviation_bound(&uv, spatial, tolerance.absolute())?
+                .ok_or(GeometryError::SurfacePullbackDidNotConverge {
+                    tolerance: tolerance.absolute(),
+                })?,
         };
-        bound = bound.max(upper);
+        Ok((uv, bound))
     }
-    Ok(Some(bound))
 }
 
 fn supported(surface: &NurbsSurface, uv_degree: usize, spatial_degree: usize) -> bool {
@@ -166,6 +152,7 @@ pub(super) struct PullbackCertificate {
     spatial: curve::Spline<4>,
     domain: [Rational; 2],
     budget: Budget,
+    uv_degree: usize,
 }
 
 impl PullbackCertificate {
@@ -173,7 +160,15 @@ impl PullbackCertificate {
         surface: &NurbsSurface,
         spatial: &NurbsCurve,
     ) -> Result<Option<Self>, GeometryError> {
-        if !supported(surface, PULLBACK_DEGREE, spatial.degree()) {
+        Self::with_degree(surface, spatial, PULLBACK_DEGREE)
+    }
+
+    pub(super) fn with_degree(
+        surface: &NurbsSurface,
+        spatial: &NurbsCurve,
+        uv_degree: usize,
+    ) -> Result<Option<Self>, GeometryError> {
+        if !supported(surface, uv_degree, spatial.degree()) {
             return Ok(None);
         }
         let mut budget = Budget(MAX_WORK);
@@ -191,7 +186,55 @@ impl PullbackCertificate {
                 rational(*spatial.domain().end()),
             ],
             budget,
+            uv_degree,
         }))
+    }
+
+    /// Reuses exact reference extraction, tensor patches and one work budget
+    /// across complete proposals. Each proposal keeps normalized correspondence
+    /// to the original source, including every source and UV knot span.
+    pub(super) fn curve(
+        &mut self,
+        uv: &NurbsCurve2,
+        limit: Real,
+    ) -> Result<Option<Real>, GeometryError> {
+        if uv.degree() != self.uv_degree {
+            return Ok(None);
+        }
+        let Some(uv) = curve::Spline::uv(uv, &mut self.budget)? else {
+            return Ok(None);
+        };
+        let mut cuts = uv.cuts();
+        cuts.sort();
+        cuts.dedup();
+        if self.uv_degree == 1 {
+            let mut crossings = Vec::new();
+            for interval in cuts.windows(2) {
+                let controls = uv.extract(&interval[0], &interval[1], &mut self.budget)?;
+                for fraction in self.surface.linear_crossings(&controls, &mut self.budget)? {
+                    let t = &interval[0] + (&interval[1] - &interval[0]) * fraction;
+                    self.budget.check(&t)?;
+                    crossings.push(t);
+                }
+            }
+            cuts.extend(crossings);
+        }
+        cuts.extend(self.spatial.cuts());
+        cuts.sort();
+        cuts.dedup();
+        let mut bound = 0_f64;
+        for interval in cuts.windows(2) {
+            let uv = uv.extract(&interval[0], &interval[1], &mut self.budget)?;
+            let spatial = self
+                .spatial
+                .extract(&interval[0], &interval[1], &mut self.budget)?;
+            let Some(upper) = piece_bound(&mut self.surface, uv, spatial, limit, &mut self.budget)?
+            else {
+                return Ok(None);
+            };
+            bound = bound.max(upper);
+        }
+        Ok(Some(bound))
     }
 
     pub(super) fn segment(

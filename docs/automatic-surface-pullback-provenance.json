@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleLinearPullbackFinal_20261006",
+  "engine_version": "8.32.26160.13001",
+  "native_sdk_records": 24,
+  "native_pullback_successes": 20,
+  "source_purity_agreements": 24,
+  "sample_stations_per_record": 129,
+  "native_timing_iterations": 16,
+  "full_native_parity": false,
+  "retained_native_failures": [
+    "sphere_pole_u_forward",
+    "sphere_pole_u_reverse",
+    "singular_diagonal_forward",
+    "singular_diagonal_reverse"
+  ],
+  "retained_native_parameterization_differences": [
+    "two_poles_swapped_forward",
+    "two_poles_swapped_reverse"
+  ],
+  "baseline_git_head": "37b891213cda0468e15b29fe9fdb17fe19bc7af6",
+  "scope_notes": [
+    "Twenty-four closed public SDK recipes at idle in an empty owned document on private Xvfb and a fresh private settings scheme.",
+    "All complete surface and spatial definitions, native pullback definitions when present, source purity, 129 normalized stations, geometric closest-locus samples, and independent straight-path image witnesses are retained.",
+    "The local requests omit endpoint constraints. Before editing, the six closed isocurves in the preceding capture failed in the local certified fitter; their raw audit outcomes are retained.",
+    "Native Pullback fails for both directions of a collapsed spherical boundary curve and the singular diagonal. The local certificate can prove these source images; native failure is not silently treated as success.",
+    "Transposing the two-pole surface changes native parameter speed: its maximum matched-parameter sample error is about 0.0283 while the sampled geometric locus error remains below 1.4e-11.",
+    "Native timing includes public SDK fitting, IsValid, and Dispose, with prebuilt sources and two warmups. Local timing includes fitting and an exact complete correspondence certificate, with its bound reused. Contracts and runtimes differ; this is not a general performance parity claim.",
+    "This evidence does not establish arbitrary periodic chart tracking, general nonlinear singular fitting, trim topology, curved Boolean construction, or complete command compatibility."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_pullback_linear_probe.py": "f987ecac8d7318e27fbd14f55dca6ee4af1dccf368ff4d1036aa40ac2bf2da1e",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/surface_pullback_linear.json": "ba6b8f64e28ffaa14090befc3f6f1bc56cda470692bc55143e543eb1721bda47",
+    "tools/rhino_oracle/fixtures/surface_pullback_linear_certified.json": "68ef15f87d58f7fb71e0700f8a28ef1d8ef8536d3355c673aaa2936c96d9d09c",
+    "tools/rhino_oracle/observations/surface_pullback_linear.json": "6dc51b123d336e848ce5129c7fbd91e0f40dc425e983404f0436178580d43420",
+    "tools/rhino_oracle/observations/surface_pullback_unconstrained_before.json": "c09846d2294a928bb6cc95bc9a30cbce22c368d8558dd0a1191023840d469b89",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
+    "docs/automatic-surface-pullback-performance.json": "c1dea0875b69242a28e7aba09b84ec19da882ce4bde7a8ca4397b476501ed63d",
+    "tools/rhino_oracle/observations/surface_pullback_linear_certified.json": "ede897f1d01088e7363d222219303678e2a1fd8b4a1f2b292cac34bd037c68ef"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "1b005965e14a5cb1a3182f3b92d5543cb04aeeb6979b8a7c14089211b683f321",
+    "tools/rhino_oracle/rhino_worker.py": "8c4e9c71e7f0968fe932400dc622e28d96b75b2ad1baef4433b41d34065b57fc"
+  },
+  "local_certified_records": 24,
+  "maximum_local_bound": 8.852363856723912e-16
+}

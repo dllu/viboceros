@@ -1,0 +1,184 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "outcomes": [
+    {
+      "status": "success",
+      "result": {
+        "id": "pullback_endpoints_planar_forward",
+        "value": {
+          "bound": 0.0028771330360133195,
+          "certified": true,
+          "correspondence": "normalized_curve_domains",
+          "fixed_endpoints": null,
+          "parameter_curve": {
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.2916666666666667,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.5714285714285714,
+                  0.16666666666666669,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  1.0,
+                  0.5,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 3,
+            "domain": [
+              2.0,
+              5.0
+            ],
+            "knots": [
+              2.0,
+              2.0,
+              2.0,
+              2.0,
+              5.0,
+              5.0,
+              5.0,
+              5.0
+            ]
+          }
+        },
+        "elapsed_ns": 14660045
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "pullback_endpoints_planar_reverse",
+        "value": {
+          "bound": 0.0028771330360133195,
+          "certified": true,
+          "correspondence": "normalized_curve_domains",
+          "fixed_endpoints": null,
+          "parameter_curve": {
+            "control_points": [
+              {
+                "point": [
+                  1.0,
+                  0.5,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.5714285714285714,
+                  0.16666666666666669,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.2916666666666667,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 3,
+            "domain": [
+              -5.0,
+              -2.0
+            ],
+            "knots": [
+              -5.0,
+              -5.0,
+              -5.0,
+              -5.0,
+              -2.0,
+              -2.0,
+              -2.0,
+              -2.0
+            ]
+          }
+        },
+        "elapsed_ns": 10809385
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_cylinder_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_cylinder_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_sphere_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_sphere_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_torus_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_endpoints_torus_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "surface pullback did not converge at absolute model tolerance 0.000001"
+      }
+    }
+  ]
+}

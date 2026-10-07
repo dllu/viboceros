@@ -276,8 +276,12 @@ fn uncertified_domains_signs_limits_and_resource_exhaustion_remain_explicit() {
             .unwrap(),
         None
     );
+    let mut certificate = PullbackCertificate::with_degree(&s, &edge, uv.degree())
+        .unwrap()
+        .unwrap();
+    certificate.budget = Budget(0);
     assert!(matches!(
-        certificate(&s, &uv, &edge, 1., &mut Budget(0)),
+        certificate.curve(&uv, 1.),
         Err(GeometryError::SurfaceCurveCertificateWorkLimit)
     ));
     let huge = Rational::from_integer(num_bigint::BigInt::one() << 8193);
@@ -285,6 +289,144 @@ fn uncertified_domains_signs_limits_and_resource_exhaustion_remain_explicit() {
         Budget(MAX_WORK).check(&huge),
         Err(GeometryError::SurfaceCurveCertificateWorkLimit)
     ));
+}
+
+#[test]
+fn exact_rational_linear_crossings_split_both_axes_at_non_binary_fractions() {
+    // u(t)=v(t)=2t/(1+t). Tensor knots at u=1/2 and v=1/4
+    // cross at exact t=1/3 and t=1/7, neither a binary64 parameter.
+    let surface = NurbsSurface::try_new(
+        1,
+        1,
+        3,
+        3,
+        [0., 0.25, 1.]
+            .into_iter()
+            .enumerate()
+            .flat_map(|(j, v)| {
+                [0., 0.5, 1.]
+                    .into_iter()
+                    .enumerate()
+                    .map(move |(i, u)| p(u, v, (i == 2) as u8 as Real + (j == 2) as u8 as Real))
+            })
+            .collect(),
+        vec![0., 0., 0.5, 1., 1.],
+        vec![0., 0., 0.25, 1., 1.],
+    )
+    .unwrap();
+    let spatial = NurbsCurve::try_new_rational(
+        1,
+        [
+            ([0., 0., 0.], 1.),
+            ([0.25, 0.25, 0.], 8. / 7.),
+            ([0.5, 0.5, 1. / 3.], 4. / 3.),
+            ([1., 1., 2.], 2.),
+        ]
+        .into_iter()
+        .map(|(xyz, w)| WeightedPoint3::try_new(p(xyz[0], xyz[1], xyz[2]), w).unwrap())
+        .collect(),
+        vec![0., 0., 1. / 7., 1. / 3., 1., 1.],
+    )
+    .unwrap();
+    let uv = NurbsCurve2::try_new_rational(
+        1,
+        vec![
+            WeightedPoint2::try_new(Point2::try_new(0., 0.).unwrap(), 1.).unwrap(),
+            WeightedPoint2::try_new(Point2::try_new(1., 1.).unwrap(), 2.).unwrap(),
+        ],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    for (chart, parameters) in [
+        (surface.clone(), uv.clone()),
+        (surface.try_swapped_uv().unwrap(), uv),
+    ] {
+        for (parameters, source) in [
+            (parameters.clone(), spatial.clone()),
+            (parameters.reversed().unwrap(), spatial.reversed().unwrap()),
+        ] {
+            let bound = chart
+                .parameter_curve_deviation_bound(&parameters, &source, 1e-12)
+                .unwrap()
+                .unwrap();
+            assert!(bound < 1e-14, "{bound}");
+            assert_eq!(
+                chart
+                    .parameter_curve_deviation_bound(&parameters, &source, 0.)
+                    .unwrap(),
+                None
+            );
+        }
+    }
+}
+
+#[test]
+fn exact_isocurve_restrictions_handle_unequal_uv_weights_and_reversed_axes() {
+    // S(u,v)=(u²,v,uv), v=1/2, u(t)=2t/(1+t). The rational
+    // quadratic spatial controls are independently composed in Bernstein form.
+    let surface = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        vec![
+            p(0., 0., 0.),
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(0., 1., 0.),
+            p(0., 1., 0.5),
+            p(1., 1., 1.),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let source = NurbsCurve::try_new_rational(
+        2,
+        [
+            ([0., 0.5, 0.], 1.),
+            ([0., 0.5, 0.25], 2.),
+            ([1., 0.5, 0.5], 4.),
+        ]
+        .into_iter()
+        .map(|(xyz, w)| WeightedPoint3::try_new(p(xyz[0], xyz[1], xyz[2]), w).unwrap())
+        .collect(),
+        vec![2., 2., 2., 5., 5., 5.],
+    )
+    .unwrap();
+    for swapped in [false, true] {
+        let chart = if swapped {
+            surface.try_swapped_uv().unwrap()
+        } else {
+            surface.clone()
+        };
+        let uv = NurbsCurve2::try_new_rational(
+            1,
+            [([0., 0.5], 1.), ([1., 0.5], 2.)]
+                .into_iter()
+                .map(|(xy, w)| {
+                    WeightedPoint2::try_new(
+                        Point2::try_new(xy[swapped as usize], xy[1 - swapped as usize]).unwrap(),
+                        w,
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            vec![-7., -7., 19., 19.],
+        )
+        .unwrap();
+        for (uv, curve) in [
+            (uv.clone(), source.clone()),
+            (uv.reversed().unwrap(), source.reversed().unwrap()),
+        ] {
+            assert_eq!(
+                chart
+                    .parameter_curve_deviation_bound(&uv, &curve, 0.)
+                    .unwrap(),
+                Some(0.)
+            );
+        }
+    }
 }
 
 #[test]

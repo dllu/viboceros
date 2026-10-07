@@ -31,6 +31,13 @@ and proves its complete spatial error at absolute tolerance. Native planar
 pullbacks have different parameter speeds; their geometric locus samples and
 the independent endpoint image witnesses remain explicit in the records.
 
+The [automatic branch follow-up](automatic-surface-pullbacks.md) adds 24 SDK
+recipes for changed charts, closed isocurves, collapsed boundaries, and a
+singular diagonal. Local requests omit endpoint constraints and return complete
+certificates. Four native failures and the swapped two-pole surface's different
+parameter speed remain in the raw records. Already certified bounds are reused
+by the local Python API.
+
 The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
 recipes from private Xvfb and 289 application replays. Complete geometry, tight
 center translations, overlapping groups, metadata, grip display, numeric getter

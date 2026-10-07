@@ -5,6 +5,7 @@ use crate::{
 mod certificate;
 #[cfg(test)]
 pub(crate) mod certified_tests;
+mod linear;
 
 const PULLBACK_DEGREE: usize = 3;
 const PULLBACK_SAMPLES_PER_SPAN: usize = 16;
@@ -121,13 +122,7 @@ fn pullback_node(
     numerical_tolerance: Tolerance,
 ) -> Result<PullbackNode, GeometryError> {
     let model_point = curve.evaluate(parameter)?;
-    let (u, v) = surface.closest_parameters(model_point, numerical_tolerance)?;
-    let domain_u = [*surface.domain_u().start(), *surface.domain_u().end()];
-    let domain_v = [*surface.domain_v().start(), *surface.domain_v().end()];
-    let point = Point2::try_new(
-        snap_domain_roundoff(u, domain_u),
-        snap_domain_roundoff(v, domain_v),
-    )?;
+    let point = pullback_parameters(surface, model_point, numerical_tolerance)?;
     if !model_points_near(
         surface.evaluate(point.x(), point.y())?,
         model_point,
@@ -143,6 +138,20 @@ fn pullback_node(
         point,
         derivative: pullback_derivative(surface, point, model_derivative, numerical_tolerance)?,
     })
+}
+
+fn pullback_parameters(
+    surface: &NurbsSurface,
+    model_point: Point3,
+    numerical_tolerance: Tolerance,
+) -> Result<Point2, GeometryError> {
+    let (u, v) = surface.closest_parameters(model_point, numerical_tolerance)?;
+    let domain_u = [*surface.domain_u().start(), *surface.domain_u().end()];
+    let domain_v = [*surface.domain_v().start(), *surface.domain_v().end()];
+    Point2::try_new(
+        snap_domain_roundoff(u, domain_u),
+        snap_domain_roundoff(v, domain_v),
+    )
 }
 
 fn hermite_segment(
@@ -375,7 +384,9 @@ impl NurbsSurface {
     /// Pulls a model-space NURBS curve into this surface's parameter space.
     ///
     /// Exact affine, projective, and eligible bilinear inverses retain the
-    /// source NURBS structure. Other regular parameterizations use adaptive
+    /// source NURBS structure. Automatically discovered straight UV paths,
+    /// including eligible seam and singular-endpoint branches, require a
+    /// continuous absolute-error certificate. Other regular parameterizations use adaptive
     /// piecewise-cubic Hermite pullback. Every fitted span is verified in
     /// model space at the supplied tolerance, and the source parameter domain
     /// is retained.
@@ -385,6 +396,7 @@ impl NurbsSurface {
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
         self.pullback_curve(curve, tolerance, false, None)
+            .map(|(curve, _)| curve)
     }
 
     fn pullback_curve(
@@ -393,7 +405,7 @@ impl NurbsSurface {
         tolerance: Tolerance,
         certified: bool,
         endpoints: Option<[Point2; 2]>,
-    ) -> Result<NurbsCurve2, GeometryError> {
+    ) -> Result<(NurbsCurve2, Option<Real>), GeometryError> {
         if let Some(points) = endpoints {
             for (point, parameter) in points
                 .into_iter()
@@ -422,36 +434,34 @@ impl NurbsSurface {
             },
             Err(_) => None,
         };
-        if let Some(exact) = proposal
-            && (!certified
-                || self
-                    .parameter_curve_deviation_bound(&exact, curve, tolerance.absolute())?
-                    .is_some())
-        {
-            return Ok(exact);
+        if let Some(exact) = proposal {
+            let bound = if certified {
+                self.parameter_curve_deviation_bound(&exact, curve, tolerance.absolute())?
+            } else {
+                None
+            };
+            if !certified || bound.is_some() {
+                return Ok((exact, bound));
+            }
         }
 
+        let mut fitting_endpoints = endpoints;
         if let Some(points) = endpoints {
             // A full closed isocurve has distinct UV seam endpoints even
             // though its spatial endpoints coincide. This generic proposal
             // needs neither primitive recognition nor closest-point guesses.
-            let domain = curve.domain();
-            let line = NurbsCurve2::try_new(
-                1,
-                points.to_vec(),
-                vec![
-                    *domain.start(),
-                    *domain.start(),
-                    *domain.end(),
-                    *domain.end(),
-                ],
-            )?;
-            if self
-                .parameter_curve_deviation_bound(&line, curve, tolerance.absolute())?
-                .is_some()
+            let line = linear::parameter_line(curve, points)?;
+            if let Some(bound) =
+                self.parameter_curve_deviation_bound(&line, curve, tolerance.absolute())?
             {
-                return Ok(line);
+                return Ok((line, Some(bound)));
             }
+        } else {
+            let discovery = linear::discover(self, curve, tolerance)?;
+            if let Some((line, bound)) = discovery.curve {
+                return Ok((line, Some(bound)));
+            }
+            fitting_endpoints = discovery.endpoints;
         }
 
         let certificate = if certified {
@@ -486,27 +496,28 @@ impl NurbsSurface {
             } else {
                 span_end.next_down().max(span_start)
             };
-            let start = if let Some(points) = endpoints.filter(|_| span_start == domain_start) {
-                fixed_pullback_node(
-                    self,
-                    curve,
-                    span_start,
-                    derivative_start,
-                    points[0],
-                    tolerance,
-                    fitter.numerical_tolerance,
-                )?
-            } else {
-                pullback_node(
-                    self,
-                    curve,
-                    span_start,
-                    derivative_start,
-                    tolerance,
-                    fitter.numerical_tolerance,
-                )?
-            };
-            let end = if let Some(points) = endpoints.filter(|_| span_end == domain_end) {
+            let start =
+                if let Some(points) = fitting_endpoints.filter(|_| span_start == domain_start) {
+                    fixed_pullback_node(
+                        self,
+                        curve,
+                        span_start,
+                        derivative_start,
+                        points[0],
+                        tolerance,
+                        fitter.numerical_tolerance,
+                    )?
+                } else {
+                    pullback_node(
+                        self,
+                        curve,
+                        span_start,
+                        derivative_start,
+                        tolerance,
+                        fitter.numerical_tolerance,
+                    )?
+                };
+            let end = if let Some(points) = fitting_endpoints.filter(|_| span_end == domain_end) {
                 fixed_pullback_node(
                     self,
                     curve,
@@ -534,7 +545,7 @@ impl NurbsSurface {
                 tolerance: tolerance.absolute(),
             });
         }
-        Ok(parameter_curve)
+        Ok((parameter_curve, None))
     }
 }
 

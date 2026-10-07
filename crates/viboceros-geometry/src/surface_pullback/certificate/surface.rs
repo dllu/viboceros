@@ -1,5 +1,6 @@
 //! Exact tensor patches and images, including control hulls at knot crossings.
 use super::*;
+mod linear;
 
 pub(super) struct Surface {
     degree: [usize; 2],
@@ -83,6 +84,41 @@ impl Surface {
                 })
             })
     }
+
+    /// Exact parameter fractions where a rational linear UV segment crosses
+    /// an internal tensor knot. Homogeneous coordinates make each equation
+    /// linear even when the two endpoint weights differ.
+    pub fn linear_crossings(
+        &self,
+        uv: &[Uv],
+        budget: &mut Budget,
+    ) -> Result<Vec<Rational>, GeometryError> {
+        if uv.len() != 2 {
+            return Ok(Vec::new());
+        }
+        let mut cuts = Vec::new();
+        for axis in 0..2 {
+            for &span in self.spans[axis].iter().skip(1) {
+                budget.charge(1)?;
+                let knot = &self.knots[axis][span];
+                let a = &uv[0][axis] - knot * &uv[0][2];
+                let b = &uv[1][axis] - knot * &uv[1][2];
+                let difference = &a - &b;
+                budget.check(&a)?;
+                budget.check(&b)?;
+                budget.check(&difference)?;
+                if difference.is_zero() {
+                    continue;
+                }
+                let t = a / difference;
+                budget.check(&t)?;
+                if t > Rational::zero() && t < Rational::one() {
+                    cuts.push(t);
+                }
+            }
+        }
+        Ok(cuts)
+    }
     pub fn containing_patch(
         &self,
         bounds: &[[Rational; 2]],
@@ -148,6 +184,9 @@ impl Surface {
         uv: &[Uv],
         budget: &mut Budget,
     ) -> Result<Vec<H>, GeometryError> {
+        if let Some(image) = self.linear_image(span, uv, budget)? {
+            return Ok(image);
+        }
         let net = self.patch(span, budget)?;
         let mut bases = Vec::new();
         for axis in 0..2 {

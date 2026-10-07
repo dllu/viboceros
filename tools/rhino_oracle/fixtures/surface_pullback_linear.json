@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_cylinder_u_forward",
+      "case": "cylinder_u_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_cylinder_u_reverse",
+      "case": "cylinder_u_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_cylinder_u_relocated_forward",
+      "case": "cylinder_u_relocated_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_cylinder_u_relocated_reverse",
+      "case": "cylinder_u_relocated_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_u_forward",
+      "case": "sphere_u_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_u_reverse",
+      "case": "sphere_u_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_pole_u_forward",
+      "case": "sphere_pole_u_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_pole_u_reverse",
+      "case": "sphere_pole_u_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_forward",
+      "case": "sphere_v_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_reverse",
+      "case": "sphere_v_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_relocated_forward",
+      "case": "sphere_v_relocated_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_relocated_reverse",
+      "case": "sphere_v_relocated_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_swapped_forward",
+      "case": "sphere_v_swapped_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_sphere_v_swapped_reverse",
+      "case": "sphere_v_swapped_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_torus_u_forward",
+      "case": "torus_u_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_torus_u_reverse",
+      "case": "torus_u_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_torus_v_forward",
+      "case": "torus_v_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_torus_v_reverse",
+      "case": "torus_v_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_two_poles_forward",
+      "case": "two_poles_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_two_poles_reverse",
+      "case": "two_poles_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_two_poles_swapped_forward",
+      "case": "two_poles_swapped_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_two_poles_swapped_reverse",
+      "case": "two_poles_swapped_reverse"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_singular_diagonal_forward",
+      "case": "singular_diagonal_forward"
+    },
+    {
+      "op": "surface_pullback_linear",
+      "id": "pullback_linear_singular_diagonal_reverse",
+      "case": "singular_diagonal_reverse"
+    }
+  ]
+}

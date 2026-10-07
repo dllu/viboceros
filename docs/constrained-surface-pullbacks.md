@@ -75,7 +75,10 @@ definition, a `spatial_curve` definition, positive `limit`, and optional
 used for numerical proposals; the proof always uses the operation's absolute
 limit. Results retain the full UV NURBS definition with zero-Z wire controls,
 `bound`, `certified`, `fixed_endpoints`, and `normalized_curve_domains`
-correspondence. Omitted endpoints use the ordinary certified fitter.
+correspondence. Omitted endpoints now use
+[automatic straight-path discovery](automatic-surface-pullbacks.md) before the
+ordinary certified fitter. Already proven bounds are retained through the
+`try_pullback_curve_certified_with_bound` API and Python response.
 The [runnable local request](../tools/rhino_oracle/fixtures/surface_pullback_certified.json)
 retains the full inputs and constraints from all eight native source records.
 An October 6, 2026 Python CLI run returned seven controls and a continuous bound
