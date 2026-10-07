@@ -255,6 +255,42 @@ impl PullbackCertificate {
             .collect();
         Ok(piece_bound(&mut self.surface, uv, spatial, limit, &mut self.budget)?.is_some())
     }
+
+    /// Certifies a polynomial cubic on a whole-domain fractional interval.
+    /// Its sampling times need not be representable in the native knot domain.
+    /// Every original spatial knot inside the interval is retained explicitly.
+    pub(super) fn fractional_segment(
+        &mut self,
+        interval: [Real; 2],
+        controls: [Point2; 4],
+        limit: Real,
+    ) -> Result<bool, GeometryError> {
+        let [start, end] = interval.map(rational);
+        let width = &end - &start;
+        let mut cuts = self
+            .spatial
+            .cuts()
+            .into_iter()
+            .filter(|t| *t > start && *t < end)
+            .collect::<Vec<_>>();
+        cuts.extend([start.clone(), end.clone()]);
+        cuts.sort();
+        cuts.dedup();
+        let uv = controls.map(|p| [rational(p.x()), rational(p.y()), Rational::one()]);
+        let knots = [vec![Rational::zero(); 4], vec![Rational::one(); 4]].concat();
+        for bounds in cuts.windows(2) {
+            let first = (&bounds[0] - &start) / &width;
+            let last = (&bounds[1] - &start) / &width;
+            let uv = curve::extract(&knots, 3, 3, &uv, &first, &last, &mut self.budget)?;
+            let spatial = self
+                .spatial
+                .extract(&bounds[0], &bounds[1], &mut self.budget)?;
+            if piece_bound(&mut self.surface, uv, spatial, limit, &mut self.budget)?.is_none() {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
 }
 
 fn piece_bound(

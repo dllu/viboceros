@@ -56,7 +56,7 @@ fn station_coordinate(a: Real, b: Real, fraction: Real) -> Option<Real> {
     }
 }
 
-fn endpoint_choices(
+pub(super) fn endpoint_choices(
     surface: &NurbsSurface,
     model: Point3,
     guess: Point2,

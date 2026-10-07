@@ -137,6 +137,14 @@ class RhinoWorkerTests(unittest.TestCase):
         self.assertEqual(result, ({"geometry": "recorded"}, 0))
         run.assert_called_once_with(operation, vars(self.worker))
 
+    def test_surface_pullback_interpolation_dispatch_receives_the_operation_and_host(self):
+        operation = dict(op="surface_pullback_interpolation", id="owned", case="singular_cubic_forward")
+        run = Mock(return_value=({"geometry": "recorded"}, 0))
+        with patch.dict("sys.modules", {"surface_pullback_interpolation_probe": SimpleNamespace(run=run)}):
+            result = self.worker._execute(operation, 1, {})
+        self.assertEqual(result, ({"geometry": "recorded"}, 0))
+        run.assert_called_once_with(operation, vars(self.worker))
+
     def test_compound_pairs_dispatch_receives_the_operation_and_host(self):
         operation = dict(op="compound_pairs", id="owned", case="sdk_crossing")
         run = Mock(return_value=({"geometry": "recorded"}, 0))

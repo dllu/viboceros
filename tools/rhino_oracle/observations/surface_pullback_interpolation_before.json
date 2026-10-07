@@ -1,0 +1,88 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "outcomes": [
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_singular_quadratic_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_singular_quadratic_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_singular_cubic_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_singular_cubic_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_two_poles_quadratic_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_two_poles_quadratic_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_sqrt_boundary_forward",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    },
+    {
+      "status": "failure",
+      "id": "pullback_interpolation_sqrt_boundary_reverse",
+      "error": {
+        "kind": "geometry",
+        "message": "vector is degenerate at the requested tolerance"
+      }
+    }
+  ]
+}

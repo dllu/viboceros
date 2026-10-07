@@ -41,6 +41,9 @@ arbitrary compound contributor configurations remain uncertified.
 [Automatic pullback discovery](automatic-surface-pullbacks.md) certifies eligible
 straight UV branches at seams and collapsed boundaries, reuses exact proof
 preparation, and returns its bound without duplicate work.
+The [derivative-free fallback](derivative-free-surface-pullbacks.md) also fits
+eligible nonlinear paths through singular nodes, with original-knot-aware
+fractional proofs and a final assembled-curve certificate.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

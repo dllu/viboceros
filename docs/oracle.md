@@ -38,6 +38,12 @@ certificates. Four native failures and the swapped two-pole surface's different
 parameter speed remain in the raw records. Already certified bounds are reused
 by the local Python API.
 
+The [derivative-free follow-up](derivative-free-surface-pullbacks.md) captures ten
+nonlinear singular-endpoint recipes on private Xvfb. All ten previously failed
+locally and now return complete correspondence certificates. Eight native
+pullbacks succeed with different parameter speeds; two cubic native failures
+remain explicit in the raw evidence.
+
 The [ScalePositions guide](commands/scale-positions.md) covers 249 bounded native
 recipes from private Xvfb and 289 application replays. Complete geometry, tight
 center translations, overlapping groups, metadata, grip display, numeric getter

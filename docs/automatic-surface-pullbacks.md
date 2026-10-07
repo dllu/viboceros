@@ -91,8 +91,10 @@ two-pole surface changes native parameter speed: paired errors reach about
 failures and speed differences remain explicit rather than being normalized
 away. Native samples do not establish continuous error bounds.
 
-Automatic discovery handles certified straight UV paths, not arbitrary periodic
-chart tracking or nonlinear singular-endpoint fitting. It does not prove trim
+Automatic discovery handles certified straight UV paths. A separate
+[derivative-free fallback](derivative-free-surface-pullbacks.md) now fits eligible
+nonlinear singular-endpoint paths after the regular fitter fails. These methods
+do not establish arbitrary periodic chart tracking. They do not prove trim
 simplicity, topology, injectivity, curved Booleans, or full Rhino compatibility.
 Certificate degree, rational-size, work, and subdivision limits still apply.
 Native SDK timings and local complete-proof timings have different contracts

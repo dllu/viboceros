@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleInterpolatedPullbackFinal_20261006",
+  "engine_version": "8.32.26160.13001",
+  "native_sdk_records": 10,
+  "native_pullback_successes": 8,
+  "source_purity_agreements": 10,
+  "sample_stations_per_record": 129,
+  "full_native_parity": false,
+  "local_certified_records": 10,
+  "retained_native_failures": [
+    "singular_cubic_forward",
+    "singular_cubic_reverse"
+  ],
+  "baseline_git_head": "92b104d71a92b2be591b635a20e25ec984bb9b8e",
+  "scope_notes": [
+    "Ten closed public Surface.Pullback recipes at idle in an empty owned document on private Xvfb and a fresh private settings scheme.",
+    "Full source and native output definitions, source purity, 129 paired stations, independent nonlinear UV image witnesses and geometric closest-locus samples are retained.",
+    "The pre-change executable failed on all ten local source definitions. New local requests omit fixed endpoint constraints and require a complete normalized-parameter error certificate.",
+    "Native Pullback succeeds on eight recipes and follows their geometric loci within the supplied tolerance, but paired normalized-parameter errors range from about 0.102 to 0.25. Both singular cubic directions return no native pullback.",
+    "The local fit includes all original spatial knots and certifies its returned assembled spline after native-domain restoration. Native sampling alone is not a continuous proof.",
+    "This evidence does not establish arbitrary nonlinear periodic chart tracking, all singular surfaces, trim topology, curved Boolean construction, complete command coverage or native performance parity."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_pullback_interpolation_probe.py": "b13dd27172a964e08d554bb523f7f2a9bfb240fa3d288c2a07d469fcf91be508",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/surface_pullback_interpolation.json": "7ee3cc4d413dbb896b734b50f58eae287729f9a70cfc09bc59ce603c289702c5",
+    "tools/rhino_oracle/fixtures/surface_pullback_interpolation_certified.json": "10fa64d0e266c780a99f3b09157e0fc0240d43320b8b936ba120a4ea09156941",
+    "tools/rhino_oracle/observations/surface_pullback_interpolation.json": "1f159b7a82037a7780f007af52fa5265d6b185d6bf75beda02eb23d6e9c92711",
+    "tools/rhino_oracle/observations/surface_pullback_interpolation_certified.json": "e15ff31dfe7077ca7c79fb65edec086d9dfc8e3a60bf404bdf69e64a7188260c",
+    "tools/rhino_oracle/observations/surface_pullback_interpolation_before.json": "b37d5173067b0d0b1e14ed4fcdf8ede47ba6b84f4a6793fd1ca56f67240e3f5f",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  },
+  "historical_dispatch_sha256": {
+    "tools/rhino_oracle/client.py": "1b4d2cec09963ffefd64bbe9d48759bbf2353662fd7adc76f056f6d519435c37",
+    "tools/rhino_oracle/rhino_worker.py": "042c66d2881214983fd67fb28643c9fef650e4ec4ac2912a4eadc5b35bb57676"
+  }
+}

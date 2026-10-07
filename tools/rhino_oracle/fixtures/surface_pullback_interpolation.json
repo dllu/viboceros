@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_singular_quadratic_forward",
+      "case": "singular_quadratic_forward"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_singular_quadratic_reverse",
+      "case": "singular_quadratic_reverse"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_singular_cubic_forward",
+      "case": "singular_cubic_forward"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_singular_cubic_reverse",
+      "case": "singular_cubic_reverse"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_two_poles_quadratic_forward",
+      "case": "two_poles_quadratic_forward"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_two_poles_quadratic_reverse",
+      "case": "two_poles_quadratic_reverse"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_forward",
+      "case": "two_poles_quadratic_swapped_forward"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_reverse",
+      "case": "two_poles_quadratic_swapped_reverse"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_sqrt_boundary_forward",
+      "case": "sqrt_boundary_forward"
+    },
+    {
+      "op": "surface_pullback_interpolation",
+      "id": "pullback_interpolation_sqrt_boundary_reverse",
+      "case": "sqrt_boundary_reverse"
+    }
+  ]
+}

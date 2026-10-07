@@ -2,6 +2,8 @@
 use super::*;
 use viboceros_geometry::{Point2, WeightedPoint2};
 #[cfg(test)]
+mod interpolation_tests;
+#[cfg(test)]
 mod linear_tests;
 #[cfg(test)]
 mod pullback_tests;

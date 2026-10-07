@@ -5,6 +5,7 @@ use crate::{
 mod certificate;
 #[cfg(test)]
 pub(crate) mod certified_tests;
+mod interpolation;
 mod linear;
 
 const PULLBACK_DEGREE: usize = 3;
@@ -464,6 +465,26 @@ impl NurbsSurface {
             fitting_endpoints = discovery.endpoints;
         }
 
+        match self.hermite_pullback(curve, fitting_endpoints, tolerance, certified) {
+            Ok(result) => Ok(result),
+            Err(
+                GeometryError::Degenerate { .. }
+                | GeometryError::NonFinite { .. }
+                | GeometryError::SurfacePullbackDidNotConverge { .. }
+                | GeometryError::SurfaceCurveCertificateWorkLimit,
+            ) => interpolation::fit(self, curve, endpoints, tolerance)
+                .map(|(uv, bound)| (uv, Some(bound))),
+            Err(error) => Err(error),
+        }
+    }
+
+    fn hermite_pullback(
+        &self,
+        curve: &NurbsCurve,
+        fitting_endpoints: Option<[Point2; 2]>,
+        tolerance: Tolerance,
+        certified: bool,
+    ) -> Result<(NurbsCurve2, Option<Real>), GeometryError> {
         let certificate = if certified {
             Some(certificate::PullbackCertificate::new(self, curve)?.ok_or(
                 GeometryError::SurfacePullbackDidNotConverge {

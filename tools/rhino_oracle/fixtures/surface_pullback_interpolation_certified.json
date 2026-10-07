@@ -1,0 +1,1366 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_singular_quadratic_forward",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              0.3333333333333333,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          2.0,
+          5.0
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_singular_quadratic_reverse",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              0.3333333333333333,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 3,
+        "domain": [
+          -5.0,
+          -2.0
+        ],
+        "knots": [
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_singular_cubic_forward",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.16666666666666666,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              0.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          2.0,
+          5.0
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_singular_cubic_reverse",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.5,
+              0.25,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.16666666666666666,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          -5.0,
+          -2.0
+        ],
+        "knots": [
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_two_poles_quadratic_forward",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.25,
+              1.0,
+              0.25
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              1.3333333333333333,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.75,
+              1.0,
+              0.75
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          2.0,
+          5.0
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_two_poles_quadratic_reverse",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.75,
+              1.0,
+              0.75
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              1.3333333333333333,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.25,
+              1.0,
+              0.25
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          -5.0,
+          -2.0
+        ],
+        "knots": [
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 2,
+        "control_point_count_u": 2,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_forward",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.25,
+              1.0,
+              0.25
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              1.3333333333333333,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.75,
+              1.0,
+              0.75
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          2.0,
+          5.0
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_two_poles_quadratic_swapped_reverse",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.75,
+              1.0,
+              0.75
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.3333333333333333,
+              1.3333333333333333,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.25,
+              1.0,
+              0.25
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 4,
+        "domain": [
+          -5.0,
+          -2.0
+        ],
+        "knots": [
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -5.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0,
+          -2.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              2.0,
+              2.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_sqrt_boundary_forward",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 1,
+        "domain": [
+          2.0,
+          5.0
+        ],
+        "knots": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "op": "surface_pullback_certified",
+      "id": "pullback_interpolation_sqrt_boundary_reverse",
+      "limit": 1e-06,
+      "spatial_curve": {
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "degree": 1,
+        "domain": [
+          -5.0,
+          -2.0
+        ],
+        "knots": [
+          -5.0,
+          -5.0,
+          -2.0,
+          -2.0
+        ]
+      },
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              1.0,
+              0.5
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "knots_v": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "domain_u": [
+          0.0,
+          1.0
+        ],
+        "domain_v": [
+          0.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}
