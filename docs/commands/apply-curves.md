@@ -2,8 +2,8 @@
 
 [Command reference](README.md) · [Certified surface images](../certified-surface-pushups.md)
 
-`ApplyCrv` maps World-XY curves and points onto one NURBS surface or a single-face
-B-rep. `ApplyCurves` is an alias. Start the command, select sources, press Enter,
+`ApplyCrv` maps World-XY curves and points onto one NURBS surface or a selected
+B-rep face. `ApplyCurves` is an alias. Start the command, select sources, press Enter,
 then pick the target surface. Preselected curves and points skip the first stage.
 Source picking respects groups; the target remains a read-only reference.
 Escape restores the original selection. Picking the target completes the command.
@@ -11,7 +11,7 @@ Escape restores the original selection. Picking the target completes the command
 For scripts, select the source objects and run:
 
 ```text
-ApplyCrv Surface=target-object-uuid
+ApplyCrv Surface=target-object-uuid [Face=index]
 ```
 
 The combined tight XY bounds of eligible sources map affinely onto the target's
@@ -47,8 +47,8 @@ and control remapping can round. Extreme charts may therefore fail qualification
 or differ from native mapping; the checked native cases below have ordinary
 coordinate ranges. Kernel degree, sign-coherent weight, natural-domain and work
 limits also apply. A trimmed target uses its underlying surface without clipping
-the output to trim loops. Multi-face target picking and inline `SubCrv` selection
-are not implemented. [`CreateUVCrv`](create-uv-curves.md) can now generate the
+the output to trim loops. [Multi-face references](../uv-face-references.md) now accept viewport hits and
+explicit face indices. Inline `SubCrv` selection is not implemented. [`CreateUVCrv`](create-uv-curves.md) can now generate the
 reference UV rectangle, trim contours and optional flattened spatial inputs.
 
 ## Native evidence

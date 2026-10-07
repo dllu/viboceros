@@ -418,6 +418,11 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('CreateUVCrv requires a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'uv_face_reference_command' for op in request.get('operations', [])):
+            from .uv_face_reference_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('UV face references require a private Rhino settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'surface_pullback_endpoints' for op in request.get('operations', [])):
             from .surface_pullback_endpoints_probe import validate_request
             if self.settings_scheme is None:
@@ -823,6 +828,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
             if any(op.get('op') == 'create_uv_curves_command' for op in request.get('operations', [])):
                 for name in ('create_uv_curves_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'uv_face_reference_command' for op in request.get('operations', [])):
+                for name in ('uv_face_reference_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'grip_alias' for op in request.get('operations', [])):
                 for name in ('grip_alias_probe.py','smooth_probe.py','join_probe.py','merge_edges_probe.py','grip_transform_probe.py'):

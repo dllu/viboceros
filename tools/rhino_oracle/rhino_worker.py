@@ -6849,6 +6849,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'create_uv_curves_command':
         from create_uv_curves_probe import run
         return run(operation, globals())
+    if kind == 'uv_face_reference_command':
+        from uv_face_reference_probe import run
+        return run(operation,globals())
     if kind == 'surface_pullback_endpoints':
         from surface_pullback_endpoints_probe import run
         return run(operation, globals())
@@ -16687,7 +16690,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op') in ('apply_uv_curves_command','create_uv_curves_command') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('apply_uv_curves_command','create_uv_curves_command','uv_face_reference_command') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

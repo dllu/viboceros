@@ -11,6 +11,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) original_selection: Vec<ObjectId>,
     pub(super) boolean: Option<BooleanOptions>,
     pub(super) uv_mapping: Option<super::apply_curves::UvMappingKind>,
+    pub(super) uv_face: Option<usize>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -150,6 +151,7 @@ impl VibocerosApp {
             original_selection,
             boolean: None,
             uv_mapping: None,
+            uv_face: None,
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));

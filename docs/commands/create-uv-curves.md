@@ -3,7 +3,7 @@
 [Command reference](README.md) · [Apply UV curves](apply-curves.md)
 
 `CreateUVCrv` generates a flat World-XY representation of one NURBS surface or
-single-face B-rep. Pick a surface, optionally select spatial curves and points,
+selected B-rep face. Pick a surface, optionally select spatial curves and points,
 then press Enter. A preselected surface skips the first stage. Escape restores
 the starting selection. Scripts use `CreateUVCrv Surface=object-uuid` with the
 optional spatial inputs selected.
@@ -54,8 +54,8 @@ domain and arithmetic limits. Off-surface fitting checks 31 interior stations
 per candidate cubic and refines to depth 24; it is a numerical approximation,
 not a continuous certificate of the global nearest-point locus. Ambiguous
 periodic charts, singular projection branches and discontinuous source curves
-may fail or remain unsupported. Multi-face reference picking and inline `SubCrv`
-selection are not implemented. Full native sizing and projection parity remain
+may fail or remain unsupported. [Multi-face references](../uv-face-references.md) support viewport hits and
+explicit `Face=index`; inline `SubCrv` selection remains outstanding. Full native sizing and projection parity remain
 outstanding.
 
 ## Native evidence

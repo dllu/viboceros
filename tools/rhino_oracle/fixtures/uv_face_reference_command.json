@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_0",
+      "case": "create_0"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_1",
+      "case": "create_1"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_2",
+      "case": "create_2"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_3",
+      "case": "create_3"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_4",
+      "case": "create_4"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_create_5",
+      "case": "create_5"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_0",
+      "case": "apply_0"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_1",
+      "case": "apply_1"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_2",
+      "case": "apply_2"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_3",
+      "case": "apply_3"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_4",
+      "case": "apply_4"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_5",
+      "case": "apply_5"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_top",
+      "case": "apply_top"
+    },
+    {
+      "op": "uv_face_reference_command",
+      "id": "uv_face_apply_front",
+      "case": "apply_front"
+    }
+  ]
+}

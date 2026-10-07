@@ -6,7 +6,7 @@ mod projection;
 mod tests;
 
 pub(super) const USAGE: &str =
-    "CreateUVCrv Surface=surface-uuid (optionally select curves/points on surface)";
+    "CreateUVCrv Surface=surface-uuid [Face=index] (optionally select curves/points on surface)";
 pub(super) struct CreateUvCurvesCommand;
 
 impl Command for CreateUvCurvesCommand {
@@ -14,28 +14,10 @@ impl Command for CreateUvCurvesCommand {
         "CreateUVCrv"
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let [arg] = arguments else {
-            return Err(CommandError::Usage(USAGE));
-        };
-        let (name, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-        if !option_name_eq(name, "Surface") {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let target: ObjectId = value.parse().map_err(|_| CommandError::Usage(USAGE))?;
-        if !document.is_object_selectable(target) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let geometry = document
-            .object(target)
-            .ok_or(DocumentError::ObjectNotFound(target))?
-            .geometry();
-        let (surface, face) = match geometry {
-            Geometry::NurbsSurface(s) => (s, None),
-            Geometry::Brep(b) if b.faces().len() == 1 => {
-                (b.faces()[0].surface(), Some(&b.faces()[0]))
-            }
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
+        let reference = uv_reference::resolve(document, arguments, USAGE)?;
+        let target = reference.object;
+        let surface = reference.surface;
+        let face = reference.face;
         let tolerance = document.tolerance();
         let size = rectangle_size(surface, tolerance)?;
         let chart = Chart { surface, size };

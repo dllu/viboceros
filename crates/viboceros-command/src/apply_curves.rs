@@ -6,7 +6,8 @@ use viboceros_geometry::{NurbsCurve2, Point2, WeightedPoint2, remap_scalar};
 #[cfg(test)]
 mod tests;
 
-pub(super) const USAGE: &str = "ApplyCrv Surface=surface-uuid (select World-XY curves and points)";
+pub(super) const USAGE: &str =
+    "ApplyCrv Surface=surface-uuid [Face=index] (select World-XY curves and points)";
 pub(super) struct ApplyCurvesCommand;
 
 impl Command for ApplyCurvesCommand {
@@ -18,25 +19,9 @@ impl Command for ApplyCurvesCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let [argument] = arguments else {
-            return Err(CommandError::Usage(USAGE));
-        };
-        let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-        if !option_name_eq(name, "Surface") {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let target: ObjectId = value.parse().map_err(|_| CommandError::Usage(USAGE))?;
-        if !document.is_object_selectable(target) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let object = document
-            .object(target)
-            .ok_or(DocumentError::ObjectNotFound(target))?;
-        let surface = match object.geometry() {
-            Geometry::NurbsSurface(s) => s,
-            Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface(),
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
+        let reference = uv_reference::resolve(document, arguments, USAGE)?;
+        let target = reference.object;
+        let surface = reference.surface;
         let selected = selected_ids(document)?;
         let tolerance = document.tolerance();
         let numerical = Tolerance::try_new(

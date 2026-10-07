@@ -106,3 +106,51 @@ fn grouped_source_picks_expand_curves_and_points_and_keep_target_as_reference() 
     assert_eq!(app.document.objects().len(), 7);
     assert_eq!(app.document.selected_object_count(), 3);
 }
+
+#[test]
+fn apply_uv_reference_face_click_keeps_whole_polysurface_and_maps_one_face() {
+    let mut app = test_app();
+    enter(&mut app, "Box 0,0,0 4,6,0 2");
+    enter(&mut app, "Line 0,0 1,1");
+    let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    let original = app.document.object(ids[0]).unwrap().geometry().clone();
+    app.document.select_command_results([ids[1]]).unwrap();
+    enter(&mut app, "ApplyCrv");
+    assert!(app.picking_uv_reference());
+    let Geometry::Brep(brep) = &original else {
+        panic!()
+    };
+    let surface = brep.faces()[5].surface().clone();
+    app.accept_component_face_hit(ids[0], 5, None);
+    assert!(app.intersection_prompt.is_none());
+    assert_eq!(app.document.objects().len(), 3);
+    assert_eq!(app.document.object(ids[0]).unwrap().geometry(), &original);
+    let c = app
+        .document
+        .selected_objects()
+        .next()
+        .unwrap()
+        .geometry()
+        .curve_ref()
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    for i in 0..=32 {
+        let t = i as f64 / 32.;
+        let expected = surface
+            .evaluate(
+                surface.parameter_at_u(t).unwrap(),
+                surface.parameter_at_v(t).unwrap(),
+            )
+            .unwrap();
+        assert!(
+            c.parameter_sampler()
+                .unwrap()
+                .evaluate(t)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 1e-9
+        );
+    }
+}

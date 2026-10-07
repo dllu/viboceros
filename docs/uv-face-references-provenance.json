@@ -1,0 +1,19 @@
+{
+  "capture_date": "2026-10-06",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleUVFacesFinal20261006",
+  "engine_version": "8.32.26160.13001",
+  "recipes": 14,
+  "successful_component_recipes": 12,
+  "retained_coordinate_failures": [
+    "apply_top",
+    "apply_front"
+  ],
+  "full_native_parity": false,
+  "replay_source": "Recorded face charts reconstructed in an independent six-face B-rep; native shared-edge topology is not reconstructed.",
+  "sha256": {
+    "tools/rhino_oracle/uv_face_reference_probe.py": "955bee15c6cd6197e100e47aaad58aa6e254cae94555f443a401a7cab3a36645",
+    "tools/rhino_oracle/fixtures/uv_face_reference_command.json": "18c1fb58e531181c9322f62b14ef06617ac95c42e08bbc880bc06eec87691cdd",
+    "tools/rhino_oracle/observations/uv_face_reference_command.json": "262ea7678da69dde4efb0964f0f7bd5e342ac3a1ba3fd4ab2247bd8819d8f0c2"
+  }
+}

@@ -8707,6 +8707,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.selecting_move_normal_reference()
+            || self.picking_uv_reference()
             || self.picking_mirror_object()
             || self.picking_scale_by_plane_object()
         {

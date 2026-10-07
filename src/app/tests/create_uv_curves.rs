@@ -61,3 +61,66 @@ fn create_uv_cancel_restores_original_selection_without_editing() {
     );
     assert_eq!(a.document.undo_label(), history.as_deref());
 }
+
+#[test]
+fn create_uv_polysurface_requires_face_and_retains_clicked_reference_until_enter() {
+    let mut a = test_app();
+    enter(&mut a, "Box 0,0,0 4,6,0 2");
+    let id = a.document.objects().next().unwrap().id();
+    let original = a.document.object(id).unwrap().geometry().clone();
+    a.document.select_command_results([id]).unwrap();
+    enter(&mut a, "CreateUVCrv");
+    assert!(a.picking_uv_reference());
+    assert!(a.intersection_prompt.as_ref().unwrap().first.is_none());
+    a.apply_selection_click(SelectionClick {
+        object_id: Some(id),
+        mode: SelectionMode::Replace,
+    });
+    assert!(a.picking_uv_reference());
+    a.accept_component_face_hit(id, 2, None);
+    assert!(!a.picking_uv_reference());
+    assert_eq!(a.intersection_prompt.as_ref().unwrap().uv_face, Some(2));
+    enter(&mut a, "");
+    assert!(a.intersection_prompt.is_none());
+    assert_eq!(a.document.objects().len(), 2);
+    assert_eq!(a.document.object(id).unwrap().geometry(), &original);
+}
+
+#[test]
+fn typed_face_reference_retries_bad_index_and_cancel_restores_preselection() {
+    let mut a = test_app();
+    enter(&mut a, "Box 0,0,0 4,6,0 2");
+    let id = a.document.objects().next().unwrap().id();
+    a.document.select_command_results([id]).unwrap();
+    let label = a.document.undo_label().map(str::to_owned);
+    enter(&mut a, "CreateUVCrv");
+    enter(&mut a, &format!("{id} Face=99"));
+    assert!(a.picking_uv_reference());
+    enter(&mut a, &format!("{id} Face=0"));
+    assert!(!a.picking_uv_reference());
+    a.cancel_interactive_command(true);
+    assert_eq!(a.document.selected_object_ids().collect::<Vec<_>>(), [id]);
+    assert_eq!(a.document.undo_label(), label.as_deref());
+}
+
+#[test]
+fn preselected_component_face_starts_at_extra_input_stage() {
+    let mut a = test_app();
+    enter(&mut a, "Box 0,0,0 4,6,0 2");
+    let id = a.document.objects().next().unwrap().id();
+    a.document.clear_selection();
+    a.accept_component_click(crate::viewport::ComponentClick {
+        picks: vec![crate::viewport::ComponentPick {
+            object: id,
+            index: 1,
+            kind: viboceros_command::ComponentSelectionKind::BrepFace,
+        }],
+        preselection: true,
+        modifiers: Default::default(),
+    });
+    enter(&mut a, "CreateUVCrv");
+    assert!(!a.picking_uv_reference());
+    assert_eq!(a.intersection_prompt.as_ref().unwrap().uv_face, Some(1));
+    enter(&mut a, "");
+    assert_eq!(a.document.objects().len(), 2);
+}

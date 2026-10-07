@@ -10,6 +10,9 @@ impl VibocerosApp {
         face: usize,
         point: Option<Point3>,
     ) {
+        if self.accept_uv_reference_face(object, face) {
+            return;
+        }
         if self.selecting_move_normal_reference() {
             self.accept_move_normal_reference(object, Some(face));
             return;

@@ -3,6 +3,7 @@
 mod align;
 mod apply_curves;
 mod create_uv_curves;
+mod uv_reference;
 use apply_curves::ApplyCurvesCommand;
 use create_uv_curves::CreateUvCurvesCommand;
 mod align_vertices;
