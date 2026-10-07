@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 6, 2026 audit tested code at `142f7a92` with Rust 1.95.0 after
-[CreateUVCrv surface/trim flattening and optional input projection](commands/create-uv-curves.md).
+The October 6, 2026 audit tested code at `04b0df92` with Rust 1.95.0 after
+[ApplyCrv and CreateUVCrv references to individual B-rep faces](uv-face-references.md).
 
 ## Commands and results
 
@@ -14,35 +14,47 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/create_uv_curves_local.json --timeout 600 --output docs/create-uv-curves-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,118 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,125 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 944 | 17 |
-| Command | 1,140 | 2 |
+| App | 948 | 17 |
+| Command | 1,143 | 2 |
 | Document | 185 | 5 |
 | Drafting | 157 | 6 |
 | Geometry | 2,015 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 482 | 0 |
 
-The Python suite passed 878 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 881 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The latest standalone Python run reproduces nine original untrimmed CreateUVCrv
+A fresh 14-recipe native capture ran on private Xvfb with settings scheme
+`VibocerosOracleUVFacesFinal20261006`. All 12 face-component-preselected
+`ApplyCrv` and `CreateUVCrv` recipes succeeded; the two coordinate-input
+attempts were rejected and remain in the
+[raw records](../tools/rhino_oracle/observations/uv_face_reference_command.json).
+Replay compares all 33 stations of every successful output curve at `1e-8`,
+retaining the original six surface charts and face indices. Its reconstructed
+B-rep contains independent faces and does not reproduce native shared-edge
+topology. Separate tests cover every face of a connected kernel box, source
+purity, Undo/Redo, ambiguous or invalid references, viewport hits, typed face
+indices and component preselection. See [scope](uv-face-references.md) and
+[provenance](uv-face-references-provenance.json).
+
+The preceding standalone Python run reproduces nine original untrimmed CreateUVCrv
 surface/input definitions. The Rust command replay additionally reconstructs
 the two trimmed sources from their original UV curves. A create/apply roundtrip
 recovers the original spatial curve within `1e-6`; application tests exercise
 surface-first picking, optional point selection, preselection, cancellation and
 World-XY output under a rotated construction plane.
 
-A fresh 11-recipe native capture ran on private Xvfb with settings scheme
+The preceding 11-recipe native capture ran on private Xvfb with settings scheme
 `VibocerosOracleCreateUVFinal20261006`, creating 17 UV curves and four points.
 The [raw records](../tools/rhino_oracle/observations/create_uv_curves_command.json)
 retain full inputs, trim curves, isocurve-length diagnostics, output stations,
@@ -151,7 +163,8 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 11 actual `CreateUVCrv` command recipes. Other recorded-output
+The newest native capture covers 12 successful face-component command recipes
+and retains two rejected coordinate-input attempts. Other recorded-output
 replays are not fresh cross-engine measurements, and tests that merely execute
 fixtures with finite output do not establish numerical agreement with Rhino.
 Native `Surface.Pullback` and `Surface.Pushup` follow geometric loci and do not
