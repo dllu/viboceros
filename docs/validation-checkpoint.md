@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `7b66c044` with Rust 1.95.0 after
-[signed arc-length subcurves and UV script inputs](signed-length-subcurves.md).
+The October 7, 2026 audit tested code at `a9ab0d47` with Rust 1.95.0 after
+[inline UV subcurve numeric confirmation](subcurve-length-confirmation.md).
 
 ## Commands and results
 
@@ -14,42 +14,58 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/signed_length_subcurves.json --timeout 600 --output docs/signed-length-subcurves-local.json
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,141 tests:
+All commands completed successfully. The ordinary Rust suite passed 5,146 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 952 | 17 |
+| App | 954 | 17 |
 | Command | 1,147 | 2 |
 | Document | 185 | 5 |
-| Drafting | 157 | 6 |
-| Geometry | 2,019 | 8 |
+| Drafting | 159 | 6 |
+| Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 888 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 891 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-A fresh 20-recipe public SDK capture ran on private Xvfb with settings scheme
+A fresh 29-recipe command capture ran on private Xvfb with settings scheme
+`VibocerosOracleSubcurveConfirmCommands20261007`. Twenty-eight commands succeed;
+the standalone object-ID reference attempt remains a native cancellation.
+[Raw records](../tools/rhino_oracle/observations/subcurve_numeric_followup.json)
+retain 50 curves and 1,650 stations, complete originals, getter history and
+command-end events. Real viewport and typed-coordinate confirmation picks
+establish the step missing from earlier numeric diagnostics. Application tests
+replay all 27 UV-command cases at `1e-6` for loci and directed endpoints, with
+source purity and Undo/Redo. They cover magnitude/replacement inputs, forward and
+backward orientation, curved sources, closed seams, nonuniform segment lengths,
+open-end clamping, empty Enter and zero input. Drafting tests preserve units,
+calculator expressions and point/angle routing. A self-crossing kernel regression
+checks the original-domain endpoint without assuming which tied branch a
+closest-point query would select. Standalone numeric UI, direction locking and
+B-rep edges remain unimplemented. See [scope](subcurve-length-confirmation.md)
+and [provenance](subcurve-length-confirmation-provenance.json).
+
+The preceding 20-recipe public SDK capture ran on private Xvfb with settings scheme
 `VibocerosOracleSignedLengthFinal20261007`, returning 16 curve pieces and four
 unavailable cases. The source NURBS definitions cover lines, curved polynomials,
 stationary endpoints, piecewise spans, polylines, circles, ellipses and an arc.
 [Raw records](../tools/rhino_oracle/observations/signed_length_subcurves.json)
 retain definitions, 528 stations and measured source purity. Runtime Rust replay
-compares every locus and directed endpoint at `1e-6`; the standalone Python
+compares every locus and directed endpoint at `1e-6`; the preceding standalone Python
 geometry run additionally compares paired stations, with maximum discrepancy
 `1.05031e-7`. Independent kernel tests check analytic forms, signed seam crossings,
 one complete traversal and a quarter-unit interval after a `1e16` prefix.
 Both UV command adapters accept explicit `SubCrvLength` options, with atomic
 failure and source/history checks. These use numerical integration rather than
 a continuous length certificate. Historical scripted/cursor getter diagnostics
-remain recorded: tested numeric inputs did not yield temporary curves, and
-inline numeric-entry parity remains unresolved. Those historical producers were
+remain recorded: those numeric inputs did not supply the required confirmation
+pick and did not yield temporary curves. Those historical producers were
 not retained; the fresh canonical SDK producer is hashed. See
 [scope](signed-length-subcurves.md) and [provenance](signed-length-subcurves-provenance.json).
 
@@ -200,8 +216,9 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 20 public signed-length SDK queries. It does
-not establish inline numeric-input compatibility. The preceding command capture
+The newest native capture covers 29 numeric getter/command recipes, including
+one retained cancellation. The preceding signed-length SDK capture covers 20
+independent geometry queries. The earlier command capture
 covers 14 successful endpoint-input SubCrv recipes.
 The preceding face capture retains two rejected coordinate-input attempts.
 Other recorded-output
