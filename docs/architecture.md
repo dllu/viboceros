@@ -63,6 +63,8 @@ The [standalone SubCrv controller](commands/subcurve.md) shares that command
 policy, with separate source picking and native copy/replacement selection.
 Its [MarkEnds mode](subcurve-mark-ends.md) stages default marker points without
 copying source attributes or modifying the original curve.
+The [FromMidpoint policy](subcurve-midpoint.md) queries both sides from the
+original center, sharing parameter-preserving endpoint recovery with the kernel.
 
 The [Smooth kernel](smooth.md) averages curve and surface controls and mesh
 vertices in World, CPlane, and Object axes, with 304 native geometry replays.

@@ -9,9 +9,17 @@ pub(super) struct SubcurvePrompt {
     pub(super) length: Option<f64>,
     pub(super) copy: bool,
     pub(super) mode: viboceros_command::subcurve_input::SubcurveMode,
+    pub(super) from_midpoint: bool,
 }
 impl SubcurvePrompt {
     pub(super) fn hint(&self) -> &'static str {
+        if self.from_midpoint && self.source.is_some() {
+            return if self.start.is_none() {
+                "SubCrv: pick the midpoint on the curve (Esc cancels)"
+            } else {
+                "SubCrv: pick a symmetric end or enter the half-length (Esc cancels)"
+            };
+        }
         match (self.source, self.start, self.length) {
             (None, _, _) => "SubCrv: select one curve; Esc cancels",
             (Some(_), None, _) => "SubCrv: pick the subcurve start (Esc cancels)",
@@ -29,6 +37,7 @@ impl VibocerosApp {
         &mut self,
         copy: bool,
         mode: viboceros_command::subcurve_input::SubcurveMode,
+        from_midpoint: bool,
     ) {
         let sources = self
             .document
@@ -47,6 +56,7 @@ impl VibocerosApp {
             length: None,
             copy,
             mode,
+            from_midpoint,
         });
         self.active_command = source.map(|_| InteractiveCommand::SubCrv { start: None, copy });
         if source.is_none() {
@@ -84,6 +94,25 @@ impl VibocerosApp {
         };
         if input.is_empty() {
             self.cancel_interactive_command(true);
+            return true;
+        }
+        if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+            && name.eq_ignore_ascii_case("FromMidpoint")
+        {
+            let flag = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                Some(true)
+            } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                Some(false)
+            } else {
+                None
+            };
+            if let Some(flag) = flag {
+                self.subcurve_prompt.as_mut().unwrap().from_midpoint = flag;
+                self.command_input.clear();
+                self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
+            } else {
+                self.push_log("FromMidpoint expects Yes or No".into());
+            }
             return true;
         }
         if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
@@ -145,6 +174,23 @@ impl VibocerosApp {
                         Some(Ok(total)) if length.abs() <= total => {
                             self.subcurve_prompt.as_mut().unwrap().length = Some(length.abs());
                             self.command_input.clear();
+                            if prompt.from_midpoint {
+                                let point = self
+                                    .document
+                                    .object(source)
+                                    .unwrap()
+                                    .geometry()
+                                    .curve_ref()
+                                    .unwrap()
+                                    .evaluate(prompt.start.unwrap());
+                                match point {
+                                    Ok(point) => {
+                                        self.accept_standalone_subcurve_point(point);
+                                    }
+                                    Err(error) => self.push_log(format!("Error: {error}")),
+                                }
+                                return true;
+                            }
                             self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
                         }
                         Some(Err(error)) => self.push_log(format!("Error: {error}")),
@@ -210,6 +256,10 @@ impl VibocerosApp {
                 )
             };
             input.push_str(&format!(" Mode={}", prompt.mode.option()));
+            input.push_str(&format!(
+                " FromMidpoint={}",
+                if prompt.from_midpoint { "Yes" } else { "No" }
+            ));
             self.document.select_command_results([source])?;
             self.commands.execute(&mut self.document, &input)?;
             self.subcurve_prompt = None;

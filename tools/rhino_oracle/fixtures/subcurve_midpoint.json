@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_forward_copy",
+      "case": "forward_copy"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_forward_replace",
+      "case": "forward_replace"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_backward_copy",
+      "case": "backward_copy"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_backward_replace",
+      "case": "backward_replace"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_negative",
+      "case": "negative"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_clamp_start",
+      "case": "clamp_start"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_clamp_end",
+      "case": "clamp_end"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_quadratic",
+      "case": "quadratic"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_closed_forward",
+      "case": "closed_forward"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_closed_backward",
+      "case": "closed_backward"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_closed_full",
+      "case": "closed_full"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_zero",
+      "case": "zero"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_no_confirmation",
+      "case": "no_confirmation"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_point_forward",
+      "case": "point_forward"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_point_backward",
+      "case": "point_backward"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_postselect",
+      "case": "postselect"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_mark_ends",
+      "case": "mark_ends"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_mark_closed",
+      "case": "mark_closed"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_closed_half",
+      "case": "closed_half"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_closed_over_half",
+      "case": "closed_over_half"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_quadratic_point",
+      "case": "quadratic_point"
+    },
+    {
+      "op": "subcurve_midpoint",
+      "id": "midpoint_endpoint_center",
+      "case": "endpoint_center"
+    }
+  ]
+}

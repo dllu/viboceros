@@ -1,5 +1,6 @@
 use super::*;
 mod mark_ends;
+mod midpoint;
 mod standalone;
 
 #[test]

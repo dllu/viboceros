@@ -30,7 +30,8 @@ ran on private Xvfb under `VibocerosOracleMarkEnds20261007`.
 confirmation), full original curve definitions, properties, groups, selection,
 events, and Undo/Redo. Command/app replays compare every point within `1e-6`,
 source purity, default attributes and history. Numeric curved inputs retain the
-existing integration and native fitting limits. Direction locking, FromMidpoint,
+existing integration and native fitting limits. [FromMidpoint](subcurve-midpoint.md)
+also supports MarkEnds. Direction locking,
 B-rep edge references, native mode memory and reactive Rhino History remain
 outstanding. See [provenance](subcurve-mark-ends-provenance.json).
 

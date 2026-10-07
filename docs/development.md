@@ -30,6 +30,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Inline numeric length confirmation and native getter replay](subcurve-length-confirmation.md)
 - [Standalone SubCrv source picking, numeric input and history](commands/subcurve.md)
 - [SubCrv MarkEnds source purity, marker attributes and history](subcurve-mark-ends.md)
+- [SubCrv FromMidpoint radius entry, clamping and seam replay](subcurve-midpoint.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
 - [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [Derivative-free fitting for nonlinear singular-endpoint paths](derivative-free-surface-pullbacks.md)

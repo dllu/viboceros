@@ -73,7 +73,7 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
-pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds]";
+pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SubcurveLocation {
@@ -87,6 +87,7 @@ struct SubcurveOptions {
     location: SubcurveLocation,
     copy: bool,
     mode: subcurve_input::SubcurveMode,
+    from_midpoint: bool,
 }
 
 pub(super) struct SubcurveCommand;
@@ -115,13 +116,22 @@ impl Command for SubcurveCommand {
         let (id, curve) = candidates.pop().expect("one subcurve source was required");
         let (geometry, start, end) = match options.location {
             SubcurveLocation::Numeric([anchor, length, confirmation]) => {
-                let Some(piece) = subcurve_input::piece(
-                    curve.as_ref(),
-                    anchor,
-                    confirmation,
-                    length,
-                    document.tolerance(),
-                )?
+                let Some(piece) = if options.from_midpoint {
+                    subcurve_input::midpoint_piece(
+                        curve.as_ref(),
+                        anchor,
+                        length,
+                        document.tolerance(),
+                    )
+                } else {
+                    subcurve_input::piece(
+                        curve.as_ref(),
+                        anchor,
+                        confirmation,
+                        length,
+                        document.tolerance(),
+                    )
+                }?
                 else {
                     document.clear_selection();
                     return Ok("No subcurve created".into());
@@ -142,15 +152,36 @@ impl Command for SubcurveCommand {
                     ],
                     SubcurveLocation::Numeric(_) => unreachable!(),
                 };
-                let [start, end] = if matches!(location, SubcurveLocation::Points(_))
-                    && !curve.as_ref().is_closed()?
-                    && start > end
-                {
-                    [end, start]
+                if options.from_midpoint {
+                    let radius = subcurve_input::midpoint_radius(
+                        curve.as_ref(),
+                        start,
+                        end,
+                        document.tolerance(),
+                    )?;
+                    let Some(piece) = subcurve_input::midpoint_piece(
+                        curve.as_ref(),
+                        start,
+                        radius,
+                        document.tolerance(),
+                    )?
+                    else {
+                        document.clear_selection();
+                        return Ok("No subcurve created".into());
+                    };
+                    let domain = piece.as_ref().domain();
+                    (Geometry::from(piece), *domain.start(), *domain.end())
                 } else {
-                    [start, end]
-                };
-                (Geometry::from(curve.try_subcurve(start, end)?), start, end)
+                    let [start, end] = if matches!(location, SubcurveLocation::Points(_))
+                        && !curve.as_ref().is_closed()?
+                        && start > end
+                    {
+                        [end, start]
+                    } else {
+                        [start, end]
+                    };
+                    (Geometry::from(curve.try_subcurve(start, end)?), start, end)
+                }
             }
         };
         document.release_command_selection_on_history_replay([id])?;
@@ -235,8 +266,16 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     let mut copy_seen = false;
     let mut mode = subcurve_input::SubcurveMode::Shorten;
     let mut mode_seen = false;
+    let mut from_midpoint = false;
+    let mut midpoint_seen = false;
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
+        if option_name_eq(name, "FromMidpoint") && !midpoint_seen {
+            from_midpoint = parse_yes_no(value).ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
+            midpoint_seen = true;
+            index += consumed;
+            continue;
+        }
         if option_name_eq(name, "Mode") && !mode_seen {
             mode = subcurve_input::SubcurveMode::parse(value)
                 .ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
@@ -255,6 +294,7 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
         location,
         copy,
         mode,
+        from_midpoint,
     })
 }
 

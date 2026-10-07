@@ -1,0 +1,26 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSubcurveMidpointFinal20261007",
+  "recipes": 22,
+  "successful_commands": 19,
+  "retained_cancellations": [
+    "closed_full",
+    "zero",
+    "closed_half"
+  ],
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Public SubCrv FromMidpoint commands on independently defined original curves; no proprietary code read.",
+  "limits": [
+    "arbitrary-curve integration and parameter-resolution limits",
+    "live preview, direction locking and B-rep edges",
+    "native option memory and reactive History"
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_midpoint_probe.py": "01008f743ec3a000b45f71c67a6f660545eaa883998c72495438d19257c7b610",
+    "tools/rhino_oracle/fixtures/subcurve_midpoint.json": "9183eb046bc106622ad8e5672509e9858aa519415215b6941b167bb146273925",
+    "tools/rhino_oracle/observations/subcurve_midpoint.json": "46f8a08c170567ddd530441ceeaed81935c1d47da9fd65885f18925021de71f3"
+  }
+}

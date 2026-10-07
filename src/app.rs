@@ -4285,12 +4285,22 @@ impl VibocerosApp {
             let mut copy = false;
             let mut copy_seen = false;
             let mut mode_seen = false;
+            let mut midpoint_seen = false;
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("FromMidpoint") {
+                    if midpoint_seen
+                        || !(value.eq_ignore_ascii_case("Yes") || value.eq_ignore_ascii_case("No"))
+                    {
+                        return false;
+                    }
+                    midpoint_seen = true;
+                    continue;
+                }
                 if name.eq_ignore_ascii_case("Mode") {
                     if mode_seen
                         || viboceros_command::subcurve_input::SubcurveMode::parse(value).is_none()
@@ -4840,7 +4850,16 @@ impl VibocerosApp {
                         })
                 })
                 .unwrap_or_default();
-            self.begin_subcurve_prompt(copy, mode);
+            let from_midpoint = input
+                .split_whitespace()
+                .skip(1)
+                .filter_map(|o| o.split_once('='))
+                .any(|(name, value)| {
+                    name.trim_start_matches(['_', '-'])
+                        .eq_ignore_ascii_case("FromMidpoint")
+                        && value.trim_start_matches('_').eq_ignore_ascii_case("Yes")
+                });
+            self.begin_subcurve_prompt(copy, mode, from_midpoint);
             return true;
         }
         if let InteractiveCommand::ExtractSrf {
@@ -9360,6 +9379,7 @@ mod tests {
     mod split_edge;
     mod standalone_subcurve;
     mod subcurve_mark_ends;
+    mod subcurve_midpoint;
     mod taper;
     mod transform_copy;
     mod translation_preview;

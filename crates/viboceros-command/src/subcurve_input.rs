@@ -91,3 +91,64 @@ pub fn interval(
         [endpoint, anchor]
     }))
 }
+
+/// FromMidpoint uses the entered magnitude as the distance on each side.
+/// Open sides clamp independently; closed endpoints wrap in the original chart.
+pub fn midpoint_piece(
+    curve: CurveRef<'_>,
+    center: Real,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<Option<Curve3>, GeometryError> {
+    if !center.is_finite() || !curve.domain().contains(&center) {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    if radius == 0. {
+        return Ok(None);
+    }
+    let radius = radius.abs();
+    if !radius.is_finite() || radius > curve.length(tolerance)? {
+        return Err(GeometryError::InvalidCurveTrimInterval);
+    }
+    let source = curve.to_owned();
+    let domain = curve.domain();
+    if curve.is_closed()? {
+        let total = curve.length(tolerance)?;
+        if radius == total || radius == total * 0.5 {
+            return Ok(None);
+        }
+    }
+    let left = source
+        .try_subcurve_at_arc_length_with_endpoint(center, -radius, tolerance)?
+        .map(|(_, t)| t)
+        .unwrap_or(*domain.start());
+    let right = source
+        .try_subcurve_at_arc_length_with_endpoint(center, radius, tolerance)?
+        .map(|(_, t)| t)
+        .unwrap_or(*domain.end());
+    if left == right {
+        return Ok(None);
+    }
+    Ok(Some(source.try_subcurve(left, right)?))
+}
+
+pub fn midpoint_radius(
+    curve: CurveRef<'_>,
+    center: Real,
+    end: Real,
+    tolerance: Tolerance,
+) -> Result<Real, GeometryError> {
+    if center == end {
+        return Ok(0.);
+    }
+    let length = curve
+        .to_owned()
+        .try_subcurve(center, end)?
+        .as_ref()
+        .length(tolerance)?;
+    Ok(if curve.is_closed()? {
+        length.min(curve.length(tolerance)? - length)
+    } else {
+        length
+    })
+}
