@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `13112fdb` with Rust 1.95.0 after
-[Physical surface Rebuild retrimming](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `01bfc6f2` with Rust 1.95.0 after
+[Cached surface Rebuild previews](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -16,26 +16,51 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The release workspace suite passed
-5,323 Rust tests:
+All final checks completed successfully. The complete release workspace run passed
+5,331 Rust tests; after the final dialog-default regression, a complete app run
+passed 1,032 tests, and the strengthened prepared-result redo test passed in its
+command-package replay. The current validated package inventory is 5,332 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,026 | 17 |
-| Command | 1,196 | 2 |
+| App | 1,032 | 17 |
+| Command | 1,198 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,072 | 8 |
+| Geometry | 2,073 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 990 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 993 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest surface Rebuild retrim captures ran fourteen owned native commands
+The newest surface Rebuild preview work shares one readonly command preparation
+with a cached viewport scene and accepted geometry. Unchanged edits retain scene
+identity; deletion/layer changes reuse geometry, and background edits refresh the
+scene. Guards validate source geometry, attributes, root text, groups, selection,
+tolerance and current layer before edits or acceptance. Failed preparation clears
+the scene, blocks acceptance and permits recovery. Tests preserve existing redo,
+reject stale queued edits and compare preview/accepted controls with twelve native
+outcomes. A [four-command Xvfb capture](../tools/rhino_oracle/observations/surface_rebuild_natural.json)
+confirms full target boundaries and retained source domains on default 10x10 warped
+and curved natural faces. Exact target isocurves preserve reordered edges, reversed
+uses and vertex indices while avoiding inverse fitting; straight UV contour images
+use canonical parameter speed for direct knot-crossing composition. The first eager
+previews exposed work limits/slow inverse fits on those boundaries.
+An [eight-stage production UI inspection](../tools/rhino_oracle/observations/rebuild_preview_ui.json)
+completes replacement/copy previews, an invalid edit, acceptance, Undo/Redo and
+cancellation on private Xvfb. Screenshots show two drawn surfaces in a copy preview
+while the document layer pane still reports one object. Early UI observers misread
+active/invalid command text; the final command-field observer completed successfully.
+See [guide](commands/rebuild-surfaces.md) and [provenance](rebuild-preview-provenance.json).
+Curve previews, seam/singular retrimming, split natural-side specialization, native
+pixel appearance, general closest-point guarantees and performance parity remain
+unfinished or unverified.
+
+The preceding surface Rebuild retrim captures ran fourteen owned native commands
 and two public trim-transfer queries on private Xvfb. [Initial records](../tools/rhino_oracle/observations/surface_rebuild_retrim.json)
 and [follow-up records](../tools/rhino_oracle/observations/surface_rebuild_retrim_followup.json)
 retain complete source/output topology, controls, 33 edge stations, 81 surface
