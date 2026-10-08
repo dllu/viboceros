@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `9ccdd36b` with Rust 1.95.0 after
-[Repeated surface corner edits and preview guards](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `37c552ab` with Rust 1.95.0 after
+[Unequal surface control matching](commands/tween-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,42 @@ git diff --check
 ```
 
 All commands completed successfully. The release workspace suite passed
-5,301 Rust tests:
+5,307 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,021 | 17 |
-| Command | 1,189 | 2 |
+| App | 1,022 | 17 |
+| Command | 1,190 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,064 | 8 |
+| Geometry | 2,068 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 487 | 0 |
 
-The Python suite passed 976 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 979 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest repeated-corner capture ran 14 successful owned commands and 28 real
+The newest control-matching captures ran 38 successful owned commands on private
+Xvfb with one, two and three outputs. [Initial records](../tools/rhino_oracle/observations/tween_surfaces_control_initial.json)
+and [follow-up records](../tools/rhino_oracle/observations/tween_surfaces_control_followup.json)
+retain unequal polynomial/rational degrees and counts, single-axis changes,
+swapped order, cubic/curved nets and compatible nets with differing knots.
+Kernel and command replay compare controls/positions at `1e-6`, knots/weights
+at `1e-12`, source purity, full attributes/groups and independent Undo/Redo.
+Public Surface.Rebuild records check preparation independently. Unequal nets
+use midpoint-isocurve arc-length stations and uniform Greville tensor solves,
+rebuilding before every output; compatible nets retain first-source knots.
+An analytic plane regression and readonly three-output app replay add independent
+checks. Solves normalize coordinates and check pivots, finite values and residuals.
+Separate 26-case diagnostics retain rejected blend/row preparation hypotheses
+and native option-change object effects. See [control provenance](tween-control-provenance.json).
+Periodic/general singular inputs, extreme rational gauges, continuous source-locus
+preservation and performance parity remain unverified.
+
+The preceding repeated-corner capture ran 14 successful owned commands and 28 real
 mouse clicks on private Xvfb under `VibocerosOracleTweenCornerSequencesVerified20261008`.
 [Complete records](../tools/rhino_oracle/observations/tween_surfaces_corner_sequences.json)
 retain each public viewport calibration, actual click, full source/output surfaces,
