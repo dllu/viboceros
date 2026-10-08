@@ -147,6 +147,7 @@ impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
         self.active_command.is_none()
             && self.boolean_two_prompt.is_none()
+            && self.planar_boolean_prompt.is_none()
             && self.selection_menu.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()

@@ -182,6 +182,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.planar_boolean_prompt.is_some() {
+            return Some(ObjectSelectionFilter::Surfaces);
+        }
         if let Some(p) = &self.boolean_two_prompt {
             return (!p.cycling()).then_some(ObjectSelectionFilter::SurfaceComponents);
         }
@@ -394,7 +397,7 @@ impl VibocerosApp {
         }
         let required = match description.command {
             "Circle FitPoints" => 3,
-            "BooleanUnion" => 2,
+            "BooleanUnion" | "PlanarUnion" => 2,
             _ => 1,
         };
         let selected_objects = self

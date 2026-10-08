@@ -31,6 +31,7 @@ Rhino's complete command set is still a work in progress.
 - [Subtract convex polyhedral cutters from solids](boolean-difference.md)
 - [Split polyhedral solids by multiple cutters](boolean-split.md)
 - [Cycle two-object Boolean results](boolean-two-objects.md)
+- [Planar surface Union, Difference and Intersection](planar-booleans.md)
 - [Extract individual surface faces](extract-srf.md)
 - [Circular pipe surfaces and solids](pipe.md)
 - [Cap planar surface, B-rep, and mesh holes](cap.md)

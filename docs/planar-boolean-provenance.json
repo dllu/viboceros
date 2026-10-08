@@ -1,0 +1,21 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOraclePlanarBooleanCorrected20261007",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 28,
+  "successful_commands": 28,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "limits": [
+    "Affine planar surfaces with linear trims; parallel offset surfaces are projected onto the first plane.",
+    "General curved boundaries, nonparallel projection, compound surfaces, near contacts and relative performance remain unverified.",
+    "Native pending pixel parity is not measured."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_boolean_probe.py": "7e67d6227b710bf0bd57edc5d311b85c3a2e471215a38b81c3423d0489617615",
+    "tools/rhino_oracle/fixtures/planar_boolean_command.json": "e6c4ba204c9717c9f6b01c062248219067535aebed996635061bf53e65219d96",
+    "tools/rhino_oracle/observations/planar_boolean_command.json": "06eca1218a0495c75030ab9c771811d4816a4bb9f9c15f4f59c9f9fb665d6d10"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_overlap",
+      "case": "planarunion_overlap"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_reverse",
+      "case": "planarunion_reverse"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_contained",
+      "case": "planarunion_contained"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_first_small",
+      "case": "planarunion_first_small"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_equal",
+      "case": "planarunion_equal"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_disjoint",
+      "case": "planarunion_disjoint"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_touch",
+      "case": "planarunion_touch"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_noncoplanar",
+      "case": "planarunion_noncoplanar"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_overlap",
+      "case": "planardifference_overlap"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_reverse",
+      "case": "planardifference_reverse"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_contained",
+      "case": "planardifference_contained"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_first_small",
+      "case": "planardifference_first_small"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_equal",
+      "case": "planardifference_equal"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_disjoint",
+      "case": "planardifference_disjoint"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_touch",
+      "case": "planardifference_touch"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_noncoplanar",
+      "case": "planardifference_noncoplanar"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_overlap",
+      "case": "planarintersection_overlap"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_reverse",
+      "case": "planarintersection_reverse"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_contained",
+      "case": "planarintersection_contained"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_first_small",
+      "case": "planarintersection_first_small"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_equal",
+      "case": "planarintersection_equal"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_disjoint",
+      "case": "planarintersection_disjoint"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_touch",
+      "case": "planarintersection_touch"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_noncoplanar",
+      "case": "planarintersection_noncoplanar"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_three",
+      "case": "planarunion_three"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarunion_pre",
+      "case": "planarunion_pre"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planardifference_pre",
+      "case": "planardifference_pre"
+    },
+    {
+      "op": "planar_boolean_command",
+      "id": "planar_boolean_command_planarintersection_pre",
+      "case": "planarintersection_pre"
+    }
+  ]
+}

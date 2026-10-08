@@ -161,6 +161,7 @@ mod mirror;
 mod move_normal;
 mod named_view;
 mod object_selection;
+mod planar_boolean;
 mod plane_primitives;
 mod point_grid;
 mod point_input;
@@ -1967,6 +1968,7 @@ pub struct VibocerosApp {
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     subcurve_prompt: Option<subcurve_prompt::SubcurvePrompt>,
     boolean_two_prompt: Option<boolean_two::Prompt>,
+    planar_boolean_prompt: Option<planar_boolean::Prompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2064,6 +2066,7 @@ impl VibocerosApp {
             intersection_prompt: None,
             subcurve_prompt: None,
             boolean_two_prompt: None,
+            planar_boolean_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -2212,6 +2215,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_planar_boolean(&input) {
+            return;
+        }
         if self.continue_boolean_two(&input) {
             return;
         }
@@ -2289,7 +2295,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.start_boolean_two(&input)
+        if self.start_planar_boolean(&input)
+            || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
             || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
@@ -5071,6 +5078,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.cancel_planar_boolean();
         self.cancel_boolean_two();
         if self.subcurve_prompt.take().is_some() {
             self.document.clear_selection();
@@ -7751,6 +7759,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_planar_boolean(click.object_id) {
+            return;
+        }
         if self
             .boolean_two_prompt
             .as_ref()
@@ -8510,6 +8521,7 @@ impl VibocerosApp {
             || self.group_prompt.is_some()
             || self.intersection_prompt.is_some()
             || self.boolean_two_prompt.is_some()
+            || self.planar_boolean_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -8600,6 +8612,8 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.planar_boolean_prompt.is_some() {
+            self.cancel_planar_boolean();
         } else if self.boolean_two_prompt.is_some() {
             self.cancel_boolean_two();
         } else if self.remember_copy_prompt {
@@ -8689,6 +8703,7 @@ impl eframe::App for VibocerosApp {
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
             && self.boolean_two_prompt.is_none()
+            && self.planar_boolean_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9482,6 +9497,7 @@ mod tests {
     mod named_view;
     mod nurbs_selection;
     mod object_selection;
+    mod planar_boolean;
     mod plane_arrays;
     mod point_grid;
     mod point_input;
@@ -9579,6 +9595,7 @@ mod tests {
             intersection_prompt: None,
             subcurve_prompt: None,
             boolean_two_prompt: None,
+            planar_boolean_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,

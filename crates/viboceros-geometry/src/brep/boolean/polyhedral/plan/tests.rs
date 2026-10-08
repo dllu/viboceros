@@ -494,3 +494,49 @@ fn coplanar_partial_area_queries_preserve_operand_order_and_exact_coverage() {
     ));
     assert_eq!((a, b), before);
 }
+
+#[test]
+fn finite_planar_set_union_uses_all_original_inputs_and_finite_coverage() {
+    let p = |y, z| Point3::try_new(1., y, z).unwrap();
+    let s = |lo, hi, zlo, zhi| {
+        Brep::try_surface_face(
+            NurbsSurface::try_bilinear([p(lo, zlo), p(hi, zlo), p(hi, zhi), p(lo, zhi)]).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    };
+    let a = s(-1., 3., -1., 3.);
+    let b = s(1., 4., 0., 2.).reversed();
+    let c = s(3.5, 5., 1., 3.);
+    let mut plan =
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&a, &b, &c], Tolerance::DEFAULT)
+            .unwrap();
+    for (operation, ids, area) in [
+        (BrepBooleanOperation::Union, vec![0, 1, 2], 20.5),
+        (BrepBooleanOperation::Intersection, vec![0, 1], 4.),
+        (BrepBooleanOperation::Difference, vec![0, 1], 12.),
+    ] {
+        let bodies = plan
+            .export_coplanar_sheet_set_boolean(operation, &ids)
+            .unwrap();
+        let total = bodies
+            .iter()
+            .map(|b| b.brep.area(Tolerance::DEFAULT).unwrap())
+            .sum::<f64>();
+        assert!((total - area).abs() < 1e-9);
+        assert!(bodies.iter().all(|b| !b.brep.is_solid()));
+    }
+    assert!(
+        plan.export_coplanar_sheet_set_boolean(BrepBooleanOperation::Union, &[])
+            .is_err()
+    );
+    assert!(
+        plan.export_coplanar_sheet_set_boolean(BrepBooleanOperation::Union, &[3])
+            .is_err()
+    );
+    plan.exported_faces = MAX_OUTPUT_FACES;
+    assert!(matches!(
+        plan.export_coplanar_sheet_set_boolean(BrepBooleanOperation::Union, &[0, 1]),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+}

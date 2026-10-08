@@ -215,6 +215,58 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         self.export_open_patches(selected)
     }
 
+    /// Finite-area set Boolean on coplanar sheet inputs in selection order.
+    /// The first input's supporting plane/orientation supplies every patch;
+    /// no half-space membership or virtual planning face supplies coverage.
+    pub fn export_coplanar_sheet_set_boolean(
+        &mut self,
+        operation: BrepBooleanOperation,
+        inputs: &[usize],
+    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+        let Some(&first) = inputs.first() else {
+            return Err(unsupported("at least one sheet required"));
+        };
+        if inputs.len() > 128 {
+            return Err(GeometryError::BrepBooleanWorkLimit);
+        }
+        for &index in inputs {
+            if !self.inputs_are_coplanar(first, index)? {
+                return Err(unsupported("coplanar physical sheets required"));
+            }
+        }
+        let mut patches =
+            BTreeMap::<Vec<ExactPoint>, (Polygon<'a>, [usize; 2], BTreeSet<usize>)>::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if !cell.source_covers_cell || !inputs.contains(&cell.source[0]) {
+                continue;
+            }
+            let entry = patches
+                .entry(canonical_ring(&cell.polygon.ring))
+                .or_insert_with(|| (cell.polygon.clone(), cell.source, BTreeSet::new()));
+            entry.2.insert(cell.source[0]);
+        }
+        let reference = &self.built.operands[first][0];
+        let mut selected = Vec::new();
+        for (mut polygon, source, owners) in patches.into_values() {
+            self.budget.spend(inputs.len() + 1)?;
+            let include = match operation {
+                BrepBooleanOperation::Union => true,
+                BrepBooleanOperation::Intersection => inputs.iter().all(|i| owners.contains(i)),
+                BrepBooleanOperation::Difference => {
+                    owners.contains(&first) && inputs.iter().skip(1).all(|i| !owners.contains(i))
+                }
+            };
+            if include {
+                if dot(&polygon.normal, &reference.normal).is_negative() {
+                    polygon = polygon.reverse();
+                }
+                selected.push((polygon, source));
+            }
+        }
+        self.export_open_patches(selected)
+    }
+
     /// Export a common/exclusive partition of two finite coplanar sheets.
     /// Distinct category labels retain overlap seams even when one original
     /// supporting face contributes both common and exclusive pieces.
