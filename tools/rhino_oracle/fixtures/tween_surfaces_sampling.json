@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_planes_sample2",
+      "case": "planes_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_planes_sample3",
+      "case": "planes_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_planes_sample6",
+      "case": "planes_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_warped_sample2",
+      "case": "warped_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_warped_sample3",
+      "case": "warped_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_warped_sample6",
+      "case": "warped_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_rational_sample2",
+      "case": "rational_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_rational_sample3",
+      "case": "rational_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_rational_sample6",
+      "case": "rational_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_counts_sample2",
+      "case": "counts_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_counts_sample3",
+      "case": "counts_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_counts_sample6",
+      "case": "counts_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_degrees_sample2",
+      "case": "degrees_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_degrees_sample3",
+      "case": "degrees_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_degrees_sample6",
+      "case": "degrees_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_domains_sample2",
+      "case": "domains_sample2"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_domains_sample3",
+      "case": "domains_sample3"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_domains_sample6",
+      "case": "domains_sample6"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_layer_startsrf",
+      "case": "layer_startsrf"
+    },
+    {
+      "op": "tween_surfaces_sampling",
+      "id": "tween_srf_layer_endsrf",
+      "case": "layer_endsrf"
+    }
+  ]
+}

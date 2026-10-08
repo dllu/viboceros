@@ -33,6 +33,37 @@ fn tween_surfaces_selection_confirmation_and_history() {
     assert_eq!(app.document.objects().len(), 4);
 }
 #[test]
+fn sampled_tween_options_survive_command_first_surface_selection() {
+    let (mut app, ids) = pair();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(
+        &mut app,
+        "TweenSurfaces MatchMethod=SamplePoints SampleNumber=6 NumberOfSurfaces=2",
+    );
+    for id in ids {
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(id),
+            mode: SelectionMode::Add,
+        });
+    }
+    enter(&mut app, "");
+    if app.object_prompt.is_some() {
+        enter(&mut app, "");
+    }
+    assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().len(), 4, "{:?}", app.command_log);
+    for o in app.document.objects().skip(2) {
+        let Geometry::Brep(b) = o.geometry() else {
+            panic!()
+        };
+        assert_eq!(b.faces()[0].surface().control_point_count_u(), 7);
+    }
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 4);
+}
+#[test]
 fn planar_difference_and_intersection_pick_ordered_surfaces_and_finish_on_second_pick() {
     for (name, area) in [("PlanarDifference", 12.), ("PlanarIntersection", 4.)] {
         let (mut app, ids) = pair();

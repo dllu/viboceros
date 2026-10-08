@@ -1280,6 +1280,13 @@ pub enum Operation {
         knots: CurveThroughKnotStyle,
         closed: bool,
     },
+    SurfaceTweenSampledGeometry {
+        id: String,
+        start_surface: NurbsSurfaceDefinition,
+        end_surface: NurbsSurfaceDefinition,
+        number: usize,
+        sample_number: usize,
+    },
     CurveTweenGeometry {
         id: String,
         start_curve: NurbsCurveDefinition,
@@ -2304,6 +2311,7 @@ impl Operation {
             | Self::Catenary { id, .. }
             | Self::CurveThroughGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
+            | Self::SurfaceTweenSampledGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
@@ -4842,6 +4850,28 @@ fn execute(
                 json!({
                     "curves": definitions,
                 }),
+                elapsed,
+            )
+        }
+        Operation::SurfaceTweenSampledGeometry {
+            start_surface,
+            end_surface,
+            number,
+            sample_number,
+            ..
+        } => {
+            let start = nurbs_surface_from_definition(start_surface)?;
+            let end = nurbs_surface_from_definition(end_surface)?;
+            let (surfaces, elapsed) = measure(iterations, || {
+                viboceros_geometry::try_tween_nurbs_surfaces_sampled(
+                    &start,
+                    &end,
+                    black_box(*number),
+                    black_box(*sample_number),
+                )
+            })?;
+            (
+                json!({"surfaces":surfaces.iter().map(nurbs_surface_definition_value).collect::<Vec<_>>()}),
                 elapsed,
             )
         }
@@ -12341,6 +12371,43 @@ mod tests {
             curves[1]["control_points"][0]["point"],
             json!([0.0, 6.0, 2.0])
         );
+    }
+    #[test]
+    fn sampled_surface_tween_protocol_replays_full_native_sdk_nets() {
+        let q: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_sampling.json"
+        ))
+        .unwrap();
+        for row in q["results"].as_array().unwrap() {
+            let v = &row["value"];
+            let request:ProbeRequest=serde_json::from_value(json!({"protocol_version":1,"iterations":1,"operations":[{
+                "op":"surface_tween_sampled_geometry","id":"sampled_surfaces",
+                "start_surface":v["spec"]["sources"][0],"end_surface":v["spec"]["sources"][1],"number":v["spec"]["number"],"sample_number":v["spec"]["sample"]
+            }]})).unwrap();
+            let response = run_request(&request).unwrap();
+            let actual = response.results[0].value["surfaces"].as_array().unwrap();
+            let expected = v["sampling_sdk"].as_array().unwrap();
+            assert_eq!(actual.len(), expected.len());
+            for (a, b) in actual.iter().zip(expected) {
+                assert_eq!(a["degree"], b["degree"]);
+                assert_eq!(a["control_count"], b["control_count"]);
+                for (a, b) in a["control_points"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .zip(b["control_points"].as_array().unwrap())
+                {
+                    for axis in 0..3 {
+                        assert!(
+                            (a["point"][axis].as_f64().unwrap()
+                                - b["point"][axis].as_f64().unwrap())
+                            .abs()
+                                < 1e-7
+                        );
+                    }
+                }
+            }
+        }
     }
 
     #[test]

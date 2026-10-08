@@ -1,0 +1,30 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenSampling20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 20,
+  "successful_commands": 20,
+  "sample_numbers": [
+    2,
+    3,
+    6
+  ],
+  "control_point_epsilon": 1e-07,
+  "knot_epsilon": 1e-08,
+  "normalized_surface_witness_epsilon": 1e-07,
+  "previous_sdk_replay_recipes": 22,
+  "limits": [
+    "Sampled output interpolates the blended grid, not a continuous exact transition between source surfaces.",
+    "Sampling is bounded at 255 divisions per axis and one million aggregate output controls.",
+    "Unequal-net control matching, Refit, native corner previews, ordered picks and option memory remain unfinished.",
+    "The prior matching-option-change capture retains additional native copies; those option-change effects are not reproduced locally.",
+    "Continuous native epsilon agreement and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_sampling_probe.py": "f193bda9f587bc2338f62a85a43c9465b96124298ae8acb341cbbce22cee76db",
+    "tools/rhino_oracle/fixtures/tween_surfaces_sampling.json": "173ccbc19a9db428cec3c2375e47f8e0be79ae8fb18d0ffcd20daeaa5c4d8faf",
+    "tools/rhino_oracle/observations/tween_surfaces_sampling.json": "9cf2dbc62d3ee2a02a4202c00da291c33f08afe608b80b3ef11967fc337ffec5"
+  }
+}

@@ -4,6 +4,73 @@ use crate::{GeometryError, NurbsSurface, Point3, Real, WeightedPoint3};
 pub const MAX_SURFACE_TWEEN_COUNT: usize = 4096;
 pub const MAX_SURFACE_TWEEN_CONTROLS: usize = 1_000_000;
 
+/// Sample normalized UV correspondence and interpolate each blended point grid.
+/// Each axis has `sample_number + 1` stations; source trims are not sampled.
+pub fn try_tween_nurbs_surfaces_sampled(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    sample_number: usize,
+) -> Result<Vec<NurbsSurface>, GeometryError> {
+    if !(1..=MAX_SURFACE_TWEEN_COUNT).contains(&number) || !(2..=255).contains(&sample_number) {
+        return Err(error("surface/sample count is outside the resource limit"));
+    }
+    let count = sample_number + 1;
+    check_count(
+        count
+            .checked_mul(count)
+            .ok_or_else(|| error("sample grid count overflow"))?,
+        number,
+    )?;
+    let mut pairs = Vec::with_capacity(count * count);
+    for j in 0..count {
+        for i in 0..count {
+            let fractions = [
+                i as Real / sample_number as Real,
+                j as Real / sample_number as Real,
+            ];
+            let point = |surface: &NurbsSurface| {
+                let domains = [surface.domain_u(), surface.domain_v()];
+                surface.evaluate(
+                    crate::exact_scalar::remap_scalar(
+                        fractions[0],
+                        [0., 1.],
+                        [*domains[0].start(), *domains[0].end()],
+                    )?,
+                    crate::exact_scalar::remap_scalar(
+                        fractions[1],
+                        [0., 1.],
+                        [*domains[1].start(), *domains[1].end()],
+                    )?,
+                )
+            };
+            pairs.push((point(start)?, point(end)?));
+        }
+    }
+    let mut result = Vec::with_capacity(number);
+    for index in 1..=number {
+        let fraction = index as Real / (number + 1) as Real;
+        let points = pairs
+            .iter()
+            .map(|(a, b)| {
+                let mut coordinates = [0.; 3];
+                for (axis, coordinate) in coordinates.iter_mut().enumerate() {
+                    *coordinate = crate::exact_scalar::interpolate_scalar(
+                        [a.to_array()[axis], b.to_array()[axis]],
+                        [0., 1.],
+                        fraction,
+                    )?;
+                }
+                Point3::try_from(coordinates)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        result.push(NurbsSurface::try_through_point_grid(
+            &points, [count; 2], [3; 2], [false; 2],
+        )?);
+    }
+    Ok(result)
+}
+
 /// Prepare equal-sized nets by exact degree elevation and common knots.
 /// Compatible positive rational nets retain first-source weights and apply
 /// the measured square-root weight ratio to control displacement.
@@ -191,6 +258,118 @@ fn error(context: &'static str) -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn sampled_tween_grids_keep_analytic_planes_and_reject_excessive_work() {
+        let plane = |z| {
+            NurbsSurface::try_bilinear([
+                Point3::try_new(0., 0., z).unwrap(),
+                Point3::try_new(4., 0., z).unwrap(),
+                Point3::try_new(4., 6., z).unwrap(),
+                Point3::try_new(0., 6., z).unwrap(),
+            ])
+            .unwrap()
+        };
+        let a = plane(0.);
+        let b = plane(9.);
+        let before = (a.clone(), b.clone());
+        for sample in [2, 3, 6] {
+            let result = try_tween_nurbs_surfaces_sampled(&a, &b, 2, sample).unwrap();
+            for (i, s) in result.iter().enumerate() {
+                for y in 0..17 {
+                    for x in 0..17 {
+                        let u = *s.domain_u().start()
+                            + (*s.domain_u().end() - *s.domain_u().start()) * x as Real / 16.;
+                        let v = *s.domain_v().start()
+                            + (*s.domain_v().end() - *s.domain_v().start()) * y as Real / 16.;
+                        let p = s.evaluate(u, v).unwrap();
+                        assert!(
+                            p.distance_to(
+                                Point3::try_new(
+                                    x as Real / 4.,
+                                    y as Real * 6. / 16.,
+                                    3. * (i + 1) as Real
+                                )
+                                .unwrap()
+                            )
+                            .unwrap()
+                                < 1e-12
+                        );
+                    }
+                }
+            }
+        }
+        assert_eq!((a.clone(), b.clone()), before);
+        for (number, sample) in [(0, 4), (1, 1), (1, 256), (4096, 255)] {
+            assert!(try_tween_nurbs_surfaces_sampled(&a, &b, number, sample).is_err());
+        }
+    }
+    #[test]
+    fn sampled_tweens_replay_all_native_sdk_surface_nets() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_command.json"
+        ))
+        .unwrap();
+        replay_sampled(&q);
+    }
+    #[test]
+    fn sampled_tweens_replay_twenty_native_commands_at_small_and_larger_grids() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_sampling.json"
+        ))
+        .unwrap();
+        assert_eq!(q["results"].as_array().unwrap().len(), 20);
+        replay_sampled(&q);
+    }
+    fn replay_sampled(q: &serde_json::Value) {
+        for row in q["results"].as_array().unwrap() {
+            let v = &row["value"];
+            let a = surface(&v["before"][0]["definition"]);
+            let b = surface(&v["before"][1]["definition"]);
+            let results = try_tween_nurbs_surfaces_sampled(
+                &a,
+                &b,
+                v["spec"]["number"].as_u64().unwrap() as usize,
+                v["spec"]["sample"].as_u64().unwrap() as usize,
+            )
+            .unwrap();
+            let expected = v["sampling_sdk"].as_array().unwrap();
+            assert_eq!(results.len(), expected.len());
+            for (s, e) in results.iter().zip(expected) {
+                let n = surface(e);
+                assert_eq!(
+                    (
+                        s.degree_u(),
+                        s.degree_v(),
+                        s.control_point_count_u(),
+                        s.control_point_count_v()
+                    ),
+                    (
+                        n.degree_u(),
+                        n.degree_v(),
+                        n.control_point_count_u(),
+                        n.control_point_count_v()
+                    )
+                );
+                for (a, b) in s
+                    .knots_u()
+                    .iter()
+                    .chain(s.knots_v())
+                    .zip(n.knots_u().iter().chain(n.knots_v()))
+                {
+                    assert!((a - b).abs() < 1e-8, "{} knots {a} {b}", v["case"]);
+                }
+                for (a, b) in s.control_points().iter().zip(n.control_points()) {
+                    assert!(
+                        a.point().distance_to(b.point()).unwrap() < 1e-7,
+                        "{} {:?} {:?}",
+                        v["case"],
+                        a,
+                        b
+                    );
+                }
+            }
+        }
+    }
     #[test]
     fn tween_limits_source_purity_and_extreme_coordinates() {
         let huge = f64::MAX * 0.5;

@@ -116,11 +116,13 @@ selection prompts, and Undo/Redo; application tests replay those 304 cases.
 The mesh containment query validates closed manifold topology once, classifies
 surface boundary points, and uses retried ray parity for interior tests. Volume
 object selection uses that query for mesh and tessellated B-rep sources.
-The initial [TweenSurfaces workflow](commands/tween-surfaces.md) adds compatible
-control-net transitions, explicit direction adjustments and measured layer/
-attribute/group policy. Rational displacement retains the first weights with
-square-root weight ratios. Unequal-net fitting and refinement modes remain
-unfinished, with complete native command/SDK evidence retained.
+The [TweenSurfaces workflow](commands/tween-surfaces.md) adds compatible control-net
+transitions and normalized-UV sampled tensor interpolation, with explicit
+direction changes and measured layer/attribute/group policy. Sampling accepts
+unequal polynomial/rational nets and retains mean-chord output domains. Rational
+control displacement retains the first weights with square-root weight ratios.
+Unequal-net control fitting and Refit remain unfinished. Complete native
+command/SDK evidence and a Python geometry query retain those boundaries.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

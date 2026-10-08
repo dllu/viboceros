@@ -43,6 +43,7 @@ mod curve_tween;
 mod surface_tween;
 pub use surface_tween::{
     MAX_SURFACE_TWEEN_CONTROLS, MAX_SURFACE_TWEEN_COUNT, try_tween_nurbs_surfaces,
+    try_tween_nurbs_surfaces_sampled,
 };
 mod edge_surface;
 mod ellipse;

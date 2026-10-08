@@ -6816,6 +6816,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'boolean_union_command':
         from boolean_union_probe import run
         return run(operation,globals())
+    if kind == 'tween_surfaces_sampling':
+        from tween_surfaces_sampling_probe import run
+        return run(operation,globals())
     if kind == 'tween_surfaces_command':
         from tween_surfaces_probe import run
         return run(operation,globals())
@@ -12282,6 +12285,24 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_curves_through_geometry)
 
+    if kind == "surface_tween_sampled_geometry":
+        number, sample = operation.get('number'), operation.get('sample_number')
+        if type(number) is not int or not 1 <= number <= 4096 or type(sample) is not int or not 2 <= sample <= 255 or (sample+1)**2*number > 1000000:
+            raise ValueError('surface tween resource limit')
+        surfaces=[]
+        try:
+            for key in ('start_surface','end_surface'):
+                surfaces.append(_nurbs_surface_from_definition(operation[key]))
+            def sampled_surface_tweens():
+                results=Rhino.Geometry.Surface.CreateTweenSurfacesWithSampling(surfaces[0],surfaces[1],number,sample,tolerance['absolute'])
+                if results is None or len(results)!=number:raise ValueError('Rhino surface tween returned wrong result count')
+                try:return {'surfaces':[_nurbs_surface_definition(s) for s in results]}
+                finally:
+                    for result in results:result.Dispose()
+            return _measure(iterations,sampled_surface_tweens)
+        finally:
+            for surface in surfaces:surface.Dispose()
+
     if kind == "curve_tween_geometry":
         curves = []
         try:
@@ -16770,7 +16791,7 @@ def _main(at_idle=False):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
-        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane", "scale_by_plane_object", "scale_by_plane_curve", "smooth_command", "smooth_frames", "smooth_uvn", "smooth_workflow", "grip_alias", "convex_boolean", "polyhedral_boolean", "polyhedral_boolean_command", "compound_intersection", "compound_pairs", "common_participation", "surface_curve_image", "surface_pullback_endpoints", "surface_pullback_linear", "surface_pullback_interpolation", "boolean_union_command", "boolean_intersection_command", "boolean_difference_command", "boolean_difference_order_command", "boolean_split_command", "boolean_split_plane", "boolean_split_open", "boolean_split_mixed_open", "boolean_split_topology", "boolean_two_command", "boolean_two_open", "boolean_two_coplanar", "planar_boolean_command", "planar_boolean_topology", "planar_boolean_circular", "planar_boolean_mixed", "planar_boolean_scale", "planar_circle_scale", "tween_surfaces_command") for op in request.get("operations", [])):
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane", "scale_by_plane_object", "scale_by_plane_curve", "smooth_command", "smooth_frames", "smooth_uvn", "smooth_workflow", "grip_alias", "convex_boolean", "polyhedral_boolean", "polyhedral_boolean_command", "compound_intersection", "compound_pairs", "common_participation", "surface_curve_image", "surface_pullback_endpoints", "surface_pullback_linear", "surface_pullback_interpolation", "boolean_union_command", "boolean_intersection_command", "boolean_difference_command", "boolean_difference_order_command", "boolean_split_command", "boolean_split_plane", "boolean_split_open", "boolean_split_mixed_open", "boolean_split_topology", "boolean_two_command", "boolean_two_open", "boolean_two_coplanar", "planar_boolean_command", "planar_boolean_topology", "planar_boolean_circular", "planar_boolean_mixed", "planar_boolean_scale", "planar_circle_scale", "tween_surfaces_command", "tween_surfaces_sampling") for op in request.get("operations", [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return
