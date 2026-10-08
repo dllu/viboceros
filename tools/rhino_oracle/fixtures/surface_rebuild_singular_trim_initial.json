@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_cap_untrim",
+      "case": "sphere_cap_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_cap_retrim",
+      "case": "sphere_cap_retrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_hole_untrim",
+      "case": "sphere_hole_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_hole_retrim",
+      "case": "sphere_hole_retrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_wedge_untrim",
+      "case": "sphere_wedge_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_wedge_retrim",
+      "case": "sphere_wedge_retrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_cone_hole_untrim",
+      "case": "cone_hole_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_cone_hole_retrim",
+      "case": "cone_hole_retrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_swapped_cap_untrim",
+      "case": "sphere_swapped_cap_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_swapped_cap_retrim",
+      "case": "sphere_swapped_cap_retrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_reversed_cap_untrim",
+      "case": "sphere_reversed_cap_untrim"
+    },
+    {
+      "op": "surface_rebuild_singular_trim",
+      "id": "singular_rebuild_sphere_reversed_cap_retrim",
+      "case": "sphere_reversed_cap_retrim"
+    }
+  ]
+}

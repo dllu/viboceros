@@ -4,6 +4,67 @@ use viboceros_document::{ColorRgb, ObjectAttributes, SelectionMode};
 use viboceros_geometry::{NurbsSurface, Tolerance, WeightedPoint3};
 
 #[test]
+fn trimmed_sphere_cap_preview_keeps_the_pole_through_acceptance_and_history() {
+    use viboceros_geometry::{Brep, BrepTrimType, Frame3, Vector3};
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let surface = NurbsSurface::try_sphere(frame, 2.).unwrap();
+    let original = Brep::try_rectangular_surface_face(
+        surface.clone(),
+        surface.domain_u(),
+        surface.parameter_at_v(0.7).unwrap()..=*surface.domain_v().end(),
+        tolerance,
+    )
+    .unwrap();
+    let mut app = test_app();
+    app.document = Document::new(tolerance);
+    let id = app.document.add_geometry(Geometry::Brep(original)).unwrap();
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Rebuild");
+    let ready = app
+        .rebuild_preview
+        .as_ref()
+        .unwrap()
+        .prepared
+        .as_ref()
+        .unwrap()
+        .outputs()
+        .next()
+        .unwrap()
+        .clone();
+    let Geometry::Brep(b) = &*ready else { panic!() };
+    let singular = b.faces()[0]
+        .loops()
+        .iter()
+        .flat_map(|l| l.trims())
+        .filter(|t| t.trim_type() == BrepTrimType::Singular)
+        .collect::<Vec<_>>();
+    assert_eq!(singular.len(), 1);
+    assert!(singular[0].edge().is_none());
+    assert_eq!(singular[0].vertices()[0], singular[0].vertices()[1]);
+    assert_eq!(
+        b.vertices()[singular[0].vertices()[0]].point(),
+        Point3::try_new(0., 0., 2.).unwrap()
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "");
+    assert_eq!(app.document.object(id).unwrap().geometry(), &*ready);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.object(id).unwrap().geometry(), &*ready);
+}
+
+#[test]
 fn trimmed_cylinder_band_preview_preserves_seam_sharing_and_atomic_history() {
     use viboceros_geometry::{Brep, BrepTrimType, Frame3, Vector3};
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();

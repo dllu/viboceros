@@ -937,6 +937,12 @@ thresholds, and polycurve-specific boundary behavior still need oracle coverage.
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
 results, and reports per-operation timings.
+Both ordinary engine runners require the returned recipe ID set to exactly match
+the request. Missing or unexpected outcomes fail protocol validation before a
+capture can be accepted; result order may differ. The retained initial singular
+Rebuild artifact has ten results for twelve requested recipes and fails this check.
+Its fresh [verified capture](../tools/rhino_oracle/observations/surface_rebuild_singular_trim.json)
+contains all twelve outcomes.
 
 `control_point_prompt_rhino_only.json` is a diagnostic exception: it exercises
 Rhino's Curve point prompt and records resulting control points, rather than

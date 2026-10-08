@@ -1,6 +1,7 @@
 //! Transfer physical face boundaries to a changed surface parameterization.
 use super::*;
 use crate::PointMorph;
+mod poles;
 
 const MAX_PROJECTED_CONTROLS: usize = 4096;
 
@@ -344,6 +345,8 @@ impl Brep {
     /// Exact pullbacks are certified when available. Otherwise the bounded
     /// closest-point projection fit has sampled accuracy checks; its resulting
     /// spatial edges have continuous certificates against the new UV trims.
+    /// Natural singular sides require an exactly collapsed target boundary and
+    /// retain their UV intervals and shared pole vertices without spatial edges.
     /// Projection is not a certified global nearest-point or topology guarantee.
     pub fn try_retrimmed_single_surface(
         &self,
@@ -437,17 +440,18 @@ impl Brep {
                 );
             }
         }
-        if face
-            .loops
-            .iter()
-            .flat_map(|l| &l.trims)
-            .any(|t| !matches!(t.trim_type, BrepTrimType::Boundary | BrepTrimType::Seam))
-        {
-            return invalid("retrimming requires boundary or seam trims");
+        if face.loops.iter().flat_map(|l| &l.trims).any(|t| {
+            !matches!(
+                t.trim_type,
+                BrepTrimType::Boundary | BrepTrimType::Seam | BrepTrimType::Singular
+            )
+        }) {
+            return invalid("retrimming requires boundary, seam or singular trims");
         }
         let normalized = surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
         let closed = [normalized.is_closed_u()?, normalized.is_closed_v()?];
         let original_normalized = face.surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
+        let poles = poles::prepare(face, &normalized)?;
         let numerical = Tolerance::try_new(
             (tolerance.absolute() * 1e-4).max(Real::MIN_POSITIVE),
             (tolerance.relative() * 1e-4).max(Real::MIN_POSITIVE),
@@ -456,14 +460,22 @@ impl Brep {
         let parameters = self
             .vertices
             .iter()
-            .map(|v| {
+            .enumerate()
+            .map(|(index, v)| {
+                if let Some(pole) = poles.get(&index) {
+                    return Ok(pole.parameter);
+                }
                 let (u, v) = normalized.closest_parameters(v.point, numerical)?;
                 Point2::try_new(u, v)
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let mut vertices = self.vertices.clone();
-        for (vertex, uv) in vertices.iter_mut().zip(&parameters) {
-            vertex.point = normalized.evaluate(uv.x(), uv.y())?;
+        for (index, (vertex, uv)) in vertices.iter_mut().zip(&parameters).enumerate() {
+            vertex.point = if let Some(pole) = poles.get(&index) {
+                pole.point
+            } else {
+                normalized.evaluate(uv.x(), uv.y())?
+            };
             vertex.tolerance = tolerance.absolute();
         }
         let mut edges = self.edges.clone();
@@ -483,6 +495,13 @@ impl Brep {
         let mut replacements = std::collections::BTreeMap::<(usize, usize), Vec<BrepTrim>>::new();
         for (loop_index, face_loop) in loops.iter_mut().enumerate() {
             for (trim_index, trim) in face_loop.trims.iter_mut().enumerate() {
+                if trim.trim_type == BrepTrimType::Singular {
+                    // The complete target side was proved exactly constant.
+                    // Keep this trim's own UV interval and the shared pole index.
+                    trim.iso = trim_iso::classify(&trim.curve, &target);
+                    trim.tolerance = [0.; 2];
+                    continue;
+                }
                 let index = trim.edge.ok_or(GeometryError::InvalidBrepTopology {
                     context: "retrimming needs spatial edges",
                 })?;
@@ -544,30 +563,48 @@ impl Brep {
                 ];
                 let mut ends = [parameters[trim.vertices[0]], parameters[trim.vertices[1]]];
                 for i in 0..2 {
-                    let uv = nearest_lift(ends[i].to_array(), references[i], closed);
-                    ends[i] = Point2::try_new(uv[0], uv[1])?;
+                    ends[i] = if let Some(pole) = poles.get(&trim.vertices[i]) {
+                        pole.endpoint(references[i])?
+                    } else {
+                        let uv = nearest_lift(ends[i].to_array(), references[i], closed);
+                        Point2::try_new(uv[0], uv[1])?
+                    };
                 }
+                // Native transfer keeps a complete constant-U contour on a
+                // closed V chart as a target isocurve. Its U coordinate comes
+                // from the projected shared endpoint. Pointwise surface
+                // closest points can vary in U and describe a different locus.
+                let fixed_isocurve = (closed[1]
+                    && trim.iso == SurfaceIso::InteriorUConstant
+                    && normalized_trim.is_straight_segment()
+                    && references[0][0] == references[1][0]
+                    && matches!([references[0][1], references[1][1]], [0., 1.] | [1., 0.]))
+                .then_some((0, ends[0].x()));
                 let uv = projection_curve(
                     &normalized,
                     &source,
                     ends,
                     tolerance,
-                    closed.into_iter().any(|c| c).then_some(ProjectionChart {
-                        source: &original_normalized,
-                        curve: &normalized_trim,
-                        closed,
-                        fixed: if trim.trim_type == BrepTrimType::Seam {
-                            match trim.iso {
-                                SurfaceIso::West => Some((0, 0.)),
-                                SurfaceIso::East => Some((0, 1.)),
-                                SurfaceIso::South => Some((1, 0.)),
-                                SurfaceIso::North => Some((1, 1.)),
-                                _ => None,
-                            }
-                        } else {
-                            None
+                    (closed.into_iter().any(|c| c) || !poles.is_empty()).then_some(
+                        ProjectionChart {
+                            source: &original_normalized,
+                            curve: &normalized_trim,
+                            closed,
+                            fixed: if fixed_isocurve.is_some() {
+                                fixed_isocurve
+                            } else if trim.trim_type == BrepTrimType::Seam {
+                                match trim.iso {
+                                    SurfaceIso::West => Some((0, 0.)),
+                                    SurfaceIso::East => Some((0, 1.)),
+                                    SurfaceIso::South => Some((1, 0.)),
+                                    SurfaceIso::North => Some((1, 1.)),
+                                    _ => None,
+                                }
+                            } else {
+                                None
+                            },
                         },
-                    }),
+                    ),
                 )?;
                 let controls = uv
                     .control_points()
@@ -734,6 +771,120 @@ mod tests {
             seams[1].curve.end_point().unwrap().x()
         );
         assert!((result.area(tolerance).unwrap() - 8. * std::f64::consts::PI).abs() < 0.01);
+    }
+
+    #[test]
+    fn spherical_cap_transfer_keeps_exact_poles_and_both_chart_branches() {
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.).unwrap();
+        for swapped in [false, true] {
+            let surface = if swapped {
+                sphere.try_swapped_uv().unwrap()
+            } else {
+                sphere.clone()
+            };
+            let u = surface.domain_u();
+            let v = surface.domain_v();
+            let original = Brep::try_rectangular_surface_face(
+                surface.clone(),
+                if swapped {
+                    surface.parameter_at_u(0.7).unwrap()..=*u.end()
+                } else {
+                    u
+                },
+                if swapped {
+                    v
+                } else {
+                    surface.parameter_at_v(0.7).unwrap()..=*v.end()
+                },
+                tolerance,
+            )
+            .unwrap()
+            .reversed();
+            let before = original.clone();
+            let target = crate::try_rebuild_nurbs_surface(&surface, [12, 8], [3, 3]).unwrap();
+            let result = original
+                .try_retrimmed_single_surface(target, tolerance)
+                .unwrap();
+            assert_eq!(original, before);
+            assert!(result.faces[0].reversed);
+            assert_eq!(result.vertices.len(), result.edges.len());
+            assert_eq!(result.faces[0].loops[0].trims.len(), result.edges.len() + 2);
+            let seams = result.faces[0].loops[0]
+                .trims
+                .iter()
+                .filter(|t| t.trim_type == BrepTrimType::Seam)
+                .collect::<Vec<_>>();
+            assert_eq!(seams.len(), 2);
+            assert_eq!(seams[0].edge, seams[1].edge);
+            let singular = result.faces[0].loops[0]
+                .trims
+                .iter()
+                .find(|t| t.trim_type == BrepTrimType::Singular)
+                .unwrap();
+            assert!(singular.edge.is_none());
+            assert_eq!(singular.vertices[0], singular.vertices[1]);
+            assert_eq!(
+                result.vertices[singular.vertices[0]].point,
+                Point3::try_new(0., 0., 2.).unwrap()
+            );
+            assert_eq!(
+                singular.curve,
+                original.faces[0].loops[0]
+                    .trims
+                    .iter()
+                    .find(|t| t.trim_type == BrepTrimType::Singular)
+                    .unwrap()
+                    .curve
+            );
+        }
+    }
+
+    #[test]
+    fn singular_trim_transfer_rejects_a_target_without_the_exact_collapse() {
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.).unwrap();
+        let original = Brep::try_rectangular_surface_face(
+            sphere.clone(),
+            sphere.domain_u(),
+            sphere.parameter_at_v(0.7).unwrap()..=*sphere.domain_v().end(),
+            tolerance,
+        )
+        .unwrap();
+        let before = original.clone();
+        let target = crate::try_rebuild_nurbs_surface(&sphere, [12, 8], [3, 3]).unwrap();
+        let mut controls = target.control_points().to_vec();
+        let index = (target.control_point_count_v() - 1) * target.control_point_count_u() + 1;
+        controls[index] =
+            WeightedPoint3::try_new(Point3::try_new(0.01, 0., 2.).unwrap(), 1.).unwrap();
+        let target = NurbsSurface::try_new_rational(
+            target.degree_u(),
+            target.degree_v(),
+            target.control_point_count_u(),
+            target.control_point_count_v(),
+            controls,
+            target.knots_u().to_vec(),
+            target.knots_v().to_vec(),
+        )
+        .unwrap();
+        assert!(
+            original
+                .try_retrimmed_single_surface(target, tolerance)
+                .is_err()
+        );
+        assert_eq!(original, before);
     }
     #[test]
     fn projection_moves_boundaries_to_parallel_surface_and_preserves_holes_and_orientation() {

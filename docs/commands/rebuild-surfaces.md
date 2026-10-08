@@ -68,7 +68,12 @@ originals and Redo restores the accepted objects. All geometry is prepared befor
 document edits.
 
 `ReTrim=No` rebuilds a single face's full underlying surface with natural boundaries
-and uniform output domains. `ReTrim=Yes` transfers the original physical edges
+and uniform output domains. When removing trims produces a solid, its output
+orientation is normalized outward, including swapped/reversed sphere charts.
+The exact solid-orientation classifier is tried first; an unresolved single
+connected shell uses the signed-volume fallback shared by `Cap`. This numerical
+fallback is not a certificate of a general solid's embedding. Open output faces
+retain their source face sense. `ReTrim=Yes` transfers the original physical edges
 onto the rebuilt surface and retains the source UV domains. Natural four-side
 faces use exact target isocurves directly, following measured native behavior.
 Their edge indices, vertex connectivity, reversed uses and face orientation are
@@ -90,6 +95,17 @@ tensor-knot composition. Constant-coordinate interpolation noise can be aligned
 within the UV fit budget before exact-locus simplification; trim parameter speed
 need not match the input edge's speed.
 
+A complete constant-U contour spanning a closed V chart transfers to a target
+isocurve at its projected shared endpoint U. Captured trim transfer keeps that
+coordinate even when pointwise nearest surface parameters vary. The constant-V
+contour on the normal sphere chart follows the preceding fitted projection path;
+this measured native asymmetry remains explicit. A separate
+[66-query closest-point capture](../../tools/rhino_oracle/observations/surface_rebuild_cap_projection.json)
+shows a U range of about `0.000474` on the swapped cap, while the native transferred
+trim's U control range is below `3e-8`. The isocurve rule follows native contour
+transfer rather than claiming the pointwise closest locus. General contour and
+chart families remain unverified.
+
 Natural closed faces now support seam and singular trims when the target has
 the same side incidence. Repeated seam edges, singular trims without edges,
 vertex connectivity and face orientation are retained. The complete source UV
@@ -98,9 +114,16 @@ span counts. Trimmed seam faces use a separate periodic lift for each trim use,
 preserving U=0 and U=end even when both refer to one spatial vertex. Projection
 continues from the original chart with bounded local refinement and global
 fallback. Exact seam sides use one-dimensional isocurve projection. Generic
-singular trimmed faces remain unsupported.
+singular trims on exactly collapsed natural sides are also supported. A coherent
+UV control hull must remain inside the original chart, and the complete target
+boundary isocurve must have identical control positions. The pole retains its
+vertex index and has no spatial edge. Each singular trim retains its own UV
+interval, including partial sides on wedges. Adjacent edge uses retain separate
+UV endpoints at the same pole; the collapsed coordinate is set exactly. Target
+sides that lose their exact collapse, interior singularities and conflicting
+pole incidence are rejected before document edits.
 
-Polysurfaces, generic singular trimmed faces, rational target surfaces, mixed curve/surface batches,
+Polysurfaces, general interior singularities, rational target surfaces, mixed curve/surface batches,
 native preview appearance, restart persistence and performance parity remain unresolved.
 The earlier replacement capture contains no geometry-root user text, so its
 replacement lifetime is not established by that evidence.
@@ -199,8 +222,23 @@ and vertex records compared with Rhino; segmentation differences remain explicit
 Limits are 4,096 projected controls, 2,048 source spans, eight subdivision levels
 and 256 certified pieces per contour. Projection fitting has sampled accuracy
 checks; each output piece has continuous trim/edge correspondence certification.
-General multi-chart winding, generic singular trims and performance parity remain
+General multi-chart winding, interior singular trims and performance parity remain
 unverified. See [seam trim provenance](../seam-trim-rebuild-provenance.json).
+
+The [12-case singular trim capture](../../tools/rhino_oracle/observations/surface_rebuild_singular_trim.json)
+ran on private Xvfb for sphere caps, circular holes, half-sphere wedges, a holed
+cone, and swapped/reversed cap charts. Every ReTrim=Yes native B-rep exactly equals
+public `Brep.CreateTrimmedSurface`. Controls, topology, source purity and independent
+Undo/Redo are retained. Local replay checks target controls at `1e-6`, scaled knots
+at `1e-12`, pole trims without edges, shared seams and native edge witnesses at
+`2e-6`; extra local boundary segmentation remains explicit. Analytic tests check
+both cap charts, exact pole positions, reversed face orientation and rejection of
+a perturbed target pole. App tests exercise readonly cap preview, acceptance and
+history. An initial ten-result artifact is incomplete evidence for its twelve-case
+request and remains separate from the verified capture. See
+[singular trim provenance](../singular-trim-rebuild-provenance.json).
+The first complete local replay exposed inward full-sphere outputs with ReTrim=No
+after chart edits; outward normalization corrects that measured discrepancy.
 
 The oracle operation `surface_rebuild_geometry` accepts `surface`, `point_count`
 and `degree`, returning the complete `surface` definition in either engine.
@@ -214,7 +252,7 @@ the two loops, projected vertices and native edge distance witnesses at `2e-6`.
 ```sh
 cargo test --release -p viboceros-geometry surface_rebuild
 cargo test --release -p viboceros-command surface_rebuild
-python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview tools.rhino_oracle.test_closed_surface_rebuild tools.rhino_oracle.test_seam_trim_rebuild
+python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview tools.rhino_oracle.test_closed_surface_rebuild tools.rhino_oracle.test_seam_trim_rebuild tools.rhino_oracle.test_singular_trim_rebuild
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface_rebuild_geometry.json --scheme VibocerosOracleSurfaceRebuildSDK --absolute-epsilon 1e-6 --relative-epsilon 1e-10
 ```
 

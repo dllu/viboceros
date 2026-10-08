@@ -152,7 +152,7 @@ coupling. Physical retrimming projects original edges onto the changed surface,
 preserves source domains and certifies newly constructed trim/edge correspondence.
 Fourteen native commands distinguish projection from UV copying, including
 nonuniform, curved/rational and holed sources. Projection fitting has sampled
-accuracy checks; generic singular trims, native preview appearance, restart persistence
+accuracy checks; interior singular trims, native preview appearance, restart persistence
 and performance parity remain unfinished or unverified. Rebuild options use a
 readonly scene and a shared prepared command result. Source snapshots and metadata
 guard acceptance; unchanged edits retain the cache, output policies reuse geometry,
@@ -167,7 +167,16 @@ faces keep per-use periodic branches and shared seam incidence; ten native cylin
 recipes extend that evidence to patches and holes crossing the seam. Compact fits
 retain original-span validation stations, while unshared contours can subdivide
 into continuously certified UV/spatial pieces. Extra boundary segmentation remains
-an explicit native representation difference. Generic singular trim projection,
+an explicit native representation difference. Exact collapsed natural sides also
+retain full or partial singular UV trims and pole vertices without spatial edges.
+Twelve native cap/hole/wedge recipes cover spheres, a cone and edited charts.
+Perturbed target poles are rejected before document edits. ReTrim=No normalizes
+newly closed single-face solids outward, using exact sense where available and a
+numerical signed-volume fallback for an unresolved connected shell.
+A full constant-U contour on a closed V chart transfers to the target isocurve
+at its projected endpoint U. Independent closest-point queries expose the native
+swapped-cap asymmetry relative to pointwise projection.
+Interior singular trim projection,
 multi-chart winding and arbitrary periodic surfaces remain unfinished or unverified.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep

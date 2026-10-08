@@ -1,0 +1,57 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSurfaceRebuildSingularTrimVerified20261008",
+  "recipes": 12,
+  "full_native_parity": false,
+  "control_epsilon": 1e-06,
+  "knot_epsilon": 1e-12,
+  "boundary_witness_epsilon": 2e-06,
+  "measured_rule": "ReTrim=Yes equals public Brep.CreateTrimmedSurface on sphere caps, circular holes, half-sphere wedges, cone holes and swapped/reversed cap charts, retaining natural collapsed-side trims without spatial edges. ReTrim=No removes trimming and orients the closed full-sphere output outward after swapped/reversed chart edits.",
+  "initial_diagnostic": "The first retained artifact contains ten outcomes for a twelve-recipe request. It is incomplete evidence; the fresh verified capture contains all twelve. The final producer supplies a negative U station for the reversed chart.",
+  "limits": [
+    "Only exactly collapsed natural target sides are admitted; singular interior curves and noncollapsed target replacements remain unsupported.",
+    "Coherent UV weights and a control hull inside the natural parameter chart are required for singular trims.",
+    "Projection searches and fits remain numerical; no global closest-point or continuous projection-error proof is claimed.",
+    "Boundary subdivision can differ from native edge/vertex segmentation; performance parity remains unverified.",
+    "The single-shell signed-volume orientation fallback is numerical and does not certify a general solid embedding."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_singular_trim_probe.py": "f71ff951da1b29431ab27e213640f3eb0f54fd5e4d8ba119e296ca9cd1c92575",
+    "tools/rhino_oracle/fixtures/surface_rebuild_singular_trim.json": "d521d9c82f3d693e7b225f7f4697e198573fb0c3bf5c2b0e8008436faed3da17",
+    "tools/rhino_oracle/observations/surface_rebuild_singular_trim.json": "b14feb8c3861c7107dde98f5080b935450edabf71c20418dd319fb9c5554ea8a",
+    "tools/rhino_oracle/surface_rebuild_singular_trim_initial_probe.py": "94f9b57e075fb37c9a88165e68ecb82f4cb215a984f1a679c9bb7b35294c8ae7",
+    "tools/rhino_oracle/fixtures/surface_rebuild_singular_trim_initial.json": "d521d9c82f3d693e7b225f7f4697e198573fb0c3bf5c2b0e8008436faed3da17",
+    "tools/rhino_oracle/observations/surface_rebuild_singular_trim_initial.json": "4d361c8ce1d1d0ccc699e5309ce978524960aa416011b65f678c93a398940269",
+    "tools/rhino_oracle/surface_rebuild_cap_projection_request.py": "df1095160b36b7a4e98490bf7f55e385f6f3b30c0b18f30039de4da1e5db8cf0",
+    "tools/rhino_oracle/fixtures/surface_rebuild_cap_projection.json": "b50bffcab35d773c542ded044846b115602c6370fef627a0b042ea22e20ade53",
+    "tools/rhino_oracle/observations/surface_rebuild_cap_projection.json": "0faa79a2447437823c1fd75157c3633bc726c9504a5257393d623d8b414c096e"
+  },
+  "local_initial_diagnostic": "The complete replay passed caps, sphere holes, wedges and cone holes, then exposed an inward ReTrim=No full-sphere output after chart edits. Single-face solid orientation now normalizes outward, with an exact classifier and a numerical signed-volume fallback for an unresolved connected shell. A second replay exposed the swapped cap contour policy; 66 independent SDK closest queries distinguish that native isocurve transfer from pointwise projection.",
+  "local_segmentation": {
+    "sphere_cap_retrim": {
+      "local_edges": 73,
+      "native_edges": 2
+    },
+    "sphere_hole_retrim": {
+      "local_edges": 84,
+      "native_edges": 2
+    },
+    "cone_hole_retrim": {
+      "local_edges": 83,
+      "native_edges": 3
+    },
+    "sphere_swapped_cap_retrim": {
+      "local_edges": 2,
+      "native_edges": 2
+    },
+    "sphere_reversed_cap_retrim": {
+      "local_edges": 73,
+      "native_edges": 2
+    }
+  },
+  "cap_projection_scheme": "VibocerosOracleSurfaceRebuildCapProjectionFinal20261008",
+  "cap_projection_witnesses": 66,
+  "cap_projection_rule": "A complete InteriorUConstant trim spanning a closed V chart is transferred to the target isocurve at its projected shared endpoint U. On the swapped sphere cap, native surface closest U spans about 0.000474, while native transfer U varies by less than 3e-8. This is intentionally different from the pointwise closest locus."
+}

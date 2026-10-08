@@ -194,6 +194,15 @@ fn seam_crossing_hole_rebuild_preserves_native_trim_incidence() {
     replay_with_knots(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap(), 1e-12);
 }
 
+#[test]
+fn singular_trim_rebuild_replays_native_caps_holes_wedges_and_chart_edits() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/surface_rebuild_singular_trim.json"
+    ))
+    .unwrap();
+    replay_with_knots(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap(), 1e-12);
+}
+
 fn boundary_samples(curves: &[&NurbsCurve]) -> Vec<Vec<Point3>> {
     curves
         .iter()
@@ -244,6 +253,7 @@ fn replay_with_knots(q: &Value, tolerance: Tolerance, knot_epsilon: Real) {
     for row in q["results"].as_array().unwrap() {
         let v = &row["value"];
         let spec = &v["spec"];
+        eprintln!("retrimming replay {}", v["case"]);
         let original = source(&v["before"][0]["brep"], tolerance);
         let mut doc = Document::new(tolerance);
         let registry = CommandRegistry::with_builtins();
@@ -270,6 +280,12 @@ fn replay_with_knots(q: &Value, tolerance: Tolerance, knot_epsilon: Real) {
         let surface = actual.faces()[0].surface();
         let native =
             crate::tween_surfaces::tests::native_surface(&expected["faces"][0]["definition"]);
+        assert_eq!(
+            actual.faces()[0].is_reversed(),
+            expected["topology"]["faces"][0]["reversed"]
+                .as_bool()
+                .unwrap()
+        );
         assert_eq!(surface.degree_u(), native.degree_u());
         assert_eq!(surface.degree_v(), native.degree_v());
         assert_eq!(
@@ -329,6 +345,24 @@ fn replay_with_knots(q: &Value, tolerance: Tolerance, knot_epsilon: Real) {
                 .filter(|t| t["type"] == "Seam")
                 .count();
             assert_eq!(local_seams, native_seams);
+            let local_singular = actual.faces()[0]
+                .loops()
+                .iter()
+                .flat_map(|l| l.trims())
+                .filter(|t| t.trim_type() == BrepTrimType::Singular)
+                .collect::<Vec<_>>();
+            let native_singular = expected["topology"]["faces"][0]["loops"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .flat_map(|l| l["trims"].as_array().unwrap())
+                .filter(|t| t["type"] == "Singular")
+                .count();
+            assert_eq!(local_singular.len(), native_singular);
+            for t in local_singular {
+                assert!(t.edge().is_none());
+                assert_eq!(t.vertices()[0], t.vertices()[1]);
+            }
             let native_curves = expected["edges"]
                 .as_array()
                 .unwrap()

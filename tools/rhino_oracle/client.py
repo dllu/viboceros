@@ -138,7 +138,7 @@ class OracleClient:
         """Run the native release-mode Rust probe."""
 
         response = self._run_native(request, timeout, audit=False)
-        _validate_response(response, "viboceros")
+        _validate_response(response, "viboceros", request)
         return response
 
     def run_viboceros_audit(
@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'surface_rebuild_singular_trim' for op in request.get('operations', [])):
+            from .surface_rebuild_singular_trim_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Surface Rebuild requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'surface_rebuild_crossing_hole' for op in request.get('operations', [])):
             from .surface_rebuild_crossing_hole_probe import validate_request
             if self.settings_scheme is None:
@@ -1009,6 +1014,9 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'surface_rebuild_singular_trim' for op in request.get('operations', [])):
+                for name in ('surface_rebuild_singular_trim_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'surface_rebuild_crossing_hole' for op in request.get('operations', [])):
                 for name in ('surface_rebuild_crossing_hole_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
@@ -1520,7 +1528,7 @@ class OracleClient:
                 if owned_window is not None:
                     _close_rhino_window(owned_window, self.repo_root)
                 _terminate_owned_rhino_processes(owned_pids, windows_worker)
-        _validate_response(response, "rhino")
+        _validate_response(response, "rhino", request)
         if any(op.get("op") == "scale_by_plane" for op in request.get("operations", [])):
             interaction.record_diagnostics(response)
         if any(op.get('op') in ('mirror_preview','translation_preview','affine_preview','twist_preview','bend_preview','taper_preview','maelstrom_preview','scale_nu_reference') for op in request.get('operations', [])):
@@ -1920,7 +1928,9 @@ def _read_optional_text(path: Path) -> str:
         return ""
 
 
-def _validate_response(response: Mapping[str, Any], engine: str) -> None:
+def _validate_response(
+    response: Mapping[str, Any], engine: str, request: Mapping[str, Any] | None = None,
+) -> None:
     if not isinstance(response, Mapping):
         raise OracleProtocolError(f"{engine} response must be a JSON object")
     if type(response.get("protocol_version")) is not int or response["protocol_version"] != PROTOCOL_VERSION:
@@ -1956,6 +1966,13 @@ def _validate_response(response: Mapping[str, Any], engine: str) -> None:
         if isinstance(elapsed, bool) or not isinstance(elapsed, int) or elapsed < 0:
             raise OracleProtocolError(
                 f"{engine} result {operation_id!r} has invalid elapsed_ns"
+            )
+    if request is not None:
+        expected = {op["id"] for op in request.get("operations", [])}
+        if seen != expected:
+            raise OracleProtocolError(
+                f"{engine} result ids differ from request: "
+                f"missing={sorted(expected - seen)!r}, unexpected={sorted(seen - expected)!r}"
             )
 
 

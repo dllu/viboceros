@@ -255,11 +255,23 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
             }
         } else {
             let b = Brep::try_surface_face(rebuilt, doc.tolerance())?;
-            if matches!(object.geometry(),Geometry::Brep(original) if original.faces()[0].is_reversed())
+            let b = if matches!(object.geometry(),Geometry::Brep(original) if original.faces()[0].is_reversed())
             {
                 b.reversed()
             } else {
                 b
+            };
+            // Removing trims can close an inward open source into a full solid.
+            // Native Rebuild normalizes that output's orientation. The volume
+            // fallback applies only to this one connected, single-face shell.
+            match b.solid_orientation()? {
+                viboceros_geometry::BrepSolidOrientation::Inward => b.reversed(),
+                viboceros_geometry::BrepSolidOrientation::Unknown
+                    if b.signed_volume(doc.tolerance())? < 0. =>
+                {
+                    b.reversed()
+                }
+                _ => b,
             }
         };
         let attrs = object.attributes().clone().with_layer(if options.current {
