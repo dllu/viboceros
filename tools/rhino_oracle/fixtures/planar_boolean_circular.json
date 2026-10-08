@@ -1,0 +1,146 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_overlap",
+      "case": "planarunion_overlap"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_reverse",
+      "case": "planarunion_reverse"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_contained",
+      "case": "planarunion_contained"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_first_small",
+      "case": "planarunion_first_small"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_equal",
+      "case": "planarunion_equal"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_disjoint",
+      "case": "planarunion_disjoint"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_tangent",
+      "case": "planarunion_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_internal_tangent",
+      "case": "planarunion_internal_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_offset",
+      "case": "planarunion_offset"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_overlap",
+      "case": "planardifference_overlap"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_reverse",
+      "case": "planardifference_reverse"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_contained",
+      "case": "planardifference_contained"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_first_small",
+      "case": "planardifference_first_small"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_equal",
+      "case": "planardifference_equal"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_disjoint",
+      "case": "planardifference_disjoint"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_tangent",
+      "case": "planardifference_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_internal_tangent",
+      "case": "planardifference_internal_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planardifference_offset",
+      "case": "planardifference_offset"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_overlap",
+      "case": "planarintersection_overlap"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_reverse",
+      "case": "planarintersection_reverse"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_contained",
+      "case": "planarintersection_contained"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_first_small",
+      "case": "planarintersection_first_small"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_equal",
+      "case": "planarintersection_equal"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_disjoint",
+      "case": "planarintersection_disjoint"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_tangent",
+      "case": "planarintersection_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_internal_tangent",
+      "case": "planarintersection_internal_tangent"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarintersection_offset",
+      "case": "planarintersection_offset"
+    },
+    {
+      "op": "planar_boolean_circular",
+      "id": "planar_boolean_circular_planarunion_three",
+      "case": "planarunion_three"
+    }
+  ]
+}

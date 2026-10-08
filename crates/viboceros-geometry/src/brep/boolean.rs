@@ -29,9 +29,11 @@ pub use polyhedral::{
 };
 mod intersection;
 mod merge;
+mod planar_circular;
 pub use intersection::{
     BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,
 };
+pub use planar_circular::boolean_planar_breps;
 mod convex_plan;
 mod union;
 pub use convex_plan::{BrepConvexBooleanPlan, BrepConvexRegion};

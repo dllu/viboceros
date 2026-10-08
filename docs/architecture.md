@@ -49,7 +49,9 @@ identity, default attributes, empty-result and preselection history policies.
 The projection kernel keeps original trim-hole polygons rational through
 orthogonal projection and finite-area classification, then extends the first
 support only for final validated output. Tilted and collapsed inputs do not
-supply rounded intermediate operands. General curved Boolean commands
+supply rounded intermediate operands. The circular planar adapter certifies
+complete disk loops, classifies analytic arc intervals and keeps rational arc
+seams, with two native internal-contact discrepancies retained in its evidence. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

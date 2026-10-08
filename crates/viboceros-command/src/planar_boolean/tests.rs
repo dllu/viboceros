@@ -160,6 +160,29 @@ fn replay(q: &Value) {
 
 fn shape_brep(shape: &Value, tolerance: Tolerance) -> Brep {
     match shape["kind"].as_str().unwrap() {
+        "disk" => {
+            let circle = viboceros_geometry::Circle3::try_new(
+                Point3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["center"].clone()).unwrap(),
+                )
+                .unwrap(),
+                shape["radius"].as_f64().unwrap(),
+                viboceros_geometry::Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["normal"].clone()).unwrap(),
+                )
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            let b = Brep::try_planar_face(&circle.to_nurbs().unwrap(), tolerance).unwrap();
+            if shape["reverse"] == true {
+                b.reversed()
+            } else {
+                b
+            }
+        }
         "box" => crate::boolean_union::tests::box_brep(
             serde_json::from_value(shape["bounds"].clone()).unwrap(),
         ),
@@ -261,4 +284,160 @@ fn shape_brep(shape: &Value, tolerance: Tolerance) -> Brep {
             }
         }
     }
+}
+
+fn native_curve(v: &Value) -> viboceros_geometry::NurbsCurve {
+    let controls = v["control_points"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|c| {
+            viboceros_geometry::WeightedPoint3::try_new(
+                Point3::try_from(serde_json::from_value::<[f64; 3]>(c["point"].clone()).unwrap())
+                    .unwrap(),
+                c["weight"].as_f64().unwrap(),
+            )
+            .unwrap()
+        })
+        .collect();
+    viboceros_geometry::NurbsCurve::try_new_rational(
+        v["degree"].as_u64().unwrap() as usize,
+        controls,
+        serde_json::from_value(v["knots"].clone()).unwrap(),
+    )
+    .unwrap()
+}
+fn curve_distance(
+    curves: &[&viboceros_geometry::NurbsCurve],
+    point: Point3,
+    tolerance: Tolerance,
+) -> f64 {
+    curves
+        .iter()
+        .map(|c| {
+            c.evaluate(c.closest_parameter(point, tolerance).unwrap())
+                .unwrap()
+                .distance_to(point)
+                .unwrap()
+        })
+        .fold(f64::INFINITY, f64::min)
+}
+#[test]
+fn planar_circular_native_boundary_history_and_contact_diagnostics() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/planar_boolean_circular.json"
+    ))
+    .unwrap();
+    let mut regular = 0;
+    for r in q["results"].as_array().unwrap() {
+        let v = &r["value"];
+        let case = v["case"].as_str().unwrap();
+        let (mut doc, ids, layers, groups) = setup(v);
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        let command = format!(
+            "{} Sources={}",
+            v["command_name"].as_str().unwrap(),
+            ids.iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+                .join(",")
+        );
+        let result = registry.execute(&mut doc, &command);
+        assert!(result.is_ok(), "{case} {result:?}");
+        let expected = v["command"]["after_script"].as_array().unwrap();
+        assert_eq!(doc.objects().len(), expected.len(), "{case}");
+        let mut actual = snapshot(&doc, &ids, &layers, &groups);
+        let mut native = v["command"]["after_script"].clone();
+        for (i, (o, n)) in doc.objects().zip(expected).enumerate() {
+            let Geometry::Brep(b) = o.geometry() else {
+                panic!()
+            };
+            assert!(
+                (b.area(doc.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs() < 2e-5,
+                "{case} area"
+            );
+            actual[i]["area"] = Value::Null;
+            native[i]["area"] = Value::Null;
+            if case == "planarintersection_internal_tangent" {
+                assert_eq!(b.edges().len(), 1);
+                assert_eq!(n["edges"], 3);
+                actual[i]["edges"] = Value::Null;
+                native[i]["edges"] = Value::Null;
+            }
+            let own = b.edges().iter().map(|e| e.curve()).collect::<Vec<_>>();
+            let theirs = n["edge_curves"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(native_curve)
+                .collect::<Vec<_>>();
+            let refs = theirs.iter().collect::<Vec<_>>();
+            for samples in n["edge_samples"].as_array().unwrap() {
+                for p in samples.as_array().unwrap() {
+                    let point =
+                        Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                            .unwrap();
+                    assert!(
+                        curve_distance(&own, point, doc.tolerance()) < 5e-6,
+                        "{case} native boundary"
+                    );
+                }
+            }
+            if case == "planardifference_internal_tangent" {
+                let contact = Point3::try_new(2., 0., 0.).unwrap();
+                let gap = curve_distance(&refs, contact, doc.tolerance());
+                assert!(
+                    gap > 5e-3 && gap < 6e-3,
+                    "native contact gap remains an explicit diagnostic: {gap}"
+                );
+            }
+            for edge in &own {
+                let d = edge.domain();
+                for sample in 0..33 {
+                    let p = edge
+                        .evaluate(*d.start() + (*d.end() - *d.start()) * sample as f64 / 32.)
+                        .unwrap();
+                    let epsilon = if case == "planardifference_internal_tangent" {
+                        6e-3
+                    } else {
+                        5e-6
+                    };
+                    assert!(
+                        curve_distance(&refs, p, doc.tolerance()) < epsilon,
+                        "{case} local boundary"
+                    );
+                }
+            }
+        }
+        compare(&actual, &native, case);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        let mut own_before = snapshot(&doc, &ids, &layers, &groups);
+        let mut native_before = v["undo"]["after_script"].clone();
+        for (a, b) in own_before
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .zip(native_before.as_array_mut().unwrap())
+        {
+            assert!((a["area"].as_f64().unwrap() - b["area"].as_f64().unwrap()).abs() < 5e-7);
+            a["area"] = Value::Null;
+            b["area"] = Value::Null;
+        }
+        compare(&own_before, &native_before, "circular undo");
+        registry.execute(&mut doc, "Redo").unwrap();
+        let mut redone = snapshot(&doc, &ids, &layers, &groups);
+        for o in redone.as_array_mut().unwrap() {
+            o["area"] = Value::Null;
+            if case == "planarintersection_internal_tangent" {
+                o["edges"] = Value::Null;
+            }
+        }
+        compare(&redone, &native, "circular redo");
+        if !case.ends_with("internal_tangent") || case.starts_with("planarunion") {
+            regular += 1;
+        }
+    }
+    assert_eq!(regular, 26);
 }

@@ -1,7 +1,7 @@
 //! Finite coplanar surface Booleans; document policy follows public commands.
 use super::*;
 use std::borrow::Cow;
-use viboceros_geometry::{BrepBooleanOperation, boolean_projected_planar_breps};
+use viboceros_geometry::{BrepBooleanOperation, boolean_planar_breps};
 #[cfg(test)]
 mod tests;
 
@@ -85,16 +85,23 @@ impl PlanarBooleanCommand {
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
         let refs = surfaces.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let outputs = boolean_projected_planar_breps(&refs, self.0, doc.tolerance())?;
+        let outputs = boolean_planar_breps(&refs, self.0, doc.tolerance())?;
         let mut pieces = Vec::new();
-        for p in outputs {
-            let groups = vec![0; p.brep.faces().len()];
-            let b = boolean_solids::finish_boundary(
-                p.brep
-                    .try_merge_coplanar_polygon_faces_in_groups(&groups, doc.tolerance())?
-                    .unwrap_or(p.brep),
-                doc.tolerance(),
-            )?;
+        for b in outputs {
+            let b = if b
+                .edges()
+                .iter()
+                .all(|e| e.curve().degree() == 1 && e.curve().control_points().len() == 2)
+            {
+                let groups = vec![0; b.faces().len()];
+                boolean_solids::finish_boundary(
+                    b.try_merge_coplanar_polygon_faces_in_groups(&groups, doc.tolerance())?
+                        .unwrap_or(b),
+                    doc.tolerance(),
+                )?
+            } else {
+                b
+            };
             pieces.push(boolean_two::Piece {
                 brep: b,
                 owner: 0,

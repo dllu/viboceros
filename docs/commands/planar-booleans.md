@@ -18,18 +18,28 @@ PlanarDifference Sources=<a>,<b>
 PlanarIntersection Sources=<a>,<b>
 ```
 
-Inputs currently require affine planar surfaces with certified linear trims,
-including outer boundaries and holes. Original boundary polygons are projected
+The polygon path accepts affine planar surfaces with certified linear trims,
+including outer boundaries and holes. A separate circular path accepts complete
+circular disks in parallel planes. Original boundary polygons are projected
 orthogonally onto the first surface's plane with exact rational arithmetic before
 the finite-area arrangement. Tilted and parallel offset inputs are supported;
 perpendicular inputs collapse to zero area. Normals do not change set membership.
-Every operation uses original physical patches, excluding virtual planning rectangles. Union
+Every operation uses original physical patches, excluding virtual planning
+rectangles. Union
 merges all selected inputs; Difference subtracts B from A; Intersection retains
 their shared area. Coplanar merging removes interior partition seams. The kernel
 bounds input, fragment, rational, work and output sizes. Intermediate
 projected B-reps are never rounded and reused as operands. The first affine
 support is extended for final output only; trims and topology remain validated
 at the document tolerance.
+
+Circular inputs undergo whole-span circular-locus and simple-loop certification.
+Their boundaries are classified as analytic arcs, assembled into outer/hole loops
+and exported as rational NURBS. Original circular seams remain distinct.
+Parallel offset disks project onto the first plane without changing radius;
+nonparallel disks become ellipses and are not yet accepted. Circular control,
+arc and graph work limits bound preparation. Signed loop contributions use exact
+accumulation of finite terms.
 
 Union and Difference delete their sources and create new default-attribute
 surfaces on the current layer, without source groups or geometry user text.
@@ -65,6 +75,24 @@ Independent kernel tests compare both projection orders and collapsed area,
 verify all output vertices lie on the first plane, reject warped/oversized inputs
 and confirm original sources remain unchanged.
 
+The [circular follow-up](../planar-boolean-circular-provenance.json) retains 28
+successful native recipes under `VibocerosOraclePlanarCircularVerified20261007`.
+[Full NURBS edge definitions and samples](../../tools/rhino_oracle/observations/planar_boolean_circular.json)
+cover overlap, containment in either order, equality, disjoint/external/internal
+tangency, reversed normals, parallel offsets and three-disk Union. All 28 local
+outcomes replay identity, metadata and independent history; 26 also match native
+topology and bidirectional finite curve witnesses at `5e-6`. Area comparisons use
+`2e-5`, reflecting native mass integration and perturbed projected arcs.
+Independent kernel checks retain analytic area at `1e-9` and circle loci at
+`1e-12`. Earlier polygon tolerances remain unchanged.
+
+Two internal-contact discrepancies remain explicit. Local Difference retains
+exact point contact, while the native fitted boundary omits the contact point
+with a reverse witness gap between `0.005` and `0.006` model units. Local
+Intersection retains one complete circle edge; native creates three perturbed
+edges (its curve witnesses remain within `5e-6`). The tests keep both records as
+diagnostics; these cases do not establish native parity.
+
 A production wgpu/egui inspection on private Xvfb checks ordered viewport picks
 for Difference and Intersection, automatic completion on the second pick, and
 Undo/Redo in Ghosted mode. It also checks three-surface preselected Union.
@@ -81,12 +109,21 @@ hit ranking, allowing an enclosed cutter to be picked in filled views.
 
 ![Holed surface cut by a projected tilted sheet, after Redo](../images/planar-trim-hole-tilted-cutter.png)
 
-Curved trim boundaries, compound surfaces, broader trimmed-hole configurations,
-near contacts, restart behavior and relative performance remain unsupported or unverified. This capture does not establish
+A circular production inspection on private Xvfb creates Circle/PlanarSrf disk
+inputs, picks a Difference source/cutter, checks Undo/Redo in Ghosted mode and
+runs preselected circular Union. The saved crescent retains rational arc edges;
+this inspection does not compare native pixels.
+
+![Circular planar Difference after Redo in Ghosted mode](../images/planar-circular-difference-ghosted.png)
+
+General curved loops, mixed polygon/circular inputs, circular input holes,
+nonparallel circular projections, compound surfaces, broader hole configurations,
+near contacts, restart behavior and relative performance remain unsupported or
+unverified. This capture does not establish
 native preview pixel parity.
 
 ```sh
 cargo test --release -p viboceros-command planar_boolean
 cargo test --release --bin viboceros planar_boolean
-python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology
+python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular
 ```

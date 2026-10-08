@@ -1,0 +1,37 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOraclePlanarCircularVerified20261007",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 28,
+  "successful_commands": 28,
+  "regular_topology_replays": 26,
+  "boundary_witness_epsilon": 5e-06,
+  "area_epsilon": 2e-05,
+  "independent_analytic_area_epsilon": 1e-09,
+  "independent_circle_locus_epsilon": 1e-12,
+  "diagnostics": [
+    {
+      "case": "planardifference_internal_tangent",
+      "difference": "Native perturbed arcs omit the exact contact point; local exact circular boundaries retain it. The reverse witness gap is between 0.005 and 0.006 model units.",
+      "native_parity": false
+    },
+    {
+      "case": "planarintersection_internal_tangent",
+      "difference": "Local exact circular boundary has one edge; native has three perturbed edges. Geometry witnesses stay within 5e-6.",
+      "native_parity": false
+    }
+  ],
+  "limits": [
+    "Complete certified circular disks in parallel planes; tilted disks become ellipses and remain unsupported.",
+    "Mixed polygon/circular inputs, general curved loops and input holes remain unsupported or unverified.",
+    "Circular comparisons use the stated measured tolerances; earlier polygon tolerances are unchanged.",
+    "Near contacts, general coincident junctions, native pending pixels, restart behavior and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_boolean_circular_probe.py": "62e8f9289471a6884fc09f81302f07343392b353d1a38493e5ef891eb30df667",
+    "tools/rhino_oracle/fixtures/planar_boolean_circular.json": "bcac9ad251d1d60abe614b219c00d163e04ddc304cdd62ead208fdfb7a06da3e",
+    "tools/rhino_oracle/observations/planar_boolean_circular.json": "f268621c566f47c35eab795979dc650a207b24c6ac402ed93493e6efefb59483"
+  }
+}

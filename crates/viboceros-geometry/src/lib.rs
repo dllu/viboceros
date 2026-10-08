@@ -102,7 +102,7 @@ pub use brep::{
     BrepPolyhedralRegion, BrepPolyhedralShell, BrepSetIntersection, BrepSolidOrientation,
     BrepSplitComponent, BrepSurfaceShrinkMode, BrepSurfaceSplitComponent, BrepTrim, BrepTrimType,
     BrepUnionComponent, BrepVertex, BrepWireCage, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceIso, boolean_polyhedral_breps,
+    RectangularSurfaceCornerCut, SurfaceIso, boolean_planar_breps, boolean_polyhedral_breps,
     boolean_projected_planar_breps, convex_brep_boundary_interactions,
     convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,
     intersect_polyhedral_brep_sets, intersect_polyhedral_breps, join_breps, join_breps_with_report,
