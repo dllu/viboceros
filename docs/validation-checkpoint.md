@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `37fc9fb8` with Rust 1.95.0 after
-[Circle-pair cut arithmetic and scale diagnostics](planar-cut-numerics.md).
+The October 8, 2026 audit tested code at `31c4e387` with Rust 1.95.0 after
+[Compatible surface tween construction](commands/tween-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,42 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,264 tests:
+5,269 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,000 | 17 |
-| Command | 1,182 | 2 |
+| App | 1,001 | 17 |
+| Command | 1,184 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,056 | 8 |
+| Geometry | 2,058 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 959 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 961 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest circular scale capture ran 27 owned public commands on private Xvfb
+The newest surface-tween capture ran 22 owned public commands on private Xvfb
+under `VibocerosOracleTweenSurfacesVerified20261008`. All succeed natively.
+[Complete records](../tools/rhino_oracle/observations/tween_surfaces_command.json)
+retain full surface nets, 81 stations per object, source identity, properties,
+groups, command events and independent history, plus public sampling SDK data.
+The new `TweenSurfaces` command implements compatible control-net matching,
+explicit direction changes and output-layer attributes/groups, with staged
+atomic output. Eight native compatible recipes replay controls at `1e-6` and
+knots/weights at `1e-12`, including rational displacement via square-root weight
+ratios. Independent kernel tests cover finite extreme coordinates, source purity
+and resource rejection; command/app tests cover groups and history. Unequal-net
+common-chart fitting, Refit, SamplePoints, native default/option memory and corner
+previews remain unfinished. Refit leaves four source-shaped native copies and
+SamplePoints two; these are retained diagnostics, not local parity claims.
+See [workflow and limitations](commands/tween-surfaces.md) and
+[provenance](tween-surfaces-provenance.json).
+
+The preceding circular scale capture ran 27 owned public commands on private Xvfb
 under `VibocerosOracleCircleScale20261008`. All succeed natively and locally.
 [Complete records](../tools/rhino_oracle/observations/planar_circle_scale.json)
 retain equal/unequal radii, swapped operands, full edge curves, stations,
