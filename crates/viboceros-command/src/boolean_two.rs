@@ -50,6 +50,8 @@ impl Mode {
 pub struct Piece {
     pub brep: Brep,
     pub owner: usize,
+    /// Geometry-root user text survives only a single connected output branch.
+    pub retain_geometry_user_text: bool,
 }
 #[derive(Clone, Debug)]
 pub struct Candidates {
@@ -67,15 +69,106 @@ pub fn prepare(
     second: &Brep,
     tolerance: Tolerance,
 ) -> Result<Candidates, GeometryError> {
-    if boolean_solids::interactions(&[first, second], tolerance, false)?
-        .1
-        .is_empty()
-    {
-        return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-            context: "two boundary-crossing operands required",
+    let sheets = !first.is_solid() || !second.is_solid();
+    let mut plan = if sheets {
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[first, second], tolerance)?
+    } else {
+        if boolean_solids::interactions(&[first, second], tolerance, false)?
+            .1
+            .is_empty()
+        {
+            return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
+                context: "two boundary-crossing operands required",
+            });
+        }
+        BrepPolyhedralBooleanPlan::try_new(&[first, second], tolerance)?
+    };
+    if sheets && plan.inputs_are_coplanar(0, 1)? {
+        let agrees = plan.coplanar_input_normals_agree(0, 1)?;
+        let partition = plan
+            .export_coplanar_sheet_partition(0, 1)?
+            .into_iter()
+            .map(|p| finish(p, 0, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let remainder = plan
+            .export_coplanar_sheet_boolean(BrepBooleanOperation::Difference, 0, 1)?
+            .into_iter()
+            .map(|p| finish(p, 0, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let (common, difference) = if agrees {
+            (partition, remainder)
+        } else {
+            (remainder, partition)
+        };
+        let inverse = difference
+            .iter()
+            .cloned()
+            .chain(difference.iter().cloned())
+            .collect();
+        return Ok(Candidates {
+            values: [
+                common.clone(),
+                common,
+                difference.clone(),
+                difference,
+                inverse,
+            ]
+            .map(Arc::new),
         });
     }
-    let mut plan = BrepPolyhedralBooleanPlan::try_new(&[first, second], tolerance)?;
+    if sheets {
+        // Rhino's no-intersection open workflow retains the finite sheets in
+        // each mode, dropping closed operands and duplicating for inverse.
+        let mut sheet_crossing = false;
+        for (i, b) in [first, second].into_iter().enumerate() {
+            if !b.is_solid() {
+                sheet_crossing |= plan.input_boundary_crosses_region(i, 1 - i)?;
+            }
+        }
+        if !sheet_crossing {
+            let mut pieces = Vec::new();
+            for b in [first, second].into_iter().filter(|b| !b.is_solid()) {
+                for faces in b.edge_connected_face_components() {
+                    pieces.push(Piece {
+                        brep: b.duplicate_faces(&faces, tolerance)?,
+                        owner: 0,
+                        retain_geometry_user_text: true,
+                    });
+                }
+            }
+            let retain = pieces.len() == 1;
+            for p in &mut pieces {
+                p.retain_geometry_user_text = retain;
+            }
+            let inverse = pieces
+                .iter()
+                .cloned()
+                .chain(pieces.iter().cloned())
+                .collect();
+            return Ok(Candidates {
+                values: [
+                    pieces.clone(),
+                    pieces.clone(),
+                    pieces.clone(),
+                    pieces,
+                    inverse,
+                ]
+                .map(Arc::new),
+            });
+        }
+    }
+    if sheets {
+        for (index, brep) in [first, second].into_iter().enumerate() {
+            if !brep.is_solid()
+                && plan.input_boundary_crosses_region(index, 1 - index)?
+                && !plan.planar_sheet_covers_input_section(index, 1 - index)?
+            {
+                return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
+                    context: "complete physical sheet crossing required",
+                });
+            }
+        }
+    }
     let a = plan.input(0)?;
     let b = plan.input(1)?;
     let union = plan.combine(BrepBooleanOperation::Union, &[&a, &b])?;
@@ -89,12 +182,22 @@ pub fn prepare(
     }
     let mut values: [Vec<Piece>; 5] = std::array::from_fn(|_| Vec::new());
     for (index, region, owner) in [(0, &union, 0), (1, &common, 0), (2, &ab, 0), (3, &ba, 0)] {
-        for result in plan.export(region)? {
+        let output = if sheets {
+            plan.export_physical_boundary(region)?
+        } else {
+            plan.export(region)?
+        };
+        for result in output {
             values[index].push(finish(result, owner, tolerance)?);
         }
     }
     for (region, owner) in [(&ba, 0), (&ab, 0)] {
-        for result in plan.export(region)? {
+        let output = if sheets {
+            plan.export_physical_boundary(region)?
+        } else {
+            plan.export(region)?
+        };
+        for result in output {
             values[4].push(finish(result, owner, tolerance)?);
         }
     }
@@ -110,6 +213,7 @@ fn finish(
     Ok(Piece {
         brep: boolean_solids::merged(piece.brep, &piece.face_sources, tolerance)?,
         owner,
+        retain_geometry_user_text: true,
     })
 }
 pub(super) struct BooleanTwoCommand {
@@ -266,15 +370,23 @@ pub fn accept(
     for piece in pieces {
         let id = ids[piece.owner];
         if delete_input && used.insert(id) {
-            replacements.push((id, Geometry::Brep(piece.brep.clone())));
+            replacements.push((
+                id,
+                Geometry::Brep(piece.brep.clone()),
+                piece.retain_geometry_user_text,
+            ));
         } else {
             copies.push((
                 id,
                 Geometry::Brep(piece.brep.clone()),
-                doc.object(id)
-                    .ok_or(DocumentError::ObjectNotFound(id))?
-                    .geometry_user_text()
-                    .clone(),
+                if piece.retain_geometry_user_text {
+                    doc.object(id)
+                        .ok_or(DocumentError::ObjectNotFound(id))?
+                        .geometry_user_text()
+                        .clone()
+                } else {
+                    BTreeMap::new()
+                },
             ));
         }
     }
@@ -285,12 +397,18 @@ pub fn accept(
     if !replacements.is_empty() {
         let metadata = replacements
             .iter()
-            .map(|(id, _)| (*id, doc.object(*id).unwrap().geometry_user_text().clone()))
+            .map(|(id, _, retain)| {
+                (
+                    *id,
+                    *retain,
+                    doc.object(*id).unwrap().geometry_user_text().clone(),
+                )
+            })
             .collect::<Vec<_>>();
-        doc.replace_object_geometries(replacements)?;
-        for (id, text) in metadata {
+        doc.replace_object_geometries(replacements.into_iter().map(|(id, g, _)| (id, g)))?;
+        for (id, retain, text) in metadata {
             for (key, value) in text {
-                doc.set_object_geometry_user_text([id], &key, Some(&value))?;
+                doc.set_object_geometry_user_text([id], &key, retain.then_some(value.as_str()))?;
             }
         }
     }

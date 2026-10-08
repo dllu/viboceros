@@ -308,3 +308,121 @@ fn positive_length_boundary_query_excludes_point_only_contacts() {
     let b = plan.input(1).unwrap();
     assert!(!plan.boundaries_share_line(&a, &b).unwrap());
 }
+
+#[test]
+fn oriented_planar_regions_export_only_finite_physical_patches_and_share_one_plan() {
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let sheet = |hi| {
+        Brep::try_surface_face(
+            NurbsSurface::try_bilinear([
+                p(1., -1., -1.),
+                p(1., hi, -1.),
+                p(1., hi, 3.),
+                p(1., -1., 3.),
+            ])
+            .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    };
+    let full = sheet(3.);
+    let solid = cube([[0., 2.]; 3]);
+    let before = (full.clone(), solid.clone());
+    for (full, center) in [(full.clone(), 0.5), (full.reversed(), 1.5)] {
+        let mut plan =
+            BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&full, &solid], Tolerance::DEFAULT)
+                .unwrap();
+        assert!(plan.planar_sheet_covers_input_section(0, 1).unwrap());
+        let a = plan.input(0).unwrap();
+        let b = plan.input(1).unwrap();
+        let common = plan
+            .combine(BrepBooleanOperation::Intersection, &[&a, &b])
+            .unwrap();
+        let pieces = plan.export_physical_boundary(&common).unwrap();
+        assert_eq!(pieces.len(), 1);
+        let mass = pieces[0]
+            .brep
+            .volume_mass_properties(Tolerance::DEFAULT)
+            .unwrap();
+        assert!((mass.signed_volume().unwrap() - 4.).abs() < 1e-10);
+        assert!((mass.centroid().unwrap().x() - center).abs() < 1e-10);
+        assert!(pieces[0].face_sources.iter().any(|s| s[0] == 0));
+        assert!(pieces[0].face_sources.iter().any(|s| s[0] == 1));
+        let union = plan
+            .combine(BrepBooleanOperation::Union, &[&a, &b])
+            .unwrap();
+        let pieces = plan.export_physical_boundary(&union).unwrap();
+        assert_eq!(pieces.len(), 1);
+        assert!(!pieces[0].brep.is_solid());
+        assert!((pieces[0].brep.area(Tolerance::DEFAULT).unwrap() - 24.).abs() < 1e-9);
+        let mut other =
+            BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&full, &solid], Tolerance::DEFAULT)
+                .unwrap();
+        assert!(other.export_physical_boundary(&union).is_err());
+        assert!(plan.planar_sheet_covers_input_section(2, 1).is_err());
+    }
+    let partial = sheet(1.);
+    let mut plan =
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&partial, &solid], Tolerance::DEFAULT)
+            .unwrap();
+    assert!(!plan.planar_sheet_covers_input_section(0, 1).unwrap());
+    assert_eq!((full, solid), before);
+}
+
+#[test]
+fn finite_coplanar_sheet_sets_preserve_holes_and_reject_crossing_supports() {
+    let p = |x, y, z| Point3::try_new(x, y, z).unwrap();
+    let sheet = |lo, hi| {
+        Brep::try_surface_face(
+            NurbsSurface::try_bilinear([
+                p(1., lo, lo),
+                p(1., hi, lo),
+                p(1., hi, hi),
+                p(1., lo, hi),
+            ])
+            .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    };
+    let a = sheet(-1., 3.);
+    let b = sheet(0., 2.);
+    let mut plan =
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&a, &b], Tolerance::DEFAULT).unwrap();
+    assert!(plan.inputs_are_coplanar(0, 1).unwrap());
+    for (operation, expected) in [
+        (BrepBooleanOperation::Union, 16.),
+        (BrepBooleanOperation::Intersection, 4.),
+        (BrepBooleanOperation::Difference, 12.),
+    ] {
+        let outputs = plan.export_coplanar_sheet_boolean(operation, 0, 1).unwrap();
+        assert_eq!(outputs.len(), 1);
+        assert!((outputs[0].brep.area(Tolerance::DEFAULT).unwrap() - expected).abs() < 1e-9);
+        if operation == BrepBooleanOperation::Difference {
+            let merged = outputs[0]
+                .brep
+                .try_merge_coplanar_polygon_faces_in_groups(
+                    &vec![0; outputs[0].brep.faces().len()],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap()
+                .unwrap_or_else(|| outputs[0].brep.clone());
+            assert!(merged.faces().iter().any(|f| f.loops().len() == 2));
+        }
+    }
+    assert!(
+        plan.export_coplanar_sheet_boolean(BrepBooleanOperation::Difference, 1, 0)
+            .unwrap()
+            .is_empty()
+    );
+    let cube = cube([[0., 2.]; 3]);
+    let mut mixed =
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&a, &cube], Tolerance::DEFAULT)
+            .unwrap();
+    assert!(!mixed.inputs_are_coplanar(0, 1).unwrap());
+    assert!(
+        mixed
+            .export_coplanar_sheet_boolean(BrepBooleanOperation::Union, 0, 1)
+            .is_err()
+    );
+}

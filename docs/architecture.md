@@ -38,7 +38,9 @@ separate complete solid caps from open boundary output and keep command shell
 participation and geometry metadata outside material-region classification.
 [Boolean2Objects](commands/boolean-two-objects.md) prepares five choices with one
 exact arrangement, caches readonly preview scenes and accepts in one transaction
-while preserving the first source identity and metadata. General curved Boolean commands
+while preserving the first source identity and metadata. Its planar-sheet path
+uses exact oriented half-spaces and finite physical patches, with separate
+coplanar seam and uncut-sheet policies from native commands. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

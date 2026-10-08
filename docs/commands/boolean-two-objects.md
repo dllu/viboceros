@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/booleanunion.htm#Boolean2Objects)
 
-Select two supported polysurfaces and run `Boolean2Objects`, or start
+Select two supported surfaces or polysurfaces and run `Boolean2Objects`, or start
 the command, pick the objects and press Enter. The pending Union result appears
 in every viewport. Click in a viewport or type Next to cycle:
 
@@ -21,7 +21,8 @@ DeleteInput defaults to Yes and can be set during source selection. Yes replaces
 the first object in place and removes the second. B−A also retains the first
 object's identity and attributes. Inverse intersection replaces that first object
 with B−A and adds A−B. No retains both originals and creates new output. All pieces
-inherit the first object's layer, attributes, geometry user text and groups.
+inherit the first object's layer, attributes and groups. Geometry user text
+survives single-component branches; parallel uncut sheet branches clear it.
 Results are unselected. One Undo restores the original pair; Redo restores the
 accepted result. Option changes persist for the current registry session.
 The app also accepts DeleteInput changes while cycling as an extension.
@@ -34,12 +35,18 @@ Boolean2Objects Mode=Intersection DeleteInput=No
 Boolean2Objects Sources=<a-id>,<b-id> Mode=InverseIntersection
 ```
 
-The current kernel accepts certified closed polyhedral B-reps. All five choices
-share one exact original-face arrangement; no rounded result becomes an operand.
+The current kernel accepts certified closed polyhedral B-reps and affine planar
+sheets with linear trims. All five choices share one exact original-face
+arrangement; no rounded result becomes an operand.
 Source-face seams remain distinct. Preparation has bounded work and cumulative
-output limits. Disjoint and strictly contained pairs fail without document edits;
-the native capture establishes those failures before cycling. Empty results and
-invalid acceptance requests are rejected.
+output limits. Disjoint and strictly contained closed-solid pairs fail without
+edits. A sheet crossing a solid must cover the complete physical section; partial
+crossings fail. Uncut sheets remain in every mode, closed inputs are dropped,
+and inverse intersection duplicates the uncut result. Coplanar sheets retain
+trim seams; agreeing normals use the partition for Union/Intersection and the
+first-sheet remainder for either Difference. Reversing the second normal swaps
+these choices. The recorded cases nest one sheet inside another; broader
+coplanar overlap policies remain unverified. Empty acceptance is rejected.
 
 Eleven owned public recipes ran on private Xvfb under
 `VibocerosOracleBooleanTwoVerified20261007` with Rhino 8.32.26160.13001. Seven
@@ -53,6 +60,18 @@ The app replay covers original cycle counts, cancellation, failed preparation,
 source purity and history; cache/stale-source tests check reuse and invalidation.
 See [provenance](../boolean-two-provenance.json).
 
+The [planar/open follow-up](../boolean-two-open-provenance.json) adds 48 public
+recipes from two private Xvfb sessions: 46 successes, one partial-crossing failure
+and one cancellation. [Combined replay](../../tools/rhino_oracle/observations/boolean_two_open.json)
+retains every record, with unchanged raw sessions linked in provenance. It checks
+all five modes for plane/box in both orders, reversed normals, perpendicular
+sheets, nested coplanar sheets, contained/disjoint sheets and parallel sheets,
+plus retention and cancellation. Command replay compares boundaries, counts,
+mass, identity, metadata and independent history at the same epsilons above.
+App replay checks original click counts, untouched source geometry/history,
+acceptance and Undo/Redo. Independent kernel tests check finite coverage,
+normal-relative volume, coplanar area/hole preservation and plan isolation.
+
 A production wgpu/egui inspection on private Xvfb checked viewport source picks,
 click cycling, Escape, Enter acceptance, Undo/Redo and display-mode changes during
 the pending command. The saved Ghosted view shows A−B with one preview object
@@ -61,13 +80,21 @@ This local inspection does not measure native preview pixel parity.
 
 ![Pending A−B in four Ghosted viewports](../images/boolean-two-preview-ghosted.png)
 
-Open/curved sources, arbitrary compound policies, near contacts, restart option
-persistence, native preview pixels and relative performance remain unsupported
+A fresh private-Xvfb inspection of the planar extension also checks a typed
+SrfPt/Box pair, preselection, four real cycle clicks, Enter, Undo and Redo.
+Its inverse preview contains a closed half-box plus an open boundary, rendered
+through the same production Ghosted path.
+
+![Planar/solid inverse preview in Ghosted](../images/boolean-two-open-preview-ghosted.png)
+
+Curved sources, nonplanar open polysurfaces, arbitrary compound policies,
+partial coplanar overlap, near contacts, restart option persistence, native preview
+pixels and relative performance remain unsupported
 or unverified. The native driver records final command geometry, not the
 proprietary display-conduit geometry at each pending click.
 
 ```sh
 cargo test --release -p viboceros-command boolean_two
 cargo test --release --bin viboceros boolean_two
-python3 -m unittest tools.rhino_oracle.test_boolean_two
+python3 -m unittest tools.rhino_oracle.test_boolean_two tools.rhino_oracle.test_boolean_two_open
 ```

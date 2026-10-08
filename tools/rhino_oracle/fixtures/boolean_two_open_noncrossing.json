@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_contained_1",
+      "case": "contained_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_contained_2",
+      "case": "contained_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_contained_3",
+      "case": "contained_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_contained_4",
+      "case": "contained_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_disjoint_1",
+      "case": "disjoint_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_disjoint_2",
+      "case": "disjoint_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_disjoint_3",
+      "case": "disjoint_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_disjoint_4",
+      "case": "disjoint_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_parallel_1",
+      "case": "parallel_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_parallel_2",
+      "case": "parallel_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_parallel_3",
+      "case": "parallel_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_parallel_4",
+      "case": "parallel_4"
+    }
+  ]
+}

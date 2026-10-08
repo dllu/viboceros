@@ -137,3 +137,106 @@ fn boolean_two_stale_geometry_is_rejected_and_scene_cache_survives_cycle_wrap() 
     assert!(app.boolean_two_prompt.is_none());
     assert_eq!(app.document.objects().len(), 2);
 }
+
+#[test]
+fn boolean_two_planar_cycles_replay_native_open_results_and_preserve_originals() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/boolean_two_open.json"
+    ))
+    .unwrap();
+    for r in q["results"].as_array().unwrap() {
+        let v = &r["value"];
+        let mut app = test_app();
+        for shape in v["shapes"].as_array().unwrap() {
+            let b = if shape["kind"] == "box" {
+                viboceros_geometry::Brep::try_box(
+                    viboceros_command::CommandContext::default().construction_plane,
+                    serde_json::from_value(shape["bounds"].clone()).unwrap(),
+                    app.document.tolerance(),
+                )
+                .unwrap()
+            } else {
+                let points = serde_json::from_value::<[[f64; 3]; 4]>(shape["points"].clone())
+                    .unwrap()
+                    .map(|p| viboceros_geometry::Point3::try_from(p).unwrap());
+                let b = viboceros_geometry::Brep::try_surface_face(
+                    viboceros_geometry::NurbsSurface::try_bilinear(points).unwrap(),
+                    app.document.tolerance(),
+                )
+                .unwrap();
+                if shape["reverse"] == true {
+                    b.reversed()
+                } else {
+                    b
+                }
+            };
+            app.document.add_geometry(Geometry::Brep(b)).unwrap();
+        }
+        let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        app.document.clear_history().unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        enter(
+            &mut app,
+            &format!(
+                "Boolean2Objects DeleteInput={}",
+                if v["delete"] == true { "Yes" } else { "No" }
+            ),
+        );
+        pick(&mut app, ids[0]);
+        pick(&mut app, ids[1]);
+        enter(&mut app, "");
+        if v["command"]["success"] == false && v["cancel"] != true {
+            assert!(app.boolean_two_prompt.is_none(), "{}", v["case"]);
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(!app.document.can_undo());
+            continue;
+        }
+        for _ in 0..v["cycles"].as_u64().unwrap() {
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(!app.document.can_undo());
+            app.handle_viewport_action(ViewportOutput {
+                source_viewport_click: true,
+                ..Default::default()
+            });
+        }
+        if v["cancel"] == true {
+            enter(&mut app, "Cancel");
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            continue;
+        }
+        enter(&mut app, "");
+        assert!(
+            app.boolean_two_prompt.is_none(),
+            "{} {:?}",
+            v["case"],
+            app.command_log
+        );
+        let expected = v["command"]["after_script"].as_array().unwrap();
+        assert_eq!(app.document.objects().len(), expected.len());
+        for (object, native) in app.document.objects().zip(expected) {
+            let Geometry::Brep(b) = object.geometry() else {
+                panic!()
+            };
+            assert_eq!(b.is_solid(), native["solid"] == true);
+            assert_eq!(b.faces().len(), native["faces"].as_u64().unwrap() as usize);
+            assert_eq!(b.edges().len(), native["edges"].as_u64().unwrap() as usize);
+            assert!(
+                (b.area(app.document.tolerance()).unwrap() - native["area"].as_f64().unwrap())
+                    .abs()
+                    < 1e-9
+            );
+            if b.is_solid() {
+                assert!(
+                    (b.signed_volume(app.document.tolerance()).unwrap()
+                        - native["volume"].as_f64().unwrap())
+                    .abs()
+                        < 1e-10
+                );
+            }
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), expected.len());
+    }
+}

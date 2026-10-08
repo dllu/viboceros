@@ -1,0 +1,186 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_0",
+      "case": "plane_box_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_1",
+      "case": "plane_box_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_2",
+      "case": "plane_box_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_3",
+      "case": "plane_box_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_4",
+      "case": "plane_box_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_reverse_0",
+      "case": "plane_box_reverse_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_reverse_1",
+      "case": "plane_box_reverse_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_reverse_2",
+      "case": "plane_box_reverse_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_reverse_3",
+      "case": "plane_box_reverse_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_box_reverse_4",
+      "case": "plane_box_reverse_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_box_plane_0",
+      "case": "box_plane_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_box_plane_1",
+      "case": "box_plane_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_box_plane_2",
+      "case": "box_plane_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_box_plane_3",
+      "case": "box_plane_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_box_plane_4",
+      "case": "box_plane_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_plane_0",
+      "case": "plane_plane_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_plane_1",
+      "case": "plane_plane_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_plane_2",
+      "case": "plane_plane_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_plane_3",
+      "case": "plane_plane_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_plane_plane_4",
+      "case": "plane_plane_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_partial",
+      "case": "partial"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_contained",
+      "case": "contained"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_0",
+      "case": "coplanar_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_reverse_0",
+      "case": "coplanar_reverse_0"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_1",
+      "case": "coplanar_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_reverse_1",
+      "case": "coplanar_reverse_1"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_2",
+      "case": "coplanar_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_reverse_2",
+      "case": "coplanar_reverse_2"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_3",
+      "case": "coplanar_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_reverse_3",
+      "case": "coplanar_reverse_3"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_4",
+      "case": "coplanar_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_coplanar_reverse_4",
+      "case": "coplanar_reverse_4"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_parallel",
+      "case": "parallel"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_keep",
+      "case": "keep"
+    },
+    {
+      "op": "boolean_two_open",
+      "id": "boolean_two_open_cancel",
+      "case": "cancel"
+    }
+  ]
+}

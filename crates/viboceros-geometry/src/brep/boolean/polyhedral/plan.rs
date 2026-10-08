@@ -67,6 +67,195 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         })
     }
 
+    /// Build regions for closed polyhedra and oriented finite planar sheets.
+    /// A sheet represents the negative side of its oriented supporting plane;
+    /// only its actual trimmed patches may be exported. Callers must certify
+    /// complete physical intersection coverage before accepting a Boolean.
+    pub fn try_with_planar_sheets(
+        breps: &[&'a Brep],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if breps.is_empty() {
+            return Err(unsupported("at least one operand required"));
+        }
+        let mut budget = Budget(EXACT_WORK_LIMIT);
+        let (built, _) = surface_split::build(breps, tolerance, &mut budget)?;
+        Ok(Self::from_arrangement(built, tolerance, budget))
+    }
+
+    /// Whether two operands are entirely supported on one common plane.
+    /// This geometric query does not turn finite sheets into material solids.
+    pub fn inputs_are_coplanar(
+        &mut self,
+        first: usize,
+        second: usize,
+    ) -> Result<bool, GeometryError> {
+        if first >= self.built.operands.len() || second >= self.built.operands.len() {
+            return Err(unsupported("plan input index out of range"));
+        }
+        let reference = &self.built.operands[first][0];
+        for polygon in self.built.operands[first]
+            .iter()
+            .chain(&self.built.operands[second])
+        {
+            self.budget.spend(polygon.ring.len() + 1)?;
+            if !zero(&cross(&reference.normal, &polygon.normal))
+                || polygon
+                    .ring
+                    .iter()
+                    .any(|p| !reference.plane_side(p).is_zero())
+            {
+                return Ok(false);
+            }
+        }
+        Ok(true)
+    }
+
+    /// Orientation agreement of coplanar sheet inputs.
+    pub fn coplanar_input_normals_agree(
+        &mut self,
+        first: usize,
+        second: usize,
+    ) -> Result<bool, GeometryError> {
+        if !self.inputs_are_coplanar(first, second)? {
+            return Err(unsupported("coplanar physical sheets required"));
+        }
+        Ok(dot(
+            &self.built.operands[first][0].normal,
+            &self.built.operands[second][0].normal,
+        )
+        .is_positive())
+    }
+
+    /// Finite-area Boolean on two coplanar physical sheet boundaries.
+    /// Patch coverage, including trim holes, is exact in the shared arrangement.
+    /// The first input supplies coincident supporting faces and orientation.
+    pub fn export_coplanar_sheet_boolean(
+        &mut self,
+        operation: BrepBooleanOperation,
+        first: usize,
+        second: usize,
+    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+        if !self.inputs_are_coplanar(first, second)? {
+            return Err(unsupported("coplanar physical sheets required"));
+        }
+        let mut patches =
+            BTreeMap::<Vec<ExactPoint>, [Option<(Polygon<'a>, [usize; 2])>; 2]>::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if !cell.source_covers_cell {
+                continue;
+            }
+            let side = if cell.source[0] == first {
+                0
+            } else if cell.source[0] == second {
+                1
+            } else {
+                continue;
+            };
+            patches
+                .entry(canonical_ring(&cell.polygon.ring))
+                .or_insert_with(|| [None, None])[side] = Some((cell.polygon.clone(), cell.source));
+        }
+        let selected = patches
+            .into_values()
+            .filter_map(|[a, b]| match operation {
+                BrepBooleanOperation::Union => a.or(b),
+                BrepBooleanOperation::Intersection => {
+                    if b.is_some() {
+                        a
+                    } else {
+                        None
+                    }
+                }
+                BrepBooleanOperation::Difference => {
+                    if b.is_none() {
+                        a
+                    } else {
+                        None
+                    }
+                }
+            })
+            .collect();
+        self.export_open_patches(selected)
+    }
+
+    /// Export both finite coplanar operands with their common trim seam.
+    /// Coincident patches use the second operand's original supporting face.
+    pub fn export_coplanar_sheet_partition(
+        &mut self,
+        first: usize,
+        second: usize,
+    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+        if !self.inputs_are_coplanar(first, second)? {
+            return Err(unsupported("coplanar physical sheets required"));
+        }
+        let mut patches = BTreeMap::new();
+        for owner in [first, second] {
+            for cell in &self.built.cells {
+                self.budget.spend(1)?;
+                if cell.source[0] == owner && cell.source_covers_cell {
+                    patches.insert(
+                        canonical_ring(&cell.polygon.ring),
+                        (cell.polygon.clone(), cell.source),
+                    );
+                }
+            }
+        }
+        self.export_open_patches(patches.into_values().collect())
+    }
+
+    /// Whether another operand has both inside and outside states on the
+    /// finite physical boundary of an original input. Missing virtual patches
+    /// do not count as physical crossings.
+    pub fn input_boundary_crosses_region(
+        &mut self,
+        input: usize,
+        other: usize,
+    ) -> Result<bool, GeometryError> {
+        let own = self.input(input)?;
+        let other = self.input(other)?;
+        let mut inside = false;
+        let mut outside = false;
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if cell.source[0] != input || !cell.source_covers_cell {
+                continue;
+            }
+            let sides = cell.sides.map(|i| own.mask[i]);
+            if sides[0] == sides[1] {
+                continue;
+            }
+            inside |= cell.sides.iter().any(|&i| other.mask[i]);
+            outside |= cell.sides.iter().all(|&i| !other.mask[i]);
+        }
+        Ok(inside && outside)
+    }
+
+    /// Whether an operand's physical sheets completely cover the crossing
+    /// section of another original operand, using exact interval coverage.
+    pub fn planar_sheet_covers_input_section(
+        &mut self,
+        sheet: usize,
+        operand: usize,
+    ) -> Result<bool, GeometryError> {
+        let region = self.input(operand)?;
+        if sheet >= self.built.operands.len() {
+            return Err(unsupported("plan input index out of range"));
+        }
+        self.sheet_covers_boundary_section(&region, &[sheet])
+    }
+
+    /// Export the physical part of an oriented region boundary, allowing
+    /// naked edges where finite input sheets end. Planning patches are omitted.
+    pub fn export_physical_boundary(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+        let patches = self.physical_patches(region)?;
+        self.export_open_patches(patches)
+    }
+
     pub(super) fn from_arrangement(
         built: arrangement::Arrangement<'a>,
         tolerance: Tolerance,

@@ -363,6 +363,13 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'boolean_two_open' for op in request.get('operations', [])):
+            from .boolean_two_open_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Boolean2Objects requires a private settings scheme')
+            validate_request(request)
+            from .boolean_two_open_input import BooleanTwoOpenPicker
+            interaction=BooleanTwoOpenPicker(request)
         if any(op.get('op') == 'boolean_two_command' for op in request.get('operations', [])):
             from .boolean_two_probe import validate_request
             if self.settings_scheme is None:
@@ -856,6 +863,9 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'boolean_two_open' for op in request.get('operations', [])):
+                for name in ('boolean_two_open_probe.py','boolean_split_open_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'boolean_two_command' for op in request.get('operations', [])):
                 for name in ('boolean_two_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

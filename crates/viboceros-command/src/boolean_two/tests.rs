@@ -1,3 +1,4 @@
+mod open;
 use super::*;
 use crate::boolean_union::tests::{Boundary, compare, regions, setup, snapshot, witnesses};
 use serde_json::Value;
@@ -95,6 +96,7 @@ fn prepared_choices_reuse_geometry_and_reject_invalid_acceptance_atomically() {
     assert!(accept(&mut doc, ids, &[], true).is_err());
     let bad = Piece {
         owner: 2,
+        retain_geometry_user_text: true,
         brep: prepared.get(Mode::Union)[0].brep.clone(),
     };
     assert!(accept(&mut doc, ids, &[bad], true).is_err());

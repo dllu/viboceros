@@ -1,0 +1,41 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 48,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "sessions": [
+    {
+      "scheme": "VibocerosOracleBooleanTwoOpenVerified20261007",
+      "recipes": 36,
+      "raw": "tools/rhino_oracle/observations/boolean_two_open_initial.json"
+    },
+    {
+      "scheme": "VibocerosOracleBooleanTwoOpenNoncrossing20261007",
+      "recipes": 12,
+      "raw": "tools/rhino_oracle/observations/boolean_two_open_noncrossing.json"
+    }
+  ],
+  "assembly": "The combined replay appends all twelve follow-up records. Initial contained, disjoint and parallel case/operation IDs receive _0 to match final recipe names; native geometry/history remains unchanged.",
+  "limits": [
+    "Certified affine planar sheets and closed polyhedra only.",
+    "General compound, partial coplanar overlap, curved inputs, near contacts and relative performance remain unverified.",
+    "No native pending display-conduit geometry or pixel comparison."
+  ],
+  "successful_commands": 46,
+  "cancellations": 1,
+  "retained_failures": 1,
+  "sha256": {
+    "tools/rhino_oracle/boolean_two_open_probe.py": "fcc6085bec581b335b9f1011e1293445f8d79ca2511297121c71b3465f79ea6f",
+    "tools/rhino_oracle/boolean_two_open_input.py": "d384a76dbf6e2a065d7f2dfa793c67a8d2a99b7b47a0dc8427449a6e7a6d2b45",
+    "tools/rhino_oracle/fixtures/boolean_two_open.json": "b6bc397a232e81a6b1fc3cfe50a5302a1af23f3bd82dcf269c7de94078c84f10",
+    "tools/rhino_oracle/fixtures/boolean_two_open_noncrossing.json": "0dee3e94ecb53bb216f3cfcabd49bfdd8ea3807dd13503e0af87646e9f7d9ce2",
+    "tools/rhino_oracle/observations/boolean_two_open.json": "d0c306df5bfed4b1ff0c807acc46a8619c1615113fcfa0be06126075ff84dbf9",
+    "tools/rhino_oracle/observations/boolean_two_open_initial.json": "94c45128e816a0dbafee75b26712e3813412097e22a57dc6aac89fa2f9aea323",
+    "tools/rhino_oracle/observations/boolean_two_open_noncrossing.json": "84e346a6bc7433553488fb7000923d4ba1f2d3635c2f7a9770584daf4c36ba50",
+    "tools/rhino_oracle/fixtures/boolean_two_open_initial.json": "5006543647c06cb756dd8cb0ce1c5ad294bf929203ce290c1b5228d0c5b1bc85"
+  }
+}
