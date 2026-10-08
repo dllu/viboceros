@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `8f6726fe` with Rust 1.95.0 after
-[Closed surface Rebuild and natural seam/pole retrimming](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `b495ccdf` with Rust 1.95.0 after
+[Closed surface Rebuild and seam-crossing hole retrimming](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,53 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,338 Rust tests:
+5,345 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,033 | 17 |
-| Command | 1,201 | 2 |
+| App | 1,034 | 17 |
+| Command | 1,203 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,075 | 8 |
+| Geometry | 2,079 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 996 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,000 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest closed surface Rebuild captures ran sixteen default and twelve
+The newest trimmed closed-surface Rebuild captures ran eight cylinder patch/hole
+recipes and two seam-crossing hole recipes on fresh private Xvfb schemes.
+[Patch/hole records](../tools/rhino_oracle/observations/surface_rebuild_seam_trim.json)
+and [crossing-hole records](../tools/rhino_oracle/observations/surface_rebuild_crossing_hole.json)
+retain complete source/output B-reps, target controls, edge witnesses, source
+purity and independent Undo/Redo. Every native ReTrim=Yes output exactly equals
+the public Brep.CreateTrimmedSurface diagnostic. Local replay checks degrees,
+control counts and weights, control positions at `1e-6`, scaled knots at `1e-12`,
+source purity, loop structure, shared seams and history. When local certification
+adds boundary segments, bidirectional physical boundary witnesses use `2e-6`;
+the extra segmentation remains an explicit representation difference.
+The rectangle has 26 local edges versus four native edges; the interior-hole
+face has 59 versus four. These are geometric witnesses, not topology parity.
+Per-trim periodic lifts keep both UV uses of a shared seam. Chart-seeded local
+projection has bounded global fallback; exact seam sides project in one dimension.
+Compact fitting checks additional stations on every original UV span. Unshared
+contours can subdivide into individually continuously certified UV/spatial pieces,
+with at most eight levels and 256 pieces. Shared seams cannot split independently.
+The initial dense-hole case exceeded its surface-image proof budget; the final
+bounded subdivision passes without relaxing the correspondence tolerance.
+Kernel tests check UV restriction, narrow features missed by ordinary fit stations,
+periodic lift selection and cylinder bands. App testing checks readonly band
+preview, acceptance and atomic history. The final review added stricter source
+and surface-structure assertions and reran the complete retrim replay module.
+See [guide](commands/rebuild-surfaces.md) and [provenance](seam-trim-rebuild-provenance.json).
+Generic singular trims, multi-chart winding, global closest-point guarantees,
+continuous projection-error bounds and performance parity remain unverified.
+
+The preceding closed surface Rebuild captures ran sixteen default and twelve
 varied-degree/count recipes on fresh private Xvfb schemes. [Default records](../tools/rhino_oracle/observations/surface_rebuild_closed.json)
 and [degree/count records](../tools/rhino_oracle/observations/surface_rebuild_closed_degrees.json)
 retain spheres, cylinders, cones and tori, corrected swapped charts, a reversed
@@ -52,7 +80,7 @@ closure and pole rows; app replay checks readonly preview, acceptance and histor
 Resource admission counts actual periodic repetitions before solving. The initial
 producer discarded returned chart edits; its complete diagnostics remain separate.
 See [guide](commands/rebuild-surfaces.md) and [provenance](closed-surface-rebuild-provenance.json).
-Generic trimmed seam/singular projection, arbitrary periodic sources, degenerate
+Generic singular trim projection, arbitrary periodic sources, degenerate
 midpoint isocurves and performance parity remain unfinished or unverified.
 TweenSurfaces keeps its preceding measured open preparation policy; these rebuild
 records do not establish closed-source tween matching.
