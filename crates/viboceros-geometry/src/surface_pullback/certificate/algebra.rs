@@ -2,7 +2,7 @@
 use super::*;
 use num_bigint::BigInt;
 
-fn binomial(n: usize, k: usize) -> BigInt {
+pub(super) fn binomial(n: usize, k: usize) -> BigInt {
     (0..k.min(n - k)).fold(BigInt::one(), |c, i| c * (n - i) / (i + 1))
 }
 pub(super) fn multiply(

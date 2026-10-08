@@ -9,6 +9,7 @@ pub(super) struct Surface {
     spans: [Vec<usize>; 2],
     controls: Vec<H>,
     patches: BTreeMap<[usize; 2], Vec<H>>,
+    interval_coefficients: interval::Coefficients,
 }
 impl Surface {
     pub fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Option<Self>, GeometryError> {
@@ -65,6 +66,7 @@ impl Surface {
             spans,
             controls,
             patches: BTreeMap::new(),
+            interval_coefficients: interval::Coefficients::default(),
         }))
     }
     pub fn in_domain(&self, bounds: &[[Rational; 2]]) -> bool {
@@ -220,6 +222,31 @@ impl Surface {
         }
         Ok(image)
     }
+    pub fn interval_bound(
+        &mut self,
+        span: [usize; 2],
+        uv: &[Uv],
+        spatial: &[H],
+        limit: Real,
+        budget: &mut Budget,
+    ) -> Result<interval::Outcome, GeometryError> {
+        let net = self.patch(span, budget)?;
+        let bounds = std::array::from_fn(|axis| {
+            [
+                self.knots[axis][span[axis]].clone(),
+                &self.knots[axis][span[axis] + 1] - &self.knots[axis][span[axis]],
+            ]
+        });
+        Ok(interval::bound_with_cache(
+            &net,
+            self.degree,
+            &bounds,
+            uv,
+            spatial,
+            limit,
+            &mut self.interval_coefficients,
+        ))
+    }
     pub fn crossing_bound(
         &mut self,
         bounds: &[[Rational; 2]],
@@ -279,6 +306,46 @@ impl Surface {
             a.max(b)
         });
         Ok(algebra::norm_bound(&difference, limit))
+    }
+    pub fn interval_crossing_bound(
+        &mut self,
+        bounds: &[[Rational; 2]],
+        spatial: &[H],
+        limit: Real,
+        budget: &mut Budget,
+    ) -> Result<interval::Crossing, GeometryError> {
+        let spans: [Vec<usize>; 2] = std::array::from_fn(|axis| {
+            self.spans[axis]
+                .iter()
+                .copied()
+                .filter(|&span| {
+                    bounds[axis][0] <= self.knots[axis][span + 1]
+                        && bounds[axis][1] >= self.knots[axis][span]
+                })
+                .collect()
+        });
+        if spans[0].len().saturating_mul(spans[1].len()) > 64 {
+            return Ok(interval::Crossing::Refine);
+        }
+        let mut boxes = interval::Boxes::new();
+        for &sv in &spans[1] {
+            for &su in &spans[0] {
+                let span = [su, sv];
+                let mut intervals = Vec::new();
+                for axis in 0..2 {
+                    let low = &self.knots[axis][span[axis]];
+                    let high = &self.knots[axis][span[axis] + 1];
+                    let a = bounds[axis][0].clone().max(low.clone());
+                    let b = bounds[axis][1].clone().min(high.clone());
+                    intervals.push([(&a - low) / (high - low), (&b - low) / (high - low)]);
+                }
+                let net = self.patch(span, budget)?;
+                if boxes.add(&net, self.degree, &intervals).is_none() {
+                    return Ok(interval::Crossing::Inconclusive);
+                }
+            }
+        }
+        Ok(boxes.finish(spatial, limit))
     }
 }
 

@@ -1,0 +1,47 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSurfaceReTrimProfile20261008",
+  "baseline_commit": "3356050b",
+  "sphere_baseline_median_seconds": 64.77580015,
+  "sphere_optimized_median_seconds": 1.607728713,
+  "measured_ratio": 40.290255206756385,
+  "baseline_geometry_sha256": [
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+  ],
+  "optimized_geometry_sha256": [
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+    "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+  ],
+  "sphere_rhino_median_seconds": 0.0276824,
+  "full_performance_parity": false,
+  "limits": [
+    "Only three repetitions on one DGX Spark host are measured; this is not a general benchmark.",
+    "Rust constructs continuously certified edges; native SDK fitting has a different validation contract and runs through the Python/RhinoCommon bridge under Wine/FEX.",
+    "Source setup, geometry serialization and output disposal are outside reported method timings.",
+    "Geometry fingerprints cover the coordinates, weights, knots and topology emitted by the example; document metadata and pixels are not measured.",
+    "The native sphere-cap timing remains substantially lower than the optimized Rust timing."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/examples/profile_surface_retrim.rs": "f4f897127f83348cf54bdeecda56d238504cab7342cceea80e7aca30df83e557",
+    "tools/rhino_oracle/surface_retrim_profile_probe.py": "968995dfb2958d6e1338910198fe6d918de9e119052993ad70767261e9c0b377",
+    "tools/rhino_oracle/fixtures/surface_retrim_profile.json": "f221573dae01a4f9e8290078ac2f4d816416874ef1eeeb5b1afd0c2aabfbad70",
+    "tools/rhino_oracle/observations/surface_retrim_profile.json": "9e2809748c4163e4f37255e14d40f2e29f41ee3411335501b5e5ded7ab4245ad",
+    "docs/retrim-performance-baseline-three.json": "0395e743edeb90c3ca75fb659ddb3da7de6f3bc93e7f7948af3bac27f01d69c7",
+    "docs/retrim-performance-interval-three.json": "616b498f3bfda4bac433b6799fef81ba13782510f0bcb7d135abb3a5fd697069",
+    "docs/retrim-performance-crossing-three.json": "1e7cab93fb0c2de3d0008512425147ea724957ac0cd3d7da556d1cac8fba78a2",
+    "docs/retrim-performance-sphere.json": "ba8987cfa88673aa62d82c59064a3cdc450687697f244666448515295404febf",
+    "docs/retrim-performance-swapped.json": "f0c59e3beb8ba8b43309bf6511c5b3a9f90294861c10bb265c739bb00fa93d20",
+    "docs/retrim-performance-cylinder.json": "002cc2f76cbc0187cde00559d90a30bf57da67d844684de82d3ee3c2667f310d",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "00a66d609573e804c5e8e13be41cd0542c6f4d29c343e2f7d765a7cec4048dc0",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "15a7de14dcd0a96de5eb1bafef6cb65164643b824d12adaf5acd76cfa3268c95",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "c53653dc0ff734d162bbf41688204a92dee9f803bca9de6c68f73c310470aaa2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/number.rs": "336501254b7cd6c1c3662827ec38f4e8d2b461ec6a79bd29d65b6e01310a51c1",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs": "6d20ee9eba93a2c6586448bac2df8b5f018c856274c5f301adb16448b2c24228",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs": "2a8a74001d5f8e5b0b4de89188582587926436bdba53bd68fb04d2430e6d7a84"
+  }
+}

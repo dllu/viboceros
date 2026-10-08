@@ -245,6 +245,10 @@ and `degree`, returning the complete `surface` definition in either engine.
 `brep_retrim_geometry` accepts a closed-loop `fixture` and target `surface`,
 returning complete `brep` topology, definitions and geometry witnesses. It exposes
 trim transfer separately from rebuilding for instrumentation.
+An [interval certificate optimization](../retrim-performance.md) reduces the measured
+default sphere-cap retrim time from 64.78 to 1.61 seconds while retaining the recorded
+geometry and continuous tolerance. Its same-source private-Xvfb SDK measurement
+still shows a substantial performance gap. General performance parity remains open.
 Two [public SDK queries](../../tools/rhino_oracle/observations/brep_retrim_geometry.json)
 project a paraboloid annulus onto parallel polynomial planes. API replay checks
 the two loops, projected vertices and native edge distance witnesses at `2e-6`.

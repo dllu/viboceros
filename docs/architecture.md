@@ -178,6 +178,12 @@ at its projected endpoint U. Independent closest-point queries expose the native
 swapped-cap asymmetry relative to pointwise projection.
 Interior singular trim projection,
 multi-chart winding and arbitrary periodic surfaces remain unfinished or unverified.
+Curved cubic trim/image certificates use outward interval Bernstein products and
+restricted knot-crossing boxes, retaining exact rational extraction and fallback.
+The [retrim profile](retrim-performance.md) records a default sphere-cap reduction
+from 64.78 to 1.61 seconds with identical recorded geometry; native SDK timing
+still shows a substantial gap. Overflow, subnormal and uncertain proofs use the
+preceding exact path, and hidden between-station excursions remain rejected.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

@@ -7,6 +7,7 @@ use std::collections::BTreeMap;
 mod affine;
 mod algebra;
 mod curve;
+mod interval;
 mod pushup;
 mod surface;
 #[cfg(test)]
@@ -45,7 +46,7 @@ impl NurbsSurface {
     /// `Some(bound)` proves the entire correspondence is within `limit`.
     /// `None` is inconclusive or outside that limit, never proof of equality.
     ///
-    /// Exact rational extraction and Bernstein products retain all stored
+    /// Exact rational extraction and outward interval or exact Bernstein products retain all stored
     /// controls, weights and knots without rounded knot insertion or sampling.
     /// Tensor knot crossings use restricted surface hulls and exact dyadic
     /// subdivision. Positive or uniformly negative weight gauges are supported;
@@ -54,6 +55,7 @@ impl NurbsSurface {
     /// Bernstein path limits composed degrees to 64; the polynomial affine
     /// control-reference path does not form that composition. UV must stay in the natural
     /// surface domain. Work, rational sizes and subdivision depth are bounded.
+    /// Inconclusive finite-interval proofs fall back to exact rational arithmetic.
     /// Sources remain unchanged; this does not certify topology or injectivity.
     pub fn parameter_curve_deviation_bound(
         &self,
@@ -307,6 +309,17 @@ fn piece_bound(
     limit: Real,
     budget: &mut Budget,
 ) -> Result<Option<Real>, GeometryError> {
+    piece_bound_with_interval(surface, uv, spatial, limit, budget, true)
+}
+
+fn piece_bound_with_interval(
+    surface: &mut surface::Surface,
+    uv: Vec<Uv>,
+    spatial: Vec<H>,
+    limit: Real,
+    budget: &mut Budget,
+    use_interval: bool,
+) -> Result<Option<Real>, GeometryError> {
     let mut bound = 0_f64;
     let mut pending = vec![(uv, spatial, 0)];
     while let Some((uv, spatial, depth)) = pending.pop() {
@@ -316,6 +329,16 @@ fn piece_bound(
                 return Ok(None);
             }
         } else if let Some(patch) = surface.containing_patch(&bounds, budget)? {
+            if use_interval && limit > 0. && uv.len() > 2 && spatial.len() == 4 {
+                match surface.interval_bound(patch, &uv, &spatial, limit, budget)? {
+                    interval::Outcome::Within(upper) => {
+                        bound = bound.max(upper);
+                        continue;
+                    }
+                    interval::Outcome::Outside => return Ok(None),
+                    interval::Outcome::Inconclusive => {}
+                }
+            }
             let image = surface.compose(patch, &uv, budget)?;
             let difference = algebra::difference(&image, &spatial, budget)?;
             let Some(upper) = algebra::hull_bound(difference, limit, budget)? else {
@@ -323,9 +346,25 @@ fn piece_bound(
             };
             bound = bound.max(upper);
             continue;
-        } else if let Some(upper) = surface.crossing_bound(&bounds, &spatial, limit, budget)? {
-            bound = bound.max(upper);
-            continue;
+        } else {
+            let crossing = if use_interval && limit > 0. && uv.len() > 2 && spatial.len() == 4 {
+                surface.interval_crossing_bound(&bounds, &spatial, limit, budget)?
+            } else {
+                interval::Crossing::Inconclusive
+            };
+            match crossing {
+                interval::Crossing::Within(upper) => {
+                    bound = bound.max(upper);
+                    continue;
+                }
+                interval::Crossing::Refine => {}
+                interval::Crossing::Inconclusive => {
+                    if let Some(upper) = surface.crossing_bound(&bounds, &spatial, limit, budget)? {
+                        bound = bound.max(upper);
+                        continue;
+                    }
+                }
+            }
         }
         if depth == MAX_DEPTH {
             return Ok(None);
