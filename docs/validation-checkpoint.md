@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `ae58768c` with Rust 1.95.0 after
-[BooleanSplit mixed coplanar stages](boolean-split-mixed-open.md).
+The October 7, 2026 audit tested code at `18131ce5` with Rust 1.95.0 after
+[BooleanSplit trimmed sheets and compound inputs](boolean-split-topology.md).
 
 ## Commands and results
 
@@ -17,25 +17,43 @@ git diff --check
 ```
 
 All commands completed successfully. The ordinary Rust workspace suite passed
-5,209 tests:
+5,214 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 985 | 17 |
-| Command | 1,168 | 2 |
+| App | 986 | 17 |
+| Command | 1,169 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,031 | 8 |
+| Geometry | 2,034 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 931 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 935 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new mixed-stage BooleanSplit capture ran 20 owned public recipes on private
+The new topology BooleanSplit capture ran 14 owned public recipes on private
+Xvfb under `VibocerosOracleBooleanSplitTopologyPilot20261007`. Twelve succeed and
+create 33 pieces; two failures remain in the [raw records](../tools/rhino_oracle/observations/boolean_split_topology.json).
+Replay checks every outcome, face/edge counts, boundary witnesses at `1e-7`,
+scalars at `1e-9`, solid volume/centroid at `1e-10`, attributes/groups, geometry
+user text, idle selection and independent Undo/Redo. Compound targets/cutters,
+original trim holes, missing cap patches, coplanar cover/straddle behavior,
+preselection and retention are measured. The command omits untouched closed
+shells from successful outputs while restoring the full original on Undo.
+Trimmed-sheet boundary splitting distinguishes outer coverage from enclosed holes;
+the strict solid-partition API retains its complete-cap contract. Open reports
+carry branch component counts for metadata and repeat untouched open components
+where the capture requires them. Kernel/app tests verify these distinctions,
+original-hole remainders and history. Earlier BooleanSplit capture replays also
+pass. See [scope and provenance](boolean-split-topology.md). General curved and
+higher-degree geometry, overlapping shells, broader compound/trim combinations,
+near contacts, insertion order and relative performance remain unverified.
+
+The preceding mixed-stage BooleanSplit capture ran 20 owned public recipes on private
 Xvfb under `VibocerosOracleBooleanSplitMixedOpenVerified20261007`. All succeed and
 create 56 pieces. [Raw records](../tools/rhino_oracle/observations/boolean_split_mixed_open.json)
 retain boundaries, counts, mass properties, metadata, groups, idle selection and
