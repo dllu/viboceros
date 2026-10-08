@@ -3,43 +3,58 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `bfa6efa5` with Rust 1.95.0 after
-[Ordered surface tween picking and previews](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `22a11c1e` with Rust 1.95.0 after
+[Surface tween option memory](commands/tween-surfaces.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
-cargo test --release -p viboceros-command script_tweens_preserve
-cargo test --release --bin viboceros app::tests::tween_surfaces
+cargo test --release --bin viboceros native_inactive_sample
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The release workspace suite passed 5,288
-tests. A newly added script-selection regression passed separately in release;
-final region-selection guards also passed the focused release application suite.
-Together these checks passed 5,289 distinct Rust tests:
+All commands completed successfully. The release workspace suite passed 5,292
+tests. The newly added inactive-sample follow-up regression passed separately in
+release. Together these checks passed 5,293 distinct Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,010 | 17 |
-| Command | 1,188 | 2 |
+| App | 1,013 | 17 |
+| Command | 1,189 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,064 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 487 | 0 |
 
-The Python suite passed 967 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 970 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest TweenSurfaces interaction capture ran nine owned private-Xvfb recipes
+The newest TweenSurfaces option capture runs a 29-step owned private-Xvfb sequence
+under `VibocerosOracleTweenOptionsVerified20261008`. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_options.json)
+retain native prompt defaults before/after edits, accepted geometry, cancellations
+and independent history. App replay checks each subsequent invocation against
+those defaults: count, method and sample edits commit only on success, while
+OutputLayer saves in the options phase even on cancellation. Source-selection
+cancellation accepts no inline layer preset; invalid edits preserve values.
+An [eight-step follow-up](../tools/rhino_oracle/observations/tween_surfaces_sample_memory.json)
+under `VibocerosOracleTweenSampleMemory20261008` confirms an edited sample count
+survives accepted Refit and is revealed when returning to SamplePoints. Preferences
+remain outside document history; command tests check independent registries,
+reused documents and omission of source IDs/directions from memory. A cancelled
+native Refit edit leaves two source-shaped copies even though its method change
+is discarded; this remains an explicit geometry discrepancy. Restart persistence,
+native corner-click directions, general geometry and performance parity remain
+unverified. See [workflow](commands/tween-surfaces.md) and [provenance](tween-options-provenance.json).
+
+The preceding TweenSurfaces interaction capture ran nine owned private-Xvfb recipes
 under `VibocerosOracleTweenInteraction20261008`: three acceptances and six
 cancellations with zero, one or two preselected sources. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_interaction.json)
 retain native prompts, geometry and selection/history. App replay checks all
