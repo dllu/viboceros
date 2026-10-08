@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `6877ab9e` with Rust 1.95.0 after
-[BooleanSplit partitions and native workflows](commands/boolean-split.md).
+The October 7, 2026 audit tested code at `031bc9d9` with Rust 1.95.0 after
+[BooleanSplit finite plane cutters](boolean-split-plane-cutters.md).
 
 ## Commands and results
 
@@ -17,25 +17,47 @@ git diff --check
 ```
 
 All commands completed successfully. The ordinary Rust workspace suite passed
-5,192 tests:
+5,200 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 980 | 17 |
-| Command | 1,164 | 2 |
+| App | 982 | 17 |
+| Command | 1,166 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,023 | 8 |
+| Geometry | 2,027 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 919 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 923 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new BooleanSplit capture ran 28 owned public recipes on private Xvfb under
+The new finite-plane BooleanSplit capture ran 19 public recipes on private Xvfb
+under `VibocerosOracleBooleanSplitPlanesPilot20261007`. Fourteen commands succeed
+and produce 39 closed pieces; five no-split failures remain in the
+[raw records](../tools/rhino_oracle/observations/boolean_split_plane.json).
+Replay covers all outcomes, face/edge counts, bidirectional boundary witnesses at
+`1e-7`, scalar fields at `1e-9`, volume/centroid at `1e-10`, attributes, groups,
+geometry-user-text lineage, immutable cutter snapshots, idle selection and
+independent Undo/Redo. Complete, partial, exact, joint and gapped coverage,
+normal reversal, diagonal planes, cutter order and mixed solid/surface stages
+are measured. Coplanar sheets can cover a section jointly; an earlier full cut
+can make a later partial sheet effective on one connected piece. Planning cells
+outside actual sheets cannot provide result faces. Exact material-component
+queries preserve cavity shells and separate nested islands before any export.
+Kernel tests verify finite coverage, source-face ownership, normal-relative side
+reports, nested material, work limits and warped-sheet rejection. App tests and
+a fresh production wgpu/egui check on private Xvfb confirm both source types,
+viewport picking, acceptance, failed partial cuts, source purity and Undo/Redo.
+The [saved image and scope](boolean-split-plane-cutters.md) distinguish that
+local inspection from native pixel comparison. Curved/nonplanar sheets,
+higher-degree supports, open targets, broader trimmed/compound policies, tolerance
+contacts, interleaved coplanar groups and relative performance remain unverified.
+
+The preceding BooleanSplit capture ran 28 owned public recipes on private Xvfb under
 `VibocerosOracleBooleanSplitVerified20261007`. Seventeen commands succeed and
 create 64 pieces; eight no-split failures and three cancellations remain in the
 [raw records](../tools/rhino_oracle/observations/boolean_split_command.json).
@@ -53,8 +75,9 @@ B-reps never become operands. App tests and a fresh production wgpu/egui
 inspection on private Xvfb verify both selection phases, shared sets,
 preselection, retention, cancellation, acceptance and Undo/Redo. See the
 [saved image, scope and provenance](commands/boolean-split.md). Native insertion
-order differs; open/curved cutters, broader compound command policies and relative
-performance remain unverified.
+order differs. That checkpoint did not support open cutters; the finite-plane
+extension above adds their certified planar case. Curved cutters, broader
+compound command policies and relative performance remain unverified.
 
 The preceding edge SubCrv capture ran eleven owned public commands on private Xvfb
 under `VibocerosOracleSubcurveEdgesFinal20261007`, including box, planar surface
