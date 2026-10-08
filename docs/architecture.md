@@ -121,8 +121,10 @@ transitions and normalized-UV sampled tensor interpolation, with explicit
 direction changes and measured layer/attribute/group policy. Sampling accepts
 unequal polynomial/rational nets and retains mean-chord output domains. Rational
 control displacement retains the first weights with square-root weight ratios.
-Unequal-net control fitting and Refit remain unfinished. Complete native
-command/SDK evidence and a Python geometry query retain those boundaries.
+Refit matches degrees and knots for unequal positive rational nets and retains
+the end source domains. Unequal-net control fitting and native option previews
+remain unfinished. Complete command/SDK evidence and a sampled Python geometry
+query retain those boundaries.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

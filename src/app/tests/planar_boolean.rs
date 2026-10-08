@@ -64,6 +64,49 @@ fn sampled_tween_options_survive_command_first_surface_selection() {
     assert_eq!(app.document.objects().len(), 4);
 }
 #[test]
+fn refit_tweens_match_unequal_source_degrees_through_selection_and_history() {
+    let mut app = test_app();
+    enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0");
+    enter(
+        &mut app,
+        "SrfControlPtGrid Degree=2 3 Degree=2 3 0,0,4 0,3,4 0,6,4 2,0,4 2,3,5 2,6,6 4,0,4 4,3,6 4,6,8",
+    );
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let ids = before.iter().map(|o| o.id()).collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "TweenSurfaces MatchMethod=Refit NumberOfSurfaces=3",
+    );
+    for id in ids {
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(id),
+            mode: SelectionMode::Add,
+        });
+    }
+    enter(&mut app, "");
+    if app.object_prompt.is_some() {
+        enter(&mut app, "");
+    }
+    assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().len(), 5, "{:?}", app.command_log);
+    for (i, o) in app.document.objects().skip(2).enumerate() {
+        let Geometry::Brep(b) = o.geometry() else {
+            panic!()
+        };
+        let s = b.faces()[0].surface();
+        assert_eq!((s.degree_u(), s.degree_v()), (2, 2));
+        let p = s
+            .evaluate(*s.domain_u().start(), *s.domain_v().start())
+            .unwrap();
+        assert!((p.z() - (i + 1) as f64).abs() < 1e-12);
+    }
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 5);
+}
+#[test]
 fn planar_difference_and_intersection_pick_ordered_surfaces_and_finish_on_second_pick() {
     for (name, area) in [("PlanarDifference", 12.), ("PlanarIntersection", 4.)] {
         let (mut app, ids) = pair();

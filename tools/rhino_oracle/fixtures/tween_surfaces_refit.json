@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_planes_number1",
+      "case": "planes_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_planes_number3",
+      "case": "planes_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_warped_number1",
+      "case": "warped_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_warped_number3",
+      "case": "warped_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_number1",
+      "case": "rational_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_number3",
+      "case": "rational_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_swapped_number1",
+      "case": "rational_swapped_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_swapped_number3",
+      "case": "rational_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_both_rational_number1",
+      "case": "both_rational_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_both_rational_number3",
+      "case": "both_rational_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_counts_number1",
+      "case": "counts_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_counts_number3",
+      "case": "counts_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_counts_swapped_number1",
+      "case": "counts_swapped_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_counts_swapped_number3",
+      "case": "counts_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_degrees_number1",
+      "case": "degrees_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_degrees_number3",
+      "case": "degrees_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_degrees_swapped_number1",
+      "case": "degrees_swapped_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_degrees_swapped_number3",
+      "case": "degrees_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_domains_number1",
+      "case": "domains_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_domains_number3",
+      "case": "domains_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_counts_number1",
+      "case": "rational_counts_number1"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_rational_counts_number3",
+      "case": "rational_counts_number3"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_layer_startsrf",
+      "case": "layer_startsrf"
+    },
+    {
+      "op": "tween_surfaces_refit",
+      "id": "tween_srf_layer_endsrf",
+      "case": "layer_endsrf"
+    }
+  ]
+}

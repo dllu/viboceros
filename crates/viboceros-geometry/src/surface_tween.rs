@@ -81,6 +81,24 @@ pub fn try_tween_nurbs_surfaces(
     end: &NurbsSurface,
     number: usize,
 ) -> Result<Vec<NurbsSurface>, GeometryError> {
+    tween_matched(start, end, number, false)
+}
+
+/// Match source degrees and knot multiplicities before interpolating controls.
+/// Output domains retain the end surface's native UV intervals.
+pub fn try_tween_nurbs_surfaces_refitted(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+) -> Result<Vec<NurbsSurface>, GeometryError> {
+    tween_matched(start, end, number, true)
+}
+fn tween_matched(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    refit: bool,
+) -> Result<Vec<NurbsSurface>, GeometryError> {
     if !(1..=MAX_SURFACE_TWEEN_COUNT).contains(&number) {
         return Err(error("surface count is outside the resource limit"));
     }
@@ -97,7 +115,8 @@ pub fn try_tween_nurbs_surfaces(
         .iter()
         .chain(end.control_points())
         .any(|c| c.weight() != 1.);
-    if rational
+    if !refit
+        && rational
         && (start.degree_u() != end.degree_u()
             || start.degree_v() != end.degree_v()
             || start.control_point_count_u() != end.control_point_count_u()
@@ -111,8 +130,9 @@ pub fn try_tween_nurbs_surfaces(
         start.degree_u().max(end.degree_u()),
         start.degree_v().max(end.degree_v()),
     ];
-    if start.control_point_count_u() != end.control_point_count_u()
-        || start.control_point_count_v() != end.control_point_count_v()
+    if !refit
+        && (start.control_point_count_u() != end.control_point_count_u()
+            || start.control_point_count_v() != end.control_point_count_v())
     {
         return Err(error(
             "unequal control nets require native common-chart fitting, still under investigation",
@@ -229,7 +249,7 @@ pub fn try_tween_nurbs_surfaces(
                 WeightedPoint3::try_new(point, a.weight())
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        result.push(NurbsSurface::try_new_rational(
+        let surface = NurbsSurface::try_new_rational(
             degree[0],
             degree[1],
             a.control_point_count_u(),
@@ -237,7 +257,12 @@ pub fn try_tween_nurbs_surfaces(
             controls,
             knots_u.clone(),
             knots_v.clone(),
-        )?);
+        )?;
+        result.push(if refit {
+            surface.try_reparameterized(end.domain_u(), end.domain_v())?
+        } else {
+            surface
+        });
     }
     Ok(result)
 }
@@ -258,6 +283,139 @@ fn error(context: &'static str) -> GeometryError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn refitted_polynomial_nets_retain_exact_parameter_correspondence_and_sources() {
+        let a = NurbsSurface::try_bilinear([
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 6., 0.).unwrap(),
+            Point3::try_new(0., 6., 0.).unwrap(),
+        ])
+        .unwrap()
+        .try_insert_knot_u(0.25, 1)
+        .unwrap();
+        let b = NurbsSurface::try_new(
+            2,
+            2,
+            3,
+            3,
+            (0..3)
+                .flat_map(|v| {
+                    (0..3).map(move |u| {
+                        Point3::try_new(u as Real * 2., v as Real * 3., 4. + u as Real * v as Real)
+                            .unwrap()
+                    })
+                })
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap()
+        .try_change_degree(3, 2, false)
+        .unwrap()
+        .try_insert_knot_v(0.75, 2)
+        .unwrap()
+        .try_reparameterized(2. ..=8., -4. ..=5.)
+        .unwrap();
+        let before = (a.clone(), b.clone());
+        let result = try_tween_nurbs_surfaces_refitted(&a, &b, 2).unwrap();
+        for (index, s) in result.iter().enumerate() {
+            assert_eq!(s.domain_u(), b.domain_u());
+            assert_eq!(s.domain_v(), b.domain_v());
+            for j in 0..17 {
+                for i in 0..17 {
+                    let x = i as Real / 16.;
+                    let y = j as Real / 16.;
+                    let fraction = (index + 1) as Real / 3.;
+                    let actual = s.evaluate(2. + 6. * x, -4. + 9. * y).unwrap();
+                    let expected =
+                        Point3::try_new(4. * x, 6. * y, fraction * (4. + 4. * x * y)).unwrap();
+                    assert!(actual.distance_to(expected).unwrap() < 1e-12);
+                }
+            }
+        }
+        assert_eq!((a, b), before);
+    }
+    #[test]
+    fn refitted_tweens_replay_original_native_requested_nets() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_command.json"
+        ))
+        .unwrap();
+        replay_refitted(&q, 6);
+    }
+    #[test]
+    fn refitted_tweens_replay_twenty_four_native_accepted_nets() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_refit.json"
+        ))
+        .unwrap();
+        replay_refitted(&q, 24);
+    }
+    fn replay_refitted(q: &serde_json::Value, expected_cases: usize) {
+        let mut cases = 0;
+        for row in q["results"].as_array().unwrap() {
+            let v = &row["value"];
+            if v["spec"]["method"] != "Refit" {
+                continue;
+            }
+            let a = surface(&v["before"][0]["definition"]);
+            let b = surface(&v["before"][1]["definition"]);
+            let results = try_tween_nurbs_surfaces_refitted(
+                &a,
+                &b,
+                v["spec"]["number"].as_u64().unwrap() as usize,
+            )
+            .unwrap();
+            for (s, e) in results.iter().zip(
+                v["command"]["after_script"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .rev()
+                    .take(results.len())
+                    .collect::<Vec<_>>()
+                    .into_iter()
+                    .rev(),
+            ) {
+                let n = surface(&e["definition"]);
+                assert_eq!(
+                    (
+                        s.degree_u(),
+                        s.degree_v(),
+                        s.control_point_count_u(),
+                        s.control_point_count_v()
+                    ),
+                    (
+                        n.degree_u(),
+                        n.degree_v(),
+                        n.control_point_count_u(),
+                        n.control_point_count_v()
+                    )
+                );
+                for (a, b) in s
+                    .knots_u()
+                    .iter()
+                    .chain(s.knots_v())
+                    .zip(n.knots_u().iter().chain(n.knots_v()))
+                {
+                    assert!((a - b).abs() < 1e-12, "{} knots", v["case"]);
+                }
+                for (a, b) in s.control_points().iter().zip(n.control_points()) {
+                    assert!(
+                        a.point().distance_to(b.point()).unwrap() < 1e-7,
+                        "{} {:?} {:?}",
+                        v["case"],
+                        a,
+                        b
+                    );
+                    assert!((a.weight() - b.weight()).abs() < 1e-12);
+                }
+            }
+            cases += 1;
+        }
+        assert_eq!(cases, expected_cases);
+    }
     #[test]
     fn sampled_tween_grids_keep_analytic_planes_and_reject_excessive_work() {
         let plane = |z| {

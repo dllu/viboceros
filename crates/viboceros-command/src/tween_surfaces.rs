@@ -1,8 +1,10 @@
 //! Atomic surface tween construction; correspondence belongs to the command.
 use super::*;
-use viboceros_geometry::{try_tween_nurbs_surfaces, try_tween_nurbs_surfaces_sampled};
+use viboceros_geometry::{
+    try_tween_nurbs_surfaces, try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_sampled,
+};
 
-const USAGE: &str = "TweenSurfaces [NumberOfSurfaces=n] [MatchMethod=None|SamplePoints] [SampleNumber=2..255] [OutputLayer=CurrentLayer|StartSrf|EndSrf] [Sources=a,b] [FlipStartU=Yes|No] [FlipStartV=Yes|No] [SwapStartUV=Yes|No] [FlipEndU=Yes|No] [FlipEndV=Yes|No] [SwapEndUV=Yes|No]";
+const USAGE: &str = "TweenSurfaces [NumberOfSurfaces=n] [MatchMethod=None|Refit|SamplePoints] [SampleNumber=2..255] [OutputLayer=CurrentLayer|StartSrf|EndSrf] [Sources=a,b] [FlipStartU=Yes|No] [FlipStartV=Yes|No] [SwapStartUV=Yes|No] [FlipEndU=Yes|No] [FlipEndV=Yes|No] [SwapEndUV=Yes|No]";
 pub(super) struct TweenSurfacesCommand;
 
 #[derive(Clone, Copy)]
@@ -11,12 +13,18 @@ enum OutputLayer {
     Start,
     End,
 }
+#[derive(Clone, Copy, PartialEq)]
+enum Method {
+    Control,
+    Refit,
+    Sampled,
+}
 struct Options {
     number: usize,
     layer: OutputLayer,
     sources: Option<[ObjectId; 2]>,
     reverse: [[bool; 3]; 2],
-    sampled: bool,
+    method: Method,
     sample_number: usize,
 }
 impl Command for TweenSurfacesCommand {
@@ -77,15 +85,19 @@ impl Command for TweenSurfacesCommand {
             }
             surfaces.push(surface);
         }
-        let outputs = if options.sampled {
-            try_tween_nurbs_surfaces_sampled(
+        let outputs = match options.method {
+            Method::Sampled => try_tween_nurbs_surfaces_sampled(
                 &surfaces[0],
                 &surfaces[1],
                 options.number,
                 options.sample_number,
-            )?
-        } else {
-            try_tween_nurbs_surfaces(&surfaces[0], &surfaces[1], options.number)?
+            )?,
+            Method::Control => {
+                try_tween_nurbs_surfaces(&surfaces[0], &surfaces[1], options.number)?
+            }
+            Method::Refit => {
+                try_tween_nurbs_surfaces_refitted(&surfaces[0], &surfaces[1], options.number)?
+            }
         };
         let (attrs, membership) = match options.layer {
             OutputLayer::Current => (
@@ -113,7 +125,7 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
         layer: OutputLayer::Current,
         sources: None,
         reverse: [[false; 3]; 2],
-        sampled: true,
+        method: Method::Sampled,
         sample_number: 10,
     };
     let mut seen = BTreeSet::new();
@@ -132,11 +144,12 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
                 result.number = value.parse().map_err(|_| CommandError::Usage(USAGE))?
             }
             "matchmethod" if value.eq_ignore_ascii_case("None") => {
-                result.sampled = false;
+                result.method = Method::Control;
             }
             "matchmethod" if value.eq_ignore_ascii_case("SamplePoints") => {
-                result.sampled = true;
+                result.method = Method::Sampled;
             }
+            "matchmethod" if value.eq_ignore_ascii_case("Refit") => result.method = Method::Refit,
             "samplenumber" => {
                 result.sample_number = value.parse().map_err(|_| CommandError::Usage(USAGE))?
             }
@@ -180,7 +193,7 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
         return Err(CommandError::Usage(USAGE));
     }
     if !(2..=255).contains(&result.sample_number)
-        || seen.contains("samplenumber") && !result.sampled
+        || seen.contains("samplenumber") && result.method != Method::Sampled
     {
         return Err(CommandError::Usage(USAGE));
     }
@@ -237,6 +250,17 @@ mod tests {
             "../../../tools/rhino_oracle/observations/tween_surfaces_sampling.json"
         ))
         .unwrap();
+        replay_native(&q);
+    }
+    #[test]
+    fn refitted_tweens_replay_native_geometry_properties_and_independent_history() {
+        let q: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/tween_surfaces_refit.json"
+        ))
+        .unwrap();
+        replay_native(&q);
+    }
+    fn replay_native(q: &serde_json::Value) {
         for row in q["results"].as_array().unwrap() {
             let v = &row["value"];
             let mut doc = Document::default();
@@ -270,7 +294,7 @@ mod tests {
             doc.clear_history().unwrap();
             let before = doc.objects().cloned().collect::<Vec<_>>();
             let spec = &v["spec"];
-            registry.execute(&mut doc,&format!("TweenSurfaces Sources={},{} MatchMethod=SamplePoints SampleNumber={} NumberOfSurfaces={} OutputLayer={}",ids[0],ids[1],spec["sample"],spec["number"],spec["layer"].as_str().unwrap())).unwrap();
+            registry.execute(&mut doc,&format!("TweenSurfaces Sources={},{} MatchMethod={} {} NumberOfSurfaces={} OutputLayer={}",ids[0],ids[1],spec["method"].as_str().unwrap(),if spec["method"]=="SamplePoints" {format!("SampleNumber={}",spec["sample"])} else {String::new()},spec["number"],spec["layer"].as_str().unwrap())).unwrap();
             let output = v["command"]["after_script"].as_array().unwrap();
             let strip = |rows: &serde_json::Value| {
                 serde_json::Value::Array(

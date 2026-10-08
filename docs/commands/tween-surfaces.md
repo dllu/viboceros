@@ -5,13 +5,16 @@
 `TweenSurfaces` adds intermediate surfaces between two inputs. The current
 implementation supports sampled matching (`MatchMethod=SamplePoints`) for
 polynomial/rational surfaces with different degrees, counts and parameter domains.
-Control matching (`MatchMethod=None`) handles equal-sized polynomial nets and
-compatible positive rational nets. Sources remain unchanged.
+`MatchMethod=Refit` matches degrees and knot layouts across positive rational
+nets, including unequal counts. Control matching (`MatchMethod=None`) handles
+equal-sized polynomial nets and compatible positive rational nets. Sources remain
+unchanged.
 Select two single-face surfaces and confirm, or start the command and select
 sources with Enter confirmation.
 
 ```text
 TweenSurfaces NumberOfSurfaces=3 MatchMethod=SamplePoints SampleNumber=6
+TweenSurfaces NumberOfSurfaces=3 MatchMethod=Refit
 TweenSurfaces NumberOfSurfaces=3 MatchMethod=None
 TweenSurfaces Sources=<first-id>,<second-id> OutputLayer=StartSrf
 TweenSurfaces Sources=<first-id>,<second-id> FlipEndU=Yes SwapEndUV=Yes
@@ -39,7 +42,14 @@ preparation elevates degrees and unifies knots; output domains count common
 spans. Compatible rational matching retains the first weights and scales each
 control displacement by `sqrt(end_weight / start_weight)`, following measured
 native data. This can extrapolate control locations. Unequal rational degrees
-or counts remain rejected.
+or counts remain rejected in control matching.
+
+Refit prepares a common tensor basis by clamping, elevating degrees and inserting
+the union of normalized interior knots with their maximum multiplicities. It then
+uses the measured rational control-displacement policy above. Output UV domains
+retain the end source's native intervals. This exact basis matching covers the
+recorded inputs; it does not establish every native adaptive fitting policy.
+The same control and output limits apply before preparation and insertion.
 
 `OutputLayer=CurrentLayer` uses fresh default attributes and no groups.
 `StartSrf` and `EndSrf` copy the corresponding attributes and group memberships.
@@ -58,11 +68,12 @@ domains, swapped rational order and output layers. Independent regressions
 check extreme finite coordinates, source purity, resource rejection and history.
 See [provenance](../tween-surfaces-provenance.json).
 
-Captured `Refit` commands leave four additional source-shaped copies, and
-`SamplePoints` two, alongside requested tweens. The public sampling SDK returns
+Earlier commands that changed matching options left additional source-shaped
+copies: `Refit` four and `SamplePoints` two in that capture, alongside requested
+tweens. The public sampling SDK returns
 just the requested outputs. Both raw records and the initial investigation are
 retained without normalizing these differences. Unequal-net control matching,
-`Refit`, option memory, corner previews and performance parity remain unfinished.
+option memory, corner previews and performance parity remain unfinished.
 The registered command rejects unsupported methods. Trimmed single-face input
 uses its underlying surface; trim correspondence is not implemented.
 
@@ -80,6 +91,26 @@ command-first selection and Undo/Redo. Independent kernel checks require
 analytic plane agreement at `1e-12` and reject excessive work before allocation.
 See [sampling provenance](../tween-sampling-provenance.json).
 
+The [Refit follow-up](../../tools/rhino_oracle/observations/tween_surfaces_refit.json)
+adds 24 successful owned commands under `VibocerosOracleTweenRefit20261008`.
+Each recipe initializes native options in the owned document, retains that
+initialization record, deletes its outputs and clears history, then starts a new
+command and accepts without option changes. Every accepted command produces
+exactly the requested one, two or three surfaces. Native initialization still
+creates extra objects; this isolates those diagnostics from accepted geometry.
+
+Kernel replay checks all 24 accepted nets and six earlier requested Refit nets
+at `1e-7` for controls and `1e-12` for knots/weights. Cases include polynomial/
+rational inputs, unequal degrees/counts, swapped order, differing domains and
+source-layer outputs. Command replay compares 81 UV-normalized witnesses per
+source/output at `1e-7`, complete identity/properties/groups and independent
+history. An independent polynomial test checks normalized parameter agreement
+at `1e-12` with different degrees, U/V knot sites and multiplicities, while
+preserving original sources. App tests exercise Refit options, source picking,
+unequal degrees and Undo/Redo. See [Refit provenance](../tween-refit-provenance.json).
+The local workflow creates the requested outputs; native option-change copies
+and remembered preferences remain unimplemented.
+
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
 `surfaces` definitions in both engines and shares the same resource limits.
@@ -88,5 +119,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit
 ```

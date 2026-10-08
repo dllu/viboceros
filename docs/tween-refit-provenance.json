@@ -1,0 +1,51 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenRefit20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 24,
+  "successful_commands": 24,
+  "control_point_epsilon": 1e-07,
+  "knot_weight_epsilon": 1e-12,
+  "normalized_surface_witness_epsilon": 1e-07,
+  "independent_polynomial_witness_epsilon": 1e-12,
+  "original_requested_output_replay_recipes": 6,
+  "initialization_output_counts": {
+    "planes_number1": 5,
+    "planes_number3": 9,
+    "warped_number1": 7,
+    "warped_number3": 9,
+    "rational_number1": 7,
+    "rational_number3": 9,
+    "rational_swapped_number1": 7,
+    "rational_swapped_number3": 9,
+    "both_rational_number1": 7,
+    "both_rational_number3": 9,
+    "counts_number1": 7,
+    "counts_number3": 9,
+    "counts_swapped_number1": 7,
+    "counts_swapped_number3": 9,
+    "degrees_number1": 7,
+    "degrees_number3": 9,
+    "degrees_swapped_number1": 7,
+    "degrees_swapped_number3": 9,
+    "domains_number1": 7,
+    "domains_number3": 9,
+    "rational_counts_number1": 7,
+    "rational_counts_number3": 9,
+    "layer_startsrf": 8,
+    "layer_endsrf": 8
+  },
+  "limits": [
+    "Native option changes leave extra source-shaped objects; bare acceptance does not. Initialization snapshots retain those effects separately.",
+    "Compatible matching uses degree elevation and exact knot refinement; this does not establish every native adaptive surface-fitting policy.",
+    "Unequal-net control matching, remembered options, ordered picks and corner previews remain unfinished.",
+    "General negative-weight or singular preparation, continuous native epsilon agreement and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_refit_probe.py": "c361ed7a1c15c31aeb292172b0a338ece194bf6c4448625b76358a45b0bb0ef3",
+    "tools/rhino_oracle/fixtures/tween_surfaces_refit.json": "013d9289eb153336c8094ef6c7bf5758b69faaeb413f0e76c58514c3bf61514e",
+    "tools/rhino_oracle/observations/tween_surfaces_refit.json": "7e9158d3374c4e99e45a9df5415cc96802b5f9aae094148fe27cefb2e05c5de2"
+  }
+}
