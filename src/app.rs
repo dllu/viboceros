@@ -8346,6 +8346,11 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(action) = output.surface_corner_click.take()
+            && self.edit_tween_corner(action)
+        {
+            return true;
+        }
         if output.source_viewport_click && !output.toggle_maximized && self.cycle_boolean_two() {
             return true;
         }
@@ -9095,6 +9100,7 @@ impl eframe::App for VibocerosApp {
                 .use_single_marker_color
                 .then_some(analysis.marker_color)
         });
+        let tween_corner_controls = self.tween_corner_controls().to_vec();
         let normal_surface = model_input_active
             .then(|| self.move_normal_surface())
             .flatten();
@@ -9320,6 +9326,7 @@ impl eframe::App for VibocerosApp {
                             end_markers: &end_markers,
                             current_end_marker,
                             end_marker_color,
+                            surface_corners: &tween_corner_controls,
                         },
                         curve_points,
                         index,

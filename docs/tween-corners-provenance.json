@@ -1,0 +1,58 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenCornerVerifiedFinal20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 9,
+  "successful_commands": 9,
+  "calibrated_mouse_clicks": 8,
+  "normalized_surface_witness_epsilon": 1e-07,
+  "actions": {
+    "end_00": "Swap U/V",
+    "end_10": "Reverse U",
+    "end_01": "Reverse V",
+    "end_11": "No action",
+    "start_corners": "No action"
+  },
+  "initial_recovery": "Two diagnostic real-click runs needed a manually injected first owned click request to activate the native modal timer; the final run uses the corrected calibrated driver without manual recovery.",
+  "limits": [
+    "Native preview colors, label layout and continuous pixel agreement are unverified.",
+    "Marker picking uses a local nine-pixel radius and deterministic closest projected distance.",
+    "Repeated native click sequences, periodic/singular corners and overlapping projected controls remain unverified.",
+    "Native option-change object effects and restart persistence remain explicit compatibility limits."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_corners_initial_probe.py": "26331735beda9861cc34b0fac75526bb906ec8ae395524ba011c7b1359f16f29",
+    "tools/rhino_oracle/observations/tween_surfaces_corners_initial.json": "ab83e1c35d4e518b2c4fcce738c26a461905ad611aa2764ef885696f26133b06",
+    "tools/rhino_oracle/tween_surfaces_corner_mouse_recovery_probe.py": "72cef286f862c375d9efb6ec04321dd26ce8b914ad7587e362de26a3fcccd57f",
+    "tools/rhino_oracle/observations/tween_surfaces_corner_mouse_recovery.json": "18f07016e9c0a358543e969aad19a76e19c9e2f318791e5cb83944fe33203f6f",
+    "tools/rhino_oracle/observations/tween_surfaces_corner_prime_recovery.json": "2a7de9ab387d9c6800749f1bfaadbdc5b725b80d963c7da150f48962839642ad",
+    "tools/rhino_oracle/tween_surfaces_corners_probe.py": "1500c16b52341e1e8dd48c2d8fe3f9de27c53f63abf3473913fa7b1a7c68a797",
+    "tools/rhino_oracle/tween_surfaces_corner_input.py": "c029d6718c38e0c59398e5ff269ed482ea75b54ebbd99496a1dcff5d86886173",
+    "tools/rhino_oracle/fixtures/tween_surfaces_corners.json": "7a5aada81c76042f2bde5e89b7cfa655a78b0eaed6d782a10c2ceb575fa8f312",
+    "tools/rhino_oracle/observations/tween_surfaces_corners.json": "8ef57c3c1097d3a4c082e5c3dab6160825d69b49dc7ce9d876cdbc140e917d94",
+    "docs/images/tween-surfaces-corner-controls.png": "a87d89447aad27f7e664491da0bac519d84c41adb12fc5f724fcbf2816d4a2bc"
+  },
+  "local_ui_inspection": {
+    "private_xvfb": true,
+    "renderer": "production wgpu/egui path, debug build",
+    "checks": [
+      "end-surface U click",
+      "moved-origin swap click",
+      "V click",
+      "Ghosted display",
+      "readonly preview with two live sources",
+      "acceptance",
+      "Undo and Redo"
+    ],
+    "native_pixels_compared": false
+  },
+  "initial_producer_whitespace_normalization": {
+    "original_sha256": "73e5f45582fc1f5ebfded5b552a8b6d458cf461526a8f606fc85c08e147f05c9",
+    "lines": [
+      109
+    ],
+    "removed_trailing_spaces": 1
+  }
+}

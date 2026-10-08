@@ -216,6 +216,154 @@ fn repeated_source_picks_create_copies_without_mutating_the_source() {
     assert_eq!(app.document.object(ids[0]).unwrap(), &before);
 }
 #[test]
+fn corner_controls_transform_current_end_axes_and_leave_live_sources_unchanged() {
+    use crate::viewport::SurfaceCornerAction as Action;
+    let (mut app, ids) = pair();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "TweenSurfaces MatchMethod=None");
+    for id in ids {
+        click(&mut app, id);
+    }
+    let initial = app.tween_corner_controls().to_vec();
+    assert_eq!(initial.len(), 3);
+    assert!(app.handle_viewport_action(ViewportOutput {
+        surface_corner_click: Some(Action::ReverseU),
+        ..Default::default()
+    }));
+    let changed = app.tween_corner_controls().to_vec();
+    assert_eq!(changed[0].point, initial[1].point);
+    assert_eq!(changed[1].point, initial[0].point);
+    app.edit_tween_corner(Action::SwapUv);
+    let swapped = app.tween_corner_controls();
+    assert_eq!(swapped[0].point, changed[0].point);
+    assert_eq!(swapped[2].point, changed[1].point);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    app.edit_tween_corner(Action::SwapUv);
+    app.edit_tween_corner(Action::ReverseU);
+    let restored = app.tween_corner_controls();
+    assert_eq!(restored[0].point, initial[0].point);
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().len(), 3);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+#[test]
+fn source_selection_and_value_questions_hide_corner_controls() {
+    let (mut app, ids) = pair();
+    enter(&mut app, "TweenSurfaces");
+    assert!(app.tween_corner_controls().is_empty());
+    click(&mut app, ids[0]);
+    assert!(app.tween_corner_controls().is_empty());
+    click(&mut app, ids[1]);
+    assert_eq!(app.tween_corner_controls().len(), 3);
+    enter(&mut app, "NumberOfSurfaces");
+    assert!(app.tween_corner_controls().is_empty());
+    enter(&mut app, "");
+    assert_eq!(app.tween_corner_controls().len(), 3);
+    enter(&mut app, "Cancel");
+    assert!(app.tween_corner_controls().is_empty());
+}
+#[test]
+fn failed_preview_keeps_source_controls_available_for_direction_recovery() {
+    let mut app = test_app();
+    enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0");
+    enter(
+        &mut app,
+        "SrfControlPtGrid Degree=2 3 Degree=2 3 10,0,4 10,3,4 10,6,4 12,0,4 12,3,5 12,6,6 14,0,4 14,3,6 14,6,8",
+    );
+    let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    enter(&mut app, "TweenSurfaces MatchMethod=None");
+    for id in ids {
+        click(&mut app, id);
+    }
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_none()
+    );
+    assert_eq!(app.tween_corner_controls().len(), 3);
+    app.edit_tween_corner(crate::viewport::SurfaceCornerAction::ReverseU);
+    assert_eq!(app.tween_corner_controls().len(), 3);
+    enter(&mut app, "MatchMethod=Refit");
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_some()
+    );
+    assert_eq!(app.document.objects().len(), 2);
+}
+#[test]
+fn corner_actions_replay_nine_native_calibrated_click_outcomes_and_history() {
+    use crate::viewport::SurfaceCornerAction as Action;
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/tween_surfaces_corners.json"
+    ))
+    .unwrap();
+    for row in q["results"].as_array().unwrap() {
+        let v = &row["value"];
+        let mut app = test_app();
+        enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,1 0,6,0");
+        enter(&mut app, "SrfPt 10,0,4 14,0,4 14,6,7 10,6,4");
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        let ids = before.iter().map(|o| o.id()).collect::<Vec<_>>();
+        app.document.clear_history().unwrap();
+        enter(&mut app, "TweenSurfaces MatchMethod=None");
+        for id in ids {
+            click(&mut app, id);
+        }
+        for click in v["spec"]["clicks"].as_array().unwrap() {
+            if click["source"] == 1 {
+                let action = match click["corner"].as_u64().unwrap() {
+                    0 => Some(Action::SwapUv),
+                    1 => Some(Action::ReverseU),
+                    2 => Some(Action::ReverseV),
+                    _ => None,
+                };
+                if let Some(action) = action {
+                    app.handle_viewport_action(ViewportOutput {
+                        surface_corner_click: Some(action),
+                        ..Default::default()
+                    });
+                }
+            }
+        }
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "");
+        let output = v["command"]["after_script"].as_array().unwrap();
+        assert_eq!(app.document.objects().len(), output.len());
+        for (object, n) in app.document.objects().zip(output) {
+            let s = match object.geometry() {
+                Geometry::NurbsSurface(s) => s,
+                Geometry::Brep(b) => b.faces()[0].surface(),
+                _ => panic!(),
+            };
+            for (i, p) in n["samples"].as_array().unwrap().iter().enumerate() {
+                let u = *s.domain_u().start()
+                    + (*s.domain_u().end() - *s.domain_u().start()) * (i % 9) as f64 / 8.;
+                let w = *s.domain_v().start()
+                    + (*s.domain_v().end() - *s.domain_v().start()) * (i / 9) as f64 / 8.;
+                let expected =
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                        .unwrap();
+                assert!(
+                    s.evaluate(u, w).unwrap().distance_to(expected).unwrap() < 1e-7,
+                    "{}",
+                    v["case"]
+                );
+            }
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), output.len());
+    }
+}
+#[test]
 fn cancel_saves_only_layer_while_acceptance_saves_count_method_and_inactive_samples() {
     use viboceros_command::tween_surfaces::{Method, OutputLayer, Preferences};
     let (mut app, ids) = pair();

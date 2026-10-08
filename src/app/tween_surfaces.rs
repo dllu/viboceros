@@ -16,6 +16,7 @@ pub(super) struct Prompt {
     prepared: Option<Prepared>,
     scene: Option<Document>,
     value_option: Option<String>,
+    corners: Vec<crate::viewport::SurfaceCornerControl>,
 }
 impl Prompt {
     pub(super) fn hint(&self) -> &str {
@@ -49,6 +50,81 @@ impl Prompt {
     }
 }
 impl VibocerosApp {
+    pub(super) fn tween_corner_controls(&self) -> &[crate::viewport::SurfaceCornerControl] {
+        self.tween_surfaces_prompt
+            .as_ref()
+            .filter(|p| !p.selecting() && p.value_option.is_none())
+            .map_or(&[], |p| p.corners.as_slice())
+    }
+    fn compute_tween_corner_controls(&self) -> Vec<crate::viewport::SurfaceCornerControl> {
+        use crate::viewport::{SurfaceCornerAction as Action, SurfaceCornerControl as Control};
+        let Some(p) = self
+            .tween_surfaces_prompt
+            .as_ref()
+            .filter(|p| !p.selecting() && p.value_option.is_none())
+        else {
+            return vec![];
+        };
+        let Some(object) = self.document.object(p.sources[1]) else {
+            return vec![];
+        };
+        let result = (|| -> Result<_, viboceros_geometry::GeometryError> {
+            let mut surface = match object.geometry() {
+                Geometry::NurbsSurface(s) => s.clone(),
+                Geometry::Brep(b) => b.faces()[0].surface().clone(),
+                _ => return Ok(vec![]),
+            };
+            if p.options.reverse[1][2] {
+                surface = surface.try_swapped_uv()?;
+            }
+            if p.options.reverse[1][0] {
+                surface = surface.try_reversed_u()?;
+            }
+            if p.options.reverse[1][1] {
+                surface = surface.try_reversed_v()?;
+            }
+            let u = surface.domain_u();
+            let v = surface.domain_v();
+            Ok(vec![
+                Control {
+                    point: surface.evaluate(*u.start(), *v.start())?,
+                    action: Action::SwapUv,
+                },
+                Control {
+                    point: surface.evaluate(*u.end(), *v.start())?,
+                    action: Action::ReverseU,
+                },
+                Control {
+                    point: surface.evaluate(*u.start(), *v.end())?,
+                    action: Action::ReverseV,
+                },
+            ])
+        })();
+        result.unwrap_or_default()
+    }
+    pub(super) fn edit_tween_corner(
+        &mut self,
+        action: crate::viewport::SurfaceCornerAction,
+    ) -> bool {
+        use crate::viewport::SurfaceCornerAction as Action;
+        let Some(p) = self
+            .tween_surfaces_prompt
+            .as_mut()
+            .filter(|p| !p.selecting() && p.value_option.is_none())
+        else {
+            return false;
+        };
+        match action {
+            Action::SwapUv => {
+                p.options.reverse[1].swap(0, 1);
+                p.options.reverse[1][2] = !p.options.reverse[1][2];
+            }
+            Action::ReverseU => p.options.reverse[1][0] = !p.options.reverse[1][0],
+            Action::ReverseV => p.options.reverse[1][1] = !p.options.reverse[1][1],
+        }
+        self.update_tween_preview();
+        true
+    }
     pub(super) fn start_tween_surfaces(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();
         if !words.first().is_some_and(|s| {
@@ -86,6 +162,7 @@ impl VibocerosApp {
             prepared: None,
             scene: None,
             value_option: None,
+            corners: vec![],
         });
         self.push_log(format!("> {input}"));
         if selected.len() <= 2 {
@@ -155,6 +232,7 @@ impl VibocerosApp {
         self.commands.remember_tween_surface_layer(p.options.layer);
         p.scene = None;
         p.prepared = None;
+        p.corners.clear();
         let Ok(ids) = <[ObjectId; 2]>::try_from(p.sources.clone()) else {
             return;
         };
@@ -174,6 +252,10 @@ impl VibocerosApp {
                 p.scene = Some(scene);
             }
             Err(error) => self.push_log(format!("Preview error: {error}")),
+        }
+        let corners = self.compute_tween_corner_controls();
+        if let Some(p) = self.tween_surfaces_prompt.as_mut() {
+            p.corners = corners;
         }
         self.log_tween_surfaces();
     }

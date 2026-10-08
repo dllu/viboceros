@@ -26,8 +26,11 @@ Explicit `Sources=` fixes script order. `FlipStartU`, `FlipStartV`, `SwapStartUV
 and their `End` counterparts adjust correspondence without changing originals.
 Swap applies before flips. Source picks retain click order, independently of
 document insertion order or source groups. The same surface can be picked twice.
-Native corner-click direction editing remains unfinished; use the typed direction
-options while the preview is active.
+Three end-surface corner controls are clickable in every viewport: `U/V` swaps
+the current axes, `U` reverses U, and `V` reverses V. The controls follow the
+current end-surface parameterization after each edit. Start-surface corners and
+the opposite end corner do not act, matching the measured native behavior.
+Typed direction options remain available for either source.
 
 Options accept `Name=value`, `Name value`, or an option name followed by its
 value at the next prompt. Invalid edits retain the previous valid preview. Enter
@@ -99,7 +102,7 @@ copies: `Refit` four and `SamplePoints` two in that capture, alongside requested
 tweens. The public sampling SDK returns
 just the requested outputs. Both raw records and the initial investigation are
 retained without normalizing these differences. Unequal-net control matching,
-native corner-click editing and performance parity remain unfinished.
+native preview appearance and performance parity remain unverified.
 The registered command rejects unsupported methods. Trimmed single-face input
 uses its underlying surface; trim correspondence is not implemented.
 
@@ -177,6 +180,27 @@ an explicit geometry discrepancy; local readonly previews discard all staged
 geometry on cancellation. The older initial investigation is retained separately.
 Neither sequence establishes preference persistence across application restarts.
 
+The [corner capture](../../tools/rhino_oracle/observations/tween_surfaces_corners.json)
+adds nine successful owned outcomes under `VibocerosOracleTweenCornerVerifiedFinal20261008`:
+one baseline and eight real mouse clicks. Public viewport matrices and
+WorldToClient projections calibrate every target; recorded mouse pixels agree
+with the integer aim. App replay compares 81 normalized witnesses per
+source/output at `1e-7` and independent history for all outcomes. Initial coordinate
+and recovered mouse investigations remain separate records; the final driver
+completes without manual recovery. See [corner provenance](../tween-corners-provenance.json).
+
+Corner positions are cached alongside prepared geometry. Pixel hit testing is
+independent of snaps and uses a nine-pixel radius with nearest-distance ordering.
+Controls hide during source selection and value questions; a failed preview
+retains them so correspondence can be edited. Independent tests cover axis
+composition, source purity, clipped/missed hits and all three display modes.
+A private-Xvfb inspection checks U, moved-origin swap and V clicks, Ghosted mode,
+readonly preview, acceptance and Undo/Redo on the production wgpu/egui path.
+Repeated native click sequences, periodic/singular and overlapping projected
+controls, native label/colors and continuous pixel agreement remain unverified.
+
+![End-surface corner controls after direction edits in a readonly preview](../images/tween-surfaces-corner-controls.png)
+
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
 `surfaces` definitions in both engines and shares the same resource limits.
@@ -185,5 +209,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options tools.rhino_oracle.test_tween_surfaces_corners
 ```

@@ -125,6 +125,9 @@ Ordered single-source picks and a readonly cached scene keep preview geometry
 outside document history. Typed option/direction edits rebuild only when values
 change; acceptance reuses prepared geometry in one transaction. Native source
 preselection survives acceptance/cancellation and independent history.
+End-surface corner controls provide measured U/V swap and U/V reversals.
+Their projected hit tests are independent of snaps, and transformed positions
+are cached with the readonly preview rather than recomputed per frame.
 Command-instance option storage applies measured field lifetimes: accepted
 count/method/sample edits and immediate options-phase layer edits. Source/direction
 state stays per invocation; history never changes saved preferences.

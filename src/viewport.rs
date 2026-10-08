@@ -55,7 +55,9 @@ pub(crate) use translation_preview::TranslationPreview;
 mod extents;
 pub(crate) use extents::ZoomExtentsBorders;
 mod end_markers;
+mod surface_corners;
 pub(crate) use end_markers::{EndMarker, EndMarkerKind, EndMarkerOptions, collect_end_markers};
+pub(crate) use surface_corners::{SurfaceCornerAction, SurfaceCornerControl};
 mod scene;
 #[cfg(test)]
 use scene::GpuSceneBuilder;
@@ -351,6 +353,7 @@ pub struct ViewportInput<'a> {
     pub end_markers: &'a [EndMarker],
     pub current_end_marker: Option<usize>,
     pub end_marker_color: Option<Color32>,
+    pub(crate) surface_corners: &'a [SurfaceCornerControl],
 }
 
 fn selection_candidate(
@@ -416,12 +419,14 @@ impl Default for ViewportInput<'_> {
             end_markers: &[],
             current_end_marker: None,
             end_marker_color: None,
+            surface_corners: &[],
         }
     }
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub(crate) surface_corner_click: Option<SurfaceCornerAction>,
     pub zoom_window_result: Option<Result<bool, &'static str>>,
     pub zoom_window_cancelled: bool,
     pub zoom_target_pick: Option<(Point3, usize)>,
@@ -1791,6 +1796,7 @@ impl Viewport {
                 }
             }
         }
+        self.paint_surface_corners(&painter, input.surface_corners, response.hover_pos(), rect);
         if let Some(target) = input.point_cloud_remove_target
             && let Some(object) = document.object(target)
             && let Geometry::PointCloud(cloud) = object.geometry()
@@ -2051,6 +2057,14 @@ impl Viewport {
             && response.clicked_by(PointerButton::Primary)
             && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
         ViewportOutput {
+            surface_corner_click: response
+                .clicked_by(PointerButton::Primary)
+                .then(|| {
+                    response.interact_pointer_pos().and_then(|pixel| {
+                        self.pick_surface_corner(input.surface_corners, pixel, rect)
+                    })
+                })
+                .flatten(),
             mirror_preview: mirror_preview_update,
             translation_preview: translation_preview_update,
             affine_preview: affine_preview_update,
