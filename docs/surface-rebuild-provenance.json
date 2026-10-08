@@ -1,0 +1,37 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleSurfaceRebuildVerified20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 12,
+  "normalized_surface_witness_epsilon": 1e-06,
+  "control_point_epsilon": 1e-06,
+  "initial_diagnostic": "Six initial commands used curve PointCount/Degree tokens. Rhino ignored those tokens and rebuilt with its 10x10 degree-3 defaults. Their producer and unaltered outputs are retained separately.",
+  "limits": [
+    "Open positive-weight surface examples only; periodic/general singular input and retrimming changed surfaces remain unsupported or unverified.",
+    "No performance parity claim.",
+    "Native remembered settings and automatic degree/count coupling remain unimplemented."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_probe.py": "7f0b1770816cc74818b92aaa492c3cc594bf684779cc19ee5e586ab0b315ec1c",
+    "tools/rhino_oracle/surface_rebuild_initial_probe.py": "e277c7f4b0427cef2d6594227d4a40f7cf7bce55e4c8ab443e1f1cb679f505f3",
+    "tools/rhino_oracle/fixtures/surface_rebuild.json": "96166c42ea6cb4680f519841c6be4f7db1363f83731f62e28bd5af9d6fd38349",
+    "tools/rhino_oracle/observations/surface_rebuild.json": "7a1bfa4e604e1da209a756afb13550adc9bfe01b2d50e31c4e318fd26b858f20",
+    "tools/rhino_oracle/observations/surface_rebuild_initial.json": "3b83fe06065f5bc6a23128f03c1fb7d4d55788a4fb19697f306809eb04f74a06",
+    "tools/rhino_oracle/fixtures/surface_rebuild_geometry.json": "e378767ac4f5c46109ce9b8786c049a921978aea704a8a444cf41d2282de9b0f",
+    "tools/rhino_oracle/observations/surface_rebuild_geometry.json": "946502693801a934a02fdf5a842c3e92527d53604737d2ab961abb5ea8d88699",
+    "tools/rhino_oracle/observations/surface_rebuild_local_initial_audit.json": "0442e5d9d23d7c0871561bc747463fa7ab91c4d8f1b99348e7db05937e658654",
+    "tools/rhino_oracle/observations/surface_rebuild_local_audit.json": "4ab773bb81c97500c47c250f1f69e2f8e9c72a0518e4e5dbad61e2c266eb33fa"
+  },
+  "sdk_recipes": 12,
+  "sdk_settings_scheme": "VibocerosOracleSurfaceRebuildSDK20261008",
+  "initial_local_sdk_audit": "10 matched and 2 local failures: endpoint length multiplication/division overshot the total by one binary64 step for rational sources. Fixed by taking endpoint parameters directly and computing interior fractions before multiplying by length.",
+  "sdk_audit": {
+    "matched": 12,
+    "mismatched": 0,
+    "local_failed": 0,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 1e-10
+  }
+}

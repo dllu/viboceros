@@ -180,8 +180,8 @@ with a fixed `PointCount` (default 10) and `Degree` from 1 through 11 (default
 structure; both interpolate equal-arc-length source stations. Positive point
 counts below the structural minimum are raised automatically, as in Rhino.
 `PreserveTangents=Yes` aligns eligible open-curve end handles. The
-`DeleteInput` and `OutputLayer` options follow `FitCrv`; surface rebuilding is
-not yet represented.
+`DeleteInput` and `OutputLayer` options follow `FitCrv`. Surfaces use independent
+[U/V rebuild options](rebuild-surfaces.md).
 
 ## Conics and spatial curves
 

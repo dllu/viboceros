@@ -365,7 +365,7 @@ impl CommandRegistry {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     #[test]
     fn tween_preferences_survive_history_and_documents_without_source_ids_or_directions() {
@@ -447,7 +447,7 @@ mod tests {
         assert_eq!(doc.objects().len(), 3);
         assert_eq!(doc.selected_object_count(), 2);
     }
-    fn native_surface(v: &serde_json::Value) -> viboceros_geometry::NurbsSurface {
+    pub(crate) fn native_surface(v: &serde_json::Value) -> viboceros_geometry::NurbsSurface {
         let controls = v["control_points"]
             .as_array()
             .unwrap()

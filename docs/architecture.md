@@ -141,6 +141,12 @@ faer solves check pivots, finite controls and residuals. Native option-change
 object effects, general periodic/singular sources and performance parity remain
 unresolved. Complete command/SDK evidence and a sampled Python geometry query
 retain those boundaries.
+The shared [surface Rebuild kernel](commands/rebuild-surfaces.md) also backs the
+surface branch of `Rebuild` and the Python `surface_rebuild_geometry` operation.
+Twelve native commands establish replacement identity, copied attributes,
+cleared output groups, layer choice and independent history. A separate twelve
+SDK queries check asymmetric target structures and reductions. Retrimming a
+changed surface and native option persistence remain unfinished.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

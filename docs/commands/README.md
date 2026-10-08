@@ -19,6 +19,7 @@ Rhino's complete command set is still a work in progress.
 - [Point-cloud creation](point-cloud.md)
 - [Detach or copy group members](remove-from-group.md)
 - [NURBS structure and parameterization](nurbs.md)
+- [Rebuild surface control nets](rebuild-surfaces.md)
 - [Smooth controls and mesh vertices](smooth.md)
 - [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)

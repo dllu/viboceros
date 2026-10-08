@@ -115,6 +115,7 @@ pub mod scale_positions;
 mod single_spans;
 pub mod smooth;
 mod split_disjoint_mesh;
+mod surface_rebuild;
 use explode::ExplodeCommand;
 use extract_subcurve::ExtractSubcurveCommand;
 mod to_nurbs;
@@ -2929,7 +2930,27 @@ impl Command for RebuildCurveCommand {
         &["RebuildCrv", "RebuildCurve"]
     }
 
+    fn object_selection_prompt(
+        &self,
+        _arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(Some(ObjectSelectionPrompt {
+            command: "Rebuild",
+            filter: ObjectSelectionFilter::Beziers,
+            workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
+            options: vec![],
+            menus: vec![],
+            choices: vec![],
+        }))
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if document
+            .selected_objects()
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
+        {
+            return surface_rebuild::run(document, arguments);
+        }
         let options = parse_rebuild_curve_options(arguments)?;
         let tolerance = document.tolerance();
         let sources = document
@@ -17860,6 +17881,11 @@ pub enum CommandError {
 
     #[error("Rebuild requires at least one selected curve")]
     NoRebuildCurves,
+
+    #[error(
+        "surface Rebuild requires single-face surfaces; retrimming changed surfaces is not yet supported"
+    )]
+    UnsupportedSurfaceRebuild,
 
     #[error("ChangeDegree degree {actual} must be between 1 and {maximum}")]
     InvalidChangeDegree { actual: usize, maximum: usize },

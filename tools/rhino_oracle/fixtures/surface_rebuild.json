@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_quadratic_copy_input",
+      "case": "quadratic_copy_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_quadratic_copy_current",
+      "case": "quadratic_copy_current"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_quadratic_replace_input",
+      "case": "quadratic_replace_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_quadratic_replace_current",
+      "case": "quadratic_replace_current"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_rational_copy_input",
+      "case": "rational_copy_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_rational_copy_current",
+      "case": "rational_copy_current"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_rational_replace_input",
+      "case": "rational_replace_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_rational_replace_current",
+      "case": "rational_replace_current"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_curved_copy_input",
+      "case": "curved_copy_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_curved_copy_current",
+      "case": "curved_copy_current"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_curved_replace_input",
+      "case": "curved_replace_input"
+    },
+    {
+      "op": "surface_rebuild",
+      "id": "tween_srf_curved_replace_current",
+      "case": "curved_replace_current"
+    }
+  ]
+}

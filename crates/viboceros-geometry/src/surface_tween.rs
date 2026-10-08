@@ -261,7 +261,7 @@ fn error(context: &'static str) -> GeometryError {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     #[test]
     fn refitted_polynomial_nets_retain_exact_parameter_correspondence_and_sources() {
@@ -539,7 +539,7 @@ mod tests {
         }
         assert!(check_count(MAX_SURFACE_TWEEN_CONTROLS, 2).is_err());
     }
-    pub(super) fn surface(v: &serde_json::Value) -> NurbsSurface {
+    pub(crate) fn surface(v: &serde_json::Value) -> NurbsSurface {
         let counts = v["control_count"].as_array().unwrap();
         let degree = v["degree"].as_array().unwrap();
         let controls = v["control_points"]

@@ -866,3 +866,31 @@ fn unequal_control_nets_preview_and_accept_three_native_tweens_with_atomic_histo
         accepted
     );
 }
+
+#[test]
+fn surface_rebuild_command_first_picks_replaces_and_undoes_in_one_step() {
+    let (mut app, ids) = pair();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(
+        &mut app,
+        "Rebuild UPointCount=5 VPointCount=4 UDegree=3 VDegree=2 ReTrim=No",
+    );
+    click(&mut app, ids[0]);
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().len(), 2);
+    let Geometry::Brep(b) = app.document.object(ids[0]).unwrap().geometry() else {
+        panic!()
+    };
+    let surface = b.faces()[0].surface();
+    assert_eq!((surface.degree_u(), surface.degree_v()), (3, 2));
+    assert_eq!(
+        (
+            surface.control_point_count_u(),
+            surface.control_point_count_v()
+        ),
+        (5, 4)
+    );
+    assert_eq!(app.document.undo_label(), Some("Rebuild"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}

@@ -485,7 +485,7 @@ impl VibocerosApp {
                 return true;
             }
             self.document.clear_selection();
-            let command_override = (description.command == "TweenSurfaces"
+            let command_override = (matches!(description.command, "TweenSurfaces" | "Rebuild")
                 || description.command == "ReducePointCloud"
                     && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());

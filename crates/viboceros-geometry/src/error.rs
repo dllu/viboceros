@@ -5,6 +5,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("invalid surface rebuild: {context}")]
+    InvalidSurfaceRebuild { context: &'static str },
     #[error("surface tween failed: {context}")]
     InvalidSurfaceTween { context: &'static str },
     #[error("convex B-rep Boolean input is unsupported: {context}")]

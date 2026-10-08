@@ -1280,6 +1280,12 @@ pub enum Operation {
         knots: CurveThroughKnotStyle,
         closed: bool,
     },
+    SurfaceRebuildGeometry {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        point_count: [usize; 2],
+        degree: [usize; 2],
+    },
     SurfaceTweenSampledGeometry {
         id: String,
         start_surface: NurbsSurfaceDefinition,
@@ -2312,6 +2318,7 @@ impl Operation {
             | Self::CurveThroughGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
             | Self::SurfaceTweenSampledGeometry { id, .. }
+            | Self::SurfaceRebuildGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
@@ -4850,6 +4857,25 @@ fn execute(
                 json!({
                     "curves": definitions,
                 }),
+                elapsed,
+            )
+        }
+        Operation::SurfaceRebuildGeometry {
+            surface,
+            point_count,
+            degree,
+            ..
+        } => {
+            let surface = nurbs_surface_from_definition(surface)?;
+            let (rebuilt, elapsed) = measure(iterations, || {
+                viboceros_geometry::try_rebuild_nurbs_surface(
+                    &surface,
+                    black_box(*point_count),
+                    black_box(*degree),
+                )
+            })?;
+            (
+                json!({"surface":nurbs_surface_definition_value(&rebuilt)}),
                 elapsed,
             )
         }
@@ -12372,6 +12398,56 @@ mod tests {
             json!([0.0, 6.0, 2.0])
         );
     }
+    #[test]
+    fn surface_rebuild_protocol_matches_twelve_native_sdk_definitions() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_rebuild_geometry.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/surface_rebuild_geometry.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 12);
+        for (local, n) in response
+            .results
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            assert_eq!(local.id, n["id"].as_str().unwrap());
+            let a = &local.value["surface"];
+            let b = &n["value"]["surface"];
+            for key in ["degree", "control_count", "knots_u", "knots_v"] {
+                assert_eq!(a[key], b[key]);
+            }
+            assert_eq!(
+                a["control_points"].as_array().unwrap().len(),
+                b["control_points"].as_array().unwrap().len()
+            );
+            for (a, b) in a["control_points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(b["control_points"].as_array().unwrap())
+            {
+                assert_eq!(a["weight"], b["weight"]);
+                let a: [f64; 3] = serde_json::from_value(a["point"].clone()).unwrap();
+                let b: [f64; 3] = serde_json::from_value(b["point"].clone()).unwrap();
+                assert!(
+                    a.iter()
+                        .zip(b)
+                        .map(|(a, b)| (a - b) * (a - b))
+                        .sum::<f64>()
+                        .sqrt()
+                        < 1e-6,
+                    "{}",
+                    local.id
+                );
+            }
+        }
+    }
+
     #[test]
     fn sampled_surface_tween_protocol_replays_full_native_sdk_nets() {
         let q: Value = serde_json::from_str(include_str!(

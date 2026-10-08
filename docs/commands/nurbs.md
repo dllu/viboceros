@@ -2,6 +2,8 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
+For independent U/V control counts and degrees, see [surface Rebuild](rebuild-surfaces.md).
+
 ## Degree, knots, and control points
 
 `ChangeDegree degree|u_degree,v_degree Deformable=Yes|No` changes selected
