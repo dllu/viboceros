@@ -182,6 +182,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if let Some(p) = &self.tween_surfaces_prompt {
+            return p.selecting().then_some(ObjectSelectionFilter::Surfaces);
+        }
         if self.planar_boolean_prompt.is_some() {
             return Some(ObjectSelectionFilter::Surfaces);
         }

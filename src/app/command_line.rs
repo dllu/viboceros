@@ -42,6 +42,7 @@ impl VibocerosApp {
             && self.active_command.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
+            && self.tween_surfaces_prompt.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -173,6 +174,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.tween_surfaces_prompt.is_some() {
+                        "TweenSurfaces"
                     } else if let Some(p) = &self.planar_boolean_prompt {
                         p.command
                     } else if self.boolean_two_prompt.is_some() {
@@ -252,6 +255,8 @@ impl VibocerosApp {
                                 "Yes or No; Enter accepts, Esc cancels"
                             } else if let Some(prompt) = set_view_prompt {
                                 prompt.message()
+                            } else if let Some(p)=&self.tween_surfaces_prompt {
+                                p.hint()
                             } else if self.planar_boolean_prompt.is_some() {
                                 "Pick a planar surface; Esc cancels"
                             } else if let Some(prompt) = &self.boolean_two_prompt {

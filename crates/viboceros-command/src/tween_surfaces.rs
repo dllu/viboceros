@@ -7,25 +7,26 @@ use viboceros_geometry::{
 const USAGE: &str = "TweenSurfaces [NumberOfSurfaces=n] [MatchMethod=None|Refit|SamplePoints] [SampleNumber=2..255] [OutputLayer=CurrentLayer|StartSrf|EndSrf] [Sources=a,b] [FlipStartU=Yes|No] [FlipStartV=Yes|No] [SwapStartUV=Yes|No] [FlipEndU=Yes|No] [FlipEndV=Yes|No] [SwapEndUV=Yes|No]";
 pub(super) struct TweenSurfacesCommand;
 
-#[derive(Clone, Copy)]
-enum OutputLayer {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum OutputLayer {
     Current,
     Start,
     End,
 }
-#[derive(Clone, Copy, PartialEq)]
-enum Method {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Method {
     Control,
     Refit,
     Sampled,
 }
-struct Options {
-    number: usize,
-    layer: OutputLayer,
-    sources: Option<[ObjectId; 2]>,
-    reverse: [[bool; 3]; 2],
-    method: Method,
-    sample_number: usize,
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Options {
+    pub number: usize,
+    pub layer: OutputLayer,
+    pub sources: Option<[ObjectId; 2]>,
+    pub reverse: [[bool; 3]; 2],
+    pub method: Method,
+    pub sample_number: usize,
 }
 impl Command for TweenSurfacesCommand {
     fn name(&self) -> &'static str {
@@ -56,70 +57,162 @@ impl Command for TweenSurfacesCommand {
             let ids = selected_ids(document)?;
             ids.try_into().map_err(|_| CommandError::Usage(USAGE))?
         };
-        if ids[0] == ids[1] {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let mut surfaces = Vec::new();
-        let mut attributes = Vec::new();
-        let mut groups = Vec::new();
-        for (i, id) in ids.into_iter().enumerate() {
-            let object = document.object(id).ok_or(CommandError::Usage(USAGE))?;
-            if !document.is_object_selectable(id) {
-                return Err(CommandError::Usage(USAGE));
-            }
-            let mut surface = match object.geometry() {
-                Geometry::NurbsSurface(s) => s.clone(),
-                Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface().clone(),
-                _ => return Err(CommandError::Usage(USAGE)),
-            };
-            attributes.push(object.attributes().clone());
-            groups.push(object.group_ids().to_vec());
-            if options.reverse[i][2] {
-                surface = surface.try_swapped_uv()?;
-            }
-            if options.reverse[i][0] {
-                surface = surface.try_reversed_u()?;
-            }
-            if options.reverse[i][1] {
-                surface = surface.try_reversed_v()?;
-            }
-            surfaces.push(surface);
-        }
-        let outputs = match options.method {
-            Method::Sampled => try_tween_nurbs_surfaces_sampled(
-                &surfaces[0],
-                &surfaces[1],
-                options.number,
-                options.sample_number,
-            )?,
-            Method::Control => {
-                try_tween_nurbs_surfaces(&surfaces[0], &surfaces[1], options.number)?
-            }
-            Method::Refit => {
-                try_tween_nurbs_surfaces_refitted(&surfaces[0], &surfaces[1], options.number)?
-            }
-        };
-        let (attrs, membership) = match options.layer {
-            OutputLayer::Current => (
-                ObjectAttributes::on_layer(document.current_layer_id()),
-                vec![],
-            ),
-            OutputLayer::Start => (attributes[0].clone(), groups[0].clone()),
-            OutputLayer::End => (attributes[1].clone(), groups[1].clone()),
-        };
-        let breps = outputs
-            .iter()
-            .map(|s| Brep::try_surface_face(s.clone(), document.tolerance()))
-            .collect::<Result<Vec<_>, _>>()?;
-        for b in breps {
-            let id = document.add_geometry_with_attributes(Geometry::Brep(b), attrs.clone())?;
-            document.set_object_group_memberships(id, membership.iter().copied())?;
-        }
-        document.clear_selection();
+        let prepared = prepare(document, ids, &options)?;
+        prepared.apply(document)?;
         Ok(format!("Created {} tween surface(s)", options.number))
     }
 }
-fn parse(args: &[&str]) -> Result<Options, CommandError> {
+/// Readonly output staging shared by the command and interactive preview.
+#[derive(Clone, Debug)]
+pub struct Prepared {
+    pub breps: Vec<Brep>,
+    attributes: ObjectAttributes,
+    memberships: Vec<viboceros_document::GroupId>,
+}
+impl Prepared {
+    pub fn apply(&self, document: &mut Document) -> Result<(), CommandError> {
+        for b in &self.breps {
+            let id = document
+                .add_geometry_with_attributes(Geometry::Brep(b.clone()), self.attributes.clone())?;
+            document.set_object_group_memberships(id, self.memberships.iter().copied())?;
+        }
+        Ok(())
+    }
+}
+pub fn prepare(
+    document: &Document,
+    ids: [ObjectId; 2],
+    options: &Options,
+) -> Result<Prepared, CommandError> {
+    let mut surfaces = Vec::new();
+    let mut attributes = Vec::new();
+    let mut groups = Vec::new();
+    for (i, id) in ids.into_iter().enumerate() {
+        let object = document.object(id).ok_or(CommandError::Usage(USAGE))?;
+        if !document.is_object_selectable(id) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let mut surface = match object.geometry() {
+            Geometry::NurbsSurface(s) => s.clone(),
+            Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface().clone(),
+            _ => return Err(CommandError::Usage(USAGE)),
+        };
+        attributes.push(object.attributes().clone());
+        groups.push(object.group_ids().to_vec());
+        if options.reverse[i][2] {
+            surface = surface.try_swapped_uv()?;
+        }
+        if options.reverse[i][0] {
+            surface = surface.try_reversed_u()?;
+        }
+        if options.reverse[i][1] {
+            surface = surface.try_reversed_v()?;
+        }
+        surfaces.push(surface);
+    }
+    let outputs = match options.method {
+        Method::Sampled => try_tween_nurbs_surfaces_sampled(
+            &surfaces[0],
+            &surfaces[1],
+            options.number,
+            options.sample_number,
+        )?,
+        Method::Control => try_tween_nurbs_surfaces(&surfaces[0], &surfaces[1], options.number)?,
+        Method::Refit => {
+            try_tween_nurbs_surfaces_refitted(&surfaces[0], &surfaces[1], options.number)?
+        }
+    };
+    let (attrs, membership) = match options.layer {
+        OutputLayer::Current => (
+            ObjectAttributes::on_layer(document.current_layer_id()),
+            vec![],
+        ),
+        OutputLayer::Start => (attributes[0].clone(), groups[0].clone()),
+        OutputLayer::End => (attributes[1].clone(), groups[1].clone()),
+    };
+    let breps = outputs
+        .iter()
+        .map(|s| Brep::try_surface_face(s.clone(), document.tolerance()))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Prepared {
+        breps,
+        attributes: attrs,
+        memberships: membership,
+    })
+}
+impl Options {
+    pub fn arguments(&self) -> String {
+        let method = match self.method {
+            Method::Control => "None",
+            Method::Refit => "Refit",
+            Method::Sampled => "SamplePoints",
+        };
+        let layer = match self.layer {
+            OutputLayer::Current => "CurrentLayer",
+            OutputLayer::Start => "StartSrf",
+            OutputLayer::End => "EndSrf",
+        };
+        let mut output = format!(
+            "NumberOfSurfaces={} MatchMethod={method} OutputLayer={layer}",
+            self.number
+        );
+        if self.method == Method::Sampled {
+            output.push_str(&format!(" SampleNumber={}", self.sample_number));
+        }
+        for (i, source) in ["Start", "End"].iter().enumerate() {
+            for (axis, name) in [
+                format!("Flip{source}U"),
+                format!("Flip{source}V"),
+                format!("Swap{source}UV"),
+            ]
+            .iter()
+            .enumerate()
+            {
+                output.push_str(&format!(
+                    " {name}={}",
+                    if self.reverse[i][axis] { "Yes" } else { "No" }
+                ));
+            }
+        }
+        output
+    }
+    /// Apply option edits atomically while retaining inactive sample settings.
+    pub fn updated(&self, args: &[&str]) -> Result<Self, CommandError> {
+        let edits = parse(args)?;
+        let mut result = self.clone();
+        for token in args {
+            let (name, _) = token.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+            match name.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                "number" | "numberofsurfaces" => result.number = edits.number,
+                "matchmethod" => result.method = edits.method,
+                "samplenumber" => result.sample_number = edits.sample_number,
+                "outputlayer" => result.layer = edits.layer,
+                "sources" => return Err(CommandError::Usage(USAGE)),
+                name => {
+                    let source = usize::from(name.contains("end"));
+                    let axis = if name.starts_with("swap") {
+                        2
+                    } else if name.ends_with('v') {
+                        1
+                    } else {
+                        0
+                    };
+                    result.reverse[source][axis] = edits.reverse[source][axis];
+                }
+            }
+        }
+        if result.method != Method::Sampled
+            && args.iter().any(|t| {
+                t.split_once('=')
+                    .is_some_and(|(n, _)| option_name_eq(n, "SampleNumber"))
+            })
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(result)
+    }
+}
+pub fn parse(args: &[&str]) -> Result<Options, CommandError> {
     let mut result = Options {
         number: 1,
         layer: OutputLayer::Current,
@@ -203,6 +296,40 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn script_tweens_preserve_preselected_sources_and_accept_repeated_ids() {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0")
+            .unwrap();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,4 4,0,4 4,6,4 0,6,4")
+            .unwrap();
+        let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
+        doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        registry
+            .execute(&mut doc, "TweenSurfaces SampleNumber=4")
+            .unwrap();
+        assert_eq!(doc.selected_object_count(), 2);
+        assert_eq!(doc.objects().len(), 3);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.selected_object_count(), 2);
+        assert_eq!(doc.objects().len(), 2);
+        registry
+            .execute(
+                &mut doc,
+                &format!(
+                    "TweenSurfaces Sources={},{} MatchMethod=None",
+                    ids[0], ids[0]
+                ),
+            )
+            .unwrap();
+        assert_eq!(doc.objects().len(), 3);
+        assert_eq!(doc.selected_object_count(), 2);
+    }
     fn native_surface(v: &serde_json::Value) -> viboceros_geometry::NurbsSurface {
         let controls = v["control_points"]
             .as_array()

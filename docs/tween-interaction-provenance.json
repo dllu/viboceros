@@ -1,0 +1,48 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenInteraction20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 9,
+  "successful_commands": 3,
+  "cancellations": 6,
+  "normalized_surface_witness_epsilon": 1e-07,
+  "selection_policy": "Preselected sources remain selected through acceptance, cancellation and independent history. Postpicked sources stay unselected after the command.",
+  "repeated_source_measurement": "With one preselected start, the explicit macro selects that same surface again as end; native accepts and produces copies of it.",
+  "limits": [
+    "Readonly local preview and typed direction edits are implemented; native corner click behavior, pixels and option memory remain unverified.",
+    "Native matching-option edits can create additional source-shaped copies; local readonly previews do not reproduce those side effects.",
+    "Preview caches validate source geometry, attributes/groups, document tolerance and current layer.",
+    "Arbitrary general geometry, cross-platform rendering and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_interaction_probe.py": "9449826d61c5d61a60ed2cfff3ff768c5263a995b29b1b1bf6aa9fa5c86e478a",
+    "tools/rhino_oracle/fixtures/tween_surfaces_interaction.json": "057dd1134888e1a295f5fed5fc8a453ccc46086209d5c934628af7a6721cab65",
+    "tools/rhino_oracle/observations/tween_surfaces_interaction.json": "cc4d0cb8557cc6ef234bcef5679249b5adda713ab3cd6ee93be63c000130327c",
+    "docs/images/tween-surfaces-preview-ghosted.png": "42e3f917d241da81d257ce9a06daed669295fad4daf8506dbc59512273dedf5b",
+    "docs/images/tween-surfaces-redo-ghosted.png": "f291a1a9bcf1b35a2d339f7dd85e57d997e1e48883c2aaf39a5c2ba958fb9b3b"
+  },
+  "local_ui_inspection": {
+    "private_xvfb": true,
+    "renderer": "production wgpu/egui path, debug build",
+    "sources": [
+      "SrfPt 0,0,0 6,0,0 6,5,0 0,5,0",
+      "SrfPt 0,0,6 6,0,6 6,5,9 0,5,6"
+    ],
+    "checks": [
+      "ordered viewport picks",
+      "NumberOfSurfaces=3 preview",
+      "FlipEndU=Yes",
+      "Ghosted display",
+      "invalid count retains preview",
+      "acceptance",
+      "Undo and Redo",
+      "Escape cancellation"
+    ],
+    "preview_viewport_objects": 5,
+    "preview_live_layer_objects": 2,
+    "redo_live_layer_objects": 5,
+    "native_pixels_compared": false
+  }
+}

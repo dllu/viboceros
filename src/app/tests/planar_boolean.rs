@@ -14,7 +14,7 @@ fn tween_surfaces_selection_confirmation_and_history() {
     let (mut app, ids) = pair();
     let before = app.document.objects().cloned().collect::<Vec<_>>();
     enter(&mut app, "TweenSurfaces NumberOfSurfaces=2");
-    assert!(app.object_prompt.is_some());
+    assert!(app.tween_surfaces_prompt.as_ref().unwrap().selecting());
     for id in ids {
         app.apply_selection_click(SelectionClick {
             object_id: Some(id),

@@ -9,8 +9,10 @@ polynomial/rational surfaces with different degrees, counts and parameter domain
 nets, including unequal counts. Control matching (`MatchMethod=None`) handles
 equal-sized polynomial nets and compatible positive rational nets. Sources remain
 unchanged.
-Select two single-face surfaces and confirm, or start the command and select
-sources with Enter confirmation.
+Start the command, pick the start surface and then the end surface, edit options
+or directions while viewing the preview, and press Enter to accept. Escape
+cancels any phase. One preselected surface supplies the start; two preselected
+surfaces open the preview directly.
 
 ```text
 TweenSurfaces NumberOfSurfaces=3 MatchMethod=SamplePoints SampleNumber=6
@@ -22,8 +24,18 @@ TweenSurfaces Sources=<first-id>,<second-id> FlipEndU=Yes SwapEndUV=Yes
 
 Explicit `Sources=` fixes script order. `FlipStartU`, `FlipStartV`, `SwapStartUV`,
 and their `End` counterparts adjust correspondence without changing originals.
-Swap applies before flips. The viewport controller collects two surfaces;
-native ordered single picks and corner-preview editing remain unfinished.
+Swap applies before flips. Source picks retain click order, independently of
+document insertion order or source groups. The same surface can be picked twice.
+Native corner-click direction editing remains unfinished; use the typed direction
+options while the preview is active.
+
+Options accept `Name=value`, `Name value`, or an option name followed by its
+value at the next prompt. Invalid edits retain the previous valid preview. Enter
+at a value prompt keeps the current value and returns to the options phase.
+View and display commands remain available during preview. Source geometry, attributes,
+groups, tolerance and current-layer changes invalidate the cached result.
+Preview preparation is readonly; unchanged option edits reuse the current scene.
+Acceptance reuses the prepared geometry in one transaction.
 
 The initial matching default is `SamplePoints` with `SampleNumber=10`, following
 the owned fresh native settings. `SampleNumber` specifies divisions per UV axis;
@@ -53,8 +65,10 @@ The same control and output limits apply before preparation and insertion.
 
 `OutputLayer=CurrentLayer` uses fresh default attributes and no groups.
 `StartSrf` and `EndSrf` copy the corresponding attributes and group memberships.
-Geometry-root text is not copied. Sources and outputs finish unselected.
-One Undo removes every output; Redo restores the accepted result. Construction
+Geometry-root text is not copied. Outputs finish unselected. Preselected sources
+retain their selection through acceptance, cancellation and history; sources
+picked after starting finish unselected. One Undo removes every output; Redo
+restores the accepted result. Construction
 is staged before insertion, and failures preserve geometry and history.
 
 The [complete capture](../../tools/rhino_oracle/observations/tween_surfaces_command.json)
@@ -111,6 +125,28 @@ unequal degrees and Undo/Redo. See [Refit provenance](../tween-refit-provenance.
 The local workflow creates the requested outputs; native option-change copies
 and remembered preferences remain unimplemented.
 
+The [interaction capture](../../tools/rhino_oracle/observations/tween_surfaces_interaction.json)
+adds nine owned private-Xvfb recipes under
+`VibocerosOracleTweenInteraction20261008`: three accepted commands and six
+cancellations with zero, one or two preselected sources. Complete snapshots and
+command traces retain selection and independent history. The one-preselected
+macro selects that same surface as the end; native accepts it and produces copies.
+App replay matches all nine outcomes, including 81 normalized witnesses per
+source/output at `1e-7` and exact source/history restoration. Independent tests
+check reversed pick order, readonly/cached previews, number and direction edits,
+invalid values, cancellation, stale input and unrelated transaction preservation.
+See [interaction provenance](../tween-interaction-provenance.json).
+
+A private-Xvfb inspection of the wgpu/egui app checks two ordered viewport picks,
+three-result preview, `FlipEndU`, Ghosted display, invalid count retention,
+acceptance, Undo/Redo and cancellation. The preview viewport shows five objects
+while the live layer pane still counts two sources; after acceptance/Redo it
+counts five. These local images do not compare native pixels.
+
+![Readonly surface tween preview with a direction edit](../images/tween-surfaces-preview-ghosted.png)
+
+![Accepted surface tween after Undo and Redo](../images/tween-surfaces-redo-ghosted.png)
+
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
 `surfaces` definitions in both engines and shares the same resource limits.
@@ -119,5 +155,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction
 ```

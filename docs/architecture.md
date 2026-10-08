@@ -121,6 +121,10 @@ transitions and normalized-UV sampled tensor interpolation, with explicit
 direction changes and measured layer/attribute/group policy. Sampling accepts
 unequal polynomial/rational nets and retains mean-chord output domains. Rational
 control displacement retains the first weights with square-root weight ratios.
+Ordered single-source picks and a readonly cached scene keep preview geometry
+outside document history. Typed option/direction edits rebuild only when values
+change; acceptance reuses prepared geometry in one transaction. Native source
+preselection survives acceptance/cancellation and independent history.
 Refit matches degrees and knots for unequal positive rational nets and retains
 the end source domains. Unequal-net control fitting and native option previews
 remain unfinished. Complete command/SDK evidence and a sampled Python geometry

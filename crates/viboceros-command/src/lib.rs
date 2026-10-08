@@ -272,7 +272,7 @@ mod loft;
 mod point_arguments;
 mod point_cloud;
 pub mod subcurve_input;
-mod tween_surfaces;
+pub mod tween_surfaces;
 use point_arguments::parse_point;
 mod point_grid;
 mod point_matrix;

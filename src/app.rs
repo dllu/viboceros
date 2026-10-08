@@ -183,6 +183,7 @@ mod toolbar;
 mod transform_prompt;
 mod transform_sources;
 mod translation_prompt;
+mod tween_surfaces;
 mod twist_prompt;
 mod unjoin_edge;
 mod untrim_holes;
@@ -1969,6 +1970,7 @@ pub struct VibocerosApp {
     subcurve_prompt: Option<subcurve_prompt::SubcurvePrompt>,
     boolean_two_prompt: Option<boolean_two::Prompt>,
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
+    tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2067,6 +2069,7 @@ impl VibocerosApp {
             subcurve_prompt: None,
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
+            tween_surfaces_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -2215,6 +2218,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_tween_surfaces(&input) {
+            return;
+        }
         if self.continue_planar_boolean(&input) {
             return;
         }
@@ -2295,7 +2301,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.start_planar_boolean(&input)
+        if self.start_tween_surfaces(&input)
+            || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
             || self.try_start_shrink_faces(&input)
@@ -5078,6 +5085,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
         if self.subcurve_prompt.take().is_some() {
@@ -7759,6 +7767,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_tween_surface(click.object_id) {
+            return;
+        }
         if self.pick_planar_boolean(click.object_id) {
             return;
         }
@@ -8006,6 +8017,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.tween_surfaces_prompt.is_some() {
+            return;
+        }
         if self
             .boolean_two_prompt
             .as_ref()
@@ -8050,6 +8064,10 @@ impl VibocerosApp {
     }
 
     fn finish_fence_selection(&mut self) {
+        if self.tween_surfaces_prompt.is_some() {
+            self.fence_selection = None;
+            return;
+        }
         let Some(state) = self.fence_selection.take() else {
             return;
         };
@@ -8143,6 +8161,10 @@ impl VibocerosApp {
         region_mode: RectSelectionMode,
         selection_mode: SelectionMode,
     ) {
+        if self.tween_surfaces_prompt.is_some() {
+            self.boundary_selection = None;
+            return;
+        }
         let Some(filter) = self.viewport_object_filter() else {
             self.push_log("Boundary selection is unavailable during this prompt".into());
             return;
@@ -8275,6 +8297,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.tween_surfaces_prompt.is_some() {
+            return;
+        }
         if self.end_analysis_pick.is_some() {
             self.apply_end_analysis_pick_ids(selection.object_ids);
             return;
@@ -8522,6 +8547,7 @@ impl VibocerosApp {
             || self.intersection_prompt.is_some()
             || self.boolean_two_prompt.is_some()
             || self.planar_boolean_prompt.is_some()
+            || self.tween_surfaces_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -8612,6 +8638,8 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.tween_surfaces_prompt.is_some() {
+            self.cancel_tween_surfaces();
         } else if self.planar_boolean_prompt.is_some() {
             self.cancel_planar_boolean();
         } else if self.boolean_two_prompt.is_some() {
@@ -8688,6 +8716,7 @@ impl eframe::App for VibocerosApp {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
@@ -8704,6 +8733,7 @@ impl eframe::App for VibocerosApp {
             && self.object_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
+            && self.tween_surfaces_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9074,6 +9104,7 @@ impl eframe::App for VibocerosApp {
             .boolean_two_prompt
             .as_ref()
             .and_then(|p| p.scene())
+            .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
             .unwrap_or(&self.document);
         let twist_preview = self
             .twist_session
@@ -9527,6 +9558,7 @@ mod tests {
     mod taper;
     mod transform_copy;
     mod translation_preview;
+    mod tween_surfaces;
     mod twist;
     mod unjoin_edge;
     mod untrim_edge;
@@ -9598,6 +9630,7 @@ mod tests {
             subcurve_prompt: None,
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
+            tween_surfaces_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,

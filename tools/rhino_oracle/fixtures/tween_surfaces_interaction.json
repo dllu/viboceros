@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre0_accept",
+      "case": "pre0_accept"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre0_cancel_first",
+      "case": "pre0_cancel_first"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre0_cancel_options",
+      "case": "pre0_cancel_options"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre1_accept",
+      "case": "pre1_accept"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre1_cancel_first",
+      "case": "pre1_cancel_first"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre1_cancel_options",
+      "case": "pre1_cancel_options"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre2_accept",
+      "case": "pre2_accept"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre2_cancel_first",
+      "case": "pre2_cancel_first"
+    },
+    {
+      "op": "tween_surfaces_interaction",
+      "id": "tween_srf_pre2_cancel_options",
+      "case": "pre2_cancel_options"
+    }
+  ]
+}
