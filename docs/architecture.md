@@ -40,7 +40,10 @@ participation and geometry metadata outside material-region classification.
 exact arrangement, caches readonly preview scenes and accepts in one transaction
 while preserving the first source identity and metadata. Its planar-sheet path
 uses exact oriented half-spaces and finite physical patches, with separate
-coplanar seam and uncut-sheet policies from native commands. General curved Boolean commands
+coplanar seam and uncut-sheet policies from native commands. Common/exclusive
+patch categories supplement original-face lineage so partial overlap seams
+survive merging. Explicit unchanged acceptance records its own history step
+for measured Invalid result previews. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

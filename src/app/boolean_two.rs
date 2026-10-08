@@ -152,7 +152,11 @@ impl VibocerosApp {
             let _ = scene.clear_history();
             let result = (|| -> Result<(), viboceros_command::CommandError> {
                 scene.begin_transaction("Boolean2Objects preview")?;
-                viboceros_command::boolean_two::accept(&mut scene, ids, &pieces, true)?;
+                if pieces.is_empty() {
+                    viboceros_command::boolean_two::accept_unchanged(&mut scene, ids)?;
+                } else {
+                    viboceros_command::boolean_two::accept(&mut scene, ids, &pieces, true)?;
+                }
                 scene.commit_transaction()?;
                 scene.clear_history()?;
                 Ok(())
@@ -164,8 +168,13 @@ impl VibocerosApp {
             p.scenes[index] = Some(scene);
         }
         let mode = p.mode.name();
+        let invalid = if p.candidates.as_ref().unwrap().get(p.mode).is_empty() {
+            " (Invalid result)"
+        } else {
+            ""
+        };
         self.push_log(format!(
-            "Boolean2Objects: {mode}; click for next result, Enter accepts, Esc cancels"
+            "Boolean2Objects: {mode}{invalid}; click for next result, Enter accepts, Esc cancels"
         ));
     }
     pub(super) fn validate_boolean_two(&mut self) {
@@ -222,12 +231,12 @@ impl VibocerosApp {
             let delete = p.delete_input;
             let result = (|| -> Result<(), viboceros_command::CommandError> {
                 self.document.begin_transaction("Boolean2Objects")?;
-                match viboceros_command::boolean_two::accept(
-                    &mut self.document,
-                    ids,
-                    &pieces,
-                    delete,
-                ) {
+                let accepted = if pieces.is_empty() {
+                    viboceros_command::boolean_two::accept_unchanged(&mut self.document, ids)
+                } else {
+                    viboceros_command::boolean_two::accept(&mut self.document, ids, &pieces, delete)
+                };
+                match accepted {
                     Ok(()) => {
                         self.document.commit_transaction()?;
                         Ok(())

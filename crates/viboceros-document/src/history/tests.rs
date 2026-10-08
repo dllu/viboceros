@@ -127,3 +127,32 @@ fn mixed_edit_prefixes_roll_back_exactly_including_selection_and_redo() {
         "the matrix must include rejected partial edits"
     );
 }
+
+#[test]
+fn explicitly_accepted_unchanged_commands_own_history_and_rollback_preserves_redo() {
+    let mut doc = Document::default();
+    let id = doc
+        .add_geometry(Geometry::Point(Point3::try_new(1., 2., 3.).unwrap()))
+        .unwrap();
+    doc.clear_history().unwrap();
+    assert_eq!(
+        doc.record_accepted_unchanged_command(),
+        Err(DocumentError::NoActiveTransaction)
+    );
+    let geometry = doc.object(id).unwrap().geometry_snapshot().clone();
+    doc.begin_transaction("Accepted preview").unwrap();
+    doc.record_accepted_unchanged_command().unwrap();
+    assert!(doc.commit_transaction().unwrap());
+    assert!(doc.can_undo());
+    assert!(!doc.can_redo());
+    assert!(geometry.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    assert_eq!(doc.undo().unwrap(), Some("Accepted preview".into()));
+    let before = format!("{doc:?}");
+    doc.begin_transaction("Canceled preview").unwrap();
+    doc.record_accepted_unchanged_command().unwrap();
+    doc.rollback_transaction().unwrap();
+    assert_eq!(format!("{doc:?}"), before);
+    assert_eq!(doc.redo().unwrap(), Some("Accepted preview".into()));
+    assert!(geometry.shares_storage_with(doc.object(id).unwrap().geometry_snapshot()));
+    assert!(doc.can_undo());
+}

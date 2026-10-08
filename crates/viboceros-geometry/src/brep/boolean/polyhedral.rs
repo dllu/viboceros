@@ -15,8 +15,8 @@ pub use open_split::{
     BrepOpenSplitComponent, split_open_polyhedral_brep, split_open_polyhedral_brep_with_lineage,
 };
 pub use plan::{
-    BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
-    BrepPolyhedralShell,
+    BrepCoplanarPartitionComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent,
+    BrepPolyhedralRegion, BrepPolyhedralShell,
 };
 pub use reports::{
     BrepSplitComponent, intersect_polyhedral_brep_sets, intersect_polyhedral_breps,

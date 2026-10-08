@@ -128,3 +128,12 @@ fn boolean_two_script_syntax_and_unsupported_geometry_fail_without_edits() {
         assert!(!doc.can_undo());
     }
 }
+
+#[test]
+fn boolean_two_coplanar_replays_overlap_boundary_categories_metadata_and_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/boolean_two_coplanar.json"
+    ))
+    .unwrap();
+    open::replay(&q);
+}

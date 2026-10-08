@@ -36,6 +36,15 @@ pub struct BrepPolyhedralBoundaryComponent {
     pub boundary_equal_inputs: Vec<usize>,
 }
 
+/// Finite coplanar partition with original face lineage and shared-area labels.
+#[derive(Clone, Debug)]
+pub struct BrepCoplanarPartitionComponent {
+    pub brep: Brep,
+    pub face_sources: Vec<[usize; 2]>,
+    /// 1 = first only, 2 = second only, 3 = common to both inputs.
+    pub face_categories: Vec<u8>,
+}
+
 /// Reusable polyhedral Boolean expressions over one original-face arrangement.
 ///
 /// Build once, combine bounded regions, inspect shell participation and exact
@@ -127,6 +136,32 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         .is_positive())
     }
 
+    /// Positive physical area overlap, excluding edge and point contact.
+    pub fn coplanar_inputs_share_area(
+        &mut self,
+        first: usize,
+        second: usize,
+    ) -> Result<bool, GeometryError> {
+        if !self.inputs_are_coplanar(first, second)? {
+            return Err(unsupported("coplanar physical sheets required"));
+        }
+        let mut first_keys = BTreeSet::new();
+        let mut second_keys = BTreeSet::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if !cell.source_covers_cell {
+                continue;
+            }
+            if cell.source[0] == first {
+                first_keys.insert(canonical_ring(&cell.polygon.ring));
+            }
+            if cell.source[0] == second {
+                second_keys.insert(canonical_ring(&cell.polygon.ring));
+            }
+        }
+        Ok(first_keys.iter().any(|k| second_keys.contains(k)))
+    }
+
     /// Finite-area Boolean on two coplanar physical sheet boundaries.
     /// Patch coverage, including trim holes, is exact in the shared arrangement.
     /// The first input supplies coincident supporting faces and orientation.
@@ -180,29 +215,63 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         self.export_open_patches(selected)
     }
 
-    /// Export both finite coplanar operands with their common trim seam.
-    /// Coincident patches use the second operand's original supporting face.
+    /// Export a common/exclusive partition of two finite coplanar sheets.
+    /// Distinct category labels retain overlap seams even when one original
+    /// supporting face contributes both common and exclusive pieces.
     pub fn export_coplanar_sheet_partition(
         &mut self,
         first: usize,
         second: usize,
-    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+    ) -> Result<Vec<BrepCoplanarPartitionComponent>, GeometryError> {
         if !self.inputs_are_coplanar(first, second)? {
             return Err(unsupported("coplanar physical sheets required"));
         }
-        let mut patches = BTreeMap::new();
-        for owner in [first, second] {
-            for cell in &self.built.cells {
-                self.budget.spend(1)?;
-                if cell.source[0] == owner && cell.source_covers_cell {
-                    patches.insert(
-                        canonical_ring(&cell.polygon.ring),
-                        (cell.polygon.clone(), cell.source),
-                    );
-                }
+        let mut patches =
+            BTreeMap::<Vec<ExactPoint>, [Option<(Polygon<'a>, [usize; 2])>; 2]>::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if !cell.source_covers_cell {
+                continue;
             }
+            let side = if cell.source[0] == first {
+                0
+            } else if cell.source[0] == second {
+                1
+            } else {
+                continue;
+            };
+            patches
+                .entry(canonical_ring(&cell.polygon.ring))
+                .or_insert_with(|| [None, None])[side] = Some((cell.polygon.clone(), cell.source));
         }
-        self.export_open_patches(patches.into_values().collect())
+        let mut categories = BTreeMap::new();
+        let mut originals = Vec::new();
+        let mut selected = Vec::new();
+        for [a, b] in patches.into_values() {
+            let category = usize::from(a.is_some()) + 2 * usize::from(b.is_some());
+            let (polygon, source) = b.or(a).unwrap();
+            let next = categories.len();
+            let index = *categories.entry((category, source)).or_insert_with(|| {
+                originals.push((source, category as u8));
+                next
+            });
+            selected.push((polygon, [0, index]));
+        }
+        self.export_open_patches(selected)?
+            .into_iter()
+            .map(|body| {
+                let labels = body
+                    .face_sources
+                    .iter()
+                    .map(|s| originals[s[1]])
+                    .collect::<Vec<_>>();
+                Ok(BrepCoplanarPartitionComponent {
+                    brep: body.brep,
+                    face_sources: labels.iter().map(|l| l.0).collect(),
+                    face_categories: labels.iter().map(|l| l.1).collect(),
+                })
+            })
+            .collect()
     }
 
     /// Whether another operand has both inside and outside states on the

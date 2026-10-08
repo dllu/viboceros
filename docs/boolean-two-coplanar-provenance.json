@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "settings_scheme": "VibocerosOracleBooleanTwoCoplanarVerified20261007",
+  "recipes": 37,
+  "successful_commands": 36,
+  "cancellations": 1,
+  "retained_failures": 0,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "limits": [
+    "Affine planar sheets with linear trims only; general compound, trimmed-hole combinations and curved surfaces remain unverified.",
+    "Native pending preview pixels, near contacts, arbitrary insertion order and relative performance remain unverified."
+  ],
+  "source": "Owned public Boolean2Objects commands with bounded real click counts, all five coplanar modes, final boundaries, metadata and independent Undo/Redo.",
+  "sha256": {
+    "tools/rhino_oracle/boolean_two_coplanar_probe.py": "190b05f6684acb892f561ff2e3a2d5d4964288458ad9a573729d7b43ad641565",
+    "tools/rhino_oracle/boolean_two_coplanar_input.py": "b4e08c5c55a98fa88b8cb55b8f0a483e2fa8397d8a2398c6828ff62b2ae68a94",
+    "tools/rhino_oracle/fixtures/boolean_two_coplanar.json": "94bc348dcd5a7561dca8ac79e639e959e6e54cb50f43dd070af882c0e9352fb3",
+    "tools/rhino_oracle/observations/boolean_two_coplanar.json": "1fd7a5efed3cb0402a9ac7c16b410114c53316aec5e574db7256f9d32bbbb2dc"
+  }
+}

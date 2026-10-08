@@ -487,6 +487,19 @@ impl Document {
         Ok(())
     }
 
+    /// Retain an explicit accepted command in history even when its result
+    /// leaves geometry unchanged. Requires a transaction; rollback discards it.
+    pub fn record_accepted_unchanged_command(&mut self) -> Result<(), DocumentError> {
+        if self.history.active.is_none() {
+            return Err(DocumentError::NoActiveTransaction);
+        }
+        self.record_edit(
+            "Accepted unchanged command",
+            Edit::CommandAcceptedWithoutChanges,
+        );
+        Ok(())
+    }
+
     /// Commits the active transaction, returning whether it added an Undo entry.
     pub fn commit_transaction(&mut self) -> Result<bool, DocumentError> {
         if self
@@ -1730,7 +1743,8 @@ impl Document {
             Edit::ObjectsCleared { stored_objects, .. } => {
                 stored_objects.iter().map(|object| object.id).collect()
             }
-            Edit::SelectionReleasedOnReplay { .. }
+            Edit::CommandAcceptedWithoutChanges
+            | Edit::SelectionReleasedOnReplay { .. }
             | Edit::ControlPointsChanged { .. }
             | Edit::TransformSelectionReleasedOnReplay { .. }
             | Edit::ObjectInserted { .. }

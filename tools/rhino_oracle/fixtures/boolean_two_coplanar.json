@@ -1,0 +1,191 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_0",
+      "case": "overlap_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_1",
+      "case": "overlap_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_2",
+      "case": "overlap_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_3",
+      "case": "overlap_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_4",
+      "case": "overlap_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_reverse_0",
+      "case": "overlap_reverse_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_reverse_1",
+      "case": "overlap_reverse_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_reverse_2",
+      "case": "overlap_reverse_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_reverse_3",
+      "case": "overlap_reverse_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_overlap_reverse_4",
+      "case": "overlap_reverse_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_nested_order_0",
+      "case": "nested_order_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_nested_order_1",
+      "case": "nested_order_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_nested_order_2",
+      "case": "nested_order_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_nested_order_3",
+      "case": "nested_order_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_nested_order_4",
+      "case": "nested_order_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_0",
+      "case": "equal_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_1",
+      "case": "equal_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_2",
+      "case": "equal_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_3",
+      "case": "equal_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_4",
+      "case": "equal_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_reverse_0",
+      "case": "equal_reverse_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_reverse_1",
+      "case": "equal_reverse_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_reverse_2",
+      "case": "equal_reverse_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_reverse_3",
+      "case": "equal_reverse_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_equal_reverse_4",
+      "case": "equal_reverse_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_disjoint_0",
+      "case": "disjoint_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_disjoint_1",
+      "case": "disjoint_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_disjoint_2",
+      "case": "disjoint_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_disjoint_3",
+      "case": "disjoint_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_disjoint_4",
+      "case": "disjoint_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_edge_touch_0",
+      "case": "edge_touch_0"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_edge_touch_1",
+      "case": "edge_touch_1"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_edge_touch_2",
+      "case": "edge_touch_2"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_edge_touch_3",
+      "case": "edge_touch_3"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_edge_touch_4",
+      "case": "edge_touch_4"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_keep",
+      "case": "keep"
+    },
+    {
+      "op": "boolean_two_coplanar",
+      "id": "boolean_two_coplanar_cancel",
+      "case": "cancel"
+    }
+  ]
+}

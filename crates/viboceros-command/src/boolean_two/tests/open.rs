@@ -55,6 +55,10 @@ fn boolean_two_open_replays_native_physical_boundaries_and_history() {
         "../../../../../tools/rhino_oracle/observations/boolean_two_open.json"
     ))
     .unwrap();
+    replay(&q);
+}
+
+pub(super) fn replay(q: &Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         if v["cancel"] == true {
@@ -94,6 +98,7 @@ fn boolean_two_open_replays_native_physical_boundaries_and_history() {
             witnesses(&expected, &a, "open Boolean2Objects");
         }
         if result.is_ok() {
+            assert!(doc.can_undo(), "{}", v["case"]);
             registry.execute(&mut doc, "Undo").unwrap();
             compare(
                 &snapshot(&doc, &ids, &layers, &groups),

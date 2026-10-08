@@ -426,3 +426,71 @@ fn finite_coplanar_sheet_sets_preserve_holes_and_reject_crossing_supports() {
             .is_err()
     );
 }
+
+#[test]
+fn coplanar_partial_area_queries_preserve_operand_order_and_exact_coverage() {
+    let p = |y, z| Point3::try_new(1., y, z).unwrap();
+    let sheet = |ylo, yhi, zlo, zhi| {
+        Brep::try_surface_face(
+            NurbsSurface::try_bilinear([p(ylo, zlo), p(yhi, zlo), p(yhi, zhi), p(ylo, zhi)])
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    };
+    let a = sheet(-1., 3., -1., 3.);
+    let b = sheet(1., 4., 0., 2.);
+    let before = (a.clone(), b.clone());
+    let mut plan =
+        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[&a, &b], Tolerance::DEFAULT).unwrap();
+    for (operation, first, second, area) in [
+        (BrepBooleanOperation::Union, 0, 1, 18.),
+        (BrepBooleanOperation::Intersection, 0, 1, 4.),
+        (BrepBooleanOperation::Difference, 0, 1, 12.),
+        (BrepBooleanOperation::Difference, 1, 0, 2.),
+    ] {
+        let pieces = plan
+            .export_coplanar_sheet_boolean(operation, first, second)
+            .unwrap();
+        assert_eq!(pieces.len(), 1);
+        let actual = pieces
+            .iter()
+            .map(|p| p.brep.area(Tolerance::DEFAULT).unwrap())
+            .sum::<f64>();
+        assert!((actual - area).abs() < 1e-9);
+        if operation == BrepBooleanOperation::Difference {
+            assert!(
+                pieces
+                    .iter()
+                    .flat_map(|p| &p.face_sources)
+                    .all(|s| s[0] == first)
+            );
+        }
+    }
+    let union = plan.export_coplanar_sheet_partition(0, 1).unwrap();
+    assert_eq!(union.len(), 1);
+    assert!((union[0].brep.area(Tolerance::DEFAULT).unwrap() - 18.).abs() < 1e-9);
+    assert!(union[0].face_sources.iter().any(|s| s[0] == 0));
+    assert!(union[0].face_sources.iter().any(|s| s[0] == 1));
+    assert_eq!(union[0].face_sources.len(), union[0].face_categories.len());
+    assert_eq!(
+        union[0]
+            .face_categories
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>(),
+        BTreeSet::from([1, 2, 3])
+    );
+    assert!(plan.export_coplanar_sheet_partition(0, 2).is_err());
+    plan.exported_faces = MAX_OUTPUT_FACES;
+    assert!(matches!(
+        plan.export_coplanar_sheet_partition(0, 1),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+    plan.budget = Budget(0);
+    assert!(matches!(
+        plan.export_coplanar_sheet_partition(0, 1),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+    assert_eq!((a, b), before);
+}

@@ -88,13 +88,54 @@ pub fn prepare(
         let partition = plan
             .export_coplanar_sheet_partition(0, 1)?
             .into_iter()
-            .map(|p| finish(p, 0, tolerance))
-            .collect::<Result<Vec<_>, _>>()?;
-        let remainder = plan
-            .export_coplanar_sheet_boolean(BrepBooleanOperation::Difference, 0, 1)?
-            .into_iter()
-            .map(|p| finish(p, 0, tolerance))
-            .collect::<Result<Vec<_>, _>>()?;
+            .map(|p| {
+                let mut labels = BTreeMap::new();
+                let groups = p
+                    .face_sources
+                    .iter()
+                    .zip(&p.face_categories)
+                    .map(|(s, c)| {
+                        let next = labels.len();
+                        *labels.entry((*s, *c)).or_insert(next)
+                    })
+                    .collect::<Vec<_>>();
+                let brep = boolean_solids::finish_boundary(
+                    p.brep
+                        .try_merge_coplanar_polygon_faces_in_groups(&groups, tolerance)?
+                        .unwrap_or(p.brep),
+                    tolerance,
+                )?;
+                Ok(Piece {
+                    brep,
+                    owner: 0,
+                    retain_geometry_user_text: true,
+                })
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let mut remainder = Vec::new();
+        for (first, second) in [(0, 1), (1, 0)] {
+            remainder.extend(
+                plan.export_coplanar_sheet_boolean(
+                    BrepBooleanOperation::Difference,
+                    first,
+                    second,
+                )?
+                .into_iter()
+                .map(|p| finish(p, 0, tolerance))
+                .collect::<Result<Vec<_>, _>>()?,
+            );
+        }
+        let mut partition = partition;
+        for outputs in [&mut partition, &mut remainder] {
+            let retain = outputs.len() == 1;
+            for p in outputs.iter_mut() {
+                p.retain_geometry_user_text = retain;
+            }
+        }
+        // Connected edge-contact inputs have no valid exclusive preview.
+        if !plan.coplanar_inputs_share_area(0, 1)? && partition.len() < remainder.len() {
+            remainder.clear();
+        }
         let (common, difference) = if agrees {
             (partition, remainder)
         } else {
@@ -301,9 +342,10 @@ impl Command for BooleanTwoCommand {
         let candidates = prepare(&shapes[0], &shapes[1], doc.tolerance())?;
         let pieces = candidates.get(options.mode);
         if pieces.is_empty() {
-            return Err(CommandError::Usage("Selected Boolean result is empty"));
+            accept_unchanged(doc, ids)?;
+        } else {
+            accept(doc, ids, &pieces, options.delete_input)?;
         }
-        accept(doc, ids, &pieces, options.delete_input)?;
         Ok(format!("Boolean2Objects accepted {}", options.mode.name()))
     }
     fn cleanup_failed_selection(
@@ -351,6 +393,18 @@ impl Command for BooleanTwoCommand {
         Ok(())
     }
 }
+/// Accept a measured invalid preview as an unchanged command with history.
+/// This path is separate from nonempty geometry acceptance.
+pub fn accept_unchanged(doc: &mut Document, ids: [ObjectId; 2]) -> Result<(), CommandError> {
+    if ids[0] == ids[1] {
+        return Err(CommandError::Usage("Two distinct objects required"));
+    }
+    doc.release_command_selection_on_history_replay(ids)?;
+    doc.record_accepted_unchanged_command()?;
+    doc.clear_selection();
+    Ok(())
+}
+
 /// Accept prepared choices without recomputing the exact arrangement.
 /// The caller must own an active transaction and roll it back on failure.
 pub fn accept(

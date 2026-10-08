@@ -144,6 +144,19 @@ fn boolean_two_planar_cycles_replay_native_open_results_and_preserve_originals()
         "../../../tools/rhino_oracle/observations/boolean_two_open.json"
     ))
     .unwrap();
+    replay_planar_cycles(&q);
+}
+
+#[test]
+fn boolean_two_coplanar_cycles_preserve_categories_and_multiple_result_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/boolean_two_coplanar.json"
+    ))
+    .unwrap();
+    replay_planar_cycles(&q);
+}
+
+fn replay_planar_cycles(q: &Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let mut app = test_app();
@@ -199,6 +212,27 @@ fn boolean_two_planar_cycles_replay_native_open_results_and_preserve_originals()
                 ..Default::default()
             });
         }
+        let invalid = v["command"]["history"]
+            .as_str()
+            .unwrap()
+            .lines()
+            .rfind(|line| {
+                [
+                    "Union.",
+                    "Intersection.",
+                    "A MINUS B.",
+                    "B MINUS A.",
+                    "Inverse intersection.",
+                ]
+                .iter()
+                .any(|mode| line.starts_with(mode))
+            })
+            .is_some_and(|line| line.contains("Invalid result"));
+        if invalid {
+            let preview = app.boolean_two_prompt.as_ref().unwrap().scene().unwrap();
+            assert_eq!(preview.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(app.command_log.back().unwrap().contains("Invalid result"));
+        }
         if v["cancel"] == true {
             enter(&mut app, "Cancel");
             assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
@@ -234,6 +268,7 @@ fn boolean_two_planar_cycles_replay_native_open_results_and_preserve_originals()
                 );
             }
         }
+        assert!(app.document.can_undo());
         enter(&mut app, "Undo");
         assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
         enter(&mut app, "Redo");
