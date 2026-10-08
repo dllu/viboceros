@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `043c48a4` with Rust 1.95.0 after
-[Surface Rebuild option memory and typed prompts](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `13112fdb` with Rust 1.95.0 after
+[Physical surface Rebuild retrimming](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,48 @@ git diff --check
 ```
 
 All commands completed successfully. The release workspace suite passed
-5,317 Rust tests:
+5,323 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,025 | 17 |
-| Command | 1,194 | 2 |
+| App | 1,026 | 17 |
+| Command | 1,196 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,070 | 8 |
+| Geometry | 2,072 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 488 | 0 |
+| Oracle | 489 | 0 |
 
-The Python suite passed 987 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 990 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest surface Rebuild option captures ran a 25-step preference sequence and
+The newest surface Rebuild retrim captures ran fourteen owned native commands
+and two public trim-transfer queries on private Xvfb. [Initial records](../tools/rhino_oracle/observations/surface_rebuild_retrim.json)
+and [follow-up records](../tools/rhino_oracle/observations/surface_rebuild_retrim_followup.json)
+retain complete source/output topology, controls, 33 edge stations, 81 surface
+stations and independent history for planar holes, nonuniform parameterization,
+warped cuts, curved/rational sources and natural boundaries. Every native
+ReTrim=Yes outcome equals public Brep.CreateTrimmedSurface and retains source UV
+domains; UV copying disagrees materially on the nonuniform source. Local command
+replay checks controls at `1e-6`, native edge distance witnesses at `2e-6`, source
+purity and history. A [two-query API capture](../tools/rhino_oracle/observations/brep_retrim_geometry.json)
+projects a paraboloid annulus onto parallel planes. API replay checks loops,
+vertices and edge witnesses at `2e-6`. App and analytic regressions check holes,
+area, orientation, readonly edits and trim/edge certificates. A default 10x10
+circular-hole regression initially exhausted the general knot-crossing proof;
+an exact affine control-net reference certificate now proves that case while
+retaining rational image controls. Incorrect translated images and mixed-sign
+UV proposals are rejected. See [guide](commands/rebuild-surfaces.md),
+[certificate](surface-curve-certificates.md) and [provenance](surface-rebuild-retrim-provenance.json).
+Projection searches and fits have sampled accuracy checks; new spatial edges
+are continuously certified against their new UV trims. Global closest-point
+projection, seam/singular trims, native previews and performance parity remain
+unfinished or unverified.
+
+The preceding surface Rebuild option captures ran a 25-step preference sequence and
 nine-step ordered degree/count follow-up on fresh private Xvfb schemes.
 [Primary prompts](../tools/rhino_oracle/observations/surface_rebuild_options.json)
 and [ordered follow-up](../tools/rhino_oracle/observations/surface_rebuild_option_followup.json)
