@@ -3,41 +3,66 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `e0029ac4` with Rust 1.95.0 after
-[Planar trim holes and exact orthogonal projection](commands/planar-booleans.md).
+The October 8, 2026 audit tested code at `76099fda` with Rust 1.95.0 after
+[Circular planar regions and native diagnostics](commands/planar-booleans.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
-cargo test --release --bin viboceros
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The workspace suite passed 5,239 tests;
-a final application-only rerun after nested-cutter picking was corrected passed
-996 tests (17 ignored), covering 5,240 distinct Rust tests in total:
+All commands completed successfully. The final release workspace suite passed
+5,244 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 996 | 17 |
-| Command | 1,178 | 2 |
+| App | 997 | 17 |
+| Command | 1,179 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,040 | 8 |
+| Geometry | 2,042 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 949 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 951 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new trim-hole/projection capture ran 31 owned public recipes on private Xvfb
+The new circular planar capture ran 28 owned public recipes on private Xvfb
+under `VibocerosOraclePlanarCircularVerified20261007`. All succeed natively.
+[Complete records](../tools/rhino_oracle/observations/planar_boolean_circular.json)
+retain full NURBS edge definitions and 33 samples per edge, alongside areas,
+counts, identity, metadata and independent history. [Provenance](planar-boolean-circular-provenance.json)
+binds all records and two explicit internal-contact diagnostics. All 28 local
+outcomes replay metadata/history; 26 match native topology and bidirectional
+finite curve witnesses at `5e-6`. Area comparisons use `2e-5` for native mass
+integration and perturbed projected arcs; polygon tolerances remain unchanged.
+The independent kernel tests require analytic area at `1e-9` and circular locus
+stations at `1e-12`, with containment/holes, disconnected tangency, three-input
+Union and duplicate input coverage. Whole-span circular-locus and simple-loop
+certificates admit complete disk boundaries; analytic arc intervals carry region
+boundaries into rational NURBS output. Finite term accumulation determines loop
+orientation without summation loss, and preparation/export work is bounded.
+App replay covers all 28 selection and history workflows. Native internal-tangent
+Difference removes the exact contact point with a reverse witness gap between
+`0.005` and `0.006`, while local output retains it. Native Intersection creates
+three perturbed edges where local output has one circle; its boundary witnesses
+stay within `5e-6`. Both discrepancies remain explicit and do not establish
+native parity. Production wgpu/egui inspection on private Xvfb checks Circle/
+PlanarSrf inputs, circular Difference/Union, ordered picks, Ghosted mode and
+Undo/Redo. See [usage and saved image](commands/planar-booleans.md). Mixed polygon/
+circular inputs, general curved loops, circular input holes, nonparallel circular
+projection, arbitrary coincident junctions, near contacts, native pixels,
+restart behavior and relative performance remain unsupported or unverified.
+
+The preceding trim-hole/projection capture ran 31 owned public recipes on private Xvfb
 under `VibocerosOraclePlanarTopologyVerified20261007`. All succeed.
 [Complete records](../tools/rhino_oracle/observations/planar_boolean_topology.json)
 measure hole fill/cover/straddle/cut regions, holed cutters, two different hole
