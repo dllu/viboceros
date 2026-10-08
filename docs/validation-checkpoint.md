@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `31c4e387` with Rust 1.95.0 after
-[Compatible surface tween construction](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `7425380d` with Rust 1.95.0 after
+[Sampled surface tween construction](commands/tween-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,46 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,269 tests:
+5,276 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,001 | 17 |
-| Command | 1,184 | 2 |
+| App | 1,002 | 17 |
+| Command | 1,186 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,058 | 8 |
+| Geometry | 2,061 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 486 | 0 |
+| Oracle | 487 | 0 |
 
-The Python suite passed 961 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 963 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest surface-tween capture ran 22 owned public commands on private Xvfb
+The newest sampled-tween capture ran 20 owned public commands on private Xvfb
+under `VibocerosOracleTweenSampling20261008`. All succeed with exactly the requested
+output count. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_sampling.json)
+retain sample counts 2, 3 and 6 for planar, warped/rational and unequal-degree/
+count/domain inputs, plus source-layer outputs. Every command output definition
+is identical to its public sampling SDK result. Kernel replay compares controls
+at `1e-7` and knots at `1e-8`, also replaying all 22 earlier sampling SDK outputs.
+Command replay checks 81 UV-normalized witnesses per source/output at `1e-7`,
+source identity, attributes/groups and independent history. Sampled tensor
+interpolation blends normalized source UV grids and uses mean-chord output
+knots/domains; initial command defaults follow captured SamplePoints/10 settings.
+The Python/JSON oracle exposes `surface_tween_sampled_geometry` with full output
+nets. Independent tests require analytic plane agreement at `1e-12`, retain
+source purity and reject excess work before allocation. App regression checks
+method/sample/count options through source picking and history. Sampling is
+bounded at 255 divisions per axis and a million aggregate controls. Unequal-net
+control matching, Refit, remembered options and corner previews remain unfinished;
+sampled grid interpolation is not a continuous exact source blend or native
+boundary certificate. See [workflow](commands/tween-surfaces.md) and
+[provenance](tween-sampling-provenance.json).
+
+The preceding surface-tween capture ran 22 owned public commands on private Xvfb
 under `VibocerosOracleTweenSurfacesVerified20261008`. All succeed natively.
 [Complete records](../tools/rhino_oracle/observations/tween_surfaces_command.json)
 retain full surface nets, 81 stations per object, source identity, properties,
