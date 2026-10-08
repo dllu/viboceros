@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `1982fc56` with Rust 1.95.0 after
-[Trimmed pole Rebuild, native isocurve transfer and solid orientation](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `73553044` with Rust 1.95.0 after
+[Interval-certified trim-transfer performance](retrim-performance.md).
 
 ## Commands and results
 
@@ -17,7 +17,7 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,349 Rust tests:
+5,355 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
@@ -25,17 +25,48 @@ All commands completed successfully. The complete release workspace run passed
 | Command | 1,204 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,081 | 8 |
+| Geometry | 2,087 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 1,008 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,013 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest singular trim Rebuild capture ran twelve recipes on a fresh private
+The newest trim-transfer profile retains three baseline and three optimized
+radius-two sphere-cap runs on this DGX Spark. Median release retrim cost falls
+from 64.7758 to 1.6077 seconds, about 40× for this case. Each emitted geometry
+definition has the same canonical fingerprint across the runs, including its
+73 edges. Temporary instrumentation located most of the original cost in
+continuous image proofs and was removed before the final verification.
+Outward finite intervals now enclose Bernstein composition and homogeneous
+differences for nonlinear UV against cubic spatial spans. Rational conversions
+are checked exactly, reported Euclidean bounds are checked with rational squared
+arithmetic, and ambiguous, overflow/subnormal or zero-limit cases use exact
+fallback. At knot crossings, restricted box enclosures can prove correspondence
+or prove only that the box method requires subdivision; that latter outcome is
+never geometric rejection. Existing rational extraction and tolerance remain.
+Floating attempts have 65,536 work units and eight hull levels; degree and
+rational work/bit/depth limits remain in place. Coefficient tables are cached
+within each prepared surface. Six independent regressions compare arithmetic,
+curved spans and crossing boxes to exact rational results, exercise extreme
+values, and reject an excursion hidden at all four cubic sampling nodes.
+
+A fresh [private-Xvfb SDK capture](../tools/rhino_oracle/observations/surface_retrim_profile.json)
+retains three repetitions each for the cap, swapped cap and cylinder band, using
+the serialized local source surfaces and trim bounds. Every result is valid;
+sources remain unchanged. Native target controls match at `1e-6`, knots at
+`1e-12`. Source setup, serialization and disposal are outside reported method
+timings. Rhino's cap median is 0.02768 seconds versus local 1.6077: substantial
+performance work remains. Different validation contracts, Python/RhinoCommon
+and Wine/FEX overhead, three samples and one host preclude a general kernel
+speedup or parity claim. The full app, command and geometry runs retain the
+preceding native boundary, source-purity and history checks. See
+[performance guide](retrim-performance.md) and [raw profiles/provenance](retrim-performance-provenance.json).
+
+The preceding singular trim Rebuild capture ran twelve recipes on a fresh private
 Xvfb scheme. [Complete records](../tools/rhino_oracle/observations/surface_rebuild_singular_trim.json)
 retain sphere caps, circular holes, half-sphere wedges, a holed cone and swapped/
 reversed cap charts. Every native ReTrim=Yes B-rep exactly equals the public
