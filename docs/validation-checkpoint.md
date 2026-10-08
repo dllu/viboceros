@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `e56035f2` with Rust 1.95.0 after
-[Boolean2Objects coplanar partitions and unchanged acceptance](commands/boolean-two-objects.md).
+The October 7, 2026 audit tested code at `03c04539` with Rust 1.95.0 after
+[PlanarUnion, PlanarDifference and PlanarIntersection](commands/planar-booleans.md).
 
 ## Commands and results
 
@@ -17,25 +17,47 @@ git diff --check
 ```
 
 All commands completed successfully. The ordinary Rust workspace suite passed
-5,227 tests:
+5,235 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 990 | 17 |
-| Command | 1,174 | 2 |
+| App | 994 | 17 |
+| Command | 1,177 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,037 | 8 |
+| Geometry | 2,038 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 945 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 947 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new coplanar Boolean2Objects capture ran 37 owned public recipes on private
+The new planar-surface Boolean capture ran 28 owned public recipes on private
+Xvfb under `VibocerosOraclePlanarBooleanCorrected20261007`. All succeed.
+[Complete records](../tools/rhino_oracle/observations/planar_boolean_command.json)
+measure all three commands for overlap, reversed normals, containment in either
+order, equality, separated/touching sheets, parallel offset sheets, three-input
+Union and preselection. [Provenance](planar-boolean-provenance.json) binds the
+producer, recipes and complete capture. Command replay compares boundaries in
+both directions at `1e-7`, scalars at `1e-9`, topology, identity, default/source
+attributes, groups, geometry-root text and independent Undo/Redo. The app replay
+runs all recipes through native selection/admission phases and compares area,
+topology, preselection Undo state and history. The finite-area set API shares one
+original arrangement for multiple inputs, excluding planning rectangles; the
+kernel test covers opposite normals, multi-input area and work/output limits.
+Union/Difference create default-attribute surfaces on the current layer;
+Intersection retains the first ID, attributes and groups while clearing geometry
+user text. Empty Difference/Intersection results delete both inputs successfully.
+The production wgpu/egui inspection on private Xvfb checks ordered Difference/
+Intersection picks, three-surface preselected Union, Ghosted mode and Undo/Redo.
+See [usage and saved image](commands/planar-booleans.md). Curved boundaries,
+nonparallel projection, compound surfaces, general trim holes, near contacts,
+restart behavior, native pixels and relative performance remain unverified.
+
+The preceding coplanar Boolean2Objects capture ran 37 owned public recipes on private
 Xvfb under `VibocerosOracleBooleanTwoCoplanarVerified20261007`. Thirty-six succeed
 and one cancels. [Complete records](../tools/rhino_oracle/observations/boolean_two_coplanar.json)
 retain all five modes for partial overlap, opposite normals, smaller-first nested
