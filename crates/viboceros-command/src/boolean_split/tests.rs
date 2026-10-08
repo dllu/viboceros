@@ -1,6 +1,7 @@
 use super::*;
 use crate::boolean_union::tests::{Boundary, compare, regions, setup, snapshot, witnesses};
 use serde_json::Value;
+mod plane;
 
 pub(crate) fn align(actual: &Value, native: &Value) -> (Value, bool) {
     let mut used = BTreeSet::new();
@@ -19,12 +20,13 @@ pub(crate) fn align(actual: &Value, native: &Value) -> (Value, bool) {
                     !used.contains(j)
                         && row["source"] == o["source"]
                         && row["attribute_text"] == o["attribute_text"]
-                        && (0..3).all(|k| {
-                            (row["centroid"][k].as_f64().unwrap()
-                                - o["centroid"][k].as_f64().unwrap())
-                            .abs()
-                                < 1e-10
-                        })
+                        && (!row["source"].is_null()
+                            || (0..3).all(|k| {
+                                (row["centroid"][k].as_f64().unwrap()
+                                    - o["centroid"][k].as_f64().unwrap())
+                                .abs()
+                                    < 1e-10
+                            }))
                 })
                 .map(|(j, _)| j)
                 .collect::<Vec<_>>();

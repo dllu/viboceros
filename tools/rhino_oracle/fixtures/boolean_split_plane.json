@@ -1,0 +1,101 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_x",
+      "case": "x"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_y",
+      "case": "y"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_z",
+      "case": "z"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_diagonal",
+      "case": "diagonal"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_partial",
+      "case": "partial"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_internal",
+      "case": "internal"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_touch",
+      "case": "touch"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_exact_section",
+      "case": "exact_section"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_partial_then_full",
+      "case": "partial_then_full"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_full_then_partial",
+      "case": "full_then_partial"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_coplanar_halves",
+      "case": "coplanar_halves"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_coplanar_gap",
+      "case": "coplanar_gap"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_cross_xy",
+      "case": "cross_xy"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_mixed_closed_first",
+      "case": "mixed_closed_first"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_mixed_plane_first",
+      "case": "mixed_plane_first"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_reverse",
+      "case": "reverse"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_pre",
+      "case": "pre"
+    },
+    {
+      "op": "boolean_split_plane",
+      "id": "split_plane_keep",
+      "case": "keep"
+    }
+  ]
+}

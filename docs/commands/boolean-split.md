@@ -36,7 +36,9 @@ Replace placeholders with object UUIDs. Explicit application scripts use the
 preselection result policy; the Python/Rust command harness also exposes
 command-first execution for native workflow comparisons.
 
-The current kernel accepts certified closed polyhedral B-reps, including concave
+[Finite plane cutters](../boolean-split-plane-cutters.md) also support complete,
+partial and joint coverage queries, mixed cutters and preserved cap surfaces.
+The target kernel accepts certified closed polyhedral B-reps, including concave
 planar faces, holes, cavity shells and disjoint shells. All cutters in a target's
 partition share one exact arrangement of original faces. Overlapping cutter
 boundaries remain interfaces between separate pieces. Intermediate region
@@ -72,7 +74,7 @@ comparison. See [provenance](../boolean-split-provenance.json).
 
 ![BooleanSplit output and its retained cutter after Redo](../images/boolean-split-ui.png)
 
-Open surface cutters and curved faces remain unsupported. Object insertion order
+Curved and nonplanar cutters and open targets remain unsupported. Object insertion order
 differs from the captured native order; replays match pieces by owner and centroid
 without hiding that difference. General native face/edge ordering, tolerance
 contacts, compound command policies and relative performance remain unverified.

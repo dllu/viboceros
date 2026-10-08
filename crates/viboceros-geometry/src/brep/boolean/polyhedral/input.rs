@@ -12,6 +12,20 @@ pub(super) fn extract<'a>(
     if !brep.is_solid() {
         return Err(unsupported("closed manifold shells are required"));
     }
+    let output = extract_faces(brep, tolerance, budget)?;
+    embedding::certify(brep, &output, budget)?;
+    Ok(output)
+}
+
+/// Same whole-edge and affine-face certificates, independently of shell closure.
+pub(super) fn extract_faces<'a>(
+    brep: &'a Brep,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Vec<Polygon<'a>>, GeometryError> {
+    if brep.faces.len() > MAX_INPUT_FACES {
+        return Err(GeometryError::BrepBooleanWorkLimit);
+    }
     let mut output = Vec::new();
     for face in &brep.faces {
         let surface = &face.surface;
@@ -122,7 +136,6 @@ pub(super) fn extract<'a>(
             }
         }
     }
-    embedding::certify(brep, &output, budget)?;
     Ok(output)
 }
 

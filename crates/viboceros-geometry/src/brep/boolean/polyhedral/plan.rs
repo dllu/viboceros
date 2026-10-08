@@ -65,6 +65,78 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         })
     }
 
+    pub(super) fn from_arrangement(
+        built: arrangement::Arrangement<'a>,
+        tolerance: Tolerance,
+        budget: Budget,
+    ) -> Self {
+        Self {
+            built,
+            identity: Arc::new(()),
+            tolerance,
+            budget,
+            exported_faces: 0,
+        }
+    }
+
+    /// Connected material regions before any output rounding. Nested islands
+    /// are separated from enclosing material; inward cavity shells stay attached.
+    pub fn components(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<BrepPolyhedralRegion>, GeometryError> {
+        let shells = self.shells(region)?;
+        let outer = shells
+            .into_iter()
+            .filter(|s| !s.inward)
+            .map(|s| s.region)
+            .collect::<Vec<_>>();
+        let mut result = Vec::new();
+        for (i, shell) in outer.iter().enumerate() {
+            let mut nested = Vec::new();
+            for (j, other) in outer.iter().enumerate() {
+                if i != j && self.covered_by(other, shell)? {
+                    if self.covered_by(shell, other)? {
+                        return Err(GeometryError::UnrepresentableBrepBoolean);
+                    }
+                    nested.push(other);
+                }
+            }
+            let enclosed = self.combine(BrepBooleanOperation::Intersection, &[region, shell])?;
+            let piece = if nested.is_empty() {
+                enclosed
+            } else {
+                let islands = self.combine(BrepBooleanOperation::Union, &nested)?;
+                self.combine(BrepBooleanOperation::Difference, &[&enclosed, &islands])?
+            };
+            if !self.is_empty(&piece)? {
+                result.push(piece);
+            }
+        }
+        Ok(result)
+    }
+
+    /// All planning patches on the group's plane must be physically covered
+    /// wherever they separate material in the current bounded region.
+    pub(super) fn sheet_covers_region(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        group: &[usize],
+    ) -> Result<bool, GeometryError> {
+        self.check(region)?;
+        let mut patches = BTreeMap::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if group.contains(&cell.source[0]) && cell.sides.iter().all(|&i| region.mask[i]) {
+                let entry = patches
+                    .entry(canonical_ring(&cell.polygon.ring))
+                    .or_insert(false);
+                *entry |= cell.source_covers_cell;
+            }
+        }
+        Ok(!patches.is_empty() && patches.values().all(|covered| *covered))
+    }
+
     pub fn input(&mut self, index: usize) -> Result<BrepPolyhedralRegion, GeometryError> {
         if index >= self.built.operands.len() {
             return Err(unsupported("plan input index out of range"));
@@ -154,6 +226,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut found = false;
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             let own = c.sides.map(|i| inner.mask[i]);
             if own[0] != own[1] {
                 found = true;
@@ -182,6 +257,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut contact = false;
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             for (side, own, other) in [(0, a, b), (1, b, a)] {
                 let x = c.sides.map(|i| own.mask[i]);
                 let y = c.sides.map(|i| other.mask[i]);
@@ -207,6 +285,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut result = BTreeSet::new();
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             if region.mask[c.sides[0]] != region.mask[c.sides[1]] {
                 result.insert(c.source[0]);
             }
@@ -224,6 +305,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut result = BTreeSet::new();
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             if region.mask[c.sides[0]] != region.mask[c.sides[1]] {
                 result.insert(c.source);
             }
@@ -241,6 +325,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         self.check(b)?;
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             if a.mask[c.sides[0]] != a.mask[c.sides[1]] && b.mask[c.sides[0]] != b.mask[c.sides[1]]
             {
                 return Ok(true);
@@ -277,6 +364,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut required = BTreeSet::new();
         for c in &self.built.cells {
             self.budget.spend(1)?;
+            if !c.source_covers_cell {
+                continue;
+            }
             let x = c.sides.map(|i| region.mask[i]);
             if x[0] == x[1] {
                 continue;

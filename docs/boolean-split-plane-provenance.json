@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleBooleanSplitPlanesPilot20261007",
+  "recipes": 19,
+  "successful_commands": 14,
+  "no_split_failures": 5,
+  "outputs": 39,
+  "full_native_parity": false,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public BooleanSplit commands with finite plane sheets, source/output boundaries, idle snapshots, metadata and independent Undo/Redo.",
+  "limits": [
+    "Insertion order differs; replays align by source owner and centroid.",
+    "Curved/nonplanar sheets, higher-degree supporting surfaces and open targets remain unsupported.",
+    "Broader trimmed-sheet/compound policies, tolerance contacts, interleaved coplanar groups and relative performance need further evidence."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_split_plane_probe.py": "ffa2381a3fa8e07ec6f4e9ec1a8202853aed24deb7e3290185139cdabfaffa0e",
+    "tools/rhino_oracle/fixtures/boolean_split_plane.json": "3236c1c46d215ca1711bc39f074f82db11227707288fea65407cfb0a16dce327",
+    "tools/rhino_oracle/observations/boolean_split_plane.json": "a7b3ae846cc7de277c3603179d7a716d75472a04dd8db172565d4ea4bf3709df"
+  }
+}

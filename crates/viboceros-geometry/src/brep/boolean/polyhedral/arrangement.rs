@@ -10,6 +10,8 @@ pub(super) struct Cell<'a> {
     pub(super) polygon: Polygon<'a>,
     pub(super) source: [usize; 2],
     pub(super) sides: [usize; 2],
+    /// False only for planning patches outside a finite sheet's actual trims.
+    pub(super) source_covers_cell: bool,
 }
 
 pub(super) struct Arrangement<'a> {
@@ -115,6 +117,7 @@ pub(super) fn build<'a>(
                     polygon: piece,
                     source: [owner, face_ids[&std::ptr::from_ref(polygon.source)]],
                     sides,
+                    source_covers_cell: true,
                 });
             }
         }

@@ -96,7 +96,21 @@ impl BooleanSplitCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let (_, interactions) = boolean_solids::interactions(&refs, doc.tolerance(), false)?;
+        let closed = refs
+            .iter()
+            .enumerate()
+            .filter(|(_, b)| b.is_solid())
+            .collect::<Vec<_>>();
+        let (_, contacts) = boolean_solids::interactions(
+            &closed.iter().map(|(_, b)| **b).collect::<Vec<_>>(),
+            doc.tolerance(),
+            false,
+        )?;
+        let interactions = contacts
+            .into_iter()
+            .map(|[a, b]| [closed[a].0, closed[b].0])
+            .collect::<Vec<_>>();
+        let surfaces = refs.iter().any(|b| !b.is_solid());
         let indices = ids
             .iter()
             .enumerate()
@@ -110,28 +124,46 @@ impl BooleanSplitCommand {
                 .iter()
                 .filter_map(|id| {
                     let j = indices[id];
-                    interactions
-                        .contains(&[index.min(j), index.max(j)])
+                    (!refs[j].is_solid() || interactions.contains(&[index.min(j), index.max(j)]))
                         .then_some(refs[j])
                 })
                 .collect::<Vec<_>>();
             if cutters.is_empty() {
                 continue;
             }
-            let pieces =
-                viboceros_geometry::split_polyhedral_brep(refs[index], &cutters, doc.tolerance())?;
+            let pieces = if surfaces {
+                let pieces = viboceros_geometry::split_polyhedral_brep_with_surfaces(
+                    refs[index],
+                    &cutters,
+                    doc.tolerance(),
+                )?;
+                if !pieces
+                    .iter()
+                    .any(|p| p.cut_sides.iter().any(Option::is_some))
+                {
+                    continue;
+                }
+                pieces
+                    .into_iter()
+                    .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
+                    .collect::<Vec<_>>()
+            } else {
+                viboceros_geometry::split_polyhedral_brep(refs[index], &cutters, doc.tolerance())?
+                    .into_iter()
+                    .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
+                    .collect::<Vec<_>>()
+            };
             if pieces.len() <= 1 {
                 continue;
             }
             changed.push(target);
-            for piece in pieces {
-                let text = if piece.branch_component_counts.iter().all(|&n| n == 1) {
+            for (brep, sources, branches) in pieces {
+                let text = if branches.iter().all(|&n| n == 1) {
                     objects[index].geometry_user_text().clone()
                 } else {
                     BTreeMap::new()
                 };
-                let brep =
-                    boolean_solids::merged(piece.brep, &piece.face_sources, doc.tolerance())?;
+                let brep = boolean_solids::merged(brep, &sources, doc.tolerance())?;
                 copies.push((target, Geometry::Brep(brep), text));
             }
         }
