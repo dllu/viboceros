@@ -111,6 +111,13 @@ split strips, chained partial results, self-intersection rejection and work limi
 Outside membership queries also check model-space distance, preventing a clamped
 surface closest-point result from admitting points beyond its finite rectangle.
 
+[Planar cut arithmetic](../planar-cut-numerics.md) adds exact line determinants,
+stable line/circle roots and bounded junction export. A further 27 private-Xvfb
+recipes check the three commands at scales `2^-20`, `1` and `2^20`, including
+curve witnesses, topology, metadata and history. Local normalized analytic areas
+agree at `1e-9`; the separately measured native mass-integration differences and
+scale-specific comparison bounds remain explicit in that document.
+
 A production wgpu/egui inspection on private Xvfb checks ordered viewport picks
 for Difference and Intersection, automatic completion on the second pick, and
 Undo/Redo in Ghosted mode. It also checks three-surface preselected Union.
@@ -150,5 +157,5 @@ native preview pixel parity.
 ```sh
 cargo test --release -p viboceros-command planar_boolean
 cargo test --release --bin viboceros planar_boolean
-python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular tools.rhino_oracle.test_planar_boolean_mixed
+python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular tools.rhino_oracle.test_planar_boolean_mixed tools.rhino_oracle.test_planar_boolean_scale
 ```

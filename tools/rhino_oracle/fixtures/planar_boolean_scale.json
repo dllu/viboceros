@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_side_m20",
+      "case": "planarunion_side_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_strip_m20",
+      "case": "planarunion_strip_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_first_polygon_m20",
+      "case": "planarunion_first_polygon_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_side_0",
+      "case": "planarunion_side_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_strip_0",
+      "case": "planarunion_strip_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_first_polygon_0",
+      "case": "planarunion_first_polygon_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_side_20",
+      "case": "planarunion_side_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_strip_20",
+      "case": "planarunion_strip_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarunion_first_polygon_20",
+      "case": "planarunion_first_polygon_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_side_m20",
+      "case": "planardifference_side_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_strip_m20",
+      "case": "planardifference_strip_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_first_polygon_m20",
+      "case": "planardifference_first_polygon_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_side_0",
+      "case": "planardifference_side_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_strip_0",
+      "case": "planardifference_strip_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_first_polygon_0",
+      "case": "planardifference_first_polygon_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_side_20",
+      "case": "planardifference_side_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_strip_20",
+      "case": "planardifference_strip_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planardifference_first_polygon_20",
+      "case": "planardifference_first_polygon_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_side_m20",
+      "case": "planarintersection_side_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_strip_m20",
+      "case": "planarintersection_strip_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_first_polygon_m20",
+      "case": "planarintersection_first_polygon_m20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_side_0",
+      "case": "planarintersection_side_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_strip_0",
+      "case": "planarintersection_strip_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_first_polygon_0",
+      "case": "planarintersection_first_polygon_0"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_side_20",
+      "case": "planarintersection_side_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_strip_20",
+      "case": "planarintersection_strip_20"
+    },
+    {
+      "op": "planar_boolean_scale",
+      "id": "planar_boolean_scale_planarintersection_first_polygon_20",
+      "case": "planarintersection_first_polygon_20"
+    }
+  ]
+}

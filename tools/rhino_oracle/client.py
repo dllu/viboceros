@@ -363,6 +363,11 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'planar_boolean_scale' for op in request.get('operations', [])):
+            from .planar_boolean_scale_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Planar Boolean requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'planar_boolean_mixed' for op in request.get('operations', [])):
             from .planar_boolean_mixed_probe import validate_request
             if self.settings_scheme is None:
@@ -890,6 +895,9 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'planar_boolean_scale' for op in request.get('operations', [])):
+                for name in ('planar_boolean_scale_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'planar_boolean_mixed' for op in request.get('operations', [])):
                 for name in ('planar_boolean_mixed_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

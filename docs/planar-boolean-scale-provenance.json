@@ -1,0 +1,34 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOraclePlanarScale20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 27,
+  "successful_commands": 27,
+  "binary_scale_exponents": [
+    -20,
+    0,
+    20
+  ],
+  "normalized_boundary_witness_epsilon": 5e-06,
+  "normalized_area_epsilon": 0.0003,
+  "normalized_source_area_epsilon": 0.0002,
+  "independent_analytic_area_epsilon": 1e-09,
+  "independent_fraction_cases": 206,
+  "measured_native_normalized_area_error_max": 0.00021020778503455517,
+  "measured_native_normalized_source_area_error_max": 0.00012214119807651969,
+  "limits": [
+    "Finite witnesses are not continuous boundary certificates.",
+    "Native mass integration differs from analytic areas at small scale; earlier capture tolerances remain unchanged.",
+    "Exact coefficients apply to projected stored endpoints. Projection, arc station recovery, membership, contour assembly and export still use binary64.",
+    "Whole-model full-range scaling, general curved Boolean parity, near contacts and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_boolean_scale_probe.py": "172b8ae077bc83bb53f12741439b108a5abc3c81104cc1b43c3dfe5e974c0259",
+    "tools/rhino_oracle/fixtures/planar_boolean_scale.json": "0a3ffc761a324b5c184e2247872c4de1aeeebf833c7cf34d56ffb291350224f8",
+    "tools/rhino_oracle/observations/planar_boolean_scale.json": "744f550869f18dec58077ea992b4f0bd1dbb73c224833f4f5ea9d532a75a93ad",
+    "tools/numerics/generate_planar_cut_reference.py": "c3cb9763f113c16ff44be79e6dffeb4b81f893c5ae644e0e66ef71a133e8b7a9",
+    "crates/viboceros-geometry/src/brep/boolean/planar_mixed/cuts/reference.json": "2ed9f7e836628b3d85591bbb6eb15562c85f0c1475d28a76f7b60ba29ab003af"
+  }
+}

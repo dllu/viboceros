@@ -2,6 +2,7 @@
 use super::*;
 use crate::{Circle3, CircularArc3, CurveSegment3};
 use std::f64::consts::TAU;
+mod cuts;
 #[derive(Clone)]
 struct Edge {
     owner: usize,
@@ -31,9 +32,6 @@ fn xy(frame: Frame3, p: Point3) -> Result<[f64; 2], GeometryError> {
 }
 fn cross2(a: [f64; 2], b: [f64; 2]) -> f64 {
     a[0] * b[1] - a[1] * b[0]
-}
-fn sub2(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
-    [a[0] - b[0], a[1] - b[1]]
 }
 fn location(region: &Region, p: Point3, tolerance: Tolerance) -> Result<bool, GeometryError> {
     let face = &region.boundary.faces()[0];
@@ -267,7 +265,7 @@ pub(super) fn mixed_regions(
                     .map(|p| p.reversed())
                     .collect::<Result<Vec<_>, _>>()?;
             }
-            let composite = crate::PolyCurve3::try_new(pieces.clone())?;
+            let composite = super::planar_circular::boundary_curve(&pieces, tolerance)?;
             loops.push(composite.to_nurbs()?);
             edges.extend(pieces.into_iter().map(|curve| Edge { owner, curve }));
         }
@@ -403,49 +401,30 @@ fn intersections(
     let mut points = Vec::new();
     match (a, b) {
         (CurveSegment3::Line(a), CurveSegment3::Line(b)) => {
-            let p = xy(frame, a.start())?;
-            let q = xy(frame, b.start())?;
-            let r = sub2(xy(frame, a.end())?, p);
-            let s = sub2(xy(frame, b.end())?, q);
-            let d = cross2(r, s);
-            let offset = sub2(q, p);
-            require_finite([d, cross2(offset, r)], "planar line intersection")?;
-            if d == 0. {
-                if cross2(offset, r) == 0. {
-                    overlap.push((i, j));
-                    points.extend([a.start(), a.end(), b.start(), b.end()]);
+            match cuts::line_line(
+                [xy(frame, a.start())?, xy(frame, a.end())?],
+                [xy(frame, b.start())?, xy(frame, b.end())?],
+            )? {
+                cuts::LineCuts::None => {}
+                cuts::LineCuts::Point([t, u]) => {
+                    cuts[i].push(t);
+                    cuts[j].push(u);
                 }
-            } else {
-                let t = cross2(offset, s) / d;
-                let u = cross2(offset, r) / d;
-                require_finite([t, u], "planar line intersection parameters")?;
-                if (0. ..=1.).contains(&t) && (0. ..=1.).contains(&u) {
-                    points.push(a.point_at(t)?);
+                cuts::LineCuts::Overlap { first, second } => {
+                    overlap.push((i, j));
+                    cuts[i].extend(first);
+                    cuts[j].extend(second);
                 }
             }
         }
         (CurveSegment3::Line(line), CurveSegment3::Arc(arc))
         | (CurveSegment3::Arc(arc), CurveSegment3::Line(line)) => {
-            let start = xy(frame, line.start())?;
-            let center = xy(frame, arc.center())?;
-            let direction = sub2(xy(frame, line.end())?, start);
-            let delta = sub2(start, center);
-            let square = direction[0] * direction[0] + direction[1] * direction[1];
-            let base = -(delta[0] * direction[0] + delta[1] * direction[1]) / square;
-            let closest = [
-                delta[0] + base * direction[0],
-                delta[1] + base * direction[1],
-            ];
-            let height =
-                arc.radius() * arc.radius() - closest[0] * closest[0] - closest[1] * closest[1];
-            require_finite([square, base, height], "planar line/arc intersection")?;
-            if height >= -tolerance.absolute() * arc.radius() {
-                let half = (height.max(0.) / square).sqrt();
-                for t in [base - half, base + half] {
-                    if (0. ..=1.).contains(&t) {
-                        points.push(line.point_at(t)?);
-                    }
-                }
+            for t in cuts::line_circle(
+                [xy(frame, line.start())?, xy(frame, line.end())?],
+                xy(frame, arc.center())?,
+                arc.radius(),
+            )? {
+                points.push(line.point_at(t)?);
             }
         }
         (CurveSegment3::Arc(a), CurveSegment3::Arc(b)) => {
@@ -496,6 +475,42 @@ fn intersections(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn mixed_line_intersections_keep_exact_stations_without_point_roundtrips() {
+        let n = 2f64.powi(27);
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let line = |a: [f64; 2], b: [f64; 2]| {
+            CurveSegment3::Line(
+                LineSegment::try_new(
+                    Point3::try_new(a[0], a[1], 0.).unwrap(),
+                    Point3::try_new(b[0], b[1], 0.).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            )
+        };
+        let a = line([0., 0.], [n + 1., n]);
+        let b = line([0.5, 0.5], [n + 0.5, n - 0.5]);
+        let mut cuts = [vec![], vec![]];
+        let mut overlap = Vec::new();
+        intersections(
+            &a,
+            &b,
+            frame,
+            Tolerance::DEFAULT,
+            &mut cuts,
+            [0, 1],
+            &mut overlap,
+        )
+        .unwrap();
+        assert_eq!(cuts, [vec![0.5], vec![0.5]]);
+        assert!(overlap.is_empty());
+    }
     fn disk() -> Brep {
         let c = Circle3::try_new(
             Point3::try_new(0., 0., 0.).unwrap(),

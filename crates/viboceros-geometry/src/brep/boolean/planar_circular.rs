@@ -252,7 +252,7 @@ pub(super) fn assemble_regions(
             end = arc.as_ref().end_point()?;
             boundary.push(arc);
         }
-        let composite = PolyCurve3::try_new(boundary.clone())?;
+        let composite = boundary_curve(&boundary, tolerance)?;
         let curve = composite.to_nurbs()?;
         let origin = plane.origin();
         let mut signed = crate::FiniteSum::default();
@@ -324,9 +324,94 @@ pub(super) fn assemble_regions(
     Ok(result)
 }
 
+/// Boolean junctions are independently evaluated on each analytic segment.
+/// Reconcile their final rounded endpoints without changing the fixed
+/// coincidence contract of general-purpose polycurves.
+pub(super) fn boundary_curve(
+    boundary: &[CurveSegment3],
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, GeometryError> {
+    let mut endpoints = Vec::with_capacity(boundary.len());
+    let mut needs_edit = false;
+    for i in 0..boundary.len() {
+        let end = boundary[i].as_ref().end_point()?;
+        let start = boundary[(i + 1) % boundary.len()].as_ref().start_point()?;
+        if !end.is_near(start, tolerance) {
+            return Err(GeometryError::UnrepresentableBrepBoolean);
+        }
+        needs_edit |= !crate::nurbs::curve_points_coincident(end, start);
+        endpoints.push(end.midpoint(start)?);
+    }
+    if !needs_edit {
+        return PolyCurve3::try_new(boundary.to_vec());
+    }
+    let mut segments = Vec::with_capacity(boundary.len());
+    for (i, segment) in boundary.iter().enumerate() {
+        let curve = segment.to_nurbs()?.clamped_to_active_domain()?;
+        let mut controls = curve.control_points().to_vec();
+        let last = controls.len() - 1;
+        controls[0] = crate::WeightedPoint3::try_new(
+            endpoints[(i + boundary.len() - 1) % boundary.len()],
+            controls[0].weight(),
+        )?;
+        controls[last] = crate::WeightedPoint3::try_new(endpoints[i], controls[last].weight())?;
+        segments.push(CurveSegment3::NurbsCurve(NurbsCurve::try_new_rational(
+            curve.degree(),
+            controls,
+            curve.knots().to_vec(),
+        )?));
+    }
+    PolyCurve3::try_new(segments)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn boolean_export_reconciles_scaled_junctions_and_rejects_larger_gaps() {
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-9).unwrap();
+        let gap = 1e-8;
+        let points = [[0., 0.], [1., 0.], [1., 1.], [0., 1.]];
+        let boundary = (0..4)
+            .map(|i| {
+                let start = points[i];
+                let mut end = points[(i + 1) % 4];
+                if i == 3 {
+                    end[0] += gap;
+                }
+                CurveSegment3::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(start[0], start[1], 0.).unwrap(),
+                        Point3::try_new(end[0], end[1], 0.).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                )
+            })
+            .collect::<Vec<_>>();
+        let composite = boundary_curve(&boundary, tolerance).unwrap();
+        assert!(composite.is_closed().unwrap());
+        assert!(composite.to_nurbs().unwrap().is_closed().unwrap());
+        for (source, result) in boundary.iter().zip(composite.segments()) {
+            let domain = source.domain();
+            for j in 0..33 {
+                let t = *domain.start() + (*domain.end() - *domain.start()) * j as f64 / 32.;
+                assert!(
+                    source
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(result.evaluate(t).unwrap())
+                        .unwrap()
+                        <= gap
+                );
+            }
+        }
+        let tight = Tolerance::try_new(1e-10, 1e-12, 1e-9).unwrap();
+        assert!(matches!(
+            boundary_curve(&boundary, tight),
+            Err(GeometryError::UnrepresentableBrepBoolean)
+        ));
+    }
     fn disk(x: f64, r: f64) -> Brep {
         let c = Circle3::try_new(
             Point3::try_new(x, 0., 0.).unwrap(),

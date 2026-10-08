@@ -115,11 +115,31 @@ fn planar_application_replays_trim_holes_and_nonparallel_projection() {
     replay(&q);
 }
 
+#[test]
+fn planar_application_replays_mixed_native_scale_recipes() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/planar_boolean_scale.json"
+    ))
+    .unwrap();
+    replay(&q);
+}
+
 fn replay(q: &serde_json::Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let name = v["command_name"].as_str().unwrap();
         let mut app = test_app();
+        let scale = v["scale"].as_f64().unwrap_or(1.);
+        if v["scale"].is_number() {
+            app.document.set_tolerance(
+                Tolerance::try_new(
+                    1e-7 * scale,
+                    app.document.tolerance().relative(),
+                    app.document.tolerance().angular(),
+                )
+                .unwrap(),
+            );
+        }
         for shape in v["shapes"].as_array().unwrap() {
             app.document
                 .add_geometry(Geometry::Brep(shape_brep(shape, app.document.tolerance())))
@@ -167,7 +187,10 @@ fn replay(q: &serde_json::Value) {
             }
             assert!(
                 (b.area(app.document.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
-                    < if ["disk", "annulus", "half_disk"]
+                    / scale.powi(2)
+                    < if v["scale"].is_number() {
+                        3e-4
+                    } else if ["disk", "annulus", "half_disk"]
                         .iter()
                         .any(|kind| v["shapes"]
                             .as_array()

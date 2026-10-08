@@ -5,6 +5,16 @@ use viboceros_document::{GroupId, LayerId};
 use viboceros_geometry::{NurbsSurface, Point3};
 fn setup(v: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
     let mut doc = Document::default();
+    if let Some(scale) = v["scale"].as_f64() {
+        doc.set_tolerance(
+            Tolerance::try_new(
+                1e-7 * scale,
+                doc.tolerance().relative(),
+                doc.tolerance().angular(),
+            )
+            .unwrap(),
+        );
+    }
     let mut ids = Vec::new();
     let mut layers = Vec::new();
     for (i, shape) in v["shapes"].as_array().unwrap().iter().enumerate() {
@@ -395,11 +405,23 @@ fn planar_mixed_native_boundaries_metadata_and_history() {
     replay_curved(&q, 34);
 }
 
+#[test]
+fn planar_mixed_native_scale_boundaries_metadata_and_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/planar_boolean_scale.json"
+    ))
+    .unwrap();
+    replay_curved(&q, 27);
+}
+
 fn replay_curved(q: &Value, expected_regular: usize) {
     let mut regular = 0;
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let case = v["case"].as_str().unwrap();
+        let scale = v["scale"].as_f64().unwrap_or(1.);
+        let area_epsilon = if v["scale"].is_number() { 3e-4 } else { 2e-5 };
+        let source_area_epsilon = if v["scale"].is_number() { 2e-4 } else { 5e-7 };
         let (mut doc, ids, layers, groups) = setup(v);
         let before = doc.objects().cloned().collect::<Vec<_>>();
         let registry = CommandRegistry::with_builtins();
@@ -453,7 +475,9 @@ fn replay_curved(q: &Value, expected_regular: usize) {
                 panic!()
             };
             assert!(
-                (b.area(doc.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs() < 2e-5,
+                (b.area(doc.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
+                    / scale.powi(2)
+                    < area_epsilon,
                 "{case} area"
             );
             actual[i]["area"] = Value::Null;
@@ -478,7 +502,7 @@ fn replay_curved(q: &Value, expected_regular: usize) {
                         Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
                             .unwrap();
                     assert!(
-                        curve_distance(&own, point, doc.tolerance()) < 5e-6,
+                        curve_distance(&own, point, doc.tolerance()) / scale < 5e-6,
                         "{case} native boundary"
                     );
                 }
@@ -505,9 +529,46 @@ fn replay_curved(q: &Value, expected_regular: usize) {
                         5e-6
                     };
                     let error = curve_distance(&refs, p, doc.tolerance());
-                    assert!(error < epsilon, "{case} local boundary {error}: {p:?}");
+                    assert!(
+                        error / scale < epsilon,
+                        "{case} local boundary {error}: {p:?}"
+                    );
                 }
             }
+        }
+        if v["scale"].is_number() {
+            let intersection = if case.contains("_strip_") {
+                3.75f64.sqrt() + 8. * 0.25f64.asin()
+            } else {
+                2. * std::f64::consts::PI
+            };
+            let rectangle = if case.contains("_strip_") { 6. } else { 18. };
+            let disk = 4. * std::f64::consts::PI;
+            let expected_area = match v["command_name"].as_str().unwrap() {
+                "PlanarUnion" => disk + rectangle - intersection,
+                "PlanarIntersection" => intersection,
+                "PlanarDifference" => {
+                    (if case.contains("_first_polygon_") {
+                        rectangle
+                    } else {
+                        disk
+                    }) - intersection
+                }
+                _ => unreachable!(),
+            };
+            let actual_area: f64 = doc
+                .objects()
+                .map(|o| {
+                    let Geometry::Brep(b) = o.geometry() else {
+                        panic!()
+                    };
+                    b.area(doc.tolerance()).unwrap() / scale.powi(2)
+                })
+                .sum();
+            assert!(
+                (actual_area - expected_area).abs() < 1e-9,
+                "{case} analytic area {actual_area} expected {expected_area}"
+            );
         }
         compare(&actual, &native, case);
         registry.execute(&mut doc, "Undo").unwrap();
@@ -520,7 +581,10 @@ fn replay_curved(q: &Value, expected_regular: usize) {
             .iter_mut()
             .zip(native_before.as_array_mut().unwrap())
         {
-            assert!((a["area"].as_f64().unwrap() - b["area"].as_f64().unwrap()).abs() < 5e-7);
+            assert!(
+                (a["area"].as_f64().unwrap() - b["area"].as_f64().unwrap()).abs() / scale.powi(2)
+                    < source_area_epsilon
+            );
             a["area"] = Value::Null;
             b["area"] = Value::Null;
         }

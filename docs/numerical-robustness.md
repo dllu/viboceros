@@ -4,6 +4,8 @@
 
 For mesh-specific normal, area, midpoint, and topology-editing checks, see
 [mesh topology and editing](mesh-topology.md).
+For exact mixed planar cut coefficients and bounded junction export, see
+[planar cut arithmetic](planar-cut-numerics.md).
 
 These policies concern primitive binary64 arithmetic. They do not establish
 global Rhino parity, exact arithmetic for every geometry operation, or uniform
