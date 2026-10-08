@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `37c552ab` with Rust 1.95.0 after
-[Unequal surface control matching](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `96797e82` with Rust 1.95.0 after
+[Surface Rebuild](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,43 @@ git diff --check
 ```
 
 All commands completed successfully. The release workspace suite passed
-5,307 Rust tests:
+5,314 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,022 | 17 |
-| Command | 1,190 | 2 |
+| App | 1,023 | 17 |
+| Command | 1,193 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,068 | 8 |
+| Geometry | 2,070 | 8 |
 | I/O | 195 | 0 |
-| Oracle | 487 | 0 |
+| Oracle | 488 | 0 |
 
-The Python suite passed 979 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 984 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest control-matching captures ran 38 successful owned commands on private
+The newest surface Rebuild captures ran twelve owned native commands and twelve
+public SDK queries on private Xvfb. [Command records](../tools/rhino_oracle/observations/surface_rebuild.json)
+retain complete surfaces, 81 stations, attributes/groups, source identity and
+independent history for polynomial/rational inputs and all copy/replacement and
+input/current-layer combinations. Native command geometry exactly equals public
+SDK results. Local replay uses `1e-6` for controls and exact knots/weights.
+The [standalone API audit](../tools/rhino_oracle/observations/surface_rebuild_local_audit.json)
+matches all twelve asymmetric/reduced target structures, with maximum coordinate
+error about `2.2e-7` and zero local failures. Its initial audit exposed two rational
+arc-length endpoint overshoots by one binary64 step; endpoint parameters now use
+exact domain boundaries. Shared rebuilding retains the preceding TweenSurfaces
+regressions. App checks command-first picks, inline options, replacement and one
+Undo. Command regressions reject unsupported retrimming and invalid options
+without partial edits, and check explicit `ReTrim=No`. See
+[guide](commands/rebuild-surfaces.md) and [provenance](surface-rebuild-provenance.json).
+General retrimming, periodic/singular inputs, mixed curve/surface batches, native
+option persistence and performance parity remain unfinished or unverified.
+
+The preceding control-matching captures ran 38 successful owned commands on private
 Xvfb with one, two and three outputs. [Initial records](../tools/rhino_oracle/observations/tween_surfaces_control_initial.json)
 and [follow-up records](../tools/rhino_oracle/observations/tween_surfaces_control_followup.json)
 retain unequal polynomial/rational degrees and counts, single-axis changes,
