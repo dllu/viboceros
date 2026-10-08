@@ -4,6 +4,7 @@ use crate::exact_scalar::{Rational, rational, scalar};
 use num_traits::{One, Zero};
 use std::collections::BTreeMap;
 
+mod affine;
 mod algebra;
 mod curve;
 mod pushup;
@@ -49,8 +50,9 @@ impl NurbsSurface {
     /// Tensor knot crossings use restricted surface hulls and exact dyadic
     /// subdivision. Positive or uniformly negative weight gauges are supported;
     /// mixed signs, interior full-order surface knots, surface or UV degrees
-    /// above 16, spatial degrees above 64, and composed degrees above 64 are
-    /// uncertified. UV must stay in the natural
+    /// above 16 and spatial degrees above 64 are uncertified. The general
+    /// Bernstein path limits composed degrees to 64; the polynomial affine
+    /// control-reference path does not form that composition. UV must stay in the natural
     /// surface domain. Work, rational sizes and subdivision depth are bounded.
     /// Sources remain unchanged; this does not certify topology or injectivity.
     pub fn parameter_curve_deviation_bound(
@@ -61,6 +63,9 @@ impl NurbsSurface {
     ) -> Result<Option<Real>, GeometryError> {
         if !limit.is_finite() || limit < 0. {
             return Err(GeometryError::InvalidTolerance);
+        }
+        if let Some(bound) = affine::bound(self, uv, spatial, limit)? {
+            return Ok(Some(bound));
         }
         let Some(mut certificate) = PullbackCertificate::with_degree(self, spatial, uv.degree())?
         else {

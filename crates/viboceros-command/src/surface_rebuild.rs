@@ -114,12 +114,7 @@ pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, Comman
     for object in doc.selected_objects() {
         let source = match object.geometry() {
             Geometry::NurbsSurface(s) => s,
-            Geometry::Brep(b) if b.faces().len() == 1 => {
-                if options.retrim && !b.faces()[0].is_untrimmed(doc.tolerance())? {
-                    return Err(CommandError::UnsupportedSurfaceRebuild);
-                }
-                b.faces()[0].surface()
-            }
+            Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface(),
             Geometry::Brep(_) => return Err(CommandError::UnsupportedSurfaceRebuild),
             _ => continue,
         };
@@ -127,12 +122,21 @@ pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, Comman
             return Err(CommandError::Usage(USAGE));
         }
         let rebuilt = try_rebuild_nurbs_surface(source, options.count, options.degree)?;
-        let mut brep = Brep::try_surface_face(rebuilt, doc.tolerance())?;
-        if let Geometry::Brep(b) = object.geometry()
-            && b.faces()[0].is_reversed()
-        {
-            brep = brep.reversed();
-        }
+        let brep = if options.retrim {
+            match object.geometry() {
+                Geometry::Brep(b) => b.try_retrimmed_single_surface(rebuilt, doc.tolerance())?,
+                _ => Brep::try_surface_face(source.clone(), doc.tolerance())?
+                    .try_retrimmed_single_surface(rebuilt, doc.tolerance())?,
+            }
+        } else {
+            let b = Brep::try_surface_face(rebuilt, doc.tolerance())?;
+            if matches!(object.geometry(),Geometry::Brep(original) if original.faces()[0].is_reversed())
+            {
+                b.reversed()
+            } else {
+                b
+            }
+        };
         let attrs = object.attributes().clone().with_layer(if options.current {
             doc.current_layer_id()
         } else {
@@ -166,6 +170,8 @@ impl CommandRegistry {
     }
 }
 
+#[cfg(test)]
+mod retrim_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -290,7 +296,7 @@ mod tests {
         }
     }
     #[test]
-    fn trimmed_input_requires_explicit_untrim_and_failed_batches_are_atomic() {
+    fn trimmed_rebuild_retains_holes_and_explicit_untrim_restores_full_surface() {
         let registry = CommandRegistry::with_builtins();
         let mut doc = Document::default();
         let normal = UnitVector3::try_new(0., 0., 1., doc.tolerance()).unwrap();
@@ -320,12 +326,14 @@ mod tests {
             .unwrap();
         doc.clear_history().unwrap();
         let before = doc.objects().cloned().collect::<Vec<_>>();
-        assert!(matches!(
-            registry.execute(&mut doc, "Rebuild"),
-            Err(CommandError::UnsupportedSurfaceRebuild)
-        ));
+        registry.execute(&mut doc, "Rebuild").unwrap();
+        let Geometry::Brep(rebuilt) = doc.object(id).unwrap().geometry() else {
+            panic!()
+        };
+        assert_eq!(rebuilt.faces()[0].loops().len(), 2);
+        assert!((rebuilt.area(doc.tolerance()).unwrap() - 21. * std::f64::consts::PI).abs() < 1e-7);
+        registry.execute(&mut doc, "Undo").unwrap();
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
-        assert!(!doc.can_undo());
         registry
             .execute(&mut doc, "Rebuild ReTrim=No UPointCount=4 VPointCount=4")
             .unwrap();

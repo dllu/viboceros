@@ -17903,7 +17903,7 @@ pub enum CommandError {
     NoRebuildCurves,
 
     #[error(
-        "surface Rebuild requires single-face surfaces; retrimming changed surfaces is not yet supported"
+        "surface Rebuild requires single-face surfaces without a mixed curve/surface selection"
     )]
     UnsupportedSurfaceRebuild,
 

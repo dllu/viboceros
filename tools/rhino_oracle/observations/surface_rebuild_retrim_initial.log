@@ -1,0 +1,1 @@
+oracle failed: rhino probe failed: AttributeError at operation tween_srf_planar_rectangle_untrim: start: 'NurbsSurface' object has no attribute 'DuplicateSurface'

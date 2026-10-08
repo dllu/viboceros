@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_natural_planar_untrim",
+      "case": "natural_planar_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_natural_planar_retrim",
+      "case": "natural_planar_retrim"
+    },
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_curved_rectangle_untrim",
+      "case": "curved_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_curved_rectangle_retrim",
+      "case": "curved_rectangle_retrim"
+    },
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_rational_rectangle_untrim",
+      "case": "rational_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim_followup",
+      "id": "tween_srf_rational_rectangle_retrim",
+      "case": "rational_rectangle_retrim"
+    }
+  ]
+}

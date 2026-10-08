@@ -1049,3 +1049,49 @@ fn surface_rebuild_value_questions_return_keep_invalid_edits_and_save_cancelled_
     enter(&mut app, "");
     assert_eq!(app.document.objects().len(), 3);
 }
+
+#[test]
+fn rebuild_retrims_holes_after_readonly_option_edits_and_restores_them_with_history() {
+    use viboceros_geometry::{Brep, Circle3, Tolerance, UnitVector3};
+    let tolerance = Tolerance::DEFAULT;
+    let mut app = test_app();
+    let normal = UnitVector3::try_new(0., 0., 1., tolerance).unwrap();
+    let center = Point3::try_new(0., 0., 0.).unwrap();
+    let outer = Circle3::try_new(center, 5., normal, tolerance)
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let hole = Circle3::try_new(center, 2., normal, tolerance)
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let brep = Brep::try_planar_face_with_holes(&outer, &[hole], tolerance).unwrap();
+    let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Rebuild");
+    enter(
+        &mut app,
+        "UDegree=2 VDegree=2 UPointCount=3 VPointCount=3 DeleteInput=No ReTrim=Yes",
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().len(), 2);
+    let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
+        panic!()
+    };
+    assert_eq!(output.faces()[0].loops().len(), 2);
+    assert!((output.area(tolerance).unwrap() - 21. * std::f64::consts::PI).abs() < 1e-7);
+    let accepted = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        accepted
+    );
+}

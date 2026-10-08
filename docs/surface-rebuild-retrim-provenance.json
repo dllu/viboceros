@@ -1,0 +1,43 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 14,
+  "captures": [
+    {
+      "name": "surface_rebuild_retrim",
+      "recipes": 8,
+      "scheme": "VibocerosOracleSurfaceRebuildRetrimVerified20261008"
+    },
+    {
+      "name": "surface_rebuild_retrim_followup",
+      "recipes": 6,
+      "scheme": "VibocerosOracleSurfaceRebuildRetrimFollowup20261008"
+    }
+  ],
+  "native_rule": "ReTrim=Yes matches public Brep.CreateTrimmedSurface, projects physical boundaries and retains source UV domains, including natural boundaries. ReTrim=No uses the rebuilt uniform domains and natural boundary.",
+  "initial_diagnostic": "The first probe failed before completion because NurbsSurface has no DuplicateSurface method. The initial producer and exact error log are retained; the corrected probe uses ToNurbsSurface.",
+  "edge_distance_witness_epsilon": 2e-06,
+  "limits": [
+    "B-rep topology and boundary fitting representations may differ, especially the native approximated circular hole.",
+    "Closest-point projection fitting uses bounded multi-start searches and sampled fit checks; no global nearest-point or topology equivalence certificate is claimed.",
+    "New spatial edges are continuously certified against their new UV trims.",
+    "Seam/singular trims, rational target surfaces, multiple faces and performance parity remain unsupported or unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_retrim_probe.py": "d265455172cfd7951b67ff4d354ef0131d76b22b9e6286288d9abf675273332a",
+    "tools/rhino_oracle/surface_rebuild_retrim_initial_probe.py": "014f5418d72162d34a22e3ad7392599be92e069510b9574a2d0d44b5aef61b83",
+    "tools/rhino_oracle/surface_rebuild_retrim_followup_probe.py": "e608932a95a5a6ed912a9ca2563b7b8c826a68a91c16568fadee7bb03633eb38",
+    "tools/rhino_oracle/fixtures/surface_rebuild_retrim.json": "4dee2b6116d851dfd6b258aca3fbf83e2cce69d87da27bd0711dc113c984a288",
+    "tools/rhino_oracle/fixtures/surface_rebuild_retrim_followup.json": "e47fdbb17d5bee31a84c2acf3a45f7128c6602ffa9d0b8bfaa4e50958a2e69c0",
+    "tools/rhino_oracle/observations/surface_rebuild_retrim.json": "0d3241639bd2b55a76e4c658010618596c2da6db17333c8abe2cf423f665a664",
+    "tools/rhino_oracle/observations/surface_rebuild_retrim_followup.json": "72904285d16555c9011c4c6e4d51db5885a7069576c1178dd39e668c48a4c964",
+    "tools/rhino_oracle/observations/surface_rebuild_retrim_initial.log": "a875ca5341ba5dc101fff989ca9a1df1c7f97da83effef5d968ba8e5d33eba37",
+    "tools/rhino_oracle/fixtures/brep_retrim_geometry.json": "849554c6b6b0c349534b2a4e113ef00d538af210a5aec6dbef0a738c2b14ef9a",
+    "tools/rhino_oracle/observations/brep_retrim_geometry.json": "ca64ba7f0e643030952fd454dd73f8d78b3d013d29091105d6c604c8fb6c89b5"
+  },
+  "sdk_recipes": 2,
+  "sdk_settings_scheme": "VibocerosOracleBrepRetrimSDK20261008",
+  "local_initial_diagnostic": "The initial default 10x10 planar circular-hole command regression exhausted the general tensor-knot crossing certificate. A global exact affine control-net reference bound now qualifies the rational image without weakening tolerance."
+}

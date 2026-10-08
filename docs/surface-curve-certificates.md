@@ -50,10 +50,23 @@ that have no convenient binary64 parameter. No sampled point is an acceptance
 test. Curve excursions, rational denominator failures, and exhausted resources
 cannot become successful certificates.
 
+Clamped polynomial surfaces also have a global affine-reference path. Exact
+Greville stations reproduce the affine map in the surface basis. Exact rational
+L1 control residuals bound the surface's deviation from that map. A spatial
+curve with the UV curve's normalized knots and proportional same-sign weights
+receives a second control-residual bound; convex basis partitions make their
+sum a continuous Euclidean upper bound. UV control hulls must stay inside the
+surface domain. The final bound rounds upward. This avoids repeated tensor-knot
+subdivision for rational circles on many-span planar rebuilds and also qualifies
+their rounded spatial image controls. Images exceeding the control-residual
+bound and mixed-sign UV weights are not accepted by this path.
+
 ## Scope and limits
 
-- Surface and UV degrees up to 16; spatial curve and composed surface-image
-  degrees up to 64. [Certified pushup](certified-surface-pushups.md) constructs
+- Surface and UV degrees up to 16; spatial curve degrees up to 64. The general
+  Bernstein path bounds composed surface-image degree at 64; the polynomial
+  affine-reference path avoids forming the composed polynomial.
+  [Certified pushup](certified-surface-pushups.md) constructs
   spatial images and independently qualifies their rounded control definitions.
 - Sign-coherent nonzero weights; mixed signs are uncertified.
 - UV remains in the natural surface domain. Interior full-order surface knots
@@ -70,7 +83,9 @@ certificates return `None`. A zero limit can prove exact correspondence, but
 some exact matches remain inconclusive at a non-dyadic knot crossing. These are
 limits of the certificate. This query does not prove trim simplicity,
 surface injectivity, manifold topology, or equivalence under an arbitrary curve
-reparameterization.
+reparameterization. The bounded affine-reference check uses its own exact-work
+budget before the general Bernstein path; an inconclusive result continues with
+the ordinary certificate budget.
 
 ## Native evidence
 

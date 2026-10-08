@@ -148,8 +148,12 @@ cleared output groups, layer choice and independent history. A separate twelve
 SDK queries check asymmetric target structures and reductions. Numeric app
 prompts share command-owned parsing and immediate remembered options; two native
 sequences establish cancellation/history lifetime and ordered degree/count
-coupling. Retrimming a changed surface, native previews and restart persistence
-remain unfinished or unverified.
+coupling. Physical retrimming projects original edges onto the changed surface,
+preserves source domains and certifies newly constructed trim/edge correspondence.
+Fourteen native commands distinguish projection from UV copying, including
+nonuniform, curved/rational and holed sources. Projection fitting has sampled
+accuracy checks; seam/singular trims, native previews, restart persistence and
+performance parity remain unfinished or unverified.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

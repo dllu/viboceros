@@ -1280,6 +1280,11 @@ pub enum Operation {
         knots: CurveThroughKnotStyle,
         closed: bool,
     },
+    BrepRetrimGeometry {
+        id: String,
+        fixture: TrimmedBrepFixture,
+        surface: NurbsSurfaceDefinition,
+    },
     SurfaceRebuildGeometry {
         id: String,
         surface: NurbsSurfaceDefinition,
@@ -2319,6 +2324,7 @@ impl Operation {
             | Self::CurveTweenGeometry { id, .. }
             | Self::SurfaceTweenSampledGeometry { id, .. }
             | Self::SurfaceRebuildGeometry { id, .. }
+            | Self::BrepRetrimGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
@@ -4857,6 +4863,19 @@ fn execute(
                 json!({
                     "curves": definitions,
                 }),
+                elapsed,
+            )
+        }
+        Operation::BrepRetrimGeometry {
+            fixture, surface, ..
+        } => {
+            let original = trimmed_brep::build(fixture, tolerance)?;
+            let target = nurbs_surface_from_definition(surface)?;
+            let (result, elapsed) = measure(iterations, || {
+                original.try_retrimmed_single_surface(target.clone(), tolerance)
+            })?;
+            (
+                json!({"brep":brep_interchange::geometry_record(&result)?}),
                 elapsed,
             )
         }
@@ -12398,6 +12417,69 @@ mod tests {
             json!([0.0, 6.0, 2.0])
         );
     }
+    #[test]
+    fn retrim_protocol_matches_native_annulus_projection_on_changed_polynomial_surfaces() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/brep_retrim_geometry.json"
+        ))
+        .unwrap();
+        let native: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/brep_retrim_geometry.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 2);
+        for (local, record) in response
+            .results
+            .iter()
+            .zip(native["results"].as_array().unwrap())
+        {
+            let a = &local.value["brep"];
+            let b = &record["value"]["brep"];
+            assert_eq!(local.id, record["id"].as_str().unwrap());
+            assert_eq!(a["faces"].as_array().unwrap().len(), 1);
+            assert_eq!(a["faces"][0]["loops"].as_array().unwrap().len(), 2);
+            assert_eq!(
+                a["vertices"].as_array().unwrap().len(),
+                b["vertices"].as_array().unwrap().len()
+            );
+            for (a, b) in a["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(b["vertices"].as_array().unwrap())
+            {
+                let a: [f64; 3] = serde_json::from_value(a["point"].clone()).unwrap();
+                let b: [f64; 3] = serde_json::from_value(b["point"].clone()).unwrap();
+                assert!(
+                    Point3::try_from(a)
+                        .unwrap()
+                        .distance_to(Point3::try_from(b).unwrap())
+                        .unwrap()
+                        < 2e-6
+                );
+            }
+            for (a, b) in a["edges"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(b["edges"].as_array().unwrap())
+            {
+                let definition: NurbsCurveDefinition =
+                    serde_json::from_value(a["curve"]["definition"].clone()).unwrap();
+                let curve = nurbs_curve_from_definition(&definition).unwrap();
+                for sample in b["curve"]["samples"].as_array().unwrap() {
+                    let point = Point3::try_from(
+                        serde_json::from_value::<[f64; 3]>(sample.clone()).unwrap(),
+                    )
+                    .unwrap();
+                    let t = curve.closest_parameter(point, Tolerance::DEFAULT).unwrap();
+                    assert!(curve.evaluate(t).unwrap().distance_to(point).unwrap() < 2e-6);
+                }
+            }
+        }
+    }
+
     #[test]
     fn surface_rebuild_protocol_matches_twelve_native_sdk_definitions() {
         let request: ProbeRequest = serde_json::from_str(include_str!(

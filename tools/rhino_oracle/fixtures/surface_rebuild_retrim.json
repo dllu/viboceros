@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_planar_rectangle_untrim",
+      "case": "planar_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_planar_rectangle_retrim",
+      "case": "planar_rectangle_retrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_planar_hole_untrim",
+      "case": "planar_hole_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_planar_hole_retrim",
+      "case": "planar_hole_retrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_nonuniform_rectangle_untrim",
+      "case": "nonuniform_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_nonuniform_rectangle_retrim",
+      "case": "nonuniform_rectangle_retrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_warped_rectangle_untrim",
+      "case": "warped_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_retrim",
+      "id": "tween_srf_warped_rectangle_retrim",
+      "case": "warped_rectangle_retrim"
+    }
+  ]
+}

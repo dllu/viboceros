@@ -38,6 +38,9 @@ impl NurbsSurface {
     ) -> Result<(NurbsCurve, Real), GeometryError> {
         let limit = tolerance.absolute();
         let failed = || GeometryError::SurfacePushupDidNotConverge { tolerance: limit };
+        if let Some(result) = affine::image(self, uv, limit)? {
+            return Ok(result);
+        }
         let mut certificate = ImageCertificate::new(self, uv)?.ok_or_else(failed)?;
         if let Some(proposal) = certificate.exact_proposal(uv)?
             && let Some(bound) = self.parameter_curve_deviation_bound(uv, &proposal, limit)?
