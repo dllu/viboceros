@@ -1,0 +1,88 @@
+{
+  "private_xvfb": true,
+  "app_exit_code": -15,
+  "failure": null,
+  "records": [
+    {
+      "stage": "source",
+      "commands": [
+        "SrfControlPtGrid Degree=2 3 Degree=2 3 0,0,0 0,3,0 0,6,0 2,0,0 2,3,4 2,6,0 4,0,0 4,3,0 4,6,0",
+        "SetDisplayMode Viewport=All Mode=Shaded",
+        "Zoom All Extents",
+        "SelAll"
+      ],
+      "screenshot": "source.png",
+      "sha256": "d80b9d4e84b054ed6dcdf1fe1ab2befd652e58adbccab4acf5e9ae7f6e83494a",
+      "ocr": "Undo Redo | Top = \u00a5 Shaded = \u00a5 Viewoptions | (GridSap) Ortho Planar [Osnap) [Smerttrack) Snapmodes | 1 selected millimetres ?\n\nLayers\n\nTop - Shaded - 1 object(s) - 1 selected\n(on Lock #-tayer-objecs\n\nvoa (DERE + cae\n\nNew layer\nLayer name Add\n\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nFront - Shaded - 1 object(s) - 1 seletted Right Shaded - 1 object(s) - 1 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nDisplay MOGE: Snaded (alt VEWPOTTS)\n> Zoom All Extents\n\nZoomed to visible extents (all viewports)\n> selall\n\nSelected 1 object(s)\n\nCommand: [Type a command \u00ab Tab to complete + O for history\n\n"
+    },
+    {
+      "stage": "replacement_preview",
+      "commands": [
+        "Rebuild",
+        "UDegree=1 VDegree=1 UPointCount=2 VPointCount=2 ReTrim=No"
+      ],
+      "screenshot": "replacement_preview.png",
+      "sha256": "2e702475de270add2ba5e26fc6e398f6a953c01084a1732f4a752e2ab4a1acd9",
+      "ocr": "Redo | Top v Shaded\n\nYY Viewoptions | (Gfid/Siiap) Ortho Planar [Osnap) |SmartTrack) Snapmodes | i\n\nTop - Shaded - 1 object(s) -0 selected\n\nPerspective - Shaved. 1 object(s)-0 selected\n\nFront - Shaded - 1 object(s) -0 seletted\n\nRight Shaded 1\n\nbject(s) -O selected\n\nModelviews + | [HTOp) 2 Perspective\nSelected 1 object(s)\n> Rebuild\n\nEdit U/V counts, degrees or output options; Enter rebuilds, Esc cancels. Rebuild UDegree=3 VDegre\nUPointCount=2 VPointCount=2 Deleteinp\\\n\nRebuild UDegree=1 VDegre:\n\n3Front 4Right\n\nuPointCount\n-Yes OutputLayer=input ReTrim=No\n\n0 VPointcou\n\n0 Deleteinpul\n\nRebuild:\n\nLayers\n\nOn tock #-Layer- objects\n\nv a 0- Default\n\nNew layer\n\ncreate a group with: croup [name]\n\nEdit\n"
+    },
+    {
+      "stage": "copy_ghosted_preview",
+      "commands": [
+        "DeleteInput=No",
+        "SetDisplayMode Viewport=All Mode=Ghosted"
+      ],
+      "screenshot": "copy_ghosted_preview.png",
+      "sha256": "9eb1577d6526b8f5ccb01f7ff0aa2b46a2a8e890316403d1165f059871b25194",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | (GridSap) Ortho Planar [Osnap) [Smartirack) Snap modes\n\n1 selected Millimetres |?)\n\nTop - Ghosted - 2 object(s) -0 selected\n\nLayers\n\nOn tod #- tye ces\nvoa (DERE + cae\n\nNew layer\n\nLayer name Add\n\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nFront - Ghosted - 2 object(s) -0 seldcted\n\nRight - Ghosted -# object(s) - 0 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nENICU/V COUNES,\nRebuild UDegree=1 VDegree=1 UPointCount=2 VPointCount=2 Deleteinput=Yes OutputLay\u00e9\nRebuild UDegree=1 VDegree=1 UPointCount=2 VPointCount=2 Deletelnput=No OutputLaye\u2019\n> SetDisplayMode Viewport=All Mode=Ghosted\n\nDisplay mode: Ghosted (all viewports)\n\njegrees OF OUTPUT OPTIONS; ENcer TeDUNGS, ESC CANCEIS. HEDUNIG UDEgTee=s VUETTE:\n\ninput ReTrit\nput ReTrim:\n\nUPOINCCOUNC=TU VFOINELOUNE=10 Delereinput= es UUcpUCLayer=InpUE KE IrIM=VES\n\nRebuild: [Fait U/V counts, degrees or output options, Enter rebuilds, Esc cancels\n\n"
+    },
+    {
+      "stage": "invalid_keeps_preview",
+      "commands": [
+        "UPointCount=1",
+        "Preview"
+      ],
+      "screenshot": "invalid_keeps_preview.png",
+      "sha256": "280d7d75195b0f5701caeca40e1ca7c8aa74497c7ee0ff32e0333741529838d3",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | (GridSap) Ortho Planar [Osnap) [Smartirack) Snap modes\n\n1 selected Millimetres |?)\n\nTop - Ghosted -2 object(s)-0 selected |\n\nLayers\n\nOn tod #- tye ces\nvoa (DERE + cae\n\nNew layer\n\nLayer name Add\n\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nFront - Ghosted - 2 object(s) -0 seldcted\n\nRight - Ghosted -# object(s) - 0 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nREDUIG ULEgree=1 VUEGTES=1 UPOINTLOUNT=2 VPOInCLOUNt=2 De\\eteIput=Tes OUTpUTLAy\nRebuild UDegree=1 VDegree=1 UPointCount=2 VPointCount=2 Deletelnput=No OutputLaye\u2019\n> SetDisplayMode Viewport=All Mode=Ghosted\n\nDisplay mode: Ghosted (all viewports)\n\nError: usage: Rebuild UPointCount=2..256 VPointCount=2..256 UDegree=1..11 VDegree=1.11 [Deleteinput=Yes|No] [OutputLayer=Input|Current] [ReTrim=Yes|No]\n\nRebuild: [Fait U/V counts, degrees or output options, Enter rebuilds, Esc cancels\n\n"
+    },
+    {
+      "stage": "accepted",
+      "commands": [
+        ""
+      ],
+      "screenshot": "accepted.png",
+      "sha256": "637721a7d085c8fcfb7bed55f7c7732eed05d80081274439b6fc5ec568da8e91",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | [GridSfap) Ortho Planar [Osnap) /Smartirack) Snap modes\n\nOselected Millimetres [\n\nTop - Ghosted - 2 object(s) -0 selected\n\nLayers\n\nOn tod #- tye ces\nvoa (CBERUE > cat\n\nNew layer\n\nLayer name Add\n\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nFront - Ghosted - 2 object(s) -0 seldcted\n\nRight - Ghosted -# object(s) - 0 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nKEOUIG UDegree=1 VUEGree=1 UPOINCLOUNC=2 VFOINCLOUNE=Z DelECeIND|\n> SetDisplayMode Viewport=All Mode=Ghosted\n\nDisplay mode: Ghosted (all viewports)\n\nError: usage: Rebuild UPointCount=2..256 VPointCount=2..256 UDegree=1..11 VDegre:\nRebuilt 1 surface(s)\n\nNo OurputLaye\u2019\n\nPUCRETIM=NO\n\n14 [Deleteinput=Yes|No] [OutputLayer=Input|Current] [ReTrim=Yes|No]\n\nCommand: [Type a command \u00ab Tab to complete + O for history\n\n"
+    },
+    {
+      "stage": "undo",
+      "commands": [
+        "Undo"
+      ],
+      "screenshot": "undo.png",
+      "sha256": "d84d75aa958cd117135047e2e82d9390dbb97ea379cf7290d8d3d1d9ca176f74",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | [GridSap) Ortho Planar [Osnap) [Smartirack) Snapmodes | Oselected millimetres ?\n\nTop - Ghosted - 1 object(s) -0 selected\n\nFront - Ghosted - 4 object(s) -0 seldcted\n\nRight hosted -] object(s) - 0 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nDisplay MOGE: LNOSTEN (all VIEWDOTTS)\nError: usage: Rebuild UPointCount=2..256 VPointCount=2..256 UDegree=1..11 VDegre:\nRebuilt 1 surface(s)\n\n>Undo\n\nUndid Rebuild\n\n14 [Deleteinput=Yes|No] [OutputLayer=Input|Current] [ReTrim=Yes|No]\n\nCommand: [Type a command \u00ab Tab to complete + O for history\n\nLayers\n\n(on Lock #-tayer-objecs\n\nvoa (DERE + cae\n\nNew layer\nLayer name\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nAdd\n"
+    },
+    {
+      "stage": "redo",
+      "commands": [
+        "Redo"
+      ],
+      "screenshot": "redo.png",
+      "sha256": "e404a75e48044e64467b5486e2c7741fd28d11bf170ae01df61e793bb0753287",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | [GridSap) Ortho Planar [Osnap) [Smartirack) Snapmodes | Oselected millimetres ?\n\nLayers\nTop -Ghosted-2 objectis)-0 selected ] 3\n\nOn tod #- tye ces\nvoa (CBERUE > cat\n\nNew layer\nLayer name Add\n\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n\nFront - Ghosted - 2 object(s) -0 seldcted Right - Ghosted -# object(s) - 0 selected\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nREDUNCT SUTTACES)\n>Undo\n\nUndid Rebuild\n>Redo\n\nRedid Rebuild\n\nCommand: [Type a command \u00ab Tab to complete + O for history\n\n"
+    },
+    {
+      "stage": "cancelled",
+      "commands": [
+        "SelLast",
+        "Rebuild",
+        "UDegree=2 UPointCount=4",
+        "Cancel"
+      ],
+      "screenshot": "cancelled.png",
+      "sha256": "bdd50b668e6f9b6658b7ef3adc3576c8807373bc8826baaae77089d2ee0e9199",
+      "ocr": "Undo Redo | Top = \u00a5 Ghosted \u00a5 Viewoptions | [GridSap) Ortho Planar [Osnap) [Smartirack) Snapmodes | 1 selected millimetres ?\n\nTop - Ghosted - 2 object(s) -1 selected\n\nFront - Ghosted - 2 object(s) 1 seldcted Right - Ghosted -# object(s) - 1 selected\n\n7\n\nModel views + | AITOB) 2Perspective 3Front 4Right\n\nSEIECKION CONTAINS 7 ODJECKIS)\n> Rebuild\n\nEdit U/V counts, degrees or output options; Enter rebuilds, Esc cancels. Rebuild UDegree=1 VDegree=1 UPointCount=2 VPointCount=2 DeleteInput=No OutputLayer=input ReTrim=No\nRebuild UDegree=2 VDegree=1 UPointCount=4 VPointCount=2 DeleteInput=No OutputLayer=input ReTrim\nCancelled Rebuild\n\nCommand: [Type a command \u00ab Tab to complete + O for history\n\nLayers\n\n(on Lock #-tayer-objecs\n\nvoa (CBERUE > cat\n\nNew layer\nLayer name\nGroups\n\nNo groups\n\n\u2018create a group with: Group frame]\n"
+    }
+  ]
+}

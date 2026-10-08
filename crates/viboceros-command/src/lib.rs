@@ -17907,6 +17907,9 @@ pub enum CommandError {
     )]
     UnsupportedSurfaceRebuild,
 
+    #[error("Rebuild sources or document settings changed; select the surfaces again")]
+    StaleSurfaceRebuild,
+
     #[error("ChangeDegree degree {actual} must be between 1 and {maximum}")]
     InvalidChangeDegree { actual: usize, maximum: usize },
 

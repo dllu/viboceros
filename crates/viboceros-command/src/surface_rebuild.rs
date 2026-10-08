@@ -103,12 +103,126 @@ pub fn parse(args: &[&str], mut result: Options) -> Result<Options, CommandError
     Ok(result)
 }
 
-pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, CommandError> {
+/// Source admission state retained independently of prepared geometry.
+#[derive(Clone, Debug)]
+pub struct SourceState {
+    objects: Vec<viboceros_document::Object>,
+    tolerance: Tolerance,
+    current_layer: viboceros_document::LayerId,
+}
+impl SourceState {
+    pub fn capture(doc: &Document) -> Self {
+        Self {
+            objects: doc.selected_objects().cloned().collect(),
+            tolerance: doc.tolerance(),
+            current_layer: doc.current_layer_id(),
+        }
+    }
+    pub fn is_current(&self, doc: &Document) -> bool {
+        self.tolerance == doc.tolerance()
+            && self.current_layer == doc.current_layer_id()
+            && doc.selected_objects().count() == self.objects.len()
+            && doc.selected_objects().zip(&self.objects).all(|(a, b)| {
+                doc.is_object_selectable(a.id())
+                    && a.geometry_snapshot()
+                        .shares_storage_with(b.geometry_snapshot())
+                    && a == b
+            })
+    }
+}
+
+/// Readonly result preparation shared by scripts, preview and acceptance.
+#[derive(Clone, Debug)]
+pub struct Prepared {
+    state: SourceState,
+    options: Options,
+    output: Vec<(
+        ObjectId,
+        viboceros_document::GeometrySnapshot,
+        ObjectAttributes,
+    )>,
+}
+impl Prepared {
+    pub fn is_current(&self, doc: &Document) -> bool {
+        self.state.is_current(doc)
+    }
+    pub fn options(&self) -> Options {
+        self.options
+    }
+    pub fn outputs(&self) -> impl ExactSizeIterator<Item = &viboceros_document::GeometrySnapshot> {
+        self.output.iter().map(|(_, geometry, _)| geometry)
+    }
+    /// Reuse geometry when only deletion or layer policy changes.
+    pub fn update_output_options(
+        &mut self,
+        doc: &Document,
+        options: Options,
+    ) -> Result<(), CommandError> {
+        if !self.is_current(doc)
+            || options.count != self.options.count
+            || options.degree != self.options.degree
+            || options.retrim != self.options.retrim
+        {
+            return Err(CommandError::StaleSurfaceRebuild);
+        }
+        for (id, _, attrs) in &mut self.output {
+            let source = doc.object(*id).ok_or(CommandError::StaleSurfaceRebuild)?;
+            *attrs = source.attributes().clone().with_layer(if options.current {
+                doc.current_layer_id()
+            } else {
+                source.attributes().layer_id()
+            });
+        }
+        self.options = options;
+        Ok(())
+    }
+    /// Caller groups all edits in one transaction. Validate the complete input
+    /// state before touching any output; geometry is never rebuilt here.
+    pub fn apply(&self, doc: &mut Document) -> Result<String, CommandError> {
+        if !self.is_current(doc) {
+            return Err(CommandError::StaleSurfaceRebuild);
+        }
+        for (id, geometry, attrs) in &self.output {
+            if self.options.delete {
+                doc.replace_object_geometries([(*id, (**geometry).clone())])?;
+                doc.set_objects_layer([*id], attrs.layer_id())?;
+                doc.clear_object_group_memberships([*id])?;
+            } else {
+                doc.add_geometry_with_attributes((**geometry).clone(), attrs.clone())?;
+            }
+        }
+        doc.clear_selection();
+        Ok(format!("Rebuilt {} surface(s)", self.output.len()))
+    }
+}
+
+pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
+    if (0..2).any(|axis| {
+        !(1..=11).contains(&options.degree[axis])
+            || options.count[axis] <= options.degree[axis]
+            || options.count[axis] > 256
+    }) {
+        return Err(CommandError::Usage(USAGE));
+    }
+    let state = SourceState::capture(doc);
+    if !state.is_current(doc) {
+        return Err(CommandError::StaleSurfaceRebuild);
+    }
     if doc
         .selected_objects()
         .any(|object| object.geometry().curve_ref().is_some())
     {
         return Err(CommandError::UnsupportedSurfaceRebuild);
+    }
+    let source_count = doc
+        .selected_objects()
+        .filter(|o| matches!(o.geometry(), Geometry::NurbsSurface(_) | Geometry::Brep(_)))
+        .count();
+    if source_count
+        .checked_mul(options.count[0] * options.count[1])
+        .is_none_or(|n| n > 1_000_000)
+    {
+        return Err(CommandError::Usage(USAGE));
     }
     let mut output = Vec::new();
     for object in doc.selected_objects() {
@@ -118,9 +232,6 @@ pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, Comman
             Geometry::Brep(_) => return Err(CommandError::UnsupportedSurfaceRebuild),
             _ => continue,
         };
-        if output.len() >= 1_000_000 / (options.count[0] * options.count[1]) {
-            return Err(CommandError::Usage(USAGE));
-        }
         let rebuilt = try_rebuild_nurbs_surface(source, options.count, options.degree)?;
         let brep = if options.retrim {
             match object.geometry() {
@@ -142,23 +253,24 @@ pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, Comman
         } else {
             object.attributes().layer_id()
         });
-        output.push((object.id(), Geometry::Brep(brep), attrs));
+        output.push((
+            object.id(),
+            viboceros_document::GeometrySnapshot::from(Geometry::Brep(brep)),
+            attrs,
+        ));
     }
     if output.is_empty() {
         return Err(CommandError::UnsupportedSurfaceRebuild);
     }
-    let count = output.len();
-    for (id, geometry, attrs) in output {
-        if options.delete {
-            doc.replace_object_geometries([(id, geometry)])?;
-            doc.set_objects_layer([id], attrs.layer_id())?;
-            doc.clear_object_group_memberships([id])?;
-        } else {
-            doc.add_geometry_with_attributes(geometry, attrs)?;
-        }
-    }
-    doc.clear_selection();
-    Ok(format!("Rebuilt {count} surface(s)"))
+    Ok(Prepared {
+        state,
+        options,
+        output,
+    })
+}
+
+pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, CommandError> {
+    prepare(doc, options)?.apply(doc)
 }
 
 impl CommandRegistry {
@@ -389,5 +501,91 @@ mod tests {
             .execute(&mut doc, "RebuildCrv PointCount=6 Degree=2")
             .unwrap_err();
         assert_eq!(registry.surface_rebuild_defaults(), options);
+    }
+    #[test]
+    fn prepared_rebuild_is_readonly_reuses_output_geometry_and_rejects_stale_sources() {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,6,2 0,6,0")
+            .unwrap();
+        let id = doc.objects().next().unwrap().id();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        doc.add_geometry(Geometry::Point(Point3::try_new(9., 8., 7.).unwrap()))
+            .unwrap();
+        doc.undo().unwrap();
+        assert!(doc.can_redo());
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        let mut prepared = prepare(
+            &doc,
+            Options {
+                count: [5, 4],
+                degree: [3, 2],
+                retrim: false,
+                ..Options::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!doc.can_undo());
+        assert!(doc.can_redo());
+        let geometry = prepared.outputs().next().unwrap().clone();
+        prepared
+            .update_output_options(
+                &doc,
+                Options {
+                    delete: false,
+                    current: true,
+                    ..prepared.options()
+                },
+            )
+            .unwrap();
+        assert!(geometry.shares_storage_with(prepared.outputs().next().unwrap()));
+        assert!(doc.can_redo());
+        for change in 0..5 {
+            let mut changed = doc.clone();
+            match change {
+                0 => {
+                    changed
+                        .set_object_names([(id, Some("Changed".into()))])
+                        .unwrap();
+                }
+                1 => {
+                    changed.add_group(None, [id]).unwrap();
+                }
+                2 => {
+                    changed.set_tolerance(Tolerance::try_new(1e-5, 1e-12, 1e-10).unwrap());
+                }
+                3 => {
+                    changed.clear_selection();
+                }
+                _ => {
+                    changed
+                        .replace_object_geometries([(
+                            id,
+                            Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()),
+                        )])
+                        .unwrap();
+                }
+            }
+            let before = changed.objects().cloned().collect::<Vec<_>>();
+            assert!(matches!(
+                prepared.apply(&mut changed),
+                Err(CommandError::StaleSurfaceRebuild)
+            ));
+            assert_eq!(changed.objects().cloned().collect::<Vec<_>>(), before);
+        }
+        assert!(
+            prepare(
+                &doc,
+                Options {
+                    count: [0, 4],
+                    ..Options::default()
+                }
+            )
+            .is_err()
+        );
     }
 }

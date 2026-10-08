@@ -149,6 +149,15 @@ fn retrim_replays_native_curved_rational_and_natural_boundaries() {
     replay(&q, tolerance);
 }
 
+#[test]
+fn natural_rebuild_replays_default_native_warped_and_curved_boundaries() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/surface_rebuild_natural.json"
+    ))
+    .unwrap();
+    replay(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap());
+}
+
 fn replay(q: &Value, tolerance: Tolerance) {
     for row in q["results"].as_array().unwrap() {
         let v = &row["value"];
@@ -161,7 +170,7 @@ fn replay(q: &Value, tolerance: Tolerance) {
             .unwrap();
         doc.clear_history().unwrap();
         let before = doc.objects().cloned().collect::<Vec<_>>();
-        registry.execute(&mut doc,&format!("Rebuild UDegree=3 VDegree=2 UPointCount=5 VPointCount=4 DeleteInput=No ReTrim={}",if spec["retrim"]==true{"Yes"}else{"No"})).unwrap();
+        registry.execute(&mut doc,&format!("Rebuild UDegree={} VDegree={} UPointCount={} VPointCount={} DeleteInput=No ReTrim={}",spec["degree"][0],spec["degree"][1],spec["count"][0],spec["count"][1],if spec["retrim"]==true{"Yes"}else{"No"})).unwrap();
         let Geometry::Brep(actual) = doc.objects().last().unwrap().geometry() else {
             panic!()
         };

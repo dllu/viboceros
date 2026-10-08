@@ -1,0 +1,31 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "native_settings_scheme": "VibocerosOracleSurfaceRebuildNatural20261008",
+  "native_recipes": 4,
+  "full_native_parity": false,
+  "ui": {
+    "binary": "target/debug/viboceros",
+    "renderer": "production egui/wgpu",
+    "stages": 8,
+    "completed": true,
+    "shutdown": "owned process terminated after inspection",
+    "native_pixel_parity": false
+  },
+  "native_rule": "Natural four-side faces retain their full target boundary and original UV domains with ReTrim=Yes. Exact target isocurves can be constructed directly without inverse projection fitting.",
+  "local_diagnostic": "Initial eager previews exposed work limits and slow inverse fits on natural warped/curved boundaries. Exact natural isocurves and canonical straight UV contours avoid those fits while preserving topology. Early UI observers also confused active/invalid command text with an unfinished command; the final observer checks the command field and retains expected invalid-input errors.",
+  "limits": [
+    "The local preview refreshes automatically; Rhino uses a Preview button. Native preview pixels, labels and update cadence are not compared.",
+    "Curve Rebuild previews, seam/singular retrimming, split natural-side specialization, general closest-point guarantees and performance parity remain unfinished or unverified."
+  ],
+  "sha256": {
+    "tools/inspect_rebuild_preview.py": "6c5875ae4576a114f4b0a9cdea0c19040d18ae29ae5ed52e44bc616537169538",
+    "tools/rhino_oracle/surface_rebuild_natural_probe.py": "3ce49f54c2f838ef2cae72f41bef46e3f4c9bc279ddd24c42dfa4a3f093d2b5a",
+    "tools/rhino_oracle/fixtures/surface_rebuild_natural.json": "2d6a4fc3a61ba65ffd465a107a96a9ab77fb631dff8a143a2583af916e20ae3d",
+    "tools/rhino_oracle/observations/surface_rebuild_natural.json": "c953dcb848acc4f774c9292a99fbbf1fa5373c3b4ea374626f300d131d928291",
+    "tools/rhino_oracle/observations/rebuild_preview_ui.json": "b03cfc635c18f24318c6d3f808c712a9a72ad7dec3fae55a204514519368eae9",
+    "docs/images/rebuild-copy-ghosted-preview.png": "9eb1577d6526b8f5ccb01f7ff0aa2b46a2a8e890316403d1165f059871b25194",
+    "docs/images/rebuild-replacement-preview.png": "2e702475de270add2ba5e26fc6e398f6a953c01084a1732f4a752e2ab4a1acd9"
+  }
+}

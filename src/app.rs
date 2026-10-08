@@ -1972,6 +1972,7 @@ pub struct VibocerosApp {
     boolean_two_prompt: Option<boolean_two::Prompt>,
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
+    rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2071,6 +2072,7 @@ impl VibocerosApp {
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
+            rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -8724,6 +8726,7 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.validate_tween_surfaces();
         self.validate_boolean_two();
+        self.validate_rebuild_preview();
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             self.cancel_current_prompt_or_selection();
@@ -9112,6 +9115,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .and_then(|p| p.scene())
             .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()))
+            .or_else(|| self.rebuild_preview.as_ref().and_then(|p| p.scene()))
             .unwrap_or(&self.document);
         let twist_preview = self
             .twist_session
@@ -9544,6 +9548,7 @@ mod tests {
     mod point_input;
     mod points;
     mod radius;
+    mod rebuild_preview;
     mod rhino_curve_prompt;
     mod scale_by_plane;
     mod scale_by_plane_curve;
@@ -9639,6 +9644,7 @@ mod tests {
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
+            rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,

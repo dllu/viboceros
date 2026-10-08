@@ -1098,6 +1098,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn cancel_object_prompt(&mut self, announce: bool) {
+        self.rebuild_preview = None;
         if let Some(pending) = self.object_prompt.take() {
             if matches!(
                 pending.description.command,

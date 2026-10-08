@@ -152,8 +152,13 @@ coupling. Physical retrimming projects original edges onto the changed surface,
 preserves source domains and certifies newly constructed trim/edge correspondence.
 Fourteen native commands distinguish projection from UV copying, including
 nonuniform, curved/rational and holed sources. Projection fitting has sampled
-accuracy checks; seam/singular trims, native previews, restart persistence and
-performance parity remain unfinished or unverified.
+accuracy checks; seam/singular trims, native preview appearance, restart persistence
+and performance parity remain unfinished or unverified. Rebuild options use a
+readonly scene and a shared prepared command result. Source snapshots and metadata
+guard acceptance; unchanged edits retain the cache, output policies reuse geometry,
+and background edits refresh the scene. Natural four-side faces construct exact
+target isocurves directly, avoiding inverse-fit work. A failed later preparation
+clears the preview as one unit and blocks acceptance until recovery.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

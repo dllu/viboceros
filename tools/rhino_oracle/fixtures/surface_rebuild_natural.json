@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_natural",
+      "id": "tween_srf_natural_warped_untrim",
+      "case": "natural_warped_untrim"
+    },
+    {
+      "op": "surface_rebuild_natural",
+      "id": "tween_srf_natural_warped_retrim",
+      "case": "natural_warped_retrim"
+    },
+    {
+      "op": "surface_rebuild_natural",
+      "id": "tween_srf_natural_curved_untrim",
+      "case": "natural_curved_untrim"
+    },
+    {
+      "op": "surface_rebuild_natural",
+      "id": "tween_srf_natural_curved_retrim",
+      "case": "natural_curved_retrim"
+    }
+  ]
+}

@@ -15,6 +15,62 @@ impl PointMorph for Projection<'_> {
     }
 }
 
+fn canonical_projection(
+    mut uv: NurbsCurve2,
+    parameter_limit: Real,
+) -> Result<NurbsCurve2, GeometryError> {
+    // Closest-point and interpolation roundoff can perturb a constant
+    // coordinate. Same-sign weights bound the complete coordinate change by
+    // the maximum control displacement; keep it inside the UV fitting budget.
+    let a = uv.start_point()?.to_array();
+    let b = uv.end_point()?.to_array();
+    let sign = uv.control_points()[0].weight().is_sign_positive();
+    if uv
+        .control_points()
+        .iter()
+        .all(|p| p.weight().is_sign_positive() == sign)
+    {
+        for axis in 0..2 {
+            if a[axis] != b[axis]
+                || uv
+                    .control_points()
+                    .iter()
+                    .any(|p| (p.point().to_array()[axis] - a[axis]).abs() > parameter_limit)
+            {
+                continue;
+            }
+            let controls = uv
+                .control_points()
+                .iter()
+                .map(|p| {
+                    let mut point = p.point().to_array();
+                    point[axis] = a[axis];
+                    WeightedPoint2::try_new(Point2::try_new(point[0], point[1])?, p.weight())
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            uv = NurbsCurve2::try_new_rational(uv.degree(), controls, uv.knots().to_vec())?;
+        }
+    }
+    // This predicate proves the complete curve image is its ordered segment.
+    // Retain that exact locus and orientation with linear parameter speed so
+    // tensor-knot crossings can be composed directly instead of subdivided.
+    if uv.is_straight_segment() {
+        let domain = uv.domain();
+        NurbsCurve2::try_new(
+            1,
+            vec![uv.start_point()?, uv.end_point()?],
+            vec![
+                *domain.start(),
+                *domain.start(),
+                *domain.end(),
+                *domain.end(),
+            ],
+        )
+    } else {
+        Ok(uv)
+    }
+}
+
 fn projection_curve(
     surface: &NurbsSurface,
     spatial: &NurbsCurve,
@@ -27,7 +83,7 @@ fn projection_curve(
             .parameter_curve_deviation_bound(&uv, spatial, tolerance.absolute())?
             .is_some()
     {
-        return Ok(uv);
+        return canonical_projection(uv, 0.);
     }
     // In normalized UV, polynomial derivative control nets bound the amount
     // of model-space motion caused by an interpolation error in each axis.
@@ -90,11 +146,12 @@ fn projection_curve(
             .collect::<Result<Vec<_>, GeometryError>>()?,
         fitted.knots().to_vec(),
     )?;
-    crate::surface_pullback::constrain_curve_endpoints(uv, ends)?.ok_or(
+    let uv = crate::surface_pullback::constrain_curve_endpoints(uv, ends)?.ok_or(
         GeometryError::InvalidBrepTopology {
             context: "projected trim endpoints cannot be constrained",
         },
-    )
+    )?;
+    canonical_projection(uv, limit)
 }
 
 impl Brep {
@@ -122,6 +179,75 @@ impl Brep {
             .any(|t| t.trim_type != BrepTrimType::Boundary)
         {
             return invalid("retrimming seam and singular boundaries is not yet supported");
+        }
+        // Native natural faces retain their complete target boundary. Construct
+        // exact isocurves directly, preserving the source's numeric topology,
+        // instead of fitting an inverse parameter map along the same boundary.
+        if self.vertices.len() == 4
+            && self.edges.len() == 4
+            && face.loops.len() == 1
+            && face.loops[0].trims.len() == 4
+            && face.is_untrimmed(tolerance)?
+        {
+            let surface =
+                surface.try_reparameterized(face.surface.domain_u(), face.surface.domain_v())?;
+            let natural = Self::try_surface_face(surface.clone(), tolerance)?;
+            let exact_sides = face.loops[0].trims.iter().all(|old| {
+                old.curve.is_straight_segment()
+                    && natural.faces[0].loops[0]
+                        .trims
+                        .iter()
+                        .find(|t| t.iso == old.iso)
+                        .is_some_and(|new| {
+                            old.curve
+                                .start_point()
+                                .is_ok_and(|p| new.curve.start_point().is_ok_and(|q| p == q))
+                                && old
+                                    .curve
+                                    .end_point()
+                                    .is_ok_and(|p| new.curve.end_point().is_ok_and(|q| p == q))
+                        })
+            });
+            if natural.vertices.len() == 4 && natural.edges.len() == 4 && exact_sides {
+                let mut vertices = self.vertices.clone();
+                let mut edges = self.edges.clone();
+                let mut loops = face.loops.clone();
+                let mut used = std::collections::BTreeSet::new();
+                for old in &mut loops[0].trims {
+                    let Some(new) = natural.faces[0].loops[0]
+                        .trims
+                        .iter()
+                        .find(|t| t.iso == old.iso)
+                    else {
+                        return invalid("natural retrim boundary class is not recognized");
+                    };
+                    if !used.insert(new.iso as usize) {
+                        return invalid("natural retrim repeats a boundary side");
+                    }
+                    let mut edge = natural.edges[new.edge.unwrap()].clone();
+                    if new.reversed_3d != old.reversed_3d {
+                        edge.curve = edge.curve.reversed()?;
+                    }
+                    edge.vertices = self.edges[old.edge.unwrap()].vertices;
+                    edges[old.edge.unwrap()] = edge;
+                    for (a, b) in old.vertices.into_iter().zip(new.vertices) {
+                        vertices[a] = natural.vertices[b];
+                    }
+                    let vertices = old.vertices;
+                    let edge = old.edge;
+                    let reversed = old.reversed_3d;
+                    *old = new.clone();
+                    old.vertices = vertices;
+                    old.edge = edge;
+                    old.reversed_3d = reversed;
+                }
+                return Self::try_new(
+                    vertices,
+                    edges,
+                    vec![BrepFace::try_new(surface, face.reversed, loops)?],
+                    tolerance,
+                );
+            }
         }
         let normalized = surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
         let numerical = Tolerance::try_new(
@@ -257,6 +383,60 @@ mod tests {
                 result.faces[0]
                     .surface
                     .parameter_curve_deviation_bound(&trim.curve, &edge, tolerance.absolute())
+                    .unwrap()
+                    .is_some()
+            );
+        }
+    }
+    #[test]
+    fn natural_retrim_preserves_reordered_edges_reversed_uses_and_exact_isocurves() {
+        let tolerance = Tolerance::DEFAULT;
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 6., 2.).unwrap(),
+            Point3::try_new(0., 6., 0.).unwrap(),
+        ])
+        .unwrap();
+        let mut original = Brep::try_surface_face(surface, tolerance)
+            .unwrap()
+            .reordered_edges(&[2, 0, 3, 1], tolerance)
+            .unwrap()
+            .reversed();
+        let edge = original.faces[0].loops[0].trims[1].edge.unwrap();
+        original.edges[edge].curve = original.edges[edge].curve.reversed().unwrap();
+        original.edges[edge].vertices.swap(0, 1);
+        original.faces[0].loops[0].trims[1].reversed_3d = true;
+        original =
+            Brep::try_new(original.vertices, original.edges, original.faces, tolerance).unwrap();
+        let before = original.clone();
+        let target =
+            crate::try_rebuild_nurbs_surface(&original.faces[0].surface, [10, 10], [3, 3]).unwrap();
+        let result = original
+            .try_retrimmed_single_surface(target, tolerance)
+            .unwrap();
+        assert_eq!(original, before);
+        assert!(result.faces[0].reversed);
+        for (a, b) in original.faces[0].loops[0]
+            .trims
+            .iter()
+            .zip(&result.faces[0].loops[0].trims)
+        {
+            assert_eq!(a.vertices, b.vertices);
+            assert_eq!(a.edge, b.edge);
+            assert_eq!(a.reversed_3d, b.reversed_3d);
+            assert_eq!(a.iso, b.iso);
+            let edge = &result.edges[b.edge.unwrap()];
+            assert_eq!(edge.vertices, original.edges[a.edge.unwrap()].vertices);
+            let spatial = if b.reversed_3d {
+                edge.curve.reversed().unwrap()
+            } else {
+                edge.curve.clone()
+            };
+            assert!(
+                result.faces[0]
+                    .surface
+                    .parameter_curve_deviation_bound(&b.curve, &spatial, 1e-9)
                     .unwrap()
                     .is_some()
             );

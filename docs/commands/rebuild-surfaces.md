@@ -31,6 +31,20 @@ neither preferences nor geometry. Preferences belong to the command registry,
 are shared by its documents and reset in a new registry. Application restart
 persistence and interaction with curve Rebuild preferences remain unverified.
 
+The options phase shows a readonly viewport preview in Wireframe, Shaded and
+Ghosted modes. Counts, degrees and ReTrim changes prepare new geometry; deletion
+and output-layer changes reuse it. Unchanged edits and `Preview` retain the same
+cached scene. Enter accepts those prepared surfaces in one transaction.
+Invalid values keep the previous preview. A valid edit that fails preparation
+clears the scene and blocks acceptance until a supported edit recovers.
+Cancellation drops staged geometry while retaining the measured option memory.
+
+Before edits or acceptance, source geometry, attributes, geometry-root text,
+groups, selection, tolerance and current layer are revalidated. Stale sources
+cancel the prompt before updating preferences or geometry. Unrelated object,
+layer, group or grip-display changes refresh the background using prepared
+geometry. Preview preparation preserves document history, including redo.
+
 The shared kernel samples two midpoint isocurves by arc length, maps uniform
 Greville fractions to their source parameters, evaluates a tensor grid and solves
 two collocation systems. The result is non-rational with uniform unit-span knots.
@@ -47,8 +61,10 @@ document edits.
 
 `ReTrim=No` rebuilds a single face's full underlying surface with natural boundaries
 and uniform output domains. `ReTrim=Yes` transfers the original physical edges
-onto the rebuilt surface and retains the source UV domains, including natural
-boundaries. Holes, face orientation and shared endpoint parameters are retained.
+onto the rebuilt surface and retains the source UV domains. Natural four-side
+faces use exact target isocurves directly, following measured native behavior.
+Their edge indices, vertex connectivity, reversed uses and face orientation are
+retained. Holes and shared endpoint parameters are retained by physical projection.
 This uses physical projection: copying normalized UV coordinates gives incorrect
 boundaries when the source parameter speed changes.
 
@@ -61,11 +77,15 @@ against the new UV trims, and the assembled B-rep must pass ordinary validation.
 Neither original spatial edges nor component tolerances are silently retained
 when inconsistent with the rebuilt surface. Different native and local fitting
 representations remain visible in the records.
+Proven straight UV contour images use linear parameter speed to admit direct
+tensor-knot composition. Constant-coordinate interpolation noise can be aligned
+within the UV fit budget before exact-locus simplification; trim parameter speed
+need not match the input edge's speed.
 
 Polysurfaces, seam/singular trims, rational target surfaces, mixed curve/surface batches,
-native preview, restart persistence and performance parity remain unresolved.
-Geometry-root user text is absent from the captured native inputs, so its
-replacement lifetime is not established by this evidence.
+native preview appearance, restart persistence and performance parity remain unresolved.
+The earlier replacement capture contains no geometry-root user text, so its
+replacement lifetime is not established by that evidence.
 
 The [12-command capture](../../tools/rhino_oracle/observations/surface_rebuild.json)
 ran on private Xvfb with polynomial/rational inputs and all copy/replacement and
@@ -109,6 +129,25 @@ knot-crossing certificate. A global affine control-net certificate now proves
 that case continuously while retaining rational circle controls; it also rejects
 incorrect translated images and mixed-sign UV proposals.
 
+Four [default natural-face commands](../../tools/rhino_oracle/observations/surface_rebuild_natural.json)
+extend the evidence to warped bilinear and curved quadratic inputs rebuilt to
+10×10 degree-3 nets, with and without ReTrim. Their native outputs have four
+linear UV contours and exact target isocurves. Command replay checks controls,
+edge witnesses and independent history. Regressions cover source purity, cache
+identity, output-policy reuse, stale events, failed-work recovery, registry
+isolation and all twelve earlier native output variants.
+
+A private-Xvfb inspection of the production egui/wgpu app completes eight stages:
+source, shaded replacement preview, ghosted copy preview, invalid edit, acceptance,
+Undo, Redo and cancellation. The copy preview draws two surfaces while the layer
+pane still reports one document object. Raw screenshots/OCR and hashes are linked
+in [preview provenance](../rebuild-preview-provenance.json). Early observers
+misread active/invalid command text; the final observer waits on the command field
+and completed successfully. This verifies the local workflow; native pixel
+appearance and Rhino's manual Preview-button update cadence are not compared.
+
+![Readonly Rebuild copy preview in Ghosted mode](../images/rebuild-copy-ghosted-preview.png)
+
 The oracle operation `surface_rebuild_geometry` accepts `surface`, `point_count`
 and `degree`, returning the complete `surface` definition in either engine.
 `brep_retrim_geometry` accepts a closed-loop `fixture` and target `surface`,
@@ -121,6 +160,13 @@ the two loops, projected vertices and native edge distance witnesses at `2e-6`.
 ```sh
 cargo test --release -p viboceros-geometry surface_rebuild
 cargo test --release -p viboceros-command surface_rebuild
-python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim
+python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface_rebuild_geometry.json --scheme VibocerosOracleSurfaceRebuildSDK --absolute-epsilon 1e-6 --relative-epsilon 1e-10
+```
+
+For the local window inspection, install `xdotool`, ImageMagick and Tesseract:
+
+```sh
+cargo build --bin viboceros
+tools/rhino_oracle/run_headless.sh exec python3 tools/inspect_rebuild_preview.py
 ```
