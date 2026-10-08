@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `76099fda` with Rust 1.95.0 after
-[Circular planar regions and native diagnostics](commands/planar-booleans.md).
+The October 8, 2026 audit tested code at `864e6671` with Rust 1.95.0 after
+[Mixed straight/circular planar regions](commands/planar-booleans.md).
 
 ## Commands and results
 
@@ -17,25 +17,51 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,244 tests:
+5,248 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 997 | 17 |
-| Command | 1,179 | 2 |
+| App | 998 | 17 |
+| Command | 1,180 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,042 | 8 |
+| Geometry | 2,044 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 951 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 953 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new circular planar capture ran 28 owned public recipes on private Xvfb
+The new mixed planar capture ran 34 owned public recipes on private Xvfb under
+`VibocerosOraclePlanarMixedVerified20261008`. All succeed. [Complete records](../tools/rhino_oracle/observations/planar_boolean_mixed.json)
+retain full NURBS edge definitions, 33 witnesses per edge, areas, counts, identity,
+metadata and independent Undo/Redo. [Provenance](planar-boolean-mixed-provenance.json)
+binds the capture and the measured partial-arc endpoint shift. Command replay
+checks every outcome with curve witnesses at `5e-6` (partial-arc reverse witnesses
+at `1e-5` after measuring a `6.7e-6` native endpoint shift), area at `2e-5`, topology,
+identity, metadata and history. Earlier capture tolerances are unchanged. Newly
+created components are paired by curve geometry and original identity; insertion
+order can differ. Replays cover disk/rectangle cuts in both orders, narrow strips,
+containment, disjoint/tangent regions, offset planes, polygonal/circular holes,
+partial input arcs and three-input Union. App replay checks all 34 getter/history
+workflows. The kernel splits recognized straight/circular boundaries and shares
+oriented contour assembly, preserving arcs, corners and seams. Input loop audits
+reject crossings/overlap; monotone same-sign straight controls, finite derived
+arithmetic and bounded work protect preparation. Membership also checks spatial
+distance so clamped surface parameters cannot admit outside points. Independent
+tests compare analytic half-disk area at `1e-9`, split strips, chain a mixed result
+as a later operand and verify self-intersection/work rejection. A production
+wgpu/egui inspection on private Xvfb checks Circle/PlanarSrf and SrfPt sources,
+ordered disk/rectangle Difference, preselected mixed Union, Ghosted mode and
+Undo/Redo. See [usage and saved image](commands/planar-booleans.md). General
+splines, nonparallel circular projection, compound surfaces, broader coincident
+junctions, near contacts, arbitrary insertion order, native pixels, restart
+behavior and relative performance remain unsupported or unverified.
+
+The preceding circular planar capture ran 28 owned public recipes on private Xvfb
 under `VibocerosOraclePlanarCircularVerified20261007`. All succeed natively.
 [Complete records](../tools/rhino_oracle/observations/planar_boolean_circular.json)
 retain full NURBS edge definitions and 33 samples per edge, alongside areas,
@@ -57,9 +83,9 @@ three perturbed edges where local output has one circle; its boundary witnesses
 stay within `5e-6`. Both discrepancies remain explicit and do not establish
 native parity. Production wgpu/egui inspection on private Xvfb checks Circle/
 PlanarSrf inputs, circular Difference/Union, ordered picks, Ghosted mode and
-Undo/Redo. See [usage and saved image](commands/planar-booleans.md). Mixed polygon/
-circular inputs, general curved loops, circular input holes, nonparallel circular
-projection, arbitrary coincident junctions, near contacts, native pixels,
+Undo/Redo. See [usage and saved image](commands/planar-booleans.md). The mixed extension above
+adds the captured line/arc and hole combinations. General curved loops,
+nonparallel circular projection, arbitrary coincident junctions, near contacts, native pixels,
 restart behavior and relative performance remain unsupported or unverified.
 
 The preceding trim-hole/projection capture ran 31 owned public recipes on private Xvfb
