@@ -19,12 +19,14 @@ pub(super) struct TwoSetsPrompt {
 pub(super) enum BooleanPromptKind {
     Intersection,
     Difference,
+    Split,
 }
 impl BooleanPromptKind {
     pub(super) fn name(self) -> &'static str {
         match self {
             Self::Intersection => "BooleanIntersection",
             Self::Difference => "BooleanDifference",
+            Self::Split => "BooleanSplit",
         }
     }
 }
@@ -80,6 +82,16 @@ impl TwoSetsPrompt {
         }
         if let Some(kind) = self.uv_mapping {
             kind.hint(self.first.is_some())
+        } else if self
+            .boolean
+            .as_ref()
+            .is_some_and(|o| o.kind == BooleanPromptKind::Split)
+        {
+            if self.first.is_some() {
+                "Select cutters; Enter splits, Esc cancels"
+            } else {
+                "Select targets; Enter continues, Esc cancels"
+            }
         } else if self
             .boolean
             .as_ref()
@@ -333,9 +345,13 @@ impl VibocerosApp {
             self.command_input.clear();
             let name = prompt.name();
             if let Some(options) = prompt.boolean {
-                let _ = self
-                    .document
-                    .select_command_results(prompt.first.unwrap_or_default());
+                let _ = self.document.select_command_results(
+                    if options.kind == BooleanPromptKind::Split {
+                        vec![]
+                    } else {
+                        prompt.first.unwrap_or_default()
+                    },
+                );
                 if announce {
                     self.push_log(format!("Cancelled {}", options.kind.name()));
                 }

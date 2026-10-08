@@ -14,8 +14,8 @@ pub use plan::{
     BrepPolyhedralShell,
 };
 pub use reports::{
-    intersect_polyhedral_brep_sets, intersect_polyhedral_breps, subtract_polyhedral_breps,
-    union_polyhedral_breps,
+    BrepSplitComponent, intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
+    split_polyhedral_brep, subtract_polyhedral_breps, union_polyhedral_breps,
 };
 mod input;
 #[cfg(test)]

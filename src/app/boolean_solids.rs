@@ -1,4 +1,4 @@
-//! Two-phase BooleanIntersection and BooleanDifference picking.
+//! Two-phase BooleanIntersection, BooleanDifference and BooleanSplit picking.
 use super::intersect_two_sets::{BooleanOptions, BooleanPromptKind, TwoSetsPrompt};
 use super::*;
 use viboceros_command::ObjectSelectionFilter;
@@ -15,6 +15,8 @@ impl VibocerosApp {
             BooleanPromptKind::Intersection
         } else if name.eq_ignore_ascii_case("BooleanDifference") {
             BooleanPromptKind::Difference
+        } else if name.eq_ignore_ascii_case("BooleanSplit") {
+            BooleanPromptKind::Split
         } else {
             return false;
         };
@@ -33,7 +35,7 @@ impl VibocerosApp {
             Ok(Some(p)) => p,
             _ => return false,
         };
-        if kind == BooleanPromptKind::Difference
+        if kind != BooleanPromptKind::Intersection
             && let Err(error) = self.commands.accept_object_selection_input(input)
         {
             self.push_log(format!("Error: {error}"));
@@ -69,6 +71,9 @@ impl VibocerosApp {
                 preselected_first,
             }),
         });
+        if kind == BooleanPromptKind::Split && preselected_first {
+            self.document.clear_selection();
+        }
         self.command_input.clear();
         self.push_log(format!("> {input}"));
         self.log_intersection_prompt();
@@ -92,16 +97,17 @@ impl VibocerosApp {
                 .filter(|o| ObjectSelectionFilter::SurfaceComponents.accepts_object(o))
                 .map(|o| o.id())
                 .filter(|id| {
-                    !prompt
-                        .first
-                        .as_ref()
-                        .is_some_and(|first| first.contains(id))
+                    prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split
+                        || !prompt
+                            .first
+                            .as_ref()
+                            .is_some_and(|first| first.contains(id))
                 })
                 .collect::<Vec<_>>();
             if let Some(first) = &prompt.first {
                 if picked.is_empty()
                     && (first.len() < 2
-                        || prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Difference)
+                        || prompt.boolean.as_ref().unwrap().kind != BooleanPromptKind::Intersection)
                 {
                     self.push_log(
                         "Select at least one object in the second set; Esc cancels".into(),
@@ -141,6 +147,9 @@ impl VibocerosApp {
                 self.push_log("Select at least one surface or polysurface; Esc cancels".into());
             } else {
                 prompt.first = Some(picked);
+                if prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split {
+                    self.document.clear_selection();
+                }
                 self.intersection_prompt = Some(prompt);
                 self.log_intersection_prompt();
             }
@@ -179,7 +188,7 @@ impl VibocerosApp {
             } else {
                 options.delete_input = value;
             }
-            if options.kind == BooleanPromptKind::Difference
+            if options.kind != BooleanPromptKind::Intersection
                 && let Err(error) = self
                     .commands
                     .accept_object_selection_input(&options.command_line(true))
@@ -194,9 +203,13 @@ impl VibocerosApp {
             return true;
         }
         if normalized.eq_ignore_ascii_case("SelNone") {
-            let _ = self
-                .document
-                .select_command_results(prompt.first.clone().unwrap_or_default());
+            let _ = self.document.select_command_results(
+                if prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split {
+                    vec![]
+                } else {
+                    prompt.first.clone().unwrap_or_default()
+                },
+            );
             self.command_input.clear();
             return true;
         }
@@ -240,6 +253,7 @@ impl VibocerosApp {
             return;
         };
         let first = prompt.first.clone().unwrap_or_default();
+        let shared_sets = prompt.boolean.as_ref().unwrap().kind == BooleanPromptKind::Split;
         let eligible = self
             .document
             .selectable_objects()
@@ -254,7 +268,7 @@ impl VibocerosApp {
         // Add separately: bulk document selection sorts IDs, but metadata follows pick order.
         for id in ids {
             if eligible.contains(&id)
-                && !first.contains(&id)
+                && (shared_sets || !first.contains(&id))
                 && let Err(error) = self.document.select_objects_direct([id], mode)
             {
                 self.push_log(format!("Error: {error}"));

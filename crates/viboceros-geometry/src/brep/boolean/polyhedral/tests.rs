@@ -308,3 +308,99 @@ fn exact_loop_certificate_rejects_crossings_touching_and_nested_holes() {
 mod native;
 
 mod multiple;
+
+#[test]
+fn split_polyhedral_preserves_all_cutter_interfaces_and_original_faces() {
+    let target = cube([[0., 4.]; 3]);
+    let x = cube([[1., 3.], [-1., 5.], [-1., 5.]]);
+    let y = cube([[-1., 5.], [1., 3.], [-1., 5.]]);
+    let original = (target.clone(), x.clone(), y.clone());
+    let outputs = split_polyhedral_brep(&target, &[&x, &y], Tolerance::DEFAULT).unwrap();
+    assert_eq!(outputs.len(), 9);
+    let mut counts = BTreeMap::new();
+    for piece in outputs {
+        *counts.entry(piece.cutter_membership.clone()).or_insert(0) += 1;
+        let expected = if piece.cutter_membership.iter().all(|v| *v) {
+            16.
+        } else if piece.cutter_membership.iter().any(|v| *v) {
+            8.
+        } else {
+            4.
+        };
+        measure(Some(piece.brep.clone()), expected, None);
+        assert_eq!(piece.face_sources.len(), piece.brep.faces.len());
+        for (face, [owner, index]) in piece.brep.faces.iter().zip(piece.face_sources) {
+            assert_eq!(face.surface, [&target, &x, &y][owner].faces[index].surface);
+        }
+    }
+    assert_eq!(
+        counts,
+        BTreeMap::from([
+            (vec![false, false], 4),
+            (vec![false, true], 2),
+            (vec![true, false], 2),
+            (vec![true, true], 1)
+        ])
+    );
+    assert_eq!((target, x, y), original);
+}
+
+#[test]
+fn split_polyhedral_preserves_nested_material_and_handles_duplicate_or_absent_cutters() {
+    let target = cube([[0., 4.]; 3]);
+    let cutter = cube([[1., 3.]; 3]);
+    let outputs = split_polyhedral_brep(&target, &[&cutter], Tolerance::DEFAULT).unwrap();
+    assert_eq!(outputs.len(), 2);
+    for piece in outputs {
+        let expected = if piece.cutter_membership[0] { 8. } else { 56. };
+        measure(Some(piece.brep), expected, None);
+    }
+    let outputs = split_polyhedral_brep(&target, &[&cutter, &cutter], Tolerance::DEFAULT).unwrap();
+    assert_eq!(outputs.len(), 2);
+    assert!(
+        outputs
+            .iter()
+            .all(|p| p.cutter_membership[0] == p.cutter_membership[1])
+    );
+    let outputs = split_polyhedral_brep(&target, &[], Tolerance::DEFAULT).unwrap();
+    assert_eq!(outputs.len(), 1);
+    assert!(outputs[0].cutter_membership.is_empty());
+    measure(Some(outputs.into_iter().next().unwrap().brep), 64., None);
+    assert!(matches!(
+        split_polyhedral_brep(&target, &vec![&cutter; 128], Tolerance::DEFAULT),
+        Err(GeometryError::BrepBooleanWorkLimit)
+    ));
+}
+
+#[test]
+fn split_polyhedral_handles_concave_faces_holes_cavities_and_disjoint_shells() {
+    for case in ["concave", "hole", "cavity", "disjoint_shells"] {
+        let (target, cutter) = source(case);
+        let before = (target.clone(), cutter.clone());
+        let expected = target.signed_volume(Tolerance::DEFAULT).unwrap().abs();
+        let pieces = split_polyhedral_brep(&target, &[&cutter], Tolerance::DEFAULT).unwrap();
+        assert!(pieces.len() >= 2, "{case}");
+        let volume = pieces
+            .iter()
+            .map(|p| {
+                assert_eq!(p.branch_component_counts.len(), 1);
+                assert_eq!(p.cutter_membership.len(), 1);
+                assert!(p.brep.is_solid());
+                p.brep.signed_volume(Tolerance::DEFAULT).unwrap()
+            })
+            .sum::<f64>();
+        assert!((volume - expected).abs() < 1e-9, "{case}");
+        let inside = pieces
+            .iter()
+            .filter(|p| p.cutter_membership[0])
+            .map(|p| p.brep.signed_volume(Tolerance::DEFAULT).unwrap())
+            .sum::<f64>();
+        let intersection = intersect_polyhedral_breps(&[&target, &cutter], Tolerance::DEFAULT)
+            .unwrap()
+            .into_iter()
+            .map(|p| p.brep.signed_volume(Tolerance::DEFAULT).unwrap())
+            .sum::<f64>();
+        assert!((inside - intersection).abs() < 1e-9, "{case}");
+        assert_eq!((target, cutter), before);
+    }
+}

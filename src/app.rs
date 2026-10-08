@@ -9413,6 +9413,7 @@ mod tests {
     mod bezier_selection;
     mod boolean_difference;
     mod boolean_intersection;
+    mod boolean_split;
     mod boolean_union;
     mod circle_fit_grips;
     mod circle_fit_points;

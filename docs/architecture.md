@@ -21,8 +21,13 @@ retains exact intermediate regions and follows metadata and success decisions
 from 80 additional native recipes. [BooleanDifference](commands/boolean-difference.md)
 subtracts multiple original cutters and applies target, metadata, deletion, and
 selection policies from 40 native witnesses. The commands share a two-phase
-selection controller with separate option-memory policies. General curved Boolean commands remain
-unimplemented. The [continuous surface/trim certificate](surface-curve-certificates.md)
+selection controller with separate option-memory policies.
+[BooleanSplit](commands/boolean-split.md) partitions each target with one exact
+original-face arrangement, preserving overlapping cutter interfaces and connected
+branch counts for geometry metadata. Unchanged targets keep their identity;
+cutters remain in the document. Its two-set getter accepts shared target/cutter
+sets. General curved Boolean commands remain unimplemented.
+The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational
 tensor composition and conservative bounds at knot crossings. Surface cutting
 requires these proofs for retained, fitted, and endpoint-adjusted cutting trims;

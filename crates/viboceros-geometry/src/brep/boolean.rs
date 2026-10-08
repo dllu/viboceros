@@ -19,10 +19,10 @@ pub use difference::{BrepDifferenceComponent, subtract_convex_breps};
 mod polyhedral;
 pub use polyhedral::{
     BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent,
-    BrepPolyhedralRegion, BrepPolyhedralShell, boolean_polyhedral_breps,
+    BrepPolyhedralRegion, BrepPolyhedralShell, BrepSplitComponent, boolean_polyhedral_breps,
     intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
-    subtract_polyhedral_breps, union_polyhedral_breps,
+    split_polyhedral_brep, subtract_polyhedral_breps, union_polyhedral_breps,
 };
 mod intersection;
 mod merge;

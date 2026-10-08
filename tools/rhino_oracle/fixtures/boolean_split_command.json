@@ -1,0 +1,146 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab",
+      "case": "slab"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_corner",
+      "case": "corner"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_contained",
+      "case": "contained"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_contains",
+      "case": "contains"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_equal",
+      "case": "equal"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_touch",
+      "case": "touch"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_edge_touch",
+      "case": "edge_touch"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_point_touch",
+      "case": "point_touch"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_two_slabs",
+      "case": "two_slabs"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_cross_xy",
+      "case": "cross_xy"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_overlap_cutters",
+      "case": "overlap_cutters"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_disjoint_target",
+      "case": "disjoint_target"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_overlap_targets",
+      "case": "overlap_targets"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_shared_sets",
+      "case": "shared_sets"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_keep",
+      "case": "slab_keep"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_pre",
+      "case": "slab_pre"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_pre_keep",
+      "case": "slab_pre_keep"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_cancel",
+      "case": "slab_cancel"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_cancel_options",
+      "case": "slab_cancel_options"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_cross_xy_reverse",
+      "case": "cross_xy_reverse"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_two_slabs_reverse",
+      "case": "two_slabs_reverse"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_corner_reverse",
+      "case": "corner_reverse"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_boundary_contained",
+      "case": "boundary_contained"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_duplicate_cutters",
+      "case": "duplicate_cutters"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_pre_disjoint",
+      "case": "slab_pre_disjoint"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_internal_and_cutting",
+      "case": "internal_and_cutting"
+    },
+    {
+      "op": "boolean_split_command",
+      "id": "boolean_split_slab_cancel_cutters_options",
+      "case": "slab_cancel_cutters_options"
+    }
+  ]
+}

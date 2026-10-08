@@ -19,14 +19,15 @@ pub(super) struct Arrangement<'a> {
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum Expression {
+pub(super) enum Expression<'a> {
     Union,
     Common,
     Sets(usize),
     Difference,
+    Region(&'a [bool]),
 }
 
-impl Expression {
+impl Expression<'_> {
     pub(super) fn includes(self, inside: &[bool]) -> bool {
         match self {
             Self::Union => inside.iter().any(|v| *v),
@@ -35,6 +36,7 @@ impl Expression {
                 inside[..first].iter().any(|v| *v) && inside[first..].iter().any(|v| *v)
             }
             Self::Difference => inside[0] && !inside[1..].iter().any(|v| *v),
+            Self::Region(membership) => inside[0] && inside[1..].starts_with(membership),
         }
     }
 }
@@ -132,7 +134,7 @@ pub(super) struct Assembled {
 
 pub(super) fn assemble(
     arrangement: &Arrangement<'_>,
-    expression: Expression,
+    expression: Expression<'_>,
     tolerance: Tolerance,
     budget: &mut Budget,
 ) -> Result<Assembled, GeometryError> {

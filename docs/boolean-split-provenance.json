@@ -1,0 +1,26 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleBooleanSplitVerified20261007",
+  "private_xvfb": true,
+  "recipes": 28,
+  "successful_commands": 17,
+  "retained_no_split_failures": 8,
+  "retained_cancellations": 3,
+  "followups": 2,
+  "main_outputs": 64,
+  "full_native_parity": false,
+  "geometry_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public BooleanSplit commands with source/output face boundaries, command events, metadata, group membership, selected state and independent Undo/Redo snapshots.",
+  "limits": [
+    "Insertion order differs from native; replay aligns by source owner and centroid.",
+    "Open surface cutters, curved faces and reactive History remain unsupported.",
+    "Compound command policy, tolerance contacts and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_split_probe.py": "b68e33693c6c441cd1c227a4b7b2abb250b6cd2c082b493b98d280344c2d7ecf",
+    "tools/rhino_oracle/fixtures/boolean_split_command.json": "b43016932b16771730a6c298768c55f9f4b3bbd8fa305c72d70e5b90a6ed73ac",
+    "tools/rhino_oracle/observations/boolean_split_command.json": "694c084bdd41fc2964ce45314d27f7f4619d0f3b0d45b57b65f4898324368908"
+  }
+}
