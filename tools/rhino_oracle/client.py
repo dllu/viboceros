@@ -363,6 +363,16 @@ class OracleClient:
                 if op.get('op') == 'bend_options_command':
                     validate(op)
         interaction = None
+        if any(op.get('op') == 'surface_rebuild_closed_degrees' for op in request.get('operations', [])):
+            from .surface_rebuild_closed_degrees_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Surface Rebuild requires a private settings scheme')
+            validate_request(request)
+        if any(op.get('op') == 'surface_rebuild_closed' for op in request.get('operations', [])):
+            from .surface_rebuild_closed_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Surface Rebuild requires a private settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'surface_rebuild_natural' for op in request.get('operations', [])):
             from .surface_rebuild_natural_probe import validate_request
             if self.settings_scheme is None:
@@ -989,6 +999,12 @@ class OracleClient:
                 for name in ('point_input_precision_probe.py','number_token.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request = dict(request)
+            if any(op.get('op') == 'surface_rebuild_closed_degrees' for op in request.get('operations', [])):
+                for name in ('surface_rebuild_closed_degrees_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'surface_rebuild_closed' for op in request.get('operations', [])):
+                for name in ('surface_rebuild_closed_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'surface_rebuild_natural' for op in request.get('operations', [])):
                 for name in ('surface_rebuild_natural_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)

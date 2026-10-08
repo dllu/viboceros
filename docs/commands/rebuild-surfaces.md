@@ -52,6 +52,14 @@ Solves normalize coordinates and check pivots, finite controls and backward
 residuals. This approximates the original surface; it does not certify continuous
 locus preservation. Positive source weights are required.
 
+Closed directions use uniform cyclic collocation: integer stations for odd
+degrees and half-integer stations for even degrees, mapped by midpoint-isocurve
+arc length. A requested count of `n` stores `n + degree` controls, with the final
+degree controls repeating the first ones exactly. Degree-one output closes
+geometrically without periodic classification. Open directions retain clamped
+Greville interpolation. Periodic repetitions count toward the aggregate control
+budget. Exact constant boundary isocurves remain exact poles after both solves.
+
 Replacement retains source identity and copies its attributes, including name,
 color and attribute user text. Output groups are cleared. `OutputLayer=Current`
 moves a replacement or copy onto the current layer. Copying preserves the
@@ -82,7 +90,14 @@ tensor-knot composition. Constant-coordinate interpolation noise can be aligned
 within the UV fit budget before exact-locus simplification; trim parameter speed
 need not match the input edge's speed.
 
-Polysurfaces, seam/singular trims, rational target surfaces, mixed curve/surface batches,
+Natural closed faces now support seam and singular trims when the target has
+the same side incidence. Repeated seam edges, singular trims without edges,
+vertex connectivity and face orientation are retained. The complete source UV
+domains are restored with ReTrim; without it, domains follow the uniform rebuilt
+span counts. This covers full natural boundaries. Generic projection of trimmed
+seam/singular faces remains unsupported.
+
+Polysurfaces, generic trimmed seam/singular faces, rational target surfaces, mixed curve/surface batches,
 native preview appearance, restart persistence and performance parity remain unresolved.
 The earlier replacement capture contains no geometry-root user text, so its
 replacement lifetime is not established by that evidence.
@@ -148,6 +163,20 @@ appearance and Rhino's manual Preview-button update cadence are not compared.
 
 ![Readonly Rebuild copy preview in Ghosted mode](../images/rebuild-copy-ghosted-preview.png)
 
+The [16-case closed capture](../../tools/rhino_oracle/observations/surface_rebuild_closed.json)
+and [12-case degree/count follow-up](../../tools/rhino_oracle/observations/surface_rebuild_closed_degrees.json)
+ran on fresh private Xvfb schemes. They retain spheres, cylinders, cones and
+tori, transposed charts, a reversed sphere, closure/periodicity/singularity flags,
+complete B-reps and independent history. Kernel replay checks public SDK control
+nets at `1e-6`; command replay checks seam/pole topology and edge witnesses at
+`2e-6`. Analytic tests check closed solids, exact repeated controls and source
+purity in both charts; app tests check readonly preview, acceptance and history.
+Initial discarded-return-value chart diagnostics are retained separately. See
+[closed rebuild provenance](../closed-surface-rebuild-provenance.json).
+Arbitrary periodic inputs, degenerate midpoint isocurves and performance parity
+remain unverified. Closed-source TweenSurfaces matching retains its earlier
+boundary and is not established by this Rebuild evidence.
+
 The oracle operation `surface_rebuild_geometry` accepts `surface`, `point_count`
 and `degree`, returning the complete `surface` definition in either engine.
 `brep_retrim_geometry` accepts a closed-loop `fixture` and target `surface`,
@@ -160,7 +189,7 @@ the two loops, projected vertices and native edge distance witnesses at `2e-6`.
 ```sh
 cargo test --release -p viboceros-geometry surface_rebuild
 cargo test --release -p viboceros-command surface_rebuild
-python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview
+python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview tools.rhino_oracle.test_closed_surface_rebuild
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface_rebuild_geometry.json --scheme VibocerosOracleSurfaceRebuildSDK --absolute-epsilon 1e-6 --relative-epsilon 1e-10
 ```
 

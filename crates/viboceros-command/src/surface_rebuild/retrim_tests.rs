@@ -158,6 +158,24 @@ fn natural_rebuild_replays_default_native_warped_and_curved_boundaries() {
     replay(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap());
 }
 
+#[test]
+fn closed_rebuild_replays_native_seams_poles_and_independent_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/surface_rebuild_closed.json"
+    ))
+    .unwrap();
+    replay(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap());
+}
+
+#[test]
+fn closed_rebuild_replays_native_degree_parity_and_small_counts() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/surface_rebuild_closed_degrees.json"
+    ))
+    .unwrap();
+    replay(&q, Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap());
+}
+
 fn replay(q: &Value, tolerance: Tolerance) {
     for row in q["results"].as_array().unwrap() {
         let v = &row["value"];
@@ -185,6 +203,32 @@ fn replay(q: &Value, tolerance: Tolerance) {
             "{}",
             v["case"]
         );
+        assert_eq!(
+            actual.vertices().len(),
+            expected["vertices"].as_array().unwrap().len(),
+            "{}",
+            v["case"]
+        );
+        assert_eq!(
+            actual.is_solid(),
+            expected["topology"]["solid"].as_bool().unwrap(),
+            "{}",
+            v["case"]
+        );
+        let types = actual.faces()[0]
+            .loops()
+            .iter()
+            .flat_map(|l| l.trims())
+            .map(|t| format!("{:?}", t.trim_type()))
+            .collect::<Vec<_>>();
+        let native_types = expected["topology"]["faces"][0]["loops"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .flat_map(|l| l["trims"].as_array().unwrap())
+            .map(|t| t["type"].as_str().unwrap().to_owned())
+            .collect::<Vec<_>>();
+        assert_eq!(types, native_types, "{}", v["case"]);
         let surface = actual.faces()[0].surface();
         let native =
             crate::tween_surfaces::tests::native_surface(&expected["faces"][0]["definition"]);

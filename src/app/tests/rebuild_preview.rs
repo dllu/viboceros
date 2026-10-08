@@ -3,6 +3,57 @@ use super::*;
 use viboceros_document::{ColorRgb, ObjectAttributes, SelectionMode};
 use viboceros_geometry::{NurbsSurface, Tolerance, WeightedPoint3};
 
+#[test]
+fn closed_rebuild_preview_keeps_seams_and_poles_through_acceptance_and_history() {
+    use viboceros_geometry::{Frame3, Vector3};
+    let tolerance = Tolerance::DEFAULT;
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    for (source, solid) in [
+        (NurbsSurface::try_sphere(frame, 2.).unwrap(), true),
+        (
+            NurbsSurface::try_cylinder(frame, 2., 0., 4.).unwrap(),
+            false,
+        ),
+        (NurbsSurface::try_cone(frame, 2., 4.).unwrap(), false),
+        (NurbsSurface::try_torus(frame, 4., 1.).unwrap(), true),
+    ] {
+        let mut app = test_app();
+        let id = app
+            .document
+            .add_geometry(Geometry::NurbsSurface(source))
+            .unwrap();
+        app.document
+            .select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        enter(&mut app, "Rebuild");
+        let preview = app.rebuild_preview.as_ref().unwrap();
+        let ready = preview
+            .prepared
+            .as_ref()
+            .unwrap()
+            .outputs()
+            .next()
+            .unwrap()
+            .clone();
+        let Geometry::Brep(b) = &*ready else { panic!() };
+        assert_eq!(b.is_solid(), solid);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "");
+        assert_eq!(app.document.object(id).unwrap().geometry(), &*ready);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.object(id).unwrap().geometry(), &*ready);
+    }
+}
+
 fn fixture() -> (VibocerosApp, viboceros_document::ObjectId) {
     let mut app = test_app();
     enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,2 0,6,0");

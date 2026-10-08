@@ -159,6 +159,12 @@ guard acceptance; unchanged edits retain the cache, output policies reuse geomet
 and background edits refresh the scene. Natural four-side faces construct exact
 target isocurves directly, avoiding inverse-fit work. A failed later preparation
 clears the preview as one unit and blocks acceptance until recovery.
+Closed Rebuild directions use cyclic uniform interpolation with exact repeated
+controls. Constant boundary isocurves stay exact poles, and natural seam/singular
+faces retain shared incidence on the rebuilt surface. Twenty-eight native command
+and SDK records cover primitives, swapped charts and degree parity. Generic
+trimmed seam/singular projection and arbitrary periodic surfaces remain unfinished
+or unverified.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

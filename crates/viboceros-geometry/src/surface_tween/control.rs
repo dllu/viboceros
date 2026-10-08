@@ -1,6 +1,6 @@
 //! Control matching shares the independently exposed surface rebuild kernel.
 use super::*;
-use crate::try_rebuild_nurbs_surface as rebuilt;
+use crate::surface_rebuild::rebuild_open as rebuilt;
 
 pub(super) fn tweens(
     start: &NurbsSurface,

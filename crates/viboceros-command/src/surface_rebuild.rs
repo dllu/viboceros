@@ -214,15 +214,29 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
     {
         return Err(CommandError::UnsupportedSurfaceRebuild);
     }
-    let source_count = doc
-        .selected_objects()
-        .filter(|o| matches!(o.geometry(), Geometry::NurbsSurface(_) | Geometry::Brep(_)))
-        .count();
-    if source_count
-        .checked_mul(options.count[0] * options.count[1])
-        .is_none_or(|n| n > 1_000_000)
-    {
-        return Err(CommandError::Usage(USAGE));
+    let mut control_budget = 0usize;
+    for object in doc.selected_objects() {
+        let source = match object.geometry() {
+            Geometry::NurbsSurface(s) => s,
+            Geometry::Brep(b) if b.faces().len() == 1 => b.faces()[0].surface(),
+            Geometry::Brep(_) => return Err(CommandError::UnsupportedSurfaceRebuild),
+            _ => continue,
+        };
+        let closed = [source.is_closed_u()?, source.is_closed_v()?];
+        let count = std::array::from_fn::<_, 2, _>(|axis| {
+            options.count[axis]
+                + if closed[axis] {
+                    options.degree[axis]
+                } else {
+                    0
+                }
+        });
+        control_budget = control_budget
+            .checked_add(count[0] * count[1])
+            .ok_or(CommandError::Usage(USAGE))?;
+        if control_budget > 1_000_000 {
+            return Err(CommandError::Usage(USAGE));
+        }
     }
     let mut output = Vec::new();
     for object in doc.selected_objects() {
@@ -587,5 +601,40 @@ mod tests {
             )
             .is_err()
         );
+    }
+    #[test]
+    fn periodic_control_repetitions_count_toward_the_preparation_budget() {
+        let mut doc = Document::default();
+        let tolerance = doc.tolerance();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let torus = NurbsSurface::try_torus(frame, 4., 1.).unwrap();
+        let ids = (0..15)
+            .map(|_| {
+                doc.add_geometry(Geometry::NurbsSurface(torus.clone()))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        doc.select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        // 15*256^2 fits, but the actual 15*259^2 periodic nets exceed one million.
+        assert!(
+            prepare(
+                &doc,
+                Options {
+                    count: [256, 256],
+                    ..Options::default()
+                }
+            )
+            .is_err()
+        );
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!doc.can_undo());
     }
 }

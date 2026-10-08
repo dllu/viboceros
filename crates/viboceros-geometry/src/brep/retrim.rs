@@ -172,20 +172,10 @@ impl Brep {
         if surface.is_rational() {
             return invalid("retrimming requires a polynomial target surface");
         }
-        if face
-            .loops
-            .iter()
-            .flat_map(|l| &l.trims)
-            .any(|t| t.trim_type != BrepTrimType::Boundary)
-        {
-            return invalid("retrimming seam and singular boundaries is not yet supported");
-        }
         // Native natural faces retain their complete target boundary. Construct
         // exact isocurves directly, preserving the source's numeric topology,
         // instead of fitting an inverse parameter map along the same boundary.
-        if self.vertices.len() == 4
-            && self.edges.len() == 4
-            && face.loops.len() == 1
+        if face.loops.len() == 1
             && face.loops[0].trims.len() == 4
             && face.is_untrimmed(tolerance)?
         {
@@ -208,7 +198,19 @@ impl Brep {
                                     .is_ok_and(|p| new.curve.end_point().is_ok_and(|q| p == q))
                         })
             });
-            if natural.vertices.len() == 4 && natural.edges.len() == 4 && exact_sides {
+            let same_incidence = natural.vertices.len() == self.vertices.len()
+                && natural.edges.len() == self.edges.len()
+                && face.loops[0].trims.iter().all(|old| {
+                    natural.faces[0].loops[0]
+                        .trims
+                        .iter()
+                        .find(|t| t.iso == old.iso)
+                        .is_some_and(|new| {
+                            new.trim_type == old.trim_type
+                                && new.edge.is_some() == old.edge.is_some()
+                        })
+                });
+            if same_incidence && exact_sides {
                 let mut vertices = self.vertices.clone();
                 let mut edges = self.edges.clone();
                 let mut loops = face.loops.clone();
@@ -224,12 +226,14 @@ impl Brep {
                     if !used.insert(new.iso as usize) {
                         return invalid("natural retrim repeats a boundary side");
                     }
-                    let mut edge = natural.edges[new.edge.unwrap()].clone();
-                    if new.reversed_3d != old.reversed_3d {
-                        edge.curve = edge.curve.reversed()?;
+                    if let (Some(old_edge), Some(new_edge)) = (old.edge, new.edge) {
+                        let mut edge = natural.edges[new_edge].clone();
+                        if new.reversed_3d != old.reversed_3d {
+                            edge.curve = edge.curve.reversed()?;
+                        }
+                        edge.vertices = self.edges[old_edge].vertices;
+                        edges[old_edge] = edge;
                     }
-                    edge.vertices = self.edges[old.edge.unwrap()].vertices;
-                    edges[old.edge.unwrap()] = edge;
                     for (a, b) in old.vertices.into_iter().zip(new.vertices) {
                         vertices[a] = natural.vertices[b];
                     }
@@ -248,6 +252,14 @@ impl Brep {
                     tolerance,
                 );
             }
+        }
+        if face
+            .loops
+            .iter()
+            .flat_map(|l| &l.trims)
+            .any(|t| t.trim_type != BrepTrimType::Boundary)
+        {
+            return invalid("retrimming seam and singular boundaries is not yet supported");
         }
         let normalized = surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
         let numerical = Tolerance::try_new(

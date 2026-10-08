@@ -1,0 +1,37 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "captures": [
+    {
+      "name": "surface_rebuild_closed",
+      "recipes": 16,
+      "scheme": "VibocerosOracleSurfaceRebuildClosedVerified20261008"
+    },
+    {
+      "name": "surface_rebuild_closed_degrees",
+      "recipes": 12,
+      "scheme": "VibocerosOracleSurfaceRebuildClosedDegrees20261008"
+    }
+  ],
+  "control_point_epsilon": 1e-06,
+  "edge_distance_witness_epsilon": 2e-06,
+  "measured_rule": "Closed directions use uniform periodic station interpolation, with integer stations for odd degrees and half-integer stations for even degrees. Stored control counts add the degree and repeat those controls exactly. Degree-one output closes geometrically but is not classified periodic.",
+  "initial_diagnostic": "Initial producer discarded the new surfaces returned by Transpose and Reverse; those named recipes repeated the original chart. The initial producer/capture are retained separately. The corrected producer owns the returned surfaces and verifies closure direction.",
+  "limits": [
+    "Open trimmed faces with seam/singular trims remain unsupported by generic projection; this extends full natural boundaries only.",
+    "Arbitrary periodic surfaces, degenerate midpoint isocurves, native preview pixel appearance and performance parity remain unverified.",
+    "TweenSurfaces control matching retains its measured open preparation path; closed-source tween matching is not established by these rebuild records."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_closed_probe.py": "a563871268665703e7f75fca925ee13a1018195a1e488968c4209d75c1bcd557",
+    "tools/rhino_oracle/surface_rebuild_closed_initial_probe.py": "30565fb18eccbc978c33f0d0aada0937377498b8b1a3b6fd7ae5905085d73fa5",
+    "tools/rhino_oracle/surface_rebuild_closed_degrees_probe.py": "73c8c3bee9be8123d61689422dbfa9a6de42dd182d63781b31d674407e25c3aa",
+    "tools/rhino_oracle/fixtures/surface_rebuild_closed.json": "621fcc2473e2c7713531238414fc5744960b9658d7b1b6895035375e8fee7b58",
+    "tools/rhino_oracle/fixtures/surface_rebuild_closed_degrees.json": "f3bb816e5c663a6e7ed657bd942cc3f552f5d4c8700c394d4d01c203f8316c6e",
+    "tools/rhino_oracle/observations/surface_rebuild_closed.json": "e60c812d9abf18434bceac45fc925fdf3340b818f318e0e16ba263cfc09bcb2b",
+    "tools/rhino_oracle/observations/surface_rebuild_closed_initial.json": "2e53b63a3e4518c4eb38409d32936bf0591679a4d18a945fb8b5c0eafb73147c",
+    "tools/rhino_oracle/observations/surface_rebuild_closed_degrees.json": "0ce716c95141be5273c77a42095cf873ccbba3b1616757f482c57200a93cfc92"
+  }
+}

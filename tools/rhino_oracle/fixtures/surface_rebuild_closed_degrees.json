@@ -1,0 +1,66 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_sphere_2_2",
+      "case": "sphere_2_2"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_sphere_1_1",
+      "case": "sphere_1_1"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_sphere_4_3",
+      "case": "sphere_4_3"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cylinder_swapped_2_2",
+      "case": "cylinder_swapped_2_2"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cylinder_swapped_1_1",
+      "case": "cylinder_swapped_1_1"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cylinder_swapped_4_3",
+      "case": "cylinder_swapped_4_3"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cone_2_2",
+      "case": "cone_2_2"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cone_1_1",
+      "case": "cone_1_1"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_cone_4_3",
+      "case": "cone_4_3"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_torus_2_2",
+      "case": "torus_2_2"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_torus_1_1",
+      "case": "torus_1_1"
+    },
+    {
+      "op": "surface_rebuild_closed_degrees",
+      "id": "tween_srf_torus_4_3",
+      "case": "torus_4_3"
+    }
+  ]
+}

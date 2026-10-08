@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_untrim",
+      "case": "sphere_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_retrim",
+      "case": "sphere_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_swapped_untrim",
+      "case": "sphere_swapped_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_swapped_retrim",
+      "case": "sphere_swapped_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_reversed_untrim",
+      "case": "sphere_reversed_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_sphere_reversed_retrim",
+      "case": "sphere_reversed_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cylinder_untrim",
+      "case": "cylinder_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cylinder_retrim",
+      "case": "cylinder_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cylinder_swapped_untrim",
+      "case": "cylinder_swapped_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cylinder_swapped_retrim",
+      "case": "cylinder_swapped_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cone_untrim",
+      "case": "cone_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cone_retrim",
+      "case": "cone_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cone_swapped_untrim",
+      "case": "cone_swapped_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_cone_swapped_retrim",
+      "case": "cone_swapped_retrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_torus_untrim",
+      "case": "torus_untrim"
+    },
+    {
+      "op": "surface_rebuild_closed",
+      "id": "tween_srf_torus_retrim",
+      "case": "torus_retrim"
+    }
+  ]
+}
