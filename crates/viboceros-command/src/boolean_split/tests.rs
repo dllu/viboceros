@@ -1,6 +1,7 @@
 use super::*;
 use crate::boolean_union::tests::{Boundary, compare, regions, setup, snapshot, witnesses};
 use serde_json::Value;
+mod open;
 mod plane;
 
 pub(crate) fn align(actual: &Value, native: &Value) -> (Value, bool) {

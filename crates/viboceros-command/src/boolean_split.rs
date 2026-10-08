@@ -124,14 +124,26 @@ impl BooleanSplitCommand {
                 .iter()
                 .filter_map(|id| {
                     let j = indices[id];
-                    (!refs[j].is_solid() || interactions.contains(&[index.min(j), index.max(j)]))
-                        .then_some(refs[j])
+                    (j != index
+                        && (!refs[index].is_solid()
+                            || !refs[j].is_solid()
+                            || interactions.contains(&[index.min(j), index.max(j)])))
+                    .then_some(refs[j])
                 })
                 .collect::<Vec<_>>();
             if cutters.is_empty() {
                 continue;
             }
-            let pieces = if surfaces {
+            let pieces = if !refs[index].is_solid() {
+                viboceros_geometry::split_open_polyhedral_brep(
+                    refs[index],
+                    &cutters,
+                    doc.tolerance(),
+                )?
+                .into_iter()
+                .map(|p| (p.brep, p.face_sources, vec![1]))
+                .collect::<Vec<_>>()
+            } else if surfaces {
                 let pieces = viboceros_geometry::split_polyhedral_brep_with_surfaces(
                     refs[index],
                     &cutters,

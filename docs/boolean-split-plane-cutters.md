@@ -61,7 +61,8 @@ scene after Redo in Ghosted mode; it does not compare native pixels.
 
 ![Finite plane cut with its original sheet retained after Redo](images/boolean-split-plane-ui.png)
 
-Curved and nonplanar sheets, higher-degree supporting surfaces and open targets
+[Open planar targets](boolean-split-open-targets.md) have a separate shared-
+boundary path. Curved and nonplanar sheets and higher-degree supporting surfaces
 remain unsupported. Native insertion order, broader trimmed-sheet and compound
 command policies, near-contact tolerance decisions, coplanar groups interleaved
 with other cutters, and relative performance need further evidence. The exact

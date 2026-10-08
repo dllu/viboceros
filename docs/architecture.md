@@ -28,7 +28,9 @@ branch counts for geometry metadata. Unchanged targets keep their identity;
 cutters remain in the document. Its two-set getter accepts shared target/cutter
 sets. [Finite plane cutters](boolean-split-plane-cutters.md) add per-region coverage
 checks and coplanar sheet groups, with exact component queries retaining cavities
-and separating nested islands before export. General curved Boolean commands
+and separating nested islands before export. [Open planar targets](boolean-split-open-targets.md)
+use oriented shared/unshared boundary expressions, complete segment coverage and
+an explicit naked-edge exporter while preserving solid closure gates. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

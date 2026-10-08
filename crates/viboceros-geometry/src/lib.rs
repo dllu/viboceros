@@ -106,8 +106,8 @@ pub use brep::{
     convex_brep_subtraction_interactions, intersect_convex_brep_sets, intersect_convex_breps,
     intersect_polyhedral_brep_sets, intersect_polyhedral_breps, join_breps, join_breps_with_report,
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
-    split_polyhedral_brep, split_polyhedral_brep_with_surfaces, subtract_convex_breps,
-    subtract_polyhedral_breps, union_convex_breps, union_polyhedral_breps,
+    split_open_polyhedral_brep, split_polyhedral_brep, split_polyhedral_brep_with_surfaces,
+    subtract_convex_breps, subtract_polyhedral_breps, union_convex_breps, union_polyhedral_breps,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,

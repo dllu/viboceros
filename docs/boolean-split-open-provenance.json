@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleBooleanSplitOpenPilot20261007",
+  "private_xvfb": true,
+  "recipes": 16,
+  "successful_commands": 11,
+  "no_split_failures": 5,
+  "outputs": 27,
+  "full_native_parity": false,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public BooleanSplit open planar targets; complete boundaries, open/solid properties, metadata, idle selection and independent Undo/Redo.",
+  "limits": [
+    "Insertion order differs; replay aligns by owner, area and bounds.",
+    "Curved/nonplanar targets and cutters, higher-degree supports and mixed coplanar/noncoplanar open stages remain unsupported.",
+    "Broader trimmed/compound policies, tolerance contacts and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_split_open_probe.py": "29a07b0f313db7906c100dea3eac7f6e15e75d9aa743519f391d3ad59682fe0d",
+    "tools/rhino_oracle/fixtures/boolean_split_open.json": "1c7c749f5dd1cd91643ba3d54ccdf3ce83096bd4c3f4dcdeaa32e9d22ca97af9",
+    "tools/rhino_oracle/observations/boolean_split_open.json": "3904292244e4f65c63954f0676b9d2ba9e0437347b1de65752cfa5f6cc96c6d3"
+  }
+}

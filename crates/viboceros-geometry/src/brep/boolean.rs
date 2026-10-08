@@ -22,8 +22,8 @@ pub use polyhedral::{
     BrepPolyhedralRegion, BrepPolyhedralShell, BrepSplitComponent, BrepSurfaceSplitComponent,
     boolean_polyhedral_breps, intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
-    split_polyhedral_brep, split_polyhedral_brep_with_surfaces, subtract_polyhedral_breps,
-    union_polyhedral_breps,
+    split_open_polyhedral_brep, split_polyhedral_brep, split_polyhedral_brep_with_surfaces,
+    subtract_polyhedral_breps, union_polyhedral_breps,
 };
 mod intersection;
 mod merge;
@@ -517,9 +517,24 @@ fn rebuild(
 /// Exact point collapse during rounding is still rejected. Solid callers add
 /// their manifold certificates separately.
 fn rebuild_boundary(
+    polygons: Vec<Polygon<'_>>,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Brep, GeometryError> {
+    rebuild_boundary_with_open_edges(polygons, tolerance, budget, false)
+}
+fn rebuild_open_boundary(
+    polygons: Vec<Polygon<'_>>,
+    tolerance: Tolerance,
+    budget: &mut Budget,
+) -> Result<Brep, GeometryError> {
+    rebuild_boundary_with_open_edges(polygons, tolerance, budget, true)
+}
+fn rebuild_boundary_with_open_edges(
     mut polygons: Vec<Polygon<'_>>,
     tolerance: Tolerance,
     budget: &mut Budget,
+    allow_open: bool,
 ) -> Result<Brep, GeometryError> {
     let points = subdivide(&mut polygons, budget)?;
     let mut vertices = Vec::new();
@@ -583,8 +598,19 @@ fn rebuild_boundary(
             vec![trims],
         )?);
     }
-    if edge_uses.iter().any(|&n| n < 2) {
+    if !allow_open && edge_uses.iter().any(|&n| n < 2) {
         return Err(GeometryError::UnrepresentableBrepBoolean);
+    }
+    if allow_open {
+        for face in &mut faces {
+            for boundary in &mut face.loops {
+                for trim in &mut boundary.trims {
+                    if edge_uses[trim.edge.unwrap()] == 1 {
+                        trim.trim_type = BrepTrimType::Boundary;
+                    }
+                }
+            }
+        }
     }
     Brep::try_new(vertices, edges, faces, tolerance)
 }

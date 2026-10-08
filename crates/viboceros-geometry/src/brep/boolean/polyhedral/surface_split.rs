@@ -25,6 +25,9 @@ pub fn split_polyhedral_brep_with_surfaces(
     cutters: &[&Brep],
     tolerance: Tolerance,
 ) -> Result<Vec<BrepSurfaceSplitComponent>, GeometryError> {
+    if !target.is_solid() {
+        return Err(unsupported("closed polyhedral target required"));
+    }
     let refs = std::iter::once(target)
         .chain(cutters.iter().copied())
         .collect::<Vec<_>>();
@@ -93,7 +96,7 @@ pub fn split_polyhedral_brep_with_surfaces(
     Ok(result)
 }
 
-fn build<'a>(
+pub(super) fn build<'a>(
     breps: &[&'a Brep],
     tolerance: Tolerance,
     budget: &mut Budget,
@@ -103,14 +106,11 @@ fn build<'a>(
     }
     let mut operands = Vec::new();
     let mut sheets = Vec::new();
-    for (i, brep) in breps.iter().enumerate() {
+    for brep in breps {
         if brep.is_solid() {
             operands.push(input::extract(brep, tolerance, budget)?);
             sheets.push(false);
         } else {
-            if i == 0 {
-                return Err(unsupported("closed polyhedral target required"));
-            }
             let polygons = input::extract_faces(brep, tolerance, budget)?;
             let first = polygons
                 .first()
@@ -141,9 +141,14 @@ fn build<'a>(
         groups.push(vec![i]);
     }
     let mut planning = operands.clone();
-    for i in 1..breps.len() {
+    let extent = if sheets[0] {
+        operands.iter().flatten().cloned().collect::<Vec<_>>()
+    } else {
+        operands[0].clone()
+    };
+    for i in 0..breps.len() {
         if sheets[i] {
-            planning[i] = vec![seed(&operands[i][0], &operands[0], budget)?];
+            planning[i] = vec![seed(&operands[i][0], &extent, budget)?];
         }
     }
     let all = planning

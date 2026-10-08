@@ -137,6 +137,66 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         Ok(!patches.is_empty() && patches.values().all(|covered| *covered))
     }
 
+    /// Complete segment coverage on every physical boundary crossing of a
+    /// finite sheet. This also applies to an open, unbounded half-space region.
+    pub(super) fn sheet_covers_boundary_section(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        group: &[usize],
+    ) -> Result<bool, GeometryError> {
+        let (mut polygons, _) = self.boundary(region)?;
+        subdivide(&mut polygons, &mut self.budget)?;
+        let plane = &self.built.operands[group[0]][0];
+        let mut edges = BTreeMap::<[ExactPoint; 2], [bool; 2]>::new();
+        for polygon in &polygons {
+            let center = mean(&polygon.ring, &mut self.budget)?;
+            let sign = plane.plane_side(&center);
+            if sign.is_zero() {
+                continue;
+            }
+            for i in 0..polygon.ring.len() {
+                self.budget.spend(1)?;
+                let a = &polygon.ring[i];
+                let b = &polygon.ring[(i + 1) % polygon.ring.len()];
+                if plane.plane_side(a).is_zero() && plane.plane_side(b).is_zero() {
+                    let key = if a < b {
+                        [a.clone(), b.clone()]
+                    } else {
+                        [b.clone(), a.clone()]
+                    };
+                    edges.entry(key).or_default()[usize::from(sign.is_positive())] = true;
+                }
+            }
+        }
+        let mut found = false;
+        for (edge, sides) in edges {
+            if !sides.iter().all(|v| *v) {
+                continue;
+            }
+            found = true;
+            let mut intervals = Vec::new();
+            for &owner in group {
+                for polygon in &self.built.operands[owner] {
+                    if let Some(interval) = segment_interval(&edge, polygon, &mut self.budget)? {
+                        intervals.push(interval);
+                    }
+                }
+            }
+            intervals.sort();
+            let mut end = Rational::zero();
+            for [lo, hi] in intervals {
+                if lo > end {
+                    return Ok(false);
+                }
+                end = end.max(hi);
+            }
+            if end < rational(1.) {
+                return Ok(false);
+            }
+        }
+        Ok(found)
+    }
+
     pub fn input(&mut self, index: usize) -> Result<BrepPolyhedralRegion, GeometryError> {
         if index >= self.built.operands.len() {
             return Err(unsupported("plan input index out of range"));
@@ -552,7 +612,7 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         &mut self,
         region: &BrepPolyhedralRegion,
     ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
-        self.export_boundary_from_faces(region, None)
+        self.export_boundary_from_faces(region, None, false)
     }
 
     /// Boundary export with complete original-face coverage checked before
@@ -566,13 +626,21 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             return Err(GeometryError::BrepBooleanWorkLimit);
         }
         self.budget.spend(faces.len())?;
-        self.export_boundary_from_faces(region, Some(&faces.iter().copied().collect()))
+        self.export_boundary_from_faces(region, Some(&faces.iter().copied().collect()), false)
+    }
+
+    pub(super) fn export_open_boundary(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
+        self.export_boundary_from_faces(region, None, true)
     }
 
     fn export_boundary_from_faces(
         &mut self,
         region: &BrepPolyhedralRegion,
         allowed: Option<&BTreeSet<[usize; 2]>>,
+        allow_open: bool,
     ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
         let (polygons, sources) = self.boundary_from_faces(region, allowed)?;
         self.exported_faces += polygons.len();
@@ -590,6 +658,9 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut originals = vec![BTreeSet::new(); self.built.operands.len()];
         for cell in &self.built.cells {
             self.budget.spend(originals.len() + 1)?;
+            if !cell.source_covers_cell {
+                continue;
+            }
             let key = canonical_ring(&cell.polygon.ring);
             if region.mask[cell.sides[0]] != region.mask[cell.sides[1]]
                 && allowed.is_none_or(|a| a.contains(&cell.source))
@@ -604,7 +675,11 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
                 }
             }
         }
-        let built = rebuild_boundary(polygons, self.tolerance, &mut self.budget)?;
+        let built = if allow_open {
+            rebuild_open_boundary(polygons, self.tolerance, &mut self.budget)?
+        } else {
+            rebuild_boundary(polygons, self.tolerance, &mut self.budget)?
+        };
         let mut result = Vec::new();
         for faces in built.edge_connected_face_components() {
             self.budget.spend(faces.len() + originals.len())?;
@@ -632,6 +707,38 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         }
         Ok(result)
     }
+}
+
+fn segment_interval(
+    edge: &[ExactPoint; 2],
+    polygon: &Polygon<'_>,
+    budget: &mut Budget,
+) -> Result<Option<[Rational; 2]>, GeometryError> {
+    let (mut lo, mut hi) = (Rational::zero(), rational(1.));
+    for i in 0..polygon.ring.len() {
+        budget.spend(1)?;
+        let a = &polygon.ring[i];
+        let b = &polygon.ring[(i + 1) % polygon.ring.len()];
+        let side = |p: &ExactPoint| dot(&polygon.normal, &cross(&sub(b, a), &sub(p, a)));
+        let x = side(&edge[0]);
+        let y = side(&edge[1]);
+        if x.is_negative() && y.is_negative() {
+            return Ok(None);
+        }
+        if x.is_negative() || y.is_negative() {
+            let t = &x / (&x - &y);
+            check_scalar(&t)?;
+            if x.is_negative() {
+                lo = lo.max(t);
+            } else {
+                hi = hi.min(t);
+            }
+            if lo > hi {
+                return Ok(None);
+            }
+        }
+    }
+    Ok(Some([lo, hi]))
 }
 
 #[cfg(test)]

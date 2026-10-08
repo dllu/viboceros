@@ -3,7 +3,7 @@ use crate::boolean_union::tests::box_brep;
 use serde_json::json;
 use viboceros_document::{GroupId, LayerId};
 
-fn setup(v: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
+pub(super) fn setup(v: &Value) -> (Document, Vec<ObjectId>, Vec<LayerId>, Vec<GroupId>) {
     let mut doc = Document::default();
     let mut ids = Vec::new();
     let mut layers = Vec::new();

@@ -4,12 +4,14 @@ use super::*;
 mod arrangement;
 mod embedding;
 mod interactions;
+mod open_split;
 mod plan;
 mod reports;
 mod surface_split;
 pub use interactions::{
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
 };
+pub use open_split::split_open_polyhedral_brep;
 pub use plan::{
     BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
     BrepPolyhedralShell,

@@ -74,7 +74,9 @@ comparison. See [provenance](../boolean-split-provenance.json).
 
 ![BooleanSplit output and its retained cutter after Redo](../images/boolean-split-ui.png)
 
-Curved and nonplanar cutters and open targets remain unsupported. Object insertion order
+[Open planar targets](../boolean-split-open-targets.md) produce shared and unshared
+boundaries containing target and cutter faces. Curved and nonplanar inputs remain
+unsupported. Object insertion order
 differs from the captured native order; replays match pieces by owner and centroid
 without hiding that difference. General native face/edge ordering, tolerance
 contacts, compound command policies and relative performance remain unverified.

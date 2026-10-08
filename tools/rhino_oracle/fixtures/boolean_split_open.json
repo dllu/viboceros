@@ -1,0 +1,86 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box",
+      "case": "plane_box"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box_reverse",
+      "case": "plane_box_reverse"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box_partial",
+      "case": "plane_box_partial"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box_contained",
+      "case": "plane_box_contained"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box_disjoint",
+      "case": "plane_box_disjoint"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_box_touch",
+      "case": "plane_box_touch"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_plane",
+      "case": "plane_plane"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_plane_partial",
+      "case": "plane_plane_partial"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_plane_coplanar",
+      "case": "plane_plane_coplanar"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_plane_parallel",
+      "case": "plane_plane_parallel"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_two_boxes",
+      "case": "two_boxes"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_overlap_boxes",
+      "case": "overlap_boxes"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_box_then_plane",
+      "case": "box_then_plane"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_plane_then_box",
+      "case": "plane_then_box"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_pre",
+      "case": "pre"
+    },
+    {
+      "op": "boolean_split_open",
+      "id": "split_open_keep",
+      "case": "keep"
+    }
+  ]
+}
