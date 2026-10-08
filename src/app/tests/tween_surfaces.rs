@@ -216,6 +216,166 @@ fn repeated_source_picks_create_copies_without_mutating_the_source() {
     assert_eq!(app.document.object(ids[0]).unwrap(), &before);
 }
 #[test]
+fn cancel_saves_only_layer_while_acceptance_saves_count_method_and_inactive_samples() {
+    use viboceros_command::tween_surfaces::{Method, OutputLayer, Preferences};
+    let (mut app, ids) = pair();
+    let initial = app.commands.tween_surface_preferences();
+    enter(
+        &mut app,
+        "TweenSurfaces NumberOfSurfaces=3 OutputLayer=StartSrf",
+    );
+    enter(&mut app, "Cancel");
+    assert_eq!(app.commands.tween_surface_preferences(), initial);
+    enter(&mut app, "TweenSurfaces");
+    for id in ids {
+        click(&mut app, id);
+    }
+    enter(&mut app, "NumberOfSurfaces=3");
+    enter(&mut app, "SampleNumber=6");
+    enter(&mut app, "OutputLayer=StartSrf");
+    enter(&mut app, "MatchMethod=Refit");
+    enter(&mut app, "FlipEndU=Yes");
+    enter(&mut app, "Cancel");
+    assert_eq!(
+        app.commands.tween_surface_preferences(),
+        Preferences {
+            layer: OutputLayer::Start,
+            ..initial
+        }
+    );
+    enter(&mut app, "TweenSurfaces");
+    for id in ids {
+        click(&mut app, id);
+    }
+    enter(&mut app, "NumberOfSurfaces=2");
+    enter(&mut app, "SampleNumber=6");
+    enter(&mut app, "MatchMethod=Refit");
+    enter(&mut app, "");
+    let saved = app.commands.tween_surface_preferences();
+    assert_eq!(
+        (saved.number, saved.method, saved.sample_number),
+        (2, Method::Refit, 6)
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.commands.tween_surface_preferences(), saved);
+    enter(&mut app, "Redo");
+    assert_eq!(app.commands.tween_surface_preferences(), saved);
+    enter(&mut app, "TweenSurfaces");
+    for id in ids {
+        click(&mut app, id);
+    }
+    enter(&mut app, "MatchMethod=SamplePoints");
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_some()
+    );
+    enter(&mut app, "NumberOfSurfaces=0");
+    assert_eq!(app.commands.tween_surface_preferences(), saved);
+    enter(&mut app, "Cancel");
+    assert_eq!(
+        app.commands.tween_surface_options(&[]).unwrap().reverse,
+        [[false; 3]; 2]
+    );
+}
+#[test]
+fn native_option_sequence_replays_each_next_invocation_default() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/tween_surfaces_options.json"
+    ))
+    .unwrap();
+    let states: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/tween-options-provenance.json")).unwrap();
+    replay_option_defaults(&q, &states["states"]);
+}
+#[test]
+fn native_inactive_sample_count_is_saved_on_acceptance() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/tween_surfaces_sample_memory.json"
+    ))
+    .unwrap();
+    let states: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/tween-options-provenance.json")).unwrap();
+    replay_option_defaults(&q, &states["inactive_sample_followup"]["states"]);
+}
+fn replay_option_defaults(q: &serde_json::Value, states: &serde_json::Value) {
+    use viboceros_command::tween_surfaces::{Method, OutputLayer};
+    let (mut app, ids) = pair();
+    for r in q["results"][0]["value"]["records"].as_array().unwrap() {
+        let step = r["step"].as_str().unwrap();
+        let expected = &states[step]["before"];
+        let saved = app.commands.tween_surface_preferences();
+        assert_eq!(
+            saved.number,
+            expected["NumberOfSurfaces"]
+                .as_str()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap(),
+            "{step}"
+        );
+        assert_eq!(
+            saved.layer,
+            match expected["OutputLayer"].as_str().unwrap() {
+                "StartSrf" => OutputLayer::Start,
+                "EndSrf" => OutputLayer::End,
+                _ => OutputLayer::Current,
+            },
+            "{step}"
+        );
+        assert_eq!(
+            saved.method,
+            match expected["MatchMethod"].as_str().unwrap() {
+                "None" => Method::Control,
+                "Refit" => Method::Refit,
+                _ => Method::Sampled,
+            },
+            "{step}"
+        );
+        if let Some(sample) = expected["SampleNumber"].as_str() {
+            assert_eq!(
+                saved.sample_number,
+                sample.parse::<usize>().unwrap(),
+                "{step}"
+            );
+        }
+        enter(&mut app, "TweenSurfaces");
+        for id in ids {
+            click(&mut app, id);
+        }
+        for edit in r["edits"].as_array().unwrap() {
+            let (name, value) = edit.as_str().unwrap().split_once('=').unwrap();
+            enter(
+                &mut app,
+                &format!(
+                    "{}={}",
+                    name.trim_start_matches('_'),
+                    value.trim_start_matches('_')
+                ),
+            );
+        }
+        enter(&mut app, if r["accepted"] == true { "" } else { "Cancel" });
+        if r["accepted"] == true {
+            let memory = app.commands.tween_surface_preferences();
+            enter(&mut app, "Undo");
+            assert_eq!(app.commands.tween_surface_preferences(), memory);
+            enter(&mut app, "Redo");
+            assert_eq!(app.commands.tween_surface_preferences(), memory);
+            let outputs = app
+                .document
+                .objects()
+                .filter(|o| !ids.contains(&o.id()))
+                .map(|o| o.id())
+                .collect::<Vec<_>>();
+            app.document.delete_objects(outputs).unwrap();
+        }
+        app.document.clear_history().unwrap();
+        assert_eq!(app.document.objects().len(), 2);
+    }
+}
+#[test]
 fn failed_acceptance_does_not_rollback_an_unrelated_open_transaction() {
     let (mut app, ids) = pair();
     enter(&mut app, "TweenSurfaces");

@@ -9,6 +9,16 @@ uses its last accepted choice. Updating only one option leaves the other alone.
 `TrimTriangularFaces` and `UseNgons`. Its native bootstrap choices are Yes/Yes;
 the current mesh model has no n-gon regions, so `UseNgons` has no geometric effect.
 
+[`TweenSurfaces`](commands/tween-surfaces.md) has separate save rules: count,
+matching method and sample count save on successful acceptance, including a
+sample count hidden by another matching mode. OutputLayer saves immediately
+on reaching or editing the options phase, including cancellation. Selection-phase
+cancellation accepts no inline layer preset. Invalid edits preserve previous
+values, and Undo/Redo does not restore preferences. Source IDs and direction
+correspondence reset per invocation. Its 29-step private-Xvfb capture and eight-step
+inactive-sample follow-up retain every prompt default and explicit native
+option-change object discrepancies; see [provenance](tween-options-provenance.json).
+
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
 across documents retains choices; separate registries are independent. The GUI

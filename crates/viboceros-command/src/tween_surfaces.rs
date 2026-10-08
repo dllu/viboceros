@@ -5,7 +5,49 @@ use viboceros_geometry::{
 };
 
 const USAGE: &str = "TweenSurfaces [NumberOfSurfaces=n] [MatchMethod=None|Refit|SamplePoints] [SampleNumber=2..255] [OutputLayer=CurrentLayer|StartSrf|EndSrf] [Sources=a,b] [FlipStartU=Yes|No] [FlipStartV=Yes|No] [SwapStartUV=Yes|No] [FlipEndU=Yes|No] [FlipEndV=Yes|No] [SwapEndUV=Yes|No]";
-pub(super) struct TweenSurfacesCommand;
+pub(super) struct TweenSurfacesCommand(
+    pub(super) std::sync::Arc<remembered::Remembered<Preferences>>,
+);
+
+/// Command-instance preferences. Sources and direction correspondence are per
+/// invocation; model history never restores preference values.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Preferences {
+    pub number: usize,
+    pub layer: OutputLayer,
+    pub method: Method,
+    pub sample_number: usize,
+}
+impl Default for Preferences {
+    fn default() -> Self {
+        Self {
+            number: 1,
+            layer: OutputLayer::Current,
+            method: Method::Sampled,
+            sample_number: 10,
+        }
+    }
+}
+impl Preferences {
+    pub fn options(self) -> Options {
+        Options {
+            number: self.number,
+            layer: self.layer,
+            method: self.method,
+            sample_number: self.sample_number,
+            sources: None,
+            reverse: [[false; 3]; 2],
+        }
+    }
+    fn accepted(options: &Options) -> Self {
+        Self {
+            number: options.number,
+            layer: options.layer,
+            method: options.method,
+            sample_number: options.sample_number,
+        }
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum OutputLayer {
@@ -36,7 +78,7 @@ impl Command for TweenSurfacesCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let options = parse(args)?;
+        let options = parse_with_defaults(args, self.0.get())?;
         if options.sources.is_some() {
             return Ok(None);
         }
@@ -50,15 +92,28 @@ impl Command for TweenSurfacesCommand {
         }))
     }
     fn run(&self, document: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let options = parse(args)?;
+        let options = parse_with_defaults(args, self.0.get())?;
         let ids = if let Some(ids) = options.sources {
             ids
         } else {
             let ids = selected_ids(document)?;
             ids.try_into().map_err(|_| CommandError::Usage(USAGE))?
         };
+        for id in ids {
+            if !document.is_object_selectable(id)
+                || !document
+                    .object(id)
+                    .is_some_and(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
+            {
+                return Err(CommandError::Usage(USAGE));
+            }
+        }
+        let mut preferences = self.0.get();
+        preferences.layer = options.layer;
+        self.0.set(preferences);
         let prepared = prepare(document, ids, &options)?;
         prepared.apply(document)?;
+        self.0.set(Preferences::accepted(&options));
         Ok(format!("Created {} tween surface(s)", options.number))
     }
 }
@@ -213,14 +268,10 @@ impl Options {
     }
 }
 pub fn parse(args: &[&str]) -> Result<Options, CommandError> {
-    let mut result = Options {
-        number: 1,
-        layer: OutputLayer::Current,
-        sources: None,
-        reverse: [[false; 3]; 2],
-        method: Method::Sampled,
-        sample_number: 10,
-    };
+    parse_with_defaults(args, Preferences::default())
+}
+pub fn parse_with_defaults(args: &[&str], defaults: Preferences) -> Result<Options, CommandError> {
+    let mut result = defaults.options();
     let mut seen = BTreeSet::new();
     for arg in args {
         let (name, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
@@ -293,9 +344,75 @@ pub fn parse(args: &[&str]) -> Result<Options, CommandError> {
     Ok(result)
 }
 
+impl CommandRegistry {
+    pub fn tween_surface_preferences(&self) -> Preferences {
+        self.tween_surface_preferences.get()
+    }
+    pub fn tween_surface_options(&self, args: &[&str]) -> Result<Options, CommandError> {
+        parse_with_defaults(args, self.tween_surface_preferences())
+    }
+    /// Layer edits are immediate in the options phase, even on cancellation.
+    pub fn remember_tween_surface_layer(&self, layer: OutputLayer) {
+        let mut preferences = self.tween_surface_preferences.get();
+        preferences.layer = layer;
+        self.tween_surface_preferences.set(preferences);
+    }
+    /// Count, method and sample settings commit only with accepted geometry.
+    pub fn accept_tween_surface_preferences(&self, options: &Options) {
+        self.tween_surface_preferences
+            .set(Preferences::accepted(options));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn tween_preferences_survive_history_and_documents_without_source_ids_or_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0")
+            .unwrap();
+        registry
+            .execute(&mut doc, "SrfPt 0,0,4 4,0,4 4,6,4 0,6,4")
+            .unwrap();
+        let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
+        doc.clear_history().unwrap();
+        registry.execute(&mut doc,&format!("TweenSurfaces Sources={},{} NumberOfSurfaces=2 MatchMethod=Refit OutputLayer=EndSrf FlipEndU=Yes",ids[0],ids[1])).unwrap();
+        let saved = registry.tween_surface_preferences();
+        assert_eq!(saved.number, 2);
+        assert_eq!(saved.method, Method::Refit);
+        assert_eq!(saved.layer, OutputLayer::End);
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(registry.tween_surface_preferences(), saved);
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(registry.tween_surface_preferences(), saved);
+        let options = registry.tween_surface_options(&[]).unwrap();
+        assert_eq!(options.reverse, [[false; 3]; 2]);
+        assert_eq!(options.sources, None);
+        let mut other = Document::default();
+        assert!(
+            registry
+                .execute(
+                    &mut other,
+                    "TweenSurfaces NumberOfSurfaces=3 OutputLayer=StartSrf"
+                )
+                .is_err()
+        );
+        assert_eq!(registry.tween_surface_preferences(), saved);
+        assert_eq!(
+            CommandRegistry::with_builtins().tween_surface_preferences(),
+            Preferences::default()
+        );
+        assert!(registry.tween_surface_options(&["SampleNumber=6"]).is_err());
+        let sampled = registry
+            .tween_surface_options(&["MatchMethod=SamplePoints", "SampleNumber=6"])
+            .unwrap();
+        assert_eq!(sampled.number, 2);
+        assert_eq!(sampled.layer, OutputLayer::End);
+        assert_eq!(sampled.sample_number, 6);
+    }
     #[test]
     fn script_tweens_preserve_preselected_sources_and_accept_repeated_ids() {
         let mut doc = Document::default();

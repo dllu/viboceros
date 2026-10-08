@@ -1,6 +1,6 @@
 //! Ordered source picks and cached readonly surface-tween previews.
 use super::*;
-use viboceros_command::tween_surfaces::{Options, Prepared, parse, prepare};
+use viboceros_command::tween_surfaces::{Options, Prepared, prepare};
 use viboceros_document::{GeometrySnapshot, GroupId, ObjectAttributes, ObjectId};
 use viboceros_geometry::Tolerance;
 
@@ -57,7 +57,7 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let options = match parse(&words[1..]) {
+        let options = match self.commands.tween_surface_options(&words[1..]) {
             Ok(v) => v,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -152,6 +152,7 @@ impl VibocerosApp {
         let Some(p) = self.tween_surfaces_prompt.as_mut() else {
             return;
         };
+        self.commands.remember_tween_surface_layer(p.options.layer);
         p.scene = None;
         p.prepared = None;
         let Ok(ids) = <[ObjectId; 2]>::try_from(p.sources.clone()) else {
@@ -230,6 +231,7 @@ impl VibocerosApp {
                 }
                 self.push_log(format!("Error: {error}"));
             } else {
+                self.commands.accept_tween_surface_preferences(&p.options);
                 self.push_log(format!("Created {} tween surface(s)", p.options.number));
             }
             self.command_input.clear();

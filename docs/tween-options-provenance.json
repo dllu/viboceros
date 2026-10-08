@@ -1,0 +1,616 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenOptionsVerified20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "steps": 29,
+  "accepted_commands": 5,
+  "immediate_fields": [
+    "OutputLayer"
+  ],
+  "accepted_fields": [
+    "NumberOfSurfaces",
+    "MatchMethod",
+    "SampleNumber"
+  ],
+  "states": {
+    "initial": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_number": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "3",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_cancel_number": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_sample": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "6"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_cancel_sample": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_layer": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_cancel_layer": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_method": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "accepted": false,
+      "output_count": 2
+    },
+    "after_cancel_method": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "accept_refit": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "accepted": true,
+      "output_count": 3
+    },
+    "after_undo_redo": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_control": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "None"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_cancel_control": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "cancel_sampling": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_cancel_sampling": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "accept_control": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "Refit"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "None"
+      },
+      "accepted": true,
+      "output_count": 1
+    },
+    "after_accept_control": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "None"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "None"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "accept_sampling": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "None"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": true,
+      "output_count": 1
+    },
+    "after_accept_sampling": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "invalid_number": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_invalid_number": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "invalid_sample": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "after_invalid_sample": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "accept_changed": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "StartSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "EndSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "accepted": true,
+      "output_count": 2
+    },
+    "after_accepted_changes": {
+      "before": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "EndSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "after": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "EndSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "restore_defaults": {
+      "before": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "EndSrf",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "final": {
+      "before": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "after": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "accepted": false,
+      "output_count": 0
+    },
+    "accept_reset": {
+      "before": {
+        "NumberOfSurfaces": "2",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "4"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": true,
+      "output_count": 1
+    },
+    "final_defaults": {
+      "before": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "after": {
+        "NumberOfSurfaces": "1",
+        "OutputLayer": "CurrentLayer",
+        "MatchMethod": "SamplePoints",
+        "SampleNumber": "10"
+      },
+      "accepted": false,
+      "output_count": 0
+    }
+  },
+  "limits": [
+    "Preferences are tested within one owned Rhino process; persistence across application restart is unverified.",
+    "Local preferences belong to one registry and are independent of document history; independent registries start with defaults.",
+    "Source IDs and direction correspondence are per invocation; native corner direction memory is unverified.",
+    "Native option-change geometry side effects remain diagnostics rather than reproduced local objects.",
+    "Some cancelled native matching-option edits leave source-shaped copies; these retained objects are an explicit parity discrepancy."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_options_initial_probe.py": "00ef36571be0bb1618ea2a61b2c5fb64c7f1d507b4b31f37a8099c61082269fe",
+    "tools/rhino_oracle/observations/tween_surfaces_options_initial.json": "8dcb2b3a1d4aa9b95a05dea6a47cf32180878019bc91a984efbf336a65f5cd4c",
+    "tools/rhino_oracle/tween_surfaces_options_probe.py": "fbbe31c57bc0c0bb678a940933a9613c84b0e7f91e23edc753bffdbf6453ea5c",
+    "tools/rhino_oracle/fixtures/tween_surfaces_options.json": "37da9f0601c2676695bd0e26c72074d22b83b8b4364c15b8e5f0a46f024c01bf",
+    "tools/rhino_oracle/observations/tween_surfaces_options.json": "c6888ab3169bded89e38600c93deaa4717156b76b7c48b085c4bcc4015e99e9f",
+    "tools/rhino_oracle/tween_surfaces_sample_memory_probe.py": "caebd376d81f25b4153ea354acf64ce954586dffd930c91348aedba36a3463d9",
+    "tools/rhino_oracle/fixtures/tween_surfaces_sample_memory.json": "1effa78ac9bae4161cbec957e84a0ba93a76df0eea4e91b5a5947b6a1cc7fe43",
+    "tools/rhino_oracle/observations/tween_surfaces_sample_memory.json": "92bf1ebe275aefbee5c3ada9fde5dd016bd52ace7b614abd3b82b819d8276756"
+  },
+  "cancelled_option_change_extra_objects": {
+    "cancel_method": 2
+  },
+  "inactive_sample_followup": {
+    "settings_scheme": "VibocerosOracleTweenSampleMemory20261008",
+    "steps": 8,
+    "states": {
+      "initial": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "accepted": false,
+        "output_count": 0
+      },
+      "accept_inactive_sample": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "Refit"
+        },
+        "accepted": true,
+        "output_count": 3
+      },
+      "after_accept_refit": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "Refit"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "Refit"
+        },
+        "accepted": false,
+        "output_count": 0
+      },
+      "reveal_inactive_sample": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "Refit"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "6"
+        },
+        "accepted": false,
+        "output_count": 0
+      },
+      "accept_sampling": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "Refit"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "6"
+        },
+        "accepted": true,
+        "output_count": 1
+      },
+      "after_accept_sampling": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "6"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "6"
+        },
+        "accepted": false,
+        "output_count": 0
+      },
+      "restore_defaults": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "6"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "accepted": true,
+        "output_count": 1
+      },
+      "final_defaults": {
+        "before": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "after": {
+          "NumberOfSurfaces": "1",
+          "OutputLayer": "CurrentLayer",
+          "MatchMethod": "SamplePoints",
+          "SampleNumber": "10"
+        },
+        "accepted": false,
+        "output_count": 0
+      }
+    }
+  }
+}

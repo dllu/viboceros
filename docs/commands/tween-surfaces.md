@@ -48,6 +48,18 @@ blend of the source surfaces. Sampling is bounded to `2..=255` divisions per axi
 matching the existing 256-station dense tensor solve limit. Source trims are not
 sampled. Native sample counts above this local limit remain unsupported.
 
+Count, matching method and sample count remember their last successful
+acceptance. Cancelling the options phase discards edits to those fields. The
+sample count is saved even when acceptance occurs in Refit or control matching,
+so returning to SamplePoints recovers the last edited count. `OutputLayer` edits
+instead take effect immediately on reaching the options phase and survive
+cancellation. Cancelling during source selection does not save an inline layer
+preset. Invalid input changes neither the staged options nor remembered values.
+Undo/Redo does not change preferences. They belong to the application's command
+registry, are shared across its documents, and reset in a fresh registry; restart
+persistence remains unverified. Source IDs and direction flags are per invocation.
+Use explicit options in deterministic scripts.
+
 Counts default to one and are bounded at 4,096, with an aggregate million-control
 limit. Outputs exclude sources, at fractions `i / (number + 1)`. Polynomial
 preparation elevates degrees and unifies knots; output domains count common
@@ -87,7 +99,7 @@ copies: `Refit` four and `SamplePoints` two in that capture, alongside requested
 tweens. The public sampling SDK returns
 just the requested outputs. Both raw records and the initial investigation are
 retained without normalizing these differences. Unequal-net control matching,
-option memory, corner previews and performance parity remain unfinished.
+native corner-click editing and performance parity remain unfinished.
 The registered command rejects unsupported methods. Trimmed single-face input
 uses its underlying surface; trim correspondence is not implemented.
 
@@ -123,7 +135,7 @@ at `1e-12` with different degrees, U/V knot sites and multiplicities, while
 preserving original sources. App tests exercise Refit options, source picking,
 unequal degrees and Undo/Redo. See [Refit provenance](../tween-refit-provenance.json).
 The local workflow creates the requested outputs; native option-change copies
-and remembered preferences remain unimplemented.
+remain unimplemented; remembered field lifetimes are described above.
 
 The [interaction capture](../../tools/rhino_oracle/observations/tween_surfaces_interaction.json)
 adds nine owned private-Xvfb recipes under
@@ -147,6 +159,24 @@ counts five. These local images do not compare native pixels.
 
 ![Accepted surface tween after Undo and Redo](../images/tween-surfaces-redo-ghosted.png)
 
+The [option-lifetime capture](../../tools/rhino_oracle/observations/tween_surfaces_options.json)
+runs a 29-step owned sequence under `VibocerosOracleTweenOptionsVerified20261008`.
+It retains initial/final native option prompts, accepted geometry, cancellations
+and independent history. App replay compares every next-invocation default,
+including the different layer/count save rules, rejected values and method
+changes. An [eight-step follow-up](../../tools/rhino_oracle/observations/tween_surfaces_sample_memory.json)
+under `VibocerosOracleTweenSampleMemory20261008` confirms that a sample count
+edited before accepted Refit is revealed when returning to SamplePoints.
+Command tests cover independent registries, reused documents, per-invocation
+source/direction state and failed invocation admission. See
+[option provenance](../tween-options-provenance.json).
+
+The cancelled Refit edit in that sequence leaves two native source-shaped copies,
+while discarding the method change for the next invocation. Those objects remain
+an explicit geometry discrepancy; local readonly previews discard all staged
+geometry on cancellation. The older initial investigation is retained separately.
+Neither sequence establishes preference persistence across application restarts.
+
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
 `surfaces` definitions in both engines and shares the same resource limits.
@@ -155,5 +185,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options
 ```

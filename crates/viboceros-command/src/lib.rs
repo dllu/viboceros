@@ -492,6 +492,7 @@ pub struct CommandRegistry {
     taper_preferences: std::sync::Arc<taper::TaperPreferences>,
     maelstrom_preferences: std::sync::Arc<maelstrom::MaelstromPreferences>,
     smooth_preferences: std::sync::Arc<remembered::Remembered<smooth::Options>>,
+    tween_surface_preferences: std::sync::Arc<remembered::Remembered<tween_surfaces::Preferences>>,
 }
 
 impl CommandRegistry {
@@ -746,7 +747,9 @@ impl CommandRegistry {
             .register(sweep::SweepCommand)
             .expect("unique built-in command");
         registry
-            .register(tween_surfaces::TweenSurfacesCommand)
+            .register(tween_surfaces::TweenSurfacesCommand(
+                registry.tween_surface_preferences.clone(),
+            ))
             .expect("unique TweenSurfaces command");
         registry
             .register(edge_surface::EdgeSurfaceCommand)
