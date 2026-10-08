@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `b495ccdf` with Rust 1.95.0 after
-[Closed surface Rebuild and seam-crossing hole retrimming](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `1982fc56` with Rust 1.95.0 after
+[Trimmed pole Rebuild, native isocurve transfer and solid orientation](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,56 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,345 Rust tests:
+5,349 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,034 | 17 |
-| Command | 1,203 | 2 |
+| App | 1,035 | 17 |
+| Command | 1,204 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,079 | 8 |
+| Geometry | 2,081 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 1,000 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,008 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest trimmed closed-surface Rebuild captures ran eight cylinder patch/hole
+The newest singular trim Rebuild capture ran twelve recipes on a fresh private
+Xvfb scheme. [Complete records](../tools/rhino_oracle/observations/surface_rebuild_singular_trim.json)
+retain sphere caps, circular holes, half-sphere wedges, a holed cone and swapped/
+reversed cap charts. Every native ReTrim=Yes B-rep exactly equals the public
+Brep.CreateTrimmedSurface result. Command replay checks degrees/counts/weights,
+controls at `1e-6`, knots at `1e-12`, face orientation, source purity, pole/seam
+incidence, boundary witnesses at `2e-6` and independent Undo/Redo. Exactly collapsed
+natural target sides retain full or partial singular UV intervals and pole vertex
+indices without spatial edges. Coherent trim control hulls prove chart containment;
+targets that lose their exact collapse are rejected. Analytic tests cover both cap
+charts, reversed face sense and perturbed poles. App testing covers readonly cap
+preview, acceptance and atomic history.
+
+The first complete replay exposed inward ReTrim=No full-sphere outputs after chart
+edits. Newly closed single-face outputs now normalize outward, using the exact
+orientation classifier and a numerical signed-volume fallback for an unresolved
+connected shell. A second replay exposed a contour-policy difference on the
+swapped cap. [Sixty-six independent closest queries](../tools/rhino_oracle/observations/surface_rebuild_cap_projection.json)
+show about `0.000474` variation in closest U, while native trim transfer keeps U
+within `3e-8`. A full constant-U contour on a closed V chart now transfers to the
+target isocurve at its projected shared endpoint. The swapped cap retains two edges
+like Rhino; normal/reversed caps have 73 local edges versus two native, the sphere
+hole 84 versus two, and the cone hole 83 versus three. Extra segments are individually
+certified and remain an explicit representation difference. The initial ten-result
+artifact is incomplete evidence for its twelve-case request. Both ordinary engine
+runners now require the exact requested recipe ID set, rejecting missing or extra
+results while allowing reordering. See [guide](commands/rebuild-surfaces.md) and
+[provenance](singular-trim-rebuild-provenance.json). Interior singularities,
+multi-chart winding, general solid embedding, broader isocurve-transfer families,
+global nearest-point guarantees and performance parity remain unverified.
+
+The preceding trimmed closed-surface Rebuild captures ran eight cylinder patch/hole
 recipes and two seam-crossing hole recipes on fresh private Xvfb schemes.
 [Patch/hole records](../tools/rhino_oracle/observations/surface_rebuild_seam_trim.json)
 and [crossing-hole records](../tools/rhino_oracle/observations/surface_rebuild_crossing_hole.json)
