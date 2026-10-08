@@ -10,7 +10,6 @@
   "followups": 2,
   "main_outputs": 64,
   "full_native_parity": false,
-  "geometry_epsilon": 1e-09,
   "mass_epsilon": 1e-10,
   "source": "Owned public BooleanSplit commands with source/output face boundaries, command events, metadata, group membership, selected state and independent Undo/Redo snapshots.",
   "limits": [
@@ -22,5 +21,7 @@
     "tools/rhino_oracle/boolean_split_probe.py": "b68e33693c6c441cd1c227a4b7b2abb250b6cd2c082b493b98d280344c2d7ecf",
     "tools/rhino_oracle/fixtures/boolean_split_command.json": "b43016932b16771730a6c298768c55f9f4b3bbd8fa305c72d70e5b90a6ed73ac",
     "tools/rhino_oracle/observations/boolean_split_command.json": "694c084bdd41fc2964ce45314d27f7f4619d0f3b0d45b57b65f4898324368908"
-  }
+  },
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09
 }

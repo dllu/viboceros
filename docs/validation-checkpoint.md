@@ -3,40 +3,60 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `408a1b1a` with Rust 1.95.0 after
-[SubCrv surface edge input](subcurve-edge-input.md).
+The October 7, 2026 audit tested code at `6877ab9e` with Rust 1.95.0 after
+[BooleanSplit partitions and native workflows](commands/boolean-split.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
-cargo test --release --bin viboceros
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The workspace suite and final application
-rerun cover 5,184 passing Rust tests:
+All commands completed successfully. The ordinary Rust workspace suite passed
+5,192 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 977 | 17 |
-| Command | 1,162 | 2 |
+| App | 980 | 17 |
+| Command | 1,164 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,020 | 8 |
+| Geometry | 2,023 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 915 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 919 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new edge SubCrv capture ran eleven owned public commands on private Xvfb
+The new BooleanSplit capture ran 28 owned public recipes on private Xvfb under
+`VibocerosOracleBooleanSplitVerified20261007`. Seventeen commands succeed and
+create 64 pieces; eight no-split failures and three cancellations remain in the
+[raw records](../tools/rhino_oracle/observations/boolean_split_command.json).
+Two follow-ups verify DeleteInput memory after cancellation in either getter.
+Command replay covers all 25 completed/failed outcomes, face/edge counts,
+bidirectional boundary witnesses at `1e-7`, other scalars at `1e-9`, volume and
+centroid at `1e-10`, source attributes/groups, geometry user text, unchanged
+object identity and independent Undo/Redo. EndCommand still reports selected
+cutters; completed idle snapshots release them. The implementation follows the
+idle states. Kernel tests cover every crossed-cutter region, original-face
+ownership, duplicate cutters, empty cutters, nested material, concave faces,
+holes, cavities, disjoint shells and volume conservation. All target regions
+and connected ancestry share one original-face arrangement; rounded intermediate
+B-reps never become operands. App tests and a fresh production wgpu/egui
+inspection on private Xvfb verify both selection phases, shared sets,
+preselection, retention, cancellation, acceptance and Undo/Redo. See the
+[saved image, scope and provenance](commands/boolean-split.md). Native insertion
+order differs; open/curved cutters, broader compound command policies and relative
+performance remain unverified.
+
+The preceding edge SubCrv capture ran eleven owned public commands on private Xvfb
 under `VibocerosOracleSubcurveEdgesFinal20261007`, including box, planar surface
 and circular cylinder edges. All succeed. [Complete native records](../tools/rhino_oracle/observations/subcurve_edge.json)
 retain parent B-rep definitions, public edge preselection, macros, events,

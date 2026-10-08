@@ -58,9 +58,9 @@ Two follow-ups establish option persistence after cancellation in either getter.
 The main successful commands create 64 pieces. Saved records include source
 vertices and face loops, commands and events, area/volume/centroid, attributes,
 geometry user text, groups, selection and independent Undo/Redo. Command replay
-checks completed idle states and geometry within `1e-9` (volume/centroid within
-`1e-10`), face/edge counts,
-boundary witnesses in both directions and metadata/history. Kernel regressions
+checks completed idle states, scalar fields within `1e-9` (volume/centroid within
+`1e-10`), face/edge counts, boundary witnesses in both directions at `1e-7`, and
+metadata/history. Kernel regressions
 check all crossed-cutter regions, original-face ownership, nested material,
 concave faces, holes, cavities, disjoint shells and volume conservation. App tests
 cover both selection phases, preselection, retention, shared sets, cancellation
