@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `15833634` with Rust 1.95.0 after
-[Planar cut arithmetic and scale validation](planar-cut-numerics.md).
+The October 8, 2026 audit tested code at `37fc9fb8` with Rust 1.95.0 after
+[Circle-pair cut arithmetic and scale diagnostics](planar-cut-numerics.md).
 
 ## Commands and results
 
@@ -17,25 +17,47 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,258 tests:
+5,264 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 999 | 17 |
-| Command | 1,181 | 2 |
+| App | 1,000 | 17 |
+| Command | 1,182 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,052 | 8 |
+| Geometry | 2,056 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 956 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 959 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest planar scale capture ran 27 owned public recipes on private Xvfb
+The newest circular scale capture ran 27 owned public commands on private Xvfb
+under `VibocerosOracleCircleScale20261008`. All succeed natively and locally.
+[Complete records](../tools/rhino_oracle/observations/planar_circle_scale.json)
+retain equal/unequal radii, swapped operands, full edge curves, stations,
+identity, metadata and independent history at scales `2^-20`, `1` and `2^20`.
+All local normalized analytic areas agree at `1e-9`. Six equal-radius cases
+at scales `1` and `2^20` meet the existing normalized bidirectional boundary
+bound `5e-6`; the other 21 retain individually measured discrepancies. Unequal
+radius native fits differ by up to `8.632e-6` at those scales; small-scale
+bidirectional witnesses differ by up to `0.004588` and normalized native areas
+by up to `0.014638`. Tests reproduce these diagnostics instead of weakening
+the agreement bound. All cases check counts, identity, metadata and history;
+app replay checks all picking/history workflows. Shared exact circle-pair
+coefficients replace duplicated squared-radius subtraction. An independent
+172-case Fraction/180-digit Decimal reference verifies bit-exact longitudinal
+offsets and height within one binary64 step, including primitive exponents
+`-550` through `600` and near-internal contacts. A regression removes an old
+`6.9e-4` height error. Center-distance and angle arithmetic remain binary64;
+whole-model extreme scaling, continuous native boundary agreement, general
+curved Booleans and relative performance remain unverified. See
+[arithmetic](planar-cut-numerics.md) and [provenance](planar-circle-scale-provenance.json).
+
+The preceding planar scale capture ran 27 owned public recipes on private Xvfb
 under `VibocerosOraclePlanarScale20261008`. All succeed natively and locally.
 [Complete records](../tools/rhino_oracle/observations/planar_boolean_scale.json)
 retain curves, samples, topology, identity, metadata and independent history
