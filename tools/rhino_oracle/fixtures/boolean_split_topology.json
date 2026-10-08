@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_target_one_shell",
+      "case": "compound_target_one_shell"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_target_both_shells",
+      "case": "compound_target_both_shells"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_cutter_one_shell",
+      "case": "compound_cutter_one_shell"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_cutter_two_slabs",
+      "case": "compound_cutter_two_slabs"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_open_target",
+      "case": "compound_open_target"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_sheet_hole_cross_section",
+      "case": "sheet_hole_cross_section"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_sheet_hole_outside_section",
+      "case": "sheet_hole_outside_section"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_open_target_hole_then_box",
+      "case": "open_target_hole_then_box"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_open_target_hole_then_plane",
+      "case": "open_target_hole_then_plane"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_open_target_hole_then_coplanar_fill",
+      "case": "open_target_hole_then_coplanar_fill"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_open_target_hole_then_coplanar_cover",
+      "case": "open_target_hole_then_coplanar_cover"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_open_target_hole_then_coplanar_straddle",
+      "case": "open_target_hole_then_coplanar_straddle"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_keep",
+      "case": "compound_keep"
+    },
+    {
+      "op": "boolean_split_topology",
+      "id": "split_topology_compound_pre",
+      "case": "compound_pre"
+    }
+  ]
+}

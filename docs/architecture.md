@@ -33,7 +33,9 @@ use oriented shared/unshared boundary expressions, complete segment coverage and
 an explicit naked-edge exporter while preserving solid closure gates.
 [Mixed coplanar stages](boolean-split-mixed-open.md) carry physical boundary
 patches alongside exact region masks, preserving holes and supporting-face
-ownership through later cuts. General curved Boolean commands
+ownership through later cuts. [Trimmed sheets and compound inputs](boolean-split-topology.md)
+separate complete solid caps from open boundary output and keep command shell
+participation and geometry metadata outside material-region classification. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

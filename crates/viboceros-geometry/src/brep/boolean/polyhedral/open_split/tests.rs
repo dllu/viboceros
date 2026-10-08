@@ -140,3 +140,112 @@ fn coplanar_hole_boundary_crossing_is_ignored_and_future_faces_do_not_expand_tar
             .is_empty()
     );
 }
+
+fn holed_sheet() -> Brep {
+    let outer = cube([[0., 1.], [-1., 3.], [-1., 3.]]);
+    let tunnel = cube([[-1., 2.], [0.5, 1.5], [0.5, 1.5]]);
+    let tube = outer
+        .try_boolean_convex(
+            &tunnel,
+            BrepBooleanOperation::Difference,
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .unwrap();
+    let tube = tube
+        .try_merge_coplanar_polygon_faces_in_groups(&vec![0; tube.faces.len()], Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap_or(tube);
+    let face = tube
+        .faces
+        .iter()
+        .position(|f| {
+            f.loops.len() == 2
+                && f.loops[0]
+                    .trims
+                    .iter()
+                    .all(|t| tube.vertices[t.vertices[0]].point.x() == 1.)
+        })
+        .unwrap();
+    tube.duplicate_faces(&[face], Tolerance::DEFAULT).unwrap()
+}
+#[test]
+fn trimmed_sheet_boundary_api_keeps_holes_while_solid_partition_requires_full_caps() {
+    let target = cube([[0., 2.]; 3]);
+    let sheet = holed_sheet();
+    let strict =
+        split_polyhedral_brep_with_surfaces(&target, &[&sheet], Tolerance::DEFAULT).unwrap();
+    assert_eq!(strict.len(), 1);
+    assert!(strict[0].brep.is_solid());
+    assert_eq!(strict[0].cut_sides, [None]);
+    let open =
+        split_polyhedral_brep_by_trimmed_sheets(&target, &[&sheet], Tolerance::DEFAULT).unwrap();
+    assert_eq!(open.len(), 2);
+    for p in open {
+        assert!(!p.brep.is_solid());
+        assert!((p.brep.area(Tolerance::DEFAULT).unwrap() - 15.).abs() < 1e-9);
+    }
+}
+#[test]
+fn original_trim_holes_and_lineage_reports_preserve_disconnected_remainders() {
+    let target = holed_sheet();
+    let cutter = cube([[0., 2.]; 3]);
+    let pieces =
+        split_open_polyhedral_brep_with_lineage(&target, &[&cutter], Tolerance::DEFAULT).unwrap();
+    let mut areas = pieces
+        .iter()
+        .map(|p| p.brep.area(Tolerance::DEFAULT).unwrap())
+        .collect::<Vec<_>>();
+    areas.sort_by(f64::total_cmp);
+    assert_eq!(areas, [15., 24.]);
+    assert!(pieces.iter().all(|p| p.branch_component_count == 1));
+    let overlap = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([p(1., 0., 0.), p(1., 2., 0.), p(1., 2., 2.), p(1., 0., 2.)])
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let pieces =
+        split_open_polyhedral_brep_with_lineage(&target, &[&overlap], Tolerance::DEFAULT).unwrap();
+    assert_eq!(pieces.len(), 3);
+    assert_eq!(
+        pieces
+            .iter()
+            .filter(|p| p.branch_component_count == 2)
+            .count(),
+        2
+    );
+}
+#[test]
+fn compound_open_boundaries_repeat_untouched_components_in_each_branch() {
+    let target = Brep::try_disjoint_union(
+        vec![
+            plane(-1., 3.),
+            Brep::try_surface_face(
+                NurbsSurface::try_bilinear([
+                    p(1., 4., 4.),
+                    p(1., 6., 4.),
+                    p(1., 6., 6.),
+                    p(1., 4., 6.),
+                ])
+                .unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let cutter = cube([[0., 2.]; 3]);
+    let pieces =
+        split_open_polyhedral_brep_with_lineage(&target, &[&cutter], Tolerance::DEFAULT).unwrap();
+    assert_eq!(pieces.len(), 4);
+    assert!(pieces.iter().all(|p| p.branch_component_count == 2));
+    assert_eq!(
+        pieces
+            .iter()
+            .filter(|p| (p.brep.area(Tolerance::DEFAULT).unwrap() - 4.).abs() < 1e-9)
+            .count(),
+        2
+    );
+}

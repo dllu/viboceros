@@ -134,37 +134,27 @@ impl BooleanSplitCommand {
             if cutters.is_empty() {
                 continue;
             }
-            let pieces = if !refs[index].is_solid() {
-                viboceros_geometry::split_open_polyhedral_brep(
-                    refs[index],
-                    &cutters,
-                    doc.tolerance(),
-                )?
-                .into_iter()
-                .map(|p| (p.brep, p.face_sources, vec![1]))
-                .collect::<Vec<_>>()
-            } else if surfaces {
-                let pieces = viboceros_geometry::split_polyhedral_brep_with_surfaces(
-                    refs[index],
-                    &cutters,
-                    doc.tolerance(),
-                )?;
-                if !pieces
-                    .iter()
-                    .any(|p| p.cut_sides.iter().any(Option::is_some))
-                {
-                    continue;
+            let mut pieces = partition(refs[index], &cutters, surfaces, doc.tolerance())?;
+            if refs[index].is_solid() {
+                let components = refs[index].edge_connected_face_components();
+                if components.len() > 1 {
+                    let active_faces = pieces
+                        .iter()
+                        .filter(|(_, s, _)| s.iter().any(|p| p[0] > 0))
+                        .flat_map(|(_, s, _)| s.iter().filter(|p| p[0] == 0).map(|p| p[1]))
+                        .collect::<BTreeSet<_>>();
+                    let faces = components
+                        .iter()
+                        .filter(|c| c.iter().any(|i| active_faces.contains(i)))
+                        .flatten()
+                        .copied()
+                        .collect::<Vec<_>>();
+                    if !faces.is_empty() && faces.len() < refs[index].faces().len() {
+                        let active = refs[index].duplicate_faces(&faces, doc.tolerance())?;
+                        pieces = partition(&active, &cutters, surfaces, doc.tolerance())?;
+                    }
                 }
-                pieces
-                    .into_iter()
-                    .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
-                    .collect::<Vec<_>>()
-            } else {
-                viboceros_geometry::split_polyhedral_brep(refs[index], &cutters, doc.tolerance())?
-                    .into_iter()
-                    .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
-                    .collect::<Vec<_>>()
-            };
+            }
             if pieces.len() <= 1 {
                 continue;
             }
@@ -245,5 +235,45 @@ impl Command for BooleanSplitCommand {
         if matches!(error, CommandError::NothingSplit) {
             doc.clear_selection();
         }
+    }
+}
+
+type PartitionPiece = (Brep, Vec<[usize; 2]>, Vec<usize>);
+fn partition(
+    target: &Brep,
+    cutters: &[&Brep],
+    surfaces: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<PartitionPiece>, GeometryError> {
+    if !target.is_solid() {
+        Ok(
+            viboceros_geometry::split_open_polyhedral_brep_with_lineage(
+                target, cutters, tolerance,
+            )?
+            .into_iter()
+            .map(|p| (p.brep, p.face_sources, vec![p.branch_component_count]))
+            .collect(),
+        )
+    } else if surfaces {
+        let pieces = viboceros_geometry::split_polyhedral_brep_by_trimmed_sheets(
+            target, cutters, tolerance,
+        )?;
+        if !pieces
+            .iter()
+            .any(|p| p.cut_sides.iter().any(Option::is_some))
+        {
+            return Ok(vec![]);
+        }
+        Ok(pieces
+            .into_iter()
+            .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
+            .collect())
+    } else {
+        Ok(
+            viboceros_geometry::split_polyhedral_brep(target, cutters, tolerance)?
+                .into_iter()
+                .map(|p| (p.brep, p.face_sources, p.branch_component_counts))
+                .collect(),
+        )
     }
 }

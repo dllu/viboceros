@@ -50,6 +50,7 @@ pub struct BrepPolyhedralBooleanPlan<'a> {
     tolerance: Tolerance,
     budget: Budget,
     exported_faces: usize,
+    use_outer_coverage: bool,
 }
 
 impl<'a> BrepPolyhedralBooleanPlan<'a> {
@@ -62,6 +63,7 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             tolerance,
             budget,
             exported_faces: 0,
+            use_outer_coverage: false,
         })
     }
 
@@ -76,6 +78,7 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
             tolerance,
             budget,
             exported_faces: 0,
+            use_outer_coverage: false,
         }
     }
 
@@ -116,6 +119,32 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         Ok(result)
     }
 
+    pub(super) fn components_with_sheet_holes(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<BrepPolyhedralRegion>, GeometryError> {
+        self.use_outer_coverage = true;
+        let result = self.components(region);
+        self.use_outer_coverage = false;
+        result
+    }
+    pub(super) fn sheet_outer_covers_region(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+        group: &[usize],
+    ) -> Result<bool, GeometryError> {
+        self.check(region)?;
+        let mut patches = BTreeMap::new();
+        for cell in &self.built.cells {
+            self.budget.spend(1)?;
+            if group.contains(&cell.source[0]) && cell.sides.iter().all(|&i| region.mask[i]) {
+                *patches
+                    .entry(canonical_ring(&cell.polygon.ring))
+                    .or_insert(false) |= cell.outer_covers_cell;
+            }
+        }
+        Ok(!patches.is_empty() && patches.values().all(|v| *v))
+    }
     /// All planning patches on the group's plane must be physically covered
     /// wherever they separate material in the current bounded region.
     pub(super) fn sheet_covers_region(
@@ -424,7 +453,7 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         let mut required = BTreeSet::new();
         for c in &self.built.cells {
             self.budget.spend(1)?;
-            if !c.source_covers_cell {
+            if !(c.source_covers_cell || self.use_outer_coverage && c.outer_covers_cell) {
                 continue;
             }
             let x = c.sides.map(|i| region.mask[i]);
@@ -629,6 +658,15 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         self.export_boundary_from_faces(region, Some(&faces.iter().copied().collect()), false)
     }
 
+    pub(super) fn outer_patches(
+        &mut self,
+        region: &BrepPolyhedralRegion,
+    ) -> Result<Vec<(Polygon<'a>, [usize; 2])>, GeometryError> {
+        self.use_outer_coverage = true;
+        let result = self.physical_patches(region);
+        self.use_outer_coverage = false;
+        result
+    }
     pub(super) fn physical_patches(
         &mut self,
         region: &BrepPolyhedralRegion,

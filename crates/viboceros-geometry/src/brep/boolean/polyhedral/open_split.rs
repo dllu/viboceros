@@ -12,6 +12,27 @@ pub fn split_open_polyhedral_brep(
     cutters: &[&Brep],
     tolerance: Tolerance,
 ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+    Ok(
+        split_open_polyhedral_brep_with_lineage(target, cutters, tolerance)?
+            .into_iter()
+            .map(|p| BrepPolyhedralBooleanComponent {
+                brep: p.brep,
+                face_sources: p.face_sources,
+            })
+            .collect(),
+    )
+}
+#[derive(Clone, Debug)]
+pub struct BrepOpenSplitComponent {
+    pub brep: Brep,
+    pub face_sources: Vec<[usize; 2]>,
+    pub branch_component_count: usize,
+}
+pub fn split_open_polyhedral_brep_with_lineage(
+    target: &Brep,
+    cutters: &[&Brep],
+    tolerance: Tolerance,
+) -> Result<Vec<BrepOpenSplitComponent>, GeometryError> {
     if target.is_solid() {
         return Err(unsupported("open planar target required"));
     }
@@ -36,9 +57,15 @@ pub fn split_open_polyhedral_brep(
     let target_cells = built
         .cells
         .iter()
-        .filter(|c| c.source[0] == 0 && c.source_covers_cell)
+        .filter(|c| c.source[0] == 0 && c.outer_covers_cell)
         .map(|c| (c.polygon.clone(), c.source))
         .collect::<Vec<_>>();
+    let original_physical = built
+        .cells
+        .iter()
+        .filter(|c| c.source[0] == 0 && c.source_covers_cell)
+        .map(|c| canonical_ring(&c.polygon.ring))
+        .collect::<BTreeSet<_>>();
     let covered = groups
         .iter()
         .map(|g| {
@@ -61,11 +88,22 @@ pub fn split_open_polyhedral_brep(
     let inputs = (0..refs.len())
         .map(|i| plan.input(i))
         .collect::<Result<Vec<_>, _>>()?;
-    let initial = plan
+    let initial: Vec<Patch<'_>> = plan
         .physical_patches(&inputs[0])?
         .into_iter()
         .filter(|(_, source)| source[0] == 0)
         .collect();
+    let initial_keys = target
+        .edge_connected_face_components()
+        .into_iter()
+        .map(|faces| {
+            initial
+                .iter()
+                .filter(|(_, source)| faces.contains(&source[1]))
+                .map(|(p, _)| canonical_ring(&p.ring))
+                .collect::<BTreeSet<_>>()
+        })
+        .collect::<Vec<_>>();
     let mut nodes = vec![BoundaryNode {
         region: inputs[0].clone(),
         patches: initial,
@@ -75,7 +113,7 @@ pub fn split_open_polyhedral_brep(
     let mut patch_budget = Budget(EXACT_WORK_LIMIT);
     for (stage, group) in groups.into_iter().enumerate() {
         let closed = refs[group[0]].is_solid();
-        if closed && !plan.sheet_covers_region(&inputs[group[0]], &[0])? {
+        if closed && !plan.sheet_outer_covers_region(&inputs[group[0]], &[0])? {
             continue;
         }
         let mut next = Vec::new();
@@ -85,6 +123,7 @@ pub fn split_open_polyhedral_brep(
                     node,
                     &covered[stage],
                     &target_cells,
+                    &original_physical,
                     &planes[stage],
                     &mut patch_budget,
                 )?;
@@ -102,19 +141,16 @@ pub fn split_open_polyhedral_brep(
                     .iter()
                     .map(|(p, _)| canonical_ring(&p.ring))
                     .collect::<BTreeSet<_>>();
-                let missing = plan
-                    .physical_patches(&node.region)?
-                    .iter()
-                    .any(|(p, source)| {
-                        logical_sources.contains(&source[0])
-                            && !keys.contains(&canonical_ring(&p.ring))
-                            && (0..p.ring.len()).any(|i| {
-                                planes[stage].plane_side(&p.ring[i]).is_zero()
-                                    && planes[stage]
-                                        .plane_side(&p.ring[(i + 1) % p.ring.len()])
-                                        .is_zero()
-                            })
-                    });
+                let missing = plan.outer_patches(&node.region)?.iter().any(|(p, source)| {
+                    logical_sources.contains(&source[0])
+                        && !keys.contains(&canonical_ring(&p.ring))
+                        && (0..p.ring.len()).any(|i| {
+                            planes[stage].plane_side(&p.ring[i]).is_zero()
+                                && planes[stage]
+                                    .plane_side(&p.ring[(i + 1) % p.ring.len()])
+                                    .is_zero()
+                        })
+                });
                 if missing {
                     next.push(node);
                     continue;
@@ -160,9 +196,44 @@ pub fn split_open_polyhedral_brep(
     if !split {
         return Ok(vec![]);
     }
+    if initial_keys.len() > 1 {
+        let mut inactive = Vec::new();
+        for node in &nodes {
+            for patches in patch_components(&node.patches, &mut patch_budget)? {
+                let keys = patches
+                    .iter()
+                    .map(|(p, _)| canonical_ring(&p.ring))
+                    .collect::<BTreeSet<_>>();
+                if patches.iter().all(|(_, s)| s[0] == 0)
+                    && initial_keys.contains(&keys)
+                    && !inactive.iter().any(|(old, _)| *old == keys)
+                {
+                    inactive.push((keys, patches));
+                }
+            }
+        }
+        for node in &mut nodes {
+            let keys = node
+                .patches
+                .iter()
+                .map(|(p, _)| canonical_ring(&p.ring))
+                .collect::<BTreeSet<_>>();
+            for (needed, patches) in &inactive {
+                if !needed.is_subset(&keys) {
+                    node.patches.extend(patches.iter().cloned());
+                }
+            }
+        }
+    }
     let mut result = Vec::new();
     for node in nodes {
-        result.extend(plan.export_open_patches(node.patches)?);
+        let pieces = plan.export_open_patches(node.patches)?;
+        let count = pieces.len();
+        result.extend(pieces.into_iter().map(|p| BrepOpenSplitComponent {
+            brep: p.brep,
+            face_sources: p.face_sources,
+            branch_component_count: count,
+        }));
     }
     Ok(result)
 }
@@ -177,6 +248,7 @@ fn coplanar_nodes<'a>(
     node: BoundaryNode<'a>,
     covered: &BTreeMap<Vec<ExactPoint>, Patch<'a>>,
     originals: &[Patch<'a>],
+    original_physical: &BTreeSet<Vec<ExactPoint>>,
     plane: &Polygon<'_>,
     budget: &mut Budget,
 ) -> Result<(Vec<BoundaryNode<'a>>, bool), GeometryError> {
@@ -220,7 +292,9 @@ fn coplanar_nodes<'a>(
         return Ok((vec![node], false));
     }
     let mut hole_covered = false;
+    let mut original_fills = Vec::new();
     for hole in holes {
+        let mut original = true;
         let mut all = true;
         let mut any = false;
         let mut found = false;
@@ -228,15 +302,29 @@ fn coplanar_nodes<'a>(
             let center = mean(&p.ring, budget)?;
             if input::inside_ring(&center, hole, normal, budget)? == Some(true) {
                 found = true;
+                original &= !original_physical.contains(&canonical_ring(&p.ring));
                 let contains = covered.contains_key(&canonical_ring(&p.ring));
                 all &= contains;
                 any |= contains;
             }
         }
-        if any && !all {
-            return Ok((vec![node], false));
+        if original && found {
+            if shared > 0 {
+                for (p, s) in originals {
+                    let center = mean(&p.ring, budget)?;
+                    if input::inside_ring(&center, hole, normal, budget)? == Some(true)
+                        && covered.contains_key(&canonical_ring(&p.ring))
+                    {
+                        original_fills.push((p.clone(), *s));
+                    }
+                }
+            }
+        } else {
+            if any && !all {
+                return Ok((vec![node], false));
+            }
+            hole_covered |= found && all;
         }
-        hole_covered |= found && all;
     }
     if shared == 0 {
         if !hole_covered {
@@ -275,6 +363,8 @@ fn coplanar_nodes<'a>(
             }
         }
     }
+    primary.extend(original_fills.iter().cloned());
+    remainder.extend(original_fills);
     let region = node.region;
     Ok((
         vec![
@@ -357,4 +447,53 @@ fn patch_loops(
         loops.push(ring);
     }
     Ok(loops)
+}
+
+fn patch_components<'a>(
+    patches: &[Patch<'a>],
+    budget: &mut Budget,
+) -> Result<Vec<Vec<Patch<'a>>>, GeometryError> {
+    let mut polygons = patches.iter().map(|(p, _)| p.clone()).collect::<Vec<_>>();
+    subdivide(&mut polygons, budget)?;
+    let mut edges = BTreeMap::<[ExactPoint; 2], Vec<usize>>::new();
+    for (i, p) in polygons.iter().enumerate() {
+        for j in 0..p.ring.len() {
+            budget.spend(1)?;
+            let a = p.ring[j].clone();
+            let b = p.ring[(j + 1) % p.ring.len()].clone();
+            let key = if a < b { [a, b] } else { [b, a] };
+            edges.entry(key).or_default().push(i);
+        }
+    }
+    let mut adjacent = vec![BTreeSet::new(); patches.len()];
+    for uses in edges.values() {
+        for &i in uses {
+            for &j in uses {
+                budget.spend(1)?;
+                if i != j {
+                    adjacent[i].insert(j);
+                }
+            }
+        }
+    }
+    let mut seen = BTreeSet::new();
+    let mut result = Vec::new();
+    for i in 0..patches.len() {
+        if !seen.insert(i) {
+            continue;
+        }
+        let mut todo = vec![i];
+        let mut group = Vec::new();
+        while let Some(i) = todo.pop() {
+            budget.spend(1)?;
+            group.push(patches[i].clone());
+            for &j in &adjacent[i] {
+                if seen.insert(j) {
+                    todo.push(j);
+                }
+            }
+        }
+        result.push(group);
+    }
+    Ok(result)
 }

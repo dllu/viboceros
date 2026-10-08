@@ -25,6 +25,24 @@ pub fn split_polyhedral_brep_with_surfaces(
     cutters: &[&Brep],
     tolerance: Tolerance,
 ) -> Result<Vec<BrepSurfaceSplitComponent>, GeometryError> {
+    split_with_sheet_coverage(target, cutters, tolerance, false)
+}
+
+/// Boundary partition permitting enclosed holes in a cutting sheet. Outer
+/// coverage remains complete; missing inner patches produce validated open bodies.
+pub fn split_polyhedral_brep_by_trimmed_sheets(
+    target: &Brep,
+    cutters: &[&Brep],
+    tolerance: Tolerance,
+) -> Result<Vec<BrepSurfaceSplitComponent>, GeometryError> {
+    split_with_sheet_coverage(target, cutters, tolerance, true)
+}
+fn split_with_sheet_coverage(
+    target: &Brep,
+    cutters: &[&Brep],
+    tolerance: Tolerance,
+    allow_holes: bool,
+) -> Result<Vec<BrepSurfaceSplitComponent>, GeometryError> {
     if !target.is_solid() {
         return Err(unsupported("closed polyhedral target required"));
     }
@@ -46,7 +64,13 @@ pub fn split_polyhedral_brep_with_surfaces(
         let sheet = !refs[group[0]].is_solid();
         let mut next = Vec::new();
         for (region, sides, path) in regions {
-            if sheet && !plan.sheet_covers_region(&region, &group)? {
+            if sheet
+                && !(if allow_holes {
+                    plan.sheet_outer_covers_region(&region, &group)?
+                } else {
+                    plan.sheet_covers_region(&region, &group)?
+                })
+            {
                 let mut path = path;
                 path.push(1);
                 next.push((region, sides, path));
@@ -67,7 +91,11 @@ pub fn split_polyhedral_brep_with_surfaces(
                 continue;
             }
             for child in [outside, inside] {
-                let children = plan.components(&child)?;
+                let children = if allow_holes {
+                    plan.components_with_sheet_holes(&child)?
+                } else {
+                    plan.components(&child)?
+                };
                 let count = children.len();
                 for child in children {
                     let mut sides = sides.clone();
@@ -84,7 +112,13 @@ pub fn split_polyhedral_brep_with_surfaces(
     }
     let mut result = Vec::new();
     for (region, cut_sides, branch_component_counts) in regions {
-        for body in plan.export(&region)? {
+        let bodies = if allow_holes {
+            let patches = plan.physical_patches(&region)?;
+            plan.export_open_patches(patches)?
+        } else {
+            plan.export(&region)?
+        };
+        for body in bodies {
             result.push(BrepSurfaceSplitComponent {
                 brep: body.brep,
                 face_sources: body.face_sources,
@@ -225,6 +259,21 @@ pub(super) fn build<'a>(
                 } else {
                     true
                 };
+                let outer_covered = if sheets[owner] {
+                    let mut covered = false;
+                    for face in &breps[owner].faces {
+                        let ring = face.loops[0]
+                            .trims
+                            .iter()
+                            .map(|t| point(breps[owner].vertices[t.vertices[0]].point))
+                            .collect::<Vec<_>>();
+                        covered |= input::inside_ring(&center, &ring, &piece.normal, budget)?
+                            != Some(false);
+                    }
+                    covered
+                } else {
+                    true
+                };
                 let points = side_points(&center, &piece.normal, &planes, budget)?;
                 let sides = [samples.len(), samples.len() + 1];
                 for point in points {
@@ -245,6 +294,7 @@ pub(super) fn build<'a>(
                     source: [owner, face],
                     sides,
                     source_covers_cell: covered,
+                    outer_covers_cell: outer_covered,
                 });
             }
         }

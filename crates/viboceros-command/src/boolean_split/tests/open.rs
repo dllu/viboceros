@@ -76,6 +76,15 @@ fn boolean_split_mixed_open_replays_coplanar_stage_boundary_ownership_and_histor
     replay(&q, 20);
 }
 
+#[test]
+fn boolean_split_topology_replays_compound_and_trimmed_inputs() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/boolean_split_topology.json"
+    ))
+    .unwrap();
+    replay(&q, 12);
+}
+
 fn replay(q: &Value, expected_success: usize) {
     let mut success = 0;
     for r in q["results"].as_array().unwrap() {

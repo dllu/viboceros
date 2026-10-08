@@ -9417,6 +9417,7 @@ mod tests {
     mod boolean_split_mixed_open;
     mod boolean_split_open;
     mod boolean_split_plane;
+    mod boolean_split_topology;
     mod boolean_union;
     mod circle_fit_grips;
     mod circle_fit_points;

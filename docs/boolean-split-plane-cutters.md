@@ -8,7 +8,8 @@ phase or supply their IDs in SecondSet. The new cap faces retain the cutters'
 underlying surfaces. Target attributes, groups and geometry-user-text lineage,
 source retention, idle selection and Undo/Redo use the existing command policy.
 
-A sheet must cover the whole section of the current connected piece. A sheet
+A sheet's outer boundary must cover the section of the current connected piece.
+[Enclosed trim holes](boolean-split-topology.md) may leave open cap boundaries. A sheet
 ending inside the piece does not become an infinite plane. Incomplete, internal,
 touching and disjoint sheets leave the target unsplit. Coplanar sheets can jointly
 cover a section; their separate face ownership remains in the caps. A gap in

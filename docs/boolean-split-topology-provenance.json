@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleBooleanSplitTopologyPilot20261007",
+  "recipes": 14,
+  "successful_commands": 12,
+  "no_split_failures": 2,
+  "outputs": 33,
+  "full_native_parity": false,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public BooleanSplit compound and polygonally trimmed plane inputs, original/output boundaries, metadata, idle selection and independent Undo/Redo.",
+  "limits": [
+    "Native insertion order differs.",
+    "Curved/nonplanar and higher-degree supports remain unsupported.",
+    "Broader compound/trim combinations, overlapping shells, near contacts and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_split_topology_probe.py": "31d52ba7ed4c02336594410a972a4c5f92747964dad77eab17d330e0c75d3917",
+    "tools/rhino_oracle/fixtures/boolean_split_topology.json": "50d59f010f8f0abf621fa79c0e16c6a8d59e3fbd111bb3dbf136c346a45a6123",
+    "tools/rhino_oracle/observations/boolean_split_topology.json": "c9a64de64a4eceba6edf83464a0809b19495ece2b30cb485f20b5a770583fa36"
+  }
+}

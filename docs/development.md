@@ -44,6 +44,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [BooleanSplit finite plane sheets and exact connected-region queries](boolean-split-plane-cutters.md)
 - [BooleanSplit open targets and shared boundary construction](boolean-split-open-targets.md)
 - [BooleanSplit mixed coplanar stages and physical boundary patches](boolean-split-mixed-open.md)
+- [BooleanSplit trimmed sheets, compound participation and branch metadata](boolean-split-topology.md)
 - [Viewport caching and performance](viewport-caching.md)
 - [Opt-in offscreen GPU tests](gpu-tests.md)
 - [Imported surface shading and mesh checks](imported-shading.md)

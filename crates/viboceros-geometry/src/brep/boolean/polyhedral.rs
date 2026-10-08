@@ -11,7 +11,9 @@ mod surface_split;
 pub use interactions::{
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
 };
-pub use open_split::split_open_polyhedral_brep;
+pub use open_split::{
+    BrepOpenSplitComponent, split_open_polyhedral_brep, split_open_polyhedral_brep_with_lineage,
+};
 pub use plan::{
     BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
     BrepPolyhedralShell,
@@ -20,7 +22,10 @@ pub use reports::{
     BrepSplitComponent, intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
     split_polyhedral_brep, subtract_polyhedral_breps, union_polyhedral_breps,
 };
-pub use surface_split::{BrepSurfaceSplitComponent, split_polyhedral_brep_with_surfaces};
+pub use surface_split::{
+    BrepSurfaceSplitComponent, split_polyhedral_brep_by_trimmed_sheets,
+    split_polyhedral_brep_with_surfaces,
+};
 mod input;
 #[cfg(test)]
 mod tests;

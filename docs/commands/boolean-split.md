@@ -74,6 +74,8 @@ comparison. See [provenance](../boolean-split-provenance.json).
 
 ![BooleanSplit output and its retained cutter after Redo](../images/boolean-split-ui.png)
 
+[Trimmed sheets and compound inputs](../boolean-split-topology.md) have separate
+outer-coverage, branch-lineage and participating-shell policies.
 [Open planar targets](../boolean-split-open-targets.md) produce shared and unshared
 boundaries containing target and cutter faces. Curved and nonplanar inputs remain
 unsupported. Object insertion order
