@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `fc42a45f` with Rust 1.95.0 after
-[Boolean2Objects planar sheets and native acceptance](commands/boolean-two-objects.md).
+The October 7, 2026 audit tested code at `e56035f2` with Rust 1.95.0 after
+[Boolean2Objects coplanar partitions and unchanged acceptance](commands/boolean-two-objects.md).
 
 ## Commands and results
 
@@ -17,25 +17,47 @@ git diff --check
 ```
 
 All commands completed successfully. The ordinary Rust workspace suite passed
-5,223 tests:
+5,227 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 989 | 17 |
-| Command | 1,173 | 2 |
-| Document | 185 | 5 |
+| App | 990 | 17 |
+| Command | 1,174 | 2 |
+| Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,036 | 8 |
+| Geometry | 2,037 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 942 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 945 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new planar Boolean2Objects follow-up ran 48 owned public recipes across two
+The new coplanar Boolean2Objects capture ran 37 owned public recipes on private
+Xvfb under `VibocerosOracleBooleanTwoCoplanarVerified20261007`. Thirty-six succeed
+and one cancels. [Complete records](../tools/rhino_oracle/observations/boolean_two_coplanar.json)
+retain all five modes for partial overlap, opposite normals, smaller-first nested
+sheets, equality, opposite equality, disjoint sheets and edge contact, plus
+retention and cancellation. [Provenance](boolean-two-coplanar-provenance.json)
+binds the producer, bounded real-click driver, recipes and entire capture.
+Command replay checks complete geometry/counts, boundary witnesses in both
+directions at `1e-7`, scalars at `1e-9`, mass at `1e-10`, metadata, identity and
+independent Undo/Redo. App replay checks original cycle counts and source/history
+purity. The kernel retains common/exclusive patch categories separately from
+supporting-face lineage; merging preserves shared trim seams. Either Difference
+uses both exclusive regions, with multi-piece geometry-root text cleared.
+Accepted Invalid result previews preserve both sources but create an explicit
+unchanged Undo entry; the document regression tests rollback and Redo retention.
+A production wgpu/egui inspection on private Xvfb checks partial-overlap Difference
+and identical-sheet Invalid result previews, Enter, Undo/Redo and Ghosted mode.
+See [usage and saved images](commands/boolean-two-objects.md). General compound,
+trimmed-hole combinations, curved inputs, near contacts, insertion order,
+restart persistence, native pending pixel parity and relative performance remain
+unverified.
+
+The preceding planar Boolean2Objects follow-up ran 48 owned public recipes across two
 private Xvfb sessions. Forty-six succeed, one partial crossing fails and one
 cancels. [Combined replay](../tools/rhino_oracle/observations/boolean_two_open.json)
 retains every outcome; unchanged raw sessions and exact assembly are bound by
@@ -52,13 +74,12 @@ patches while retaining one exact original arrangement. A production wgpu/egui
 inspection on private Xvfb checked a typed SrfPt/Box pair, preselection, four real
 cycle clicks, Enter, Undo/Redo and Ghosted rendering of closed and open outputs.
 See [usage and saved image](commands/boolean-two-objects.md). Curved/nonplanar open
-inputs, arbitrary compound and partial coplanar policies, near contacts,
+inputs, arbitrary compound and trimmed-hole policies, near contacts,
 restart persistence, native preview pixel parity and relative performance remain
 unsupported or unverified.
 
 The preceding closed-solid Boolean2Objects capture ran eleven owned public
-recipes on private Xvfb
-under `VibocerosOracleBooleanTwoVerified20261007`. Seven succeed, three fail before
+recipes on private Xvfb under `VibocerosOracleBooleanTwoVerified20261007`. Seven succeed, three fail before
 cycling and one cancels. [Raw records](../tools/rhino_oracle/observations/boolean_two_command.json)
 retain bounded click counts, cycle prompts, final boundaries, mass properties,
 metadata, identity, idle selection and independent Undo/Redo. Replays check every
@@ -110,8 +131,7 @@ higher-degree geometry, arbitrary trimmed topology, ambiguous junctions,
 compound policy, near contacts, insertion order and relative performance remain
 unverified.
 
-The preceding open-target BooleanSplit capture ran 16 public recipes on private Xvfb
-under `VibocerosOracleBooleanSplitOpenPilot20261007`. Eleven succeed and create
+The preceding open-target BooleanSplit capture ran 16 public recipes on private Xvfb under `VibocerosOracleBooleanSplitOpenPilot20261007`. Eleven succeed and create
 27 pieces; five failures remain in the [raw records](../tools/rhino_oracle/observations/boolean_split_open.json).
 Replay covers all outcomes, face/edge counts, bidirectional boundary witnesses
 at `1e-7`, scalars at `1e-9`, solid volume/centroid at `1e-10`, target attributes,
@@ -130,8 +150,7 @@ extension above adds the recorded combinations. Curved/nonplanar inputs,
 higher-degree supports, broader trimmed/compound policies, tolerance contacts,
 native insertion order and relative performance remain unverified.
 
-The preceding finite-plane BooleanSplit capture ran 19 public recipes on private Xvfb
-under `VibocerosOracleBooleanSplitPlanesPilot20261007`. Fourteen commands succeed
+The preceding finite-plane BooleanSplit capture ran 19 public recipes on private Xvfb under `VibocerosOracleBooleanSplitPlanesPilot20261007`. Fourteen commands succeed
 and produce 39 closed pieces; five no-split failures remain in the
 [raw records](../tools/rhino_oracle/observations/boolean_split_plane.json).
 Replay covers all outcomes, face/edge counts, bidirectional boundary witnesses at
