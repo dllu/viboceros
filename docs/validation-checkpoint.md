@@ -3,38 +3,57 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `84bdc26b` with Rust 1.95.0 after
-[cached SubCrv viewport previews](subcurve-preview.md).
+The October 7, 2026 audit tested code at `408a1b1a` with Rust 1.95.0 after
+[SubCrv surface edge input](subcurve-edge-input.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
+cargo test --release --bin viboceros
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust suite passed 5,175 tests:
+All commands completed successfully. The workspace suite and final application
+rerun cover 5,184 passing Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 971 | 17 |
-| Command | 1,159 | 2 |
+| App | 977 | 17 |
+| Command | 1,162 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,020 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 912 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 915 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new SubCrv preview checks ten pending workflows against saved native
+The new edge SubCrv capture ran eleven owned public commands on private Xvfb
+under `VibocerosOracleSubcurveEdgesFinal20261007`, including box, planar surface
+and circular cylinder edges. All succeed. [Complete native records](../tools/rhino_oracle/observations/subcurve_edge.json)
+retain parent B-rep definitions, public edge preselection, macros, events,
+metadata and independent Undo/Redo. Application replay checks 297 curve stations,
+directed endpoints and four marker points at `1e-6`, copied attributes/groups,
+source snapshot identity and complete history restoration. Copy=No retains the
+parent and creates a new curve. Tests cover typed edge references, atomic
+failures, stale sources, numbered ambiguity choices and cancellation. A real
+CPU pointer-event test covers both ordinary curve clicks and surface edges;
+a cache regression checks reuse across moving hover and invalidation by edge,
+source and tolerance. The final application rerun includes that cache test.
+A fresh production wgpu/egui inspection on private Xvfb confirms edge selection,
+curve/marker previews, acceptance and Undo/Redo. The [saved screenshot and scope](subcurve-edge-input.md)
+document that inspection. Native command-first mouse picking, numeric edge
+getters and arbitrary trimmed-edge parity remain unverified.
+
+The preceding SubCrv preview checks ten pending workflows against saved native
 confirmed results: 330 stations and directed endpoints at `1e-6`. Repeated
 preview calls preserve source snapshot identity, attributes, selection and
 history, reuse cached geometry, and cover Copy, MarkEnds, locked-side rejection,
