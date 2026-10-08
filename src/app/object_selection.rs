@@ -397,7 +397,7 @@ impl VibocerosApp {
         }
         let required = match description.command {
             "Circle FitPoints" => 3,
-            "BooleanUnion" | "PlanarUnion" => 2,
+            "BooleanUnion" | "PlanarUnion" | "TweenSurfaces" => 2,
             _ => 1,
         };
         let selected_objects = self
@@ -482,8 +482,9 @@ impl VibocerosApp {
                 return true;
             }
             self.document.clear_selection();
-            let command_override = (description.command == "ReducePointCloud"
-                && input.split_whitespace().nth(1).is_some())
+            let command_override = (description.command == "TweenSurfaces"
+                || description.command == "ReducePointCloud"
+                    && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
             self.object_prompt = Some(PendingObjectCommand {
                 description,

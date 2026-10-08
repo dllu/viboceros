@@ -10,6 +10,29 @@ fn pair() -> (VibocerosApp, [ObjectId; 2]) {
     (app, [ids[0], ids[1]])
 }
 #[test]
+fn tween_surfaces_selection_confirmation_and_history() {
+    let (mut app, ids) = pair();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "TweenSurfaces NumberOfSurfaces=2");
+    assert!(app.object_prompt.is_some());
+    for id in ids {
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(id),
+            mode: SelectionMode::Add,
+        });
+    }
+    enter(&mut app, "");
+    if app.object_prompt.is_some() {
+        enter(&mut app, "");
+    }
+    assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().len(), 4, "{:?}", app.command_log);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 4);
+}
+#[test]
 fn planar_difference_and_intersection_pick_ordered_surfaces_and_finish_on_second_pick() {
     for (name, area) in [("PlanarDifference", 12.), ("PlanarIntersection", 4.)] {
         let (mut app, ids) = pair();

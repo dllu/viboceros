@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_planes_none",
+      "case": "planes_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_planes_refit",
+      "case": "planes_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_planes_samplepoints",
+      "case": "planes_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_quadratic_none",
+      "case": "quadratic_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_quadratic_refit",
+      "case": "quadratic_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_quadratic_samplepoints",
+      "case": "quadratic_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_rational_none",
+      "case": "rational_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_rational_refit",
+      "case": "rational_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_rational_samplepoints",
+      "case": "rational_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_domains_none",
+      "case": "domains_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_domains_refit",
+      "case": "domains_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_domains_samplepoints",
+      "case": "domains_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_counts_none",
+      "case": "counts_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_counts_refit",
+      "case": "counts_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_counts_samplepoints",
+      "case": "counts_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_degrees_none",
+      "case": "degrees_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_degrees_refit",
+      "case": "degrees_refit"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_degrees_samplepoints",
+      "case": "degrees_samplepoints"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_rational_swapped_none",
+      "case": "rational_swapped_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_both_rational_none",
+      "case": "both_rational_none"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_layer_startsrf",
+      "case": "layer_startsrf"
+    },
+    {
+      "op": "tween_surfaces_command",
+      "id": "tween_srf_layer_endsrf",
+      "case": "layer_endsrf"
+    }
+  ]
+}

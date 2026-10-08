@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenSurfacesVerified20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 22,
+  "successful_commands": 22,
+  "implemented_control_recipes": 8,
+  "control_point_epsilon": 1e-06,
+  "knot_weight_epsilon": 1e-12,
+  "limits": [
+    "Unequal-net common chart fitting remains unimplemented.",
+    "Refit and SamplePoints remain unimplemented; complete command and public sampling SDK data are retained.",
+    "Native Refit command produces four additional source-shaped copies and SamplePoints two; these are diagnostics, not reproduced locally.",
+    "Interactive ordered source picks, corner preview, option memory, arbitrary rational preparation and relative performance remain incomplete or unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_initial_probe.py": "50e6ad635049bb6eee167a0d25d21901d554df1841c1ff8b56b984dd5bd9cdcc",
+    "tools/rhino_oracle/observations/tween_surfaces_initial.json": "c5d7abdbeeebec7ec57cebe915d15d7b4daa51f47e0401870bac84ffb9bcc85a",
+    "tools/rhino_oracle/tween_surfaces_probe.py": "b31282bbed04b9231191497fd8db40536ce5c20659c4709b35b235a0adb171a8",
+    "tools/rhino_oracle/fixtures/tween_surfaces_command.json": "660d7cf0f35f3cc15c4fdacc5eb456cec56653aae63d0721b4ec477682efed25",
+    "tools/rhino_oracle/observations/tween_surfaces_command.json": "1ccaff34ecfa7d6ff7abcc9d45a3de5a67e01e7811fc2a761b3627a42ec4ff38"
+  }
+}
