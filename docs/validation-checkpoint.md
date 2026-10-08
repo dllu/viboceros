@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `96797e82` with Rust 1.95.0 after
-[Surface Rebuild](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `043c48a4` with Rust 1.95.0 after
+[Surface Rebuild option memory and typed prompts](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,40 @@ git diff --check
 ```
 
 All commands completed successfully. The release workspace suite passed
-5,314 Rust tests:
+5,317 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,023 | 17 |
-| Command | 1,193 | 2 |
+| App | 1,025 | 17 |
+| Command | 1,194 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,070 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 488 | 0 |
 
-The Python suite passed 984 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 987 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest surface Rebuild captures ran twelve owned native commands and twelve
+The newest surface Rebuild option captures ran a 25-step preference sequence and
+nine-step ordered degree/count follow-up on fresh private Xvfb schemes.
+[Primary prompts](../tools/rhino_oracle/observations/surface_rebuild_options.json)
+and [ordered follow-up](../tools/rhino_oracle/observations/surface_rebuild_option_followup.json)
+show immediate persistence of every valid option edit through cancellation and
+Undo/Redo. Scripted degree growth raises the count; a count below the current
+degree minimum is rejected. App replay compares all 34 initial/final states,
+source purity, cancellations, accepted control nets and independent history.
+Numeric value questions, inline versus picked invocation, unchanged invalid
+edits and new-registry isolation have separate regressions. Shared command-owned
+parsing preserves token order and keeps preferences outside document history.
+See [option provenance](surface-rebuild-options-provenance.json). Native dialog
+coupling, restart persistence, curve/surface preference interaction, previews and
+trim projection remain unfinished or unverified.
+
+The preceding surface Rebuild captures ran twelve owned native commands and twelve
 public SDK queries on private Xvfb. [Command records](../tools/rhino_oracle/observations/surface_rebuild.json)
 retain complete surfaces, 81 stations, attributes/groups, source identity and
 independent history for polynomial/rational inputs and all copy/replacement and
