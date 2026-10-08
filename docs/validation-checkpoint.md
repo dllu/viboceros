@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `7425380d` with Rust 1.95.0 after
-[Sampled surface tween construction](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `1ad4cda7` with Rust 1.95.0 after
+[Matched Refit surface tween construction](commands/tween-surfaces.md).
 
 ## Commands and results
 
@@ -17,25 +17,43 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,276 tests:
+5,281 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,002 | 17 |
-| Command | 1,186 | 2 |
+| App | 1,003 | 17 |
+| Command | 1,187 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,061 | 8 |
+| Geometry | 2,064 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 487 | 0 |
 
-The Python suite passed 963 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 965 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest sampled-tween capture ran 20 owned public commands on private Xvfb
+The newest Refit capture ran 24 owned public commands on private Xvfb under
+`VibocerosOracleTweenRefit20261008`. All succeed with the requested output count.
+[Complete records](../tools/rhino_oracle/observations/tween_surfaces_refit.json)
+retain option-initialization diagnostics separately from later bare acceptance,
+with original nets, 81 stations per surface, identity, attributes/groups and
+independent history. Kernel replay checks 24 accepted nets plus six earlier
+requested Refit nets at `1e-7` for controls and `1e-12` for knots/weights. Command
+replay checks every source/output with 81 UV-normalized witnesses at `1e-7`,
+identity, metadata/groups and history. Refit uses degree elevation and common
+knot refinement across unequal positive rational nets, retaining the end source
+UV domains. Independent polynomial tests verify normalized parameter agreement
+at `1e-12` across different degrees, U/V knot sites and multiplicities while
+preserving sources. App tests cover Refit selection, unequal degrees and history.
+Native option initialization creates extra objects; bare acceptance does not.
+Unequal-net control matching, native option memory/previews, general adaptive
+fitting parity and relative performance remain unfinished or unverified. See
+[workflow](commands/tween-surfaces.md) and [provenance](tween-refit-provenance.json).
+
+The preceding sampled-tween capture ran 20 owned public commands on private Xvfb
 under `VibocerosOracleTweenSampling20261008`. All succeed with exactly the requested
 output count. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_sampling.json)
 retain sample counts 2, 3 and 6 for planar, warped/rational and unequal-degree/
