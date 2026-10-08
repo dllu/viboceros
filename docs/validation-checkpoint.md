@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `500877f5` with Rust 1.95.0 after
-[Boolean2Objects cycling and native acceptance](commands/boolean-two-objects.md).
+The October 7, 2026 audit tested code at `fc42a45f` with Rust 1.95.0 after
+[Boolean2Objects planar sheets and native acceptance](commands/boolean-two-objects.md).
 
 ## Commands and results
 
@@ -16,28 +16,48 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The final application-only rerun also
-passed after command-line idle detection and display-mode regression assertions
-were added. The ordinary Rust workspace suite passed
-5,219 tests:
+All commands completed successfully. The ordinary Rust workspace suite passed
+5,223 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 988 | 17 |
-| Command | 1,172 | 2 |
+| App | 989 | 17 |
+| Command | 1,173 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,034 | 8 |
+| Geometry | 2,036 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 939 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 942 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new Boolean2Objects capture ran eleven owned public recipes on private Xvfb
+The new planar Boolean2Objects follow-up ran 48 owned public recipes across two
+private Xvfb sessions. Forty-six succeed, one partial crossing fails and one
+cancels. [Combined replay](../tools/rhino_oracle/observations/boolean_two_open.json)
+retains every outcome; unchanged raw sessions and exact assembly are bound by
+[provenance](boolean-two-open-provenance.json). Replays compare all five modes
+for plane/box in either order, reversed normals, perpendicular sheets, nested
+coplanar sheets, uncut contained/disjoint sheets, parallel sheets, retention,
+cancellation and independent Undo/Redo. Command checks include bidirectional
+boundary witnesses at `1e-7`, scalars at `1e-9` and volume/centroid at `1e-10`,
+identity, attributes/groups and geometry-root metadata. App checks use original
+click counts and verify untouched sources/history before acceptance. Independent
+kernel tests check finite section coverage, normal-relative half-box mass,
+coplanar area/holes and plan isolation. The mixed plan exports only physical
+patches while retaining one exact original arrangement. A production wgpu/egui
+inspection on private Xvfb checked a typed SrfPt/Box pair, preselection, four real
+cycle clicks, Enter, Undo/Redo and Ghosted rendering of closed and open outputs.
+See [usage and saved image](commands/boolean-two-objects.md). Curved/nonplanar open
+inputs, arbitrary compound and partial coplanar policies, near contacts,
+restart persistence, native preview pixel parity and relative performance remain
+unsupported or unverified.
+
+The preceding closed-solid Boolean2Objects capture ran eleven owned public
+recipes on private Xvfb
 under `VibocerosOracleBooleanTwoVerified20261007`. Seven succeed, three fail before
 cycling and one cancels. [Raw records](../tools/rhino_oracle/observations/boolean_two_command.json)
 retain bounded click counts, cycle prompts, final boundaries, mass properties,
@@ -48,7 +68,8 @@ preview scene caches leave source geometry/history untouched and acceptance
 creates one transaction. A production wgpu/egui inspection on private Xvfb
 checked picking, click cycling, Escape, Enter, Undo/Redo and Ghosted mode changes
 while pending. See the [saved image, scope and provenance](commands/boolean-two-objects.md).
-Certified closed polyhedral inputs are supported. Open/curved inputs, arbitrary
+That checkpoint supported certified closed polyhedral inputs. The planar
+extension above adds the measured open-sheet cases. Curved inputs, arbitrary
 compound policy, near contacts, restart option persistence, native preview pixel
 parity and relative performance remain unsupported or unverified.
 
