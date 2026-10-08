@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `18131ce5` with Rust 1.95.0 after
-[BooleanSplit trimmed sheets and compound inputs](boolean-split-topology.md).
+The October 7, 2026 audit tested code at `500877f5` with Rust 1.95.0 after
+[Boolean2Objects cycling and native acceptance](commands/boolean-two-objects.md).
 
 ## Commands and results
 
@@ -16,26 +16,43 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust workspace suite passed
-5,214 tests:
+All commands completed successfully. The final application-only rerun also
+passed after command-line idle detection and display-mode regression assertions
+were added. The ordinary Rust workspace suite passed
+5,219 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 986 | 17 |
-| Command | 1,169 | 2 |
+| App | 988 | 17 |
+| Command | 1,172 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
 | Geometry | 2,034 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 935 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 939 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new topology BooleanSplit capture ran 14 owned public recipes on private
+The new Boolean2Objects capture ran eleven owned public recipes on private Xvfb
+under `VibocerosOracleBooleanTwoVerified20261007`. Seven succeed, three fail before
+cycling and one cancels. [Raw records](../tools/rhino_oracle/observations/boolean_two_command.json)
+retain bounded click counts, cycle prompts, final boundaries, mass properties,
+metadata, identity, idle selection and independent Undo/Redo. Replays check every
+completed outcome with bidirectional boundary witnesses at `1e-7`, scalars at
+`1e-9` and volume/centroid at `1e-10`. All five choices share one exact arrangement;
+preview scene caches leave source geometry/history untouched and acceptance
+creates one transaction. A production wgpu/egui inspection on private Xvfb
+checked picking, click cycling, Escape, Enter, Undo/Redo and Ghosted mode changes
+while pending. See the [saved image, scope and provenance](commands/boolean-two-objects.md).
+Certified closed polyhedral inputs are supported. Open/curved inputs, arbitrary
+compound policy, near contacts, restart option persistence, native preview pixel
+parity and relative performance remain unsupported or unverified.
+
+The preceding topology BooleanSplit capture ran 14 owned public recipes on private
 Xvfb under `VibocerosOracleBooleanSplitTopologyPilot20261007`. Twelve succeed and
 create 33 pieces; two failures remain in the [raw records](../tools/rhino_oracle/observations/boolean_split_topology.json).
 Replay checks every outcome, face/edge counts, boundary witnesses at `1e-7`,
