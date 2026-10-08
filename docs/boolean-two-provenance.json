@@ -1,0 +1,26 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleBooleanTwoVerified20261007",
+  "private_xvfb": true,
+  "recipes": 11,
+  "successful_commands": 7,
+  "retained_failures": 3,
+  "cancellations": 1,
+  "full_native_parity": false,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public Boolean2Objects commands with real bounded viewport clicks, cycle labels, final identity/metadata and independent Undo/Redo.",
+  "limits": [
+    "Closed certified polyhedral inputs only; open/curved and general compound sources remain unsupported or unverified.",
+    "No native pending display-conduit geometry/pixel measurement.",
+    "Near contacts, option restart persistence and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_two_probe.py": "57c7ce3fe4a2ea890134bf585ff0f8650ac189ad426c0c61ece0a76a94cb0d6d",
+    "tools/rhino_oracle/boolean_two_input.py": "958a4758a851d504af70a7b12bb707d067475877b2160c20a32715cbd1f488c8",
+    "tools/rhino_oracle/fixtures/boolean_two_command.json": "d1151c4686c7dfb7f7d5948a80fb576f4dba6ab72903ab9031d2b843f5e7de2d",
+    "tools/rhino_oracle/observations/boolean_two_command.json": "a02fed6231b862e865bf751d0a505ea3a56283a62c8b27291ae1d846a23854de"
+  }
+}

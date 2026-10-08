@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_0",
+      "case": "cycle_0"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_1",
+      "case": "cycle_1"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_2",
+      "case": "cycle_2"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_3",
+      "case": "cycle_3"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_4",
+      "case": "cycle_4"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cycle_5",
+      "case": "cycle_5"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_keep",
+      "case": "keep"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_cancel",
+      "case": "cancel"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_disjoint",
+      "case": "disjoint"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_contained",
+      "case": "contained"
+    },
+    {
+      "op": "boolean_two_command",
+      "id": "boolean_two_contained_cycle_3",
+      "case": "contained_cycle_3"
+    }
+  ]
+}

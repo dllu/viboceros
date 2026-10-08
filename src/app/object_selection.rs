@@ -182,6 +182,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if let Some(p) = &self.boolean_two_prompt {
+            return (!p.cycling()).then_some(ObjectSelectionFilter::SurfaceComponents);
+        }
         if self.subcurve_prompt.is_some() {
             return Some(ObjectSelectionFilter::Curves);
         }

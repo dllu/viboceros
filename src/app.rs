@@ -141,6 +141,7 @@ use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
 mod boolean_solids;
+mod boolean_two;
 mod construction_plane;
 mod curve_preview;
 mod curve_prompt;
@@ -1965,6 +1966,7 @@ pub struct VibocerosApp {
     group_prompt: Option<group_prompt::GroupPrompt>,
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
     subcurve_prompt: Option<subcurve_prompt::SubcurvePrompt>,
+    boolean_two_prompt: Option<boolean_two::Prompt>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
@@ -2061,6 +2063,7 @@ impl VibocerosApp {
             group_prompt: None,
             intersection_prompt: None,
             subcurve_prompt: None,
+            boolean_two_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
@@ -2209,6 +2212,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_boolean_two(&input) {
+            return;
+        }
         if self.try_continue_object_prompt(&input) {
             return;
         }
@@ -2283,7 +2289,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_remember_copy_options(&input)
+        if self.start_boolean_two(&input)
+            || self.try_start_remember_copy_options(&input)
             || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
             || self.try_start_unjoin_command(&input)
@@ -5064,6 +5071,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.cancel_boolean_two();
         if self.subcurve_prompt.take().is_some() {
             self.document.clear_selection();
         }
@@ -7743,6 +7751,14 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self
+            .boolean_two_prompt
+            .as_ref()
+            .is_some_and(|p| !p.cycling())
+        {
+            self.pick_boolean_two_objects(click.object_id, click.mode);
+            return;
+        }
         if self.pick_subcurve_source(click.object_id) {
             return;
         }
@@ -7979,6 +7995,14 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self
+            .boolean_two_prompt
+            .as_ref()
+            .is_some_and(|p| !p.cycling())
+        {
+            self.pick_boolean_two_objects(selection.object_ids, selection.mode);
+            return;
+        }
         self.apply_selection_region(selection, false);
     }
 
@@ -8286,6 +8310,9 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if output.source_viewport_click && !output.toggle_maximized && self.cycle_boolean_two() {
+            return true;
+        }
         if let Some(point) = output.drafting_hover.take() {
             self.update_subcurve_hover(point);
         }
@@ -8482,6 +8509,7 @@ impl VibocerosApp {
         if self.active_command == Some(InteractiveCommand::Points)
             || self.group_prompt.is_some()
             || self.intersection_prompt.is_some()
+            || self.boolean_two_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -8572,6 +8600,8 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.boolean_two_prompt.is_some() {
+            self.cancel_boolean_two();
         } else if self.remember_copy_prompt {
             self.cancel_interactive_command(true);
         } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
@@ -8644,6 +8674,7 @@ impl eframe::App for VibocerosApp {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.validate_boolean_two();
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             self.cancel_current_prompt_or_selection();
@@ -8657,6 +8688,7 @@ impl eframe::App for VibocerosApp {
         if self.active_command.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
+            && self.boolean_two_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9023,7 +9055,11 @@ impl eframe::App for VibocerosApp {
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
         let curve_or_edge_pick = edge_pick && self.picking_subcurve_edge();
-        let document = &self.document;
+        let document = self
+            .boolean_two_prompt
+            .as_ref()
+            .and_then(|p| p.scene())
+            .unwrap_or(&self.document);
         let twist_preview = self
             .twist_session
             .as_ref()
@@ -9418,6 +9454,7 @@ mod tests {
     mod boolean_split_open;
     mod boolean_split_plane;
     mod boolean_split_topology;
+    mod boolean_two;
     mod boolean_union;
     mod circle_fit_grips;
     mod circle_fit_points;
@@ -9541,6 +9578,7 @@ mod tests {
             group_prompt: None,
             intersection_prompt: None,
             subcurve_prompt: None,
+            boolean_two_prompt: None,
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
