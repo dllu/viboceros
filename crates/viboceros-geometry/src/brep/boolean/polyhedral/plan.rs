@@ -629,11 +629,41 @@ impl<'a> BrepPolyhedralBooleanPlan<'a> {
         self.export_boundary_from_faces(region, Some(&faces.iter().copied().collect()), false)
     }
 
-    pub(super) fn export_open_boundary(
+    pub(super) fn physical_patches(
         &mut self,
         region: &BrepPolyhedralRegion,
-    ) -> Result<Vec<BrepPolyhedralBoundaryComponent>, GeometryError> {
-        self.export_boundary_from_faces(region, None, true)
+    ) -> Result<Vec<(Polygon<'a>, [usize; 2])>, GeometryError> {
+        let (polygons, sources) = self.boundary(region)?;
+        Ok(polygons.into_iter().zip(sources).collect())
+    }
+    pub(super) fn export_open_patches(
+        &mut self,
+        patches: Vec<(Polygon<'a>, [usize; 2])>,
+    ) -> Result<Vec<BrepPolyhedralBooleanComponent>, GeometryError> {
+        self.budget.spend(patches.len())?;
+        self.exported_faces += patches.len();
+        if self.exported_faces > MAX_OUTPUT_FACES {
+            return Err(GeometryError::BrepBooleanWorkLimit);
+        }
+        if patches.is_empty() {
+            return Ok(vec![]);
+        }
+        let sources = patches.iter().map(|(_, s)| *s).collect::<Vec<_>>();
+        let built = rebuild_open_boundary(
+            patches.into_iter().map(|(p, _)| p).collect(),
+            self.tolerance,
+            &mut self.budget,
+        )?;
+        built
+            .edge_connected_face_components()
+            .into_iter()
+            .map(|faces| {
+                Ok(BrepPolyhedralBooleanComponent {
+                    brep: built.duplicate_faces(&faces, self.tolerance)?,
+                    face_sources: faces.into_iter().map(|i| sources[i]).collect(),
+                })
+            })
+            .collect()
     }
 
     fn export_boundary_from_faces(

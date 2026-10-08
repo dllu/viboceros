@@ -30,7 +30,10 @@ sets. [Finite plane cutters](boolean-split-plane-cutters.md) add per-region cove
 checks and coplanar sheet groups, with exact component queries retaining cavities
 and separating nested islands before export. [Open planar targets](boolean-split-open-targets.md)
 use oriented shared/unshared boundary expressions, complete segment coverage and
-an explicit naked-edge exporter while preserving solid closure gates. General curved Boolean commands
+an explicit naked-edge exporter while preserving solid closure gates.
+[Mixed coplanar stages](boolean-split-mixed-open.md) carry physical boundary
+patches alongside exact region masks, preserving holes and supporting-face
+ownership through later cuts. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

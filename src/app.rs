@@ -9414,6 +9414,7 @@ mod tests {
     mod boolean_difference;
     mod boolean_intersection;
     mod boolean_split;
+    mod boolean_split_mixed_open;
     mod boolean_split_open;
     mod boolean_split_plane;
     mod boolean_union;

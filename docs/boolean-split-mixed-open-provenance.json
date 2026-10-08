@@ -1,0 +1,24 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleBooleanSplitMixedOpenVerified20261007",
+  "private_xvfb": true,
+  "recipes": 20,
+  "successful_commands": 20,
+  "outputs": 56,
+  "full_native_parity": false,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "mass_epsilon": 1e-10,
+  "source": "Owned public BooleanSplit mixed coplanar/noncoplanar open-target stages with boundaries, metadata, idle selection and Undo/Redo.",
+  "limits": [
+    "Insertion order differs; replay matches owner, area, bounds and topology.",
+    "Curved/nonplanar and higher-degree supports remain unsupported.",
+    "Arbitrary trimmed topology, ambiguous patch junctions, compound policy, near contacts and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/boolean_split_mixed_open_probe.py": "6e13f3bd0e6072e90cc28f80dc775645a54bf88a3b35a6543baebc7fcc66781c",
+    "tools/rhino_oracle/fixtures/boolean_split_mixed_open.json": "7c104d13bc7f86f77de9537f8dd6260c6172c54d270e839978d1fa4b93c170cb",
+    "tools/rhino_oracle/observations/boolean_split_mixed_open.json": "03fe98284e9942ff95b612c8b298c25cf1ebf5ff435748be0f7e92bf77cdf88b"
+  }
+}

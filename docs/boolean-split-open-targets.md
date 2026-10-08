@@ -55,8 +55,8 @@ after Redo in Ghosted mode; it is not a native pixel comparison.
 
 The supported targets are certified coplanar affine clamped bilinear faces with
 straight trims. Curved or nonplanar targets and cutters and higher-degree support
-surfaces remain unsupported. Mixed coplanar and noncoplanar open-target stages
-fail explicitly. Broader trimmed/compound policies, near-contact tolerance,
+surfaces remain unsupported. [Mixed coplanar stages](boolean-split-mixed-open.md)
+now retain physical boundary patches through later solid and sheet cuts. Broader trimmed/compound policies, near-contact tolerance,
 insertion/face ordering and relative performance remain unverified. Native
 boundary witnesses are separate from the kernel's exact arrangement certificates.
 

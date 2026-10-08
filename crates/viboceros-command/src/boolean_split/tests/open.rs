@@ -45,7 +45,12 @@ fn aligned(doc: &Document, actual: &Value, native: &Value) -> Value {
             })
             .map(|(i, _)| i)
             .collect::<Vec<_>>();
-        assert_eq!(candidates.len(), 1, "unique native output for {row}");
+        assert!(!candidates.is_empty(), "native output for {row}");
+        let candidates = candidates
+            .into_iter()
+            .filter(|&i| row["faces"] == n[i]["faces"] && row["edges"] == n[i]["edges"])
+            .collect::<Vec<_>>();
+        assert!(!candidates.is_empty(), "native topology for {row}");
         used.insert(candidates[0]);
         result.push(n[candidates[0]].clone());
     }
@@ -59,6 +64,19 @@ fn boolean_split_open_replays_shared_boundary_geometry_metadata_and_history() {
         "../../../../../tools/rhino_oracle/observations/boolean_split_open.json"
     ))
     .unwrap();
+    replay(&q, 11);
+}
+
+#[test]
+fn boolean_split_mixed_open_replays_coplanar_stage_boundary_ownership_and_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../../tools/rhino_oracle/observations/boolean_split_mixed_open.json"
+    ))
+    .unwrap();
+    replay(&q, 20);
+}
+
+fn replay(q: &Value, expected_success: usize) {
     let mut success = 0;
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
@@ -120,5 +138,5 @@ fn boolean_split_open_replays_shared_boundary_geometry_metadata_and_history() {
             assert!(!doc.can_undo());
         }
     }
-    assert_eq!(success, 11);
+    assert_eq!(success, expected_success);
 }

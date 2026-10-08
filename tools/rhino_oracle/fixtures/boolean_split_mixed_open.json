@@ -1,0 +1,106 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_then_plane",
+      "case": "coplanar_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_then_coplanar",
+      "case": "plane_then_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_then_box",
+      "case": "coplanar_then_box"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_box_then_coplanar",
+      "case": "box_then_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_reverse_then_plane",
+      "case": "coplanar_reverse_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_then_coplanar_reverse",
+      "case": "plane_then_coplanar_reverse"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_partial_then_plane",
+      "case": "coplanar_partial_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_then_coplanar_partial",
+      "case": "plane_then_coplanar_partial"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_full_then_plane",
+      "case": "coplanar_full_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_then_coplanar_full",
+      "case": "plane_then_coplanar_full"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_outside_then_plane",
+      "case": "coplanar_outside_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_coplanar_box",
+      "case": "plane_coplanar_box"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_pre",
+      "case": "pre"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_keep",
+      "case": "keep"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_box_then_small_coplanar",
+      "case": "box_then_small_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_box_then_large_coplanar",
+      "case": "box_then_large_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_plane_then_inside_coplanar",
+      "case": "plane_then_inside_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_inside_coplanar_then_plane",
+      "case": "inside_coplanar_then_plane"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_box_then_straddle_coplanar",
+      "case": "box_then_straddle_coplanar"
+    },
+    {
+      "op": "boolean_split_mixed_open",
+      "id": "split_mixed_open_coplanar_then_plane_keep",
+      "case": "coplanar_then_plane_keep"
+    }
+  ]
+}

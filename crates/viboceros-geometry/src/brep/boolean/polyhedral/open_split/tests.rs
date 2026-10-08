@@ -55,3 +55,88 @@ fn open_target_finite_coverage_rejects_short_sheet_and_preserves_closed_contract
     ));
     assert!(split_open_polyhedral_brep(&cube, &[&full], Tolerance::DEFAULT).is_err());
 }
+
+#[test]
+fn mixed_coplanar_stages_preserve_unrounded_remainders_and_cut_order() {
+    let target = plane(-1., 3.);
+    let overlap = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([p(1., 0., 0.), p(1., 2., 0.), p(1., 2., 2.), p(1., 0., 2.)])
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let perpendicular = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([
+            p(-1., 1., -1.),
+            p(-1., 1., 3.),
+            p(3., 1., 3.),
+            p(3., 1., -1.),
+        ])
+        .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for (cutters, expected) in [
+        (vec![&overlap, &perpendicular], vec![12., 16., 16.]),
+        (vec![&perpendicular, &overlap], vec![16., 16.]),
+    ] {
+        let pieces = split_open_polyhedral_brep(&target, &cutters, Tolerance::DEFAULT).unwrap();
+        let mut areas = pieces
+            .iter()
+            .map(|p| p.brep.area(Tolerance::DEFAULT).unwrap())
+            .collect::<Vec<_>>();
+        areas.sort_by(f64::total_cmp);
+        assert_eq!(areas, expected);
+        assert!(pieces.iter().all(|p| !p.brep.is_solid()));
+        for piece in &pieces {
+            for (face, [owner, index]) in piece.brep.faces.iter().zip(&piece.face_sources) {
+                assert_eq!(
+                    face.surface,
+                    [&target]
+                        .into_iter()
+                        .chain(cutters.iter().copied())
+                        .collect::<Vec<_>>()[*owner]
+                        .faces[*index]
+                        .surface
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn coplanar_hole_boundary_crossing_is_ignored_and_future_faces_do_not_expand_target() {
+    let target = plane(-1., 3.);
+    let solid = cube([[0., 2.]; 3]);
+    let straddle = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([
+            p(1., -0.5, -0.5),
+            p(1., 0.5, -0.5),
+            p(1., 0.5, 0.5),
+            p(1., -0.5, 0.5),
+        ])
+        .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let pieces =
+        split_open_polyhedral_brep(&target, &[&solid, &straddle], Tolerance::DEFAULT).unwrap();
+    assert_eq!(pieces.len(), 2);
+    let mut areas = pieces
+        .iter()
+        .map(|p| p.brep.area(Tolerance::DEFAULT).unwrap())
+        .collect::<Vec<_>>();
+    areas.sort_by(f64::total_cmp);
+    assert_eq!(areas, [16., 24.]);
+    let outside = Brep::try_surface_face(
+        NurbsSurface::try_bilinear([p(1., 4., 0.), p(1., 5., 0.), p(1., 5., 1.), p(1., 4., 1.)])
+            .unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert!(
+        split_open_polyhedral_brep(&target, &[&outside], Tolerance::DEFAULT)
+            .unwrap()
+            .is_empty()
+    );
+}
