@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `864e6671` with Rust 1.95.0 after
-[Mixed straight/circular planar regions](commands/planar-booleans.md).
+The October 8, 2026 audit tested code at `15833634` with Rust 1.95.0 after
+[Planar cut arithmetic and scale validation](planar-cut-numerics.md).
 
 ## Commands and results
 
@@ -17,25 +17,46 @@ git diff --check
 ```
 
 All commands completed successfully. The final release workspace suite passed
-5,248 tests:
+5,258 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 998 | 17 |
-| Command | 1,180 | 2 |
+| App | 999 | 17 |
+| Command | 1,181 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,044 | 8 |
+| Geometry | 2,052 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 953 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 956 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new mixed planar capture ran 34 owned public recipes on private Xvfb under
+The newest planar scale capture ran 27 owned public recipes on private Xvfb
+under `VibocerosOraclePlanarScale20261008`. All succeed natively and locally.
+[Complete records](../tools/rhino_oracle/observations/planar_boolean_scale.json)
+retain curves, samples, topology, identity, metadata and independent history
+at scales `2^-20`, `1` and `2^20`. Command replay checks bidirectional finite
+curve witnesses at `5e-6 * scale`; local normalized total areas match analytic
+formulas at `1e-9`. Native normalized output areas differ by up to `2.103e-4`,
+and source areas by up to `1.222e-4`. Only this capture uses normalized native
+area bounds `3e-4` and `2e-4`; earlier tolerances stay unchanged. App replay
+checks all 27 picking/history workflows. Exact rational cut coefficients fix
+cancelled, overflowing and underflowing line determinants and stabilize
+line/circle roots; 206 independent Python Fraction cases check line stations
+bit for bit. Boolean export reconciles independently rounded junction endpoints
+within the document tolerance while preserving general PolyCurve coincidence
+rules. Primitive regressions include exponents `-550` through `600`, exact
+endpoint roots, unrepresentable cuts and rejection of excessive junction gaps.
+[Arithmetic details](planar-cut-numerics.md) and [provenance](planar-boolean-scale-provenance.json)
+retain the evidence and limits. Whole-model extreme scaling, continuous native
+boundary certificates, general curved Booleans and relative performance remain
+unverified.
+
+The preceding mixed planar capture ran 34 owned public recipes on private Xvfb under
 `VibocerosOraclePlanarMixedVerified20261008`. All succeed. [Complete records](../tools/rhino_oracle/observations/planar_boolean_mixed.json)
 retain full NURBS edge definitions, 33 witnesses per edge, areas, counts, identity,
 metadata and independent Undo/Redo. [Provenance](planar-boolean-mixed-provenance.json)
