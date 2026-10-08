@@ -384,6 +384,7 @@ impl Viewport {
             .next()
     }
 
+    #[cfg(test)]
     pub(super) fn pick_object_candidates_matching_preview(
         &self,
         pointer: Pos2,
@@ -392,9 +393,26 @@ impl Viewport {
         filter: ObjectSelectionFilter,
         preview: Option<ObjectSelectionFilter>,
     ) -> Vec<ObjectId> {
+        self.pick_object_candidates_matching_preview_excluding(
+            pointer, rect, document, filter, preview, None,
+        )
+    }
+
+    pub(super) fn pick_object_candidates_matching_preview_excluding(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+        preview: Option<ObjectSelectionFilter>,
+        excluded: Option<ObjectId>,
+    ) -> Vec<ObjectId> {
         let mut hits = Vec::new();
         for object in document.objects() {
-            if !filter.accepts_object(object) || !selection_candidate(document, object, preview) {
+            if Some(object.id()) == excluded
+                || !filter.accepts_object(object)
+                || !selection_candidate(document, object, preview)
+            {
                 continue;
             }
             let hit = match object.geometry() {
@@ -971,6 +989,55 @@ mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
     use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn excluding_the_first_surface_makes_nested_cutters_pickable_in_filled_views() {
+        let mut document = Document::default();
+        let surface = |size: f64| {
+            viboceros_geometry::NurbsSurface::try_bilinear([
+                Point3::try_new(-size, -size, 0.).unwrap(),
+                Point3::try_new(size, -size, 0.).unwrap(),
+                Point3::try_new(size, size, 0.).unwrap(),
+                Point3::try_new(-size, size, 0.).unwrap(),
+            ])
+            .unwrap()
+        };
+        let outer = document
+            .add_geometry(Geometry::NurbsSurface(surface(4.)))
+            .unwrap();
+        let inner = document
+            .add_geometry(Geometry::NurbsSurface(surface(1.)))
+            .unwrap();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+            let mut view = Viewport::new(ViewKind::Top);
+            view.display_mode = mode;
+            let pointer = view
+                .project(Point3::try_new(0., 0., 0.).unwrap(), rect)
+                .unwrap();
+            let original = view.pick_object_candidates_matching_preview(
+                pointer,
+                rect,
+                &document,
+                ObjectSelectionFilter::Surfaces,
+                None,
+            );
+            assert!(original.contains(&outer));
+            assert_eq!(
+                view.pick_object_candidates_matching_preview_excluding(
+                    pointer,
+                    rect,
+                    &document,
+                    ObjectSelectionFilter::Surfaces,
+                    None,
+                    Some(outer)
+                ),
+                vec![inner]
+            );
+            assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.selected_object_count(), 0);
+        }
+    }
 
     #[test]
     fn lasso_modes_classify_enclosed_crossing_and_outside_objects() {

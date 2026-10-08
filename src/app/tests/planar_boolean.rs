@@ -1,5 +1,6 @@
 use super::boolean_intersection::enter;
 use super::*;
+use viboceros_geometry::{Brep, NurbsSurface, Point3, Tolerance};
 fn pair() -> (VibocerosApp, [ObjectId; 2]) {
     let mut app = test_app();
     enter(&mut app, "SrfPt 0,0 4,0 4,4 0,4");
@@ -102,25 +103,26 @@ fn planar_application_replays_all_native_recipes_and_history() {
         "../../../tools/rhino_oracle/observations/planar_boolean_command.json"
     ))
     .unwrap();
+    replay(&q);
+}
+
+#[test]
+fn planar_application_replays_trim_holes_and_nonparallel_projection() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/planar_boolean_topology.json"
+    ))
+    .unwrap();
+    replay(&q);
+}
+
+fn replay(q: &serde_json::Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let name = v["command_name"].as_str().unwrap();
         let mut app = test_app();
         for shape in v["shapes"].as_array().unwrap() {
-            let points = serde_json::from_value::<[[f64; 3]; 4]>(shape["points"].clone())
-                .unwrap()
-                .map(|p| viboceros_geometry::Point3::try_from(p).unwrap());
-            let b = viboceros_geometry::Brep::try_surface_face(
-                viboceros_geometry::NurbsSurface::try_bilinear(points).unwrap(),
-                app.document.tolerance(),
-            )
-            .unwrap();
             app.document
-                .add_geometry(Geometry::Brep(if shape["reverse"] == true {
-                    b.reversed()
-                } else {
-                    b
-                }))
+                .add_geometry(Geometry::Brep(shape_brep(shape, app.document.tolerance())))
                 .unwrap();
         }
         let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
@@ -178,5 +180,97 @@ fn planar_application_replays_all_native_recipes_and_history() {
         enter(&mut app, "Redo");
         assert_eq!(app.document.objects().len(), native.len());
         assert_eq!(app.document.selected_object_count(), 0);
+    }
+}
+
+fn shape_brep(shape: &serde_json::Value, tolerance: Tolerance) -> Brep {
+    match shape["kind"].as_str().unwrap() {
+        "sheet_hole" => {
+            use viboceros_geometry::{
+                BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
+                NurbsCurve2, Point2, SurfaceIso,
+            };
+            let outer = serde_json::from_value::<[[f64; 3]; 4]>(shape["outer"].clone())
+                .unwrap()
+                .map(|p| Point3::try_from(p).unwrap());
+            let mut hole = serde_json::from_value::<[[f64; 3]; 4]>(shape["hole"].clone())
+                .unwrap()
+                .map(|p| Point3::try_from(p).unwrap());
+            hole.reverse();
+            let surface = NurbsSurface::try_bilinear(outer).unwrap();
+            let mut vertices = Vec::new();
+            let mut edges = Vec::new();
+            let mut loops = Vec::new();
+            for (index, points) in [outer, hole].into_iter().enumerate() {
+                let offset = vertices.len();
+                vertices.extend(points.map(|p| BrepVertex::try_new(p, 0.).unwrap()));
+                let mut trims = Vec::new();
+                for i in 0..4 {
+                    let ids = [offset + i, offset + (i + 1) % 4];
+                    let e = edges.len();
+                    edges.push(
+                        BrepEdge::try_new(
+                            ids,
+                            NurbsCurve::try_new(
+                                1,
+                                ids.map(|i| vertices[i].point()).to_vec(),
+                                vec![0., 0., 1., 1.],
+                            )
+                            .unwrap(),
+                            0.,
+                        )
+                        .unwrap(),
+                    );
+                    let uv =
+                        |p: Point3| Point2::try_new((p.y() + 1.) / 4., (p.z() + 1.) / 4.).unwrap();
+                    trims.push(
+                        BrepTrim::try_new(
+                            ids,
+                            Some(e),
+                            false,
+                            NurbsCurve2::try_line(
+                                uv(vertices[ids[0]].point()),
+                                uv(vertices[ids[1]].point()),
+                            )
+                            .unwrap(),
+                            BrepTrimType::Boundary,
+                            SurfaceIso::NotIso,
+                            [0., 0.],
+                        )
+                        .unwrap(),
+                    );
+                }
+                loops.push(
+                    BrepLoop::try_new(
+                        if index == 0 {
+                            BrepLoopType::Outer
+                        } else {
+                            BrepLoopType::Inner
+                        },
+                        trims,
+                    )
+                    .unwrap(),
+                );
+            }
+            Brep::try_new(
+                vertices,
+                edges,
+                vec![BrepFace::try_new(surface, false, loops).unwrap()],
+                tolerance,
+            )
+            .unwrap()
+        }
+        _ => {
+            let points = serde_json::from_value::<[[f64; 3]; 4]>(shape["points"].clone())
+                .unwrap()
+                .map(|p| Point3::try_from(p).unwrap());
+            let b = Brep::try_surface_face(NurbsSurface::try_bilinear(points).unwrap(), tolerance)
+                .unwrap();
+            if shape["reverse"] == true {
+                b.reversed()
+            } else {
+                b
+            }
+        }
     }
 }

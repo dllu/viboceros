@@ -320,6 +320,7 @@ pub struct ViewportInput<'a> {
     pub lasso_selection: Option<LassoSelectionInput<'a>>,
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
+    pub selection_excluded_object: Option<ObjectId>,
     pub selection_preview: Option<ObjectSelectionFilter>,
     pub selection_preview_ids: &'a [ObjectId],
     pub point_cloud_remove_target: Option<ObjectId>,
@@ -385,6 +386,7 @@ impl Default for ViewportInput<'_> {
             lasso_selection: None,
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
+            selection_excluded_object: None,
             selection_preview: None,
             selection_preview_ids: &[],
             point_cloud_remove_target: None,
@@ -1708,12 +1710,13 @@ impl Viewport {
             Some(response.interact_pointer_pos().map(|pointer| {
                 (
                     pointer,
-                    self.pick_object_candidates_matching_preview(
+                    self.pick_object_candidates_matching_preview_excluding(
                         pointer,
                         rect,
                         document,
                         object_filter,
                         input.selection_preview,
+                        input.selection_excluded_object,
                     ),
                 )
             }))

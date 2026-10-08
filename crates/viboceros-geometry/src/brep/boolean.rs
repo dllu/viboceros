@@ -21,7 +21,7 @@ pub use polyhedral::{
     BrepCoplanarPartitionComponent, BrepOpenSplitComponent, BrepPolyhedralBooleanComponent,
     BrepPolyhedralBooleanPlan, BrepPolyhedralBoundaryComponent, BrepPolyhedralRegion,
     BrepPolyhedralShell, BrepSplitComponent, BrepSurfaceSplitComponent, boolean_polyhedral_breps,
-    intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
+    boolean_projected_planar_breps, intersect_polyhedral_brep_sets, intersect_polyhedral_breps,
     polyhedral_brep_boundary_interactions, polyhedral_brep_subtraction_interactions,
     split_open_polyhedral_brep, split_open_polyhedral_brep_with_lineage, split_polyhedral_brep,
     split_polyhedral_brep_by_trimmed_sheets, split_polyhedral_brep_with_surfaces,

@@ -5,7 +5,7 @@ use viboceros_document::ObjectId;
 #[derive(Debug)]
 pub(super) struct Prompt {
     pub(super) command: &'static str,
-    first: Option<ObjectId>,
+    pub(super) first: Option<ObjectId>,
 }
 impl VibocerosApp {
     pub(super) fn start_planar_boolean(&mut self, input: &str) -> bool {

@@ -1,7 +1,7 @@
 //! Finite coplanar surface Booleans; document policy follows public commands.
 use super::*;
 use std::borrow::Cow;
-use viboceros_geometry::{BrepBooleanOperation, BrepPolyhedralBooleanPlan};
+use viboceros_geometry::{BrepBooleanOperation, boolean_projected_planar_breps};
 #[cfg(test)]
 mod tests;
 
@@ -84,34 +84,8 @@ impl PlanarBooleanCommand {
                 }
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let first_plane = surfaces[0].faces()[0]
-            .surface()
-            .plane(doc.tolerance())?
-            .ok_or(CommandError::Usage("Planar surfaces required"))?;
-        let mut projected = Vec::new();
-        for b in &surfaces {
-            let plane = b.faces()[0]
-                .surface()
-                .plane(doc.tolerance())?
-                .ok_or(CommandError::Usage("Planar surfaces required"))?;
-            if first_plane
-                .normal()
-                .as_vector()
-                .cross(plane.normal().as_vector())?
-                .length()?
-                > doc.tolerance().angular()
-            {
-                return Err(CommandError::Usage("Parallel planar surfaces required"));
-            }
-            let offset = first_plane.signed_distance_to(plane.origin())?;
-            let shift = first_plane.normal().as_vector().scaled(-offset)?;
-            projected
-                .push(b.transformed(AffineTransform3::from_translation(shift), doc.tolerance())?);
-        }
-        let refs = projected.iter().collect::<Vec<_>>();
-        let mut plan = BrepPolyhedralBooleanPlan::try_with_planar_sheets(&refs, doc.tolerance())?;
-        let outputs =
-            plan.export_coplanar_sheet_set_boolean(self.0, &(0..refs.len()).collect::<Vec<_>>())?;
+        let refs = surfaces.iter().map(Cow::as_ref).collect::<Vec<_>>();
+        let outputs = boolean_projected_planar_breps(&refs, self.0, doc.tolerance())?;
         let mut pieces = Vec::new();
         for p in outputs {
             let groups = vec![0; p.brep.faces().len()];

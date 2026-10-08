@@ -45,7 +45,11 @@ patch categories supplement original-face lineage so partial overlap seams
 survive merging. Explicit unchanged acceptance records its own history step
 for measured Invalid result previews. [Planar surface Booleans](commands/planar-booleans.md)
 use finite-area set masks, merge partition seams and retain command-specific
-identity, default attributes, empty-result and preselection history policies. General curved Boolean commands
+identity, default attributes, empty-result and preselection history policies.
+The projection kernel keeps original trim-hole polygons rational through
+orthogonal projection and finite-area classification, then extends the first
+support only for final validated output. Tilted and collapsed inputs do not
+supply rounded intermediate operands. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

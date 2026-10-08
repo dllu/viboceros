@@ -6,6 +6,8 @@ mod embedding;
 mod interactions;
 mod open_split;
 mod plan;
+mod planar_projection;
+pub use planar_projection::boolean_projected_planar_breps;
 mod reports;
 mod surface_split;
 pub use interactions::{

@@ -1,0 +1,20 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOraclePlanarTopologyVerified20261007",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 31,
+  "successful_commands": 31,
+  "boundary_witness_epsilon": 1e-07,
+  "scalar_epsilon": 1e-09,
+  "limits": [
+    "Affine planar surfaces with certified linear trims only.",
+    "General curved trim boundaries, compound surfaces, near contacts, arbitrary insertion order, native pixel parity and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_boolean_topology_probe.py": "24afcb67a354c3de84f32865518d35553198ba87ba312c3eab3b62418505ff6a",
+    "tools/rhino_oracle/fixtures/planar_boolean_topology.json": "a02b45736e23d1464038b584824dc62b8f99191930372dfabccd8228949c5e28",
+    "tools/rhino_oracle/observations/planar_boolean_topology.json": "cc0d0684f792df289a473ec9586cf63b54cc52587e56bce9561b3b5dad5518dd"
+  }
+}

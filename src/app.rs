@@ -9145,6 +9145,7 @@ impl eframe::App for VibocerosApp {
             .is_none()
             .then_some(self.point_constraint.filter(|_| model_input_active))
             .flatten();
+        let selection_excluded_object = self.planar_boolean_prompt.as_ref().and_then(|p| p.first);
         let viewport_positions = &self.viewport_positions;
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
@@ -9244,6 +9245,7 @@ impl eframe::App for VibocerosApp {
                             } else {
                                 object_filter
                             },
+                            selection_excluded_object,
                             selection_preview: if plane_object_pick
                                 || end_analysis_picking
                                 || curve_region_pick

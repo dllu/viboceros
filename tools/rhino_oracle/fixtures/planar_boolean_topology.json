@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_hole_fill",
+      "case": "planarunion_hole_fill"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_hole_cover",
+      "case": "planarunion_hole_cover"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_hole_straddle",
+      "case": "planarunion_hole_straddle"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_hole_cut",
+      "case": "planarunion_hole_cut"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_hole_cutter",
+      "case": "planarunion_hole_cutter"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_two_holes",
+      "case": "planarunion_two_holes"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_tilted",
+      "case": "planarunion_tilted"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_tilted_reverse",
+      "case": "planarunion_tilted_reverse"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_tilted_first",
+      "case": "planarunion_tilted_first"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_perpendicular",
+      "case": "planarunion_perpendicular"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_hole_fill",
+      "case": "planardifference_hole_fill"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_hole_cover",
+      "case": "planardifference_hole_cover"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_hole_straddle",
+      "case": "planardifference_hole_straddle"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_hole_cut",
+      "case": "planardifference_hole_cut"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_hole_cutter",
+      "case": "planardifference_hole_cutter"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_two_holes",
+      "case": "planardifference_two_holes"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_tilted",
+      "case": "planardifference_tilted"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_tilted_reverse",
+      "case": "planardifference_tilted_reverse"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_tilted_first",
+      "case": "planardifference_tilted_first"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planardifference_perpendicular",
+      "case": "planardifference_perpendicular"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_hole_fill",
+      "case": "planarintersection_hole_fill"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_hole_cover",
+      "case": "planarintersection_hole_cover"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_hole_straddle",
+      "case": "planarintersection_hole_straddle"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_hole_cut",
+      "case": "planarintersection_hole_cut"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_hole_cutter",
+      "case": "planarintersection_hole_cutter"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_two_holes",
+      "case": "planarintersection_two_holes"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_tilted",
+      "case": "planarintersection_tilted"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_tilted_reverse",
+      "case": "planarintersection_tilted_reverse"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_tilted_first",
+      "case": "planarintersection_tilted_first"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarintersection_perpendicular",
+      "case": "planarintersection_perpendicular"
+    },
+    {
+      "op": "planar_boolean_topology",
+      "id": "planar_boolean_topology_planarunion_multi_holes",
+      "case": "planarunion_multi_holes"
+    }
+  ]
+}

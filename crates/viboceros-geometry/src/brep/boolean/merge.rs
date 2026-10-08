@@ -233,7 +233,7 @@ fn merged_face(
     BrepFace::try_from_polygon_boundaries(surface, source.reversed, loops)
 }
 
-fn extended_surface(
+pub(super) fn extended_surface(
     source: &NurbsSurface,
     bounds: [[Real; 2]; 2],
 ) -> Result<NurbsSurface, GeometryError> {
