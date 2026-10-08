@@ -1,0 +1,37 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "sequences": [
+    {
+      "name": "surface_rebuild_options",
+      "steps": 25,
+      "scheme": "VibocerosOracleSurfaceRebuildOptions20261008"
+    },
+    {
+      "name": "surface_rebuild_option_followup",
+      "steps": 9,
+      "scheme": "VibocerosOracleSurfaceRebuildOptionFollowup20261008"
+    }
+  ],
+  "measured_rules": [
+    "All valid option edits persist immediately through cancellation and Undo/Redo.",
+    "Scripted degree increase raises point count to degree+1. Count edits below current degree+1 are rejected, leaving the count unchanged.",
+    "Edits apply in token order; degree-first can admit a following lower count."
+  ],
+  "limits": [
+    "Native dialog coupling differs from scripted getters and remains unimplemented.",
+    "Application restart persistence, curve/surface option interaction and invalid-input message wording remain unverified.",
+    "Readonly preview and native trim projection remain unfinished."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_options_probe.py": "3c4473203e9a7bfdac0c8f34f4d0603736611faba7a4ceb700361ac8d7083855",
+    "tools/rhino_oracle/surface_rebuild_option_followup_probe.py": "772e9477aef632090830df7d6a1204e1a82b678523ebbb117e3deb13fab089f8",
+    "tools/rhino_oracle/fixtures/surface_rebuild_options.json": "b8ae709f1faa59ef174426a2192fa878d90af2e22ddeac934f42ac413364459f",
+    "tools/rhino_oracle/fixtures/surface_rebuild_option_followup.json": "a4098b8258e2a97089babdb99ea656cb70a1ebbc66dc63a48f79fd2aed0220b3",
+    "tools/rhino_oracle/observations/surface_rebuild_options.json": "66bdce03cd7583708a842074369039523a1591e183066a724a6e6485ae8e3d2e",
+    "tools/rhino_oracle/observations/surface_rebuild_option_followup.json": "c8eaff178afdcaa0e6499ec9a31c37f8ebef7c60f55d424e56cf9071bfae0bc4",
+    "docs/surface-rebuild-option-states.json": "484afd8ca69effbfb958c7e6e7cd2babbff1830c172d2203828bd2d144c7fee9"
+  }
+}

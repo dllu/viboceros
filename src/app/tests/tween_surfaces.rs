@@ -894,3 +894,158 @@ fn surface_rebuild_command_first_picks_replaces_and_undoes_in_one_step() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
+
+#[test]
+fn surface_rebuild_native_option_sequences_replay_immediate_memory_and_coupling() {
+    use viboceros_command::surface_rebuild::Options;
+    let states: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/surface-rebuild-option-states.json"
+    ))
+    .unwrap();
+    for (name, text) in [
+        (
+            "surface_rebuild_options",
+            include_str!("../../../tools/rhino_oracle/observations/surface_rebuild_options.json"),
+        ),
+        (
+            "surface_rebuild_option_followup",
+            include_str!(
+                "../../../tools/rhino_oracle/observations/surface_rebuild_option_followup.json"
+            ),
+        ),
+    ] {
+        let q: serde_json::Value = serde_json::from_str(text).unwrap();
+        let mut app = test_app();
+        enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0");
+        let source = app.document.objects().next().unwrap().id();
+        let source_geometry = app.document.object(source).unwrap().geometry().clone();
+        let options = |v: &serde_json::Value| Options {
+            count: serde_json::from_value(v["count"].clone()).unwrap(),
+            degree: serde_json::from_value(v["degree"].clone()).unwrap(),
+            delete: v["delete"].as_bool().unwrap(),
+            current: v["current"].as_bool().unwrap(),
+            retrim: v["retrim"].as_bool().unwrap(),
+        };
+        for (record, state) in q["results"][0]["value"]["records"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(states[name].as_array().unwrap())
+        {
+            assert_eq!(
+                app.commands.surface_rebuild_defaults(),
+                options(&state["initial"]),
+                "{}",
+                state["step"]
+            );
+            app.document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+            let before = app.document.objects().cloned().collect::<Vec<_>>();
+            app.document.clear_history().unwrap();
+            enter(&mut app, "Rebuild");
+            for edit in record["edits"].as_array().unwrap() {
+                enter(&mut app, edit.as_str().unwrap());
+            }
+            assert_eq!(
+                app.commands.surface_rebuild_defaults(),
+                options(&state["final"]),
+                "{}",
+                state["step"]
+            );
+            if record["accepted"] == true {
+                enter(&mut app, "");
+                assert!(app.object_prompt.is_none());
+                let accepted = app.document.objects().cloned().collect::<Vec<_>>();
+                let Geometry::Brep(b) = accepted.last().unwrap().geometry() else {
+                    panic!()
+                };
+                let native = &record["command"]["after_script"]
+                    .as_array()
+                    .unwrap()
+                    .last()
+                    .unwrap()["definition"];
+                let surface = b.faces()[0].surface();
+                assert_eq!(
+                    [surface.degree_u(), surface.degree_v()],
+                    serde_json::from_value::<[usize; 2]>(native["degree"].clone()).unwrap()
+                );
+                assert_eq!(
+                    [
+                        surface.control_point_count_u(),
+                        surface.control_point_count_v()
+                    ],
+                    serde_json::from_value::<[usize; 2]>(native["control_count"].clone()).unwrap()
+                );
+                for (control, expected) in surface
+                    .control_points()
+                    .iter()
+                    .zip(native["control_points"].as_array().unwrap())
+                {
+                    let point = Point3::try_from(
+                        serde_json::from_value::<[f64; 3]>(expected["point"].clone()).unwrap(),
+                    )
+                    .unwrap();
+                    assert!(control.point().distance_to(point).unwrap() < 1e-6);
+                }
+                enter(&mut app, "Undo");
+                assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                enter(&mut app, "Redo");
+                assert_eq!(
+                    app.document.objects().cloned().collect::<Vec<_>>(),
+                    accepted
+                );
+                let remove = app
+                    .document
+                    .objects()
+                    .filter(|o| o.id() != source)
+                    .map(|o| o.id())
+                    .collect::<Vec<_>>();
+                for id in remove {
+                    app.document.delete_object(id).unwrap();
+                }
+            } else {
+                enter(&mut app, "Cancel");
+                assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+                assert!(!app.document.can_undo());
+            }
+            assert_eq!(
+                app.document.object(source).unwrap().geometry(),
+                &source_geometry
+            );
+            assert_eq!(
+                app.commands.surface_rebuild_defaults(),
+                options(&state["final"])
+            );
+        }
+    }
+}
+
+#[test]
+fn surface_rebuild_value_questions_return_keep_invalid_edits_and_save_cancelled_values() {
+    let (mut app, ids) = pair();
+    app.document
+        .select_objects_direct([ids[0]], SelectionMode::Replace)
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Rebuild");
+    enter(&mut app, "UDegree");
+    enter(&mut app, "7");
+    assert_eq!(app.commands.surface_rebuild_defaults().count[0], 10);
+    enter(&mut app, "UPointCount");
+    enter(&mut app, "2");
+    assert_eq!(app.commands.surface_rebuild_defaults().count[0], 10);
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_some());
+    enter(&mut app, "DeleteInput No");
+    enter(&mut app, "ReTrim No");
+    enter(&mut app, "Cancel");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(app.commands.surface_rebuild_defaults().degree[0], 7);
+    assert!(!app.commands.surface_rebuild_defaults().delete);
+    assert!(!app.commands.surface_rebuild_defaults().retrim);
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Rebuild");
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().len(), 3);
+}

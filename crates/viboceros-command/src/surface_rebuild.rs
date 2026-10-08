@@ -4,26 +4,57 @@ use viboceros_geometry::try_rebuild_nurbs_surface;
 
 const USAGE: &str = "Rebuild UPointCount=2..256 VPointCount=2..256 UDegree=1..11 VDegree=1..11 [DeleteInput=Yes|No] [OutputLayer=Input|Current] [ReTrim=Yes|No]";
 
-#[derive(Clone, Copy, Debug)]
-struct Options {
-    count: [usize; 2],
-    degree: [usize; 2],
-    delete: bool,
-    current: bool,
-    retrim: bool,
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Options {
+    pub count: [usize; 2],
+    pub degree: [usize; 2],
+    pub delete: bool,
+    pub current: bool,
+    pub retrim: bool,
 }
 
-fn parse(args: &[&str]) -> Result<Options, CommandError> {
-    let mut result = Options {
-        count: [10; 2],
-        degree: [3; 2],
-        delete: true,
-        current: false,
-        retrim: true,
-    };
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            count: [10; 2],
+            degree: [3; 2],
+            delete: true,
+            current: false,
+            retrim: true,
+        }
+    }
+}
+impl Options {
+    pub fn command_line(self) -> String {
+        format!(
+            "Rebuild UDegree={} VDegree={} UPointCount={} VPointCount={} DeleteInput={} OutputLayer={} ReTrim={}",
+            self.degree[0],
+            self.degree[1],
+            self.count[0],
+            self.count[1],
+            if self.delete { "Yes" } else { "No" },
+            if self.current { "Current" } else { "Input" },
+            if self.retrim { "Yes" } else { "No" }
+        )
+    }
+}
+
+/// Apply scripted options in order. Raising degree raises its count; a count
+/// below the current degree minimum is rejected without changing defaults.
+pub fn parse(args: &[&str], mut result: Options) -> Result<Options, CommandError> {
     let mut seen = BTreeSet::new();
-    for argument in args {
-        let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+    let mut index = 0;
+    while index < args.len() {
+        let (name, value, consumed) = if let Some((name, value)) = args[index].split_once('=') {
+            (name, value, 1)
+        } else {
+            (
+                args[index],
+                *args.get(index + 1).ok_or(CommandError::Usage(USAGE))?,
+                2,
+            )
+        };
+        index += consumed;
         let name = name.trim_start_matches('_').to_ascii_lowercase();
         let value = value.trim_start_matches('_');
         if !seen.insert(name.clone()) {
@@ -36,8 +67,15 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
                     .parse::<usize>()
                     .map_err(|_| CommandError::InvalidInteger(value.into()))?;
                 if name.ends_with("degree") {
+                    if !(1..=11).contains(&number) {
+                        return Err(CommandError::Usage(USAGE));
+                    }
                     result.degree[axis] = number;
+                    result.count[axis] = result.count[axis].max(number + 1);
                 } else {
+                    if number <= result.degree[axis] || number > 256 {
+                        return Err(CommandError::Usage(USAGE));
+                    }
                     result.count[axis] = number;
                 }
             }
@@ -65,8 +103,7 @@ fn parse(args: &[&str]) -> Result<Options, CommandError> {
     Ok(result)
 }
 
-pub(super) fn run(doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-    let options = parse(args)?;
+pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, CommandError> {
     if doc
         .selected_objects()
         .any(|object| object.geometry().curve_ref().is_some())
@@ -118,6 +155,15 @@ pub(super) fn run(doc: &mut Document, args: &[&str]) -> Result<String, CommandEr
     }
     doc.clear_selection();
     Ok(format!("Rebuilt {count} surface(s)"))
+}
+
+impl CommandRegistry {
+    pub fn surface_rebuild_defaults(&self) -> Options {
+        self.surface_rebuild_preferences.get()
+    }
+    pub fn remember_surface_rebuild_options(&self, options: Options) {
+        self.surface_rebuild_preferences.set(options);
+    }
 }
 
 #[cfg(test)]
@@ -290,5 +336,50 @@ mod tests {
         assert!(b.faces()[0].is_untrimmed(doc.tolerance()).unwrap());
         registry.execute(&mut doc, "Undo").unwrap();
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    }
+    #[test]
+    fn surface_preferences_follow_ordered_degree_growth_and_survive_history() {
+        let registry = CommandRegistry::with_builtins();
+        assert_eq!(registry.surface_rebuild_defaults(), Options::default());
+        let options = parse(
+            &["UDegree=1", "UPointCount=2", "VDegree=1", "VPointCount=2"],
+            Options::default(),
+        )
+        .unwrap();
+        assert_eq!(options.count, [2, 2]);
+        assert_eq!(options.degree, [1, 1]);
+        let raised = parse(&["UPointCount=3", "UDegree=4"], options).unwrap();
+        assert_eq!(raised.count, [5, 2]);
+        assert_eq!(raised.degree, [4, 1]);
+        assert!(parse(&["UDegree=4", "UPointCount=3"], options).is_err());
+        let mut doc = Document::default();
+        let s = NurbsSurface::try_bilinear([
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 6., 0.).unwrap(),
+            Point3::try_new(0., 6., 0.).unwrap(),
+        ])
+        .unwrap();
+        let id = doc.add_geometry(Geometry::NurbsSurface(s)).unwrap();
+        doc.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut doc,
+                "Rebuild UDegree=1 VDegree=1 UPointCount=2 VPointCount=2",
+            )
+            .unwrap();
+        assert_eq!(registry.surface_rebuild_defaults(), options);
+        registry.execute(&mut doc, "Undo").unwrap();
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(registry.surface_rebuild_defaults(), options);
+        assert_eq!(
+            CommandRegistry::with_builtins().surface_rebuild_defaults(),
+            Options::default()
+        );
+        registry
+            .execute(&mut doc, "RebuildCrv PointCount=6 Degree=2")
+            .unwrap_err();
+        assert_eq!(registry.surface_rebuild_defaults(), options);
     }
 }

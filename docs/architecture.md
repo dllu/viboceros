@@ -145,8 +145,11 @@ The shared [surface Rebuild kernel](commands/rebuild-surfaces.md) also backs the
 surface branch of `Rebuild` and the Python `surface_rebuild_geometry` operation.
 Twelve native commands establish replacement identity, copied attributes,
 cleared output groups, layer choice and independent history. A separate twelve
-SDK queries check asymmetric target structures and reductions. Retrimming a
-changed surface and native option persistence remain unfinished.
+SDK queries check asymmetric target structures and reductions. Numeric app
+prompts share command-owned parsing and immediate remembered options; two native
+sequences establish cancellation/history lifetime and ordered degree/count
+coupling. Retrimming a changed surface, native previews and restart persistence
+remain unfinished or unverified.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

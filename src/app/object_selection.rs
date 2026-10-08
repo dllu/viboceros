@@ -12,6 +12,7 @@ pub(super) enum ObjectPromptPhase {
     Choice(usize),
     SmoothFactor,
     SmoothSteps,
+    RebuildValue(&'static str),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -50,6 +51,7 @@ impl PendingObjectCommand {
             ObjectPromptPhase::Choice(index) => self.description.choices[index].name,
             ObjectPromptPhase::SmoothFactor => "SmoothFactor",
             ObjectPromptPhase::SmoothSteps => "Steps",
+            ObjectPromptPhase::RebuildValue(name) => name,
             _ => self.description.command,
         }
     }
@@ -70,6 +72,13 @@ impl PendingObjectCommand {
                     "Enter a positive step count; Enter keeps the shown value, Esc cancels"
                 }
                 _ => "Choose Smooth options; Enter applies, Esc cancels",
+            };
+        }
+        if self.description.command == "Rebuild" && self.phase != ObjectPromptPhase::Selecting {
+            return if matches!(self.phase, ObjectPromptPhase::RebuildValue(_)) {
+                "Enter an option value; Enter keeps it, Esc cancels"
+            } else {
+                "Edit U/V counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
         if self.description.command == "Circle FitPoints" {
@@ -104,6 +113,9 @@ impl PendingObjectCommand {
             return "Select objects or type options; Enter finishes, Esc cancels";
         }
         match self.phase {
+            ObjectPromptPhase::RebuildValue(_) => {
+                "Enter an option value; Enter keeps it, Esc cancels"
+            }
             ObjectPromptPhase::Selecting => match self.description.workflow {
                 ObjectSelectionWorkflow::OptionsDuringSelection
                 | ObjectSelectionWorkflow::QuestionOnPreselection { .. } => {
@@ -434,6 +446,9 @@ impl VibocerosApp {
             return false;
         }
         if preselected {
+            if description.command == "Rebuild" && input.split_whitespace().nth(1).is_some() {
+                return false;
+            }
             if description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 return false;
             }
@@ -505,6 +520,7 @@ impl VibocerosApp {
         }
         self.command_input.clear();
         self.initialize_smooth_options(input, preselected);
+        self.initialize_rebuild_options();
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -536,6 +552,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_rebuild_options(input) {
+            return true;
+        }
         if self.continue_smooth_options(input) {
             return true;
         }
@@ -668,18 +687,28 @@ impl VibocerosApp {
                         .object_selection_confirmation(&self.document, &pending.description)
                     {
                         Ok(Some(description)) => {
-                            if let Err(error) =
-                                self.commands.accept_object_selection_options(&description)
+                            if description.command == "Rebuild"
+                                && pending
+                                    .command_override
+                                    .as_ref()
+                                    .is_some_and(|s| s.split_whitespace().nth(1).is_some())
                             {
-                                self.push_log(format!("Error: {error}"));
+                                // Complete inline scripts accept directly after picking.
+                            } else {
+                                if let Err(error) =
+                                    self.commands.accept_object_selection_options(&description)
+                                {
+                                    self.push_log(format!("Error: {error}"));
+                                    return true;
+                                }
+                                pending.description = description;
+                                pending.phase = ObjectPromptPhase::Options;
+                                self.object_prompt = Some(pending);
+                                self.initialize_rebuild_options();
+                                self.command_input.clear();
+                                self.log_object_prompt();
                                 return true;
                             }
-                            pending.description = description;
-                            pending.phase = ObjectPromptPhase::Options;
-                            self.object_prompt = Some(pending);
-                            self.command_input.clear();
-                            self.log_object_prompt();
-                            return true;
                         }
                         Ok(None) => {} // No-op selection finishes without accepting choices.
                         Err(error) => {

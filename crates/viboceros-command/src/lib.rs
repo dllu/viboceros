@@ -115,7 +115,7 @@ pub mod scale_positions;
 mod single_spans;
 pub mod smooth;
 mod split_disjoint_mesh;
-mod surface_rebuild;
+pub mod surface_rebuild;
 use explode::ExplodeCommand;
 use extract_subcurve::ExtractSubcurveCommand;
 mod to_nurbs;
@@ -493,6 +493,7 @@ pub struct CommandRegistry {
     taper_preferences: std::sync::Arc<taper::TaperPreferences>,
     maelstrom_preferences: std::sync::Arc<maelstrom::MaelstromPreferences>,
     smooth_preferences: std::sync::Arc<remembered::Remembered<smooth::Options>>,
+    surface_rebuild_preferences: std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>,
     tween_surface_preferences: std::sync::Arc<remembered::Remembered<tween_surfaces::Preferences>>,
 }
 
@@ -574,7 +575,9 @@ impl CommandRegistry {
             .register(FitCurveCommand)
             .expect("unique built-in command");
         registry
-            .register(RebuildCurveCommand)
+            .register(RebuildCurveCommand(
+                registry.surface_rebuild_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(ChangeDegreeCommand)
@@ -2919,7 +2922,7 @@ struct RebuildCurveOptions {
     output_layer: FitCurveOutputLayer,
 }
 
-struct RebuildCurveCommand;
+struct RebuildCurveCommand(std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>);
 
 impl Command for RebuildCurveCommand {
     fn name(&self) -> &'static str {
@@ -2944,12 +2947,29 @@ impl Command for RebuildCurveCommand {
         }))
     }
 
+    fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        _arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if document
+            .selected_objects()
+            .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
+        {
+            self.object_selection_prompt(&[])
+        } else {
+            Ok(None)
+        }
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         if document
             .selected_objects()
             .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
         {
-            return surface_rebuild::run(document, arguments);
+            let options = surface_rebuild::parse(arguments, self.0.get())?;
+            self.0.set(options);
+            return surface_rebuild::run(document, options);
         }
         let options = parse_rebuild_curve_options(arguments)?;
         let tolerance = document.tolerance();

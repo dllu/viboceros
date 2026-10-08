@@ -178,6 +178,7 @@ mod snapping;
 mod subcurve_direction;
 mod subcurve_preview;
 mod subcurve_prompt;
+mod surface_rebuild;
 mod taper_prompt;
 mod toolbar;
 mod transform_prompt;

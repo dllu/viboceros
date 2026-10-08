@@ -1,0 +1,11 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_option_followup",
+      "id": "tween_srf_sequence",
+      "case": "sequence"
+    }
+  ]
+}

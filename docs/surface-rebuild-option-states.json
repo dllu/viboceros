@@ -1,0 +1,992 @@
+{
+  "surface_rebuild_options": [
+    {
+      "step": "initial",
+      "initial": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "cancel_counts",
+      "initial": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_cancel_counts",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "cancel_degrees",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_cancel_degrees",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "cancel_delete",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_cancel_delete",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "cancel_layer",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_cancel_layer",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": true
+      }
+    },
+    {
+      "step": "cancel_retrim",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_cancel_retrim",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "accept_changed",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_undo_redo",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "count_lowers_degree",
+      "initial": {
+        "count": [
+          6,
+          5
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          6,
+          2
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_cancel_coupling",
+      "initial": {
+        "count": [
+          6,
+          2
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          6,
+          2
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "degree_raises_count",
+      "initial": {
+        "count": [
+          6,
+          2
+        ],
+        "degree": [
+          2,
+          1
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          7,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_cancel_degree_raise",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          7,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          7,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "count_then_degree",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          7,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "degree_then_count",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "invalid_count",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_invalid_count",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "invalid_degree",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_invalid_degree",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "accept_coupled",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    },
+    {
+      "step": "final_defaults",
+      "initial": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          8,
+          7
+        ],
+        "degree": [
+          4,
+          6
+        ],
+        "delete": false,
+        "current": true,
+        "retrim": false
+      }
+    }
+  ],
+  "surface_rebuild_option_followup": [
+    {
+      "step": "initial",
+      "initial": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "lower_degree_then_count",
+      "initial": {
+        "count": [
+          10,
+          10
+        ],
+        "degree": [
+          3,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          2,
+          2
+        ],
+        "degree": [
+          1,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_lower",
+      "initial": {
+        "count": [
+          2,
+          2
+        ],
+        "degree": [
+          1,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          2,
+          2
+        ],
+        "degree": [
+          1,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "count_then_raise_degree",
+      "initial": {
+        "count": [
+          2,
+          2
+        ],
+        "degree": [
+          1,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          5,
+          2
+        ],
+        "degree": [
+          4,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_raise",
+      "initial": {
+        "count": [
+          5,
+          2
+        ],
+        "degree": [
+          4,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          5,
+          2
+        ],
+        "degree": [
+          4,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "degree_then_count_boundary",
+      "initial": {
+        "count": [
+          5,
+          2
+        ],
+        "degree": [
+          4,
+          1
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "after_boundary",
+      "initial": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      }
+    },
+    {
+      "step": "accept_ordered",
+      "initial": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": true,
+        "current": false,
+        "retrim": true
+      },
+      "final": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": false
+      }
+    },
+    {
+      "step": "after_history",
+      "initial": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": false
+      },
+      "final": {
+        "count": [
+          5,
+          4
+        ],
+        "degree": [
+          4,
+          3
+        ],
+        "delete": false,
+        "current": false,
+        "retrim": false
+      }
+    }
+  ]
+}
