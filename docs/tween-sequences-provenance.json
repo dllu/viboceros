@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleTweenCornerSequencesVerified20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 14,
+  "successful_commands": 14,
+  "calibrated_mouse_clicks": 28,
+  "normalized_surface_witness_epsilon": 1e-07,
+  "measured_swap_rule": "Swap toggles the swap bit while retaining the U/V reversal bits in their existing slots; it does not transpose those bits.",
+  "initial_driver_diagnostic": "The initial modal-timer driver stalled after the first sequence clicks and its confirmed owned host was stopped. The corrected driver advances only after native mouse callback acknowledgements and completed without manual recovery.",
+  "limits": [
+    "Sequences cover the captured open warped bilinear patches; periodic/singular source corners and coincident controls remain unverified.",
+    "Native preview pixel appearance, label colors/layout and alternate platforms remain unverified.",
+    "Native option-change object effects, restart persistence and performance parity remain unresolved."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_corner_sequences_probe.py": "d43e0eab3242c885bb26257850d3c11cfb248d626353455edf8f106505875051",
+    "tools/rhino_oracle/tween_surfaces_corner_sequence_input.py": "f6aee37a1a0442dc74e51a175bcad28bbd1af7c24bf95bea592b08d82145df31",
+    "tools/rhino_oracle/fixtures/tween_surfaces_corner_sequences.json": "6100d4a93eba1a5b2ed2af55b59d58e641c0511261b2fe21c9a2f5635211f2cb",
+    "tools/rhino_oracle/observations/tween_surfaces_corner_sequences.json": "bf0f5555f414c3473af411cb1cd57d69fcda030e9b5083b334bb2aabec6d95c4",
+    "tools/rhino_oracle/observations/tween_corner_sequence_driver_initial.json": "693cf22584414d1758b219aa50d11f15be7edbd70ac181c6b0801c09adc9d82f"
+  }
+}

@@ -107,6 +107,7 @@ impl VibocerosApp {
         action: crate::viewport::SurfaceCornerAction,
     ) -> bool {
         use crate::viewport::SurfaceCornerAction as Action;
+        self.validate_tween_surfaces();
         let Some(p) = self
             .tween_surfaces_prompt
             .as_mut()
@@ -116,7 +117,6 @@ impl VibocerosApp {
         };
         match action {
             Action::SwapUv => {
-                p.options.reverse[1].swap(0, 1);
                 p.options.reverse[1][2] = !p.options.reverse[1][2];
             }
             Action::ReverseU => p.options.reverse[1][0] = !p.options.reverse[1][0],

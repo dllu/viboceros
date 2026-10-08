@@ -126,6 +126,8 @@ outside document history. Typed option/direction edits rebuild only when values
 change; acceptance reuses prepared geometry in one transaction. Native source
 preselection survives acceptance/cancellation and independent history.
 End-surface corner controls provide measured U/V swap and U/V reversals.
+Repeated native sequences retain reversal flags in their slots on swap. Queued
+corner events revalidate sources/settings before changing the prepared state.
 Their projected hit tests are independent of snaps, and transformed positions
 are cached with the readonly preview rather than recomputed per frame.
 Command-instance option storage applies measured field lifetimes: accepted

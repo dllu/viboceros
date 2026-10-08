@@ -26,8 +26,10 @@ Explicit `Sources=` fixes script order. `FlipStartU`, `FlipStartV`, `SwapStartUV
 and their `End` counterparts adjust correspondence without changing originals.
 Swap applies before flips. Source picks retain click order, independently of
 document insertion order or source groups. The same surface can be picked twice.
-Three end-surface corner controls are clickable in every viewport: `U/V` swaps
-the current axes, `U` reverses U, and `V` reverses V. The controls follow the
+Three end-surface corner controls are clickable in every viewport: `U/V` toggles
+U/V swapping, `U` reverses U, and `V` reverses V. Swap retains the U/V reversal
+flags in their existing slots, following measured repeated native clicks; it does
+not transpose those flags. A swap after a reversal can therefore move the origin. The controls follow the
 current end-surface parameterization after each edit. Start-surface corners and
 the opposite end corner do not act, matching the measured native behavior.
 Typed direction options remain available for either source.
@@ -196,10 +198,33 @@ retains them so correspondence can be edited. Independent tests cover axis
 composition, source purity, clipped/missed hits and all three display modes.
 A private-Xvfb inspection checks U, moved-origin swap and V clicks, Ghosted mode,
 readonly preview, acceptance and Undo/Redo on the production wgpu/egui path.
-Repeated native click sequences, periodic/singular and overlapping projected
-controls, native label/colors and continuous pixel agreement remain unverified.
+The repeated sequences below extend the single-click evidence. Periodic/singular
+and overlapping projected controls, native labels/colors and continuous pixel
+agreement remain unverified.
 
 ![End-surface corner controls after direction edits in a readonly preview](../images/tween-surfaces-corner-controls.png)
+
+The [repeated-click capture](../../tools/rhino_oracle/observations/tween_surfaces_corner_sequences.json)
+adds 14 successful owned commands and 28 real mouse clicks under
+`VibocerosOracleTweenCornerSequencesVerified20261008`. Every successive click is
+calibrated against a public viewport matrix and released only after a native
+mouse-event acknowledgement. It covers repeated swaps, reversals followed by
+swaps, returns to the original orientation, inactive-corner clicks after reversal,
+both reversals and three-click combinations. A 14-case app replay finds the
+current control at each fixed world corner and compares 81 normalized witnesses
+per source/output at `1e-7`, along with exact source restoration and Undo/Redo.
+This corrected the previous implementation's reversal-flag transposition on swap.
+Some measured outputs collapse in projection or to a spatial curve; they remain
+represented rather than being silently discarded.
+
+Queued corner edits now revalidate source geometry, attributes/groups, tolerance
+and current layer before changing state. Regressions cover stale sources and
+failed preparation after a valid preview: the old scene is discarded as one unit,
+acceptance stays blocked, and a supported edit can recover. The initial stalled
+timer-driver diagnostics are retained; the final acknowledged-click run completed
+without manual recovery. See [sequence provenance](../tween-sequences-provenance.json).
+This extends the captured open warped bilinear sources; general singular or
+periodic source corners and coincident controls remain unverified.
 
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
@@ -209,5 +234,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options tools.rhino_oracle.test_tween_surfaces_corners
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options tools.rhino_oracle.test_tween_surfaces_corners tools.rhino_oracle.test_tween_corner_sequences
 ```

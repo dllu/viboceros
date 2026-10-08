@@ -235,8 +235,8 @@ fn corner_controls_transform_current_end_axes_and_leave_live_sources_unchanged()
     assert_eq!(changed[1].point, initial[0].point);
     app.edit_tween_corner(Action::SwapUv);
     let swapped = app.tween_corner_controls();
-    assert_eq!(swapped[0].point, changed[0].point);
-    assert_eq!(swapped[2].point, changed[1].point);
+    assert_eq!(swapped[0].point, initial[2].point);
+    assert_eq!(swapped[1].point, initial[0].point);
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     assert!(!app.document.can_undo());
     app.edit_tween_corner(Action::SwapUv);
@@ -296,6 +296,79 @@ fn failed_preview_keeps_source_controls_available_for_direction_recovery() {
             .is_some()
     );
     assert_eq!(app.document.objects().len(), 2);
+}
+#[test]
+fn queued_corner_edits_reject_stale_source_geometry_attributes_and_settings() {
+    use crate::viewport::SurfaceCornerAction as Action;
+    for changed in 0..3 {
+        let (mut app, ids) = pair();
+        enter(&mut app, "TweenSurfaces");
+        for id in ids {
+            click(&mut app, id);
+        }
+        match changed {
+            0 => {
+                app.document.delete_object(ids[1]).unwrap();
+            }
+            1 => {
+                app.document
+                    .set_object_names([(ids[1], Some("changed".into()))])
+                    .unwrap();
+            }
+            _ => {
+                let layer = app
+                    .document
+                    .add_layer("Other", viboceros_document::ColorRgb::BLACK)
+                    .unwrap();
+                app.document.set_current_layer(layer).unwrap();
+            }
+        }
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        assert!(!app.edit_tween_corner(Action::SwapUv));
+        assert!(app.tween_surfaces_prompt.is_none());
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}
+#[test]
+fn failed_option_preparation_drops_previous_preview_as_one_unit() {
+    let mut app = test_app();
+    enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,0 0,6,0");
+    enter(
+        &mut app,
+        "SrfControlPtGrid Degree=2 3 Degree=2 3 10,0,4 10,3,4 10,6,4 12,0,4 12,3,5 12,6,6 14,0,4 14,3,6 14,6,8",
+    );
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let ids = before.iter().map(|o| o.id()).collect::<Vec<_>>();
+    enter(&mut app, "TweenSurfaces MatchMethod=Refit");
+    for id in ids {
+        click(&mut app, id);
+    }
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_some()
+    );
+    enter(&mut app, "MatchMethod=None");
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_none()
+    );
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(app.tween_surfaces_prompt.is_some());
+    enter(&mut app, "MatchMethod=Refit");
+    assert!(
+        app.tween_surfaces_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .is_some()
+    );
 }
 #[test]
 fn corner_actions_replay_nine_native_calibrated_click_outcomes_and_history() {
@@ -361,6 +434,73 @@ fn corner_actions_replay_nine_native_calibrated_click_outcomes_and_history() {
         assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
         enter(&mut app, "Redo");
         assert_eq!(app.document.objects().len(), output.len());
+    }
+}
+#[test]
+fn repeated_corner_sequences_replay_current_controls_native_geometry_and_history() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/tween_surfaces_corner_sequences.json"
+    ))
+    .unwrap();
+    for row in q["results"].as_array().unwrap() {
+        let v = &row["value"];
+        let mut app = test_app();
+        enter(&mut app, "SrfPt 0,0,0 4,0,0 4,6,1 0,6,0");
+        enter(&mut app, "SrfPt 10,0,4 14,0,4 14,6,7 10,6,4");
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        let ids = before.iter().map(|o| o.id()).collect::<Vec<_>>();
+        app.document.clear_history().unwrap();
+        enter(&mut app, "TweenSurfaces MatchMethod=None");
+        for id in ids {
+            click(&mut app, id);
+        }
+        for click in v["spec"]["clicks"].as_array().unwrap() {
+            let index = click["corner"].as_u64().unwrap() as usize;
+            let point = Point3::try_from(
+                serde_json::from_value::<[f64; 3]>(
+                    v["spec"]["sources"][1]["control_points"][index]["point"].clone(),
+                )
+                .unwrap(),
+            )
+            .unwrap();
+            let action = app
+                .tween_corner_controls()
+                .iter()
+                .find(|c| c.point.distance_to(point).unwrap() < 1e-10)
+                .map(|c| c.action);
+            if let Some(action) = action {
+                assert!(app.edit_tween_corner(action));
+            }
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        }
+        enter(&mut app, "");
+        let native = v["command"]["after_script"].as_array().unwrap();
+        assert_eq!(app.document.objects().len(), native.len(), "{}", v["case"]);
+        for (object, n) in app.document.objects().zip(native) {
+            let s = match object.geometry() {
+                Geometry::NurbsSurface(s) => s,
+                Geometry::Brep(b) => b.faces()[0].surface(),
+                _ => panic!(),
+            };
+            for (i, p) in n["samples"].as_array().unwrap().iter().enumerate() {
+                let u = *s.domain_u().start()
+                    + (*s.domain_u().end() - *s.domain_u().start()) * (i % 9) as f64 / 8.;
+                let w = *s.domain_v().start()
+                    + (*s.domain_v().end() - *s.domain_v().start()) * (i / 9) as f64 / 8.;
+                let expected =
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                        .unwrap();
+                assert!(
+                    s.evaluate(u, w).unwrap().distance_to(expected).unwrap() < 1e-7,
+                    "{} {i}",
+                    v["case"]
+                );
+            }
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), native.len());
     }
 }
 #[test]

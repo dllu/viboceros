@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_baseline",
+      "case": "baseline"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_swap_twice",
+      "case": "swap_twice"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_u_origin",
+      "case": "u_origin"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_v_origin",
+      "case": "v_origin"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_u_restore",
+      "case": "u_restore"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_v_restore",
+      "case": "v_restore"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_swap_original_u",
+      "case": "swap_original_u"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_swap_original_v",
+      "case": "swap_original_v"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_u_inactive",
+      "case": "u_inactive"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_v_inactive",
+      "case": "v_inactive"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_u_v",
+      "case": "u_v"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_v_u",
+      "case": "v_u"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_u_v_swap",
+      "case": "u_v_swap"
+    },
+    {
+      "op": "tween_surfaces_corner_sequences",
+      "id": "tween_srf_swap_u_v",
+      "case": "swap_u_v"
+    }
+  ]
+}
