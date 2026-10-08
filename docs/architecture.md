@@ -152,7 +152,7 @@ coupling. Physical retrimming projects original edges onto the changed surface,
 preserves source domains and certifies newly constructed trim/edge correspondence.
 Fourteen native commands distinguish projection from UV copying, including
 nonuniform, curved/rational and holed sources. Projection fitting has sampled
-accuracy checks; seam/singular trims, native preview appearance, restart persistence
+accuracy checks; generic singular trims, native preview appearance, restart persistence
 and performance parity remain unfinished or unverified. Rebuild options use a
 readonly scene and a shared prepared command result. Source snapshots and metadata
 guard acceptance; unchanged edits retain the cache, output policies reuse geometry,
@@ -162,9 +162,13 @@ clears the preview as one unit and blocks acceptance until recovery.
 Closed Rebuild directions use cyclic uniform interpolation with exact repeated
 controls. Constant boundary isocurves stay exact poles, and natural seam/singular
 faces retain shared incidence on the rebuilt surface. Twenty-eight native command
-and SDK records cover primitives, swapped charts and degree parity. Generic
-trimmed seam/singular projection and arbitrary periodic surfaces remain unfinished
-or unverified.
+and SDK records cover primitives, swapped charts and degree parity. Trimmed closed
+faces keep per-use periodic branches and shared seam incidence; ten native cylinder
+recipes extend that evidence to patches and holes crossing the seam. Compact fits
+retain original-span validation stations, while unshared contours can subdivide
+into continuously certified UV/spatial pieces. Extra boundary segmentation remains
+an explicit native representation difference. Generic singular trim projection,
+multi-chart winding and arbitrary periodic surfaces remain unfinished or unverified.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

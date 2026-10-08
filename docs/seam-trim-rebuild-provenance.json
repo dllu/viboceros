@@ -1,0 +1,33 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSurfaceRebuildSeamTrim20261008",
+  "full_native_parity": false,
+  "recipes": 8,
+  "measured_rule": "ReTrim=Yes matches public Brep.CreateTrimmedSurface for cylinder bands, interior rectangles, holes and seam-side cuts, retaining source domains and seam uses.",
+  "limits": [
+    "Closest-point projection and periodic lift selection remain bounded numerical searches, without a global nearest-point certificate.",
+    "General trims spanning multiple periodic charts and generic singular trimmed faces remain unresolved.",
+    "Native fitting representations and projection performance parity remain unverified.",
+    "Certified subdivision can add edge/vertex records to a projected contour compared with Rhino; loop geometry, seam sharing and history are compared separately from segmentation."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/surface_rebuild_seam_trim_probe.py": "bb38978fdd9864aa15c5e743a2a4f3a407d1349c71dafc46fc953f42de7253bd",
+    "tools/rhino_oracle/fixtures/surface_rebuild_seam_trim.json": "f41c9f050373f51e821d099602e5fc05d8e020ff4c79b1d42e7dc0cfaf838e57",
+    "tools/rhino_oracle/observations/surface_rebuild_seam_trim.json": "1a49d533b46823f846fa183e355a35c07b47c9d85283b263e435362af09dead8",
+    "tools/rhino_oracle/surface_rebuild_crossing_hole_probe.py": "59804a8768dd2c00cbfaa022ff7ed49ef1830371f36f2c5d066f4fa7ce4b7314",
+    "tools/rhino_oracle/fixtures/surface_rebuild_crossing_hole.json": "706fbedb2f07df8a5e97f99d5245cf110cf5855d689247d5b8d66ffb25b61a8e",
+    "tools/rhino_oracle/observations/surface_rebuild_crossing_hole.json": "0cac4279d3ce979f96f757907a519aa0b74540c1b0d83b74fa8776023cee9ff7"
+  },
+  "crossing_hole_recipes": 2,
+  "crossing_hole_scheme": "VibocerosOracleSurfaceRebuildCrossingHole20261008",
+  "control_epsilon": 1e-6,
+  "knot_epsilon": 1e-12,
+  "boundary_witness_epsilon": 2e-6,
+  "local_segmentation": {
+    "cylinder_rectangle_retrim": { "local_edges": 26, "native_edges": 4 },
+    "cylinder_hole_retrim": { "local_edges": 59, "native_edges": 4 }
+  },
+  "local_initial_diagnostic": "Dense hole projection initially exhausted a global surface-image certificate. Compact parameter fitting keeps original-span validation stations; when a complete image proof still exceeds its budget, only unshared boundaries subdivide into individually certified UV/spatial edge pieces."
+}

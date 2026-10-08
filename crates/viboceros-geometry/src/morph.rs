@@ -161,6 +161,16 @@ pub(crate) fn fit_curve_with_control_limit(
     curve_fit::fit(morph, curve, tolerance, maximum)
 }
 
+pub(crate) fn fit_curve_with_control_limit_and_stations(
+    morph: &(impl PointMorph + ?Sized),
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+    maximum: usize,
+    stations: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    curve_fit::fit_with_stations(morph, curve, tolerance, maximum, stations)
+}
+
 pub(crate) fn fit_surface(
     morph: &(impl PointMorph + ?Sized),
     surface: &NurbsSurface,

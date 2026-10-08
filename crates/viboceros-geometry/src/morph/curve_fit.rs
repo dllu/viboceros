@@ -19,6 +19,24 @@ pub(super) fn fit(
     tolerance: Tolerance,
     maximum: usize,
 ) -> Result<NurbsCurve, GeometryError> {
+    fit_with_stations(morph, source, tolerance, maximum, &[])
+}
+
+pub(super) fn fit_with_stations(
+    morph: &(impl PointMorph + ?Sized),
+    source: &NurbsCurve,
+    tolerance: Tolerance,
+    maximum: usize,
+    stations: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    if stations
+        .iter()
+        .any(|t| !t.is_finite() || !source.domain().contains(t))
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "extra morph validation stations must lie in the source domain",
+        });
+    }
     // PointMorph is deterministic. Dyadic refinement reuses many stations;
     // cache the source evaluation and point map together, retaining the side
     // bit so independent limits at full-order knots never alias.
@@ -37,7 +55,7 @@ pub(super) fn fit(
     // Rational sources need not lose their exact representation just because
     // their point map is nonlinear. These optional bounded candidates still
     // pass the same native-parameter, sided Euclidean validation as refinement.
-    if source.is_rational() && source.degree() <= 3 {
+    if stations.is_empty() && source.is_rational() && source.degree() <= 3 {
         if source.control_points().len() <= maximum
             && let Ok(candidate) = rational::mapped_controls(morph, source)
             && validate::errors(
@@ -83,6 +101,25 @@ pub(super) fn fit(
             &fractions,
             tolerance.absolute() * 0.8,
         )?;
+        let mut deviation = deviation;
+        for &t in stations {
+            for side in [ParameterSide::Left, ParameterSide::Right] {
+                let error =
+                    point_at(t, side)?.distance_to(approximation.evaluate_on_side(t, side)?)?;
+                deviation = deviation.max(error);
+                if error > tolerance.absolute() * 0.8 {
+                    let index = breaks
+                        .partition_point(|b| b.parameter <= t)
+                        .saturating_sub(1)
+                        .min(breaks.len() - 2);
+                    if let Some(existing) = refinements.iter_mut().find(|(i, _)| *i == index) {
+                        existing.1 = existing.1.max(error);
+                    } else {
+                        refinements.push((index, error));
+                    }
+                }
+            }
+        }
         if refinements.is_empty() {
             return Ok(approximation);
         }

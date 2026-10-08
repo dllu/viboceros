@@ -94,10 +94,13 @@ Natural closed faces now support seam and singular trims when the target has
 the same side incidence. Repeated seam edges, singular trims without edges,
 vertex connectivity and face orientation are retained. The complete source UV
 domains are restored with ReTrim; without it, domains follow the uniform rebuilt
-span counts. This covers full natural boundaries. Generic projection of trimmed
-seam/singular faces remains unsupported.
+span counts. Trimmed seam faces use a separate periodic lift for each trim use,
+preserving U=0 and U=end even when both refer to one spatial vertex. Projection
+continues from the original chart with bounded local refinement and global
+fallback. Exact seam sides use one-dimensional isocurve projection. Generic
+singular trimmed faces remain unsupported.
 
-Polysurfaces, generic trimmed seam/singular faces, rational target surfaces, mixed curve/surface batches,
+Polysurfaces, generic singular trimmed faces, rational target surfaces, mixed curve/surface batches,
 native preview appearance, restart persistence and performance parity remain unresolved.
 The earlier replacement capture contains no geometry-root user text, so its
 replacement lifetime is not established by that evidence.
@@ -177,6 +180,28 @@ Arbitrary periodic inputs, degenerate midpoint isocurves and performance parity
 remain unverified. Closed-source TweenSurfaces matching retains its earlier
 boundary and is not established by this Rebuild evidence.
 
+The [eight cylinder trim recipes](../../tools/rhino_oracle/observations/surface_rebuild_seam_trim.json)
+and [two seam-crossing hole recipes](../../tools/rhino_oracle/observations/surface_rebuild_crossing_hole.json)
+ran under fresh private Xvfb schemes. ReTrim outcomes exactly equal public
+`Brep.CreateTrimmedSurface` records for a ring patch, interior rectangle, interior
+hole, seam-side half-cylinder and a hole cut across the seam. Complete topology,
+controls, edge stations, source purity and independent history are retained.
+Local replay checks target controls at `1e-6`, scaled knots at `1e-12`, shared seam
+incidence and bidirectional boundary witnesses at `2e-6`.
+
+Periodic projection fits a compact parameter basis while checking every original
+trim span at extra stations. It avoids forcing all old source knots into the new
+basis. Full natural boundary edges can be reused on a face with holes. When an
+unshared contour exceeds the complete image-certificate budget, bounded dyadic
+subdivision produces individually certified UV/spatial pieces, retaining the loop
+and its closure. Shared seam edges are not split independently. This can add edge
+and vertex records compared with Rhino; segmentation differences remain explicit.
+Limits are 4,096 projected controls, 2,048 source spans, eight subdivision levels
+and 256 certified pieces per contour. Projection fitting has sampled accuracy
+checks; each output piece has continuous trim/edge correspondence certification.
+General multi-chart winding, generic singular trims and performance parity remain
+unverified. See [seam trim provenance](../seam-trim-rebuild-provenance.json).
+
 The oracle operation `surface_rebuild_geometry` accepts `surface`, `point_count`
 and `degree`, returning the complete `surface` definition in either engine.
 `brep_retrim_geometry` accepts a closed-loop `fixture` and target `surface`,
@@ -189,7 +214,7 @@ the two loops, projected vertices and native edge distance witnesses at `2e-6`.
 ```sh
 cargo test --release -p viboceros-geometry surface_rebuild
 cargo test --release -p viboceros-command surface_rebuild
-python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview tools.rhino_oracle.test_closed_surface_rebuild
+python3 -m unittest tools.rhino_oracle.test_surface_rebuild tools.rhino_oracle.test_surface_rebuild_options tools.rhino_oracle.test_surface_rebuild_retrim tools.rhino_oracle.test_rebuild_preview tools.rhino_oracle.test_closed_surface_rebuild tools.rhino_oracle.test_seam_trim_rebuild
 tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/surface_rebuild_geometry.json --scheme VibocerosOracleSurfaceRebuildSDK --absolute-epsilon 1e-6 --relative-epsilon 1e-10
 ```
 

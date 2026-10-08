@@ -210,6 +210,39 @@ impl NurbsCurve2 {
         let knots = self.knots.iter().rev().map(|knot| -*knot).collect();
         Self::try_new_rational(self.degree, control_points, knots)
     }
+
+    /// Restrict the UV spline by ordinary NURBS knot insertion, retaining its
+    /// parameter values. This does not interpret UV coordinates as model units.
+    pub fn try_trimmed(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        let lifted = crate::NurbsCurve::try_new_rational(
+            self.degree,
+            self.control_points
+                .iter()
+                .map(|p| {
+                    crate::WeightedPoint3::try_new(
+                        crate::Point3::try_new(p.point.x(), p.point.y(), 0.)?,
+                        p.weight,
+                    )
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?,
+            self.knots.clone(),
+        )?;
+        let curve = lifted.try_trimmed(interval)?;
+        Self::try_new_rational(
+            curve.degree(),
+            curve
+                .control_points()
+                .iter()
+                .map(|p| {
+                    WeightedPoint2::try_new(
+                        Point2::try_new(p.point().x(), p.point().y())?,
+                        p.weight(),
+                    )
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?,
+            curve.knots().to_vec(),
+        )
+    }
 }
 
 #[cfg(test)]
@@ -219,6 +252,31 @@ mod tests {
 
     fn point(x: Real, y: Real) -> Point2 {
         Point2::try_new(x, y).unwrap()
+    }
+
+    #[test]
+    fn uv_restriction_retains_parameter_values_and_source_geometry() {
+        let source = NurbsCurve2::try_new_rational(
+            2,
+            vec![
+                WeightedPoint2::try_new(point(0., 0.), -1.).unwrap(),
+                WeightedPoint2::try_new(point(2., 3.), -2.).unwrap(),
+                WeightedPoint2::try_new(point(4., 0.), -1.).unwrap(),
+            ],
+            vec![2., 2., 2., 8., 8., 8.],
+        )
+        .unwrap();
+        let before = source.clone();
+        let trimmed = source.try_trimmed(3. ..=7.).unwrap();
+        assert_eq!(trimmed.domain(), 3. ..=7.);
+        assert_eq!(source, before);
+        for i in 0..=32 {
+            let t = 3. + 4. * i as Real / 32.;
+            let a = source.evaluate(t).unwrap();
+            let b = trimmed.evaluate(t).unwrap();
+            assert!((a.x() - b.x()).hypot(a.y() - b.y()) < 1e-12);
+        }
+        assert!(source.try_trimmed(1. ..=7.).is_err());
     }
 
     #[test]

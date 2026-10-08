@@ -4,6 +4,37 @@ use crate::{LineSegment, Polyline3};
 mod rational;
 
 #[test]
+fn caller_stations_detect_a_narrow_excursion_between_ordinary_fit_checks() {
+    struct Bump;
+    impl PointMorph for Bump {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            let s = (p.x() - 0.12345) / 0.00001;
+            Point3::try_new(
+                p.x(),
+                if s.abs() < 1. {
+                    (1. - s * s).powi(2)
+                } else {
+                    0.
+                },
+                0.,
+            )
+        }
+    }
+    let source = NurbsCurve::try_new(
+        1,
+        vec![point(0., 0., 0.), point(1., 0., 0.)],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    assert!(fit(&Bump, &source, Tolerance::DEFAULT, 4).is_ok());
+    assert!(matches!(
+        fit_with_stations(&Bump, &source, Tolerance::DEFAULT, 4, &[0.12345]),
+        Err(GeometryError::CurveMorphDidNotConverge { .. })
+    ));
+    assert!(fit_with_stations(&Bump, &source, Tolerance::DEFAULT, 4, &[Real::NAN]).is_err());
+}
+
+#[test]
 fn cubic_lift_of_a_rational_circle_fits_without_spending_the_control_budget() {
     struct Lift(std::cell::Cell<usize>);
     impl PointMorph for Lift {

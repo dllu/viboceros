@@ -7,7 +7,7 @@ mod polish;
 mod tests;
 
 impl SurfaceQuery<'_> {
-    pub(super) fn refine_closest_parameters(
+    pub(in crate::nurbs_surface) fn refine_closest_parameters(
         &mut self,
         target: Point3,
         mut u: Real,

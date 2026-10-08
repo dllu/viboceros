@@ -9,6 +9,25 @@ use candidate::{Candidate, retain_closest_seeds};
 mod tests;
 
 impl NurbsSurface {
+    /// Local continuation for a caller that already owns a source chart.
+    /// This proposes a stationary point, not a global closest-point certificate.
+    pub(crate) fn closest_parameters_from_seed(
+        &self,
+        target: Point3,
+        seed: [Real; 2],
+        tolerance: Tolerance,
+    ) -> Result<(Real, Real), GeometryError> {
+        let u = self.domain_u();
+        let v = self.domain_v();
+        SurfaceQuery::new(self).refine_closest_parameters(
+            target,
+            seed[0].clamp(*u.start(), *u.end()),
+            seed[1].clamp(*v.start(), *v.end()),
+            [*u.start(), *u.end()],
+            [*v.start(), *v.end()],
+            tolerance,
+        )
+    }
     /// Finds natural surface parameters nearest to a finite model-space
     /// point. Exactly affine bilinear patches use direct constrained projection;
     /// other surfaces use bounded multi-start curvature-aware Newton refinement

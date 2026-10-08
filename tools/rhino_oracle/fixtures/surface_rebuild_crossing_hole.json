@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_crossing_hole",
+      "id": "tween_srf_cylinder_crossing_hole_untrim",
+      "case": "cylinder_crossing_hole_untrim"
+    },
+    {
+      "op": "surface_rebuild_crossing_hole",
+      "id": "tween_srf_cylinder_crossing_hole_retrim",
+      "case": "cylinder_crossing_hole_retrim"
+    }
+  ]
+}

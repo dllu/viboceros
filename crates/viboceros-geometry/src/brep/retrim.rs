@@ -4,9 +4,145 @@ use crate::PointMorph;
 
 const MAX_PROJECTED_CONTROLS: usize = 4096;
 
+fn certified_images(
+    surface: &NurbsSurface,
+    uv: NurbsCurve2,
+    tolerance: Tolerance,
+    depth: usize,
+    output: &mut Vec<(NurbsCurve2, NurbsCurve)>,
+) -> Result<(), GeometryError> {
+    if output.len() >= 256 {
+        return Err(GeometryError::SurfaceCurveCertificateWorkLimit);
+    }
+    let result = if depth == 0 && (uv.degree() == 1 || uv.control_points().len() <= 32) {
+        surface.try_pushup_curve_certified(&uv, tolerance)
+    } else {
+        let domain = uv.domain();
+        let mut points = Vec::new();
+        for t in [0., 1. / 3., 2. / 3., 1.] {
+            let p = uv.evaluate(uv.parameter_at(t)?)?;
+            points.push(surface.evaluate(p.x(), p.y())?);
+        }
+        let blend = |weights: [Real; 4]| -> Result<Point3, GeometryError> {
+            let anchor = points[0].to_array();
+            Point3::try_from(std::array::from_fn(|k| {
+                points
+                    .iter()
+                    .zip(weights)
+                    .skip(1)
+                    .fold(anchor[k], |sum, (p, w)| {
+                        w.mul_add(p.to_array()[k] - anchor[k], sum)
+                    })
+            }))
+        };
+        let candidate = NurbsCurve::try_new(
+            3,
+            vec![
+                points[0],
+                blend([-5. / 6., 3., -1.5, 1. / 3.])?,
+                blend([1. / 3., -1.5, 3., -5. / 6.])?,
+                points[3],
+            ],
+            [vec![*domain.start(); 4], vec![*domain.end(); 4]].concat(),
+        )?;
+        match surface.parameter_curve_deviation_bound(&uv, &candidate, tolerance.absolute()) {
+            Ok(Some(_)) => Ok(candidate),
+            Ok(None) => Err(GeometryError::SurfacePushupDidNotConverge {
+                tolerance: tolerance.absolute(),
+            }),
+            Err(error) => Err(error),
+        }
+    };
+    match result {
+        Ok(spatial) => {
+            output.push((uv, spatial));
+            Ok(())
+        }
+        Err(
+            GeometryError::SurfaceCurveCertificateWorkLimit
+            | GeometryError::SurfacePushupDidNotConverge { .. },
+        ) if depth < 8 && output.len() < 256 => {
+            let domain = uv.domain();
+            let middle = domain.start().midpoint(*domain.end());
+            certified_images(
+                surface,
+                uv.try_trimmed(*domain.start()..=middle)?,
+                tolerance,
+                depth + 1,
+                output,
+            )?;
+            certified_images(
+                surface,
+                uv.try_trimmed(middle..=*domain.end())?,
+                tolerance,
+                depth + 1,
+                output,
+            )
+        }
+        Err(error) => Err(error),
+    }
+}
+
 struct Projection<'a> {
     surface: &'a NurbsSurface,
     tolerance: Tolerance,
+}
+
+struct ChartProjection<'a> {
+    source: &'a NurbsSurface,
+    target: &'a NurbsSurface,
+    closed: [bool; 2],
+    tolerance: Tolerance,
+    fixed: Option<(usize, Real)>,
+    curve: &'a NurbsCurve2,
+}
+struct ProjectionChart<'a> {
+    source: &'a NurbsSurface,
+    curve: &'a NurbsCurve2,
+    closed: [bool; 2],
+    fixed: Option<(usize, Real)>,
+}
+fn nearest_lift(mut projected: [Real; 2], reference: [Real; 2], closed: [bool; 2]) -> [Real; 2] {
+    for axis in 0..2 {
+        if closed[axis] {
+            projected[axis] += (reference[axis] - projected[axis]).round();
+        }
+    }
+    projected
+}
+impl PointMorph for ChartProjection<'_> {
+    fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+        let station = self.curve.evaluate(self.curve.parameter_at(point.x())?)?;
+        let reference = station.to_array();
+        if reference
+            .iter()
+            .any(|&t| !(-4096. * Real::EPSILON..=1. + 4096. * Real::EPSILON).contains(&t))
+        {
+            return invalid("source projection station leaves its natural chart");
+        }
+        let xyz = self
+            .source
+            .evaluate(reference[0].clamp(0., 1.), reference[1].clamp(0., 1.))?;
+        let (u, v) = if let Some((axis, value)) = self.fixed {
+            let curve = if axis == 0 {
+                self.target.isocurve_v(value)?
+            } else {
+                self.target.isocurve_u(value)?
+            };
+            let free = curve.closest_parameter(xyz, self.tolerance)?;
+            if axis == 0 {
+                (value, free)
+            } else {
+                (free, value)
+            }
+        } else {
+            self.target
+                .closest_parameters_from_seed(xyz, reference, self.tolerance)
+                .or_else(|_| self.target.closest_parameters(xyz, self.tolerance))?
+        };
+        let uv = nearest_lift([u, v], reference, self.closed);
+        Point3::try_new(uv[0], uv[1], 0.)
+    }
 }
 impl PointMorph for Projection<'_> {
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
@@ -76,6 +212,7 @@ fn projection_curve(
     spatial: &NurbsCurve,
     ends: [Point2; 2],
     tolerance: Tolerance,
+    chart: Option<ProjectionChart<'_>>,
 ) -> Result<NurbsCurve2, GeometryError> {
     if let Ok(uv) = surface.try_pullback_exact_curve(spatial, tolerance)
         && let Some(uv) = crate::surface_pullback::constrain_curve_endpoints(uv, ends)?
@@ -126,15 +263,62 @@ fn projection_curve(
         (tolerance.relative() * 1e-4).max(Real::MIN_POSITIVE),
         tolerance.angular(),
     )?;
-    let fitted = crate::morph::fit_curve_with_control_limit(
-        &Projection {
-            surface,
-            tolerance: numerical,
-        },
-        spatial,
-        fitting,
-        MAX_PROJECTED_CONTROLS,
-    )?;
+    let fitted = if let Some(ProjectionChart {
+        source,
+        curve: uv,
+        closed,
+        fixed,
+    }) = chart
+    {
+        let domain = uv.domain();
+        let lifted = NurbsCurve::try_new(
+            1,
+            vec![Point3::try_new(0., 0., 0.)?, Point3::try_new(1., 0., 0.)?],
+            vec![
+                *domain.start(),
+                *domain.start(),
+                *domain.end(),
+                *domain.end(),
+            ],
+        )?;
+        if uv.spans().count() > 2048 {
+            return Err(GeometryError::TooManyMorphCurveControlPoints {
+                maximum: MAX_PROJECTED_CONTROLS,
+            });
+        }
+        let mut stations = uv
+            .spans()
+            .flat_map(|(a, b)| {
+                (0..=16).map(move |i| a.mul_add(1. - i as Real / 16., b * (i as Real / 16.)))
+            })
+            .collect::<Vec<_>>();
+        stations.sort_by(Real::total_cmp);
+        stations.dedup();
+        crate::morph::fit_curve_with_control_limit_and_stations(
+            &ChartProjection {
+                source,
+                target: surface,
+                closed,
+                tolerance: numerical,
+                fixed,
+                curve: uv,
+            },
+            &lifted,
+            fitting,
+            MAX_PROJECTED_CONTROLS,
+            &stations,
+        )?
+    } else {
+        crate::morph::fit_curve_with_control_limit(
+            &Projection {
+                surface,
+                tolerance: numerical,
+            },
+            spatial,
+            fitting,
+            MAX_PROJECTED_CONTROLS,
+        )?
+    };
     let uv = NurbsCurve2::try_new_rational(
         fitted.degree(),
         fitted
@@ -257,11 +441,13 @@ impl Brep {
             .loops
             .iter()
             .flat_map(|l| &l.trims)
-            .any(|t| t.trim_type != BrepTrimType::Boundary)
+            .any(|t| !matches!(t.trim_type, BrepTrimType::Boundary | BrepTrimType::Seam))
         {
-            return invalid("retrimming seam and singular boundaries is not yet supported");
+            return invalid("retrimming requires boundary or seam trims");
         }
         let normalized = surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
+        let closed = [normalized.is_closed_u()?, normalized.is_closed_v()?];
+        let original_normalized = face.surface.try_reparameterized(0. ..=1., 0. ..=1.)?;
         let numerical = Tolerance::try_new(
             (tolerance.absolute() * 1e-4).max(Real::MIN_POSITIVE),
             (tolerance.relative() * 1e-4).max(Real::MIN_POSITIVE),
@@ -284,52 +470,196 @@ impl Brep {
         let mut loops = face.loops.clone();
         let domains = [face.surface.domain_u(), face.surface.domain_v()];
         let target = normalized.try_reparameterized(domains[0].clone(), domains[1].clone())?;
-        for trim in loops.iter_mut().flat_map(|l| &mut l.trims) {
-            let index = trim.edge.ok_or(GeometryError::InvalidBrepTopology {
-                context: "retrimming needs spatial edges",
-            })?;
-            let mut source = self.edges[index].curve.clone();
-            if trim.reversed_3d {
-                source = source.reversed()?;
-            }
-            source = source.try_reparameterized(trim.curve.domain())?;
-            let uv = projection_curve(
-                &normalized,
-                &source,
-                trim.vertices.map(|i| parameters[i]),
-                tolerance,
-            )?;
-            let controls = uv
-                .control_points()
-                .iter()
-                .map(|p| {
-                    let coordinates = [p.point().x(), p.point().y()];
-                    WeightedPoint2::try_new(
-                        Point2::try_new(
-                            crate::remap_scalar(
-                                coordinates[0],
-                                [0., 1.],
-                                [*domains[0].start(), *domains[0].end()],
+        let natural = Self::try_surface_face(target.clone(), tolerance)?;
+        let original_uses = self.faces[0].loops.iter().flat_map(|l| &l.trims).fold(
+            vec![0usize; self.edges.len()],
+            |mut counts, t| {
+                if let Some(i) = t.edge {
+                    counts[i] += 1;
+                }
+                counts
+            },
+        );
+        let mut replacements = std::collections::BTreeMap::<(usize, usize), Vec<BrepTrim>>::new();
+        for (loop_index, face_loop) in loops.iter_mut().enumerate() {
+            for (trim_index, trim) in face_loop.trims.iter_mut().enumerate() {
+                let index = trim.edge.ok_or(GeometryError::InvalidBrepTopology {
+                    context: "retrimming needs spatial edges",
+                })?;
+                if let Some(candidate) = natural.faces[0].loops[0]
+                    .trims
+                    .iter()
+                    .find(|t| t.iso == trim.iso && t.edge.is_some())
+                    && trim.curve.is_straight_segment()
+                    && trim.curve.start_point()? == candidate.curve.start_point()?
+                    && trim.curve.end_point()? == candidate.curve.end_point()?
+                {
+                    let mut edge = natural.edges[candidate.edge.unwrap()].clone();
+                    if candidate.reversed_3d != trim.reversed_3d {
+                        edge.curve = edge.curve.reversed()?;
+                    }
+                    edge.vertices = edges[index].vertices;
+                    edges[index] = edge;
+                    for (old, new) in trim.vertices.into_iter().zip(candidate.vertices) {
+                        vertices[old] = natural.vertices[new];
+                    }
+                    trim.curve = candidate.curve.clone();
+                    trim.tolerance = [0.; 2];
+                    continue;
+                }
+                let mut source = self.edges[index].curve.clone();
+                if trim.reversed_3d {
+                    source = source.reversed()?;
+                }
+                source = source.try_reparameterized(trim.curve.domain())?;
+                let normalized_trim = NurbsCurve2::try_new_rational(
+                    trim.curve.degree(),
+                    trim.curve
+                        .control_points()
+                        .iter()
+                        .map(|p| {
+                            let xyz = p.point().to_array();
+                            WeightedPoint2::try_new(
+                                Point2::try_new(
+                                    crate::remap_scalar(
+                                        xyz[0],
+                                        [*domains[0].start(), *domains[0].end()],
+                                        [0., 1.],
+                                    )?,
+                                    crate::remap_scalar(
+                                        xyz[1],
+                                        [*domains[1].start(), *domains[1].end()],
+                                        [0., 1.],
+                                    )?,
+                                )?,
+                                p.weight(),
+                            )
+                        })
+                        .collect::<Result<Vec<_>, GeometryError>>()?,
+                    trim.curve.knots().to_vec(),
+                )?;
+                let references = [
+                    normalized_trim.start_point()?.to_array(),
+                    normalized_trim.end_point()?.to_array(),
+                ];
+                let mut ends = [parameters[trim.vertices[0]], parameters[trim.vertices[1]]];
+                for i in 0..2 {
+                    let uv = nearest_lift(ends[i].to_array(), references[i], closed);
+                    ends[i] = Point2::try_new(uv[0], uv[1])?;
+                }
+                let uv = projection_curve(
+                    &normalized,
+                    &source,
+                    ends,
+                    tolerance,
+                    closed.into_iter().any(|c| c).then_some(ProjectionChart {
+                        source: &original_normalized,
+                        curve: &normalized_trim,
+                        closed,
+                        fixed: if trim.trim_type == BrepTrimType::Seam {
+                            match trim.iso {
+                                SurfaceIso::West => Some((0, 0.)),
+                                SurfaceIso::East => Some((0, 1.)),
+                                SurfaceIso::South => Some((1, 0.)),
+                                SurfaceIso::North => Some((1, 1.)),
+                                _ => None,
+                            }
+                        } else {
+                            None
+                        },
+                    }),
+                )?;
+                let controls = uv
+                    .control_points()
+                    .iter()
+                    .map(|p| {
+                        let coordinates = [p.point().x(), p.point().y()];
+                        WeightedPoint2::try_new(
+                            Point2::try_new(
+                                crate::remap_scalar(
+                                    coordinates[0],
+                                    [0., 1.],
+                                    [*domains[0].start(), *domains[0].end()],
+                                )?,
+                                crate::remap_scalar(
+                                    coordinates[1],
+                                    [0., 1.],
+                                    [*domains[1].start(), *domains[1].end()],
+                                )?,
                             )?,
-                            crate::remap_scalar(
-                                coordinates[1],
-                                [0., 1.],
-                                [*domains[1].start(), *domains[1].end()],
-                            )?,
-                        )?,
-                        p.weight(),
-                    )
-                })
-                .collect::<Result<Vec<_>, GeometryError>>()?;
-            trim.curve = NurbsCurve2::try_new_rational(uv.degree(), controls, uv.knots().to_vec())?;
-            trim.iso = trim_iso::classify(&trim.curve, &target);
-            trim.tolerance = [0.; 2];
-            let mut spatial = target.try_pushup_curve_certified(&trim.curve, tolerance)?;
-            if trim.reversed_3d {
-                spatial = spatial.reversed()?;
+                            p.weight(),
+                        )
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?;
+                trim.curve =
+                    NurbsCurve2::try_new_rational(uv.degree(), controls, uv.knots().to_vec())?;
+                trim.iso = trim_iso::classify(&trim.curve, &target);
+                trim.tolerance = [0.; 2];
+                let mut images = Vec::new();
+                certified_images(&target, trim.curve.clone(), tolerance, 0, &mut images)?;
+                if images.len() > 1 {
+                    if original_uses[index] != 1 {
+                        return invalid("a shared retrim edge cannot be split independently");
+                    }
+                    let mut pieces = Vec::new();
+                    let mut start = trim.vertices[0];
+                    let total = images.len();
+                    for (piece_index, (uv, mut spatial)) in images.into_iter().enumerate() {
+                        let end = if piece_index + 1 == total {
+                            trim.vertices[1]
+                        } else {
+                            let p = uv.end_point()?;
+                            let id = vertices.len();
+                            vertices.push(BrepVertex::try_new(
+                                target.evaluate(p.x(), p.y())?,
+                                tolerance.absolute(),
+                            )?);
+                            id
+                        };
+                        if trim.reversed_3d {
+                            spatial = spatial.reversed()?;
+                        }
+                        let endpoints = if trim.reversed_3d {
+                            [end, start]
+                        } else {
+                            [start, end]
+                        };
+                        let edge = if piece_index == 0 { index } else { edges.len() };
+                        let value = BrepEdge::try_new(endpoints, spatial, tolerance.absolute())?;
+                        if edge == edges.len() {
+                            edges.push(value);
+                        } else {
+                            edges[edge] = value;
+                        }
+                        let mut value = trim.clone();
+                        value.vertices = [start, end];
+                        value.edge = Some(edge);
+                        value.curve = uv;
+                        value.iso = trim_iso::classify(&value.curve, &target);
+                        pieces.push(value);
+                        start = end;
+                    }
+                    replacements.insert((loop_index, trim_index), pieces);
+                    continue;
+                }
+                let mut spatial = images.pop().unwrap().1;
+                if trim.reversed_3d {
+                    spatial = spatial.reversed()?;
+                }
+                edges[index].curve = spatial;
+                edges[index].tolerance = tolerance.absolute();
             }
-            edges[index].curve = spatial;
-            edges[index].tolerance = tolerance.absolute();
+        }
+        for (loop_index, face_loop) in loops.iter_mut().enumerate() {
+            let mut trims = Vec::new();
+            for (trim_index, trim) in std::mem::take(&mut face_loop.trims).into_iter().enumerate() {
+                if let Some(pieces) = replacements.remove(&(loop_index, trim_index)) {
+                    trims.extend(pieces);
+                } else {
+                    trims.push(trim);
+                }
+            }
+            face_loop.trims = trims;
         }
         Self::try_new(
             vertices,
@@ -343,6 +673,68 @@ impl Brep {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn periodic_lifts_keep_distinct_seam_uses_and_half_chart_cuts() {
+        assert_eq!(
+            nearest_lift([0., 0.25], [1., 0.25], [true, false]),
+            [1., 0.25]
+        );
+        assert_eq!(
+            nearest_lift([1., 0.75], [0., 0.75], [true, false]),
+            [0., 0.75]
+        );
+        assert_eq!(
+            nearest_lift([0.98, 0.5], [0.99, 0.5], [true, false]),
+            [0.98, 0.5]
+        );
+        assert_eq!(
+            nearest_lift([0.02, 0.5], [1.01, 0.5], [true, false]),
+            [1.02, 0.5]
+        );
+        assert_eq!(
+            nearest_lift([0.02, 0.5], [1.01, 0.5], [false, false]),
+            [0.02, 0.5]
+        );
+    }
+
+    #[test]
+    fn cylinder_band_transfer_preserves_a_shared_seam_and_full_circle_boundaries() {
+        let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_cylinder(frame, 2., 0., 4.).unwrap();
+        let original = Brep::try_rectangular_surface_face(
+            surface.clone(),
+            surface.domain_u(),
+            1. ..=3.,
+            tolerance,
+        )
+        .unwrap();
+        let before = original.clone();
+        let target = crate::try_rebuild_nurbs_surface(&surface, [12, 8], [3, 3]).unwrap();
+        let result = original
+            .try_retrimmed_single_surface(target, tolerance)
+            .unwrap();
+        assert_eq!(original, before);
+        assert_eq!(result.vertices.len(), 2);
+        assert_eq!(result.edges.len(), 3);
+        let seams = result.faces[0].loops[0]
+            .trims
+            .iter()
+            .filter(|t| t.trim_type == BrepTrimType::Seam)
+            .collect::<Vec<_>>();
+        assert_eq!(seams.len(), 2);
+        assert_eq!(seams[0].edge, seams[1].edge);
+        assert_ne!(
+            seams[0].curve.start_point().unwrap().x(),
+            seams[1].curve.end_point().unwrap().x()
+        );
+        assert!((result.area(tolerance).unwrap() - 8. * std::f64::consts::PI).abs() < 0.01);
+    }
     #[test]
     fn projection_moves_boundaries_to_parallel_surface_and_preserves_holes_and_orientation() {
         let tolerance = Tolerance::DEFAULT;

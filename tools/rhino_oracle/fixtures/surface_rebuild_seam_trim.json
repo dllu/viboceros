@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_band_untrim",
+      "case": "cylinder_band_untrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_band_retrim",
+      "case": "cylinder_band_retrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_rectangle_untrim",
+      "case": "cylinder_rectangle_untrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_rectangle_retrim",
+      "case": "cylinder_rectangle_retrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_hole_untrim",
+      "case": "cylinder_hole_untrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_hole_retrim",
+      "case": "cylinder_hole_retrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_seam_cut_untrim",
+      "case": "cylinder_seam_cut_untrim"
+    },
+    {
+      "op": "surface_rebuild_seam_trim",
+      "id": "tween_srf_cylinder_seam_cut_retrim",
+      "case": "cylinder_seam_cut_retrim"
+    }
+  ]
+}
