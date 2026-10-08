@@ -3,39 +3,63 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `03c04539` with Rust 1.95.0 after
-[PlanarUnion, PlanarDifference and PlanarIntersection](commands/planar-booleans.md).
+The October 7, 2026 audit tested code at `e0029ac4` with Rust 1.95.0 after
+[Planar trim holes and exact orthogonal projection](commands/planar-booleans.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
+cargo test --release --bin viboceros
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The ordinary Rust workspace suite passed
-5,235 tests:
+All commands completed successfully. The workspace suite passed 5,239 tests;
+a final application-only rerun after nested-cutter picking was corrected passed
+996 tests (17 ignored), covering 5,240 distinct Rust tests in total:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 994 | 17 |
-| Command | 1,177 | 2 |
+| App | 996 | 17 |
+| Command | 1,178 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,038 | 8 |
+| Geometry | 2,040 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 947 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 949 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new planar-surface Boolean capture ran 28 owned public recipes on private
+The new trim-hole/projection capture ran 31 owned public recipes on private Xvfb
+under `VibocerosOraclePlanarTopologyVerified20261007`. All succeed.
+[Complete records](../tools/rhino_oracle/observations/planar_boolean_topology.json)
+measure hole fill/cover/straddle/cut regions, holed cutters, two different hole
+boundaries, tilted/reversed inputs, a tilted first support, perpendicular collapse
+and multi-input hole filling. [Provenance](planar-boolean-topology-provenance.json)
+binds the producer, recipes and complete capture. Command replay compares every
+boundary bidirectionally at `1e-7`, scalars at `1e-9`, topology, identity, metadata
+and independent history. App replay runs every source-picking phase and checks
+area, counts and Undo/Redo. The separate geometry module projects original
+physical polygons rationally before arrangement classification; only final
+export rounds, extending the first support as needed. Independent kernel tests
+verify both projection orders, output plane membership, perpendicular zero area,
+source purity, warped-input rejection and work limits. The second planar getter
+excludes its already-picked source before hit ranking, so nested cutters remain
+pickable in Shaded/Ghosted; a regression checks both modes. Production wgpu/egui
+inspection on private Xvfb checks hole creation, a tilted cutter yielding two
+pieces, Ghosted mode, ordered clicks and Undo/Redo. See [usage and saved image](commands/planar-booleans.md).
+Curved trims, compound surfaces, broader hole combinations, near contacts,
+arbitrary insertion order, restart behavior, native pixels and relative
+performance remain unsupported or unverified.
+
+The preceding planar-surface Boolean capture ran 28 owned public recipes on private
 Xvfb under `VibocerosOraclePlanarBooleanCorrected20261007`. All succeed.
 [Complete records](../tools/rhino_oracle/observations/planar_boolean_command.json)
 measure all three commands for overlap, reversed normals, containment in either
@@ -53,8 +77,9 @@ Intersection retains the first ID, attributes and groups while clearing geometry
 user text. Empty Difference/Intersection results delete both inputs successfully.
 The production wgpu/egui inspection on private Xvfb checks ordered Difference/
 Intersection picks, three-surface preselected Union, Ghosted mode and Undo/Redo.
-See [usage and saved image](commands/planar-booleans.md). Curved boundaries,
-nonparallel projection, compound surfaces, general trim holes, near contacts,
+See [usage and saved image](commands/planar-booleans.md). The projection/hole
+extension above adds those measured cases. Curved boundaries, compound surfaces,
+broader trim holes, near contacts,
 restart behavior, native pixels and relative performance remain unverified.
 
 The preceding coplanar Boolean2Objects capture ran 37 owned public recipes on private
