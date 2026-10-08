@@ -168,7 +168,11 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
-        if !click.preselection && self.unjoin_prompt.is_none() && !self.picking_extract_faces() {
+        if !click.preselection
+            && self.unjoin_prompt.is_none()
+            && !self.picking_extract_faces()
+            && !self.picking_subcurve_edge()
+        {
             if self
                 .hole_prompt
                 .as_ref()
@@ -206,7 +210,13 @@ impl VibocerosApp {
             self.component_selection.clear_choices();
             return;
         }
-        let picks = if self.picking_extract_faces() {
+        let picks = if self.picking_subcurve_edge() {
+            click
+                .picks
+                .into_iter()
+                .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
+                .collect()
+        } else if self.picking_extract_faces() {
             click
                 .picks
                 .into_iter()
@@ -261,6 +271,15 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        if self.picking_subcurve_edge() {
+            if let [pick] = picks.as_slice() {
+                self.pick_subcurve_edge(crate::viewport::EdgePick {
+                    object: pick.object,
+                    edge: pick.index,
+                });
+            }
+            return;
+        }
         let parents = picks.iter().map(|pick| pick.object).collect::<Vec<_>>();
         match self
             .component_selection

@@ -5,6 +5,11 @@ use viboceros_document::ObjectId;
 #[derive(Clone, Debug)]
 pub(super) struct SubcurvePrompt {
     pub(super) source: Option<ObjectId>,
+    pub(super) edge: Option<usize>,
+    edge_source: Option<(
+        viboceros_document::GeometrySnapshot,
+        viboceros_geometry::Tolerance,
+    )>,
     pub(super) start: Option<f64>,
     pub(super) length: Option<f64>,
     pub(super) copy: bool,
@@ -15,6 +20,20 @@ pub(super) struct SubcurvePrompt {
     pub(super) preview: super::subcurve_preview::Cache,
 }
 impl SubcurvePrompt {
+    pub(super) fn source_current(&self, document: &Document) -> bool {
+        self.edge_source
+            .as_ref()
+            .is_none_or(|(snapshot, tolerance)| {
+                *tolerance == document.tolerance()
+                    && self.source.is_some_and(|id| {
+                        document.is_object_selectable(id)
+                            && document.object(id).is_some_and(|o| {
+                                snapshot.shares_storage_with(o.geometry_snapshot())
+                            })
+                    })
+            })
+    }
+
     pub(super) fn hint(&self) -> &'static str {
         if self.from_midpoint && self.source.is_some() {
             return if self.start.is_none() {
@@ -27,7 +46,7 @@ impl SubcurvePrompt {
             return "SubCrv: pick the locked-side end or enter a length; Direction=Free unlocks";
         }
         match (self.source, self.start, self.length) {
-            (None, _, _) => "SubCrv: select one curve; Esc cancels",
+            (None, _, _) => "SubCrv: select one curve or surface edge; Esc cancels",
             (Some(_), None, _) => "SubCrv: pick the subcurve start (Esc cancels)",
             (Some(_), Some(_), None) => {
                 "SubCrv: pick the directed subcurve end or type a length (Esc cancels)"
@@ -39,6 +58,71 @@ impl SubcurvePrompt {
     }
 }
 impl VibocerosApp {
+    pub(super) fn validate_subcurve_source(&mut self) -> bool {
+        if self
+            .subcurve_prompt
+            .as_ref()
+            .is_none_or(|p| p.source_current(&self.document))
+        {
+            return true;
+        }
+        let p = self.subcurve_prompt.as_mut().unwrap();
+        p.source = None;
+        p.edge = None;
+        p.edge_source = None;
+        p.start = None;
+        p.length = None;
+        p.hover_parameter = None;
+        p.locked_forward = None;
+        p.preview = Default::default();
+        self.active_command = None;
+        self.push_log("Surface edge changed; select the source again".into());
+        false
+    }
+
+    pub(super) fn picking_subcurve_edge(&self) -> bool {
+        self.subcurve_prompt
+            .as_ref()
+            .is_some_and(|p| p.source.is_none())
+    }
+
+    pub(super) fn pick_subcurve_edge(&mut self, pick: crate::viewport::EdgePick) -> bool {
+        if !self.picking_subcurve_edge() {
+            return false;
+        }
+        let valid = self.document.is_object_selectable(pick.object)
+            && self.document.object(pick.object).is_some_and(|o| {
+                viboceros_command::curve_reference::resolve(
+                    o.geometry(),
+                    Some(pick.edge),
+                    self.document.tolerance(),
+                )
+                .is_some()
+            });
+        if !valid {
+            self.push_log("Select an available surface edge".into());
+            return true;
+        }
+        let p = self.subcurve_prompt.as_mut().unwrap();
+        p.source = Some(pick.object);
+        p.edge = Some(pick.edge);
+        p.edge_source = Some((
+            self.document
+                .object(pick.object)
+                .unwrap()
+                .geometry_snapshot()
+                .clone(),
+            self.document.tolerance(),
+        ));
+        self.active_command = Some(InteractiveCommand::SubCrv {
+            start: None,
+            copy: p.copy,
+        });
+        self.document.clear_selection();
+        self.component_selection.clear();
+        self.push_log(self.subcurve_prompt.as_ref().unwrap().hint().into());
+        true
+    }
     pub(super) fn begin_subcurve_prompt(
         &mut self,
         copy: bool,
@@ -58,6 +142,8 @@ impl VibocerosApp {
         };
         self.subcurve_prompt = Some(SubcurvePrompt {
             source,
+            edge: None,
+            edge_source: None,
             start: None,
             length: None,
             copy,
@@ -98,6 +184,12 @@ impl VibocerosApp {
         true
     }
     pub(super) fn continue_subcurve_prompt(&mut self, input: &str) -> bool {
+        if self.subcurve_prompt.is_some() && self.try_continue_component_choice(input) {
+            return true;
+        }
+        if !self.validate_subcurve_source() {
+            return true;
+        }
         let Some(prompt) = self.subcurve_prompt.clone() else {
             return false;
         };
@@ -162,6 +254,15 @@ impl VibocerosApp {
             return true;
         }
         if prompt.source.is_none() {
+            if let Some((name, value)) = input.trim_start_matches('_').split_once('=')
+                && name.eq_ignore_ascii_case("Edge")
+                && let Some((object, edge)) = value.split_once(',')
+                && let (Ok(object), Ok(edge)) = (object.parse(), edge.parse())
+            {
+                self.pick_subcurve_edge(crate::viewport::EdgePick { object, edge });
+                self.command_input.clear();
+                return true;
+            }
             if let Ok(id) = input.parse::<ObjectId>() {
                 self.pick_subcurve_source(Some(id));
                 self.command_input.clear();
@@ -180,8 +281,14 @@ impl VibocerosApp {
                     let total = self
                         .document
                         .object(source)
-                        .and_then(|o| o.geometry().curve_ref())
-                        .map(|c| c.length(self.document.tolerance()));
+                        .and_then(|o| {
+                            viboceros_command::curve_reference::resolve(
+                                o.geometry(),
+                                prompt.edge,
+                                self.document.tolerance(),
+                            )
+                        })
+                        .map(|c| c.curve().length(self.document.tolerance()));
                     match total {
                         Some(Ok(total)) if length.abs() <= total => {
                             self.subcurve_prompt.as_mut().unwrap().length = Some(length.abs());
@@ -189,13 +296,13 @@ impl VibocerosApp {
                             if !prompt.from_midpoint
                                 && let Some(forward) = prompt.locked_forward
                             {
-                                let curve = self
-                                    .document
-                                    .object(source)
-                                    .unwrap()
-                                    .geometry()
-                                    .curve_ref()
-                                    .unwrap();
+                                let resolved = viboceros_command::curve_reference::resolve(
+                                    self.document.object(source).unwrap().geometry(),
+                                    prompt.edge,
+                                    self.document.tolerance(),
+                                )
+                                .unwrap();
+                                let curve = resolved.curve();
                                 match viboceros_command::subcurve_input::locked_numeric_requires_confirmation(
                                     curve, prompt.start.unwrap(), length.abs(), forward, self.document.tolerance(),
                                 ) {
@@ -213,14 +320,14 @@ impl VibocerosApp {
                                 }
                             }
                             if prompt.from_midpoint || prompt.locked_forward.is_some() {
-                                let point = self
-                                    .document
-                                    .object(source)
-                                    .unwrap()
-                                    .geometry()
-                                    .curve_ref()
-                                    .unwrap()
-                                    .evaluate(prompt.start.unwrap());
+                                let point = viboceros_command::curve_reference::resolve(
+                                    self.document.object(source).unwrap().geometry(),
+                                    prompt.edge,
+                                    self.document.tolerance(),
+                                )
+                                .unwrap()
+                                .curve()
+                                .evaluate(prompt.start.unwrap());
                                 match point {
                                     Ok(point) => {
                                         self.accept_standalone_subcurve_point(point);
@@ -256,16 +363,26 @@ impl VibocerosApp {
         true
     }
     pub(super) fn accept_standalone_subcurve_point(&mut self, point: Point3) -> Option<bool> {
+        if !self.validate_subcurve_source() {
+            return Some(false);
+        }
         let mut prompt = self.subcurve_prompt.clone()?;
         let source = prompt.source?;
         let result = (|| -> Result<(), viboceros_command::CommandError> {
-            let curve = self
+            let resolved = self
                 .document
                 .object(source)
-                .and_then(|o| o.geometry().curve_ref())
+                .and_then(|o| {
+                    viboceros_command::curve_reference::resolve(
+                        o.geometry(),
+                        prompt.edge,
+                        self.document.tolerance(),
+                    )
+                })
                 .ok_or(viboceros_command::CommandError::Usage(
                     "Select an existing curve",
                 ))?;
+            let curve = resolved.curve();
             let parameter = curve.closest_parameter(point, self.document.tolerance())?;
             let Some(start) = prompt.start else {
                 prompt.start = Some(parameter);
@@ -303,6 +420,9 @@ impl VibocerosApp {
                     " Locked={}",
                     if forward { "Forward" } else { "Backward" }
                 ));
+            }
+            if let Some(edge) = prompt.edge {
+                input.push_str(&format!(" Edge={source},{edge}"));
             }
             self.document.select_command_results([source])?;
             self.commands.execute(&mut self.document, &input)?;

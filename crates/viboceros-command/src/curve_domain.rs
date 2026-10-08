@@ -73,7 +73,7 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
-pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No] [Locked=Forward|Backward]";
+pub(super) const SUBCURVE_USAGE: &str = "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No] | SubCrv Numeric=anchor,length,confirmation [Copy=Yes|No] [Mode=Shorten|MarkEnds] [FromMidpoint=Yes|No] [Locked=Forward|Backward] [Edge=object_id,index]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum SubcurveLocation {
@@ -89,6 +89,7 @@ struct SubcurveOptions {
     mode: subcurve_input::SubcurveMode,
     from_midpoint: bool,
     locked_forward: Option<bool>,
+    edge: Option<(ObjectId, usize)>,
 }
 
 pub(super) struct SubcurveCommand(pub(super) subcurve_input::SubcurvePreferences);
@@ -105,15 +106,29 @@ impl Command for SubcurveCommand {
             Some(options.mode),
             Some(options.from_midpoint),
         );
-        let mut candidates = document
-            .selected_objects()
-            .filter_map(|object| {
-                object
-                    .geometry()
-                    .curve_ref()
-                    .map(|curve| (object.id(), curve.to_owned()))
-            })
-            .collect::<Vec<_>>();
+        let mut candidates = if let Some((id, index)) = options.edge {
+            let object = document
+                .object(id)
+                .filter(|_| document.is_object_selectable(id))
+                .ok_or(CommandError::Usage("Select an available surface edge"))?;
+            let curve = crate::curve_reference::resolve(
+                object.geometry(),
+                Some(index),
+                document.tolerance(),
+            )
+            .ok_or(CommandError::Usage("Edge index is outside its surface"))?;
+            vec![(id, curve.curve().to_owned())]
+        } else {
+            document
+                .selected_objects()
+                .filter_map(|object| {
+                    object
+                        .geometry()
+                        .curve_ref()
+                        .map(|curve| (object.id(), curve.to_owned()))
+                })
+                .collect::<Vec<_>>()
+        };
         if candidates.len() != 1 {
             return Err(CommandError::SubcurveRequiresOneCurve {
                 actual: candidates.len(),
@@ -210,7 +225,7 @@ impl Command for SubcurveCommand {
             }
             document.clear_selection();
             return Ok("Marked both subcurve ends; retained the input".into());
-        } else if options.copy {
+        } else if options.copy || options.edge.is_some() {
             let outputs = document.copy_object_geometries_into_source_groups([(id, geometry)])?;
             document.select_command_results(outputs)?;
         } else {
@@ -219,7 +234,7 @@ impl Command for SubcurveCommand {
         }
         Ok(format!(
             "Created a directed subcurve from parameter {start} to {end}, {} the input",
-            if options.copy {
+            if options.copy || options.edge.is_some() {
                 "retaining"
             } else {
                 "replacing"
@@ -290,8 +305,23 @@ fn parse_subcurve_options(
     let mut midpoint_seen = false;
     let mut locked_forward = None;
     let mut locked_seen = false;
+    let mut edge = None;
     while index < arguments.len() {
         let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
+        if option_name_eq(name, "Edge") && edge.is_none() {
+            let Some((id, component)) = value.split_once(',') else {
+                return Err(CommandError::Usage(SUBCURVE_USAGE));
+            };
+            edge = Some((
+                id.parse()
+                    .map_err(|_| CommandError::Usage(SUBCURVE_USAGE))?,
+                component
+                    .parse()
+                    .map_err(|_| CommandError::Usage(SUBCURVE_USAGE))?,
+            ));
+            index += consumed;
+            continue;
+        }
         if option_name_eq(name, "Locked") && !locked_seen {
             let value = value.trim_start_matches('_');
             locked_forward = Some(if value.eq_ignore_ascii_case("Forward") {
@@ -331,6 +361,7 @@ fn parse_subcurve_options(
         mode,
         from_midpoint,
         locked_forward,
+        edge,
     })
 }
 

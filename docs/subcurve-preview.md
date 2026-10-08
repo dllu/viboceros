@@ -37,8 +37,9 @@ from that inspection.
 
 This is a local preview validation against saved native command outputs, not a
 fresh Rhino preview measurement or pixel-style compatibility claim. General
-closed-chart policy, edge references, reactive History and continuous locus
-certification retain their existing limits.
+closed-chart policy, reactive History and continuous locus certification retain
+their existing limits. [Surface edge inputs](subcurve-edge-input.md) share this
+preview and cache their source boundary conversion.
 
 ```sh
 cargo test --release --bin viboceros subcurve_preview

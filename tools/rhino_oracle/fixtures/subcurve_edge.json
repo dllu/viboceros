@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_point_default",
+      "case": "point_default"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_point_copy_no",
+      "case": "point_copy_no"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_point_copy_yes",
+      "case": "point_copy_yes"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_point_backward",
+      "case": "point_backward"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_mark_ends",
+      "case": "mark_ends"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_midpoint",
+      "case": "midpoint"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_surface_point",
+      "case": "surface_point"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_curved_point",
+      "case": "curved_point"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_curved_backward",
+      "case": "curved_backward"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_curved_mark",
+      "case": "curved_mark"
+    },
+    {
+      "op": "subcurve_edge",
+      "id": "edge_subcurve_curved_midpoint",
+      "case": "curved_midpoint"
+    }
+  ]
+}

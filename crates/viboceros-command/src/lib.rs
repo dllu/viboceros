@@ -263,6 +263,7 @@ mod join;
 use join::JoinCommand;
 mod curvature;
 mod curve_domain;
+pub mod curve_reference;
 mod edge_surface;
 mod loft;
 mod point_arguments;

@@ -19,10 +19,13 @@ impl VibocerosApp {
         } else {
             return false;
         };
+        if !self.validate_subcurve_source() {
+            return true;
+        }
         let reference = self
             .subcurve_prompt
             .as_ref()
-            .and_then(|p| Some((p.source?, p.start?, p.hover_parameter)))
+            .and_then(|p| Some((p.source?, p.edge, p.start?, p.hover_parameter)))
             .or_else(|| {
                 let p = self
                     .intersection_prompt
@@ -30,9 +33,9 @@ impl VibocerosApp {
                     .uv_subcurves
                     .pending
                     .as_ref()?;
-                Some((p.object?, p.start?, p.hover_parameter))
+                Some((p.object?, None, p.start?, p.hover_parameter))
             });
-        let Some((source, start, hover)) = reference else {
+        let Some((source, edge, start, hover)) = reference else {
             return false;
         };
         let Some(locked) = locked else {
@@ -47,8 +50,16 @@ impl VibocerosApp {
             let result = self
                 .document
                 .object(source)
-                .and_then(|o| o.geometry().curve_ref())
-                .map(|c| viboceros_command::subcurve_input::cursor_forward(c, start, hover));
+                .and_then(|o| {
+                    viboceros_command::curve_reference::resolve(
+                        o.geometry(),
+                        edge,
+                        self.document.tolerance(),
+                    )
+                })
+                .map(|c| {
+                    viboceros_command::subcurve_input::cursor_forward(c.curve(), start, hover)
+                });
             match result {
                 Some(Ok(forward)) => Some(forward),
                 Some(Err(error)) => {
@@ -82,6 +93,9 @@ impl VibocerosApp {
         true
     }
     pub(super) fn update_subcurve_hover(&mut self, point: Point3) {
+        if !self.validate_subcurve_source() {
+            return;
+        }
         let reference = self
             .subcurve_prompt
             .as_ref()
@@ -100,17 +114,17 @@ impl VibocerosApp {
         };
         let snapshot = self.document.object(source).map(|o| o.geometry_snapshot());
         if let Some(p) = self.subcurve_prompt.as_mut() {
-            p.hover_parameter = p
-                .preview
-                .parameter(snapshot, point, self.document.tolerance());
+            p.hover_parameter =
+                p.preview
+                    .parameter(snapshot, p.edge, point, self.document.tolerance());
         } else if let Some(p) = self
             .intersection_prompt
             .as_mut()
             .and_then(|p| p.uv_subcurves.pending.as_mut())
         {
-            p.hover_parameter = p
-                .preview
-                .parameter(snapshot, point, self.document.tolerance());
+            p.hover_parameter =
+                p.preview
+                    .parameter(snapshot, None, point, self.document.tolerance());
         }
     }
 }

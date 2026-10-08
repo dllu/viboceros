@@ -133,3 +133,75 @@ fn real_pointer_events_capture_components_without_objects_or_drafting_points() {
     assert!(output.selection_window.is_none());
     assert!(output.picked_point.is_none());
 }
+
+#[test]
+fn mixed_curve_edge_getter_delivers_ordinary_curve_clicks_and_surface_edge_hits() {
+    let mut doc = Document::default();
+    let curve = doc
+        .add_geometry(Geometry::Line(
+            viboceros_geometry::LineSegment::try_new(
+                point(-2., 0., 0.),
+                point(2., 0., 0.),
+                doc.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let edge = doc
+        .add_geometry(Geometry::NurbsSurface(surface(7.)))
+        .unwrap();
+    let mut view = Viewport::new(ViewKind::Top);
+    let context = egui::Context::default();
+    let mut frame = |events| {
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(rect()),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    output = view.show(
+                        ui,
+                        &doc,
+                        ViewportInput {
+                            edge_pick: true,
+                            curve_or_edge_pick: true,
+                            object_filter: Some(viboceros_command::ObjectSelectionFilter::Curves),
+                            ..Default::default()
+                        },
+                        &[],
+                        0,
+                        true,
+                    );
+                },
+            )
+            .drop_without_applying_deltas();
+        (output, view.last_rect.unwrap())
+    };
+    let (_, area) = frame(vec![]);
+    for (model, expected_curve, expected_edge) in [
+        (point(0., 0., 0.), Some(curve), None),
+        (point(0., -3., 7.), None, Some(edge)),
+    ] {
+        let pointer = Viewport::new(ViewKind::Top).project(model, area).unwrap();
+        let button = |pressed| egui::Event::PointerButton {
+            pos: pointer,
+            button: PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        };
+        frame(vec![egui::Event::PointerMoved(pointer), button(true)]);
+        let (output, _) = frame(vec![button(false)]);
+        assert_eq!(
+            output.edge_click.as_ref().map(|picks| picks[0].object),
+            expected_edge
+        );
+        if let Some(id) = expected_curve {
+            assert_eq!(output.selection_click.unwrap().object_id, Some(id));
+        }
+        assert!(output.picked_point.is_none());
+    }
+    assert_eq!(doc.selected_object_count(), 0);
+}

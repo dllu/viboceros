@@ -35,6 +35,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [SubCrv cursor direction locking and numeric entry](subcurve-direction.md)
 - [Closed SubCrv point confirmation and candidate endpoint selection](subcurve-direction-confirmation.md)
 - [SubCrv cached viewport curves and endpoint previews](subcurve-preview.md)
+- [SubCrv surface edge input, parent retention and native replay](subcurve-edge-input.md)
 - [Certified pullbacks with shared UV endpoints](constrained-surface-pullbacks.md)
 - [Automatic certified seam and singular-endpoint branches](automatic-surface-pullbacks.md)
 - [Derivative-free fitting for nonlinear singular-endpoint paths](derivative-free-surface-pullbacks.md)

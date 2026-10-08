@@ -1,5 +1,6 @@
 use super::*;
 mod direction;
+mod edge;
 mod mark_ends;
 mod midpoint;
 mod preferences;

@@ -336,6 +336,8 @@ pub struct ViewportInput<'a> {
     pub angle_plane: Option<Frame3>,
     pub face_pick: Option<FacePickMode>,
     pub edge_pick: bool,
+    /// Allow ordinary curve selection alongside edge hits in the source getter.
+    pub curve_or_edge_pick: bool,
     pub component_preselection: bool,
     pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
@@ -399,6 +401,7 @@ impl Default for ViewportInput<'_> {
             angle_plane: None,
             face_pick: None,
             edge_pick: false,
+            curve_or_edge_pick: false,
             component_preselection: false,
             control_point_pick: false,
             component_pick: None,
@@ -1237,7 +1240,7 @@ impl Viewport {
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
             || input.face_pick.is_some()
-            || input.edge_pick
+            || (input.edge_pick && !input.curve_or_edge_pick)
             || input.edge_curve.is_some()
             || input.point_cloud_remove_target.is_some();
         if input.edge_curve.is_none() {
@@ -2077,7 +2080,8 @@ impl Viewport {
                     .interact_pointer_pos()
                     .map(|p| self.pick_edges(p, rect, document))
                     .unwrap_or_default()
-            }),
+            })
+            .filter(|picks: &Vec<EdgePick>| !input.curve_or_edge_pick || !picks.is_empty()),
             face_click,
             face_hit_point,
             component_click,

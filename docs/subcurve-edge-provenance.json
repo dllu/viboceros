@@ -1,0 +1,24 @@
+{
+  "capture_date": "2026-10-07",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "settings_scheme": "VibocerosOracleSubcurveEdgesFinal20261007",
+  "recipes": 11,
+  "successful_commands": 11,
+  "curves": 9,
+  "markers": 4,
+  "stations": 297,
+  "comparison_ceiling": 1e-06,
+  "full_native_parity": false,
+  "source": "Owned public SDK edge component preselection followed by the public SubCrv command; complete parent definitions, attributes, groups, selection and independent Undo/Redo snapshots.",
+  "limits": [
+    "Native command-first mouse edge selection was not captured.",
+    "Numeric edge getters, arbitrary trimmed edges, seam ties and nested UV edge inputs remain unverified.",
+    "Station replay does not establish a continuous locus certificate or relative performance."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/subcurve_edge_probe.py": "302dc81f1bb31c55f198353165e19b713efcb333e26e5b1840d4e5a39cf11b58",
+    "tools/rhino_oracle/fixtures/subcurve_edge.json": "9d44eb5ce0460dfde7a54be463dbcb60272af79f1396c66f4eef9ffefbb0697a",
+    "tools/rhino_oracle/observations/subcurve_edge.json": "5a32d241162483413b8e2921dc4e80be0de8c389c291de489c9179971c87cd09"
+  }
+}

@@ -6876,6 +6876,9 @@ def _execute(operation, iterations, tolerance):
     if kind == 'subcurve_direction_grid':
         from subcurve_direction_grid_probe import run
         return run(operation, globals())
+    if kind == 'subcurve_edge':
+        from subcurve_edge_probe import run
+        return run(operation, globals())
     if kind == 'surface_pullback_endpoints':
         from surface_pullback_endpoints_probe import run
         return run(operation, globals())
@@ -16718,7 +16721,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op') in ('apply_uv_curves_command','create_uv_curves_command','uv_face_reference_command','uv_subcurve_input_command','subcurve_numeric_followup','standalone_subcurve','subcurve_mark_ends','subcurve_midpoint','subcurve_preferences','subcurve_direction','subcurve_direction_grid') for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('apply_uv_curves_command','create_uv_curves_command','uv_face_reference_command','uv_subcurve_input_command','subcurve_numeric_followup','standalone_subcurve','subcurve_mark_ends','subcurve_midpoint','subcurve_preferences','subcurve_direction','subcurve_direction_grid','subcurve_edge') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

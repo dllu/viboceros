@@ -554,6 +554,9 @@ internal frames while retaining native output parameters. Linear spans retain
 source indices for direct local-distance point and tangent evaluation.
 Native trim, split, closest-point dispatch, and cyclic edits live in `curve_trim`;
 seam, subcurve, and reparameterization commands share the `curve_domain` module.
+The command `curve_reference` module resolves ordinary curves and surface edges;
+[SubCrv edge input](subcurve-edge-input.md) retains parent topology and attributes
+and guards interactive references with immutable snapshots.
 The `curve_parameter_map` geometry module supplies exact span-aware correspondence
 with rational representations; the `curve_cut` command module uses it for
 [cutting-object splits and trims](curve-cutting.md).

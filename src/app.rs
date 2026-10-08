@@ -4837,6 +4837,37 @@ impl VibocerosApp {
             }
         };
 
+        let subcurve_edge = if matches!(command, InteractiveCommand::SubCrv { .. }) {
+            let picks = match self.component_selection.checked_picks(&self.document) {
+                Ok(picks) => picks,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return true;
+                }
+            };
+            if !picks.is_empty()
+                && (picks.len() != 1
+                    || picks[0].kind != viboceros_command::ComponentSelectionKind::BrepEdge
+                    || self
+                        .document
+                        .selected_objects()
+                        .any(|o| o.geometry().curve_ref().is_some()))
+            {
+                self.push_log("Select one curve or one surface edge".into());
+                return true;
+            }
+            match picks.as_slice() {
+                [pick] if pick.kind == viboceros_command::ComponentSelectionKind::BrepEdge => {
+                    Some(crate::viewport::EdgePick {
+                        object: pick.object,
+                        edge: pick.index,
+                    })
+                }
+                _ => None,
+            }
+        } else {
+            None
+        };
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
         if let InteractiveCommand::SubCrv { copy, .. } = command {
@@ -4868,6 +4899,10 @@ impl VibocerosApp {
             self.commands
                 .set_subcurve_options(Some(copy), Some(mode), Some(from_midpoint));
             self.begin_subcurve_prompt(copy, mode, from_midpoint);
+            if let Some(pick) = subcurve_edge {
+                self.subcurve_prompt.as_mut().unwrap().source = None;
+                self.pick_subcurve_edge(pick);
+            }
             return true;
         }
         if let InteractiveCommand::ExtractSrf {
@@ -8364,7 +8399,20 @@ impl VibocerosApp {
         } else if let Some(window) = output.component_window {
             self.accept_component_window(window);
         } else if let Some(picks) = output.edge_click {
-            if self.hole_prompt.is_some() {
+            if self.picking_subcurve_edge() {
+                self.accept_component_click(crate::viewport::ComponentClick {
+                    picks: picks
+                        .into_iter()
+                        .map(|pick| crate::viewport::ComponentPick {
+                            object: pick.object,
+                            index: pick.edge,
+                            kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                        })
+                        .collect(),
+                    preselection: false,
+                    modifiers: egui::Modifiers::NONE,
+                });
+            } else if self.hole_prompt.is_some() {
                 self.accept_hole_edges(picks);
             } else {
                 self.accept_edge_click(picks);
@@ -8847,7 +8895,8 @@ impl eframe::App for VibocerosApp {
             || self
                 .hole_prompt
                 .as_ref()
-                .is_some_and(untrim_holes::HolePrompt::picking_edges))
+                .is_some_and(untrim_holes::HolePrompt::picking_edges)
+            || self.picking_subcurve_edge())
             && self.plane_prompt.is_none()
             && model_input_active
             && !end_analysis_picking;
@@ -8973,6 +9022,7 @@ impl eframe::App for VibocerosApp {
             .then(|| self.move_normal_surface())
             .flatten();
         let selecting_normal = model_input_active && self.selecting_move_normal_reference();
+        let curve_or_edge_pick = edge_pick && self.picking_subcurve_edge();
         let document = &self.document;
         let twist_preview = self
             .twist_session
@@ -9177,6 +9227,7 @@ impl eframe::App for VibocerosApp {
                             component_pick,
                             component_highlights: &component_highlights,
                             edge_pick,
+                            curve_or_edge_pick,
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
                             edge_curve,
@@ -9408,6 +9459,7 @@ mod tests {
     mod standalone_subcurve;
     mod subcurve_direction;
     mod subcurve_direction_grid;
+    mod subcurve_edge;
     mod subcurve_mark_ends;
     mod subcurve_midpoint;
     mod subcurve_preferences;

@@ -2,7 +2,7 @@
 
 [Curve commands](curves.md) · [Numeric UV inputs](../subcurve-length-confirmation.md)
 
-Start `SubCrv`, select a curve if none is preselected, and pick its start.
+Start `SubCrv`, select a curve or surface edge if none is preselected, and pick its start.
 The [viewport preview](../subcurve-preview.md) shows the pending curve and endpoints.
 Then pick an end location or enter a length followed by a direction-confirmation
 location. A new number replaces the pending length; units and calculator
@@ -53,8 +53,9 @@ retaining the source, with current-layer output and unselected history states.
 pick, with immediate half-length entry or symmetric endpoint picking.
 [Direction locking](../subcurve-direction.md) captures the hovered side for
 numeric entry and is shared with inline UV input. Some closed lengths retain a
-[point confirmation](../subcurve-direction-confirmation.md). B-rep edge
-references and restart preference persistence remain outstanding. The recorded
+[point confirmation](../subcurve-direction-confirmation.md).
+[Surface edge inputs](../subcurve-edge-input.md) always retain their parent, including
+Copy=No. Restart preference persistence remains outstanding. The recorded
 cases do not establish arbitrary-curve or native preview-style parity.
 
 ```sh
