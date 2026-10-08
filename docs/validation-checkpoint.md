@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `01bfc6f2` with Rust 1.95.0 after
-[Cached surface Rebuild previews](commands/rebuild-surfaces.md).
+The October 8, 2026 audit tested code at `8f6726fe` with Rust 1.95.0 after
+[Closed surface Rebuild and natural seam/pole retrimming](commands/rebuild-surfaces.md).
 
 ## Commands and results
 
@@ -16,28 +16,48 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All final checks completed successfully. The complete release workspace run passed
-5,331 Rust tests; after the final dialog-default regression, a complete app run
-passed 1,032 tests, and the strengthened prepared-result redo test passed in its
-command-package replay. The current validated package inventory is 5,332 tests:
+All commands completed successfully. The complete release workspace run passed
+5,338 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,032 | 17 |
-| Command | 1,198 | 2 |
+| App | 1,033 | 17 |
+| Command | 1,201 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,073 | 8 |
+| Geometry | 2,075 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 993 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 996 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest surface Rebuild preview work shares one readonly command preparation
+The newest closed surface Rebuild captures ran sixteen default and twelve
+varied-degree/count recipes on fresh private Xvfb schemes. [Default records](../tools/rhino_oracle/observations/surface_rebuild_closed.json)
+and [degree/count records](../tools/rhino_oracle/observations/surface_rebuild_closed_degrees.json)
+retain spheres, cylinders, cones and tori, corrected swapped charts, a reversed
+sphere, full control nets, closure/periodicity/singularity flags, complete B-reps
+and independent history. Kernel replay matches public SDK controls at `1e-6`;
+command replay checks topology, native edge witnesses at `2e-6`, unchanged sources
+and history. Closed directions use cyclic station interpolation with integer
+stations for odd degrees and half-integer stations for even degrees. Requested
+counts add the degree in stored repeated controls; degree-one output is closed
+without periodic classification. Exact constant boundaries remain exact poles.
+Natural seam/singular faces retain incidence, orientation and source domains when
+retrimming. Analytic tests cover both charts, repeated-control identity, solid
+closure and pole rows; app replay checks readonly preview, acceptance and history.
+Resource admission counts actual periodic repetitions before solving. The initial
+producer discarded returned chart edits; its complete diagnostics remain separate.
+See [guide](commands/rebuild-surfaces.md) and [provenance](closed-surface-rebuild-provenance.json).
+Generic trimmed seam/singular projection, arbitrary periodic sources, degenerate
+midpoint isocurves and performance parity remain unfinished or unverified.
+TweenSurfaces keeps its preceding measured open preparation policy; these rebuild
+records do not establish closed-source tween matching.
+
+The preceding surface Rebuild preview work shares one readonly command preparation
 with a cached viewport scene and accepted geometry. Unchanged edits retain scene
 identity; deletion/layer changes reuse geometry, and background edits refresh the
 scene. Guards validate source geometry, attributes, root text, groups, selection,
