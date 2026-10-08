@@ -3,27 +3,27 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `22a11c1e` with Rust 1.95.0 after
-[Surface tween option memory](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `3d7ee6b4` with Rust 1.95.0 after
+[Surface tween corner controls](commands/tween-surfaces.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
-cargo test --release --bin viboceros native_inactive_sample
+cargo test --release --bin viboceros failed_preview_keeps_source
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The release workspace suite passed 5,292
-tests. The newly added inactive-sample follow-up regression passed separately in
-release. Together these checks passed 5,293 distinct Rust tests:
+All commands completed successfully. The release workspace suite passed 5,297
+tests. The final failed-preview recovery regression passed separately in release.
+Together these checks passed 5,298 distinct Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,013 | 17 |
+| App | 1,018 | 17 |
 | Command | 1,189 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
@@ -31,13 +31,32 @@ release. Together these checks passed 5,293 distinct Rust tests:
 | I/O | 195 | 0 |
 | Oracle | 487 | 0 |
 
-The Python suite passed 970 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 973 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest TweenSurfaces option capture runs a 29-step owned private-Xvfb sequence
+The newest TweenSurfaces corner capture ran nine successful owned outcomes on
+private Xvfb under `VibocerosOracleTweenCornerVerifiedFinal20261008`: one baseline
+and eight real mouse clicks. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_corners.json)
+retain public viewport matrices, WorldToClient targets, actual integer mouse
+pixels, full surfaces and independent history. End origin swaps U/V, end U and
+V corners reverse their axes, and the opposite/start corners have no action.
+App replay checks every source/output with 81 normalized witnesses at `1e-7`
+and history. Three controls now draw and hit independently of snaps in every
+viewport, following current end parameterization. Positions are cached with the
+readonly scene; source selection/value questions hide them, and failed previews
+retain them for recovery. Independent tests cover axis composition, source purity,
+pixel hit/miss/clipping and Wireframe/Shaded/Ghosted modes. A private-Xvfb
+inspection checks U, moved-origin swap and V clicks, Ghosted display, readonly
+preview, acceptance and Undo/Redo. See [workflow and image](commands/tween-surfaces.md)
+and [provenance](tween-corners-provenance.json). Initial recovered runs remain
+separate diagnostics; the final run completed without manual recovery. Repeated
+native click sequences, periodic/singular/overlapping controls, native colors/
+labels/pixels and performance parity remain unverified.
+
+The preceding TweenSurfaces option capture runs a 29-step owned private-Xvfb sequence
 under `VibocerosOracleTweenOptionsVerified20261008`. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_options.json)
 retain native prompt defaults before/after edits, accepted geometry, cancellations
 and independent history. App replay checks each subsequent invocation against
