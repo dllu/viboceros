@@ -3,9 +3,9 @@ use super::*;
 use crate::{Circle3, CircularArc3, CurveSegment3, PolyCurve3};
 use std::f64::consts::TAU;
 
-/// Planar Boolean using exact polygon projection or certified circular loops.
-/// Unsupported polygon certificates select the circular path; work, arithmetic
-/// and invalid output errors never become a different geometry approximation.
+/// Planar Boolean using exact polygon projection or recognized line/arc loops.
+/// Unsupported input certificates select the next eligible boundary path;
+/// work, arithmetic and invalid output errors never select an approximation.
 pub fn boolean_planar_breps(
     breps: &[&Brep],
     operation: BrepBooleanOperation,
@@ -14,7 +14,12 @@ pub fn boolean_planar_breps(
     match boolean_projected_planar_breps(breps, operation, tolerance) {
         Ok(values) => Ok(values.into_iter().map(|p| p.brep).collect()),
         Err(GeometryError::UnsupportedPolyhedralBrepBoolean { .. }) => {
-            circular_regions(breps, operation, tolerance)
+            match circular_regions(breps, operation, tolerance) {
+                Err(GeometryError::UnsupportedPolyhedralBrepBoolean { .. }) => {
+                    super::planar_mixed::mixed_regions(breps, operation, tolerance)
+                }
+                value => value,
+            }
         }
         Err(error) => Err(error),
     }
@@ -119,8 +124,8 @@ fn circular_regions(
             }
             let sum = a.radius() + b.radius();
             let difference = (a.radius() - b.radius()).abs();
-            // Tangent circles do not create finite arc intervals. Exact pinch
-            // subtraction is rejected by validated trim topology below.
+            // Tangent circles do not create positive-length overlap intervals.
+            // Their closed contours retain point contact during assembly.
             if distance >= sum - tolerance.absolute()
                 || distance <= difference + tolerance.absolute()
             {
@@ -199,55 +204,79 @@ fn circular_regions(
             arcs.push(arc);
         }
     }
+    assemble_regions(
+        arcs.into_iter().map(CurveSegment3::Arc).collect(),
+        plane,
+        circles[0].x_axis().as_vector(),
+        circles[0].y_axis().as_vector(),
+        tolerance,
+    )
+}
+
+pub(super) fn assemble_regions(
+    mut segments: Vec<CurveSegment3>,
+    plane: crate::Plane,
+    x: Vector3,
+    y: Vector3,
+    tolerance: Tolerance,
+) -> Result<Vec<Brep>, GeometryError> {
     let mut loops = Vec::new();
     let mut work = 0usize;
-    while !arcs.is_empty() {
-        let first = arcs.remove(0);
-        let start = first.start()?;
+    while !segments.is_empty() {
+        let mut closed = 0;
+        for (i, p) in segments.iter().enumerate() {
+            if p.as_ref().is_closed()? {
+                closed = i;
+                break;
+            }
+        }
+        let first = segments.remove(closed);
+        let start = first.as_ref().start_point()?;
+        let mut end = first.as_ref().end_point()?;
         let mut boundary = vec![first];
-        let mut end = first.end()?;
         while !end.is_near(start, tolerance) {
-            work += arcs.len();
+            work += segments.len();
             if work > 2_000_000 {
                 return Err(GeometryError::BrepBooleanWorkLimit);
             }
             let mut matches = Vec::new();
-            for (i, arc) in arcs.iter().enumerate() {
-                if arc.start()?.is_near(end, tolerance) {
+            for (i, arc) in segments.iter().enumerate() {
+                if arc.as_ref().start_point()?.is_near(end, tolerance) {
                     matches.push(i);
                 }
             }
             let [index] = matches.as_slice() else {
                 return Err(GeometryError::UnrepresentableBrepBoolean);
             };
-            let arc = arcs.remove(*index);
-            end = arc.end()?;
+            let arc = segments.remove(*index);
+            end = arc.as_ref().end_point()?;
             boundary.push(arc);
         }
-        let composite = PolyCurve3::try_new(
-            boundary
-                .iter()
-                .copied()
-                .map(CurveSegment3::Arc)
-                .collect::<Vec<_>>(),
-        )?;
+        let composite = PolyCurve3::try_new(boundary.clone())?;
         let curve = composite.to_nurbs()?;
         let origin = plane.origin();
-        let x = circles[0].x_axis().as_vector();
-        let y = circles[0].y_axis().as_vector();
         let mut signed = crate::FiniteSum::default();
-        for arc in &boundary {
-            let center = origin.vector_to(arc.center())?;
-            let from = origin.vector_to(arc.start()?)?;
-            let to = origin.vector_to(arc.end()?)?;
-            let sign = arc
-                .normal()?
-                .as_vector()
-                .dot(plane.normal().as_vector())?
-                .signum();
-            signed.add(center.dot(x)? * (to.dot(y)? - from.dot(y)?))?;
-            signed.add(-center.dot(y)? * (to.dot(x)? - from.dot(x)?))?;
-            signed.add(sign * arc.radius() * arc.radius() * arc.sweep_radians())?;
+        for segment in &boundary {
+            let from = origin.vector_to(segment.as_ref().start_point()?)?;
+            let to = origin.vector_to(segment.as_ref().end_point()?)?;
+            match segment {
+                CurveSegment3::Line(_) => {
+                    signed.add(from.dot(x)? * to.dot(y)?)?;
+                    signed.add(-from.dot(y)? * to.dot(x)?)?;
+                }
+                CurveSegment3::Arc(arc) => {
+                    let center = origin.vector_to(arc.center())?;
+                    let sign = arc
+                        .normal()?
+                        .as_vector()
+                        .dot(plane.normal().as_vector())?
+                        .signum();
+                    signed.add(center.dot(x)? * (to.dot(y)? - from.dot(y)?))?;
+                    signed.add(-center.dot(y)? * (to.dot(x)? - from.dot(x)?))?;
+                    signed.add(sign * arc.radius() * arc.radius() * arc.sweep_radians())?;
+                }
+                _ => return Err(GeometryError::UnrepresentableBrepBoolean),
+            }
         }
         loops.push((curve, composite.parameters().to_vec(), signed.total()?));
     }
@@ -265,7 +294,13 @@ fn circular_regions(
                 let (u, v) = outer_face.faces()[0]
                     .surface()
                     .closest_parameters(point, tolerance)?;
-                if outer_face.faces()[0].contains_parameters(u, v, tolerance)? {
+                if outer_face.faces()[0]
+                    .surface()
+                    .evaluate(u, v)?
+                    .distance_to(point)?
+                    <= tolerance.absolute()
+                    && outer_face.faces()[0].contains_parameters(u, v, tolerance)?
+                {
                     holes.push(hole.clone());
                     hole_parameters.push(parameters.clone());
                 }

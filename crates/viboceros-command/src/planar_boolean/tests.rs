@@ -160,6 +160,59 @@ fn replay(q: &Value) {
 
 fn shape_brep(shape: &Value, tolerance: Tolerance) -> Brep {
     match shape["kind"].as_str().unwrap() {
+        "annulus" | "half_disk" => {
+            let circle = viboceros_geometry::Circle3::try_new(
+                Point3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["center"].clone()).unwrap(),
+                )
+                .unwrap(),
+                shape["radius"].as_f64().unwrap(),
+                viboceros_geometry::Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["normal"].clone()).unwrap(),
+                )
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            if shape["kind"] == "annulus" {
+                let inner = viboceros_geometry::Circle3::try_new(
+                    circle.center(),
+                    shape["inner"].as_f64().unwrap(),
+                    circle.normal().unwrap(),
+                    tolerance,
+                )
+                .unwrap();
+                Brep::try_planar_face_with_holes(
+                    &circle.to_nurbs().unwrap(),
+                    &[inner.to_nurbs().unwrap()],
+                    tolerance,
+                )
+                .unwrap()
+            } else {
+                let arc = viboceros_geometry::CircularArc3::try_from_circle_angles(
+                    circle,
+                    0. ..=std::f64::consts::PI,
+                )
+                .unwrap();
+                let line = viboceros_geometry::LineSegment::try_new(
+                    arc.end().unwrap(),
+                    arc.start().unwrap(),
+                    tolerance,
+                )
+                .unwrap();
+                let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+                    viboceros_geometry::CurveSegment3::Arc(arc),
+                    viboceros_geometry::CurveSegment3::Line(line),
+                ])
+                .unwrap();
+                Brep::try_planar_face(&curve.to_nurbs().unwrap(), tolerance)
+                    .unwrap()
+                    .try_split_edges_at_parameters(&[(0, vec![curve.parameters()[1]])], tolerance)
+                    .unwrap()
+            }
+        }
         "disk" => {
             let circle = viboceros_geometry::Circle3::try_new(
                 Point3::try_from(
@@ -232,8 +285,10 @@ fn shape_brep(shape: &Value, tolerance: Tolerance) -> Brep {
                         )
                         .unwrap(),
                     );
-                    let uv =
-                        |p: Point3| Point2::try_new((p.y() + 1.) / 4., (p.z() + 1.) / 4.).unwrap();
+                    let uv = |p: Point3| {
+                        let (u, v) = surface.closest_parameters(p, tolerance).unwrap();
+                        Point2::try_new(u, v).unwrap()
+                    };
                     trims.push(
                         BrepTrim::try_new(
                             ids,
@@ -328,6 +383,19 @@ fn planar_circular_native_boundary_history_and_contact_diagnostics() {
         "../../../../tools/rhino_oracle/observations/planar_boolean_circular.json"
     ))
     .unwrap();
+    replay_curved(&q, 26);
+}
+
+#[test]
+fn planar_mixed_native_boundaries_metadata_and_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/planar_boolean_mixed.json"
+    ))
+    .unwrap();
+    replay_curved(&q, 34);
+}
+
+fn replay_curved(q: &Value, expected_regular: usize) {
     let mut regular = 0;
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
@@ -345,10 +413,41 @@ fn planar_circular_native_boundary_history_and_contact_diagnostics() {
         );
         let result = registry.execute(&mut doc, &command);
         assert!(result.is_ok(), "{case} {result:?}");
-        let expected = v["command"]["after_script"].as_array().unwrap();
-        assert_eq!(doc.objects().len(), expected.len(), "{case}");
+        let source_native = v["command"]["after_script"].as_array().unwrap();
+        let mut used = BTreeSet::new();
+        let mut aligned = Vec::new();
+        for object in doc.objects() {
+            let Geometry::Brep(b) = object.geometry() else {
+                panic!()
+            };
+            let edge = b.edges().first().unwrap().curve();
+            let d = edge.domain();
+            let probe = edge.evaluate(d.start().midpoint(*d.end())).unwrap();
+            let owner = ids.iter().position(|id| *id == object.id());
+            let mut candidates = source_native
+                .iter()
+                .enumerate()
+                .filter(|(i, n)| !used.contains(i) && n["source"] == serde_json::json!(owner))
+                .map(|(i, n)| {
+                    let curves = n["edge_curves"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .map(native_curve)
+                        .collect::<Vec<_>>();
+                    let refs = curves.iter().collect::<Vec<_>>();
+                    (curve_distance(&refs, probe, doc.tolerance()), i)
+                })
+                .collect::<Vec<_>>();
+            candidates.sort_by(|a, b| a.0.total_cmp(&b.0));
+            let (_, index) = candidates.first().copied().unwrap();
+            used.insert(index);
+            aligned.push(source_native[index].clone());
+        }
+        assert_eq!(used.len(), source_native.len(), "{case} output count");
+        let expected = &aligned;
         let mut actual = snapshot(&doc, &ids, &layers, &groups);
-        let mut native = v["command"]["after_script"].clone();
+        let mut native = Value::Array(aligned.clone());
         for (i, (o, n)) in doc.objects().zip(expected).enumerate() {
             let Geometry::Brep(b) = o.geometry() else {
                 panic!()
@@ -400,13 +499,13 @@ fn planar_circular_native_boundary_history_and_contact_diagnostics() {
                         .unwrap();
                     let epsilon = if case == "planardifference_internal_tangent" {
                         6e-3
+                    } else if case.ends_with("partial_arc") {
+                        1e-5
                     } else {
                         5e-6
                     };
-                    assert!(
-                        curve_distance(&refs, p, doc.tolerance()) < epsilon,
-                        "{case} local boundary"
-                    );
+                    let error = curve_distance(&refs, p, doc.tolerance());
+                    assert!(error < epsilon, "{case} local boundary {error}: {p:?}");
                 }
             }
         }
@@ -439,5 +538,5 @@ fn planar_circular_native_boundary_history_and_contact_diagnostics() {
             regular += 1;
         }
     }
-    assert_eq!(regular, 26);
+    assert_eq!(regular, expected_regular);
 }

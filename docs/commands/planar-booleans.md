@@ -19,8 +19,8 @@ PlanarIntersection Sources=<a>,<b>
 ```
 
 The polygon path accepts affine planar surfaces with certified linear trims,
-including outer boundaries and holes. A separate circular path accepts complete
-circular disks in parallel planes. Original boundary polygons are projected
+including outer boundaries and holes. The analytic boundary path also accepts
+straight segments and circular arcs, with polygonal or circular holes. Original boundary polygons are projected
 orthogonally onto the first surface's plane with exact rational arithmetic before
 the finite-area arrangement. Tilted and parallel offset inputs are supported;
 perpendicular inputs collapse to zero area. Normals do not change set membership.
@@ -33,9 +33,12 @@ projected B-reps are never rounded and reused as operands. The first affine
 support is extended for final output only; trims and topology remain validated
 at the document tolerance.
 
-Circular inputs undergo whole-span circular-locus and simple-loop certification.
-Their boundaries are classified as analytic arcs, assembled into outer/hole loops
-and exported as rational NURBS. Original circular seams remain distinct.
+Circular edges undergo whole-span locus recognition. Mixed input loops are
+checked for closure, crossings and positive-length overlap. Straight controls
+must progress monotonically with same-sign weights. Line/arc intersections split
+original boundaries; membership selects their oriented intervals before a shared
+outer/hole contour builder exports rational NURBS. Circular seams and polygon
+corners remain distinct.
 Parallel offset disks project onto the first plane without changing radius;
 nonparallel disks become ellipses and are not yet accepted. Circular control,
 arc and graph work limits bound preparation. Signed loop contributions use exact
@@ -93,6 +96,21 @@ Intersection retains one complete circle edge; native creates three perturbed
 edges (its curve witnesses remain within `5e-6`). The tests keep both records as
 diagnostics; these cases do not establish native parity.
 
+The [mixed-boundary follow-up](../planar-boolean-mixed-provenance.json) adds 34
+successful public recipes under `VibocerosOraclePlanarMixedVerified20261008`.
+[Complete edge curves and witnesses](../../tools/rhino_oracle/observations/planar_boolean_mixed.json)
+cover disk/rectangle cuts in both orders, narrow strips, containment, separated
+and tangent regions, offset planes, polygonal/circular holes, partial input arcs
+and three-input Union. Replays check areas, face/edge counts, identity, metadata
+and independent history. Curve witnesses use `5e-6`; partial-arc reverse witnesses
+use `1e-5` after measuring a `6.7e-6` native endpoint shift. Earlier tolerances
+remain unchanged. New components are paired by curve geometry and preserved
+source identity; their creation order can differ. App replay checks all 34 getter
+and history workflows. Kernel tests verify half-disk analytic areas at `1e-9`,
+split strips, chained partial results, self-intersection rejection and work limits.
+Outside membership queries also check model-space distance, preventing a clamped
+surface closest-point result from admitting points beyond its finite rectangle.
+
 A production wgpu/egui inspection on private Xvfb checks ordered viewport picks
 for Difference and Intersection, automatic completion on the second pick, and
 Undo/Redo in Ghosted mode. It also checks three-surface preselected Union.
@@ -116,8 +134,15 @@ this inspection does not compare native pixels.
 
 ![Circular planar Difference after Redo in Ghosted mode](../images/planar-circular-difference-ghosted.png)
 
-General curved loops, mixed polygon/circular inputs, circular input holes,
-nonparallel circular projections, compound surfaces, broader hole configurations,
+A mixed-boundary production inspection on private Xvfb creates a disk and a
+rectangle, checks ordered Difference picks and Undo/Redo in Ghosted mode, then
+runs preselected mixed Union. The saved half-disk retains its circular arc and
+straight diameter. This local renderer inspection does not measure native pixels.
+
+![Disk/rectangle Difference after Redo in Ghosted mode](../images/planar-mixed-difference-ghosted.png)
+
+General spline loops, nonparallel circular projections, compound surfaces,
+broader coincident junctions and hole configurations,
 near contacts, restart behavior and relative performance remain unsupported or
 unverified. This capture does not establish
 native preview pixel parity.
@@ -125,5 +150,5 @@ native preview pixel parity.
 ```sh
 cargo test --release -p viboceros-command planar_boolean
 cargo test --release --bin viboceros planar_boolean
-python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular
+python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular tools.rhino_oracle.test_planar_boolean_mixed
 ```

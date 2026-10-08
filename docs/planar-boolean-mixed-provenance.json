@@ -1,0 +1,25 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOraclePlanarMixedVerified20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 34,
+  "successful_commands": 34,
+  "boundary_witness_epsilon": 5e-06,
+  "partial_arc_reverse_witness_epsilon": 1e-05,
+  "area_epsilon": 2e-05,
+  "source_area_epsilon": 5e-07,
+  "independent_analytic_area_epsilon": 1e-09,
+  "partial_arc_measurement": "The native partial-arc Difference endpoint is shifted from the ideal line/circle intersection by approximately 6.6964e-6 model units. Earlier capture tolerances are unchanged.",
+  "limits": [
+    "Straight/circular planar boundaries only; nonparallel circular projection yields ellipses and remains unsupported.",
+    "General curved splines, broader coincident junctions, near contacts, arbitrary insertion order, native pixels, restart behavior and relative performance remain unverified.",
+    "New outputs are matched by original identity and finite curve witnesses; component insertion order can differ."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_boolean_mixed_probe.py": "c30b3ec0dded730e2343b6982e289f61eb836af77cade2f9b1a3c54e33dda16f",
+    "tools/rhino_oracle/fixtures/planar_boolean_mixed.json": "e34bcda03574ed11537eff630c563692bedf628c3626f9afedce974665855ddd",
+    "tools/rhino_oracle/observations/planar_boolean_mixed.json": "e74b38dcde235185e5b209aa3e2399f8aa4778f8e579689326d2818d8db2af6a"
+  }
+}

@@ -167,7 +167,14 @@ fn replay(q: &serde_json::Value) {
             }
             assert!(
                 (b.area(app.document.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
-                    < if v["shapes"][0]["kind"] == "disk" {
+                    < if ["disk", "annulus", "half_disk"]
+                        .iter()
+                        .any(|kind| v["shapes"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .any(|s| s["kind"] == *kind))
+                    {
                         2e-5
                     } else {
                         1e-9
@@ -194,6 +201,59 @@ fn replay(q: &serde_json::Value) {
 
 fn shape_brep(shape: &serde_json::Value, tolerance: Tolerance) -> Brep {
     match shape["kind"].as_str().unwrap() {
+        "annulus" | "half_disk" => {
+            let circle = viboceros_geometry::Circle3::try_new(
+                Point3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["center"].clone()).unwrap(),
+                )
+                .unwrap(),
+                shape["radius"].as_f64().unwrap(),
+                viboceros_geometry::Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(shape["normal"].clone()).unwrap(),
+                )
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            if shape["kind"] == "annulus" {
+                let inner = viboceros_geometry::Circle3::try_new(
+                    circle.center(),
+                    shape["inner"].as_f64().unwrap(),
+                    circle.normal().unwrap(),
+                    tolerance,
+                )
+                .unwrap();
+                Brep::try_planar_face_with_holes(
+                    &circle.to_nurbs().unwrap(),
+                    &[inner.to_nurbs().unwrap()],
+                    tolerance,
+                )
+                .unwrap()
+            } else {
+                let arc = viboceros_geometry::CircularArc3::try_from_circle_angles(
+                    circle,
+                    0. ..=std::f64::consts::PI,
+                )
+                .unwrap();
+                let line = viboceros_geometry::LineSegment::try_new(
+                    arc.end().unwrap(),
+                    arc.start().unwrap(),
+                    tolerance,
+                )
+                .unwrap();
+                let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+                    viboceros_geometry::CurveSegment3::Arc(arc),
+                    viboceros_geometry::CurveSegment3::Line(line),
+                ])
+                .unwrap();
+                Brep::try_planar_face(&curve.to_nurbs().unwrap(), tolerance)
+                    .unwrap()
+                    .try_split_edges_at_parameters(&[(0, vec![curve.parameters()[1]])], tolerance)
+                    .unwrap()
+            }
+        }
         "disk" => {
             let c = viboceros_geometry::Circle3::try_new(
                 Point3::try_from(
@@ -253,8 +313,10 @@ fn shape_brep(shape: &serde_json::Value, tolerance: Tolerance) -> Brep {
                         )
                         .unwrap(),
                     );
-                    let uv =
-                        |p: Point3| Point2::try_new((p.y() + 1.) / 4., (p.z() + 1.) / 4.).unwrap();
+                    let uv = |p: Point3| {
+                        let (u, v) = surface.closest_parameters(p, tolerance).unwrap();
+                        Point2::try_new(u, v).unwrap()
+                    };
                     trims.push(
                         BrepTrim::try_new(
                             ids,
@@ -311,6 +373,15 @@ fn shape_brep(shape: &serde_json::Value, tolerance: Tolerance) -> Brep {
 fn planar_application_replays_circular_regions_and_retains_contact_diagnostics() {
     let q: serde_json::Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/observations/planar_boolean_circular.json"
+    ))
+    .unwrap();
+    replay(&q);
+}
+
+#[test]
+fn planar_application_replays_mixed_lines_arcs_and_holes() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/planar_boolean_mixed.json"
     ))
     .unwrap();
     replay(&q);

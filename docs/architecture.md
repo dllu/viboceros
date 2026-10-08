@@ -51,7 +51,11 @@ orthogonal projection and finite-area classification, then extends the first
 support only for final validated output. Tilted and collapsed inputs do not
 supply rounded intermediate operands. The circular planar adapter certifies
 complete disk loops, classifies analytic arc intervals and keeps rational arc
-seams, with two native internal-contact discrepancies retained in its evidence. General curved Boolean commands
+seams, with two native internal-contact discrepancies retained in its evidence.
+The mixed planar path splits straight/circular edges, audits input loops and
+shares oriented contour assembly for partial arcs and polygonal/circular holes.
+Membership checks include model-space distance to avoid surface-domain clamping
+errors; completed mixed results can be used as later operands. General curved Boolean commands
 remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational

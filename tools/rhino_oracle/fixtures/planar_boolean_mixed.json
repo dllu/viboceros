@@ -1,0 +1,176 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_side_cut",
+      "case": "planarunion_side_cut"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_polygon_first",
+      "case": "planarunion_polygon_first"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_strip",
+      "case": "planarunion_strip"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_square_inside",
+      "case": "planarunion_square_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_disk_inside",
+      "case": "planarunion_disk_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_disjoint",
+      "case": "planarunion_disjoint"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_tangent",
+      "case": "planarunion_tangent"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_offset",
+      "case": "planarunion_offset"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_hole_cover",
+      "case": "planarunion_hole_cover"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_circular_hole",
+      "case": "planarunion_circular_hole"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_partial_arc",
+      "case": "planarunion_partial_arc"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_side_cut",
+      "case": "planardifference_side_cut"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_polygon_first",
+      "case": "planardifference_polygon_first"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_strip",
+      "case": "planardifference_strip"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_square_inside",
+      "case": "planardifference_square_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_disk_inside",
+      "case": "planardifference_disk_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_disjoint",
+      "case": "planardifference_disjoint"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_tangent",
+      "case": "planardifference_tangent"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_offset",
+      "case": "planardifference_offset"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_hole_cover",
+      "case": "planardifference_hole_cover"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_circular_hole",
+      "case": "planardifference_circular_hole"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planardifference_partial_arc",
+      "case": "planardifference_partial_arc"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_side_cut",
+      "case": "planarintersection_side_cut"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_polygon_first",
+      "case": "planarintersection_polygon_first"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_strip",
+      "case": "planarintersection_strip"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_square_inside",
+      "case": "planarintersection_square_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_disk_inside",
+      "case": "planarintersection_disk_inside"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_disjoint",
+      "case": "planarintersection_disjoint"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_tangent",
+      "case": "planarintersection_tangent"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_offset",
+      "case": "planarintersection_offset"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_hole_cover",
+      "case": "planarintersection_hole_cover"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_circular_hole",
+      "case": "planarintersection_circular_hole"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarintersection_partial_arc",
+      "case": "planarintersection_partial_arc"
+    },
+    {
+      "op": "planar_boolean_mixed",
+      "id": "planar_boolean_mixed_planarunion_three",
+      "case": "planarunion_three"
+    }
+  ]
+}

@@ -46,7 +46,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [BooleanSplit mixed coplanar stages and physical boundary patches](boolean-split-mixed-open.md)
 - [BooleanSplit trimmed sheets, compound participation and branch metadata](boolean-split-topology.md)
 - [Boolean2Objects cyclic results, coplanar categories and native acceptance](commands/boolean-two-objects.md)
-- [Planar surface Booleans, trim holes, projection and circular regions](commands/planar-booleans.md)
+- [Planar Booleans, mixed line/arc boundaries, holes and projection](commands/planar-booleans.md)
 - [Viewport caching and performance](viewport-caching.md)
 - [Opt-in offscreen GPU tests](gpu-tests.md)
 - [Imported surface shading and mesh checks](imported-shading.md)
