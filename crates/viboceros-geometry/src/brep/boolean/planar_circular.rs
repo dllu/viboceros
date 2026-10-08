@@ -111,32 +111,21 @@ fn circular_regions(
             let b = circles[j];
             let delta = a.center().vector_to(b.center())?;
             let distance = delta.length()?;
-            if distance <= tolerance.absolute()
-                && (a.radius() - b.radius()).abs() <= tolerance.absolute()
-            {
-                if duplicates[j].is_none() {
-                    duplicates[j] = Some(duplicates[i].unwrap_or(i));
+            let (along, height) = match super::planar_circle_cuts::coefficients(
+                distance,
+                a.radius(),
+                b.radius(),
+                tolerance,
+            )? {
+                super::planar_circle_cuts::CircleCuts::Coincident => {
+                    if duplicates[j].is_none() {
+                        duplicates[j] = Some(duplicates[i].unwrap_or(i));
+                    }
+                    continue;
                 }
-                continue;
-            }
-            if distance <= tolerance.absolute() {
-                continue;
-            }
-            let sum = a.radius() + b.radius();
-            let difference = (a.radius() - b.radius()).abs();
-            // Tangent circles do not create positive-length overlap intervals.
-            // Their closed contours retain point contact during assembly.
-            if distance >= sum - tolerance.absolute()
-                || distance <= difference + tolerance.absolute()
-            {
-                continue;
-            }
-            let scale = distance.max(a.radius()).max(b.radius());
-            let d = distance / scale;
-            let ra = a.radius() / scale;
-            let rb = b.radius() / scale;
-            let along = ((d * d + ra * ra - rb * rb) / (2. * d)) * scale;
-            let height = ((ra * ra - (along / scale).powi(2)).max(0.)).sqrt() * scale;
+                super::planar_circle_cuts::CircleCuts::None => continue,
+                super::planar_circle_cuts::CircleCuts::Cross { along, height } => (along, height),
+            };
             let axis = delta.normalized_nonzero()?.as_vector();
             let perpendicular = plane
                 .normal()

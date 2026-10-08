@@ -30,6 +30,27 @@ python3 tools/numerics/generate_planar_cut_reference.py > /tmp/planar-cut-refere
 cmp /tmp/planar-cut-reference.json crates/viboceros-geometry/src/brep/boolean/planar_mixed/cuts/reference.json
 ```
 
+Circle pairs share one exact-coefficient helper across the complete-circle and
+mixed-boundary paths. It computes `(d^2 + r^2 - s^2) / (2d)` and the squared
+perpendicular offset rationally before final rounding. This avoids cancellation
+from nearly equal squared radii and recovers heights when squared terms exceed
+binary64. The center distance `d` is still a rounded binary64 length. Coincidence
+and tangency bands retain the document's absolute tolerance policy, with exact
+comparisons against the stored scalar values.
+
+A second independent reference has 172 Fraction/Decimal cases. Longitudinal
+offsets match bit for bit; heights are within one binary64 step of 180-digit
+Decimal square roots. It includes binary scale exponents `-550` through `600`
+and near-internal contacts with radii from `2^20` to `2^50`. A concrete regression
+removes a `6.9e-4` height error from the previous squared-radius subtraction.
+Swapping radii preserves height, and finite/positive input validation remains
+explicit. Generate the reference with:
+
+```sh
+python3 tools/numerics/generate_circle_cut_reference.py > /tmp/circle-cut-reference.json
+cmp /tmp/circle-cut-reference.json crates/viboceros-geometry/src/brep/boolean/circle_cut_reference.json
+```
+
 Independent analytic segments can evaluate a common junction to slightly
 different coordinates. The general `PolyCurve3` fixed-coincidence contract stays
 unchanged. Boolean export checks every junction at the document tolerance;
@@ -55,6 +76,25 @@ are retained separately. Only this scale capture uses normalized native area
 bounds `3e-4` for outputs and `2e-4` for sources; earlier capture tolerances stay
 unchanged. [Provenance](planar-boolean-scale-provenance.json) binds the complete
 capture, producer, recipes and independent reference.
+
+The [circular scale capture](../tools/rhino_oracle/observations/planar_circle_scale.json)
+adds 27 successful commands under `VibocerosOracleCircleScale20261008`, covering
+equal/unequal radii and swapped operands at the same three scales. All local
+normalized areas match analytic disk-segment formulas at `1e-9`. All cases replay
+face/edge counts, source identity, attributes/groups and independent history;
+application replay also checks the full picking/history workflow.
+
+Six equal-radius cases at scales `1` and `2^20` meet the existing normalized
+bidirectional boundary bound `5e-6`. The other 21 remain explicit diagnostics:
+unequal-radius native fits differ by up to `8.632e-6` at these scales, and the
+smallest-scale native results differ by up to `0.004588` in bidirectional finite
+witnesses. Their native circle-locus deviation reaches `0.004060`, normalized
+area error `0.014638`, and source disk area error `0.000275`. Tests reproduce
+the individual diagnostic measurements rather than relaxing the agreement
+bound. Native output/source area checks at scales `1` and `2^20` retain `2e-5`
+and `5e-7`; small-scale native areas are recorded diagnostics. Earlier captures
+retain their tolerances. [Circular provenance](planar-circle-scale-provenance.json)
+binds the full inputs/outputs and both reference and diagnostic evidence.
 
 Exact cut coefficients do not make the entire geometry pipeline exact.
 Projection, arc station recovery, membership, contour assembly and export still

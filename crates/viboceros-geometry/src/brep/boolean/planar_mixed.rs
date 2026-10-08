@@ -430,34 +430,32 @@ fn intersections(
         (CurveSegment3::Arc(a), CurveSegment3::Arc(b)) => {
             let delta = a.center().vector_to(b.center())?;
             let distance = delta.length()?;
-            if distance <= tolerance.absolute()
-                && (a.radius() - b.radius()).abs() <= tolerance.absolute()
-            {
-                overlap.push((i, j));
-                points.extend([a.start()?, a.end()?, b.start()?, b.end()?]);
-            } else if distance > tolerance.absolute()
-                && distance < a.radius() + b.radius() - tolerance.absolute()
-                && distance > (a.radius() - b.radius()).abs() + tolerance.absolute()
-            {
-                let scale = distance.max(a.radius()).max(b.radius());
-                let d = distance / scale;
-                let r = a.radius() / scale;
-                let s = b.radius() / scale;
-                let t = (d * d + r * r - s * s) / (2. * d) * scale;
-                let h = (r * r - (t / scale).powi(2)).max(0.).sqrt() * scale;
-                let axis = delta.normalized_nonzero()?.as_vector();
-                let perp = frame
-                    .z_axis()
-                    .as_vector()
-                    .cross(axis)?
-                    .normalized_nonzero()?
-                    .as_vector();
-                for sign in [-1., 1.] {
-                    points.push(
-                        a.center()
-                            .translated(axis.scaled(t)?)?
-                            .translated(perp.scaled(sign * h)?)?,
-                    );
+            match super::planar_circle_cuts::coefficients(
+                distance,
+                a.radius(),
+                b.radius(),
+                tolerance,
+            )? {
+                super::planar_circle_cuts::CircleCuts::Coincident => {
+                    overlap.push((i, j));
+                    points.extend([a.start()?, a.end()?, b.start()?, b.end()?]);
+                }
+                super::planar_circle_cuts::CircleCuts::None => {}
+                super::planar_circle_cuts::CircleCuts::Cross { along, height } => {
+                    let axis = delta.normalized_nonzero()?.as_vector();
+                    let perp = frame
+                        .z_axis()
+                        .as_vector()
+                        .cross(axis)?
+                        .normalized_nonzero()?
+                        .as_vector();
+                    for sign in [-1., 1.] {
+                        points.push(
+                            a.center()
+                                .translated(axis.scaled(along)?)?
+                                .translated(perp.scaled(sign * height)?)?,
+                        );
+                    }
                 }
             }
         }

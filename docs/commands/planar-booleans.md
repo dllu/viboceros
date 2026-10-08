@@ -117,6 +117,11 @@ recipes check the three commands at scales `2^-20`, `1` and `2^20`, including
 curve witnesses, topology, metadata and history. Local normalized analytic areas
 agree at `1e-9`; the separately measured native mass-integration differences and
 scale-specific comparison bounds remain explicit in that document.
+Circle-pair coefficients now share the same exact/scaled arithmetic policy.
+A circular scale follow-up adds 27 local/native outcomes with analytic areas,
+topology, metadata and history. Six meet the existing boundary bound; 21 retain
+measured fitted-curve discrepancies as explicit diagnostics. See
+[arithmetic and diagnostics](../planar-cut-numerics.md).
 
 A production wgpu/egui inspection on private Xvfb checks ordered viewport picks
 for Difference and Intersection, automatic completion on the second pick, and
@@ -157,5 +162,5 @@ native preview pixel parity.
 ```sh
 cargo test --release -p viboceros-command planar_boolean
 cargo test --release --bin viboceros planar_boolean
-python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular tools.rhino_oracle.test_planar_boolean_mixed tools.rhino_oracle.test_planar_boolean_scale
+python3 -m unittest tools.rhino_oracle.test_planar_boolean tools.rhino_oracle.test_planar_boolean_topology tools.rhino_oracle.test_planar_boolean_circular tools.rhino_oracle.test_planar_boolean_mixed tools.rhino_oracle.test_planar_boolean_scale tools.rhino_oracle.test_planar_circle_scale
 ```

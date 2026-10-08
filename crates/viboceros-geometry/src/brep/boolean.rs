@@ -29,7 +29,9 @@ pub use polyhedral::{
 };
 mod intersection;
 mod merge;
+mod planar_circle_cuts;
 mod planar_circular;
+mod planar_cut_scalar;
 mod planar_mixed;
 pub use intersection::{
     BrepConvexIntersection, BrepSetIntersection, intersect_convex_brep_sets, intersect_convex_breps,

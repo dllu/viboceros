@@ -414,14 +414,34 @@ fn planar_mixed_native_scale_boundaries_metadata_and_history() {
     replay_curved(&q, 27);
 }
 
+#[test]
+fn planar_circular_native_scaled_boundary_history_and_contact_diagnostics() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/planar_circle_scale.json"
+    ))
+    .unwrap();
+    replay_curved(&q, 6);
+}
+
 fn replay_curved(q: &Value, expected_regular: usize) {
     let mut regular = 0;
+    let circle_provenance: Value = serde_json::from_str(include_str!(
+        "../../../../docs/planar-circle-scale-provenance.json"
+    ))
+    .unwrap();
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let case = v["case"].as_str().unwrap();
         let scale = v["scale"].as_f64().unwrap_or(1.);
         let area_epsilon = if v["scale"].is_number() { 3e-4 } else { 2e-5 };
         let source_area_epsilon = if v["scale"].is_number() { 2e-4 } else { 5e-7 };
+        let circular_scale = r["id"]
+            .as_str()
+            .unwrap()
+            .starts_with("planar_circle_scale_");
+        let native_scale_diagnostic = circular_scale && scale < 1.;
+        let native_curve_diagnostic =
+            circular_scale && (scale < 1. || !case.contains("_equal_radius_"));
         let (mut doc, ids, layers, groups) = setup(v);
         let before = doc.objects().cloned().collect::<Vec<_>>();
         let registry = CommandRegistry::with_builtins();
@@ -474,12 +494,14 @@ fn replay_curved(q: &Value, expected_regular: usize) {
             let Geometry::Brep(b) = o.geometry() else {
                 panic!()
             };
-            assert!(
-                (b.area(doc.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
-                    / scale.powi(2)
-                    < area_epsilon,
-                "{case} area"
-            );
+            if !native_scale_diagnostic {
+                assert!(
+                    (b.area(doc.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
+                        / scale.powi(2)
+                        < if circular_scale { 2e-5 } else { area_epsilon },
+                    "{case} area"
+                );
+            }
             actual[i]["area"] = Value::Null;
             native[i]["area"] = Value::Null;
             if case == "planarintersection_internal_tangent" {
@@ -496,15 +518,18 @@ fn replay_curved(q: &Value, expected_regular: usize) {
                 .map(native_curve)
                 .collect::<Vec<_>>();
             let refs = theirs.iter().collect::<Vec<_>>();
+            let mut native_boundary_error: f64 = 0.;
+            let mut local_boundary_error: f64 = 0.;
             for samples in n["edge_samples"].as_array().unwrap() {
                 for p in samples.as_array().unwrap() {
                     let point =
                         Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
                             .unwrap();
-                    assert!(
-                        curve_distance(&own, point, doc.tolerance()) / scale < 5e-6,
-                        "{case} native boundary"
-                    );
+                    let error = curve_distance(&own, point, doc.tolerance()) / scale;
+                    native_boundary_error = native_boundary_error.max(error);
+                    if !native_curve_diagnostic {
+                        assert!(error < 5e-6, "{case} native boundary {error}");
+                    }
                 }
             }
             if case == "planardifference_internal_tangent" {
@@ -529,21 +554,59 @@ fn replay_curved(q: &Value, expected_regular: usize) {
                         5e-6
                     };
                     let error = curve_distance(&refs, p, doc.tolerance());
+                    local_boundary_error = local_boundary_error.max(error / scale);
+                    if !native_curve_diagnostic {
+                        assert!(
+                            error / scale < epsilon,
+                            "{case} local boundary {error}: {p:?}"
+                        );
+                    }
+                }
+            }
+            if native_curve_diagnostic {
+                let measured =
+                    &circle_provenance["measured_local_native_bidirectional_witness_errors"][case];
+                for (actual, direction) in [
+                    (native_boundary_error, "native"),
+                    (local_boundary_error, "local"),
+                ] {
+                    let expected = measured[direction].as_f64().unwrap();
                     assert!(
-                        error / scale < epsilon,
-                        "{case} local boundary {error}: {p:?}"
+                        (actual - expected).abs() < expected * 1e-4 + 1e-12,
+                        "{case} diagnostic {direction}: measured {actual} expected {expected}"
                     );
                 }
+                assert!(native_boundary_error.max(local_boundary_error) > 5e-6);
             }
         }
         if v["scale"].is_number() {
-            let intersection = if case.contains("_strip_") {
+            let intersection = if circular_scale {
+                let a = &v["shapes"][0];
+                let b = &v["shapes"][1];
+                let r = a["radius"].as_f64().unwrap() / scale;
+                let s = b["radius"].as_f64().unwrap() / scale;
+                let d = (a["center"][0].as_f64().unwrap() - b["center"][0].as_f64().unwrap()).abs()
+                    / scale;
+                let x = (d * d + r * r - s * s) / (2. * d);
+                let h = (r * r - x * x).sqrt();
+                r * r * h.atan2(x) + s * s * h.atan2(d - x) - d * h
+            } else if case.contains("_strip_") {
                 3.75f64.sqrt() + 8. * 0.25f64.asin()
             } else {
                 2. * std::f64::consts::PI
             };
-            let rectangle = if case.contains("_strip_") { 6. } else { 18. };
-            let disk = 4. * std::f64::consts::PI;
+            let rectangle = if circular_scale {
+                std::f64::consts::PI * (v["shapes"][1]["radius"].as_f64().unwrap() / scale).powi(2)
+            } else if case.contains("_strip_") {
+                6.
+            } else {
+                18.
+            };
+            let disk = if circular_scale {
+                std::f64::consts::PI * (v["shapes"][0]["radius"].as_f64().unwrap() / scale).powi(2)
+            } else {
+                4. * std::f64::consts::PI
+            };
             let expected_area = match v["command_name"].as_str().unwrap() {
                 "PlanarUnion" => disk + rectangle - intersection,
                 "PlanarIntersection" => intersection,
@@ -581,10 +644,17 @@ fn replay_curved(q: &Value, expected_regular: usize) {
             .iter_mut()
             .zip(native_before.as_array_mut().unwrap())
         {
-            assert!(
-                (a["area"].as_f64().unwrap() - b["area"].as_f64().unwrap()).abs() / scale.powi(2)
-                    < source_area_epsilon
-            );
+            if !native_scale_diagnostic {
+                assert!(
+                    (a["area"].as_f64().unwrap() - b["area"].as_f64().unwrap()).abs()
+                        / scale.powi(2)
+                        < if circular_scale {
+                            5e-7
+                        } else {
+                            source_area_epsilon
+                        }
+                );
+            }
             a["area"] = Value::Null;
             b["area"] = Value::Null;
         }
@@ -598,7 +668,9 @@ fn replay_curved(q: &Value, expected_regular: usize) {
             }
         }
         compare(&redone, &native, "circular redo");
-        if !case.ends_with("internal_tangent") || case.starts_with("planarunion") {
+        if !native_curve_diagnostic
+            && (!case.ends_with("internal_tangent") || case.starts_with("planarunion"))
+        {
             regular += 1;
         }
     }

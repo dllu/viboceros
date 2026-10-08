@@ -1,0 +1,256 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "settings_scheme": "VibocerosOracleCircleScale20261008",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "recipes": 27,
+  "successful_commands": 27,
+  "binary_scale_exponents": [
+    -20,
+    0,
+    20
+  ],
+  "boundary_witness_epsilon": 5e-06,
+  "area_epsilon": 2e-05,
+  "independent_analytic_area_epsilon": 1e-09,
+  "independent_fraction_decimal_cases": 172,
+  "native_diagnostics": {
+    "planarunion_equal_radius_m20": {
+      "normalized_area_error": 0.0014235424278972175,
+      "normalized_circle_locus_error": 0.0013729352220037683,
+      "normalized_source_area_error": 0.00012214119807651969
+    },
+    "planarunion_unequal_radius_m20": {
+      "normalized_area_error": 0.007988519459949828,
+      "normalized_circle_locus_error": 0.0030885648682501543,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planarunion_first_small_m20": {
+      "normalized_area_error": 0.007988519459949828,
+      "normalized_circle_locus_error": 0.0030885648682501543,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planarunion_equal_radius_0": {
+      "normalized_area_error": 3.058719752146999e-06,
+      "normalized_circle_locus_error": 2.1919008399429174e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planarunion_unequal_radius_0": {
+      "normalized_area_error": 1.1606292872556878e-05,
+      "normalized_circle_locus_error": 4.778686174766733e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarunion_first_small_0": {
+      "normalized_area_error": 1.1606292886767733e-05,
+      "normalized_circle_locus_error": 4.778686175210822e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarunion_equal_radius_20": {
+      "normalized_area_error": 3.058719752146999e-06,
+      "normalized_circle_locus_error": 2.1919008399429174e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planarunion_unequal_radius_20": {
+      "normalized_area_error": 1.1606292872556878e-05,
+      "normalized_circle_locus_error": 4.778686174766733e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarunion_first_small_20": {
+      "normalized_area_error": 1.1606292886767733e-05,
+      "normalized_circle_locus_error": 4.778686175210822e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planardifference_equal_radius_m20": {
+      "normalized_area_error": 0.0017937421728015934,
+      "normalized_circle_locus_error": 0.0013729352220035462,
+      "normalized_source_area_error": 0.00012214119807651969
+    },
+    "planardifference_unequal_radius_m20": {
+      "normalized_area_error": 0.0004990374520801311,
+      "normalized_circle_locus_error": 0.0031295112365614663,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planardifference_first_small_m20": {
+      "normalized_area_error": 0.005358746235684997,
+      "normalized_circle_locus_error": 0.004059749665377144,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planardifference_equal_radius_0": {
+      "normalized_area_error": 2.8103377003318997e-06,
+      "normalized_circle_locus_error": 2.191900839720873e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planardifference_unequal_radius_0": {
+      "normalized_area_error": 1.2608761231547305e-05,
+      "normalized_circle_locus_error": 4.778686174766733e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planardifference_first_small_0": {
+      "normalized_area_error": 1.0459891782943487e-05,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planardifference_equal_radius_20": {
+      "normalized_area_error": 2.8103377003318997e-06,
+      "normalized_circle_locus_error": 2.191900839720873e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planardifference_unequal_radius_20": {
+      "normalized_area_error": 1.2608761231547305e-05,
+      "normalized_circle_locus_error": 4.778686174766733e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planardifference_first_small_20": {
+      "normalized_area_error": 1.0459891782943487e-05,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarintersection_equal_radius_m20": {
+      "normalized_area_error": 0.005537234961216164,
+      "normalized_circle_locus_error": 0.0013729352220037683,
+      "normalized_source_area_error": 0.00012214119807651969
+    },
+    "planarintersection_unequal_radius_m20": {
+      "normalized_area_error": 0.014637735416369146,
+      "normalized_circle_locus_error": 0.004059749665377144,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planarintersection_first_small_m20": {
+      "normalized_area_error": 0.0146377354163727,
+      "normalized_circle_locus_error": 0.004059749665377144,
+      "normalized_source_area_error": 0.00027481769568638015
+    },
+    "planarintersection_equal_radius_0": {
+      "normalized_area_error": 8.835376811511253e-06,
+      "normalized_circle_locus_error": 2.191900839720873e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planarintersection_unequal_radius_0": {
+      "normalized_area_error": 9.399459859338322e-06,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarintersection_first_small_0": {
+      "normalized_area_error": 9.3994598602265e-06,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarintersection_equal_radius_20": {
+      "normalized_area_error": 8.835376811511253e-06,
+      "normalized_circle_locus_error": 2.191900839720873e-06,
+      "normalized_source_area_error": 1.5507596806685342e-07
+    },
+    "planarintersection_unequal_radius_20": {
+      "normalized_area_error": 9.399459859338322e-06,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    },
+    "planarintersection_first_small_20": {
+      "normalized_area_error": 9.3994598602265e-06,
+      "normalized_circle_locus_error": 6.6390964530427254e-06,
+      "normalized_source_area_error": 3.489209738916088e-07
+    }
+  },
+  "limits": [
+    "Nine small-scale native results retain geometric and mass-integration differences.",
+    "Unequal-radius native fitted curves may exceed the existing 5e-6 normalized witness bound; diagnostic cases remain explicit.",
+    "Stored center distances and angle recovery are binary64; exact coefficients do not establish exact circular geometry or continuous native boundary agreement.",
+    "General curved Booleans, whole-model extreme scaling and relative performance remain unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/planar_circle_scale_probe.py": "1daaccaed42a0280f64b227ac0112d21e1ab67d324911a6eeed2602f7ba31d31",
+    "tools/rhino_oracle/fixtures/planar_circle_scale.json": "246663b461ae154b07c8e355b8335168f636c13bcacd36b1ea053be62ff25186",
+    "tools/rhino_oracle/observations/planar_circle_scale.json": "a3cda629694e4f4f8a8f5dfb30c2ee808dddc97c18b5909b591845859d38073c",
+    "tools/numerics/generate_circle_cut_reference.py": "95c544a29e789bf187e6a92705f0ed99b3211afee0faeaf532a57c0fc84c8c45",
+    "crates/viboceros-geometry/src/brep/boolean/circle_cut_reference.json": "e69c67d9379e16e4e129a5e5431e38aa64084affbc13a8dcda8c9d6f8480afd3"
+  },
+  "measured_local_native_bidirectional_witness_errors": {
+    "planarunion_equal_radius_m20": {
+      "native": 0.00158551058569,
+      "local": 0.001370901949471
+    },
+    "planarunion_unequal_radius_m20": {
+      "native": 0.004587906853143,
+      "local": 0.003058153478077
+    },
+    "planarunion_first_small_m20": {
+      "native": 0.004587906853143,
+      "local": 0.003058153478076
+    },
+    "planarunion_unequal_radius_0": {
+      "native": 7.083733773382e-06,
+      "local": 4.971996083349e-06
+    },
+    "planarunion_first_small_0": {
+      "native": 7.083733773378e-06,
+      "local": 4.971996084011e-06
+    },
+    "planarunion_unequal_radius_20": {
+      "native": 7.083733773238e-06,
+      "local": 4.971996083005e-06
+    },
+    "planarunion_first_small_20": {
+      "native": 7.083733773378e-06,
+      "local": 4.971996084011e-06
+    },
+    "planardifference_equal_radius_m20": {
+      "native": 0.001372935222003,
+      "local": 0.001370901949471
+    },
+    "planardifference_unequal_radius_m20": {
+      "native": 0.003129511236561,
+      "local": 0.004220762720137
+    },
+    "planardifference_first_small_m20": {
+      "native": 0.004226040393192,
+      "local": 0.004076950144283
+    },
+    "planardifference_unequal_radius_0": {
+      "native": 4.77868617522e-06,
+      "local": 8.631795673027e-06
+    },
+    "planardifference_first_small_0": {
+      "native": 8.631795674656e-06,
+      "local": 6.671038869346e-06
+    },
+    "planardifference_unequal_radius_20": {
+      "native": 4.77868617522e-06,
+      "local": 8.631795673027e-06
+    },
+    "planardifference_first_small_20": {
+      "native": 8.631795674656e-06,
+      "local": 6.671038869346e-06
+    },
+    "planarintersection_equal_radius_m20": {
+      "native": 0.001372935222003,
+      "local": 0.00158551058569
+    },
+    "planarintersection_unequal_radius_m20": {
+      "native": 0.004059749665377,
+      "local": 0.004587906853143
+    },
+    "planarintersection_first_small_m20": {
+      "native": 0.004059749665377,
+      "local": 0.004587906853143
+    },
+    "planarintersection_unequal_radius_0": {
+      "native": 6.639096452291e-06,
+      "local": 7.083700957668e-06
+    },
+    "planarintersection_first_small_0": {
+      "native": 6.639096452291e-06,
+      "local": 7.083700957668e-06
+    },
+    "planarintersection_unequal_radius_20": {
+      "native": 6.639096452291e-06,
+      "local": 7.083700957668e-06
+    },
+    "planarintersection_first_small_20": {
+      "native": 6.639096452291e-06,
+      "local": 7.083700957668e-06
+    }
+  },
+  "boundary_agreement_recipes": 6,
+  "boundary_diagnostic_recipes": 21
+}

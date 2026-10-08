@@ -1,0 +1,141 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_equal_radius_m20",
+      "case": "planarunion_equal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_unequal_radius_m20",
+      "case": "planarunion_unequal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_first_small_m20",
+      "case": "planarunion_first_small_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_equal_radius_0",
+      "case": "planarunion_equal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_unequal_radius_0",
+      "case": "planarunion_unequal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_first_small_0",
+      "case": "planarunion_first_small_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_equal_radius_20",
+      "case": "planarunion_equal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_unequal_radius_20",
+      "case": "planarunion_unequal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarunion_first_small_20",
+      "case": "planarunion_first_small_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_equal_radius_m20",
+      "case": "planardifference_equal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_unequal_radius_m20",
+      "case": "planardifference_unequal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_first_small_m20",
+      "case": "planardifference_first_small_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_equal_radius_0",
+      "case": "planardifference_equal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_unequal_radius_0",
+      "case": "planardifference_unequal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_first_small_0",
+      "case": "planardifference_first_small_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_equal_radius_20",
+      "case": "planardifference_equal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_unequal_radius_20",
+      "case": "planardifference_unequal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planardifference_first_small_20",
+      "case": "planardifference_first_small_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_equal_radius_m20",
+      "case": "planarintersection_equal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_unequal_radius_m20",
+      "case": "planarintersection_unequal_radius_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_first_small_m20",
+      "case": "planarintersection_first_small_m20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_equal_radius_0",
+      "case": "planarintersection_equal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_unequal_radius_0",
+      "case": "planarintersection_unequal_radius_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_first_small_0",
+      "case": "planarintersection_first_small_0"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_equal_radius_20",
+      "case": "planarintersection_equal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_unequal_radius_20",
+      "case": "planarintersection_unequal_radius_20"
+    },
+    {
+      "op": "planar_circle_scale",
+      "id": "planar_circle_scale_planarintersection_first_small_20",
+      "case": "planarintersection_first_small_20"
+    }
+  ]
+}

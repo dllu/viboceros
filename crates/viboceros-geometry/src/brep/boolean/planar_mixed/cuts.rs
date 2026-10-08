@@ -66,39 +66,6 @@ pub(super) fn line_line(a: [[f64; 2]; 2], b: [[f64; 2]; 2]) -> Result<LineCuts, 
     }
     Ok(LineCuts::Overlap { first, second })
 }
-fn square_root(value: &Rational) -> Result<f64, GeometryError> {
-    if value.is_zero() {
-        return Ok(0.);
-    }
-    // Normalize by an even power so neither the square nor its scale needs
-    // to fit binary64. Only the normalized sqrt and final root are rounded.
-    let exponent = value.numer().bits() as i64 - value.denom().bits() as i64;
-    let even = exponent.div_euclid(2) * 2;
-    let power = if even >= 0 {
-        Rational::from_integer(num_bigint::BigInt::from(1u8) << even as usize)
-    } else {
-        Rational::new(
-            num_bigint::BigInt::from(1u8),
-            num_bigint::BigInt::from(1u8) << (-even) as usize,
-        )
-    };
-    let normalized = scalar(&(value / &power))?.sqrt();
-    let result = scalar(
-        &(rational(normalized)
-            * if even / 2 >= 0 {
-                Rational::from_integer(num_bigint::BigInt::from(1u8) << (even / 2) as usize)
-            } else {
-                Rational::new(
-                    num_bigint::BigInt::from(1u8),
-                    num_bigint::BigInt::from(1u8) << (-even / 2) as usize,
-                )
-            }),
-    )?;
-    if result == 0. {
-        return Err(GeometryError::UnrepresentableBrepBoolean);
-    }
-    Ok(result)
-}
 pub(super) fn line_circle(
     line: [[f64; 2]; 2],
     center: [f64; 2],
@@ -151,7 +118,7 @@ pub(super) fn line_circle(
     let square = discriminant.clone() / (&aa * &aa);
     check_scalar(&base)?;
     check_scalar(&square)?;
-    let root = square_root(&square)?;
+    let root = super::super::planar_cut_scalar::square_root(&square)?;
     let offset = rational(root);
     // Add away from zero; recover the other root through Vieta's product.
     let far = &base

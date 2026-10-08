@@ -124,12 +124,25 @@ fn planar_application_replays_mixed_native_scale_recipes() {
     replay(&q);
 }
 
+#[test]
+fn planar_application_replays_circular_native_scales_and_history() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/planar_circle_scale.json"
+    ))
+    .unwrap();
+    replay(&q);
+}
+
 fn replay(q: &serde_json::Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         let name = v["command_name"].as_str().unwrap();
         let mut app = test_app();
         let scale = v["scale"].as_f64().unwrap_or(1.);
+        let circular_scale = r["id"]
+            .as_str()
+            .unwrap()
+            .starts_with("planar_circle_scale_");
         if v["scale"].is_number() {
             app.document.set_tolerance(
                 Tolerance::try_new(
@@ -185,24 +198,28 @@ fn replay(q: &serde_json::Value) {
             } else {
                 assert_eq!(b.edges().len(), n["edges"].as_u64().unwrap() as usize);
             }
-            assert!(
-                (b.area(app.document.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
-                    / scale.powi(2)
-                    < if v["scale"].is_number() {
-                        3e-4
-                    } else if ["disk", "annulus", "half_disk"]
-                        .iter()
-                        .any(|kind| v["shapes"]
-                            .as_array()
-                            .unwrap()
+            if !circular_scale || scale >= 1. {
+                assert!(
+                    (b.area(app.document.tolerance()).unwrap() - n["area"].as_f64().unwrap()).abs()
+                        / scale.powi(2)
+                        < if circular_scale {
+                            2e-5
+                        } else if v["scale"].is_number() {
+                            3e-4
+                        } else if ["disk", "annulus", "half_disk"]
                             .iter()
-                            .any(|s| s["kind"] == *kind))
-                    {
-                        2e-5
-                    } else {
-                        1e-9
-                    }
-            );
+                            .any(|kind| v["shapes"]
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .any(|s| s["kind"] == *kind))
+                        {
+                            2e-5
+                        } else {
+                            1e-9
+                        }
+                );
+            }
         }
         assert!(app.document.can_undo());
         enter(&mut app, "Undo");
