@@ -273,7 +273,10 @@ fn failed_preview_keeps_source_controls_available_for_direction_recovery() {
         "SrfControlPtGrid Degree=2 3 Degree=2 3 10,0,4 10,3,4 10,6,4 12,0,4 12,3,5 12,6,6 14,0,4 14,3,6 14,6,8",
     );
     let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
-    enter(&mut app, "TweenSurfaces MatchMethod=None");
+    enter(
+        &mut app,
+        "TweenSurfaces MatchMethod=SamplePoints SampleNumber=255 NumberOfSurfaces=16",
+    );
     for id in ids {
         click(&mut app, id);
     }
@@ -350,7 +353,10 @@ fn failed_option_preparation_drops_previous_preview_as_one_unit() {
             .scene()
             .is_some()
     );
-    enter(&mut app, "MatchMethod=None");
+    enter(
+        &mut app,
+        "MatchMethod=SamplePoints SampleNumber=255 NumberOfSurfaces=16",
+    );
     assert!(
         app.tween_surfaces_prompt
             .as_ref()
@@ -768,4 +774,95 @@ fn native_preselection_acceptance_and_cancellation_replay_geometry_and_history()
             assert!(!app.document.can_undo());
         }
     }
+}
+
+#[test]
+fn unequal_control_nets_preview_and_accept_three_native_tweens_with_atomic_history() {
+    let q: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/tween_surfaces_control_followup.json"
+    ))
+    .unwrap();
+    let v = &q["results"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["value"]["case"] == "curved_rows_number3")
+        .unwrap()["value"];
+    let mut app = test_app();
+    for source in v["before"].as_array().unwrap() {
+        let d = &source["definition"];
+        let controls = d["control_points"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|c| {
+                viboceros_geometry::WeightedPoint3::try_new(
+                    Point3::try_from(
+                        serde_json::from_value::<[f64; 3]>(c["point"].clone()).unwrap(),
+                    )
+                    .unwrap(),
+                    c["weight"].as_f64().unwrap(),
+                )
+                .unwrap()
+            })
+            .collect();
+        let s = viboceros_geometry::NurbsSurface::try_new_rational(
+            d["degree"][0].as_u64().unwrap() as usize,
+            d["degree"][1].as_u64().unwrap() as usize,
+            d["control_count"][0].as_u64().unwrap() as usize,
+            d["control_count"][1].as_u64().unwrap() as usize,
+            controls,
+            serde_json::from_value(d["knots_u"].clone()).unwrap(),
+            serde_json::from_value(d["knots_v"].clone()).unwrap(),
+        )
+        .unwrap();
+        app.document
+            .add_geometry(Geometry::NurbsSurface(s))
+            .unwrap();
+    }
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "TweenSurfaces MatchMethod=None NumberOfSurfaces=3",
+    );
+    for object in &before {
+        click(&mut app, object.id());
+    }
+    let scene = app.tween_surfaces_prompt.as_ref().unwrap().scene().unwrap();
+    assert_eq!(scene.objects().len(), 5);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!app.document.can_undo());
+    for (object, native) in scene.objects().skip(2).zip(
+        v["command"]["after_script"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .skip(2),
+    ) {
+        let Geometry::Brep(b) = object.geometry() else {
+            panic!()
+        };
+        let s = b.faces()[0].surface();
+        for (i, point) in native["samples"].as_array().unwrap().iter().enumerate() {
+            let u = *s.domain_u().start()
+                + (*s.domain_u().end() - *s.domain_u().start()) * (i % 9) as f64 / 8.;
+            let w = *s.domain_v().start()
+                + (*s.domain_v().end() - *s.domain_v().start()) * (i / 9) as f64 / 8.;
+            let expected =
+                Point3::try_from(serde_json::from_value::<[f64; 3]>(point.clone()).unwrap())
+                    .unwrap();
+            assert!(s.evaluate(u, w).unwrap().distance_to(expected).unwrap() < 1e-6);
+        }
+    }
+    enter(&mut app, "");
+    let accepted = app.document.objects().cloned().collect::<Vec<_>>();
+    assert_eq!(accepted.len(), 5);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "Redo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        accepted
+    );
 }

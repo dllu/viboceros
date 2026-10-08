@@ -1,5 +1,6 @@
 //! Intermediate tensor surfaces with explicit source correspondence.
 use crate::{GeometryError, NurbsSurface, Point3, Real, WeightedPoint3};
+mod control;
 
 pub const MAX_SURFACE_TWEEN_COUNT: usize = 4096;
 pub const MAX_SURFACE_TWEEN_CONTROLS: usize = 1_000_000;
@@ -71,10 +72,10 @@ pub fn try_tween_nurbs_surfaces_sampled(
     Ok(result)
 }
 
-/// Prepare equal-sized nets by exact degree elevation and common knots.
-/// Compatible positive rational nets retain first-source weights and apply
-/// the measured square-root weight ratio to control displacement.
-/// Output domains use the number of distinct spans in the common basis.
+/// Blend corresponding controls when degrees and control counts agree, retaining
+/// first-source knots and weights and applying the square-root weight ratio.
+/// Otherwise rebuild both sources to uniform maximum-sized nets using midpoint
+/// isocurve arc-length stations, repeating preparation for each output.
 /// Input directions and seams are retained; callers adjust them explicitly.
 pub fn try_tween_nurbs_surfaces(
     start: &NurbsSurface,
@@ -110,33 +111,12 @@ fn tween_matched(
     {
         return Err(error("surface tween requires positive weights"));
     }
-    let rational = start
-        .control_points()
-        .iter()
-        .chain(end.control_points())
-        .any(|c| c.weight() != 1.);
-    if !refit
-        && rational
-        && (start.degree_u() != end.degree_u()
-            || start.degree_v() != end.degree_v()
-            || start.control_point_count_u() != end.control_point_count_u()
-            || start.control_point_count_v() != end.control_point_count_v())
-    {
-        return Err(error(
-            "incompatible rational surface preparation is not yet verified",
-        ));
-    }
     let degree = [
         start.degree_u().max(end.degree_u()),
         start.degree_v().max(end.degree_v()),
     ];
-    if !refit
-        && (start.control_point_count_u() != end.control_point_count_u()
-            || start.control_point_count_v() != end.control_point_count_v())
-    {
-        return Err(error(
-            "unequal control nets require native common-chart fitting, still under investigation",
-        ));
+    if !refit {
+        return control::tweens(start, end, number);
     }
     let mut prepared = [start, end]
         .map(|s| {
@@ -559,7 +539,7 @@ mod tests {
         }
         assert!(check_count(MAX_SURFACE_TWEEN_CONTROLS, 2).is_err());
     }
-    fn surface(v: &serde_json::Value) -> NurbsSurface {
+    pub(super) fn surface(v: &serde_json::Value) -> NurbsSurface {
         let counts = v["control_count"].as_array().unwrap();
         let degree = v["degree"].as_array().unwrap();
         let controls = v["control_points"]

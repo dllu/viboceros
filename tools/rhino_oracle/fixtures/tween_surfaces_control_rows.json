@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_control_rows",
+      "id": "tween_srf_rational_counts_number2",
+      "case": "rational_counts_number2"
+    },
+    {
+      "op": "tween_surfaces_control_rows",
+      "id": "tween_srf_curved_rows_number2",
+      "case": "curved_rows_number2"
+    }
+  ]
+}

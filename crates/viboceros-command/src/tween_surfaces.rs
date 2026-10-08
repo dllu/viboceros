@@ -494,7 +494,7 @@ mod tests {
             "../../../tools/rhino_oracle/observations/tween_surfaces_sampling.json"
         ))
         .unwrap();
-        replay_native(&q);
+        replay_native(&q, 1e-7);
     }
     #[test]
     fn refitted_tweens_replay_native_geometry_properties_and_independent_history() {
@@ -502,9 +502,22 @@ mod tests {
             "../../../tools/rhino_oracle/observations/tween_surfaces_refit.json"
         ))
         .unwrap();
-        replay_native(&q);
+        replay_native(&q, 1e-7);
     }
-    fn replay_native(q: &serde_json::Value) {
+    #[test]
+    fn control_tweens_replay_unequal_native_nets_properties_and_independent_history() {
+        for text in [
+            include_str!(
+                "../../../tools/rhino_oracle/observations/tween_surfaces_control_initial.json"
+            ),
+            include_str!(
+                "../../../tools/rhino_oracle/observations/tween_surfaces_control_followup.json"
+            ),
+        ] {
+            replay_native(&serde_json::from_str(text).unwrap(), 1e-6);
+        }
+    }
+    fn replay_native(q: &serde_json::Value, epsilon: f64) {
         for row in q["results"].as_array().unwrap() {
             let v = &row["value"];
             let mut doc = Document::default();
@@ -574,7 +587,7 @@ mod tests {
                         Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
                             .unwrap();
                     assert!(
-                        s.evaluate(u, w).unwrap().distance_to(expected).unwrap() < 1e-7,
+                        s.evaluate(u, w).unwrap().distance_to(expected).unwrap() < epsilon,
                         "{}",
                         v["case"]
                     );

@@ -116,7 +116,7 @@ selection prompts, and Undo/Redo; application tests replay those 304 cases.
 The mesh containment query validates closed manifold topology once, classifies
 surface boundary points, and uses retried ray parity for interior tests. Volume
 object selection uses that query for mesh and tessellated B-rep sources.
-The [TweenSurfaces workflow](commands/tween-surfaces.md) adds compatible control-net
+The [TweenSurfaces workflow](commands/tween-surfaces.md) adds control-net
 transitions and normalized-UV sampled tensor interpolation, with explicit
 direction changes and measured layer/attribute/group policy. Sampling accepts
 unequal polynomial/rational nets and retains mean-chord output domains. Rational
@@ -134,9 +134,13 @@ Command-instance option storage applies measured field lifetimes: accepted
 count/method/sample edits and immediate options-phase layer edits. Source/direction
 state stays per invocation; history never changes saved preferences.
 Refit matches degrees and knots for unequal positive rational nets and retains
-the end source domains. Unequal-net control fitting and native option previews
-remain unfinished. Complete command/SDK evidence and a sampled Python geometry
-query retain those boundaries.
+the end source domains. Unequal control nets use uniform tensor interpolation
+at midpoint-isocurve arc-length stations, rebuilding before every output as
+measured in 38 native cases. Compatible nets keep first-source knots. Bounded
+faer solves check pivots, finite controls and residuals. Native option-change
+object effects, general periodic/singular sources and performance parity remain
+unresolved. Complete command/SDK evidence and a sampled Python geometry query
+retain those boundaries.
 The Pipe command reuses exact axial NURBS primitives for straight rails and
 the rotation-minimizing Sweep1 kernel for smooth curved rails. Planar B-rep
 hole capping closes the swept ends when requested. Thick pipes combine outer

@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_counts_number3",
+      "case": "counts_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_counts_swapped_number3",
+      "case": "counts_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_u_only_number3",
+      "case": "u_only_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_v_only_number3",
+      "case": "v_only_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_degrees_number3",
+      "case": "degrees_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_one_degree_number3",
+      "case": "one_degree_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_rational_counts_number3",
+      "case": "rational_counts_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_rational_swapped_number3",
+      "case": "rational_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_both_rational_number3",
+      "case": "both_rational_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_cubic_counts_number3",
+      "case": "cubic_counts_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_shifted_knot_number3",
+      "case": "shifted_knot_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_equal_count_degrees_number3",
+      "case": "equal_count_degrees_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_equal_count_degrees_swapped_number3",
+      "case": "equal_count_degrees_swapped_number3"
+    },
+    {
+      "op": "tween_surfaces_control_followup",
+      "id": "tween_srf_curved_rows_number3",
+      "case": "curved_rows_number3"
+    }
+  ]
+}

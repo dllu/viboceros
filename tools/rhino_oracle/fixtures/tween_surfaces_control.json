@@ -1,0 +1,126 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_counts_number1",
+      "case": "counts_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_counts_number2",
+      "case": "counts_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_counts_swapped_number1",
+      "case": "counts_swapped_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_counts_swapped_number2",
+      "case": "counts_swapped_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_u_only_number1",
+      "case": "u_only_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_u_only_number2",
+      "case": "u_only_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_v_only_number1",
+      "case": "v_only_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_v_only_number2",
+      "case": "v_only_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_degrees_number1",
+      "case": "degrees_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_degrees_number2",
+      "case": "degrees_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_one_degree_number1",
+      "case": "one_degree_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_one_degree_number2",
+      "case": "one_degree_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_rational_counts_number1",
+      "case": "rational_counts_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_rational_counts_number2",
+      "case": "rational_counts_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_rational_swapped_number1",
+      "case": "rational_swapped_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_rational_swapped_number2",
+      "case": "rational_swapped_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_both_rational_number1",
+      "case": "both_rational_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_both_rational_number2",
+      "case": "both_rational_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_cubic_counts_number1",
+      "case": "cubic_counts_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_cubic_counts_number2",
+      "case": "cubic_counts_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_shifted_knot_number1",
+      "case": "shifted_knot_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_shifted_knot_number2",
+      "case": "shifted_knot_number2"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_curved_rows_number1",
+      "case": "curved_rows_number1"
+    },
+    {
+      "op": "tween_surfaces_control",
+      "id": "tween_srf_curved_rows_number2",
+      "case": "curved_rows_number2"
+    }
+  ]
+}

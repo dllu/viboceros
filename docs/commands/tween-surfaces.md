@@ -7,7 +7,7 @@ implementation supports sampled matching (`MatchMethod=SamplePoints`) for
 polynomial/rational surfaces with different degrees, counts and parameter domains.
 `MatchMethod=Refit` matches degrees and knot layouts across positive rational
 nets, including unequal counts. Control matching (`MatchMethod=None`) handles
-equal-sized polynomial nets and compatible positive rational nets. Sources remain
+polynomial and positive rational nets with equal or differing degrees/counts. Sources remain
 unchanged.
 Start the command, pick the start surface and then the end surface, edit options
 or directions while viewing the preview, and press Enter to accept. Escape
@@ -66,12 +66,26 @@ persistence remains unverified. Source IDs and direction flags are per invocatio
 Use explicit options in deterministic scripts.
 
 Counts default to one and are bounded at 4,096, with an aggregate million-control
-limit. Outputs exclude sources, at fractions `i / (number + 1)`. Polynomial
-preparation elevates degrees and unifies knots; output domains count common
-spans. Compatible rational matching retains the first weights and scales each
+limit. Outputs exclude sources, at fractions `i / (number + 1)`. When control
+degrees and counts agree in both axes, matching retains the first source's
+knots and domains even when the second source's knot layout differs.
+Compatible rational matching retains the first weights and scales each
 control displacement by `sqrt(end_weight / start_weight)`, following measured
-native data. This can extrapolate control locations. Unequal rational degrees
-or counts remain rejected in control matching.
+native data. This can extrapolate control locations.
+
+When any degree or count differs, control matching rebuilds both prepared
+sources to the maximum degree and count in each axis. Target knots are uniform
+with unit spans. Target Greville fractions map to equal arc-length fractions on
+each source's two midpoint isocurves. Evaluating that tensor parameter grid and
+solving its two collocation systems produces non-rational control nets. Both
+sources are rebuilt again before each successive output, following the measured
+native drift rather than reusing the first prepared nets. In the curved three-output
+case, the second output differs from a single-rebuild blend by about `0.00835`
+at a control point. Original sources remain
+unchanged. Rebuilding uses the internal default arc-length tolerance and at most
+256 controls per axis; solves normalize coordinates and check pivots, finite
+solutions and backward residuals. This approximates the sources and does not
+certify preservation of their continuous loci.
 
 Refit prepares a common tensor basis by clamping, elevating degrees and inserting
 the union of normalized interior knots with their maximum multiplicities. It then
@@ -103,8 +117,8 @@ Earlier commands that changed matching options left additional source-shaped
 copies: `Refit` four and `SamplePoints` two in that capture, alongside requested
 tweens. The public sampling SDK returns
 just the requested outputs. Both raw records and the initial investigation are
-retained without normalizing these differences. Unequal-net control matching,
-native preview appearance and performance parity remain unverified.
+retained without normalizing these differences. Native preview appearance and
+performance parity remain unverified.
 The registered command rejects unsupported methods. Trimmed single-face input
 uses its underlying surface; trim correspondence is not implemented.
 
@@ -226,6 +240,23 @@ without manual recovery. See [sequence provenance](../tween-sequences-provenance
 This extends the captured open warped bilinear sources; general singular or
 periodic source corners and coincident controls remain unverified.
 
+The [initial control capture](../../tools/rhino_oracle/observations/tween_surfaces_control_initial.json)
+contains 24 owned native commands with one or two outputs, including unequal
+polynomial/rational nets, swapped order, single-axis count/degree differences,
+cubic and curved controls, and compatible nets with differing knots.
+A [14-case follow-up](../../tools/rhino_oracle/observations/tween_surfaces_control_followup.json)
+checks three outputs and equal-count degree changes. Both ran on private Xvfb
+and retain full surfaces, 81 normalized stations, attributes/groups, source
+identity and independent history. Kernel and command replay check controls and
+positions at `1e-6`, knots/weights at `1e-12`, and unchanged sources. Public
+Surface.Rebuild records independently check initial preparation. App replay
+checks readonly curved-net preview, three-output acceptance and Undo/Redo.
+Separate 24-case blend and two-case control-row diagnostics retain rejected
+preparation hypotheses and native option-change copies. See
+[control provenance](../tween-control-provenance.json) for immutable producer and
+capture hashes. Periodic/general singular inputs, extreme rational gauges and
+arbitrary high-degree conditioning remain unverified.
+
 The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 `start_surface`, `end_surface`, `number` and `sample_number`. It returns full
 `surfaces` definitions in both engines and shares the same resource limits.
@@ -234,5 +265,5 @@ The JSON/Python oracle accepts `surface_tween_sampled_geometry` with
 cargo test --release -p viboceros-geometry surface_tween
 cargo test --release -p viboceros-command tween_surfaces
 cargo test --release --bin viboceros tween_surfaces
-python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options tools.rhino_oracle.test_tween_surfaces_corners tools.rhino_oracle.test_tween_corner_sequences
+python3 -m unittest tools.rhino_oracle.test_tween_surfaces tools.rhino_oracle.test_tween_surfaces_sampling tools.rhino_oracle.test_tween_surfaces_refit tools.rhino_oracle.test_tween_surfaces_interaction tools.rhino_oracle.test_tween_surfaces_options tools.rhino_oracle.test_tween_surfaces_corners tools.rhino_oracle.test_tween_corner_sequences tools.rhino_oracle.test_tween_surfaces_control
 ```

@@ -1,0 +1,61 @@
+{
+  "capture_date": "2026-10-08",
+  "engine_version": "8.32.26160.13001",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "primary_recipes": 38,
+  "diagnostic_recipes": 26,
+  "control_point_epsilon": 1e-06,
+  "normalized_surface_witness_epsilon": 1e-06,
+  "captures": [
+    {
+      "file": "tween_surfaces_control_initial.json",
+      "producer": "tween_surfaces_control_initial_probe.py",
+      "scheme": "VibocerosOracleTweenControl20261008",
+      "recipes": 24
+    },
+    {
+      "file": "tween_surfaces_control_blends.json",
+      "producer": "tween_surfaces_control_blends_probe.py",
+      "scheme": "VibocerosOracleTweenControlVerified20261008",
+      "recipes": 24,
+      "diagnostic": true
+    },
+    {
+      "file": "tween_surfaces_control_rows.json",
+      "producer": "tween_surfaces_control_rows_probe.py",
+      "scheme": "VibocerosOracleTweenControlRowsVerified20261008",
+      "recipes": 2,
+      "diagnostic": true
+    },
+    {
+      "file": "tween_surfaces_control_followup.json",
+      "producer": "tween_surfaces_control_followup_probe.py",
+      "scheme": "VibocerosOracleTweenControlFollowup20261008",
+      "recipes": 14
+    }
+  ],
+  "measured_preparation": "If any degree or count differs, rebuild both sources before every output using equal arc-length fractions on midpoint isocurves and uniform Greville tensor interpolation. Otherwise retain first-source knots and blend corresponding controls.",
+  "row_diagnostic": "The first row probe failed before completion because SetPoint received ControlPoint instead of Point3d plus weight. The corrected producer and successful two-case capture are retained.",
+  "limits": [
+    "Open clamped captured surfaces only; periodic and general singular inputs are unverified.",
+    "Approximation uses internal default arc-length tolerance and at most 256 controls per rebuilt axis; it does not certify continuous source-locus preservation.",
+    "Positive weights are required; extreme rational gauges and arbitrary high degrees are unverified.",
+    "Native option changes add source-shaped objects in diagnostic runs; local previews remain readonly.",
+    "Native performance parity and alternate platforms are unverified."
+  ],
+  "sha256": {
+    "tools/rhino_oracle/tween_surfaces_control_initial_probe.py": "984fb3d671b893e96c1ed9888df8b319432fa3553465cbfa6ebaf95c860ebceb",
+    "tools/rhino_oracle/tween_surfaces_control_probe.py": "eb96573a9b68bd7d90bcf30d820140e8153c477dabad4c41c627dd53144c8186",
+    "tools/rhino_oracle/tween_surfaces_control_blends_probe.py": "eb96573a9b68bd7d90bcf30d820140e8153c477dabad4c41c627dd53144c8186",
+    "tools/rhino_oracle/tween_surfaces_control_rows_probe.py": "ac91106a19f9472ce8afa8eebe5560fe7aa1d4750dae57e68de87c2e5d371016",
+    "tools/rhino_oracle/tween_surfaces_control_followup_probe.py": "3c58fea20172be7d3b9106af8572ab30d4dce67d963745ec8c076ae12fdf2313",
+    "tools/rhino_oracle/fixtures/tween_surfaces_control.json": "e53d740ea81ac12078fd2a9726fa2cac8423f5427f09ccdba2a521a1b4a44c7a",
+    "tools/rhino_oracle/fixtures/tween_surfaces_control_rows.json": "c3de6f183c7e410a21a11cd475d0438daef9c3486c29427eeb5b5cdcd188de1c",
+    "tools/rhino_oracle/fixtures/tween_surfaces_control_followup.json": "cc7e064d3de77f3cd9ec4e543bdc0de45d8b20d4477971d964899851fcc251b0",
+    "tools/rhino_oracle/observations/tween_surfaces_control_initial.json": "ec43b7957e67834ccf07d00b15feead92d947296d511c96a2336681b385466e7",
+    "tools/rhino_oracle/observations/tween_surfaces_control_blends.json": "6ccf65de2d24e0238768c4a24a75e726945329c6fcf05eb301c70ab00a0ab39a",
+    "tools/rhino_oracle/observations/tween_surfaces_control_rows.json": "113374c44ca46e099d1c243ee46ed8b299834e465974d48e4be43d82f6da36e2",
+    "tools/rhino_oracle/observations/tween_surfaces_control_followup.json": "af0f8f57158d890e0d057cbb1727bf5f35a0a84894921f257b7449d04102822a"
+  }
+}
