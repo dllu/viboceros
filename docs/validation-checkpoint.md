@@ -3,27 +3,25 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `3d7ee6b4` with Rust 1.95.0 after
-[Surface tween corner controls](commands/tween-surfaces.md).
+The October 8, 2026 audit tested code at `9ccdd36b` with Rust 1.95.0 after
+[Repeated surface corner edits and preview guards](commands/tween-surfaces.md).
 
 ## Commands and results
 
 ```sh
 cargo test --workspace --release
-cargo test --release --bin viboceros failed_preview_keeps_source
 python3 -m unittest discover -s tools/rhino_oracle -t .
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The release workspace suite passed 5,297
-tests. The final failed-preview recovery regression passed separately in release.
-Together these checks passed 5,298 distinct Rust tests:
+All commands completed successfully. The release workspace suite passed
+5,301 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,018 | 17 |
+| App | 1,021 | 17 |
 | Command | 1,189 | 2 |
 | Document | 186 | 5 |
 | Drafting | 159 | 6 |
@@ -31,13 +29,31 @@ Together these checks passed 5,298 distinct Rust tests:
 | I/O | 195 | 0 |
 | Oracle | 487 | 0 |
 
-The Python suite passed 973 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 976 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest TweenSurfaces corner capture ran nine successful owned outcomes on
+The newest repeated-corner capture ran 14 successful owned commands and 28 real
+mouse clicks on private Xvfb under `VibocerosOracleTweenCornerSequencesVerified20261008`.
+[Complete records](../tools/rhino_oracle/observations/tween_surfaces_corner_sequences.json)
+retain each public viewport calibration, actual click, full source/output surfaces,
+properties and independent history. Native swap toggles the swap bit without
+transposing reversal bits; this corrects the earlier local composition after a
+reversal. App replay finds current controls at each original world corner and
+compares 81 normalized witnesses per source/output at `1e-7`, source purity and
+history for every sequence, including inactive corners, orientation restoration
+and three-click combinations. Queued corner edits now reject stale source geometry,
+attributes/groups or document settings. A failed later preparation discards the
+old scene, blocks acceptance and permits recovery. Initial stalled driver traces
+are retained separately; the corrected driver waits for mouse-event acknowledgements
+and completed without manual recovery. See [workflow](commands/tween-surfaces.md)
+and [provenance](tween-sequences-provenance.json). General periodic/singular source
+corners, coincident controls, native preview pixels, restart persistence,
+option-change object effects and relative performance remain unverified or unresolved.
+
+The preceding TweenSurfaces corner capture ran nine successful owned outcomes on
 private Xvfb under `VibocerosOracleTweenCornerVerifiedFinal20261008`: one baseline
 and eight real mouse clicks. [Complete records](../tools/rhino_oracle/observations/tween_surfaces_corners.json)
 retain public viewport matrices, WorldToClient targets, actual integer mouse
