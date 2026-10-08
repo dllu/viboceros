@@ -3,8 +3,8 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 7, 2026 audit tested code at `ba91f572` with Rust 1.95.0 after
-[BooleanSplit open planar targets](boolean-split-open-targets.md).
+The October 7, 2026 audit tested code at `ae58768c` with Rust 1.95.0 after
+[BooleanSplit mixed coplanar stages](boolean-split-mixed-open.md).
 
 ## Commands and results
 
@@ -17,25 +17,44 @@ git diff --check
 ```
 
 All commands completed successfully. The ordinary Rust workspace suite passed
-5,205 tests:
+5,209 tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 984 | 17 |
-| Command | 1,167 | 2 |
+| App | 985 | 17 |
+| Command | 1,168 | 2 |
 | Document | 185 | 5 |
 | Drafting | 159 | 6 |
-| Geometry | 2,029 | 8 |
+| Geometry | 2,031 | 8 |
 | I/O | 195 | 0 |
 | Oracle | 486 | 0 |
 
-The Python suite passed 927 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 931 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The new open-target BooleanSplit capture ran 16 public recipes on private Xvfb
+The new mixed-stage BooleanSplit capture ran 20 owned public recipes on private
+Xvfb under `VibocerosOracleBooleanSplitMixedOpenVerified20261007`. All succeed and
+create 56 pieces. [Raw records](../tools/rhino_oracle/observations/boolean_split_mixed_open.json)
+retain boundaries, counts, mass properties, metadata, groups, idle selection and
+independent Undo/Redo. Replay checks every outcome, boundary witnesses at `1e-7`,
+scalars at `1e-9`, solid volume/centroid at `1e-10`, supporting-face partitions and
+history. Coplanar stages before/after sheets and solids, normal reversal,
+contained/straddling/full/disjoint overlaps, hole coverage, preselection and
+retention are measured. The kernel carries physical boundary patches alongside
+exact region expressions and exports only after all stages. Kernel/app tests
+verify order, hole decisions, ownership, source isolation, pending purity and
+one history entry. A fresh production wgpu/egui inspection on private Xvfb
+confirms target picking, ordered typed cutters, three pieces with two retained
+cutters, idle selection and Undo/Redo in Ghosted mode. The [image and scope](boolean-split-mixed-open.md)
+distinguish that local inspection from native pixel parity. General curved and
+higher-degree geometry, arbitrary trimmed topology, ambiguous junctions,
+compound policy, near contacts, insertion order and relative performance remain
+unverified.
+
+The preceding open-target BooleanSplit capture ran 16 public recipes on private Xvfb
 under `VibocerosOracleBooleanSplitOpenPilot20261007`. Eleven succeed and create
 27 pieces; five failures remain in the [raw records](../tools/rhino_oracle/observations/boolean_split_open.json).
 Replay covers all outcomes, face/edge counts, bidirectional boundary witnesses
@@ -50,9 +69,10 @@ check orientation, finite coverage, isolation of the closed-target contract,
 picking, retention, cancellation and history. A fresh production wgpu/egui
 inspection on private Xvfb confirms the surface-as-target workflow, retained
 cutter and Undo/Redo in Ghosted mode. See the [saved image and scope](boolean-split-open-targets.md).
-Curved/nonplanar inputs, higher-degree supports, mixed coplanar/noncoplanar open
-stages, broader trimmed/compound policies, tolerance contacts, native insertion
-order and relative performance remain unverified.
+That checkpoint rejected mixed coplanar/noncoplanar stages; the boundary-patch
+extension above adds the recorded combinations. Curved/nonplanar inputs,
+higher-degree supports, broader trimmed/compound policies, tolerance contacts,
+native insertion order and relative performance remain unverified.
 
 The preceding finite-plane BooleanSplit capture ran 19 public recipes on private Xvfb
 under `VibocerosOracleBooleanSplitPlanesPilot20261007`. Fourteen commands succeed
