@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested ReplaceBlock, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`7f9f07b6` (earlier milestones used `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`0cf4b460` (earlier milestones used `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[replacement input provenance](block-replace-input-provenance.json),
 [replacement provenance](block-replace-provenance.json),
 [unique-definition provenance](block-unique-provenance.json),
 [management provenance](block-manager-provenance.json),
@@ -40,33 +41,46 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,495 Rust tests:
+5,502 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,064 | 17 |
+| App | 1,070 | 17 |
 | Command | 1,226 | 2 |
 | Document | 231 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,099 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 499 | 0 |
+| Oracle (unit and integration) | 500 | 0 |
 
-The Python suite passed 1,032 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,036 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [ReplaceBlock workflow](commands/replace-block.md) adds two document
+The newest [ReplaceBlock input](commands/replace-block.md) adds six GUI tests,
+one native replay test and four Python validation tests. Three private-Xvfb native
+workflows select the target through Rhino's object getter and match all 23 states
+for selected-only and All replacement, protected peers, and target state
+transitions. Hidden and locked modes are mutually exclusive in that probe, and
+normal restores target-getter eligibility. Local egui pointer events constrain
+chooser acceptance/cancellation, removed rows and changed source permissions.
+Target picking keeps source selection and target groups intact. The explicit
+name getter accepts scope words, command names and equals signs as names.
+Native chooser interaction, option memory, history parity, linked definitions,
+GPU rendering and performance remain unverified.
+
+The preceding [ReplaceBlock workflow](commands/replace-block.md) adds two document
 tests, two command tests, one GUI test, one replay test and two Python validation
 tests. Six private-Xvfb native workflows match all 37 states for selected-only
 and All scope, protected peers, reflected nonuniform placements, root metadata
 and groups, and unchanged nested definition references. Replacement retains root
 IDs and placements but clears geometry-attached root text. Local tests constrain
-atomic preparation, protected explicit selection and Undo/Redo. Replacement
-instance picking, the definition-list chooser, layer-level protection, native
-option memory, linked definitions and performance remain open.
+atomic preparation, protected explicit selection and Undo/Redo. Instance picking
+and the definition chooser are supplied by the newer input milestone above;
+layer-level protection, native option memory, linked definitions and performance
+remain open.
 
 The preceding [unique-definition workflow](commands/create-unique-block.md) adds
 three document tests, two command tests, two GUI tests, one replay test and two

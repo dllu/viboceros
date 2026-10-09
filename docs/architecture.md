@@ -19,6 +19,10 @@ editing remain subsequent work.
 recursive ExplodeBlock, with freshness checks, native group policies and one-step history.
 [BlockManager](commands/block-manager.md) adds definition inspection, linear graph
 use counts, direct root selection, rename and transactional definition deletion.
+[CreateUniqueBlock](commands/create-unique-block.md) duplicates embedded definitions
+and rebinds roots transactionally. [ReplaceBlock](commands/replace-block.md) changes
+definitions through typed names, target-instance picking or a searchable chooser,
+retaining root placement, metadata and history with native replacement policies.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

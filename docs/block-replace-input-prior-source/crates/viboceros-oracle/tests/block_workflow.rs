@@ -163,31 +163,6 @@ fn native_replacement_none_all_protected_states_and_metadata_match() {
 }
 
 #[test]
-fn native_replacement_instance_getter_matches_selected_and_all_scopes() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/block_replace_input.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/block_replace_input.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    let references = native["results"].as_array().unwrap();
-    assert_eq!(actual.results.len(), 3);
-    assert_eq!(references.len(), 3);
-    let mut numbers = 0;
-    let mut states = 0;
-    for result in actual.results {
-        let reference = references.iter().find(|r| r["id"] == result.id).unwrap();
-        compare(&result.value, &reference["value"], &result.id, &mut numbers);
-        states += result.value["states"].as_array().unwrap().len();
-    }
-    assert_eq!(states, 23);
-    assert!(numbers > 500);
-}
-
-#[test]
 fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/block_workflow_metadata.json"

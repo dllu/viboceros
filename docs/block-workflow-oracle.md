@@ -48,7 +48,7 @@ layers are black. Insert steps may supply their own attributes.
 | `delete_definition` | `name` | Delete a definition and all model roots; `expect_failure: true` records the manager's nested-definition restriction. |
 | `make_unique` | `objects`, `name` | Rebind selected roots of one definition to one new duplicate, retaining object handles. |
 | `duplicate_definition` | `name`, `new_name` | Create an unused definition copy without rebinding any model roots. |
-| `replace_block` | `objects`, `name` | Replace roots of one definition; `all_instances: true` includes all model peers. |
+| `replace_block` | `objects`, `name` | Replace roots of one definition; `all_instances: true` includes all model peers. Optional `replacement_instance` identifies a live target root using that named definition; Rhino receives it through its object getter. |
 | `object_state` | `objects`, `mode` | Set owned model objects to `normal`, `hidden` or `locked` for protected-state probes. |
 
 Group captures use `record_groups: true` to include ordered object/prototype/leaf

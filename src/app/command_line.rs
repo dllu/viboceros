@@ -238,6 +238,7 @@ impl VibocerosApp {
                         self.command_input = text;
                         self.command_focus_requested = true;
                     }
+                    let replacing_block = self.replacing_block();
                     let response = ui.add(
                         egui::TextEdit::singleline(&mut self.command_input)
                             .id(id)
@@ -281,6 +282,8 @@ impl VibocerosApp {
                                 "Select joined edges; Enter applies, Esc cancels"
                             } else if self.component_selection.has_choices() {
                                 "Choose a component by number, or pick again"
+                            } else if replacing_block {
+                                "Pick a replacement instance or choose a definition; Esc cancels"
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -323,6 +326,7 @@ impl VibocerosApp {
                     self.show_hole_choices(ui);
                     self.show_rebuild_choices(ui);
                     self.show_component_choices(ui);
+                    self.show_replace_block_choices(ui);
                 }
                 self.show_set_view_choices(ui);
                 let idle = self.command_line_idle();

@@ -13,12 +13,22 @@ native command. Hidden and locked states are retained for roots included through
 All. Explicit source roots must be editable. Definition tables and prototype
 geometry are not changed.
 
-Bare `ReplaceBlock` accepts preselection or a block selection prompt, then asks
-for a target definition name. Type All or None during that name prompt to set
-scope. Invalid or missing names keep the prompt active; Cancel preserves the
-model and redo branch. The current UI uses name entry; picking a replacement
-instance or opening the native definition-list chooser remains unfinished.
-Quote target names containing spaces, or quote the whole name option token.
+Bare `ReplaceBlock` accepts preselection or a block selection prompt, then lets
+you pick a visible, unlocked replacement instance. The target supplies only its
+definition; its placement, selection and group peers do not change. Empty clicks,
+ordinary geometry and selection windows keep the source set intact.
+
+Type or click All or None to set scope. `SelectFromBlockDefinitionList` opens a
+searchable chooser in natural name order, including unused definitions. Selecting
+a row prepares the choice; Replace or a double-click accepts it. Cancel, Esc or
+closing the chooser preserves the model and redo branch. Removed definitions
+are reconciled before acceptance, and source permissions are checked again.
+
+`BlockDefinitionName` switches to a name getter, where names such as All, None,
+Delete and Part=A are literal names. Quote names containing spaces. The default
+target-picking prompt also accepts the scripted syntax above. Invalid names keep
+the prompt active and retain the chosen scope. Command-line option buttons work
+in either input phase.
 
 ```text
 Point 1,0,0
@@ -43,10 +53,16 @@ The document API is `replace_block_instances`. The typed
 `object_state` and optional `record_states`. Six Rhino 8.32.26160.13001 workflows
 ran under private Xvfb and constrain single/multiple roots, None/All, hidden and
 locked peers, reflected nonuniform placements, metadata/groups and unchanged
-nested references. See [source/capture provenance](../block-replace-provenance.json).
+nested references. See [replacement provenance](../block-replace-provenance.json).
+Three further native captures select the replacement instance through Rhino's
+object getter and match all 23 states for None, All with protected peers, and
+target visibility/locking transitions back to a normal selectable object.
+Local egui pointer-event tests exercise chooser acceptance, cancellation, removed
+rows and changed source permissions. See
+[input provenance](../block-replace-input-provenance.json).
 
-Layer-level protection, native option memory, picking/history parity, linked
-definitions, replacement-list UI and performance remain unverified. Mixed
+Layer-level protection, native option memory, native chooser interaction/history
+parity, linked definitions, GPU rendering and performance remain unverified. Mixed
 definitions in one selected source set reject in this implementation.
 
 Reference: [ReplaceBlock](https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#ReplaceBlock).

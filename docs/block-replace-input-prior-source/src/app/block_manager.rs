@@ -154,7 +154,7 @@ impl BlockManager {
     }
 }
 
-pub(super) fn natural_compare(a: &str, b: &str) -> std::cmp::Ordering {
+fn natural_compare(a: &str, b: &str) -> std::cmp::Ordering {
     let a = a.to_lowercase();
     let b = b.to_lowercase();
     let (a, b) = (a.as_bytes(), b.as_bytes());

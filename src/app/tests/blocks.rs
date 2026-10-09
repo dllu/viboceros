@@ -1,5 +1,310 @@
 use super::*;
 
+fn replacement_fixture() -> (VibocerosApp, ObjectId, ObjectId, ObjectId, ObjectId) {
+    let mut app = test_app();
+    for (name, x) in [("Original", 1.), ("Target = 10", 7.)] {
+        let id = app
+            .document
+            .add_geometry(Geometry::Point(p(x, 0., 0.)))
+            .unwrap();
+        app.document
+            .create_block_from_objects(name, p(0., 0., 0.), [id])
+            .unwrap();
+    }
+    let roots = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    enter(&mut app, "Insert Original 10,0,0");
+    let peer = app.document.objects().last().unwrap().id();
+    let decoy = app
+        .document
+        .add_geometry(Geometry::Point(p(12., 0., 0.)))
+        .unwrap();
+    app.document.add_group(None, [roots[1], decoy]).unwrap();
+    app.document
+        .select_objects_direct([roots[0]], SelectionMode::Replace)
+        .unwrap();
+    (app, roots[0], peer, roots[1], decoy)
+}
+
+#[test]
+fn replacement_target_click_uses_definition_without_selecting_its_group() {
+    let (mut app, source, peer, target, decoy) = replacement_fixture();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let target_record = app.document.object(target).unwrap().clone();
+    let target_definition = match target_record.geometry() {
+        Geometry::BlockInstance(i) => i.reference().definition(),
+        _ => panic!(),
+    };
+    enter(&mut app, "ReplaceBlock");
+    assert!(app.picking_replace_block());
+    assert_eq!(
+        app.viewport_object_filter(),
+        Some(viboceros_command::ObjectSelectionFilter::Blocks)
+    );
+    for id in [None, Some(decoy)] {
+        app.apply_selection_click(SelectionClick {
+            object_id: id,
+            mode: SelectionMode::Replace,
+        });
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            vec![source]
+        );
+    }
+    app.apply_selection_window(SelectionWindow {
+        object_ids: vec![target, decoy],
+        mode: SelectionMode::Replace,
+        crossing: true,
+        inverted: false,
+    });
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![source]
+    );
+    assert!(app.handle_viewport_action(ViewportOutput {
+        selection_click: Some(SelectionClick {
+            object_id: Some(target),
+            mode: SelectionMode::Replace
+        }),
+        ..Default::default()
+    }));
+    assert!(!app.replacing_block());
+    assert_eq!(app.document.object(target).unwrap(), &target_record);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        vec![source]
+    );
+    assert!(
+        matches!(app.document.object(source).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == target_definition)
+    );
+    assert!(
+        matches!(app.document.object(peer).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() != target_definition)
+    );
+    assert_eq!(app.document.undo_label(), Some("ReplaceBlock"));
+    app.document.undo().unwrap();
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn replacement_command_first_picking_transitions_to_a_read_only_target_getter() {
+    let (mut app, source, _, target, _) = replacement_fixture();
+    app.document.clear_selection();
+    enter(&mut app, "ReplaceBlock");
+    assert!(app.object_prompt.is_some());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(source),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert!(app.object_prompt.is_none());
+    assert!(app.picking_replace_block());
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(target),
+        mode: SelectionMode::Replace,
+    });
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), Some("ReplaceBlock"));
+}
+
+#[test]
+fn replacement_name_entry_blocks_picks_and_keeps_scope_after_invalid_names() {
+    let (mut app, source, peer, target, _) = replacement_fixture();
+    enter(&mut app, "ReplaceBlock");
+    enter(&mut app, "All missing");
+    enter(&mut app, "BlockDefinitionName");
+    assert_eq!(app.viewport_object_filter(), None);
+    let before = format!("{:?}", app.document);
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(target),
+        mode: SelectionMode::Replace,
+    });
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "missing");
+    assert_eq!(format!("{:?}", app.document), before);
+    enter(&mut app, "\"Target = 10\"");
+    assert!(!app.replacing_block());
+    let definition = app
+        .document
+        .block_definition_by_name("Target = 10")
+        .unwrap()
+        .id();
+    for id in [source, peer] {
+        assert!(
+            matches!(app.document.object(id).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == definition)
+        );
+    }
+}
+
+#[test]
+fn replacement_explicit_name_getter_accepts_scope_words_command_names_and_equals() {
+    let (mut app, source, _, _, _) = replacement_fixture();
+    let original = app
+        .document
+        .block_definition_by_name("Original")
+        .unwrap()
+        .id();
+    for name in ["All", "None", "Delete", "Part=A"] {
+        let target = app
+            .document
+            .duplicate_block_definition(original, name)
+            .unwrap();
+        enter(&mut app, "ReplaceBlock");
+        enter(&mut app, "BlockDefinitionName");
+        enter(&mut app, name);
+        assert!(!app.replacing_block(), "name: {name}");
+        assert!(
+            matches!(app.document.object(source).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == target)
+        );
+        app.document.undo().unwrap();
+    }
+}
+
+fn replacement_chooser_frame(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    events: Vec<egui::Event>,
+) -> egui::FullOutput {
+    context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(
+                egui::Pos2::ZERO,
+                egui::Vec2::new(800., 600.),
+            )),
+            events,
+            ..Default::default()
+        },
+        |ui| app.show_replace_block_chooser(ui.ctx()),
+    )
+}
+
+fn replacement_chooser_click(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    output: &egui::FullOutput,
+    label: &str,
+) {
+    let pos = output
+        .shapes
+        .iter()
+        .find_map(|s| match &s.shape {
+            egui::Shape::Text(t) if t.galley.text() == label => {
+                Some(t.pos + t.galley.rect.center().to_vec2())
+            }
+            _ => None,
+        })
+        .unwrap_or_else(|| panic!("missing chooser label {label}"));
+    for pressed in [true, false] {
+        replacement_chooser_frame(
+            app,
+            context,
+            vec![
+                egui::Event::PointerMoved(pos),
+                egui::Event::PointerButton {
+                    pos,
+                    button: egui::PointerButton::Primary,
+                    pressed,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        )
+        .drop_without_applying_deltas();
+    }
+}
+
+#[test]
+fn replacement_definition_chooser_accepts_unused_definition_and_cancel_keeps_redo() {
+    let (mut app, source, _, _, _) = replacement_fixture();
+    let definition = app
+        .document
+        .block_definition_by_name("Original")
+        .unwrap()
+        .id();
+    let unused = app
+        .document
+        .duplicate_block_definition(definition, "Unused2")
+        .unwrap();
+    app.document
+        .duplicate_block_definition(definition, "Unused10")
+        .unwrap();
+    enter(&mut app, "ReplaceBlock");
+    enter(&mut app, "SelectFromBlockDefinitionList");
+    assert_eq!(app.viewport_object_filter(), None);
+    let before = format!("{:?}", app.document);
+    let context = egui::Context::default();
+    replacement_chooser_frame(&mut app, &context, vec![]).drop_without_applying_deltas();
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    let labels = output
+        .shapes
+        .iter()
+        .filter_map(|s| match &s.shape {
+            egui::Shape::Text(t) => Some(t.galley.text()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert!(
+        labels.iter().position(|s| *s == "Unused2").unwrap()
+            < labels.iter().position(|s| *s == "Unused10").unwrap()
+    );
+    replacement_chooser_click(&mut app, &context, &output, "Unused2");
+    assert_eq!(format!("{:?}", app.document), before);
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Replace");
+    assert!(!app.replacing_block());
+    assert!(
+        matches!(app.document.object(source).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == unused)
+    );
+    app.document.undo().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "ReplaceBlock");
+    enter(&mut app, "SelectFromBlockDefinitionList");
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Cancel");
+    assert!(!app.replacing_block());
+    assert_eq!(format!("{:?}", app.document), before);
+    app.document.redo().unwrap();
+    assert!(
+        matches!(app.document.object(source).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == unused)
+    );
+}
+
+#[test]
+fn replacement_chooser_reconciles_deleted_rows_and_rechecks_source_permissions() {
+    let (mut app, source, _, _, _) = replacement_fixture();
+    let original = app
+        .document
+        .block_definition_by_name("Original")
+        .unwrap()
+        .id();
+    let unused = app
+        .document
+        .duplicate_block_definition(original, "Temporary")
+        .unwrap();
+    enter(&mut app, "ReplaceBlock");
+    enter(&mut app, "SelectFromBlockDefinitionList");
+    let context = egui::Context::default();
+    replacement_chooser_frame(&mut app, &context, vec![]).drop_without_applying_deltas();
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Temporary");
+    app.document
+        .delete_block_definition_and_instances(unused)
+        .unwrap();
+    let before = format!("{:?}", app.document);
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Replace");
+    assert!(app.replacing_block());
+    assert_eq!(format!("{:?}", app.document), before);
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Target = 10");
+    app.document.set_objects_locked([source], true).unwrap();
+    let before = format!("{:?}", app.document);
+    let output = replacement_chooser_frame(&mut app, &context, vec![]);
+    replacement_chooser_click(&mut app, &context, &output, "Replace");
+    assert!(app.replacing_block());
+    assert_eq!(format!("{:?}", app.document), before);
+    app.cancel_interactive_command(false);
+    assert_eq!(format!("{:?}", app.document), before);
+}
+
 #[test]
 fn command_first_explode_block_picks_instances_and_accepts_group_output() {
     let mut app = test_app();

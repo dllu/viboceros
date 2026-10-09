@@ -8,37 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_replacement_instance_handle_must_be_live_and_use_the_expected_definition(self):
-        for replacement in (True, 0, 2, 99, 3.0):
-            f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-            f['steps'].extend([dict(action='create',name='target',base=[0,0,0],sources=[1]),
-                              dict(action='replace_block',objects=[2],name='target',replacement_instance=replacement)])
-            with self.subTest(replacement=replacement),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_replacement_instance_can_reference_a_name_unsuitable_for_a_macro_token(self):
-        f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-        f['steps'].extend([dict(action='create',name='Target = 10',base=[0,0,0],sources=[1]),
-                          dict(action='replace_block',objects=[2],name='Target = 10',replacement_instance=3)])
-        probe.validate(f)
-
-    def test_protected_replacement_sources_and_target_handles_reject_before_host(self):
-        for handle in (2,3):
-            for mode in ('hidden','locked'):
-                f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-                f['steps'].extend([dict(action='create',name='target',base=[0,0,0],sources=[1]),
-                                  dict(action='object_state',objects=[handle],mode=mode),
-                                  dict(action='replace_block',objects=[2],name='target',replacement_instance=3)])
-                with self.subTest(handle=handle,mode=mode),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_normal_state_restores_target_getter_eligibility(self):
-        f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-        f['steps'].extend([dict(action='create',name='target',base=[0,0,0],sources=[1]),
-                          dict(action='object_state',objects=[3],mode='hidden'),
-                          dict(action='object_state',objects=[3],mode='locked'),
-                          dict(action='object_state',objects=[3],mode='normal'),
-                          dict(action='replace_block',objects=[2],name='target',replacement_instance=3)])
-        probe.validate(f)
-
     def test_replace_and_state_inputs_are_validated_before_host_access(self):
         for step in(dict(action='replace_block',objects=[],name='leaf'),dict(action='replace_block',objects=[0],name='leaf'),dict(action='replace_block',objects=[1,1],name='leaf'),dict(action='replace_block',objects=[1],name='missing'),dict(action='replace_block',objects=[1],name='leaf',all_instances=1),dict(action='object_state',objects=[1],mode='secret'),dict(action='object_state',objects=[True],mode='hidden')):
             f=self.fixture();f['steps'].append(step)

@@ -75,7 +75,6 @@ def validate(operation):
     if type(operation.get('record_states',False)) is not bool:raise ValueError('invalid block state recording')
     handles = [None] * len(sources)  # None means ordinary geometry; absent means deleted.
     alive = set(range(len(sources)))
-    protected = set()
     definitions = {}
     records = 0
 
@@ -184,12 +183,10 @@ def validate(operation):
             if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
             definitions[new]=definitions[old][:];outputs=[]
         elif action=='replace_block':
-            picks=step.get('objects');target=_name(step.get('name'));replacement=step.get('replacement_instance')
-            if (set(step)-set(('action','objects','name','all_instances','replacement_instance')) or not isinstance(picks,list) or not picks
-                    or any(type(i)is not int or i not in alive or i in protected or handles[i]is None for i in picks) or len(set(picks))!=len(picks)
-                    or len(set(handles[i]for i in picks))!=1 or target not in definitions
-                    or (replacement is None and not re.match(r'^[A-Za-z0-9_-]+$',step['name']))
-                    or (replacement is not None and (type(replacement)is not int or replacement not in alive or replacement in protected or handles[replacement]!=target))
+            picks=step.get('objects');target=_name(step.get('name'))
+            if (set(step)-set(('action','objects','name','all_instances')) or not isinstance(picks,list) or not picks
+                    or any(type(i)is not int or i not in alive or handles[i]is None for i in picks) or len(set(picks))!=len(picks)
+                    or len(set(handles[i]for i in picks))!=1 or target not in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['name'])
                     or type(step.get('all_instances',False))is not bool):raise ValueError('invalid replacement block sources or name')
             original=handles[picks[0]]
             changed=[i for i in alive if handles[i]==original] if step.get('all_instances',False) else picks
@@ -198,8 +195,6 @@ def validate(operation):
         elif action=='object_state':
             picks=step.get('objects')
             if set(step)!=set(('action','objects','mode')) or not isinstance(picks,list)or not picks or any(type(i)is not int or i not in alive for i in picks)or len(set(picks))!=len(picks)or step['mode']not in ('normal','hidden','locked'):raise ValueError('invalid object state')
-            if step['mode']=='normal':protected.difference_update(picks)
-            else:protected.update(picks)
             outputs=[]
         elif action=='delete_definition':
             if set(step)-set(('action','name','expect_failure')) or 'name' not in step or type(step.get('expect_failure',False)) is not bool: raise ValueError('invalid block delete fields')
@@ -514,9 +509,7 @@ def run(operation, tolerance, host):
                 document.Objects.UnselectAll()
                 for j in picks:document.Objects.Select(handles[j])
                 choice=('_All ' if step.get('all_instances',False) else '_None ') if extra else ''
-                replacement=step.get('replacement_instance')
-                target=('_BlockDefinitionName '+prefix+step['name']) if replacement is None else '_SelID '+str(handles[replacement])
-                script='_-ReplaceBlock '+choice+target
+                script='_-ReplaceBlock '+choice+'_BlockDefinitionName '+prefix+step['name']
                 if not rs.Command(script,False):raise ValueError('native ReplaceBlock failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
             elif action=='delete_definition':
                 index=by_name[_fold(step['name'])]

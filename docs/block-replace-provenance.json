@@ -57,8 +57,6 @@
     "crates/viboceros-command/src/replace_block/tests.rs": "e3eacb754768faf37114514e28d96e6044b16e2ce59af2373a60be90181c5c41",
     "crates/viboceros-document/src/block_management.rs": "dd14bc791f4641192cf7cc23231ad3dc4dd2133d2f77096d11ae92c2c741fbc4",
     "crates/viboceros-document/src/block_management/tests.rs": "fbac97f53039a4bbb9bfc8f9aaec24c1ebb3e5fe24b9556d23a3bda0f0ff1f87",
-    "crates/viboceros-oracle/src/block_workflow.rs": "475b6f516019c568f2491c4f9dbc2143e87411c8c14edf060b16b6bbe7ef79f5",
-    "crates/viboceros-oracle/tests/block_workflow.rs": "d2f136faf53f248067275002ef56ac10a0a783ea57328f686d75565cfd24293f",
     "docs/block-replace-comparison.json": "b37b29e7a4f7741a78e6e241d326455057ac0519ca461a9d4b84bb9a89467a0c",
     "docs/block-replace-followup-comparison.json": "a0d4452131773a667bf402527d3cb3605d5735f0cf1fe33d386ac8639cc8c1cd",
     "docs/block-replace-prior-source/crates/viboceros-command/src/lib.rs": "becf97372c0d8c332fe3343ed45971afc25e4ece62ca5d26366bf5edc26daede",
@@ -71,20 +69,31 @@
     "docs/block-replace-prior-source/src/app/tests/blocks.rs": "fab372f1aaee153cd0732a80b9727caea7942affedbf6694cd553d0d28f0a1c9",
     "docs/block-replace-prior-source/tools/rhino_oracle/block_workflow_probe.py": "5bf5efe3c698946ca1f4adfd64955de45ce2589d5ddf5a829265f73cc76be824",
     "docs/block-replace-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "2a43fbc267b452a919579dfe87cd1251b8b7ee8dc31a2fe6d699cfa3b2c8a2d1",
-    "src/app.rs": "9ae5261be429ded769c379bd390134e2c7f41caaec4bc2431d39c478aeefdeae",
-    "src/app/blocks.rs": "0f5b9c3159c31ffeda8e2a8c23b25d5e8bdb95902258ae396c7518bd8ff237f7",
-    "src/app/tests/blocks.rs": "81fbb37f0e682216bea4d8ca00886558f237dccac071b0f06d899510faa99319",
-    "tools/rhino_oracle/block_workflow_probe.py": "3948ebbc07a80eaa2416f02c1f1fde85a560dec59640e05e7806860fe93d0f60",
     "tools/rhino_oracle/fixtures/block_replace.json": "97edce2afb1c1e6cc1e4ebe1cc81924432bbd99214729f9cbb09c26504c26fdf",
     "tools/rhino_oracle/fixtures/block_replace_followup.json": "5e1b9f0f30884fb5008f478b2eb100d15eddabdae05c0e673aa9eaa159d40dde",
     "tools/rhino_oracle/observations/block_replace.json": "e236543646567d1b13e2a39d5973c92cd42c4402520066d0171869328bda8697",
     "tools/rhino_oracle/observations/block_replace_followup.json": "6e3fc74028c8d6017b7b718cf43c965fb5a49e2180710ed42ce0f53dc856b2ac",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277"
+    "docs/block-replace-input-prior-source/src/app.rs": "9ae5261be429ded769c379bd390134e2c7f41caaec4bc2431d39c478aeefdeae",
+    "docs/block-replace-input-prior-source/src/app/blocks.rs": "0f5b9c3159c31ffeda8e2a8c23b25d5e8bdb95902258ae396c7518bd8ff237f7",
+    "docs/block-replace-input-prior-source/src/app/tests/blocks.rs": "81fbb37f0e682216bea4d8ca00886558f237dccac071b0f06d899510faa99319",
+    "docs/block-replace-input-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "475b6f516019c568f2491c4f9dbc2143e87411c8c14edf060b16b6bbe7ef79f5",
+    "docs/block-replace-input-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "d2f136faf53f248067275002ef56ac10a0a783ea57328f686d75565cfd24293f",
+    "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py": "3948ebbc07a80eaa2416f02c1f1fde85a560dec59640e05e7806860fe93d0f60",
+    "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277"
   },
   "remaining_scope": [
     "Replacement instance picking and definition-list chooser UI",
     "Native option memory, selection/history fidelity and layer-level protection",
     "Mixed source definitions, linked definitions and deeper block editing",
     "GPU behavior and performance"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "src/app.rs": "docs/block-replace-input-prior-source/src/app.rs",
+    "src/app/blocks.rs": "docs/block-replace-input-prior-source/src/app/blocks.rs",
+    "src/app/tests/blocks.rs": "docs/block-replace-input-prior-source/src/app/tests/blocks.rs",
+    "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-replace-input-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-replace-input-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py"
+  }
 }

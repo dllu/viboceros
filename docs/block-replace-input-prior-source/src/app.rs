@@ -170,7 +170,6 @@ mod point_input;
 mod points;
 mod preferences;
 mod radius;
-mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
 mod scale_positions;
@@ -819,7 +818,7 @@ impl InteractiveCommand {
                 "CreateUniqueBlock: enter the new definition name (Esc cancels)"
             }
             Self::ReplaceBlock => {
-                "ReplaceBlock: pick a replacement instance (SelectFromBlockDefinitionList, BlockDefinitionName, All, None; Esc cancels)"
+                "ReplaceBlock: enter the target definition name (All/None sets scope; Esc cancels)"
             }
             Self::Block { base: Some(_) } => "Block: enter the definition name (Esc cancels)",
             Self::Insert { has_name: false } => {
@@ -7821,9 +7820,6 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.pick_replace_block(click.object_id) {
-            return;
-        }
         if self.pick_tween_surface(click.object_id) {
             return;
         }
@@ -8363,8 +8359,7 @@ impl VibocerosApp {
             return;
         }
         self.selection_window_override = None;
-        if self.replacing_block()
-            || self.picking_alignment_curve()
+        if self.picking_alignment_curve()
             || self.picking_scale_by_plane_object()
             || self.picking_scale_by_plane_view()
         {
@@ -8818,14 +8813,12 @@ impl eframe::App for VibocerosApp {
         self.show_grid_settings(ui);
         self.show_layers(ui);
         self.show_block_manager(ui.ctx());
-        self.show_replace_block_chooser(ui.ctx());
         self.show_command_line(ui);
         let _ = self.show_viewport_tabs(ui);
         let model_input_active = self.set_view_prompt.is_none() && !self.remember_copy_prompt;
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
-                && !self.replacing_block()
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()
                 && !self.picking_extract_faces()

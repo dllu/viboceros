@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "0cf4b460009193dbff052d4be6a4f0e1fb8763c6",
+  "scope": "ReplaceBlock target-instance getter, searchable definition chooser, explicit literal-name getter and protected-state oracle validation",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#ReplaceBlock"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5502,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1036,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_replay": {
+      "cases": 3,
+      "states": 23,
+      "matched": 3,
+      "mismatched": 0,
+      "native_failures": 0,
+      "max_absolute_error": 0.0,
+      "exit_code": 0
+    },
+    "new_gui_tests": 6,
+    "new_replay_test": 1,
+    "new_python_tests": 4
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_replace_input.json",
+      "response": "tools/rhino_oracle/observations/block_replace_input.json",
+      "scheme": "VibocerosOracleReplaceInputStates20261009",
+      "cases": 3,
+      "states": 23
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "target_contract": "Native captures drive the replacement-instance object getter with SelID; target picking supplies the definition while retaining original root placement. Local UI routes direct target picks and definition IDs through the same transactional replacement API.",
+  "local_ui_contract": "Source selection and target groups survive target clicks. The definition chooser includes unused definitions, sorts names naturally, filters by case-insensitive substring, accepts explicitly or by double-click and cancels without model/redo changes. Removed choices and changed source permissions are checked at acceptance. The explicit name getter treats scope words, command names and equals signs literally.",
+  "state_contract": "Oracle object_state modes normal, hidden and locked are exclusive; changing to locked restores visibility, changing to hidden unlocks, and normal clears both restrictions. Explicit protected replacement sources and protected target getter handles reject before native host access; All can still include protected source peers.",
+  "comparison_limits": "Recorded metadata and sampled geometry at absolute 1e-9 plus relative 1e-12. Native captures exercise the object getter through command macros, not pixel mouse picking or the native chooser dialog. Local chooser pointer events are CPU egui tests, not GPU rendering evidence. Timings are not kernel performance measurements.",
+  "sha256": {
+    "crates/viboceros-oracle/src/block_workflow.rs": "feab7f8f774d8e877e0a90a90b7fe796f7a20d64fc6dcdee78be95a6b1303c7b",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "2a44a5acbd012b8e092ade4b6fd50f9a2fad170ad82d1402c3b7aa0583072a1d",
+    "docs/block-replace-input-comparison.json": "ec95d78a6d9ca713cdaa5ed2c499dd7b6556a144e0a839505f8a71951ddc13c3",
+    "docs/block-replace-input-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "475b6f516019c568f2491c4f9dbc2143e87411c8c14edf060b16b6bbe7ef79f5",
+    "docs/block-replace-input-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "d2f136faf53f248067275002ef56ac10a0a783ea57328f686d75565cfd24293f",
+    "docs/block-replace-input-prior-source/src/app.rs": "9ae5261be429ded769c379bd390134e2c7f41caaec4bc2431d39c478aeefdeae",
+    "docs/block-replace-input-prior-source/src/app/block_manager.rs": "188a13187bff8738d4709398d7c59dc9890d1baa869b4e23a58500e24fccf781",
+    "docs/block-replace-input-prior-source/src/app/blocks.rs": "0f5b9c3159c31ffeda8e2a8c23b25d5e8bdb95902258ae396c7518bd8ff237f7",
+    "docs/block-replace-input-prior-source/src/app/object_selection.rs": "12b8f180c61d1148c927972a53fee0515513871b834105f579d39c3ab5716282",
+    "docs/block-replace-input-prior-source/src/app/tests/blocks.rs": "81fbb37f0e682216bea4d8ca00886558f237dccac071b0f06d899510faa99319",
+    "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py": "3948ebbc07a80eaa2416f02c1f1fde85a560dec59640e05e7806860fe93d0f60",
+    "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277",
+    "src/app.rs": "5696a3d96a66c800fa49fbd3b09a8aa04e882145370f7878769fc1439c0a67ea",
+    "src/app/block_manager.rs": "9fdfd68a4754772d5c93a0b5993406380019bad5c13b7df81fba8ea1ea6e14bb",
+    "src/app/blocks.rs": "1ce5491f47bdf8bd0bccd102f911e881fbc42b53d2ee97ead84a5c5f8b8f8f86",
+    "src/app/command_line.rs": "75e839bf3169b9d43cf98fc3bc8250e005250f7e15720ea84d770e9223a156ad",
+    "src/app/object_selection.rs": "daa7c33283d429ad1fc37ec844204bd1c542835a785197a1f7db3a5b49876101",
+    "src/app/replace_block.rs": "19f424da628b631f6d6977422b8e5fb558d9d562e02d61449e808c166ab7a7ca",
+    "src/app/tests/blocks.rs": "ef5ce4b69196e1ec40c1921b806e686dcbd85e17622f8596419233196eb9770e",
+    "tools/rhino_oracle/block_workflow_probe.py": "943df00e75d08933121077a58a12e321244d0481b3b03e088f3370d01140b47b",
+    "tools/rhino_oracle/fixtures/block_replace_input.json": "de3ebd890af3eb4fb492a45ec5c69c7c46759f6bad810e1afb9787aa07d0faa5",
+    "tools/rhino_oracle/observations/block_replace_input.json": "ea0d2105049dfe1e2a3f86951922713b23bfcda96b85372b5e1479ebe027a3b6",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "774bc5dbf757375ad9fd8960ac4e5ba1ad7d0e47cdd468f37cdb6de5a060d718"
+  },
+  "remaining_scope": [
+    "Native definition-chooser interaction and pixel viewport-picking parity",
+    "Native option memory, selection/history parity and layer-level protection",
+    "Linked definitions, mixed source definitions and broader block editing",
+    "GPU rendering and performance"
+  ]
+}

@@ -92,8 +92,6 @@ pub enum BlockStep {
         name: String,
         #[serde(default)]
         all_instances: bool,
-        #[serde(default)]
-        replacement_instance: Option<usize>,
     },
     ObjectState {
         objects: Vec<usize>,
@@ -292,7 +290,6 @@ pub(super) fn run(
                 objects,
                 name,
                 all_instances,
-                replacement_instance,
             } => {
                 if objects.is_empty()
                     || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
@@ -303,14 +300,6 @@ pub(super) fn run(
                     .block_definition_by_name(name)
                     .ok_or_else(invalid)?
                     .id();
-                if let Some(handle) = replacement_instance {
-                    let id = live(&document, &handles, *handle)?;
-                    if !document.is_object_selectable(id)
-                        || !matches!(document.object(id).unwrap().geometry(), Geometry::BlockInstance(i) if i.reference().definition() == target)
-                    {
-                        return Err(invalid());
-                    }
-                }
                 let ids = objects
                     .iter()
                     .map(|i| live(&document, &handles, *i))
@@ -334,11 +323,9 @@ pub(super) fn run(
                         document.set_objects_locked(ids, false)?;
                     }
                     "hidden" => {
-                        document.set_objects_locked(ids.clone(), false)?;
                         document.set_objects_visibility(ids, false)?;
                     }
                     "locked" => {
-                        document.set_objects_visibility(ids.clone(), true)?;
                         document.set_objects_locked(ids, true)?;
                     }
                     _ => return Err(invalid()),
