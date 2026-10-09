@@ -28,13 +28,13 @@
     "crates/viboceros-command/src/explode/summary.rs": "c0a25992f9b5080f6a7f5c78e0246af5e3799bd708eb35f3591676e6a5c2e64c",
     "crates/viboceros-command/src/explode_block.rs": "a9b124fc581906c6464ef23025317b77d069e8b1282646b5db32060ebcacdf34",
     "crates/viboceros-command/src/object_selection.rs": "b7201beee5ff8aec93e22bb1e037545ebad718b1f803a8f076f5bcc3af3d53b1",
-    "crates/viboceros-command/src/lib.rs": "5dfb84c836a7307a0d398c86e7200b929c764402cf069bb4b1d8e4e3adba79dd",
     "src/app/object_selection.rs": "12b8f180c61d1148c927972a53fee0515513871b834105f579d39c3ab5716282",
-    "src/app/tests/blocks.rs": "50ae3cf034576c9988194b5dc6506f3e554ee3f15017e79e3d05b12dc3d7abf6",
     "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "c0781d3437f49c0b9406a84ac7c544f507cc60427a1649ddbf731b903809523e",
     "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs": "b46b052fb0c25afcd75a464b76f1104a098fb8bc22d3ace947b2a88e009044d0",
     "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs": "170c40630428970f930f855b80b939ce0623588a306b561e67612a6ac72730ba",
-    "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f"
+    "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f",
+    "docs/block-unique-prior-source/crates/viboceros-command/src/lib.rs": "5dfb84c836a7307a0d398c86e7200b929c764402cf069bb4b1d8e4e3adba79dd",
+    "docs/block-unique-prior-source/src/app/tests/blocks.rs": "50ae3cf034576c9988194b5dc6506f3e554ee3f15017e79e3d05b12dc3d7abf6"
   },
   "remaining_scope": [
     "Fresh native selection, option memory, protected-root and multi-root grouping parity",
@@ -44,6 +44,8 @@
     "crates/viboceros-document/src/block_explosion/tests.rs": "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs",
     "crates/viboceros-document/src/block_explosion.rs": "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs",
     "crates/viboceros-command/src/explode_block/tests.rs": "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs",
-    "crates/viboceros-document/src/lib.rs": "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs"
+    "crates/viboceros-document/src/lib.rs": "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-unique-prior-source/crates/viboceros-command/src/lib.rs",
+    "src/app/tests/blocks.rs": "docs/block-unique-prior-source/src/app/tests/blocks.rs"
   }
 }

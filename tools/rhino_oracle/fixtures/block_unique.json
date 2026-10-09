@@ -1,0 +1,366 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "one-root-keeps-placement",
+      "record_management": true,
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "make_unique",
+          "objects": [
+            2
+          ],
+          "name": "Unique"
+        },
+        {
+          "action": "insert",
+          "name": "Unique",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "two-roots-one-definition",
+      "record_management": true,
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "make_unique",
+          "objects": [
+            2,
+            1
+          ],
+          "name": "Unique"
+        },
+        {
+          "action": "insert",
+          "name": "Unique",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              30
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nested-child-remains-shared",
+      "record_management": true,
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "parent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              100
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "make_unique",
+          "objects": [
+            5
+          ],
+          "name": "Unique"
+        },
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 5,
+          "recursive": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "dd130d9edb9b57aa097038a0c396a24ae1b2895b",
+  "scope": "CreateUniqueBlock and unused embedded definition duplication with immutable geometry and transactional rebinding",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#CreateUniqueBlock"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5489,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1030,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_replay": {
+      "cases": 5,
+      "states": 30,
+      "matched": 5,
+      "mismatched": 0,
+      "native_failures": 0,
+      "exit_code": 0
+    },
+    "new_document_tests": 3,
+    "new_command_tests": 2,
+    "new_gui_tests": 2,
+    "new_replay_test": 1,
+    "new_python_tests": 2
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_unique.json",
+      "response": "tools/rhino_oracle/observations/block_unique.json",
+      "scheme": "VibocerosOracleUnique20261008",
+      "cases": 3
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_unique_followup.json",
+      "response": "tools/rhino_oracle/observations/block_unique_followup.json",
+      "scheme": "VibocerosOracleUniqueGroups20261008",
+      "cases": 2
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "native_helper_note": "Base capture predates the duplicate_definition reference branch; existing make_unique behavior is unchanged. The follow-up uses the helper with that branch.",
+  "duplicate_reference_contract": "Unused duplication is measured by native CreateUniqueBlock on a temporary insert followed by deletion of that insert; it is not a panel Duplicate button capture.",
+  "sha256": {
+    "crates/viboceros-document/src/block_management.rs": "143ca1b2924702b7ba7d39b1e03246a5d4183c6a95dcd983ea914259fd7e1cfa",
+    "crates/viboceros-document/src/block_management/tests.rs": "1eb09a6afa6774062fc17df288cd0caf81c9f50140079e50c8154f7907087519",
+    "crates/viboceros-command/src/create_unique_block.rs": "76a888ed4b8bad03f2680e44c6f5c39253ed137ab863c68fa0e35c7d208b6f72",
+    "crates/viboceros-command/src/create_unique_block/tests.rs": "b6567900a627470b66106a3f0287b52c12826ea25f82813e9987920ec55bc60b",
+    "crates/viboceros-command/src/lib.rs": "becf97372c0d8c332fe3343ed45971afc25e4ece62ca5d26366bf5edc26daede",
+    "crates/viboceros-oracle/src/block_workflow.rs": "18d84f822bdb51a60673972fa1d2f230e5763e8988074413ad4d8cc98a1d6f96",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "4891a290467d8e9d91cb1b44789d672baaa60ae69625bee59bb01ab37a229628",
+    "src/app.rs": "baea1d36b56f2f3acc105b9f7a9331394e7f79067417b4c69908abcdd89f5377",
+    "src/app/blocks.rs": "2a5b1fa647211e996acf689c52d67ab8005c0c70fb9f245133513035e2d798bb",
+    "src/app/block_manager.rs": "188a13187bff8738d4709398d7c59dc9890d1baa869b4e23a58500e24fccf781",
+    "src/app/tests/blocks.rs": "fab372f1aaee153cd0732a80b9727caea7942affedbf6694cd553d0d28f0a1c9",
+    "src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d",
+    "tools/rhino_oracle/block_workflow_probe.py": "5bf5efe3c698946ca1f4adfd64955de45ce2589d5ddf5a829265f73cc76be824",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "2a43fbc267b452a919579dfe87cd1251b8b7ee8dc31a2fe6d699cfa3b2c8a2d1",
+    "tools/rhino_oracle/fixtures/block_unique.json": "217b1818ba058cc4e9d7c333960d7a5f5a63a36a193d7c31182d709a3e97a6ea",
+    "tools/rhino_oracle/fixtures/block_unique_followup.json": "e8446ef573a55b740f875875cb66614a43121fcacc9adcc321cdb385d08a7073",
+    "tools/rhino_oracle/observations/block_unique.json": "5067af2db5e8b42d3cae48e895ffdb93db6bc70172ff17664d6e677ce91d68c0",
+    "tools/rhino_oracle/observations/block_unique_followup.json": "f6e268b5f4843815315fca4283399964453ba14497c96e9e6903dabacb4b914a",
+    "docs/block-unique-comparison.json": "b88fd136aa37042a8267da1ed683fea3361caefe52a2a602a4617f32dcd0240b",
+    "docs/block-unique-followup-comparison.json": "73fa1959a52d336962427a0042dca37a583ac41ba8d40bb59ce76ed83b7dd6e8",
+    "docs/block-unique-prior-source/src/app.rs": "dbeeefe12a0016678ec24a5e1884ee71aae13de08933ca94219f44ad09472349",
+    "docs/block-unique-prior-source/src/app/block_manager.rs": "601db62395112572d2a09235164e8a0a5d724424d30b27aa96c07be4c3d3efe9",
+    "docs/block-unique-prior-source/src/app/tests/block_manager.rs": "b5f4dc136406b145807e884cde3d69eae785d89d8b100c8a791bc1b49df662bd",
+    "docs/block-unique-prior-source/src/app/tests/blocks.rs": "50ae3cf034576c9988194b5dc6506f3e554ee3f15017e79e3d05b12dc3d7abf6",
+    "docs/block-unique-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "4e15d6249286b29e4f0bdd56f4e48eba369a49d828cd4c0e797bc6e2c56c5390",
+    "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py": "8bcc17454abfee3b2e07ec7914a1f2abcad9c94317579860f8ca6f6658eedc52",
+    "docs/block-unique-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "73193fe77d505344b6e1a52cc668904c3ad8ec5bf14ace827a485b92047d4fa2",
+    "docs/block-unique-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "63e7025c588d6c61fbe42ed74971dc0b1af9a97374239aa06ba10c4ef1854e63",
+    "docs/block-unique-prior-source/crates/viboceros-command/src/lib.rs": "5dfb84c836a7307a0d398c86e7200b929c764402cf069bb4b1d8e4e3adba79dd",
+    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs": "dcb5f93dd600a6536b3b21faccd8573711c64db2741ef90bd35e9b580603b686",
+    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management/tests.rs": "cd8553f5f2ab586c75a5eff82d48b7ee7e3ccc495cfb63a853f3de5c5cb2ae33"
+  },
+  "remaining_scope": [
+    "Native naming defaults and protected/group selection fidelity",
+    "Linked definitions and deeper block editing",
+    "Panel duplicate interaction parity, GPU behavior and performance"
+  ]
+}

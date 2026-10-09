@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 8, 2026 audit tested unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`a4add84b` (earlier milestones used `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`dd130d9e` (earlier milestones used `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[unique-definition provenance](block-unique-provenance.json),
 [management provenance](block-manager-provenance.json),
 [group provenance](block-group-provenance.json),
 [workflow provenance](block-workflow-provenance.json),
@@ -38,25 +39,34 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,481 Rust tests:
+5,489 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,061 | 17 |
-| Command | 1,222 | 2 |
-| Document | 226 | 5 |
+| App | 1,063 | 17 |
+| Command | 1,224 | 2 |
+| Document | 229 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,099 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 497 | 0 |
+| Oracle (unit and integration) | 498 | 0 |
 
-The Python suite passed 1,028 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,030 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [BlockManager](commands/block-manager.md) adds three document tests,
+The newest [unique-definition workflow](commands/create-unique-block.md) adds
+three document tests, two command tests, two GUI tests, one replay test and two
+Python validation tests. Five private-Xvfb native workflows match all 30 states
+for placement, root identity/metadata/groups, shared child definitions, subsequent
+child redefinition and unused duplication. Copied prototype groups are cleared.
+Immutable member geometry stays shared until later edits; rebinding and catalog
+creation form one Undo step. Native name defaults, protected/group selection,
+linked definitions, panel duplication interaction and performance remain open.
+
+The preceding [BlockManager](commands/block-manager.md) adds three document tests,
 three GUI/action/rendering tests, one interface parser test, one replay test and
 two Python validation tests. Four private-Xvfb Rhino workflows match all 33
 states for nested use counts, rename, allowed deletion and the declared manager
@@ -1251,7 +1261,8 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest management capture covers four workflows and 33 states. The preceding
+The newest unique-definition capture covers five workflows and 30 states. The
+preceding management capture covers four workflows and 33 states. The preceding
 group capture covers 30 workflows, including 16 matching command
 cases and 14 SDK-construction cases with eleven diagnostics. The preceding block
 capture covers 44 API/command workflows, including 22 matching

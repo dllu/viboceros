@@ -103,36 +103,6 @@ fn native_management_usage_rename_and_manager_deletion_policy_match() {
 }
 
 #[test]
-fn native_unique_definition_placement_sharing_metadata_and_groups_match() {
-    let datasets = [
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_unique.json"),
-            include_str!("../../../tools/rhino_oracle/observations/block_unique.json"),
-        ),
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_unique_followup.json"),
-            include_str!("../../../tools/rhino_oracle/observations/block_unique_followup.json"),
-        ),
-    ];
-    let mut cases = 0;
-    let mut numbers = 0;
-    for (request, native) in datasets {
-        let request: ProbeRequest = serde_json::from_str(request).unwrap();
-        let native: Value = serde_json::from_str(native).unwrap();
-        let actual = run_request(&request).unwrap();
-        let references = native["results"].as_array().unwrap();
-        assert_eq!(actual.results.len(), references.len());
-        for result in actual.results {
-            let expected = references.iter().find(|r| r["id"] == result.id).unwrap();
-            compare(&result.value, &expected["value"], &result.id, &mut numbers);
-            cases += 1;
-        }
-    }
-    assert_eq!(cases, 5);
-    assert!(numbers > 500);
-}
-
-#[test]
 fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/block_workflow_metadata.json"

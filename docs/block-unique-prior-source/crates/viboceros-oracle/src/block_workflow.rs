@@ -77,14 +77,6 @@ pub enum BlockStep {
         name: String,
         new_name: String,
     },
-    MakeUnique {
-        objects: Vec<usize>,
-        name: String,
-    },
-    DuplicateDefinition {
-        name: String,
-        new_name: String,
-    },
     DeleteDefinition {
         name: String,
         #[serde(default)]
@@ -248,29 +240,6 @@ pub(super) fn run(
                     .ok_or_else(invalid)?
                     .id();
                 document.rename_block_definition(id, new_name)?;
-                Vec::new()
-            }
-            BlockStep::MakeUnique { objects, name } => {
-                valid_name(name)?;
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let ids = objects
-                    .iter()
-                    .map(|index| live(&document, &handles, *index))
-                    .collect::<Result<Vec<_>, _>>()?;
-                document.make_block_instances_unique(name, ids)?;
-                Vec::new()
-            }
-            BlockStep::DuplicateDefinition { name, new_name } => {
-                valid_name(new_name)?;
-                let id = document
-                    .block_definition_by_name(name)
-                    .ok_or_else(invalid)?
-                    .id();
-                document.duplicate_block_definition(id, new_name)?;
                 Vec::new()
             }
             BlockStep::DeleteDefinition {

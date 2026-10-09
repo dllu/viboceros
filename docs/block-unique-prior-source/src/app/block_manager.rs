@@ -10,13 +10,11 @@ pub(super) struct BlockManager {
     original_name: String,
     conflicted: bool,
     filter: String,
-    duplicate_name: String,
 }
 
 pub(super) enum Action {
     Select(BlockDefinitionId),
     Rename(BlockDefinitionId, String),
-    Duplicate(BlockDefinitionId, String),
     Delete(BlockDefinitionId),
 }
 
@@ -91,7 +89,6 @@ impl BlockManager {
                                     {
                                         self.selected = Some(row.id);
                                         self.name = row.name.clone();
-                                        self.duplicate_name=format!("{} Copy",row.name);
                             self.original_name=row.name.clone();self.conflicted=false;
                                     }
                                     ui.label(row.object_count.to_string());
@@ -121,10 +118,6 @@ impl BlockManager {
                         }
                     });
                 if self.conflicted {ui.label("The definition was renamed elsewhere. Select it again to refresh the name.");}
-                    ui.horizontal(|ui|{
-                        ui.label("Duplicate as");ui.text_edit_singleline(&mut self.duplicate_name);
-                        if ui.add_enabled(!self.duplicate_name.trim().is_empty(),egui::Button::new("Duplicate definition")).clicked(){actions.push(Action::Duplicate(row.id,self.duplicate_name.trim().into()));}
-                    });
                     ui.horizontal(|ui| {
                         if ui
                             .add_enabled(
@@ -214,23 +207,6 @@ impl VibocerosApp {
                     |d| d.rename_block_definition(id, &name),
                 ) {
                     Ok(_) => self.push_log(format!("Renamed block to '{name}'")),
-                    Err(error) => self.push_log(format!("Error: {error}")),
-                }
-            }
-            Action::Duplicate(id, name) => {
-                match edit_document_transaction(
-                    &mut self.document,
-                    "Duplicate block definition",
-                    |d| d.duplicate_block_definition(id, &name),
-                ) {
-                    Ok(copy) => {
-                        self.block_manager.selected = Some(copy);
-                        self.block_manager.name = name.clone();
-                        self.block_manager.original_name = name.clone();
-                        self.block_manager.conflicted = false;
-                        self.block_manager.duplicate_name = format!("{name} Copy");
-                        self.push_log(format!("Duplicated definition as '{name}'"));
-                    }
                     Err(error) => self.push_log(format!("Error: {error}")),
                 }
             }

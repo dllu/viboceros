@@ -167,20 +167,6 @@ def validate(operation):
             members=definitions.pop(old);definitions[new]=members
             for key in definitions: definitions[key]=[new if v==old else v for v in definitions[key]]
             handles=[new if v==old else v for v in handles];outputs=[]
-        elif action=='make_unique':
-            picks=step.get('objects');new=_name(step.get('name'))
-            if (set(step)!=set(('action','objects','name')) or not isinstance(picks,list) or not picks or
-                    any(type(i) is not int or i not in alive or handles[i] is None for i in picks) or len(set(picks))!=len(picks)
-                    or len(set(handles[i] for i in picks))!=1 or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['name'])):
-                raise ValueError('invalid unique block sources or name')
-            definitions[new]=definitions[handles[picks[0]]][:]
-            for i in picks:handles[i]=new
-            outputs=[]
-        elif action=='duplicate_definition':
-            if set(step)!=set(('action','name','new_name')):raise ValueError('invalid duplicate block fields')
-            old,new=_name(step['name']),_name(step['new_name'])
-            if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
-            definitions[new]=definitions[old][:];outputs=[]
         elif action=='delete_definition':
             if set(step)-set(('action','name','expect_failure')) or 'name' not in step or type(step.get('expect_failure',False)) is not bool: raise ValueError('invalid block delete fields')
             name=_name(step['name'])
@@ -460,27 +446,6 @@ def run(operation, tolerance, host):
                 index=by_name[_fold(step['name'])];definition=document.InstanceDefinitions[index]
                 if not document.InstanceDefinitions.Modify(index,prefix+step['new_name'],'',True): raise ValueError('native block rename failed')
                 del by_name[_fold(step['name'])];by_name[_fold(step['new_name'])]=index;definition_names[definition.Id]=step['new_name']
-            elif action=='make_unique':
-                document.Objects.UnselectAll()
-                for j in sorted(step['objects']):document.Objects.Select(handles[j])
-                before=set(definition_names)
-                if not rs.Command('_-CreateUniqueBlock '+prefix+step['name'],False):
-                    raise ValueError('native unique block failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1000:])
-                additions=[d for d in document.InstanceDefinitions if not d.IsDeleted and d.Id not in before and d.Name.startswith(prefix)]
-                if len(additions)!=1:raise ValueError('native unique block did not create exactly one definition')
-                definition=additions[0];definitions.append(definition.Index);by_name[_fold(step['name'])]=definition.Index;definition_names[definition.Id]=step['name']
-            elif action=='duplicate_definition':
-                # Exercise the same native duplication command on a temporary
-                # insert, then retain just its unused definition.
-                temp=document.Objects.AddInstanceObject(by_name[_fold(step['name'])],Rhino.Geometry.Transform.Identity)
-                if temp==System.Guid.Empty:raise ValueError('native duplicate temporary insert failed')
-                try:
-                    document.Objects.UnselectAll();document.Objects.Select(temp);before=set(definition_names)
-                    if not rs.Command('_-CreateUniqueBlock '+prefix+step['new_name'],False):raise ValueError('native definition duplication failed')
-                    additions=[d for d in document.InstanceDefinitions if not d.IsDeleted and d.Id not in before and d.Name.startswith(prefix)]
-                    if len(additions)!=1:raise ValueError('native duplicate catalog mismatch')
-                    definition=additions[0];definitions.append(definition.Index);by_name[_fold(step['new_name'])]=definition.Index;definition_names[definition.Id]=step['new_name']
-                finally:document.Objects.Delete(temp,True)
             elif action=='delete_definition':
                 index=by_name[_fold(step['name'])]
                 # BlockManager prohibits deleting a definition nested in any

@@ -1,0 +1,168 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "grouped-prototypes-and-roots",
+      "record_management": true,
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "make_unique",
+          "objects": [
+            3
+          ],
+          "name": "Unique"
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "unused-duplicate-definition",
+      "record_management": true,
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ],
+          "api": "command"
+        },
+        {
+          "action": "duplicate_definition",
+          "name": "part",
+          "new_name": "Copy"
+        },
+        {
+          "action": "insert",
+          "name": "Copy",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

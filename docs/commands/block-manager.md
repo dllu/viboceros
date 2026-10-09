@@ -11,7 +11,7 @@ produce four nested leaves. An unused parent still references its child in the
 catalog, even when both model-use counts are zero.
 
 Select a definition row to rename it, select its selectable top-level instances,
-or delete the definition and its model instances. Selection targets those roots
+duplicate the definition under a new name, or delete the definition and its model instances. Selection targets those roots
 directly, without selecting ordinary group peers. Rename keeps the definition
 ID and existing geometry storage. Delete removes all model roots, including
 hidden/locked ones, in one Undo step. A definition referenced inside another
@@ -43,7 +43,7 @@ references. SDK GetReferences(2) can also retain objects from deleted parents;
 active catalog references are counted separately from model occurrences.
 See [provenance](../block-manager-provenance.json).
 
-This initial pane manages embedded definitions. Linked-file updates, duplication,
+This initial pane manages embedded definitions. Linked-file updates,
 export, hierarchical expansion, subobject editing, wildcard search, persistent
 window layout and general native panel interaction parity remain unfinished.
 The UI tests exercise actions and egui table rendering; they are not GPU captures.

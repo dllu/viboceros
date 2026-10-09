@@ -5,6 +5,7 @@ commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
 - [Block definition management](block-manager.md)
+- [CreateUniqueBlock and definition duplication](create-unique-block.md)
 
 - [Curve creation and editing](curves.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)

@@ -298,7 +298,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    CreateUniqueBlock,
     Block {
         base: Option<Point3>,
     },
@@ -700,7 +699,6 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::CreateUniqueBlock => "CreateUniqueBlock",
             Self::Block { .. } => "Block",
             Self::Insert { .. } => "Insert",
             Self::Angle { .. } => "Angle",
@@ -812,9 +810,6 @@ impl InteractiveCommand {
     const fn prompt(self) -> &'static str {
         match self {
             Self::Block { base: None } => "Block: pick a base point (Esc cancels)",
-            Self::CreateUniqueBlock => {
-                "CreateUniqueBlock: enter the new definition name (Esc cancels)"
-            }
             Self::Block { base: Some(_) } => "Block: enter the definition name (Esc cancels)",
             Self::Insert { has_name: false } => {
                 "Insert: enter a block definition name (Esc cancels)"
@@ -1570,7 +1565,6 @@ impl InteractiveCommand {
                 [point, _, _] => point,
             },
             Self::Point
-            | Self::CreateUniqueBlock
             | Self::Block { .. }
             | Self::Insert { .. }
             | Self::EvaluatePoint
@@ -5209,9 +5203,7 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
-            InteractiveCommand::Block { .. }
-            | InteractiveCommand::Insert { .. }
-            | InteractiveCommand::CreateUniqueBlock => return false,
+            InteractiveCommand::Block { .. } | InteractiveCommand::Insert { .. } => return false,
             InteractiveCommand::ScaleByPlane(prompt) => {
                 return self.accept_scale_by_plane_point(prompt, point);
             }

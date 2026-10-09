@@ -46,6 +46,8 @@ layers are black. Insert steps may supply their own attributes.
 | `explode_batch` | `objects` | Explode multiple roots recursively in one command; optional `group_output: true` creates one output group per root. |
 | `rename_definition` | `name`, `new_name` | Rename a definition without replacing its ID or instances. |
 | `delete_definition` | `name` | Delete a definition and all model roots; `expect_failure: true` records the manager's nested-definition restriction. |
+| `make_unique` | `objects`, `name` | Rebind selected roots of one definition to one new duplicate, retaining object handles. |
+| `duplicate_definition` | `name`, `new_name` | Create an unused definition copy without rebinding any model roots. |
 
 Group captures use `record_groups: true` to include ordered object/prototype/leaf
 memberships and the group table's model-handle membership. Create steps may choose

@@ -8,16 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_unique_selection_and_duplicate_names_are_validated_before_host(self):
-        for step in (dict(action='make_unique',objects=[],name='New'),dict(action='make_unique',objects=[0],name='New'),
-                     dict(action='make_unique',objects=[1,1],name='New'),dict(action='make_unique',objects=[1],name='bad name'),
-                     dict(action='make_unique',objects=[1],name='leaf'),dict(action='duplicate_definition',name='leaf',new_name='leaf'),
-                     dict(action='duplicate_definition',name='missing',new_name='Copy')):
-            f=self.fixture();f['steps'].append(step)
-            with self.subTest(step=step),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_unique_definition_does_not_allocate_new_logical_object_handles(self):
-        f=self.fixture();f['steps'].extend([dict(action='make_unique',objects=[1],name='Unique'),dict(action='group',objects=[1]),dict(action='delete_definition',name='leaf')]);probe.validate(f)
     def test_management_names_and_deletion_expectations_precede_host_access(self):
         for step in (dict(action='rename_definition',name='missing',new_name='new'),
                      dict(action='rename_definition',name='leaf',new_name=''),

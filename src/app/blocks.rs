@@ -4,6 +4,9 @@ use viboceros_command::blocks::{InsertOptions, base_point, tokenize};
 
 #[derive(Clone, Debug)]
 pub(super) enum PendingBlock {
+    Unique {
+        sources: Vec<ObjectId>,
+    },
     Create {
         sources: Vec<ObjectId>,
     },
@@ -21,6 +24,27 @@ impl VibocerosApp {
     ) -> bool {
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let name = input[..end].trim_start_matches(['_', '-']);
+        if name.eq_ignore_ascii_case("CreateUniqueBlock") {
+            if !input[end..].trim().is_empty() {
+                return false;
+            }
+            let sources = picked.map(<[ObjectId]>::to_vec).unwrap_or_else(|| {
+                self.document
+                    .selected_objects()
+                    .filter(|o| matches!(o.geometry(), Geometry::BlockInstance(_)))
+                    .map(|o| o.id())
+                    .collect()
+            });
+            if sources.is_empty() {
+                return false;
+            }
+            self.cancel_interactive_command(false);
+            self.block_session = Some(PendingBlock::Unique { sources });
+            self.active_command = Some(InteractiveCommand::CreateUniqueBlock);
+            self.command_input.clear();
+            self.push_log(self.active_command.unwrap().prompt().into());
+            return true;
+        }
         if !name.eq_ignore_ascii_case("Block") && !name.eq_ignore_ascii_case("Insert") {
             return false;
         }
@@ -118,6 +142,30 @@ impl VibocerosApp {
             return false;
         }
         match (session, self.active_command) {
+            (PendingBlock::Unique { sources }, Some(InteractiveCommand::CreateUniqueBlock)) => {
+                let words = match tokenize(input) {
+                    Ok(w) if w.len() == 1 => w,
+                    _ => {
+                        self.push_log(
+                            "Enter one new block name; quote names containing spaces".into(),
+                        );
+                        self.command_input.clear();
+                        return true;
+                    }
+                };
+                match self.document.make_block_instances_unique(words[0], sources) {
+                    Ok(id) => {
+                        self.push_log(format!(
+                            "Created unique definition '{}'",
+                            self.document.block_definition(id).unwrap().name()
+                        ));
+                        self.cancel_interactive_command(false);
+                    }
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+                self.command_input.clear();
+                true
+            }
             (
                 PendingBlock::Create { sources },
                 Some(InteractiveCommand::Block { base: Some(base) }),
@@ -243,9 +291,14 @@ impl VibocerosApp {
                 }
                 Some(accepted)
             }
-            (Some(InteractiveCommand::Block { .. } | InteractiveCommand::Insert { .. }), _) => {
-                Some(false)
-            }
+            (
+                Some(
+                    InteractiveCommand::Block { .. }
+                    | InteractiveCommand::Insert { .. }
+                    | InteractiveCommand::CreateUniqueBlock,
+                ),
+                _,
+            ) => Some(false),
             _ => None,
         }
     }

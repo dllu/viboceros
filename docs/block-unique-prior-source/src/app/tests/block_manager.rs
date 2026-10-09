@@ -28,29 +28,6 @@ fn opening_block_manager_preserves_the_pending_points_transaction() {
 }
 
 #[test]
-fn duplication_creates_an_unused_definition_without_rebinding_model_roots() {
-    let mut app = test_app();
-    let id = part(&mut app, "part", 1.);
-    let before = app.document.objects().cloned().collect::<Vec<_>>();
-    app.apply_block_manager_action(Action::Duplicate(id, "Part copy".into()));
-    let copy = app
-        .document
-        .block_definition_by_name("Part copy")
-        .unwrap()
-        .id();
-    assert_ne!(copy, id);
-    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-    assert_eq!(
-        app.document.undo_label(),
-        Some("Duplicate block definition")
-    );
-    app.document.undo().unwrap();
-    assert!(app.document.block_definition(copy).is_none());
-    app.document.redo().unwrap();
-    assert!(app.document.block_definition(copy).is_some());
-}
-
-#[test]
 fn manager_selection_is_direct_and_rename_delete_replay_through_model_history() {
     let mut app = test_app();
     let id = part(&mut app, "part", 1.);

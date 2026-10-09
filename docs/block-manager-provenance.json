@@ -44,19 +44,10 @@
   "native_diagnostics": "SDK Delete(True) can remove nested references, and GetReferences(2) can include references from deleted parent definitions. Raw SDK index counts are not substituted for active catalog references.",
   "graphics_contract": "GUI tests exercise direct actions and egui text/shape output; no production GPU capture or native panel interaction replay.",
   "sha256": {
-    "crates/viboceros-document/src/block_management.rs": "dcb5f93dd600a6536b3b21faccd8573711c64db2741ef90bd35e9b580603b686",
-    "crates/viboceros-document/src/block_management/tests.rs": "cd8553f5f2ab586c75a5eff82d48b7ee7e3ccc495cfb63a853f3de5c5cb2ae33",
     "crates/viboceros-document/src/lib.rs": "a8183d55f670580b61e479d499054eb6e3f451365467701bfddf4aeb02695c4f",
     "crates/viboceros-command/src/interface.rs": "6b9cfd8699f350e03869cbd3cab34f855e5f984b3a5a5169577cf32f32684e51",
     "crates/viboceros-command/src/interface/tests.rs": "4ce743827f3a96fb497aba59f20a44ad0564896d8c11d5f22f17ede743156c30",
-    "crates/viboceros-oracle/src/block_workflow.rs": "63e7025c588d6c61fbe42ed74971dc0b1af9a97374239aa06ba10c4ef1854e63",
-    "crates/viboceros-oracle/tests/block_workflow.rs": "73193fe77d505344b6e1a52cc668904c3ad8ec5bf14ace827a485b92047d4fa2",
-    "src/app.rs": "dbeeefe12a0016678ec24a5e1884ee71aae13de08933ca94219f44ad09472349",
     "src/app/interface.rs": "aec70e0ed056a6c62a6ca9e5579f52bdb16653b06caee30c70fb836a50d1ecf9",
-    "src/app/block_manager.rs": "601db62395112572d2a09235164e8a0a5d724424d30b27aa96c07be4c3d3efe9",
-    "src/app/tests/block_manager.rs": "b5f4dc136406b145807e884cde3d69eae785d89d8b100c8a791bc1b49df662bd",
-    "tools/rhino_oracle/block_workflow_probe.py": "8bcc17454abfee3b2e07ec7914a1f2abcad9c94317579860f8ca6f6658eedc52",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "4e15d6249286b29e4f0bdd56f4e48eba369a49d828cd4c0e797bc6e2c56c5390",
     "tools/rhino_oracle/fixtures/block_management.json": "beb59783f1e8fbcdd1b9eacdbd89932927ec96a0b376747bd46f512b3c81993e",
     "tools/rhino_oracle/observations/block_management.json": "30f0fff2be4d82d60c8dde6c908940f2281217708ac0ebdc1a7e9088cd710e85",
     "docs/block-manager-comparison.json": "30b98c3f454f217b557108eefa4363e4f35b562da3089ff5f665bd746b33572c",
@@ -65,12 +56,32 @@
     "docs/block-manager-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "d3e1d5b31ccbec68099bef1e7c6c862dd30548b54d1c701ad78a65160cd8ed61",
     "docs/block-manager-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "6b22c6fa8b4709162ae4621bdd4109810a77976a0b50b70204902b2024070513",
     "docs/block-manager-prior-source/crates/viboceros-oracle/src/block_workflow/tests.rs": "e442485c97502cda85c4071d9aedf64185e444ddb9ca22ba71eb23f4ff4f8c2d",
-    "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f"
+    "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f",
+    "docs/block-unique-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "73193fe77d505344b6e1a52cc668904c3ad8ec5bf14ace827a485b92047d4fa2",
+    "docs/block-unique-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "63e7025c588d6c61fbe42ed74971dc0b1af9a97374239aa06ba10c4ef1854e63",
+    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management/tests.rs": "cd8553f5f2ab586c75a5eff82d48b7ee7e3ccc495cfb63a853f3de5c5cb2ae33",
+    "docs/block-unique-prior-source/src/app.rs": "dbeeefe12a0016678ec24a5e1884ee71aae13de08933ca94219f44ad09472349",
+    "docs/block-unique-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "4e15d6249286b29e4f0bdd56f4e48eba369a49d828cd4c0e797bc6e2c56c5390",
+    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs": "dcb5f93dd600a6536b3b21faccd8573711c64db2741ef90bd35e9b580603b686",
+    "docs/block-unique-prior-source/src/app/tests/block_manager.rs": "b5f4dc136406b145807e884cde3d69eae785d89d8b100c8a791bc1b49df662bd",
+    "docs/block-unique-prior-source/src/app/block_manager.rs": "601db62395112572d2a09235164e8a0a5d724424d30b27aa96c07be4c3d3efe9",
+    "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py": "8bcc17454abfee3b2e07ec7914a1f2abcad9c94317579860f8ca6f6658eedc52"
   },
   "remaining_scope": [
     "Native panel interaction/selection/history and protected-root deletion parity",
     "Linked definitions, duplication, export, hierarchical expansion and wildcard search",
     "Persistent panel layout and block/subobject editing",
     "GPU behavior and performance comparisons"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-unique-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
+    "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-unique-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
+    "crates/viboceros-document/src/block_management/tests.rs": "docs/block-unique-prior-source/crates/viboceros-document/src/block_management/tests.rs",
+    "src/app.rs": "docs/block-unique-prior-source/src/app.rs",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-unique-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
+    "crates/viboceros-document/src/block_management.rs": "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs",
+    "src/app/tests/block_manager.rs": "docs/block-unique-prior-source/src/app/tests/block_manager.rs",
+    "src/app/block_manager.rs": "docs/block-unique-prior-source/src/app/block_manager.rs",
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py"
+  }
 }

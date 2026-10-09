@@ -79,38 +79,6 @@ fn source(app: &mut VibocerosApp) -> ObjectId {
 }
 
 #[test]
-fn unique_block_name_prompt_and_cancel_preserve_model_until_acceptance() {
-    let mut app = test_app();
-    let root = source(&mut app);
-    app.document
-        .select_objects_direct([root], SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "Block 0,0,0 part");
-    let root = app.document.objects().next().unwrap().id();
-    app.document
-        .select_objects_direct([root], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "CreateUniqueBlock");
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::CreateUniqueBlock)
-    );
-    assert_eq!(format!("{:?}", app.document), before);
-    app.cancel_interactive_command(false);
-    assert_eq!(format!("{:?}", app.document), before);
-    enter(&mut app, "CreateUniqueBlock");
-    enter(&mut app, "\"Unique part\"");
-    assert!(app.active_command.is_none());
-    assert!(
-        app.document
-            .block_definition_by_name("Unique part")
-            .is_some()
-    );
-    assert_eq!(app.document.undo_label(), Some("CreateUniqueBlock"));
-}
-
-#[test]
 fn preselected_creation_gets_base_and_quoted_name_then_insertion_gets_name_options_and_point() {
     let mut app = test_app();
     let source = source(&mut app);
