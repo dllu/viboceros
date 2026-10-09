@@ -1545,3 +1545,25 @@ failure with native-first Wine DLLs produced no observations, while a subsequent
 process-local built-in security-DLL setting succeeded. Neither the launcher nor
 Wine configuration was changed. Detailed hashes are in
 [provenance](edge-analysis-native-provenance.json).
+
+## Native marking and navigation checkpoint
+
+Fifty [native command workflows](edge-mark.md) match all 654 numeric fields
+exactly at 1e-9 absolute plus 1e-12 relative epsilon, without exclusions. They
+cover coincident endpoints, shared corners, repeated Mark, navigation and
+wraparound, mixed source types, and eight Undo/Redo pairs. The resulting command
+keeps every endpoint object, executes actions sequentially and resets fresh
+Zoom commands to their first eligible edge.
+
+The initial in-script history capture was insufficient: Undo succeeded but did
+not remove marks. Running the final workflows at Rhino idle establishes their
+actual history behavior. A reversed-trim implementation hypothesis also failed
+the native replay because the surface's U direction followed world Y. The
+rejected reports remain diagnostic evidence; the final implementation retains
+the original edge order and directions. Exact records and final validation are
+in [provenance](edge-mark-provenance.json). Dialog controls, camera framing and
+broader curved/multi-face geometry remain open.
+
+The corrected-source full release run passes 5,615 Rust tests with zero failures
+and 38 ignored tests. All 1,075 Python tests pass; Clippy with warnings denied,
+formatting, diff checks and all 1,602 historical/current source pins are clean.

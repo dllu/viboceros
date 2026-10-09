@@ -220,8 +220,6 @@ class OracleClient:
             for op in request['operations']:
                 if op.get('op') == 'edge_analysis':
                     validate(op)
-                    if 'workflow' in op and (self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1):
-                        raise OracleProtocolError('Edge-analysis workflows require a private scheme and one iteration')
         if any(op.get('op')=='contour_command' for op in request.get('operations',[])):
             from .contour_probe import validate
             if self.settings_scheme is None or type(request.get('iterations',1)) is not int or request.get('iterations',1) != 1:
@@ -1017,8 +1015,6 @@ class OracleClient:
             worker_path = job_path / "rhino_worker.py"
             if any(op.get('op') == 'edge_analysis' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('edge_analysis_probe.py'), job_path / 'edge_analysis_probe.py')
-                if any('workflow' in op for op in request['operations'] if op.get('op') == 'edge_analysis'):
-                    shutil.copyfile(worker_source.with_name('merge_edges_probe.py'), job_path / 'merge_edges_probe.py')
             if any(op.get('op')=='contour_command' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('contour_probe.py'),job_path/'contour_probe.py')
             if any(op.get('op')=='section_command' for op in request['operations']):

@@ -67,8 +67,6 @@
     "Extreme mesh coordinates and precision qualification"
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/edge_analysis.rs": "a0a2785a32a19a4a6e5264d6fc7deb18a9094200774f30010a9600802de57b55",
-    "crates/viboceros-command/src/edge_analysis/tests.rs": "5d40f87b6e9d0b3ddf87f3104cdc1dc5b7e43ddd9ecc5da397476af730477435",
     "crates/viboceros-command/src/lib.rs": "98a9eb9dfd60cc913592a7d8cf4b1f27036dd149a4ba45fabbfd40a2060d26e1",
     "crates/viboceros-command/src/object_selection.rs": "390d1ae732a3780648970f9e794af5733aa07306681baafbda7112cb0de613c6",
     "crates/viboceros-geometry/src/mesh.rs": "c34f18007f3b4d94710a5922e2eb457149da622e61dcb7776456c2d960de33a5",
@@ -81,15 +79,17 @@
     "src/viewport/edge_picking.rs": "6c7c1ddd1d221716133b5525e3960e0013c9124d996cff9008144c0ab8c00af4",
     "src/viewport/edge_picking/tests.rs": "5b3340edc9075797875375a0db021d7d934c62a13fa22ae1d239b6008e48b5ac",
     "src/viewport/extents.rs": "812065b62d62f38d7f7cce80870dfe8647a7298b40c35dde0bcd98e2633f8f72",
-    "crates/viboceros-oracle/src/edge_analysis.rs": "321983fbc9b66c4d18dc0587f65d77e4d342da447220eb2e50d391bfc72e9489",
     "crates/viboceros-oracle/src/lib.rs": "c292e74e004666bdb8f4e1d94ee78fa3d0bfaf8f755d01cee8396b724e65f0e3",
-    "crates/viboceros-oracle/tests/edge_analysis.rs": "4a511c36d9c3b710921ed4cd2a2a60edc641472b95f2b445c0e06586434637d1",
-    "tools/rhino_oracle/client.py": "b142b34b1793d0d7fc870dad76244f09a24e18b0a95f280b950228aa417ead47",
-    "tools/rhino_oracle/rhino_worker.py": "f173a9162158eb3b4274496824bd2e177a8c4a23af266b6a95f01a2eeb3f0fdb",
-    "tools/rhino_oracle/edge_analysis_probe.py": "660a9d70aad2d2b8deb0914c0d91603210aeecb7db928792d048831426ae0221",
-    "tools/rhino_oracle/test_edge_analysis_probe.py": "7ed6e60d9e8f7c0931a31be7983179835a879d69dc733f2f92fd8f559ce4e60d",
     "tools/rhino_oracle/fixtures/edge_analysis.json": "0b07331bef9619fa848e53940305df1288bc14b90b21af4645909ee0e6228214",
     "tools/rhino_oracle/observations/edge_analysis.json": "8b64b66673195192fff2fc7799f0c3e2a4562102168ec862fd64d2f2fe4885a0",
-    "docs/edge-analysis-native-comparison.json": "ef5ac218a45e8f802c57cfc683de689c29b8ed2a6167344e51ec09e65c8ef85a"
+    "docs/edge-analysis-native-comparison.json": "ef5ac218a45e8f802c57cfc683de689c29b8ed2a6167344e51ec09e65c8ef85a",
+    "docs/edge-mark-prior-source/crates/viboceros-command/src/edge_analysis.rs": "a0a2785a32a19a4a6e5264d6fc7deb18a9094200774f30010a9600802de57b55",
+    "docs/edge-mark-prior-source/crates/viboceros-command/src/edge_analysis/tests.rs": "5d40f87b6e9d0b3ddf87f3104cdc1dc5b7e43ddd9ecc5da397476af730477435",
+    "docs/edge-mark-prior-source/crates/viboceros-oracle/src/edge_analysis.rs": "321983fbc9b66c4d18dc0587f65d77e4d342da447220eb2e50d391bfc72e9489",
+    "docs/edge-mark-prior-source/tools/rhino_oracle/edge_analysis_probe.py": "660a9d70aad2d2b8deb0914c0d91603210aeecb7db928792d048831426ae0221",
+    "docs/edge-mark-prior-source/tools/rhino_oracle/client.py": "b142b34b1793d0d7fc870dad76244f09a24e18b0a95f280b950228aa417ead47",
+    "docs/edge-mark-prior-source/tools/rhino_oracle/test_edge_analysis_probe.py": "7ed6e60d9e8f7c0931a31be7983179835a879d69dc733f2f92fd8f559ce4e60d",
+    "docs/edge-mark-prior-source/tools/rhino_oracle/rhino_worker.py": "f173a9162158eb3b4274496824bd2e177a8c4a23af266b6a95f01a2eeb3f0fdb",
+    "docs/edge-mark-prior-source/crates/viboceros-oracle/tests/edge_analysis.rs": "4a511c36d9c3b710921ed4cd2a2a60edc641472b95f2b445c0e06586434637d1"
   }
 }

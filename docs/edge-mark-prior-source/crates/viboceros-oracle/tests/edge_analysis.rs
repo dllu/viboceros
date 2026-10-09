@@ -57,28 +57,3 @@ fn edge_analysis_replays_native_order_domains_samples_and_classifications() {
     }
     assert_eq!(numbers, 2268);
 }
-
-#[test]
-fn edge_mark_replays_native_navigation_duplicates_creation_order_and_history() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/edge_mark_workflow.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/edge_mark_workflow.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 50);
-    let mut numbers = 0;
-    for result in actual.results {
-        let reference = native["results"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .find(|r| r["id"] == result.id)
-            .unwrap();
-        compare(&result.value, &reference["value"], &result.id, &mut numbers);
-    }
-    assert!(numbers > 500);
-}

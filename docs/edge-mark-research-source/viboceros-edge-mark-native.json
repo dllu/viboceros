@@ -1,0 +1,794 @@
+{
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          38,
+          37
+        ]
+      },
+      "id": "standalone-surface|current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 8,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          51,
+          50,
+          49,
+          48,
+          47,
+          46,
+          45,
+          44
+        ]
+      },
+      "id": "standalone-surface|all"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          58,
+          57
+        ]
+      },
+      "id": "standalone-surface|next1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          65,
+          64
+        ]
+      },
+      "id": "standalone-surface|next2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          72,
+          71
+        ]
+      },
+      "id": "standalone-surface|next3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          79,
+          78
+        ]
+      },
+      "id": "standalone-surface|next4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          86,
+          85
+        ]
+      },
+      "id": "standalone-surface|previous1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          93,
+          92
+        ]
+      },
+      "id": "standalone-surface|next-current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          100,
+          99
+        ]
+      },
+      "id": "standalone-surface|all-current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          107,
+          106
+        ]
+      },
+      "id": "trimmed-hole|current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 4,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          116,
+          115,
+          114,
+          113
+        ]
+      },
+      "id": "trimmed-hole|all"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          123,
+          122
+        ]
+      },
+      "id": "trimmed-hole|next1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          130,
+          129
+        ]
+      },
+      "id": "trimmed-hole|next2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          137,
+          136
+        ]
+      },
+      "id": "trimmed-hole|next3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          144,
+          143
+        ]
+      },
+      "id": "trimmed-hole|next4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          151,
+          150
+        ]
+      },
+      "id": "trimmed-hole|previous1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          158,
+          157
+        ]
+      },
+      "id": "trimmed-hole|next-current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          165,
+          164
+        ]
+      },
+      "id": "trimmed-hole|all-current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          172,
+          171
+        ]
+      },
+      "id": "welded|current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 8,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          185,
+          184,
+          183,
+          182,
+          181,
+          180,
+          179,
+          178
+        ]
+      },
+      "id": "welded|all"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          192,
+          191
+        ]
+      },
+      "id": "welded|next1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          199,
+          198
+        ]
+      },
+      "id": "welded|next2"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          206,
+          205
+        ]
+      },
+      "id": "welded|next3"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          213,
+          212
+        ]
+      },
+      "id": "welded|next4"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          220,
+          219
+        ]
+      },
+      "id": "welded|previous1"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          227,
+          226
+        ]
+      },
+      "id": "welded|next-current"
+    },
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "output_count": 2,
+        "prompt": "Command",
+        "succeeded": true,
+        "serials": [
+          234,
+          233
+        ]
+      },
+      "id": "welded|all-current"
+    }
+  ],
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino"
+}

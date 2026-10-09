@@ -36,7 +36,6 @@ pub struct Edge {
     pub all: bool,
     pub naked: bool,
     pub non_manifold: bool,
-    pub is_mesh: bool,
 }
 #[derive(Clone, Debug)]
 pub struct View {
@@ -53,11 +52,8 @@ impl View {
         self.edges.iter().filter(|e| self.mode.accepts(e))
     }
     pub fn focused(&self) -> Vec<&Edge> {
-        let mut edges = self.displayed().collect::<Vec<_>>();
+        let edges = self.displayed().collect::<Vec<_>>();
         if self.focus_all {
-            if self.mode != Mode::All {
-                edges.sort_by_key(|edge| edge.is_mesh);
-            }
             edges
         } else {
             self.current
@@ -136,7 +132,6 @@ fn gather(
                     all: e.face_count == 1 || e.unwelded,
                     naked: e.face_count == 1,
                     non_manifold: e.face_count > 2,
-                    is_mesh: true,
                 })
             })
             .collect(),
@@ -168,7 +163,6 @@ fn gather(
                         all: true,
                         naked: counts[index] == 1,
                         non_manifold: counts[index] > 2,
-                        is_mesh: false,
                     })
                 })
                 .collect()
@@ -279,15 +273,14 @@ impl Command for AnalysisCommand {
         if self.name == "ZoomNaked" {
             proposed.mode = Mode::Naked;
             proposed.focus_all = false;
-            proposed.current = Some(0);
         }
         if self.name == "ZoomNonManifold" {
             proposed.mode = Mode::NonManifold;
             proposed.focus_all = false;
-            proposed.current = Some(0);
         }
         let mut action = "replace";
-        let mut actions = Vec::new();
+        let mut navigation = None;
+        let mut mark = false;
         let mut seen = BTreeSet::new();
         for arg in args {
             let arg = arg.trim_start_matches('_');
@@ -331,9 +324,12 @@ impl Command for AnalysisCommand {
                         action = "remove";
                     }
                     "zoom" => {}
-                    "all" | "current" | "next" | "previous" | "mark" => {
-                        actions.push(arg.to_ascii_lowercase());
+                    "all" | "current" | "next" | "previous" => {
+                        if navigation.replace(arg.to_ascii_lowercase()).is_some() {
+                            return Err(CommandError::Usage(USAGE));
+                        }
                     }
+                    "mark" => mark = true,
                     _ => return Err(CommandError::Usage(USAGE)),
                 }
             }
@@ -359,13 +355,12 @@ impl Command for AnalysisCommand {
                 return Err(CommandError::NoObjectsSelected);
             }
         }
-        proposed.zoom_requested |=
-            self.name.starts_with("Zoom") || actions.iter().any(|action| action != "mark");
+        proposed.zoom_requested = self.name.starts_with("Zoom") || navigation.is_some();
         proposed.enabled = true;
         let mut view = Session::resolve(&mut proposed, doc)?;
         let count = view.displayed().count();
-        for action in actions {
-            match action.as_str() {
+        if let Some(nav) = navigation {
+            match nav.as_str() {
                 "all" => proposed.focus_all = true,
                 "current" => proposed.focus_all = false,
                 "next" => {
@@ -381,16 +376,22 @@ impl Command for AnalysisCommand {
                             Some((proposed.current.unwrap_or(0) + count - 1) % count);
                     }
                 }
-                "mark" => {
-                    for edge in view.focused() {
-                        for point in edge.endpoints {
-                            doc.add_geometry(Geometry::Point(point))?;
-                        }
-                    }
-                }
                 _ => unreachable!(),
             };
             view = Session::resolve(&mut proposed, doc)?;
+        }
+        if mark {
+            let mut points = BTreeMap::new();
+            for edge in view.focused() {
+                for p in edge.endpoints {
+                    points
+                        .entry(p.to_array().map(|v| if v == 0. { 0 } else { v.to_bits() }))
+                        .or_insert(p);
+                }
+            }
+            for point in points.into_values() {
+                doc.add_geometry(Geometry::Point(point))?;
+            }
         }
         *self.session.0.lock().expect("edge analysis state") = proposed;
         Ok(format!(

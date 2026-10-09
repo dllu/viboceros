@@ -849,3 +849,8 @@ the viewport display cache. Marked endpoints enter document history as points.
 Ten [native SDK captures](edge-analysis-native.md) qualify edge ordering,
 classification, domains and samples for planar trims, boxes and polygon meshes.
 Native edge-analysis dialog and zoom parity remain unqualified.
+
+[Native edge marking](edge-mark.md) now preserves coincident endpoint objects,
+sequential and repeated navigation/Mark actions, and command-level Undo/Redo.
+Fifty native command workflows match point creation order and source retention;
+mixed naked/non-manifold All marking handles B-reps before meshes.

@@ -50,4 +50,6 @@ Wine configuration and license state were not changed. The launch error is a
 process failure, separate from geometry comparison. This evidence qualifies
 these topology records; native dialog controls, zoom framing, marked point
 counts, broader curved and periodic surfaces, and extreme mesh coordinates
-still require direct capture. It does not establish complete Rhino parity.
+were outside this topology capture. Subsequent [command workflows](edge-mark.md)
+qualify navigation, marking and Undo/Redo for their recorded cases. Dialog and
+camera parity remain open. It does not establish complete Rhino parity.

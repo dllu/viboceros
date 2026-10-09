@@ -34,10 +34,13 @@ select the corresponding mode and request a fit of the current edge in the
 active viewport. Navigation wraps at the first and last displayed edges.
 
 Display, color and navigation do not create model objects or history entries.
-`Mark` creates point objects on the current layer at the focused edge endpoints,
-deduplicating identical positions. All focus marks every displayed edge;
-current focus marks one. The points form one Undo step, while the analysis
-session remains open. Hidden objects and hidden layers suppress their overlays.
+`Mark` creates two point objects on the current layer for each focused edge.
+Coincident ends of a closed edge and corners shared by several edges retain
+separate point objects. All focus marks every displayed edge; current focus
+marks one. Actions execute in order and may repeat: `ZoomNaked Mark Next Mark`
+marks the first and second edges in one Undo step. A fresh Zoom command starts
+at the first eligible edge. The analysis session remains open after Undo.
+Hidden objects and hidden layers suppress their overlays.
 
 Geometry snapshots and tolerance changes invalidate the topology cache.
 Unchanged frames and color edits reuse the edge data; the four viewports share
@@ -53,3 +56,8 @@ behavior, zoom framing and curved display accuracy still need qualification.
 Standalone SubD and extrusion types are not supported. Deleted
 sources leave the session; after Undo restores an object, select and add it
 again. Analysis settings are transient and are not saved in model files.
+
+Fifty [native command workflows](../edge-mark.md) qualify endpoint duplicates,
+point creation order, navigation wraparound and Undo/Redo for the recorded
+surface, trimmed-hole, mesh and mixed-object cases. In naked/non-manifold All
+focus, B-reps are marked before meshes; current navigation retains source order.

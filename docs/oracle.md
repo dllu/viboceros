@@ -2654,3 +2654,9 @@ native = OracleClient(settings_scheme="VibocerosOracleEdgesExample").run_rhino(r
 
 On Linux the client launches this probe under private Xvfb. See the qualification
 record for the successful process-local Wine DLL setting and strict replay.
+
+An optional `workflow` adds actual ZoomNaked/ZoomNonManifold command actions,
+for example `{"command":"ZoomNaked","actions":["Mark","Next","Mark"],"undo_redo":true}`.
+The [50 command workflows](edge-mark.md) run at Rhino idle so their Undo records
+are independent of RunPythonScript. Point arrays preserve creation order using
+public runtime serial numbers; duplicate endpoints remain distinct objects.

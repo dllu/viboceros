@@ -1,0 +1,1626 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "standalone-surface-current",
+      "value": {
+        "command": "ZoomNaked Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-all",
+      "value": {
+        "command": "ZoomNaked All Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-next1",
+      "value": {
+        "command": "ZoomNaked Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-next2",
+      "value": {
+        "command": "ZoomNaked Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-next3",
+      "value": {
+        "command": "ZoomNaked Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-next4",
+      "value": {
+        "command": "ZoomNaked Next Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-previous1",
+      "value": {
+        "command": "ZoomNaked Previous Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-next-current",
+      "value": {
+        "command": "ZoomNaked Next Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-all-current",
+      "value": {
+        "command": "ZoomNaked All Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-mark-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              2.0,
+              -2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "standalone-surface-mark-next-mark",
+      "value": {
+        "command": "ZoomNaked Mark Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-current",
+      "value": {
+        "command": "ZoomNaked Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-all",
+      "value": {
+        "command": "ZoomNaked All Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-next1",
+      "value": {
+        "command": "ZoomNaked Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-next2",
+      "value": {
+        "command": "ZoomNaked Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-next3",
+      "value": {
+        "command": "ZoomNaked Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-next4",
+      "value": {
+        "command": "ZoomNaked Next Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-previous1",
+      "value": {
+        "command": "ZoomNaked Previous Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-next-current",
+      "value": {
+        "command": "ZoomNaked Next Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-all-current",
+      "value": {
+        "command": "ZoomNaked All Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-mark-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "trimmed-hole-mark-next-mark",
+      "value": {
+        "command": "ZoomNaked Mark Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-current",
+      "value": {
+        "command": "ZoomNaked Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-all",
+      "value": {
+        "command": "ZoomNaked All Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-next1",
+      "value": {
+        "command": "ZoomNaked Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-next2",
+      "value": {
+        "command": "ZoomNaked Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-next3",
+      "value": {
+        "command": "ZoomNaked Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-next4",
+      "value": {
+        "command": "ZoomNaked Next Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-previous1",
+      "value": {
+        "command": "ZoomNaked Previous Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-next-current",
+      "value": {
+        "command": "ZoomNaked Next Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-all-current",
+      "value": {
+        "command": "ZoomNaked All Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-mark-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "welded-mark-next-mark",
+      "value": {
+        "command": "ZoomNaked Mark Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-current",
+      "value": {
+        "command": "ZoomNonManifold Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-all",
+      "value": {
+        "command": "ZoomNonManifold All Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-next1",
+      "value": {
+        "command": "ZoomNonManifold Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-next2",
+      "value": {
+        "command": "ZoomNonManifold Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-next3",
+      "value": {
+        "command": "ZoomNonManifold Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-next4",
+      "value": {
+        "command": "ZoomNonManifold Next Next Next Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-previous1",
+      "value": {
+        "command": "ZoomNonManifold Previous Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-next-current",
+      "value": {
+        "command": "ZoomNonManifold Next Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-all-current",
+      "value": {
+        "command": "ZoomNonManifold All Current Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-mark-twice",
+      "value": {
+        "command": "ZoomNonManifold Mark Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": true,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "non-manifold-mark-next-mark",
+      "value": {
+        "command": "ZoomNonManifold Mark Next Mark",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "surface-then-mesh-current",
+      "value": {
+        "command": "ZoomNaked Mark",
+        "input_count": 2,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "surface-then-mesh-all",
+      "value": {
+        "command": "ZoomNaked All Mark",
+        "input_count": 2,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "mesh-then-surface-current",
+      "value": {
+        "command": "ZoomNaked Mark",
+        "input_count": 2,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "mesh-then-surface-all",
+      "value": {
+        "command": "ZoomNaked All Mark",
+        "input_count": 2,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "surface-then-mesh-next4",
+      "value": {
+        "command": "ZoomNaked Next Next Next Next Mark",
+        "input_count": 2,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "mesh-then-surface-next4",
+      "value": {
+        "command": "ZoomNaked Next Next Next Next Mark",
+        "input_count": 2,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    }
+  ]
+}

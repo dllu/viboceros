@@ -1,0 +1,463 @@
+{
+  "cases": 50,
+  "matched": 50,
+  "numeric_fields": 654,
+  "max_absolute_error": 0.0,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "field_exclusions": [],
+  "passed": true,
+  "operations": [
+    {
+      "id": "standalone-surface-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-next1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-next2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-next3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-previous1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-next-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-all-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-mark-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-mark-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-next1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-next2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-next3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-previous1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-next-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-all-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-mark-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-mark-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-next1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-next2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-next3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-previous1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-next-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-all-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-mark-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-mark-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-next1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-next2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-next3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-previous1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-next-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-all-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-mark-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-mark-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "surface-then-mesh-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "surface-then-mesh-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "mesh-then-surface-current",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "mesh-then-surface-all",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "surface-then-mesh-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "mesh-then-surface-next4",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    }
+  ],
+  "timing_note": "Timings are harness measurements, not kernel speedups. Timed work may differ between engines (including geometry extraction and cleanup); Rhino includes the Python/RhinoCommon bridge and any host emulation overhead. See docs/oracle.md#timing-interpretation."
+}

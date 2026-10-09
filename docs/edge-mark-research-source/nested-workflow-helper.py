@@ -102,7 +102,7 @@ def run_workflow(operation, tolerance, host):
         for key in ids:
             doc.Objects.Select(key)
         workflow = operation['workflow']
-        command = workflow['command'] + ' ' + ' '.join(workflow['actions'])
+        command = workflow['command'] + ' ' + ' '.join(workflow['actions']) 
         macro = '_' + workflow['command'] + ' ' + ' '.join('_' + n for n in workflow['actions']) + ' _Enter'
         succeeded = Rhino.RhinoApp.RunScript(macro, False)
         result = snapshot()
