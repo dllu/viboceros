@@ -185,8 +185,26 @@ def validate(operation):
             definitions[new]=definitions[old][:];outputs=[]
         elif action=='edit_roundtrip':
             target=step.get('object')
-            if set(step)-set(('action','object','translation','save','expect_failure')) or type(target)is not int or target not in alive or target in protected or handles[target]is None or type(step['save'])is not bool or type(step.get('expect_failure',False))is not bool:raise ValueError('invalid block edit roundtrip')
-            _numbers(step['translation'],3);outputs=[]
+            required=set(('action','object','translation','save'))
+            allowed=required|set(('expect_failure','add_objects','remove_members','base_point','translation_api'))
+            if (not required.issubset(step) or set(step)-allowed or type(target)is not int or target not in alive
+                    or target in protected or handles[target]is None or type(step['save'])is not bool
+                    or type(step.get('expect_failure',False))is not bool):raise ValueError('invalid block edit roundtrip')
+            _numbers(step['translation'],3)
+            if step.get('translation_api','sdk')not in ('sdk','command'):raise ValueError('invalid block edit translation API')
+            additions=step.get('add_objects',[]);removals=step.get('remove_members',[])
+            if (not isinstance(additions,list) or any(type(i)is not int or i not in alive or i in protected or i==target for i in additions)
+                    or len(set(additions))!=len(additions)):raise ValueError('invalid block-edit additions')
+            name=handles[target];members=definitions[name][:]+[handles[i] for i in sorted(additions)]
+            if (not isinstance(removals,list) or any(type(i)is not int or not 0<=i<len(members) for i in removals)
+                    or len(set(removals))!=len(removals)):raise ValueError('invalid block-edit removals')
+            if 'base_point'in step:_numbers(step['base_point'],3)
+            if step.get('expect_failure',False) and (additions or removals or 'base_point'in step):raise ValueError('rejected block edit cannot use controls')
+            outputs=[]
+            if step['save'] and not step.get('expect_failure',False):
+                outputs=[members[i] for i in removals]
+                definitions[name]=[member for i,member in enumerate(members) if i not in removals]
+                for key in definitions:leaves(key,[])
         elif action=='reset_scale':
             picks=step.get('objects')
             if (set(step)-set(('action','objects','mode','preselected','cancel')) or not isinstance(picks,list) or not picks
@@ -540,12 +558,45 @@ def run(operation, tolerance, host):
                 if not editable:raise ValueError('native BlockEdit did not expose model members: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
                 edit_transform=Rhino.Geometry.Transform.Translation(*[float(v) for v in step['translation']])
                 closed=False
+                released=[]
                 try:
-                    for obj in editable:
-                        if document.Objects.Transform(obj.Id,edit_transform,True)==System.Guid.Empty:raise ValueError('native BlockEdit member transform failed')
+                    from_controls=any(step.get(k) is not None and step.get(k)!=[] for k in ('add_objects','remove_members','base_point'))
+                    if from_controls:
+                        from block_edit_controls_probe import invoke
+                        control_token=operation['id']+'-'+str(len(states)-1)+'-'
+                        editable.sort(key=lambda o:int(o.RuntimeSerialNumber))
+                        additions=step.get('add_objects',[])
+                        if additions:
+                            old_ids=set(o.Id for o in document.Objects.GetObjectList(settings) if not o.IsDeleted)
+                            invoke('Add Object...',dict(token=control_token+'add_objects',action='add_objects',values=[str(handles[j]) for j in sorted(additions)]))
+                            copies=[o for o in document.Objects.GetObjectList(settings) if o.Id not in old_ids and not o.IsDeleted and not o.IsInstanceDefinitionGeometry]
+                            if len(copies)!=len(additions):raise ValueError('native Add Object did not copy the prescribed sources: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1000:])
+                            editable.extend(sorted(copies,key=lambda o:int(o.RuntimeSerialNumber)))
+                        removals=step.get('remove_members',[])
+                        if removals:
+                            released=[editable[j].Id for j in removals]
+                            invoke('Remove Object...',dict(token=control_token+'remove_members',action='remove_members',values=[str(key) for key in released]))
+                            editable=[o for o in editable if o.Id not in released]
+                        if 'base_point'in step:
+                            invoke('Set Base Point...',dict(token=control_token+'base_point',action='base_point',values=step['base_point']))
+                    if any(step['translation']):
+                        if step.get('translation_api','sdk')=='command':
+                            document.Objects.UnselectAll()
+                            for obj in editable:document.Objects.Select(obj.Id)
+                            if not rs.Command('_Move w0,0,0 w'+','.join('%.17g'%v for v in step['translation']),False):raise ValueError('native BlockEdit Move failed')
+                        else:
+                            ordered=editable[::-1] if from_controls else editable
+                            for obj in ordered:
+                                if document.Objects.Transform(obj.Id,edit_transform,True)==System.Guid.Empty:raise ValueError('native BlockEdit member transform failed')
+
                     script='_-BlockEdit '+('_SaveAndClose' if step['save'] else '_DiscardAndCancel')
                     if not rs.Command(script,False):raise ValueError('native BlockEdit close failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
                     closed=True
+                    if step['save']:
+                        for key in released:
+                            obj=document.Objects.FindId(key)
+                            if obj is None or obj.IsDeleted or obj.IsInstanceDefinitionGeometry:raise ValueError('removed member was not released to the model')
+                        handles.extend(released)
                 finally:
                     if not closed:rs.Command('_-BlockEdit _DiscardAndCancel',False)
             elif action=='reset_scale':

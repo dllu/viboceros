@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`6e60921e` (earlier milestones used `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`4f513b99` (earlier milestones used `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[block editor control provenance](block-edit-controls-provenance.json),
 [in-place block editing provenance](block-edit-provenance.json),
 [block scale-reset provenance](block-reset-scale-provenance.json),
 [block addition provenance](block-add-provenance.json),
@@ -44,25 +45,40 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,539 Rust tests:
+5,548 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,077 | 17 |
-| Command | 1,231 | 2 |
-| Document | 249 | 5 |
+| App | 1,078 | 17 |
+| Command | 1,232 | 2 |
+| Document | 255 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,103 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 503 | 0 |
+| Oracle (unit and integration) | 504 | 0 |
 
-The Python suite passed 1,044 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,050 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [BlockEdit](commands/block-edit.md) adds seven document tests, one
+The newest [BlockEdit controls](commands/block-edit.md) add six document tests,
+one command test, one egui pointer test, one replay test and six Python tests.
+All sixteen native workflows match 82 model states, with maximum sampled error
+`8.9e-16`, for source
+copying, release on save, discard, base points, unchanged saves, SDK/command Move,
+groups, nested references and a reflected circle. Root placements and original
+metadata survive. Copied nested references clear geometry text while their
+sources retain it. Member serialization follows temporary object chronology.
+Save scans members once; the chooser renders visible rows without repeated
+object-table searches. No speedup is inferred from these implementation changes.
+Native controls run from idle through public WPF/Win32 inspection, actual pointer
+clicks and a getter readiness/completion handshake. Nested navigation, external
+source/base-point viewport picking, hidden/locked-member warning choices, linked
+definitions, saved active editors and performance qualification remain open.
+
+The preceding [BlockEdit](commands/block-edit.md) adds seven document tests, one
 command test, two GUI tests, one native replay test and two Python validation
 tests. Eight private-Xvfb workflows match all 41 recorded model states for save,
 discard, translated/reflected placements, nonuniform rejection, nested references,

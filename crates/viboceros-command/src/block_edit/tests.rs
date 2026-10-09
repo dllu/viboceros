@@ -37,3 +37,45 @@ fn scriptable_edit_lifecycle_uses_ordinary_commands_and_preserves_cancel() {
         .unwrap();
     assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
 }
+
+#[test]
+fn scriptable_member_controls_copy_release_and_rebase_in_one_saved_edit() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Point 1,2,3").unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    registry.execute(&mut doc, "Block 0,0,0 part").unwrap();
+    let root = doc.objects().next().unwrap().id();
+    registry.execute(&mut doc, "Point 4,5,6").unwrap();
+    let external = doc.objects().find(|o| o.id() != root).unwrap().id();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    registry
+        .execute(&mut doc, &format!("BlockEdit Open {root}"))
+        .unwrap();
+    let member = doc.block_edit_objects()[0];
+    registry
+        .execute(&mut doc, &format!("BlockEdit AddObject {external}"))
+        .unwrap();
+    doc.select_objects([member], SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut doc, "BlockEdit RemoveObject")
+        .unwrap();
+    registry
+        .execute(&mut doc, "BlockEdit SetBasePoint 1,0,0")
+        .unwrap();
+    registry
+        .execute(&mut doc, "BlockEdit SaveAndClose")
+        .unwrap();
+    assert_eq!(doc.undo_label(), Some("BlockEdit"));
+    assert!(doc.object(external).is_some());
+    assert!(doc.object(member).is_some());
+    let Geometry::BlockInstance(i) = doc.object(root).unwrap().geometry() else {
+        panic!()
+    };
+    assert!(
+        matches!(&*i.members()[0].geometry,Geometry::Point(point) if point.to_array()==[3.,5.,6.])
+    );
+    registry.execute(&mut doc, "Undo").unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+}

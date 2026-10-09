@@ -940,7 +940,7 @@ impl Document {
         if self
             .block_edit
             .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&id))
+            .is_some_and(|edit| edit.protects(id))
         {
             return false;
         }
@@ -960,7 +960,7 @@ impl Document {
         if self
             .block_edit
             .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&object.id))
+            .is_some_and(|edit| edit.protects(object.id))
         {
             return false;
         }
@@ -1625,7 +1625,7 @@ impl Document {
         if self
             .block_edit
             .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&id))
+            .is_some_and(|edit| edit.protects(id))
         {
             return Err(DocumentError::ObjectLocked(id));
         }
@@ -1823,6 +1823,17 @@ impl Document {
                 .chain(stored.objects.iter())
                 .map(|o| o.id())
                 .collect(),
+            Edit::BlockEditSettings { stored, .. } => self
+                .block_edit
+                .as_ref()
+                .map(|edit| {
+                    edit.settings
+                        .released
+                        .symmetric_difference(&stored.released)
+                        .copied()
+                        .collect()
+                })
+                .unwrap_or_default(),
             Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
             Edit::GroupInserted { id, .. } | Edit::GroupDefinitionRetained { id } => self
                 .group(*id)

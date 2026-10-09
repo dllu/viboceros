@@ -8,6 +8,26 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
+    def test_member_control_inputs_reject_before_native_host_access(self):
+        for fields in [dict(add_objects=[0]),dict(add_objects=[1]),dict(remove_members=[-1]),dict(remove_members=[1]),dict(remove_members=[True]),dict(base_point=[1,2]),dict(base_point=[float('inf'),0,0]),dict(translation_api='invalid'),dict(base_point=[0,0,0],expect_failure=True)]:
+            f=self.fixture();step=dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True);step.update(fields);f['steps'].append(step)
+            with self.subTest(fields=fields),self.assertRaises(ValueError):probe.run(f,None,{})
+
+    def test_member_controls_require_the_complete_roundtrip_fields(self):
+        for key in ('save','translation'):
+            f=self.fixture();step=dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True);del step[key];f['steps'].append(step)
+            with self.subTest(key=key),self.assertRaises(ValueError):probe.run(f,None,{})
+
+    def test_saved_member_controls_keep_sources_and_allocate_release_handles(self):
+        f=self.fixture();f['sources'].append(dict(type='point',point=[4,5,6]));f['steps'].extend([dict(action='edit_roundtrip',object=2,translation=[0,0,0],save=True,add_objects=[1],remove_members=[0]),dict(action='group',objects=[1,2,3])]);probe.validate(f)
+        f['steps'].append(dict(action='group',objects=[0]))
+        with self.assertRaises(ValueError):probe.validate(f)
+
+    def test_discarded_member_controls_do_not_allocate_release_handles(self):
+        f=self.fixture();f['sources'].append(dict(type='point',point=[4,5,6]));f['steps'].extend([dict(action='edit_roundtrip',object=2,translation=[0,0,0],save=False,add_objects=[1],remove_members=[0]),dict(action='group',objects=[1,2])]);probe.validate(f)
+        f['steps'].append(dict(action='group',objects=[3]))
+        with self.assertRaises(ValueError):probe.validate(f)
+
     def test_edit_roundtrip_inputs_reject_before_native_host_access(self):
         for step in [dict(action='edit_roundtrip',object=0,translation=[1,2,3],save=True),dict(action='edit_roundtrip',object=True,translation=[1,2,3],save=True),dict(action='edit_roundtrip',object=1,translation=[1,2],save=True),dict(action='edit_roundtrip',object=1,translation=[1,2,3],save=1)]:
             f=self.fixture();f['steps'].append(step)

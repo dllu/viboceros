@@ -22,7 +22,7 @@ impl Document {
             indices
                 .iter()
                 .map(|index| self.objects[*index].id)
-                .find(|id| edit.original_ids.contains(id))
+                .find(|id| edit.protects(*id))
         }) {
             return Err(DocumentError::ObjectLocked(id));
         }
@@ -151,7 +151,7 @@ impl Document {
                 || self
                     .block_edit
                     .as_ref()
-                    .is_some_and(|edit| edit.original_ids.contains(&object.id))
+                    .is_some_and(|edit| edit.protects(object.id))
             {
                 unselectable = Some(unselectable.map_or(object.id, |id| id.min(object.id)));
             }
@@ -200,7 +200,7 @@ impl Document {
         if self
             .block_edit
             .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&object.id))
+            .is_some_and(|edit| edit.protects(object.id))
         {
             return Err(DocumentError::ObjectLocked(object.id));
         }
@@ -298,7 +298,7 @@ impl Document {
                 && self
                     .block_edit
                     .as_ref()
-                    .is_none_or(|edit| !edit.original_ids.contains(&object.id))
+                    .is_none_or(|edit| !edit.protects(object.id))
         };
         let mut targets = BTreeSet::new();
         let mut groups = BTreeSet::new();
@@ -325,7 +325,7 @@ impl Document {
             );
         }
         if let Some(edit) = &self.block_edit {
-            targets.retain(|id| !edit.original_ids.contains(id));
+            targets.retain(|id| !edit.protects(*id));
         }
         targets
     }

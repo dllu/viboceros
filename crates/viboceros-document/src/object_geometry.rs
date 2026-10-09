@@ -100,6 +100,12 @@ impl Document {
         if owns_transaction {
             self.begin_transaction(transaction_label)?;
         }
+        let reordered = self.is_block_editing().then(|| {
+            staged
+                .iter()
+                .map(|(index, _)| self.objects[*index].id)
+                .collect::<Vec<_>>()
+        });
         for (index, geometry) in staged {
             let source = &self.objects[index];
             let preserve_text = preserve_geometry_user_text(source, &geometry);
@@ -127,6 +133,9 @@ impl Document {
                     states: Box::new([before, after]),
                 },
             );
+        }
+        if let Some(ids) = reordered {
+            self.move_objects_to_end_in_order(ids)?;
         }
         if owns_transaction {
             self.commit_transaction()?;

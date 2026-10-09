@@ -327,3 +327,27 @@ fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     }
     assert!(numbers > 100);
 }
+
+#[test]
+fn native_dialog_controls_copy_release_rebase_and_preserve_order_and_metadata() {
+    let request: ProbeRequest = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/block_edit_controls.json"
+    ))
+    .unwrap();
+    let native: Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/observations/block_edit_controls.json"
+    ))
+    .unwrap();
+    let actual = run_request(&request).unwrap();
+    let references = native["results"].as_array().unwrap();
+    assert_eq!(actual.results.len(), 16);
+    let mut numbers = 0;
+    let mut states = 0;
+    for result in actual.results {
+        let reference = references.iter().find(|r| r["id"] == result.id).unwrap();
+        compare(&result.value, &reference["value"], &result.id, &mut numbers);
+        states += result.value["states"].as_array().unwrap().len();
+    }
+    assert_eq!(states, 82);
+    assert!(numbers > 2000);
+}

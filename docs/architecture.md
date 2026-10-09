@@ -29,8 +29,9 @@ and consumes sources in one transaction.
 [BlockResetScale](commands/block-reset-scale.md) adjusts placements in the
 instance frame, retains reflected/sheared behavior and preserves shared catalogs.
 [BlockEdit](commands/block-edit.md) exposes direct prototype members in an isolated
-world-space workspace. Save refreshes every root in one history entry; discard
-restores the original document and history. Advanced editor controls remain open.
+world-space workspace with copying, member release and base-point controls.
+Save refreshes every root in one history entry; discard restores the original
+document and history. Nested navigation and advanced editor input remain open.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

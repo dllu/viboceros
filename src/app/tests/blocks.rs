@@ -763,3 +763,88 @@ fn typed_base_and_definition_starters_keep_world_axis_rotation_options() {
     };
     assert!(point.distance_to(p(4., 18., 42.)).unwrap() < 1e-12);
 }
+
+fn block_edit_controls_frame(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    events: Vec<egui::Event>,
+) -> egui::FullOutput {
+    context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(
+                egui::Pos2::ZERO,
+                egui::Vec2::new(1000., 700.),
+            )),
+            events,
+            ..Default::default()
+        },
+        |ui| app.show_block_edit(ui.ctx()),
+    )
+}
+fn block_edit_controls_click(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    output: &egui::FullOutput,
+    label: &str,
+) {
+    let pos = output
+        .shapes
+        .iter()
+        .find_map(|s| match &s.shape {
+            egui::Shape::Text(t) if t.galley.text() == label => {
+                Some(t.pos + t.galley.rect.center().to_vec2())
+            }
+            _ => None,
+        })
+        .unwrap_or_else(|| panic!("missing block-edit control {label}"));
+    for pressed in [true, false] {
+        block_edit_controls_frame(
+            app,
+            context,
+            vec![
+                egui::Event::PointerMoved(pos),
+                egui::Event::PointerButton {
+                    pos,
+                    button: egui::PointerButton::Primary,
+                    pressed,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        )
+        .drop_without_applying_deltas();
+    }
+}
+#[test]
+fn block_edit_control_buttons_copy_release_rebase_and_save_the_model() {
+    let (mut app, root, _, _, _) = replacement_fixture();
+    let external = app
+        .document
+        .add_geometry(Geometry::Point(p(4., 5., 6.)))
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, &format!("BlockEdit Open {root}"));
+    let original = app.document.block_edit_objects()[0];
+    let context = egui::Context::default();
+    context.data_mut(|d| d.insert_temp(egui::Id::new("block-edit-add-source"), external));
+    block_edit_controls_frame(&mut app, &context, vec![]).drop_without_applying_deltas();
+    let output = block_edit_controls_frame(&mut app, &context, vec![]);
+    block_edit_controls_click(&mut app, &context, &output, "Add Object");
+    assert_eq!(app.document.block_edit_objects().len(), 2);
+    app.document
+        .select_objects_direct([original], SelectionMode::Replace)
+        .unwrap();
+    let output = block_edit_controls_frame(&mut app, &context, vec![]);
+    block_edit_controls_click(&mut app, &context, &output, "Remove Object");
+    assert_eq!(app.document.block_edit_objects().len(), 1);
+    context.data_mut(|d| d.insert_temp(egui::Id::new("block-edit-base-input"), "1,0,0".to_owned()));
+    let output = block_edit_controls_frame(&mut app, &context, vec![]);
+    block_edit_controls_click(&mut app, &context, &output, "Set Base Point");
+    assert_eq!(app.document.block_edit_base_point(), Some(p(1., 0., 0.)));
+    let output = block_edit_controls_frame(&mut app, &context, vec![]);
+    block_edit_controls_click(&mut app, &context, &output, "Save and close");
+    assert!(!app.document.is_block_editing());
+    assert!(app.document.object(original).is_some());
+    assert!(app.document.object(external).is_some());
+    app.document.undo().unwrap();
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}

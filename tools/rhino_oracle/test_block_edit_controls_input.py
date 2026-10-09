@@ -1,0 +1,70 @@
+"""Owned control inputs wait for native getter readiness and reject foreign data."""
+import json
+from pathlib import Path
+import tempfile
+import unittest
+from unittest.mock import patch
+from .block_edit_controls_input import BlockEditController
+from .client import OracleProtocolError
+
+
+class BlockEditControlInputTests(unittest.TestCase):
+    def controller(self):
+        return BlockEditController({'operations': [{'id': 'case', 'steps': [
+            {'action': 'edit_roundtrip', 'base_point': [1, 2, 3]}]}]})
+
+    def marker(self):
+        return dict(token='case-0-base_point', action='base_point',
+                    values=[1, 2, 3], button=[299, 183])
+
+    def test_input_waits_for_the_owned_getter_and_is_delivered_once(self):
+        controller = self.controller()
+        with tempfile.TemporaryDirectory() as directory:
+            job = Path(directory)
+            (job / 'block-edit-control.json').write_text(json.dumps(self.marker()))
+            with patch('tools.rhino_oracle.block_edit_controls_input._rhino_window_for_pids', return_value='owned'), patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run, patch('tools.rhino_oracle.block_edit_controls_input.time.sleep'):
+                run.return_value.stdout='X=0\nY=18\nWIDTH=1920\nHEIGHT=1062\n'
+                controller(job, {123})
+                self.assertEqual(run.call_count, 1)  # Button click only.
+                controller(job, {123})
+                self.assertEqual(run.call_count, 1)
+                (job / 'block-edit-control.json.ready').write_text(json.dumps(dict(token='case-0-base_point', prompt='New base point')))
+                controller(job, {123})
+                calls = run.call_count
+                self.assertGreater(calls, 1)
+                self.assertFalse((job / 'block-edit-control.json.ack').exists())
+                controller.submitted['case-0-base_point'] -= 2
+                (job / 'block-edit-control.json.active').write_text(json.dumps(dict(token='case-0-base_point', prompt='Command')))
+                controller(job, {123})
+                self.assertEqual(run.call_count, calls)
+                (job / 'block-edit-control.json.active').write_text(json.dumps(dict(token='case-0-base_point', prompt='New base point')))
+                controller(job, {123})
+                self.assertGreater(run.call_count, calls)
+                calls = run.call_count
+                (job / 'block-edit-control.json.completed').write_text(json.dumps('case-0-base_point'))
+                controller(job, {123})
+                self.assertEqual(run.call_count, calls)
+                self.assertEqual(json.loads((job / 'block-edit-control.json.ack').read_text()), 'case-0-base_point')
+                controller(job, {123})
+                self.assertEqual(run.call_count, calls)
+                controller.record_diagnostics({})
+
+    def test_foreign_request_and_getter_tokens_fail_without_keyboard_input(self):
+        with tempfile.TemporaryDirectory() as directory:
+            job = Path(directory)
+            controller = self.controller()
+            value = self.marker()
+            value['token'] = 'foreign'
+            (job / 'block-edit-control.json').write_text(json.dumps(value))
+            with patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
+                with self.assertRaises(OracleProtocolError):
+                    controller(job, {123})
+                run.assert_not_called()
+            value = self.marker()
+            (job / 'block-edit-control.json').write_text(json.dumps(value))
+            controller.clicked[value['token']] = value
+            (job / 'block-edit-control.json.ready').write_text(json.dumps(dict(token='foreign', prompt='New base point')))
+            with patch('tools.rhino_oracle.block_edit_controls_input._rhino_window_for_pids', return_value='owned'), patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
+                with self.assertRaises(OracleProtocolError):
+                    controller(job, {123})
+                run.assert_not_called()

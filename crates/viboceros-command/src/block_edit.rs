@@ -12,6 +12,20 @@ impl Command for BlockEditCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if args.len() == 1
+            && args[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("RemoveObject")
+        {
+            return Ok(Some(ObjectSelectionPrompt {
+                command: self.name(),
+                filter: ObjectSelectionFilter::Any,
+                options: vec![],
+                menus: vec![],
+                choices: vec![],
+                workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
+            }));
+        }
         Ok((args.is_empty()
             || args.len() == 1 && args[0].trim_start_matches('_').eq_ignore_ascii_case("Open"))
         .then(|| ObjectSelectionPrompt {
@@ -24,6 +38,43 @@ impl Command for BlockEditCommand {
         }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
+        if let Some(operation) = args.first().map(|s| s.trim_start_matches('_')) {
+            if operation.eq_ignore_ascii_case("AddObject")
+                || operation.eq_ignore_ascii_case("RemoveObject")
+            {
+                let ids = if args.len() == 1 && operation.eq_ignore_ascii_case("RemoveObject") {
+                    doc.selected_object_ids().collect::<Vec<_>>()
+                } else {
+                    args[1..]
+                        .iter()
+                        .map(|s| {
+                            s.parse::<ObjectId>().map_err(|_| {
+                                CommandError::Usage(
+                                    "BlockEdit AddObject|RemoveObject object-id ...",
+                                )
+                            })
+                        })
+                        .collect::<Result<Vec<_>, _>>()?
+                };
+                if ids.is_empty() {
+                    return Err(CommandError::Usage(
+                        "choose objects for BlockEdit AddObject or RemoveObject",
+                    ));
+                }
+                let count = if operation.eq_ignore_ascii_case("AddObject") {
+                    doc.add_objects_to_block_edit(ids)?.len()
+                } else {
+                    doc.remove_objects_from_block_edit(ids)?
+                };
+                return Ok(format!("BlockEdit {operation}: {count} object(s)"));
+            }
+            if operation.eq_ignore_ascii_case("SetBasePoint") {
+                let (point, consumed) = parse_point(&args[1..])?;
+                require_consumed(&args[1..], consumed, "BlockEdit SetBasePoint point")?;
+                doc.set_block_edit_base_point(point)?;
+                return Ok("Updated block-edit base point".into());
+            }
+        }
         if args.len() == 1
             && args[0]
                 .trim_start_matches('_')

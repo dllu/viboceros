@@ -992,6 +992,7 @@ class OracleClient:
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 
+        block_controls = any(op.get('op') == 'block_workflow' and step.get('action') == 'edit_roundtrip' and any(step.get(k) is not None and step.get(k) != [] for k in ('add_objects','remove_members','base_point')) for op in request['operations'] for step in op.get('steps',[]))
         with tempfile.TemporaryDirectory(prefix="viboceros-rhino-oracle-") as job:
             job_path = Path(job)
             request_path = job_path / "request.json"
@@ -999,6 +1000,10 @@ class OracleClient:
             worker_path = job_path / "rhino_worker.py"
             if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('block_workflow_probe.py'), job_path / 'block_workflow_probe.py')
+                if block_controls:
+                    from .block_edit_controls_input import BlockEditController
+                    interaction = BlockEditController(request)
+                    shutil.copyfile(worker_source.with_name('block_edit_controls_probe.py'),job_path / 'block_edit_controls_probe.py')
             if any(op.get('op') == 'mesh_edit_records' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('mesh_edit_records_probe.py'), job_path / 'mesh_edit_records_probe.py')
             if any(op.get('op') == 'grip_transform' for op in request.get('operations', [])):
@@ -1258,7 +1263,21 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name), job_path / name)
             worker_request["_host"] = {"exit_rhino_when_complete": True}
             _write_json(request_path, worker_request)
-            shutil.copyfile(worker_source, worker_path)
+            if block_controls:
+                shutil.copyfile(worker_source, job_path / 'block_edit_idle_core.py')
+                worker_path.write_text("""# -*- coding: utf-8 -*-
+import Rhino
+import block_edit_idle_core as core
+
+def execute_owned_controls(sender, args):
+    Rhino.RhinoApp.Idle -= execute_owned_controls
+    core._main()
+
+core._record_progress('block edit controls scheduled on idle')
+Rhino.RhinoApp.Idle += execute_owned_controls
+""", encoding='utf-8')
+            else:
+                shutil.copyfile(worker_source, worker_path)
             if any(op.get("op") == "pipe_round_probe" for op in request.get("operations", [])):
                 helper = Path(__file__).with_name("pipe_round_probe.py")
                 shutil.copyfile(helper, job_path / helper.name)
@@ -1555,6 +1574,8 @@ class OracleClient:
         if any("open_confirmation" in op for op in request.get("operations", [])):
             interaction.record_diagnostics(response)
         if any(op.get('op') == 'smooth_workflow' for op in request.get('operations', [])):
+            interaction.record_diagnostics(response)
+        if block_controls:
             interaction.record_diagnostics(response)
         return response
 

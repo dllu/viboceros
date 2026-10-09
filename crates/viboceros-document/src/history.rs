@@ -58,6 +58,10 @@ pub(super) enum Edit {
     BlockEditModel {
         stored: Box<super::Document>,
     },
+    BlockEditSettings {
+        stored: super::block_edit::BlockEditSettings,
+        selected: Vec<ObjectId>,
+    },
     /// An explicitly accepted command can own an Undo step without model edits.
     CommandAcceptedWithoutChanges,
     /// Grip edits exchange display and picking together with geometry.
@@ -166,6 +170,9 @@ impl Edit {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
             Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
+            Self::BlockEditSettings { stored, selected } => {
+                document.swap_block_edit_settings(stored, selected)?
+            }
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
             }
@@ -295,6 +302,9 @@ impl Edit {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
             Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
+            Self::BlockEditSettings { stored, selected } => {
+                document.swap_block_edit_settings(stored, selected)?
+            }
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
             }

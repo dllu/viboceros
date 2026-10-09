@@ -48,7 +48,7 @@ impl Document {
         if self
             .block_edit
             .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&id))
+            .is_some_and(|edit| edit.protects(id))
         {
             return Err(DocumentError::ObjectLocked(id));
         }
@@ -208,7 +208,7 @@ impl Document {
             if self
                 .block_edit
                 .as_ref()
-                .is_some_and(|edit| edit.original_ids.contains(&id))
+                .is_some_and(|edit| edit.protects(id))
             {
                 return Err(DocumentError::ObjectLocked(id));
             }

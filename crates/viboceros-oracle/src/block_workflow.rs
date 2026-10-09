@@ -117,12 +117,24 @@ pub enum BlockStep {
         save: bool,
         #[serde(default)]
         expect_failure: bool,
+        #[serde(default)]
+        add_objects: Vec<usize>,
+        #[serde(default)]
+        remove_members: Vec<usize>,
+        #[serde(default)]
+        base_point: Option<[f64; 3]>,
+        #[serde(default = "sdk_translation_api")]
+        translation_api: String,
     },
     DeleteDefinition {
         name: String,
         #[serde(default)]
         expect_failure: bool,
     },
+}
+
+fn sdk_translation_api() -> String {
+    "sdk".to_owned()
 }
 
 fn sdk_creation_api() -> BlockExplosionApi {
@@ -312,6 +324,10 @@ pub(super) fn run(
                 translation,
                 save,
                 expect_failure,
+                add_objects,
+                remove_members,
+                base_point,
+                translation_api,
             } => {
                 let target = live(&document, &handles, *object)?;
                 if *expect_failure {
@@ -319,21 +335,58 @@ pub(super) fn run(
                         return Err(invalid());
                     }
                     succeeded = Some(false);
+                    Vec::new()
                 } else {
-                    let members = document.open_block_edit(target)?;
-                    document.transform_objects(
-                        members,
-                        AffineTransform3::from_translation(viboceros_geometry::Vector3::try_from(
-                            *translation,
-                        )?),
-                    )?;
+                    let mut members = document.open_block_edit(target)?;
+                    let additions = add_objects
+                        .iter()
+                        .map(|i| live(&document, &handles, *i))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    if !additions.is_empty() {
+                        members.extend(document.add_objects_to_block_edit(additions)?);
+                    }
+                    let released = remove_members
+                        .iter()
+                        .map(|i| members.get(*i).copied().ok_or_else(invalid))
+                        .collect::<Result<Vec<_>, _>>()?;
+                    if !released.is_empty() {
+                        document.remove_objects_from_block_edit(released.iter().copied())?;
+                    }
+                    if let Some(point) = base_point {
+                        document.set_block_edit_base_point(Point3::try_from(*point)?)?;
+                    }
+                    let transform = AffineTransform3::from_translation(
+                        viboceros_geometry::Vector3::try_from(*translation)?,
+                    );
+                    match translation_api.as_str() {
+                        "sdk" => {
+                            for member in document.block_edit_objects().into_iter().rev() {
+                                document.transform_objects([member], transform)?;
+                            }
+                        }
+                        "command" => {
+                            document.select_objects_direct(
+                                document.block_edit_objects(),
+                                SelectionMode::Replace,
+                            )?;
+                            viboceros_command::CommandRegistry::with_builtins().execute(
+                                &mut document,
+                                &format!(
+                                    "Move 0,0,0 {},{},{}",
+                                    translation[0], translation[1], translation[2]
+                                ),
+                            )?;
+                        }
+                        _ => return Err(invalid()),
+                    }
                     if *save {
                         document.save_block_edit()?;
+                        released
                     } else {
                         document.discard_block_edit()?;
+                        Vec::new()
                     }
                 }
-                Vec::new()
             }
             BlockStep::ResetScale {
                 objects,

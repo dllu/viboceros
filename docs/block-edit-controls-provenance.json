@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "4f513b993e29d47dc0964da42517d0bdd4b0a160",
+  "scope": "BlockEdit Add Object, Remove Object, Set Base Point and chronological member serialization",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit",
+    "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Properties_T_Rhino_RhinoApp.htm"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5548,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1050,
+      "exit_code": 0
+    },
+    "native_replay": {
+      "cases": 16,
+      "states": 82,
+      "matched": 16,
+      "mismatched": 0,
+      "native_failures": 0,
+      "max_absolute_error": 8.881784197001252e-16,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "new_document_tests": 6,
+    "new_command_tests": 1,
+    "new_gui_pointer_tests": 1,
+    "new_native_replay_tests": 1,
+    "new_python_tests": 6
+  },
+  "native_capture": {
+    "fixture": "tools/rhino_oracle/fixtures/block_edit_controls.json",
+    "response": "tools/rhino_oracle/observations/block_edit_controls.json",
+    "scheme": "VibocerosOracleBlockControlsFinal20261009",
+    "cases": 16,
+    "states": 82,
+    "helper_snapshot_paths": [
+      "docs/block-edit-controls-capture-source/tools/rhino_oracle/block_edit_controls_probe.py",
+      "docs/block-edit-controls-capture-source/tools/rhino_oracle/block_edit_controls_input.py"
+    ]
+  },
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 through ARM64 Wine/FEX on private Xvfb",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "launcher_note": "The current launcher failed licensing because AcquireCredentialsHandleW was missing from its selected security library. Per-process built-in security overrides restored normal licensed startup without modifying the launcher or Wine configuration.",
+  "native_input": "Worker deferred to the public Rhino idle event. Owned dialog buttons were located through public Win32/WPF interfaces and physically clicked. A DispatcherTimer inspected the public CommandPrompt property for getter readiness/completion. Prescribed object IDs or world coordinates were delivered to the owned command field; point submissions could be retried while the same getter remained active. The final capture ran automatically. The broader capture precedes the final active-prompt retry guard; a focused post-guard native recapture is recorded separately.",
+  "copy_contract": "External sources remain in the model. Copies join the edited prototype; copied nested references clear geometry text while original sources retain their raw text. Prototype groups are cleared on save.",
+  "release_contract": "Removed members stay protected during editing and become independent world-space model objects on save. Discard restores the original document and redo branch. Release and base-point changes have isolated workspace history and fold into the one saved model edit.",
+  "base_point_contract": "The selected world point is mapped to the instance-local frame and subtracted from saved member coordinates. Original root placements stay fixed; released geometry retains its world coordinates.",
+  "ordering_contract": "Saved prototype members follow reverse temporary-object chronology. Geometry replacement renews temporary order; ordering history restores it. The oracle distinguishes per-object SDK transforms from batched native Move and compares ordered member arrays with attached metadata.",
+  "performance_scope": "Save uses one member scan and the source chooser avoids repeated model-table searches and formats visible rows. No native timing or GPU speedup was measured.",
+  "comparison_limits": "Sixteen owned recipes and 82 closed-model states at absolute 1e-9 plus relative 1e-12. Points, grouped sources, nested references and one uniformly reflected circle; finite sampled curve witnesses do not certify all curved geometry. Native temporary-object metadata, selection/history, broader panel behavior and stress/numeric boundary parity remain open.",
+  "sha256": {
+    "crates/viboceros-command/src/block_edit.rs": "f4c69e061deab5d9e97fd4485334b6f0d588f524aba8e2fbe2c4193c76166743",
+    "crates/viboceros-command/src/block_edit/tests.rs": "72ba3459732950defb2b74f4ec2e2f78ab6ee6e1b93ccb816349601eeffb900c",
+    "crates/viboceros-document/src/block_edit.rs": "e7aac9e4c9dd8966318bc19c10949185940924bd9b6f356da0e5ce00818185b4",
+    "crates/viboceros-document/src/block_edit/tests.rs": "2ae4ce89a6873be869651b98f69434116b21f7577c40df2ac26f47e87ed6b09d",
+    "crates/viboceros-document/src/groups.rs": "0af1d7b83513cc1889d85d880ef453e03ddd9a26020103013f0585590b9bdbfe",
+    "crates/viboceros-document/src/history.rs": "806c2e8e41a3c7c50d15ec32096b3965a6dec48aca3c3a32b07370cfa1a09008",
+    "crates/viboceros-document/src/lib.rs": "df1419048116a731d0f350fb89284da733a42f865cefe435a68f17a3763485d6",
+    "crates/viboceros-document/src/object_deletion.rs": "83089b9e990b5b0e3e642c3cf14fd29826b39c50a1ab2f7b063c7a06733e1b47",
+    "crates/viboceros-document/src/object_geometry.rs": "54671f8277b93a4d8074fdc898d320b58155c8aef345de217a910706fcdb8226",
+    "crates/viboceros-document/src/selection.rs": "851f5fd8c35600601df18fb74097468aede04965bbdab3b5a4ef0171f96f519f",
+    "crates/viboceros-oracle/src/block_workflow.rs": "368562d83308112816080fe3e0ce212c06c522c6ae621254458a8995c451e082",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "ed59f78e337afb450ee41036eeafff27f934ad99a2657c7d6072c6b2c50566c7",
+    "docs/commands/block-edit.md": "f0e3849048b9e85324e4e5e7364648b541d70982779476a873269d282af7519f",
+    "src/app/block_edit.rs": "07bdde9abdba1190949971a66a157b9f65d952b134a8736a39a555d1e8336121",
+    "src/app/tests/blocks.rs": "aeebc5b0517403b330b44287f31c8cb38fe1f794b4de3ea7e9e81468a39a6d2e",
+    "tools/rhino_oracle/block_edit_controls_input.py": "e4778ae454be9f18d6f9ab5cfcd9ecd03f41ee0383ebe33634d920de9ea9d3c6",
+    "tools/rhino_oracle/block_edit_controls_probe.py": "cef17f7a68e5f81daa98d10aa95755a0e4d86e8ec89491bc567a024a3c3c6ef0",
+    "tools/rhino_oracle/block_workflow_probe.py": "99bfd3a4e39e37200df02ec8ba1c2bbcdf95fb33d6061cb38656d3df23c3810d",
+    "tools/rhino_oracle/client.py": "67a9d30a39c6c2b8fb51d9f606ee3e4b4d04d754781b2ab56559b3de6b5f1cec",
+    "tools/rhino_oracle/fixtures/block_edit_controls.json": "ed63fcc2cf571fbc287425aab510b315e700ebd8455a120fee30cc1259a7dbc9",
+    "tools/rhino_oracle/observations/block_edit_controls.json": "c1c498e95a4088a1288c02d0adf754b2b42bd116414c0aaa4c19103d4a38861e",
+    "tools/rhino_oracle/test_block_edit_controls_input.py": "1a9773f1000004a36949416fd1dd4a91d9246a17fd257bb5e45247b81f276507",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "72dc31148afe4f5f0579eab5472311f48855fdaa376c4f059baeabf1b32b662c",
+    "docs/block-edit-controls-capture-source/tools/rhino_oracle/block_edit_controls_probe.py": "eb29a1f16da1285494ce89214cc85e27a83e53d3a752bff34f2121bab0ca06d6",
+    "docs/block-edit-controls-capture-source/tools/rhino_oracle/block_edit_controls_input.py": "af34210a4ed3cee5af05f5ceda725c1dbe4f185cc1fc823a494d82438de72c20",
+    "tools/rhino_oracle/fixtures/block_edit_controls_guard.json": "38b9053d6d6b306d508d426779bd29ab9a3c92add7f53d9973c67f9e4b98a41f",
+    "tools/rhino_oracle/observations/block_edit_controls_guard.json": "ee46b4faf48822a1c84a5caef1f1a4edc75b3e395196c119cdc4bed85dfd28f6",
+    "docs/block-edit-controls-comparison.json": "be2402fd112d5ba9f0e424c27302c9cb3e001085fb91b02deb5fcd01d73ed005"
+  },
+  "remaining_scope": [
+    "Nested-definition navigation and double-click opening",
+    "Viewport picking of external sources and base points",
+    "Hidden/locked-member warning choices and empty placements",
+    "Persistence of open editors and linked definitions",
+    "Broader geometry, numeric and native selection/history qualification",
+    "GPU rendering and performance"
+  ],
+  "post_guard_capture": {
+    "fixture": "tools/rhino_oracle/fixtures/block_edit_controls_guard.json",
+    "response": "tools/rhino_oracle/observations/block_edit_controls_guard.json",
+    "scheme": "VibocerosOracleBlockControlsGuard20261009",
+    "cases": 1,
+    "states": 5,
+    "matched_prior_closed_model": true
+  }
+}

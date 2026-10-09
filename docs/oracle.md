@@ -2536,6 +2536,30 @@ python3 -m tools.rhino_oracle.unjoin_edges_replay tools/rhino_oracle/fixtures/un
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.unjoin_edges_capture tools/rhino_oracle/fixtures/unjoin_edge_command.json --timeout 300
 ```
 
+## BlockEdit dialog controls
+
+`block_workflow` supports `edit_roundtrip` with optional `add_objects` model
+handles, `remove_members` definition-member ordinals and a world `base_point`.
+Saved releases allocate logical model handles; discarded releases allocate none.
+`translation_api` distinguishes individual public-SDK transforms from a native
+Move command. Definition-member order remains part of the comparison.
+
+These captures run the worker from Rhino's idle event, inspect the owned dialog
+through public WPF/Win32 interfaces, click its actual buttons and wait for the
+native getter prompt before typing prescribed input into the owned command line.
+The command reference documents the supported local UI and remaining scope.
+
+The current Wine launcher needed built-in security libraries to resolve its
+`AcquireCredentialsHandleW` licensing error. Reproduce the control capture with:
+
+```sh
+WINEDLLOVERRIDES='sspicli,secur32,schannel=b' tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/block_edit_controls.json --scheme VibocerosOracleBlockControlsReplay20261009 --timeout 300
+```
+
+See [control provenance](block-edit-controls-provenance.json). This invocation
+uses a private Xvfb display and settings scheme; it does not change the launcher
+or the user's Wine configuration.
+
 ## Timing interpretation
 
 The comparison report's `rhino_to_viboceros_ratio` is a ratio of raw harness
