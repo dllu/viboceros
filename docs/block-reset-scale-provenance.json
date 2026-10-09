@@ -106,7 +106,7 @@
     "docs/block-edit-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "cf703cee9007b96cc13a521d3db4e86e6409c64310eae60040f90d5d4b8e9a17",
     "docs/block-edit-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "a0b5c70d14c34ecd7baec41b874df65296bbc25396e9df930075ba6df1298cd8",
     "docs/block-edit-prior-source/src/app/tests/blocks.rs": "efa19963c0a2e0b30b6321c92869eca0072c5895cd1e214f3d84391fa81ee38f",
-    "src/app/object_selection.rs": "b325f21886b4a87352a0546a1934fe21cebbde61b7680cdf7549bbb1619cae85"
+    "docs/block-edit-input-prior-source/src/app/object_selection.rs": "b325f21886b4a87352a0546a1934fe21cebbde61b7680cdf7549bbb1619cae85"
   },
   "remaining_scope": [
     "Wider numerical qualification of the calibrated near-equality band",
@@ -121,6 +121,7 @@
     "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-edit-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
     "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-edit-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
     "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-edit-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
-    "src/app/tests/blocks.rs": "docs/block-edit-prior-source/src/app/tests/blocks.rs"
+    "src/app/tests/blocks.rs": "docs/block-edit-prior-source/src/app/tests/blocks.rs",
+    "src/app/object_selection.rs": "docs/block-edit-input-prior-source/src/app/object_selection.rs"
   }
 }

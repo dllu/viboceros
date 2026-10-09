@@ -1,14 +1,9 @@
 //! Block sources, base point/name getters and existing-definition insertion.
 use super::*;
-use std::collections::BTreeSet;
 use viboceros_command::blocks::{InsertOptions, base_point, tokenize};
 
 #[derive(Clone, Debug)]
 pub(super) enum PendingBlock {
-    EditAdd {
-        sources: BTreeSet<ObjectId>,
-    },
-    EditBasePoint,
     Add {
         target: Option<ObjectId>,
         selection_before: Vec<ObjectId>,
@@ -32,9 +27,6 @@ impl VibocerosApp {
         input: &str,
         picked: Option<&[ObjectId]>,
     ) -> bool {
-        if self.try_start_block_edit_input(input) {
-            return true;
-        }
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let name = input[..end].trim_start_matches(['_', '-']);
         if name.eq_ignore_ascii_case("AddObjectsToBlock") {
@@ -173,9 +165,6 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_block_input(&mut self, input: &str) -> bool {
-        if self.continue_block_edit_input(input) {
-            return true;
-        }
         if self.continue_block_add_input(input) {
             return true;
         }
@@ -322,9 +311,6 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_block_point(&mut self, point: Point3) -> Option<bool> {
-        if self.active_command == Some(InteractiveCommand::BlockEditBasePoint) {
-            return Some(self.accept_block_edit_base_point(point));
-        }
         match (self.active_command, self.block_session.clone()) {
             (Some(InteractiveCommand::Block { base: None }), Some(PendingBlock::Create { .. })) => {
                 self.active_command = Some(InteractiveCommand::Block { base: Some(point) });

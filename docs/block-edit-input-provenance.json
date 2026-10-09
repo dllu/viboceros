@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "a71ee68ba90d9b6b2f6090881986f84aa67e66e3",
+  "scope": "BlockEdit external-source viewport picker, shared base-point getter and idle double-click opening",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5556,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1052,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "new_application_tests": 5,
+    "new_viewport_tests": 2,
+    "new_scene_tests": 1,
+    "new_python_tests": 2
+  },
+  "native_capture": {
+    "response": "tools/rhino_oracle/observations/block_edit_double_click.json",
+    "worker": "tools/rhino_oracle/block_edit_double_click_worker.py",
+    "runner": "tools/rhino_oracle/block_edit_double_click_capture.py",
+    "scheme": "VibocerosOracleBlockDoubleClickFinal20261009",
+    "cases": 1,
+    "expected": {
+      "opened": true,
+      "exposed": 1,
+      "root_visible": false,
+      "member_names": [
+        "DoubleClickMember"
+      ],
+      "definition_members": 1,
+      "restored_model": true
+    }
+  },
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 through ARM64 Wine/FEX on private Xvfb",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "source_picker": "Eligible original IDs are cached at opening. The viewport source predicate bypasses temporary editor protection only for source capture, while original hidden/locked permissions remain authoritative. Picks stay in a separate set and highlight list; they never enter editable selection or unlock the model. Enter copies, Escape cancels the getter; selection commands and region paths use the same source set.",
+  "point_getter": "Bare SetBasePoint enters the established drafting pipeline for snapping, point filters, units and CPlane coordinates. Direct command coordinates retain their documented world-space meaning. Getter cancellation keeps the editor open.",
+  "double_click": "Viewport output carries an unambiguous geometry hit for a primary double click outside the title strip. The application opens only visible, selectable block roots when no modeling/getter/region session owns input. Ambiguous hits retain the existing chooser and title double clicks retain maximization.",
+  "scene_policy": "Source previews retain ordinary visibility and locked styling while overlaying only picked source highlights. Ordinary picking excludes protected/released edit records.",
+  "native_limits": "One fresh line instance, real owned viewport double click, exposed-member/root-state check and discard/model-ID restoration. Native Add Object viewport groups, ambiguity, point snapping/filter/CPlane semantics, selection/history and pixel equivalence are not newly qualified; prior control captures constrain closed-model edits.",
+  "performance_scope": "Cached original source eligibility avoids repeated object-table searches during viewport picking. No native performance or GPU measurement was made.",
+  "sha256": {
+    "crates/viboceros-command/src/object_selection.rs": "78402c48726c218d054d89439693bd1a227fcff310786a445b874d994e5bdea2",
+    "crates/viboceros-document/src/block_edit.rs": "b5964b2dfa021161c92d2c270ec4c4f6316bf7e5b0abb9009ad23f4896de96cb",
+    "docs/commands/block-edit.md": "c48027769c4b1dcefde07b4851f16c7706782d3ea00e20d2b9c6185c9f3d2e50",
+    "src/app.rs": "3bf562a00b3208f08ef500fa5ec91a330135f778e1c4b8a119f3493f6dc01f4b",
+    "src/app/block_edit.rs": "c6e68276364c9a517167d9f2f2b1c6a9ec03016c6897a1b2449866c209f611c1",
+    "src/app/blocks.rs": "fddc406d59bf48de50828b48d27da0e438be0d66d5080f0e2644839adf6b9bc7",
+    "src/app/object_selection.rs": "12f13cadd77c8426f47dc8c89732795a54c24c3635d82dd34f391484429766b5",
+    "src/app/tests/blocks.rs": "b10068fcdf26d9e61b17667754334cf2ce3c264015f4aaa00478d996fec35ec9",
+    "src/viewport.rs": "f2ea4ce34bcf0844ddc09b491c8834c61c0cd5adcc3226c287fa1c6821b84bf5",
+    "src/viewport/scene.rs": "267547c8b44998119ee7d544c5a8d0699ce68d256a1909049f3d5fec212595ae",
+    "src/viewport/scene/block_tests.rs": "1a3632c10350d6396602ba422819aa66b38a5f8604443efe93358915ff56bae6",
+    "src/viewport/tests/object_selection.rs": "d77d189e875a8d99c0c4fcede60298c31ba7d3ef9aa5dc428888214ee0c10c02",
+    "tools/rhino_oracle/block_edit_double_click_capture.py": "8883a9894dac39012f47e2e3ff020d1cf21a5e5e085f1a4e845271e19d86299e",
+    "tools/rhino_oracle/block_edit_double_click_worker.py": "f95b9c8a16f5123a6529a29a179be2f77d18eeaff25f5d4da3482b3a731fb2a8",
+    "tools/rhino_oracle/observations/block_edit_double_click.json": "e8c045305d2c50158735d30f224e7a5cccd8af1b61aca5c78c97897705d203cc",
+    "tools/rhino_oracle/test_block_edit_double_click_capture.py": "fac387507a1ba8e6c6d1ddaaf500131ce723da311124cbe8976a6822a561e13d"
+  },
+  "remaining_scope": [
+    "Nested-definition navigation",
+    "Hidden/locked-member choices and empty placements",
+    "Linked definitions and persistence of open editors",
+    "Broader native picking, group expansion, snapping and history qualification",
+    "GPU rendering and performance"
+  ]
+}

@@ -301,8 +301,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    BlockEditAdd,
-    BlockEditBasePoint,
     AddObjectsToBlock,
     ReplaceBlock,
     CreateUniqueBlock,
@@ -707,7 +705,6 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
             Self::AddObjectsToBlock => "AddObjectsToBlock",
             Self::CreateUniqueBlock => "CreateUniqueBlock",
             Self::ReplaceBlock => "ReplaceBlock",
@@ -821,10 +818,6 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
-            Self::BlockEditAdd => {
-                "BlockEdit: select external objects to copy; Enter accepts, Esc cancels"
-            }
-            Self::BlockEditBasePoint => "BlockEdit: pick a new base point (Esc cancels)",
             Self::Block { base: None } => "Block: pick a base point (Esc cancels)",
             Self::CreateUniqueBlock => {
                 "CreateUniqueBlock: enter the new definition name (Esc cancels)"
@@ -1590,8 +1583,6 @@ impl InteractiveCommand {
                 [point, _, _] => point,
             },
             Self::Point
-            | Self::BlockEditAdd
-            | Self::BlockEditBasePoint
             | Self::AddObjectsToBlock
             | Self::CreateUniqueBlock
             | Self::ReplaceBlock
@@ -5235,8 +5226,6 @@ impl VibocerosApp {
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
             InteractiveCommand::Block { .. }
-            | InteractiveCommand::BlockEditAdd
-            | InteractiveCommand::BlockEditBasePoint
             | InteractiveCommand::AddObjectsToBlock
             | InteractiveCommand::Insert { .. }
             | InteractiveCommand::CreateUniqueBlock
@@ -7842,9 +7831,6 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.pick_block_edit_sources(click.object_id, click.mode) {
-            return;
-        }
         if self.pick_block_add(click.object_id, click.mode) {
             return;
         }
@@ -8181,7 +8167,11 @@ impl VibocerosApp {
             self.push_log("Fence selection is unavailable during this prompt".into());
             return;
         };
-        let preview = self.selection_preview_filter();
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
         let ids = self.viewports[viewport].objects_crossed_by_fence_preview(
             &fence,
             &self.document,
@@ -8203,7 +8193,11 @@ impl VibocerosApp {
             self.push_log("Fence selection is unavailable during this prompt".into());
             return;
         };
-        let preview = self.selection_preview_filter();
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
         let Some(ids) = self.viewports[self.active_viewport].objects_crossed_by_curve_preview(
             source,
             &self.document,
@@ -8218,9 +8212,6 @@ impl VibocerosApp {
     }
 
     fn apply_fence_selection_ids(&mut self, ids: Vec<ObjectId>, mode: SelectionMode) {
-        if self.pick_block_edit_sources(ids.iter().copied(), mode) {
-            return;
-        }
         if self.group_prompt.is_some() {
             self.select_group_prompt_objects(ids, mode);
         } else if self.intersection_prompt.is_some() {
@@ -8249,7 +8240,11 @@ impl VibocerosApp {
             self.push_log("Boundary selection is unavailable during this prompt".into());
             return;
         };
-        let preview = self.selection_preview_filter();
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
         let Some(ids) = self.viewports[self.active_viewport].objects_in_boundary_curve_preview(
             source,
             region_mode,
@@ -8261,9 +8256,6 @@ impl VibocerosApp {
             return;
         };
         self.boundary_selection = None;
-        if self.pick_block_edit_sources(ids.iter().copied(), selection_mode) {
-            return;
-        }
         if self.group_prompt.is_some() {
             self.select_group_prompt_objects(ids, selection_mode);
         } else if self.intersection_prompt.is_some() {
@@ -8345,7 +8337,11 @@ impl VibocerosApp {
             self.push_log("Lasso selection unavailable during this prompt".into());
             return;
         };
-        let preview = self.selection_preview_filter();
+        let preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
         let Some(ids) = self.viewports[viewport].objects_in_lasso_preview(
             &state.points,
             state.mode,
@@ -8372,9 +8368,6 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
-        if self.pick_block_edit_sources(selection.object_ids.iter().copied(), selection.mode) {
-            return;
-        }
         if self.select_block_add_region(&selection) {
             return;
         }
@@ -8428,11 +8421,6 @@ impl VibocerosApp {
     }
 
     fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
-        if let Some(id) = output.object_double_click.take()
-            && self.try_open_block_edit_double_click(id)
-        {
-            return true;
-        }
         if let Some(action) = output.surface_corner_click.take()
             && self.edit_tween_corner(action)
         {
@@ -8854,7 +8842,6 @@ impl eframe::App for VibocerosApp {
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
-                && !self.picking_block_edit_sources()
                 && !self.adding_to_block()
                 && !self.replacing_block()
                 && !self.picking_scale_by_plane_object()
@@ -8928,14 +8915,17 @@ impl eframe::App for VibocerosApp {
         } else {
             self.viewport_object_filter()
         };
-        let selection_preview = self.selection_preview_filter();
+        let selection_preview = self
+            .object_prompt
+            .as_ref()
+            .filter(|prompt| prompt.special_selection.is_some())
+            .map(|prompt| prompt.description.filter);
         let mut selection_preview_ids = self
             .object_prompt
             .as_ref()
             .and_then(|prompt| prompt.special_selection.as_ref())
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
-        selection_preview_ids.extend(self.block_edit_picked_sources());
         if let Some(id) = self
             .selection_menu
             .as_ref()

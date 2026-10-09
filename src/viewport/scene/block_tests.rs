@@ -203,3 +203,33 @@ fn definition_and_parent_color_edits_invalidate_scene_and_undo_restores_geometry
     document.redo().unwrap();
     assert_scene_equal(&changed, &view.object_scene(rect(), &document));
 }
+
+#[test]
+fn block_edit_source_preview_keeps_hidden_model_objects_and_target_hidden() {
+    let mut doc = Document::default();
+    let member = doc
+        .add_geometry(Geometry::Point(point(0., 0., 0.)))
+        .unwrap();
+    let (_, root) = doc
+        .create_block_from_objects("part", point(0., 0., 0.), [member])
+        .unwrap();
+    let visible = doc
+        .add_geometry(Geometry::Point(point(3., 0., 0.)))
+        .unwrap();
+    let hidden = doc
+        .add_geometry(Geometry::Point(point(6., 0., 0.)))
+        .unwrap();
+    doc.set_objects_visibility([hidden], false).unwrap();
+    doc.open_block_edit(root).unwrap();
+    let view = Viewport::new(ViewKind::Top);
+    let ordinary = view.object_scene(rect(), &doc);
+    let preview = view.object_scene_with_preview(
+        rect(),
+        &doc,
+        Some(ObjectSelectionFilter::BlockEditSources),
+        &[visible],
+    );
+    assert_eq!(ordinary.points.len(), preview.points.len());
+    assert_eq!(ordinary.lines.len(), preview.lines.len());
+    assert_eq!(ordinary.triangles.len(), preview.triangles.len());
+}

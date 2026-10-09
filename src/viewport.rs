@@ -361,6 +361,9 @@ fn selection_candidate(
     object: &viboceros_document::Object,
     preview: Option<ObjectSelectionFilter>,
 ) -> bool {
+    if preview == Some(ObjectSelectionFilter::BlockEditSources) {
+        return document.is_block_edit_add_candidate(object.id());
+    }
     let attributes = object.attributes();
     if !document
         .layer(attributes.layer_id())
@@ -370,7 +373,11 @@ fn selection_candidate(
     }
     match preview {
         Some(filter) => filter.accepts_object(object),
-        None => attributes.is_visible() && !attributes.is_locked(),
+        None => {
+            attributes.is_visible()
+                && !attributes.is_locked()
+                && !document.is_block_edit_protected(object.id())
+        }
     }
 }
 
@@ -453,6 +460,7 @@ pub struct ViewportOutput {
     pub taper_preview: Option<Option<Point3>>,
     pub maelstrom_preview: Option<MaelstromCursor>,
     pub selection_click: Option<SelectionClick>,
+    pub object_double_click: Option<ObjectId>,
     pub selection_choice: Option<SelectionChoice>,
     pub selection_window: Option<SelectionWindow>,
     pub circular_center_pick: Option<(Pos2, usize)>,
@@ -1737,6 +1745,14 @@ impl Viewport {
                 viewport: viewport_index,
             })
         });
+        let object_double_click = selection_pick.as_ref().and_then(|pick| {
+            let (pointer, ids) = pick.as_ref()?;
+            (ids.len() == 1
+                && pointer.y > rect.top() + 28.
+                && response.double_clicked_by(PointerButton::Primary)
+                && !modifiers.any())
+            .then(|| ids[0])
+        });
         let selection_click = selection_pick.and_then(|pick| {
             if selection_choice.is_some() {
                 return None;
@@ -2114,6 +2130,7 @@ impl Viewport {
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
             selection_click,
+            object_double_click,
             selection_choice,
             selection_window,
             circular_center_pick,

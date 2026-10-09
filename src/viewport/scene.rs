@@ -378,6 +378,7 @@ impl Viewport {
         let mut objects = Vec::new();
         let mut visible = HashSet::new();
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
+        let block_sources = preview == Some(ObjectSelectionFilter::BlockEditSources);
         let sources = transform.map(|preview| {
             preview
                 .sources
@@ -392,10 +393,14 @@ impl Viewport {
             let Some(layer) = document.layer(attributes.layer_id()) else {
                 continue;
             };
-            if !layer.is_visible() || (preview.is_some() && layer.is_locked()) {
+            if !layer.is_visible() || (preview.is_some() && !block_sources && layer.is_locked()) {
                 continue;
             }
-            if let Some(filter) = preview {
+            if block_sources {
+                if !attributes.is_visible() {
+                    continue;
+                }
+            } else if let Some(filter) = preview {
                 if !filter.accepts_object(object) {
                     continue;
                 }
@@ -403,7 +408,9 @@ impl Viewport {
                 continue;
             }
             visible.insert(object.id());
-            let mut color = if preview.is_none() && (attributes.is_locked() || layer.is_locked()) {
+            let mut color = if (preview.is_none() || block_sources)
+                && (attributes.is_locked() || layer.is_locked())
+            {
                 LOCKED_COLOR
             } else {
                 resolved_display_color(attributes, layer.color())
@@ -419,7 +426,7 @@ impl Viewport {
                 .is_some_and(|ids| ids.contains(&object.id()));
             let selected = highlighted
                 || (!transformed
-                    && preview.is_none()
+                    && (preview.is_none() || block_sources)
                     && (document.is_selected(object.id())
                         || transform
                             .is_some_and(|preview| preview.reference == Some(object.id()))));

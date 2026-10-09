@@ -97,7 +97,7 @@
     "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs": "8866879d384bb846e4fdcb9b011a28ce6b1e0927c68517f3d71a2d44bac0a29c",
     "docs/block-reset-scale-prior-source/src/app/object_selection.rs": "9326992c601ab8b749892ef63413f4a010c0dd5e137f6607fcf94f801163aa82",
     "docs/block-edit-prior-source/src/app.rs": "23ef3b8f5d44c733868fcff610ab3213a35278dbbf876cfbab28eb9ac460e700",
-    "src/app/blocks.rs": "b30fedd087de9f316f892e894e176dcf30cfc39c01222b0ff71e885361f4d501"
+    "docs/block-edit-input-prior-source/src/app/blocks.rs": "b30fedd087de9f316f892e894e176dcf30cfc39c01222b0ff71e885361f4d501"
   },
   "remaining_scope": [
     "Linked definitions and broader block editing",
@@ -114,6 +114,7 @@
     "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-reset-scale-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
     "src/app/tests/blocks.rs": "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs",
     "src/app/object_selection.rs": "docs/block-reset-scale-prior-source/src/app/object_selection.rs",
-    "src/app.rs": "docs/block-edit-prior-source/src/app.rs"
+    "src/app.rs": "docs/block-edit-prior-source/src/app.rs",
+    "src/app/blocks.rs": "docs/block-edit-input-prior-source/src/app/blocks.rs"
   }
 }

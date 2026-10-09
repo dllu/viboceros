@@ -386,3 +386,123 @@ fn window_and_crossing_filters_exclude_nonmeshes_hidden_objects_and_locked_layer
         );
     }
 }
+
+#[test]
+fn block_edit_source_picking_bypasses_only_the_workspace_lock_and_keeps_model_permissions() {
+    use viboceros_document::BlockReference;
+    use viboceros_geometry::AffineTransform3;
+    let mut doc = Document::default();
+    let member = doc
+        .add_geometry(Geometry::Point(point(0., 0., 0.)))
+        .unwrap();
+    let (definition, root) = doc
+        .create_block_from_objects("part", point(0., 0., 0.), [member])
+        .unwrap();
+    let external = doc
+        .add_geometry(Geometry::Point(point(3., 0., 0.)))
+        .unwrap();
+    let locked = doc
+        .add_geometry(Geometry::Point(point(6., 0., 0.)))
+        .unwrap();
+    doc.set_objects_locked([locked], true).unwrap();
+    let peer = doc
+        .add_block_instance(
+            BlockReference::try_new(
+                definition,
+                AffineTransform3::from_translation(Vector3::try_new(9., 0., 0.).unwrap()),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    doc.open_block_edit(root).unwrap();
+    let view = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    let preview = Some(ObjectSelectionFilter::BlockEditSources);
+    assert!(
+        view.pick_object_candidates_matching_preview(
+            view.project(point(3., 0., 0.), rect).unwrap(),
+            rect,
+            &doc,
+            ObjectSelectionFilter::BlockEditSources,
+            preview
+        )
+        .contains(&external)
+    );
+    assert!(
+        view.pick_object_candidates_matching_preview(
+            view.project(point(6., 0., 0.), rect).unwrap(),
+            rect,
+            &doc,
+            ObjectSelectionFilter::BlockEditSources,
+            preview
+        )
+        .is_empty()
+    );
+    assert!(
+        view.pick_object_candidates_matching_preview(
+            view.project(point(0., 0., 0.), rect).unwrap(),
+            rect,
+            &doc,
+            ObjectSelectionFilter::BlockEditSources,
+            preview
+        )
+        .is_empty()
+    );
+    assert!(
+        view.pick_object_candidates_matching_preview(
+            view.project(point(9., 0., 0.), rect).unwrap(),
+            rect,
+            &doc,
+            ObjectSelectionFilter::BlockEditSources,
+            preview
+        )
+        .contains(&peer)
+    );
+    assert!(!doc.is_object_selectable(external));
+}
+
+#[test]
+fn viewport_double_click_reports_one_block_hit_without_triggering_title_maximization() {
+    let mut doc = Document::default();
+    let source = doc
+        .add_geometry(Geometry::Point(point(0., 0., 0.)))
+        .unwrap();
+    let (_, root) = doc
+        .create_block_from_objects("part", point(0., 0., 0.), [source])
+        .unwrap();
+    let context = egui::Context::default();
+    let mut viewport = Viewport::new(ViewKind::Top);
+    let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+    let pointer = viewport.project(point(0., 0., 0.), rect).unwrap();
+    let mut frame = |time, events| {
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(rect),
+                    time: Some(time),
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    output = viewport.show(ui, &doc, ViewportInput::default(), &[], 0, true);
+                },
+            )
+            .drop_without_applying_deltas();
+        output
+    };
+    let event = |pressed| egui::Event::PointerButton {
+        pos: pointer,
+        pressed,
+        button: PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    frame(0., vec![]);
+    frame(0.1, vec![egui::Event::PointerMoved(pointer), event(true)]);
+    let first = frame(0.15, vec![event(false)]);
+    assert_eq!(first.object_double_click, None);
+    frame(0.2, vec![event(true)]);
+    let second = frame(0.25, vec![event(false)]);
+    assert_eq!(second.object_double_click, Some(root));
+    assert!(!second.toggle_maximized);
+}

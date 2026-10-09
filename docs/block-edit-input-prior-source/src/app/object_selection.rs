@@ -194,9 +194,6 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
-        if self.picking_block_edit_sources() {
-            return Some(ObjectSelectionFilter::BlockEditSources);
-        }
         if self.adding_to_block() {
             return Some(if self.picking_block_add_target() {
                 ObjectSelectionFilter::Blocks

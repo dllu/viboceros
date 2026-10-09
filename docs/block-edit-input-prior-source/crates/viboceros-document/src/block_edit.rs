@@ -6,7 +6,6 @@ use viboceros_geometry::{Point3, Vector3};
 pub(super) struct BlockEditSession {
     baseline: Box<Document>,
     pub(super) original_ids: BTreeSet<ObjectId>,
-    source_candidates: BTreeSet<ObjectId>,
     definition: BlockDefinitionId,
     target: ObjectId,
     placement: AffineTransform3,
@@ -28,11 +27,6 @@ impl BlockEditSession {
 }
 
 impl Document {
-    pub fn is_block_edit_protected(&self, id: ObjectId) -> bool {
-        self.block_edit
-            .as_ref()
-            .is_some_and(|edit| edit.protects(id))
-    }
     pub fn is_block_editing(&self) -> bool {
         self.block_edit.is_some()
     }
@@ -45,26 +39,6 @@ impl Document {
     pub fn block_edit_add_candidates(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.block_edit_add_candidate_objects().map(|o| o.id)
     }
-    pub fn is_block_edit_add_candidate(&self, id: ObjectId) -> bool {
-        self.block_edit.as_ref().is_some_and(|edit| {
-            if id == edit.target {
-                return false;
-            }
-            if edit.original_ids.contains(&id) {
-                edit.source_candidates.contains(&id)
-            } else if edit.settings.released.contains(&id) {
-                self.object(id).is_some_and(|o| {
-                    o.attributes.visible
-                        && !o.attributes.locked
-                        && self
-                            .layer(o.attributes.layer_id)
-                            .is_some_and(|l| l.visible && !l.locked)
-                })
-            } else {
-                false
-            }
-        })
-    }
     pub fn block_edit_add_candidate_objects(&self) -> impl Iterator<Item = &Object> + '_ {
         self.block_edit.iter().flat_map(|edit| {
             edit.baseline
@@ -74,9 +48,6 @@ impl Document {
                     edit.settings.released.contains(&o.id)
                         && o.attributes.visible
                         && !o.attributes.locked
-                        && self
-                            .layer(o.attributes.layer_id)
-                            .is_some_and(|layer| layer.visible && !layer.locked)
                 }))
         })
     }
@@ -135,11 +106,6 @@ impl Document {
             .to_vec();
         let baseline = Box::new(self.clone());
         let original_ids = self.objects.iter().map(|o| o.id).collect::<BTreeSet<_>>();
-        let source_candidates = self
-            .selectable_objects()
-            .filter(|o| o.id != target)
-            .map(|o| o.id)
-            .collect();
         let mut working = self.clone();
         working.clear_selection();
         working.control_points.clear();
@@ -191,7 +157,6 @@ impl Document {
         working.block_edit = Some(Box::new(BlockEditSession {
             baseline,
             original_ids,
-            source_candidates,
             definition,
             target,
             placement,

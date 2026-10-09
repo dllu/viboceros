@@ -1,8 +1,6 @@
 # BlockEdit
 
-`BlockEdit` opens one selected block instance for in-place editing. Double-click
-an unambiguous visible block in an idle viewport to open the same editor.
-Command-first
+`BlockEdit` opens one selected block instance for in-place editing. Command-first
 input uses the block picker; scripts can use `BlockEdit Open <object-id>`. The
 definition's direct members appear in the selected instance's world frame and
 can be changed with ordinary selection, geometry and transform commands. Newly
@@ -16,23 +14,15 @@ edit before opening or exporting a file.
 
 `BlockEdit AddObject <object-id> ...` copies external objects into the edit while
 retaining the originals in the model. The window's model-object chooser provides
-the same operation. Bare `BlockEdit AddObject` and **Pick objects to add** start
-viewport picking. Clicks accumulate external sources, Shift toggles, Ctrl removes;
-window/crossing selection and SelAll/SelNone use the same source set. Enter copies
-the chosen objects; Esc cancels the getter while leaving BlockEdit open. Original
-model permissions still apply. Picks are highlighted independently of the editable
-member selection and never unlock the model.
-`BlockEdit RemoveObject [object-id ...]` releases members to
+the same operation. `BlockEdit RemoveObject [object-id ...]` releases members to
 the model on save; bare input uses preselection or the ordinary member picker.
 Released objects stay protected until the edit closes. Discard removes these
 temporary copies and releases along with all other workspace changes.
 Copied nested references retain attribute text while clearing geometry text;
 the external source keeps both text stores, matching the native dialog.
 
-`BlockEdit SetBasePoint x,y,z` sets a world-space insertion reference. Bare
-`BlockEdit SetBasePoint` and **Pick base point** use the ordinary point getter,
-including snapping, point filters and construction-plane coordinate input. The
-window also accepts explicit coordinates. The scene stays in its current world frame while
+`BlockEdit SetBasePoint x,y,z` sets a world-space insertion reference. The window
+also accepts coordinates. The scene stays in its current world frame while
 editing; save shifts the shared definition so the chosen base point corresponds
 to each root's existing insertion location. Root placements stay unchanged and
 released objects retain their original world positions. These controls have
@@ -85,12 +75,9 @@ circle. The compared member arrays retain native order and attached metadata.
 Native controls are exercised from Rhino's idle event through public WPF/Win32
 interfaces, with a getter-prompt handshake and prescribed command-line input.
 
-See [input validation](../block-edit-input-provenance.json) for the newer viewport
-input tests and owned native double-click capture. This gesture capture verifies
-opening and discard on one line instance; it does not establish all picking,
-ambiguity, snapping or native selection/history behavior.
-
-Nested-definition navigation and linked definitions remain unimplemented. Saving an
+Nested-definition navigation, viewport picking of external Add Object sources,
+interactive base-point picking, double-click opening and linked definitions
+remain unimplemented. Saving an
 empty definition with existing placements is rejected by the current instance
 admission rules. This milestone adds no GPU or performance measurements and does
 not establish full Rhino BlockEdit compatibility.

@@ -2538,6 +2538,17 @@ tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.unjoin_edg
 
 ## BlockEdit dialog controls
 
+An owned native viewport gesture is captured separately with:
+
+```sh
+WINEDLLOVERRIDES='sspicli,secur32,schannel=b' tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.block_edit_double_click_capture --output /tmp/block-edit-double-click.json --timeout 300
+```
+
+This probe uses a fresh line instance and a real double-click at its projected
+midpoint, checks exposed members and root visibility, then discards and compares
+the original model IDs. It uses the existing owned-process/idle picker transport;
+its envelope is a dedicated gesture experiment, not a new geometry operation.
+
 `block_workflow` supports `edit_roundtrip` with optional `add_objects` model
 handles, `remove_members` definition-member ordinals and a world `base_point`.
 Saved releases allocate logical model handles; discarded releases allocate none.

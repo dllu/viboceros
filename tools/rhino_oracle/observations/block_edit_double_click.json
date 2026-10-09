@@ -1,0 +1,22 @@
+{
+  "iterations": 1,
+  "protocol_version": 1,
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "value": {
+        "definition_members": 1,
+        "root_visible": false,
+        "restored_model": true,
+        "member_names": [
+          "DoubleClickMember"
+        ],
+        "exposed": 1,
+        "opened": true
+      },
+      "id": "block-double-click"
+    }
+  ]
+}
