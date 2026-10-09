@@ -1,0 +1,436 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "single-root-placement",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            2
+          ],
+          "name": "target",
+          "all_instances": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "selected-one-of-three",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            4
+          ],
+          "name": "target",
+          "all_instances": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "all-instances",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            4
+          ],
+          "name": "target",
+          "all_instances": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "all-includes-protected",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "object_state",
+          "objects": [
+            2
+          ],
+          "mode": "hidden"
+        },
+        {
+          "action": "object_state",
+          "objects": [
+            5
+          ],
+          "mode": "locked"
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            4
+          ],
+          "name": "target",
+          "all_instances": true
+        }
+      ]
+    }
+  ]
+}

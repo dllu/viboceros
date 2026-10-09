@@ -1,0 +1,248 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "metadata-groups-reflection",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              10
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "RootName",
+            "color": [
+              91,
+              73,
+              51
+            ],
+            "color_source": "object",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "RootShape": "data"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            4
+          ]
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            4
+          ],
+          "name": "target",
+          "all_instances": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "all-keeps-nested-references-original",
+      "record_management": true,
+      "record_groups": true,
+      "record_states": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            7,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "original",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "target",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              10
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "container",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            4
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "original",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              20
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "replace_block",
+          "objects": [
+            2
+          ],
+          "name": "target",
+          "all_instances": true
+        }
+      ]
+    }
+  ]
+}

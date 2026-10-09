@@ -8,12 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_replace_and_state_inputs_are_validated_before_host_access(self):
-        for step in(dict(action='replace_block',objects=[],name='leaf'),dict(action='replace_block',objects=[0],name='leaf'),dict(action='replace_block',objects=[1,1],name='leaf'),dict(action='replace_block',objects=[1],name='missing'),dict(action='replace_block',objects=[1],name='leaf',all_instances=1),dict(action='object_state',objects=[1],mode='secret'),dict(action='object_state',objects=[True],mode='hidden')):
-            f=self.fixture();f['steps'].append(step)
-            with self.subTest(step=step),self.assertRaises(ValueError):probe.run(f,None,{})
-    def test_replace_all_updates_symbolic_peers_without_allocating_handles(self):
-        f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]));f['steps'].extend([dict(action='create',name='target',base=[0,0,0],sources=[1]),dict(action='replace_block',objects=[2],name='target',all_instances=True),dict(action='delete_definition',name='leaf'),dict(action='group',objects=[2,3])]);probe.validate(f)
     def test_unique_selection_and_duplicate_names_are_validated_before_host(self):
         for step in (dict(action='make_unique',objects=[],name='New'),dict(action='make_unique',objects=[0],name='New'),
                      dict(action='make_unique',objects=[1,1],name='New'),dict(action='make_unique',objects=[1],name='bad name'),

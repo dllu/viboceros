@@ -15,8 +15,6 @@ pub struct BlockWorkflowFixture {
     pub record_groups: bool,
     #[serde(default)]
     pub record_management: bool,
-    #[serde(default)]
-    pub record_states: bool,
     pub steps: Vec<BlockStep>,
 }
 
@@ -87,16 +85,6 @@ pub enum BlockStep {
         name: String,
         new_name: String,
     },
-    ReplaceBlock {
-        objects: Vec<usize>,
-        name: String,
-        #[serde(default)]
-        all_instances: bool,
-    },
-    ObjectState {
-        objects: Vec<usize>,
-        mode: String,
-    },
     DeleteDefinition {
         name: String,
         #[serde(default)]
@@ -150,7 +138,6 @@ pub(super) fn run(
         &mut records_left,
         f.record_groups,
         f.record_management,
-        f.record_states,
     )?];
     for step in &f.steps {
         let mut succeeded = None;
@@ -286,52 +273,6 @@ pub(super) fn run(
                 document.duplicate_block_definition(id, new_name)?;
                 Vec::new()
             }
-            BlockStep::ReplaceBlock {
-                objects,
-                name,
-                all_instances,
-            } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let target = document
-                    .block_definition_by_name(name)
-                    .ok_or_else(invalid)?
-                    .id();
-                let ids = objects
-                    .iter()
-                    .map(|i| live(&document, &handles, *i))
-                    .collect::<Result<Vec<_>, _>>()?;
-                document.replace_block_instances(target, ids, *all_instances)?;
-                Vec::new()
-            }
-            BlockStep::ObjectState { objects, mode } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let ids = objects
-                    .iter()
-                    .map(|i| live(&document, &handles, *i))
-                    .collect::<Result<Vec<_>, _>>()?;
-                match mode.as_str() {
-                    "normal" => {
-                        document.set_objects_visibility(ids.clone(), true)?;
-                        document.set_objects_locked(ids, false)?;
-                    }
-                    "hidden" => {
-                        document.set_objects_visibility(ids, false)?;
-                    }
-                    "locked" => {
-                        document.set_objects_locked(ids, true)?;
-                    }
-                    _ => return Err(invalid()),
-                }
-                Vec::new()
-            }
             BlockStep::DeleteDefinition {
                 name,
                 expect_failure,
@@ -363,7 +304,6 @@ pub(super) fn run(
             &mut records_left,
             f.record_groups,
             f.record_management,
-            f.record_states,
         )?;
         value["outputs"] = json!(output_handles);
         if let Some(succeeded) = succeeded {
@@ -510,7 +450,6 @@ fn snapshot(
     left: &mut usize,
     record_groups: bool,
     record_management: bool,
-    record_states: bool,
 ) -> Result<Value, ProbeError> {
     let group_index = document
         .groups()
@@ -578,9 +517,6 @@ fn snapshot(
     }
     definitions.sort_by(|a, b| a["name"].as_str().cmp(&b["name"].as_str()));
     let mut value = json!({"objects": objects, "definitions": definitions});
-    if record_states {
-        value["object_states"]=json!(handles.iter().enumerate().filter_map(|(i,id)|document.object(*id).map(|o|json!({"handle":i,"visible":o.attributes().is_visible(),"locked":o.attributes().is_locked()}))).collect::<Vec<_>>());
-    }
     if record_groups {
         value["groups"] = json!(document.groups().enumerate().map(|(i,g)| json!({"index":i,"objects": handles.iter().enumerate().filter_map(|(j,id)| g.members().any(|member| member==*id).then_some(j)).collect::<Vec<_>>()})).collect::<Vec<_>>());
     }

@@ -1,0 +1,6691 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "single-root-placement",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 0,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 0
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "selected-one-of-three",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 0,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 0
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              }
+            ],
+            "outputs": [
+              4
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 3,
+                  "total": 3
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": [
+              5
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            17.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "all-instances",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 0,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 0
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              }
+            ],
+            "outputs": [
+              4
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 3,
+                  "total": 3
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": [
+              5
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 4,
+                  "total": 4
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            17.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            27.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "all-includes-protected",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 0,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 0
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 1,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-1",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      7.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              }
+            ],
+            "outputs": [
+              4
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 3,
+                  "total": 3
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": [
+              5
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 3,
+                  "total": 3
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": false
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": false,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 3,
+                  "total": 3
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": false
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": true,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "original",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            21.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "original",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "original",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-1",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          7.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    },
+                    "groups": []
+                  }
+                ],
+                "name": "target",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 4,
+                  "total": 4
+                }
+              }
+            ],
+            "groups": [],
+            "object_states": [
+              {
+                "handle": 2,
+                "locked": false,
+                "visible": false
+              },
+              {
+                "handle": 3,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 4,
+                "locked": false,
+                "visible": true
+              },
+              {
+                "handle": 5,
+                "locked": true,
+                "visible": true
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 2
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            7.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            17.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "target",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-1",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            27.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "groups": [],
+                      "path": [
+                        [
+                          "target",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "groups": [],
+                "handle": 5
+              }
+            ],
+            "outputs": []
+          }
+        ]
+      }
+    }
+  ]
+}

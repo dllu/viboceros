@@ -72,7 +72,6 @@ def validate(operation):
         raise ValueError('invalid block group recording')
     if type(operation.get('record_management', False)) is not bool:
         raise ValueError('invalid block management recording')
-    if type(operation.get('record_states',False)) is not bool:raise ValueError('invalid block state recording')
     handles = [None] * len(sources)  # None means ordinary geometry; absent means deleted.
     alive = set(range(len(sources)))
     definitions = {}
@@ -182,20 +181,6 @@ def validate(operation):
             old,new=_name(step['name']),_name(step['new_name'])
             if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
             definitions[new]=definitions[old][:];outputs=[]
-        elif action=='replace_block':
-            picks=step.get('objects');target=_name(step.get('name'))
-            if (set(step)-set(('action','objects','name','all_instances')) or not isinstance(picks,list) or not picks
-                    or any(type(i)is not int or i not in alive or handles[i]is None for i in picks) or len(set(picks))!=len(picks)
-                    or len(set(handles[i]for i in picks))!=1 or target not in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['name'])
-                    or type(step.get('all_instances',False))is not bool):raise ValueError('invalid replacement block sources or name')
-            original=handles[picks[0]]
-            changed=[i for i in alive if handles[i]==original] if step.get('all_instances',False) else picks
-            for i in changed:handles[i]=target
-            outputs=[]
-        elif action=='object_state':
-            picks=step.get('objects')
-            if set(step)!=set(('action','objects','mode')) or not isinstance(picks,list)or not picks or any(type(i)is not int or i not in alive for i in picks)or len(set(picks))!=len(picks)or step['mode']not in ('normal','hidden','locked'):raise ValueError('invalid object state')
-            outputs=[]
         elif action=='delete_definition':
             if set(step)-set(('action','name','expect_failure')) or 'name' not in step or type(step.get('expect_failure',False)) is not bool: raise ValueError('invalid block delete fields')
             name=_name(step['name'])
@@ -355,8 +340,6 @@ def run(operation, tolerance, host):
             catalog.append(value)
         catalog.sort(key=lambda d: d['name'])
         value=dict(objects=objects, definitions=catalog)
-        if operation.get('record_states',False):
-            value['object_states']=[dict(handle=i,visible=bool(o.Attributes.Visible),locked=bool(o.IsLocked)) for i,key in enumerate(handles) for o in [document.Objects.FindId(key)] if o is not None and not o.IsDeleted]
         if record_groups:
             value['groups']=[dict(index=i-group_start,objects=[j for j,key in enumerate(handles) if document.Objects.FindId(key) is not None and not document.Objects.FindId(key).IsDeleted and i in (document.Objects.FindId(key).Attributes.GetGroupList() or [])]) for i in range(group_start,document.Groups.Count) if not document.Groups.IsDeleted(i)]
         return value
@@ -498,19 +481,6 @@ def run(operation, tolerance, host):
                     if len(additions)!=1:raise ValueError('native duplicate catalog mismatch')
                     definition=additions[0];definitions.append(definition.Index);by_name[_fold(step['new_name'])]=definition.Index;definition_names[definition.Id]=step['new_name']
                 finally:document.Objects.Delete(temp,True)
-            elif action=='object_state':
-                for j in step['objects']:
-                    obj=document.Objects.FindId(handles[j]);a=obj.Attributes.Duplicate();owned_attributes.append(a)
-                    a.Mode={'normal':Rhino.DocObjects.ObjectMode.Normal,'hidden':Rhino.DocObjects.ObjectMode.Hidden,'locked':Rhino.DocObjects.ObjectMode.Locked}[step['mode']]
-                    if not document.Objects.ModifyAttributes(obj.Id,a,True):raise ValueError('native root state failed')
-            elif action=='replace_block':
-                picks=sorted(step['objects']);original=document.Objects.FindId(handles[picks[0]]).InstanceDefinition
-                extra=len(original.GetReferences(0))>len(picks)
-                document.Objects.UnselectAll()
-                for j in picks:document.Objects.Select(handles[j])
-                choice=('_All ' if step.get('all_instances',False) else '_None ') if extra else ''
-                script='_-ReplaceBlock '+choice+'_BlockDefinitionName '+prefix+step['name']
-                if not rs.Command(script,False):raise ValueError('native ReplaceBlock failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
             elif action=='delete_definition':
                 index=by_name[_fold(step['name'])]
                 # BlockManager prohibits deleting a definition nested in any

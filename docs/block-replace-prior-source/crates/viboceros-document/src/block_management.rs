@@ -19,60 +19,6 @@ impl BlockDefinitionInfo {
 }
 
 impl Document {
-    /// Replace roots' definitions without changing placement or attributes.
-    /// Geometry-attached root text is cleared, matching native replacement.
-    /// All includes protected model roots of the original definition, while
-    /// keeping references inside catalog definitions unchanged.
-    pub fn replace_block_instances(
-        &mut self,
-        target: BlockDefinitionId,
-        sources: impl IntoIterator<Item = ObjectId>,
-        all: bool,
-    ) -> Result<usize, DocumentError> {
-        self.block_definition(target)
-            .ok_or(DocumentError::BlockDefinitionNotFound(target))?;
-        let mut indices = self.resolve_object_indices(sources)?;
-        if indices.is_empty() {
-            return Err(DocumentError::InvalidBlockCatalog(
-                "replacement selection is empty",
-            ));
-        }
-        let mut original = None;
-        for &index in &indices {
-            let object = &self.objects[index];
-            self.ensure_object_editable(object)?;
-            let Geometry::BlockInstance(instance) = object.geometry() else {
-                return Err(DocumentError::NotBlockInstance(object.id()));
-            };
-            if original.is_some_and(|id| id != instance.reference().definition()) {
-                return Err(DocumentError::InvalidBlockCatalog(
-                    "replacement sources must share one definition",
-                ));
-            }
-            original = Some(instance.reference().definition());
-        }
-        if all {
-            indices=self.objects.iter().enumerate().filter_map(|(i,o)|matches!(o.geometry(),Geometry::BlockInstance(b)if b.reference().definition()==original.unwrap()).then_some(i)).collect();
-        }
-        let staged = indices
-            .into_iter()
-            .map(|index| {
-                let Geometry::BlockInstance(instance) = self.objects[index].geometry() else {
-                    unreachable!()
-                };
-                let reference = BlockReference::try_new(target, instance.reference().transform())?;
-                Ok((index, self.block_instance_geometry(reference)?))
-            })
-            .collect::<Result<Vec<_>, DocumentError>>()?;
-        self.commit_object_geometries(
-            staged,
-            "ReplaceBlock",
-            "Replace block definition",
-            ReplacementHistory::EveryReplacement,
-            false,
-        )
-    }
-
     /// Duplicate one embedded definition, retaining nested references and
     /// immutable member geometry. No instance is added or rebound.
     pub fn duplicate_block_definition(

@@ -298,7 +298,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    ReplaceBlock,
     CreateUniqueBlock,
     Block {
         base: Option<Point3>,
@@ -702,7 +701,6 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::CreateUniqueBlock => "CreateUniqueBlock",
-            Self::ReplaceBlock => "ReplaceBlock",
             Self::Block { .. } => "Block",
             Self::Insert { .. } => "Insert",
             Self::Angle { .. } => "Angle",
@@ -816,9 +814,6 @@ impl InteractiveCommand {
             Self::Block { base: None } => "Block: pick a base point (Esc cancels)",
             Self::CreateUniqueBlock => {
                 "CreateUniqueBlock: enter the new definition name (Esc cancels)"
-            }
-            Self::ReplaceBlock => {
-                "ReplaceBlock: enter the target definition name (All/None sets scope; Esc cancels)"
             }
             Self::Block { base: Some(_) } => "Block: enter the definition name (Esc cancels)",
             Self::Insert { has_name: false } => {
@@ -1576,7 +1571,6 @@ impl InteractiveCommand {
             },
             Self::Point
             | Self::CreateUniqueBlock
-            | Self::ReplaceBlock
             | Self::Block { .. }
             | Self::Insert { .. }
             | Self::EvaluatePoint
@@ -5217,8 +5211,7 @@ impl VibocerosApp {
         match command {
             InteractiveCommand::Block { .. }
             | InteractiveCommand::Insert { .. }
-            | InteractiveCommand::CreateUniqueBlock
-            | InteractiveCommand::ReplaceBlock => return false,
+            | InteractiveCommand::CreateUniqueBlock => return false,
             InteractiveCommand::ScaleByPlane(prompt) => {
                 return self.accept_scale_by_plane_point(prompt, point);
             }

@@ -50,20 +50,10 @@
   "native_helper_note": "Base capture predates the duplicate_definition reference branch; existing make_unique behavior is unchanged. The follow-up uses the helper with that branch.",
   "duplicate_reference_contract": "Unused duplication is measured by native CreateUniqueBlock on a temporary insert followed by deletion of that insert; it is not a panel Duplicate button capture.",
   "sha256": {
-    "crates/viboceros-document/src/block_management.rs": "143ca1b2924702b7ba7d39b1e03246a5d4183c6a95dcd983ea914259fd7e1cfa",
-    "crates/viboceros-document/src/block_management/tests.rs": "1eb09a6afa6774062fc17df288cd0caf81c9f50140079e50c8154f7907087519",
     "crates/viboceros-command/src/create_unique_block.rs": "76a888ed4b8bad03f2680e44c6f5c39253ed137ab863c68fa0e35c7d208b6f72",
     "crates/viboceros-command/src/create_unique_block/tests.rs": "b6567900a627470b66106a3f0287b52c12826ea25f82813e9987920ec55bc60b",
-    "crates/viboceros-command/src/lib.rs": "becf97372c0d8c332fe3343ed45971afc25e4ece62ca5d26366bf5edc26daede",
-    "crates/viboceros-oracle/src/block_workflow.rs": "18d84f822bdb51a60673972fa1d2f230e5763e8988074413ad4d8cc98a1d6f96",
-    "crates/viboceros-oracle/tests/block_workflow.rs": "4891a290467d8e9d91cb1b44789d672baaa60ae69625bee59bb01ab37a229628",
-    "src/app.rs": "baea1d36b56f2f3acc105b9f7a9331394e7f79067417b4c69908abcdd89f5377",
-    "src/app/blocks.rs": "2a5b1fa647211e996acf689c52d67ab8005c0c70fb9f245133513035e2d798bb",
     "src/app/block_manager.rs": "188a13187bff8738d4709398d7c59dc9890d1baa869b4e23a58500e24fccf781",
-    "src/app/tests/blocks.rs": "fab372f1aaee153cd0732a80b9727caea7942affedbf6694cd553d0d28f0a1c9",
     "src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d",
-    "tools/rhino_oracle/block_workflow_probe.py": "5bf5efe3c698946ca1f4adfd64955de45ce2589d5ddf5a829265f73cc76be824",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "2a43fbc267b452a919579dfe87cd1251b8b7ee8dc31a2fe6d699cfa3b2c8a2d1",
     "tools/rhino_oracle/fixtures/block_unique.json": "217b1818ba058cc4e9d7c333960d7a5f5a63a36a193d7c31182d709a3e97a6ea",
     "tools/rhino_oracle/fixtures/block_unique_followup.json": "e8446ef573a55b740f875875cb66614a43121fcacc9adcc321cdb385d08a7073",
     "tools/rhino_oracle/observations/block_unique.json": "5067af2db5e8b42d3cae48e895ffdb93db6bc70172ff17664d6e677ce91d68c0",
@@ -80,11 +70,33 @@
     "docs/block-unique-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "63e7025c588d6c61fbe42ed74971dc0b1af9a97374239aa06ba10c4ef1854e63",
     "docs/block-unique-prior-source/crates/viboceros-command/src/lib.rs": "5dfb84c836a7307a0d398c86e7200b929c764402cf069bb4b1d8e4e3adba79dd",
     "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs": "dcb5f93dd600a6536b3b21faccd8573711c64db2741ef90bd35e9b580603b686",
-    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management/tests.rs": "cd8553f5f2ab586c75a5eff82d48b7ee7e3ccc495cfb63a853f3de5c5cb2ae33"
+    "docs/block-unique-prior-source/crates/viboceros-document/src/block_management/tests.rs": "cd8553f5f2ab586c75a5eff82d48b7ee7e3ccc495cfb63a853f3de5c5cb2ae33",
+    "docs/block-replace-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "18d84f822bdb51a60673972fa1d2f230e5763e8988074413ad4d8cc98a1d6f96",
+    "docs/block-replace-prior-source/src/app.rs": "baea1d36b56f2f3acc105b9f7a9331394e7f79067417b4c69908abcdd89f5377",
+    "docs/block-replace-prior-source/tools/rhino_oracle/block_workflow_probe.py": "5bf5efe3c698946ca1f4adfd64955de45ce2589d5ddf5a829265f73cc76be824",
+    "docs/block-replace-prior-source/crates/viboceros-document/src/block_management/tests.rs": "1eb09a6afa6774062fc17df288cd0caf81c9f50140079e50c8154f7907087519",
+    "docs/block-replace-prior-source/src/app/blocks.rs": "2a5b1fa647211e996acf689c52d67ab8005c0c70fb9f245133513035e2d798bb",
+    "docs/block-replace-prior-source/crates/viboceros-document/src/block_management.rs": "143ca1b2924702b7ba7d39b1e03246a5d4183c6a95dcd983ea914259fd7e1cfa",
+    "docs/block-replace-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "2a43fbc267b452a919579dfe87cd1251b8b7ee8dc31a2fe6d699cfa3b2c8a2d1",
+    "docs/block-replace-prior-source/src/app/tests/blocks.rs": "fab372f1aaee153cd0732a80b9727caea7942affedbf6694cd553d0d28f0a1c9",
+    "docs/block-replace-prior-source/crates/viboceros-command/src/lib.rs": "becf97372c0d8c332fe3343ed45971afc25e4ece62ca5d26366bf5edc26daede",
+    "docs/block-replace-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "4891a290467d8e9d91cb1b44789d672baaa60ae69625bee59bb01ab37a229628"
   },
   "remaining_scope": [
     "Native naming defaults and protected/group selection fidelity",
     "Linked definitions and deeper block editing",
     "Panel duplicate interaction parity, GPU behavior and performance"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-replace-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
+    "src/app.rs": "docs/block-replace-prior-source/src/app.rs",
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-replace-prior-source/tools/rhino_oracle/block_workflow_probe.py",
+    "crates/viboceros-document/src/block_management/tests.rs": "docs/block-replace-prior-source/crates/viboceros-document/src/block_management/tests.rs",
+    "src/app/blocks.rs": "docs/block-replace-prior-source/src/app/blocks.rs",
+    "crates/viboceros-document/src/block_management.rs": "docs/block-replace-prior-source/crates/viboceros-document/src/block_management.rs",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-replace-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
+    "src/app/tests/blocks.rs": "docs/block-replace-prior-source/src/app/tests/blocks.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-replace-prior-source/crates/viboceros-command/src/lib.rs",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-replace-prior-source/crates/viboceros-oracle/tests/block_workflow.rs"
+  }
 }

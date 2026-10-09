@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested ReplaceBlock, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`dd130d9e` (earlier milestones used `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`7f9f07b6` (earlier milestones used `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[replacement provenance](block-replace-provenance.json),
 [unique-definition provenance](block-unique-provenance.json),
 [management provenance](block-manager-provenance.json),
 [group provenance](block-group-provenance.json),
@@ -25,7 +26,7 @@ Code and measurement hashes are retained in
 [surface-edit provenance](surface-edit-certificate-provenance.json),
 [preview provenance](curve-rebuild-preview-provenance.json) and
 [cross-target provenance](retrim-target-cache-provenance.json). Git metadata was
-mounted read-only during those captures. Git writes were enabled later on
+mounted read-only during the earlier captures. Git writes were enabled later on
 October 8, allowing these previously validated changes to be committed.
 
 ## Commands and results
@@ -39,25 +40,35 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,489 Rust tests:
+5,495 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,063 | 17 |
-| Command | 1,224 | 2 |
-| Document | 229 | 5 |
+| App | 1,064 | 17 |
+| Command | 1,226 | 2 |
+| Document | 231 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,099 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 498 | 0 |
+| Oracle (unit and integration) | 499 | 0 |
 
-The Python suite passed 1,030 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,032 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [unique-definition workflow](commands/create-unique-block.md) adds
+The newest [ReplaceBlock workflow](commands/replace-block.md) adds two document
+tests, two command tests, one GUI test, one replay test and two Python validation
+tests. Six private-Xvfb native workflows match all 37 states for selected-only
+and All scope, protected peers, reflected nonuniform placements, root metadata
+and groups, and unchanged nested definition references. Replacement retains root
+IDs and placements but clears geometry-attached root text. Local tests constrain
+atomic preparation, protected explicit selection and Undo/Redo. Replacement
+instance picking, the definition-list chooser, layer-level protection, native
+option memory, linked definitions and performance remain open.
+
+The preceding [unique-definition workflow](commands/create-unique-block.md) adds
 three document tests, two command tests, two GUI tests, one replay test and two
 Python validation tests. Five private-Xvfb native workflows match all 30 states
 for placement, root identity/metadata/groups, shared child definitions, subsequent

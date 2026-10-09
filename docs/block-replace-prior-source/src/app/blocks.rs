@@ -4,10 +4,6 @@ use viboceros_command::blocks::{InsertOptions, base_point, tokenize};
 
 #[derive(Clone, Debug)]
 pub(super) enum PendingBlock {
-    Replace {
-        sources: Vec<ObjectId>,
-        all: bool,
-    },
     Unique {
         sources: Vec<ObjectId>,
     },
@@ -28,35 +24,6 @@ impl VibocerosApp {
     ) -> bool {
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let name = input[..end].trim_start_matches(['_', '-']);
-        if name.eq_ignore_ascii_case("ReplaceBlock") {
-            let words = match tokenize(&input[end..]) {
-                Ok(w) => w,
-                Err(_) => return false,
-            };
-            let (all, target) = match viboceros_command::replace_block::options(&words) {
-                Ok(v) => v,
-                Err(_) => return false,
-            };
-            if target.is_some() {
-                return false;
-            }
-            let sources = picked.map(<[ObjectId]>::to_vec).unwrap_or_else(|| {
-                self.document
-                    .selected_objects()
-                    .filter(|o| matches!(o.geometry(), Geometry::BlockInstance(_)))
-                    .map(|o| o.id())
-                    .collect()
-            });
-            if sources.is_empty() {
-                return false;
-            }
-            self.cancel_interactive_command(false);
-            self.block_session = Some(PendingBlock::Replace { sources, all });
-            self.active_command = Some(InteractiveCommand::ReplaceBlock);
-            self.command_input.clear();
-            self.push_log(self.active_command.unwrap().prompt().into());
-            return true;
-        }
         if name.eq_ignore_ascii_case("CreateUniqueBlock") {
             if !input[end..].trim().is_empty() {
                 return false;
@@ -175,52 +142,6 @@ impl VibocerosApp {
             return false;
         }
         match (session, self.active_command) {
-            (PendingBlock::Replace { sources, all }, Some(InteractiveCommand::ReplaceBlock)) => {
-                let words = match tokenize(input) {
-                    Ok(w) => w,
-                    Err(error) => {
-                        self.push_log(format!("Error: {error}"));
-                        self.command_input.clear();
-                        return true;
-                    }
-                };
-                let (scope, target) = match viboceros_command::replace_block::options(&words) {
-                    Ok(v) => v,
-                    Err(error) => {
-                        self.push_log(format!("Error: {error}"));
-                        self.command_input.clear();
-                        return true;
-                    }
-                };
-                let supplied_scope = words.iter().any(|w| {
-                    w.trim_start_matches('_').eq_ignore_ascii_case("All")
-                        || w.trim_start_matches('_').eq_ignore_ascii_case("None")
-                });
-                let all = if supplied_scope { scope } else { all };
-                if let Some(name) = target {
-                    if let Some(definition) = self.document.block_definition_by_name(name) {
-                        match self.document.replace_block_instances(
-                            definition.id(),
-                            sources.clone(),
-                            all,
-                        ) {
-                            Ok(count) => {
-                                self.push_log(format!(
-                                    "Replaced {count} instance(s) with '{name}'"
-                                ));
-                                self.cancel_interactive_command(false);
-                            }
-                            Err(error) => self.push_log(format!("Error: {error}")),
-                        }
-                    } else {
-                        self.push_log(format!("Error: block definition '{name}' was not found"));
-                    }
-                } else {
-                    self.block_session = Some(PendingBlock::Replace { sources, all });
-                }
-                self.command_input.clear();
-                true
-            }
             (PendingBlock::Unique { sources }, Some(InteractiveCommand::CreateUniqueBlock)) => {
                 let words = match tokenize(input) {
                     Ok(w) if w.len() == 1 => w,
@@ -374,8 +295,7 @@ impl VibocerosApp {
                 Some(
                     InteractiveCommand::Block { .. }
                     | InteractiveCommand::Insert { .. }
-                    | InteractiveCommand::CreateUniqueBlock
-                    | InteractiveCommand::ReplaceBlock,
+                    | InteractiveCommand::CreateUniqueBlock,
                 ),
                 _,
             ) => Some(false),

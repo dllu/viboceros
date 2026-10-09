@@ -111,45 +111,6 @@ fn unique_block_name_prompt_and_cancel_preserve_model_until_acceptance() {
 }
 
 #[test]
-fn replacement_name_scope_prompt_and_cancel_preserve_sources_until_acceptance() {
-    let mut app = test_app();
-    for (name, x) in [("original", 1), ("target", 7)] {
-        enter(&mut app, &format!("Point {x},0,0"));
-        let id = app.document.objects().last().unwrap().id();
-        app.document
-            .select_objects_direct([id], SelectionMode::Replace)
-            .unwrap();
-        enter(&mut app, &format!("Block 0,0,0 {name}"));
-    }
-    let original = app.document.objects().next().unwrap().id();
-    enter(&mut app, "Insert original 10,0,0");
-    let chosen = app.document.objects().last().unwrap().id();
-    app.document
-        .select_objects_direct([chosen], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "ReplaceBlock");
-    assert_eq!(app.active_command, Some(InteractiveCommand::ReplaceBlock));
-    enter(&mut app, "All");
-    assert_eq!(format!("{:?}", app.document), before);
-    app.cancel_interactive_command(false);
-    assert_eq!(format!("{:?}", app.document), before);
-    enter(&mut app, "ReplaceBlock");
-    enter(&mut app, "All");
-    enter(&mut app, "target");
-    assert!(app.active_command.is_none());
-    let target = app
-        .document
-        .block_definition_by_name("target")
-        .unwrap()
-        .id();
-    assert!(
-        matches!(app.document.object(original).unwrap().geometry(),Geometry::BlockInstance(i)if i.reference().definition()==target)
-    );
-    assert_eq!(app.document.undo_label(), Some("ReplaceBlock"));
-}
-
-#[test]
 fn preselected_creation_gets_base_and_quoted_name_then_insertion_gets_name_options_and_point() {
     let mut app = test_app();
     let source = source(&mut app);
