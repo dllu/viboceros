@@ -86,7 +86,6 @@ mod copy_options;
 mod distribute;
 mod document_brep;
 mod document_units;
-mod edge_analysis;
 mod extract_surface;
 mod section_command;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
@@ -425,11 +424,6 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: contour_command::Fixture,
-    },
-    EdgeAnalysis {
-        id: String,
-        #[serde(flatten)]
-        fixture: edge_analysis::Fixture,
     },
     SectionCommand {
         id: String,
@@ -2191,7 +2185,6 @@ impl Operation {
             | Self::PlaneArray { id, .. }
             | Self::SectionCommand { id, .. }
             | Self::ContourCommand { id, .. }
-            | Self::EdgeAnalysis { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
@@ -2831,7 +2824,6 @@ fn execute(
         }
         Operation::SectionCommand { fixture, .. } => section_command::run(fixture, tolerance)?,
         Operation::ContourCommand { fixture, .. } => contour_command::run(fixture, tolerance)?,
-        Operation::EdgeAnalysis { fixture, .. } => edge_analysis::run(fixture, tolerance)?,
         Operation::BlockWorkflow { fixture, .. } => block_workflow::run(fixture, tolerance)?,
         Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,
         Operation::PointGridDiagonalPrompt { fixture, .. } => {

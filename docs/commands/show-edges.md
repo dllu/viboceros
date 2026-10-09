@@ -47,8 +47,9 @@ viewport sampler.
 
 The [validation record](../edge-analysis-provenance.json) records five command,
 two application and one viewport regression in a full 5,610-test Rust run.
-This milestone has no new live Rhino edge-analysis capture. Native dialog
-behavior, edge ordering, zoom framing and curved display accuracy still need
-qualification. Standalone SubD and extrusion types are not supported. Deleted
+Ten [live Rhino SDK captures](../edge-analysis-native.md) also match edge order,
+domains, classifications and curve samples without exclusions. Native dialog
+behavior, zoom framing and curved display accuracy still need qualification.
+Standalone SubD and extrusion types are not supported. Deleted
 sources leave the session; after Undo restores an object, select and add it
 again. Analysis settings are transient and are not saved in model files.

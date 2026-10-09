@@ -6345,9 +6345,6 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
-    if operation.get('op') == 'edge_analysis':
-        import edge_analysis_probe
-        return edge_analysis_probe.run(operation, tolerance, globals())
     if operation.get('op')=='contour_command':
         import contour_probe
         return contour_probe.run(operation,tolerance,globals())

@@ -846,4 +846,6 @@ truncation beside holes; 24 new native recipes pass strict replay.
 between console commands, the control window and viewport overlays. Topology is
 cached against document geometry snapshots and tolerance; sampled edges share
 the viewport display cache. Marked endpoints enter document history as points.
-Native edge-analysis dialog and ordering parity remain unqualified.
+Ten [native SDK captures](edge-analysis-native.md) qualify edge ordering,
+classification, domains and samples for planar trims, boxes and polygon meshes.
+Native edge-analysis dialog and zoom parity remain unqualified.

@@ -1,0 +1,10 @@
+{
+  "cases": 10,
+  "matched": 10,
+  "numeric_fields": 2268,
+  "max_absolute_error": 1.1102230246251565e-16,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "field_exclusions": [],
+  "failures": []
+}

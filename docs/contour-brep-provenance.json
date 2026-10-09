@@ -91,7 +91,6 @@
     "crates/viboceros-oracle/src/contour_command.rs": "503d8725f92e494af4eedc28fabc6b85311c84c0076f0faca655ade9ab5ccadc",
     "crates/viboceros-oracle/tests/contour_brep.rs": "1cc7f380ae90e96f8d1cf8fdeeac3aa9c1c7561b67ed20f7822494bc36278909",
     "src/app/tests/contour.rs": "38ca7e7dbcc884d890a5a8fca4a7311758059a745a06eecfc3eb09dad81cc5bc",
-    "tools/rhino_oracle/rhino_worker.py": "acc799a842aedf36bfae231c96654237c128baeaf710c4d30452d62acc46d76a",
     "tools/rhino_oracle/fixtures/contour_brep.json": "f648600a9c595d7e7effdf131646e6b807a80b9d47af52b145198e616df616fd",
     "tools/rhino_oracle/observations/contour_brep.json": "e77dc37c4822492a88ed3deaf1fee08e2ce7bd7bee900e3678c995ae56c36a90",
     "docs/commands/contour.md": "6223f6123b61f65fb993538b858122a90765d2ba26d91bce95d0b029d4870016",
@@ -115,6 +114,7 @@
     "docs/contour-brep-validation.json": "db9e10539dcc254ac3caa6400bda2d1eeaa758477d2616acd9ff54ac362cef84",
     "docs/box-native-prior-source/crates/viboceros-geometry/src/brep.rs": "a79daa09a95bb9e0be0e1dc1464a67042eb70b408ca0d30148ec4a5727090e17",
     "docs/box-native-prior-source/crates/viboceros-oracle/src/plane_arrays.rs": "4bad2f228719a005ac4479e4df96e8b0b8e17c12d0cdee0fb52f996b5d282f5d",
-    "docs/box-native-prior-source/docs/contour-brep-parameterization.md": "7a1f3088cb3c04700e693bd52dd1ecb8f9d1a0edcb966155991b8e1b3abe3a73"
+    "docs/box-native-prior-source/docs/contour-brep-parameterization.md": "7a1f3088cb3c04700e693bd52dd1ecb8f9d1a0edcb966155991b8e1b3abe3a73",
+    "docs/edge-analysis-native-prior-source/tools/rhino_oracle/rhino_worker.py": "acc799a842aedf36bfae231c96654237c128baeaf710c4d30452d62acc46d76a"
   }
 }

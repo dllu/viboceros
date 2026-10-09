@@ -1527,3 +1527,21 @@ historical source pins pass. The Python implementation is unchanged since the
 preceding 1,070-test run. No new live Rhino edge-analysis capture was performed;
 native UI, ordering, curved drawing and framing parity remain open. Exact
 source and validation-log hashes are in [provenance](edge-analysis-provenance.json).
+
+## Native edge-analysis checkpoint
+
+Ten [licensed Rhino SDK recipes](edge-analysis-native.md) now qualify the actual
+ShowEdges session's edge indices, ordering, classifications, domains and samples.
+All 2,268 numeric fields match at 1e-9 absolute plus 1e-12 relative epsilon;
+the largest difference is 1.1102230246251565e-16. No fields are excluded.
+This adds a permanent native replay and an `edge_analysis` Python oracle
+operation. Native dialog behavior and camera framing remain unqualified.
+
+The existing oracle package suite passes 509 tests, and the new ten-case
+integration replay is validated separately. The complete Python suite passes
+1,073 tests. Clippy with warnings denied, formatting, diff checks and historical
+source pins pass. Capture ran under private Xvfb; an initial license-refresh
+failure with native-first Wine DLLs produced no observations, while a subsequent
+process-local built-in security-DLL setting succeeded. Neither the launcher nor
+Wine configuration was changed. Detailed hashes are in
+[provenance](edge-analysis-native-provenance.json).

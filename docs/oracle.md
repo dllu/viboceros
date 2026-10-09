@@ -2630,3 +2630,27 @@ python3 -m tools.rhino_oracle.shrink_trimmed_replay tools/rhino_oracle/fixtures/
 
 Face subobjects and disabling individual shrink sides remain outside this
 coverage. These captures establish the stated cases, not full Rhino parity.
+
+## Edge-analysis topology
+
+The `edge_analysis` operation accepts `sources` containing surfaces, trimmed
+B-reps, native boxes and meshes. It compares the actual Viboceros ShowEdges
+session with public RhinoCommon edge topology, retaining ordered edge indices,
+classification flags, parameter domains and seventeen curve samples. It uses
+owned geometry without adding Rhino document objects or opening the native
+analysis dialog. Ten [native recipes](edge-analysis-native.md) match all raw
+fields; dialog controls and camera behavior remain separate work.
+
+```python
+from tools.rhino_oracle.client import OracleClient
+
+request = {"protocol_version": 1, "iterations": 1, "operations": [{
+    "op": "edge_analysis", "id": "box", "sources": [{
+        "type": "box_brep", "min": [0, 0, 0], "max": [1, 2, 3]
+    }]
+}]}
+native = OracleClient(settings_scheme="VibocerosOracleEdgesExample").run_rhino(request)
+```
+
+On Linux the client launches this probe under private Xvfb. See the qualification
+record for the successful process-local Wine DLL setting and strict replay.
