@@ -183,10 +183,6 @@ def validate(operation):
             old,new=_name(step['name']),_name(step['new_name'])
             if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
             definitions[new]=definitions[old][:];outputs=[]
-        elif action=='edit_roundtrip':
-            target=step.get('object')
-            if set(step)-set(('action','object','translation','save','expect_failure')) or type(target)is not int or target not in alive or target in protected or handles[target]is None or type(step['save'])is not bool or type(step.get('expect_failure',False))is not bool:raise ValueError('invalid block edit roundtrip')
-            _numbers(step['translation'],3);outputs=[]
         elif action=='reset_scale':
             picks=step.get('objects')
             if (set(step)-set(('action','objects','mode','preselected','cancel')) or not isinstance(picks,list) or not picks
@@ -527,27 +523,6 @@ def run(operation, tolerance, host):
                     obj=document.Objects.FindId(handles[j]);a=obj.Attributes.Duplicate();owned_attributes.append(a)
                     a.Mode={'normal':Rhino.DocObjects.ObjectMode.Normal,'hidden':Rhino.DocObjects.ObjectMode.Hidden,'locked':Rhino.DocObjects.ObjectMode.Locked}[step['mode']]
                     if not document.Objects.ModifyAttributes(obj.Id,a,True):raise ValueError('native root state failed')
-            elif action=='edit_roundtrip':
-                settings=Rhino.DocObjects.ObjectEnumeratorSettings();settings.HiddenObjects=True;settings.LockedObjects=True
-                before=set(o.Id for o in document.Objects.GetObjectList(settings))
-                document.Objects.UnselectAll();document.Objects.Select(handles[step['object']])
-                opened=rs.Command('_-BlockEdit _Open',False)
-                if step.get('expect_failure',False):
-                    if opened:rs.Command('_-BlockEdit _DiscardAndCancel',False);raise ValueError('native BlockEdit unexpectedly opened')
-                    value=snapshot();value['outputs']=[];value['succeeded']=False;states.append(value);continue
-                if not opened:raise ValueError('native BlockEdit open failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
-                editable=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry]
-                if not editable:raise ValueError('native BlockEdit did not expose model members: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
-                edit_transform=Rhino.Geometry.Transform.Translation(*[float(v) for v in step['translation']])
-                closed=False
-                try:
-                    for obj in editable:
-                        if document.Objects.Transform(obj.Id,edit_transform,True)==System.Guid.Empty:raise ValueError('native BlockEdit member transform failed')
-                    script='_-BlockEdit '+('_SaveAndClose' if step['save'] else '_DiscardAndCancel')
-                    if not rs.Command(script,False):raise ValueError('native BlockEdit close failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
-                    closed=True
-                finally:
-                    if not closed:rs.Command('_-BlockEdit _DiscardAndCancel',False)
             elif action=='reset_scale':
                 document.Objects.UnselectAll()
                 if step.get('cancel',False):script='_BlockResetScale _Mode='+('_One' if step['mode']=='one' else '_Automatic')+' _Cancel'

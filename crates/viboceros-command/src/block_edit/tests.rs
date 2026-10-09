@@ -1,0 +1,39 @@
+use super::*;
+#[test]
+fn scriptable_edit_lifecycle_uses_ordinary_commands_and_preserves_cancel() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Point 1,2,3").unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    registry.execute(&mut doc, "Block 0,0,0 part").unwrap();
+    let root = doc.objects().next().unwrap().id();
+    registry
+        .execute(&mut doc, &format!("BlockEdit Open {root}"))
+        .unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    registry.execute(&mut doc, "Move 0,0,0 2,-3,4").unwrap();
+    for command in [
+        "Open3dm block-edit-protected.3dm",
+        "SaveAs block-edit-protected.3dm",
+        "Export3dm block-edit-protected.3dm",
+        "ExportStl block-edit-protected.stl",
+        "ExportStep block-edit-protected.step",
+    ] {
+        let before = format!("{doc:?}");
+        assert!(registry.execute(&mut doc, command).is_err());
+        assert_eq!(format!("{doc:?}"), before);
+    }
+    registry
+        .execute(&mut doc, "BlockEdit SaveAndClose")
+        .unwrap();
+    assert_eq!(doc.undo_label(), Some("BlockEdit"));
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    registry
+        .execute(&mut doc, &format!("BlockEdit Open {root}"))
+        .unwrap();
+    registry.execute(&mut doc, "Point 9,8,7").unwrap();
+    registry
+        .execute(&mut doc, "BlockEdit DiscardAndCancel")
+        .unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+}

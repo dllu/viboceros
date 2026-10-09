@@ -1,0 +1,226 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "prototype-groups-save",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "member"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              1,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "edit_roundtrip",
+          "object": 3,
+          "translation": [
+            2,
+            -3,
+            4
+          ],
+          "save": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nested-member-save",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "member"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "child",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              1,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "edit_roundtrip",
+          "object": 4,
+          "translation": [
+            2,
+            -3,
+            4
+          ],
+          "save": true
+        }
+      ]
+    }
+  ]
+}

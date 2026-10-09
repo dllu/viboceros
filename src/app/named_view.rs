@@ -284,6 +284,11 @@ impl VibocerosApp {
         let name = input[..end].trim_start_matches(['_', '-']);
         let tail = &input[end..];
         if name.eq_ignore_ascii_case("Open3dm") || name.eq_ignore_ascii_case("Open") {
+            if self.document.is_block_editing() {
+                return Some(Err(viboceros_command::CommandError::Usage(
+                    "finish BlockEdit before opening another document",
+                )));
+            }
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
                 let (document, message, views, current_views, cplanes) =

@@ -9,6 +9,7 @@ Rhino's complete command set is still a work in progress.
 - [ReplaceBlock](replace-block.md)
 - [AddObjectsToBlock](add-objects-to-block.md)
 - [BlockResetScale](block-reset-scale.md)
+- [In-place BlockEdit](block-edit.md)
 
 - [Curve creation and editing](curves.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)

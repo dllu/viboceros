@@ -8,12 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_edit_roundtrip_inputs_reject_before_native_host_access(self):
-        for step in [dict(action='edit_roundtrip',object=0,translation=[1,2,3],save=True),dict(action='edit_roundtrip',object=True,translation=[1,2,3],save=True),dict(action='edit_roundtrip',object=1,translation=[1,2],save=True),dict(action='edit_roundtrip',object=1,translation=[1,2,3],save=1)]:
-            f=self.fixture();f['steps'].append(step)
-            with self.subTest(step=step),self.assertRaises(ValueError):probe.run(f,None,{})
-    def test_edit_roundtrip_keeps_model_handle_lifetimes(self):
-        f=self.fixture();f['steps'].extend([dict(action='edit_roundtrip',object=1,translation=[1,2,3],save=False),dict(action='group',objects=[1])]);probe.validate(f)
     def test_scale_reset_modes_and_handles_reject_before_host_access(self):
         for step in [dict(action='reset_scale',objects=[],mode='one'),dict(action='reset_scale',objects=[0],mode='one'),dict(action='reset_scale',objects=[1,1],mode='one'),dict(action='reset_scale',objects=[1],mode='invalid'),dict(action='reset_scale',objects=[1],mode='one',preselected=1),dict(action='reset_scale',objects=[1],mode='one',preselected=True,cancel=True)]:
             f=self.fixture();f['steps'].append(step)

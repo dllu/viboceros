@@ -77,9 +77,7 @@
     "docs/block-add-prior-source/src/app/tests/blocks.rs": "ef5ce4b69196e1ec40c1921b806e686dcbd85e17622f8596419233196eb9770e",
     "docs/block-add-prior-source/tools/rhino_oracle/block_workflow_probe.py": "943df00e75d08933121077a58a12e321244d0481b3b03e088f3370d01140b47b",
     "docs/block-add-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "774bc5dbf757375ad9fd8960ac4e5ba1ad7d0e47cdd468f37cdb6de5a060d718",
-    "src/app.rs": "23ef3b8f5d44c733868fcff610ab3213a35278dbbf876cfbab28eb9ac460e700",
     "src/app/block_add.rs": "05971599ae9afa427b430a1be38c9c86e4f7930b80b87b84ae550107c12280f3",
-    "src/app/blocks.rs": "b30fedd087de9f316f892e894e176dcf30cfc39c01222b0ff71e885361f4d501",
     "third_party/opennurbs-rust/LICENSE": "36cc876b03e43c1cb8f3c2018786d5ef6093ba761d3ab229dc1c39b81b4d4307",
     "third_party/opennurbs-rust/README.md": "c5217d87278aa3c2d4e2cbf2f3423afdb71512761f57bf7cd3a6276e3ce15f24",
     "third_party/opennurbs-rust/circle_transform.rs": "5fd85e4b5de60d7d771b5b967e31a7aba3eabf698162cc5c0d1baf8be88e0213",
@@ -97,7 +95,9 @@
     "docs/block-reset-scale-prior-source/tools/rhino_oracle/block_workflow_probe.py": "7e7dbd9727038f9b9d7657e53f1bf31e9054a0ce87d00d762440e0290f7d1fb8",
     "docs/block-reset-scale-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "c3c3b0059a94bed37753b8d5b4f8683403c82e3b3d440b76d68b26f3c2c5bcd7",
     "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs": "8866879d384bb846e4fdcb9b011a28ce6b1e0927c68517f3d71a2d44bac0a29c",
-    "docs/block-reset-scale-prior-source/src/app/object_selection.rs": "9326992c601ab8b749892ef63413f4a010c0dd5e137f6607fcf94f801163aa82"
+    "docs/block-reset-scale-prior-source/src/app/object_selection.rs": "9326992c601ab8b749892ef63413f4a010c0dd5e137f6607fcf94f801163aa82",
+    "docs/block-edit-prior-source/src/app.rs": "23ef3b8f5d44c733868fcff610ab3213a35278dbbf876cfbab28eb9ac460e700",
+    "src/app/blocks.rs": "b30fedd087de9f316f892e894e176dcf30cfc39c01222b0ff71e885361f4d501"
   },
   "remaining_scope": [
     "Linked definitions and broader block editing",
@@ -113,6 +113,7 @@
     "tools/rhino_oracle/block_workflow_probe.py": "docs/block-reset-scale-prior-source/tools/rhino_oracle/block_workflow_probe.py",
     "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-reset-scale-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
     "src/app/tests/blocks.rs": "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs",
-    "src/app/object_selection.rs": "docs/block-reset-scale-prior-source/src/app/object_selection.rs"
+    "src/app/object_selection.rs": "docs/block-reset-scale-prior-source/src/app/object_selection.rs",
+    "src/app.rs": "docs/block-edit-prior-source/src/app.rs"
   }
 }

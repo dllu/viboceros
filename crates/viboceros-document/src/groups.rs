@@ -45,6 +45,13 @@ impl Document {
         groups: impl IntoIterator<Item = GroupId>,
     ) -> Result<bool, DocumentError> {
         let id = self.objects[index].id;
+        if self
+            .block_edit
+            .as_ref()
+            .is_some_and(|edit| edit.original_ids.contains(&id))
+        {
+            return Err(DocumentError::ObjectLocked(id));
+        }
         let before = self.objects[index].group_ids.clone();
         let after = groups.into_iter().collect::<Vec<_>>();
         let mut unique = BTreeSet::new();
@@ -197,6 +204,14 @@ impl Document {
         indices: &[usize],
     ) -> Result<(), DocumentError> {
         for &index in indices {
+            let id = self.objects[index].id;
+            if self
+                .block_edit
+                .as_ref()
+                .is_some_and(|edit| edit.original_ids.contains(&id))
+            {
+                return Err(DocumentError::ObjectLocked(id));
+            }
             let memberships = &self.objects[index].group_ids;
             membership_changes(self, index, memberships, memberships)?;
         }

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "6e60921e86d675a74eb75764f0c6f97e0c634183",
+  "scope": "In-place BlockEdit workspace, save/discard lifecycle and native roundtrip comparison",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5539,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1044,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_replay": {
+      "cases": 8,
+      "states": 41,
+      "matched": 8,
+      "mismatched": 0,
+      "native_failures": 0,
+      "max_absolute_error": 0.0,
+      "exit_code": 0
+    },
+    "new_document_tests": 7,
+    "new_command_tests": 1,
+    "new_gui_tests": 2,
+    "new_replay_test": 1,
+    "new_python_tests": 2
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_edit.json",
+      "response": "tools/rhino_oracle/observations/block_edit.json",
+      "scheme": "VibocerosOracleBlockEditUniform20261009",
+      "cases": 6,
+      "states": 30
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_edit_followup.json",
+      "response": "tools/rhino_oracle/observations/block_edit_followup.json",
+      "scheme": "VibocerosOracleBlockEditNested20261009",
+      "cases": 2,
+      "states": 11
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "workspace_contract": "Expose direct prototype members in the selected root world frame while protecting original model objects from selection, geometry changes, deletion and group membership edits. Ordinary commands edit exposed and newly created members; nested references retain their structure. Workspace history is isolated.",
+  "close_contract": "Discard restores the exact original document and redo branch. Save captures members into definition-local coordinates, stages all baseline root placements and commits one full model history entry. Root IDs, placements, raw metadata and model group memberships survive; edited prototype memberships are cleared. Failed saves leave the workspace open.",
+  "file_guard": "Opening and exporting are rejected while the temporary edit scene is active. Document units must match the original document at save.",
+  "native_helper_note": "Native macros use SelID and public BlockEdit Open/SaveAndClose/DiscardAndCancel. Exposed geometry is translated through the public SDK. The protocol records the closed model and keeps logical model handles unchanged. Expected nonuniform admission failures are asserted separately from failed native operations.",
+  "comparison_limits": "Point members and nested references sampled at absolute 1e-9 plus relative 1e-12. Captures do not establish temporary-object metadata, native selection/history, panel or pixel-picking parity. Local tests constrain history, created layers/members, protected batch mutation, graph failure and file guards. No new GPU or performance measurements.",
+  "numeric_limits": "Uniform scale and uniform reflection are supported; nonuniform scale and shear are rejected. Native threshold qualification and curved geometry roundtrips remain open.",
+  "sha256": {
+    "crates/viboceros-command/src/block_edit.rs": "cf89e53644d33750fcb0f41b79bf66cf7d69981a1e92cecddc56e9cb302fb0d7",
+    "crates/viboceros-command/src/block_edit/tests.rs": "735ed516e38638325290b15f949926a33731985f887fdfea536d39d9432d9c96",
+    "crates/viboceros-command/src/interchange.rs": "7a162c97b6d4fc049a69661a491d6c1daa7f569a4d14cae4daef8b52b8db2d5e",
+    "crates/viboceros-command/src/lib.rs": "2b9140cdbfb26525ea974b85a512bc27f39cdfd16d7f545e484fd88b3daebdbc",
+    "crates/viboceros-document/src/block_edit.rs": "a5a6f5f7c19f634d8ea4b39deb893e4974b30e63ced7a3c848170f200588af0b",
+    "crates/viboceros-document/src/block_edit/tests.rs": "196850be656ac53000ffa357f655a7d3fe0c7c32a7486915135a92702497248e",
+    "crates/viboceros-document/src/groups.rs": "e02ab7113e4b26b14cf5580b461672c884a00df7ef1c4c297eeba696428d9ad9",
+    "crates/viboceros-document/src/history.rs": "72c25ee9a2eecca3f83b3eb5de8ce78bc1351d766cb3dbeba409a2c6b291ef6d",
+    "crates/viboceros-document/src/lib.rs": "d8377b6d31496dca231f68e5945c6ac58aff9f7da79d3a477cb221c8000d409a",
+    "crates/viboceros-document/src/object_deletion.rs": "004d2bb5856ab8712adf0f5a3fb016760b74e0f601884f2f625df988953cbc26",
+    "crates/viboceros-document/src/selection.rs": "c7818c711f28a78ee6e88a29fde173b9abe5c5e3cbd9e19ef0dca117cb0f1960",
+    "crates/viboceros-oracle/src/block_workflow.rs": "e211058f939ba970001972b202ea734b6737f2baea927dc3e650e62cc2141c00",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "111e263a61c83a92dfea6a9e1273292309d2867089a0d5e668640bf93762b1ff",
+    "docs/block-edit-comparison.json": "8780a9fcde6a5e0ed1cabd10ef2e51dd6c349a1fd569c530935bf5b9ec04a630",
+    "docs/block-edit-followup-comparison.json": "ef467649e095b7eba7baf87ba2c725a29f1207bf3a0335b932007639b6ef72bf",
+    "docs/commands/block-edit.md": "a88f439cb2bfa1ebab97277b1b7c04922d3171daf6b90332ea152626f7f9e2fe",
+    "src/app.rs": "bb54e0363dc103c1e0bdf7b25d4c21476f2241307d3d584a0e1b828c73d95053",
+    "src/app/block_edit.rs": "996093b8e4471de9bb1f93ec86344f6612e9c4ee0e0a2fce7e809e4902802ef6",
+    "src/app/named_view.rs": "a74c96cfd32701ec1db9433e26c5a6bff975ea59d336bb525aba4a034d5ed1e8",
+    "src/app/tests/blocks.rs": "cff571bc7518d979d5c5d5946e64a748a8c52f5eb9e8d54ae51ad2c0abcced6f",
+    "tools/rhino_oracle/block_workflow_probe.py": "79dbf510070e3d01cf060b4f72a151787b279603e1d471c46b51fe7bed8027e0",
+    "tools/rhino_oracle/fixtures/block_edit.json": "990ad4e6941225d498790d28c3b1858f3fdc2ee98ce1ec528b1ce39b1f8cafa3",
+    "tools/rhino_oracle/fixtures/block_edit_followup.json": "94f4fc4607300dd0b0be25ae83e0699e783a6b055891ec7568ef09bf34b526fa",
+    "tools/rhino_oracle/observations/block_edit.json": "59d70fafc5c22819f5d4da8f67d54d89ee94044cdab5c7f388675de4c94a07c8",
+    "tools/rhino_oracle/observations/block_edit_followup.json": "0faf6f6020ccb8a0a3046a27bc29d2a0a51519d571808d615cbd791c92cec126",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "e30682b424667187d5c8c8f17112b70d76d601c646629312d63a4599b4a99c69"
+  },
+  "remaining_scope": [
+    "Add Object and Remove Object editor controls",
+    "Set Base Point",
+    "Nested-definition navigation and double-click opening",
+    "Empty definition placements",
+    "Native temporary scene, selection/history and pointer parity",
+    "Linked definitions, broader curved geometry and numeric qualification",
+    "GPU rendering and performance"
+  ]
+}

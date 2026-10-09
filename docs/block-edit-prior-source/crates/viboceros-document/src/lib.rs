@@ -2,7 +2,6 @@
 
 mod block_addition;
 mod block_creation;
-mod block_edit;
 mod block_explosion;
 pub use block_explosion::PreparedBlockExplosion;
 mod block_instances;
@@ -438,7 +437,6 @@ impl Group {
 
 #[derive(Clone, Debug)]
 pub struct Document {
-    block_edit: Option<Box<block_edit::BlockEditSession>>,
     tolerance: Tolerance,
     units: LengthUnitSystem,
     layers: Vec<Layer>,
@@ -468,7 +466,6 @@ impl Document {
         };
         let current_layer = default_layer.id;
         Self {
-            block_edit: None,
             tolerance,
             units: LengthUnitSystem::default(),
             layers: vec![default_layer],
@@ -937,13 +934,6 @@ impl Document {
     }
 
     pub fn is_object_selectable(&self, id: ObjectId) -> bool {
-        if self
-            .block_edit
-            .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&id))
-        {
-            return false;
-        }
         self.object(id)
             .is_some_and(|object| self.object_is_selectable(object))
     }
@@ -957,13 +947,6 @@ impl Document {
     }
 
     fn object_is_selectable(&self, object: &Object) -> bool {
-        if self
-            .block_edit
-            .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&object.id))
-        {
-            return false;
-        }
         let attributes = object.attributes();
         attributes.visible
             && !attributes.locked
@@ -1622,13 +1605,6 @@ impl Document {
     }
 
     pub fn delete_object(&mut self, id: ObjectId) -> Result<(), DocumentError> {
-        if self
-            .block_edit
-            .as_ref()
-            .is_some_and(|edit| edit.original_ids.contains(&id))
-        {
-            return Err(DocumentError::ObjectLocked(id));
-        }
         let owns_transaction = self.history.active.is_none();
         if owns_transaction {
             self.begin_transaction("Delete object")?;
@@ -1675,11 +1651,6 @@ impl Document {
     }
 
     pub fn clear_objects(&mut self) -> usize {
-        if self.is_block_editing() {
-            return self
-                .delete_objects(self.block_edit_objects())
-                .expect("block-edit workspace objects are removable");
-        }
         let count = self.objects.len();
         if count == 0 && self.groups.is_empty() {
             return 0;
@@ -1817,12 +1788,6 @@ impl Document {
             Edit::BlockDefinitionsChanged { instances, .. } => {
                 instances.iter().map(|(id, _)| *id).collect()
             }
-            Edit::BlockEditModel { stored } => self
-                .objects
-                .iter()
-                .chain(stored.objects.iter())
-                .map(|o| o.id())
-                .collect(),
             Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
             Edit::GroupInserted { id, .. } | Edit::GroupDefinitionRetained { id } => self
                 .group(*id)

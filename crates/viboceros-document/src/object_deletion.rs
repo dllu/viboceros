@@ -22,6 +22,13 @@ impl Document {
         if ids.is_empty() {
             return Ok(0);
         }
+        if let Some(id) = self.block_edit.as_ref().and_then(|edit| {
+            ids.iter()
+                .find(|id| edit.original_ids.contains(id))
+                .copied()
+        }) {
+            return Err(DocumentError::ObjectLocked(id));
+        }
         let positions = self
             .objects
             .iter()

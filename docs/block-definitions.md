@@ -8,10 +8,11 @@ geometry returned by `Document::resolve_block` is derived data.
 
 The object table now supports [instance objects](block-instances.md), retaining
 definition IDs and placements through editing, display, selection and history.
-[Block/Insert commands](commands/blocks.md) create and place these definitions;
-structural 3DM round trips remain unimplemented.
-The [3DM reader](three-dm-blocks.md) still imports independent placed geometry.
-No fresh Rhino block editing or performance comparison has been captured.
+[Block/Insert commands](commands/blocks.md) create and place these definitions.
+[Structural 3DM interchange](three-dm-structural-blocks.md) retains supported
+embedded definitions and references. [BlockEdit](commands/block-edit.md) adds
+in-place member editing with save/discard and native workflow captures;
+advanced editor controls and performance qualification remain open.
 The [source provenance](block-definition-provenance.json) records the local API
 boundary and validation evidence.
 

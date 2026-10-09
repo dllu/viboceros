@@ -111,13 +111,6 @@ pub enum BlockStep {
         #[serde(default)]
         cancel: bool,
     },
-    EditRoundtrip {
-        object: usize,
-        translation: [f64; 3],
-        save: bool,
-        #[serde(default)]
-        expect_failure: bool,
-    },
     DeleteDefinition {
         name: String,
         #[serde(default)]
@@ -305,34 +298,6 @@ pub(super) fn run(
                     .ok_or_else(invalid)?
                     .id();
                 document.duplicate_block_definition(id, new_name)?;
-                Vec::new()
-            }
-            BlockStep::EditRoundtrip {
-                object,
-                translation,
-                save,
-                expect_failure,
-            } => {
-                let target = live(&document, &handles, *object)?;
-                if *expect_failure {
-                    if document.open_block_edit(target).is_ok() {
-                        return Err(invalid());
-                    }
-                    succeeded = Some(false);
-                } else {
-                    let members = document.open_block_edit(target)?;
-                    document.transform_objects(
-                        members,
-                        AffineTransform3::from_translation(viboceros_geometry::Vector3::try_from(
-                            *translation,
-                        )?),
-                    )?;
-                    if *save {
-                        document.save_block_edit()?;
-                    } else {
-                        document.discard_block_edit()?;
-                    }
-                }
                 Vec::new()
             }
             BlockStep::ResetScale {

@@ -55,6 +55,9 @@ impl Default for History {
 
 #[derive(Clone, Debug)]
 pub(super) enum Edit {
+    BlockEditModel {
+        stored: Box<super::Document>,
+    },
     /// An explicitly accepted command can own an Undo step without model edits.
     CommandAcceptedWithoutChanges,
     /// Grip edits exchange display and picking together with geometry.
@@ -162,6 +165,7 @@ impl Edit {
     pub fn undo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
+            Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
             }
@@ -290,6 +294,7 @@ impl Edit {
     pub fn redo(&mut self, document: &mut Document) -> Result<(), DocumentError> {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
+            Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
             Self::ControlPointsChanged { id, stored } => {
                 exchange_control_points(document, *id, stored)
             }

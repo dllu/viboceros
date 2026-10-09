@@ -13,8 +13,8 @@ retain references through affine editing, display and selection, with atomic
 catalog/cache replay. [Block and Insert](commands/blocks.md) now connect source
 selection, base/name getters and scaled/rotated placement to that model.
 [Structural 3DM interchange](three-dm-structural-blocks.md) retains supported embedded
-definitions and references. Linked/external files, broader metadata and block
-editing remain subsequent work.
+definitions and references. Linked/external files and broader metadata remain
+subsequent work.
 [Block expansion](commands/explode-blocks.md) supplies one-level Explode and
 recursive ExplodeBlock, with freshness checks, native group policies and one-step history.
 [BlockManager](commands/block-manager.md) adds definition inspection, linear graph
@@ -28,6 +28,9 @@ selected instance's local frame, refreshes all uses, retains nested references
 and consumes sources in one transaction.
 [BlockResetScale](commands/block-reset-scale.md) adjusts placements in the
 instance frame, retains reflected/sheared behavior and preserves shared catalogs.
+[BlockEdit](commands/block-edit.md) exposes direct prototype members in an isolated
+world-space workspace. Save refreshes every root in one history entry; discard
+restores the original document and history. Advanced editor controls remain open.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

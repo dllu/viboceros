@@ -29,11 +29,11 @@
     "crates/viboceros-io/native/viboceros_opennurbs.cpp": "1906034917b879f371bec82cf2fc1403bed9fdbaddbd8fb0d65b159d6ce20c5b",
     "crates/viboceros-io/native/viboceros_opennurbs.h": "f1054b77eb301273ff3e4a48f157b124ef8d0f663d562c04aeab8b945bd1dd20",
     "crates/viboceros-io/native/structural_blocks.h": "6505a2fc0916ad05da67db6d42202bd4cc8d5ed92779dc0e177141defd231078",
-    "crates/viboceros-command/src/interchange.rs": "7d754cb70add7f02a0a554b7208de66ce68ab992fc21bf77ac3bcd696c09fba5",
     "crates/viboceros-command/src/interchange/structural_blocks.rs": "587fcaae2cd2cf58db32364c132094d7ed044b5f40c7cbb3e1bc1ffab39b3a3e",
     "crates/viboceros-command/src/interchange/block_tests.rs": "2043daf2e475dfdc99f17b1d01d1f2b4744765e504eabb2e543ef994721ef9f8",
     "crates/viboceros-command/src/block_instance_tests.rs": "b85eb9a42cd9542af5db6e4af94459a9f9bf53a9b902a33006190eb9faae0c14",
-    "docs/block-explode-prior-source/crates/viboceros-document/src/lib.rs": "7fe05c8dc22bd665633c5cf2a792c5c3a079566feea80171316c1a41189d8279"
+    "docs/block-explode-prior-source/crates/viboceros-document/src/lib.rs": "7fe05c8dc22bd665633c5cf2a792c5c3a079566feea80171316c1a41189d8279",
+    "docs/block-edit-prior-source/crates/viboceros-command/src/interchange.rs": "7d754cb70add7f02a0a554b7208de66ce68ab992fc21bf77ac3bcd696c09fba5"
   },
   "remaining_scope": [
     "Linked/external definitions and local prototype object-lock modes are unsupported",
@@ -41,6 +41,7 @@
     "Fresh Rhino cross-reader, graphics and performance verification"
   ],
   "source_snapshot_paths": {
-    "crates/viboceros-document/src/lib.rs": "docs/block-explode-prior-source/crates/viboceros-document/src/lib.rs"
+    "crates/viboceros-document/src/lib.rs": "docs/block-explode-prior-source/crates/viboceros-document/src/lib.rs",
+    "crates/viboceros-command/src/interchange.rs": "docs/block-edit-prior-source/crates/viboceros-command/src/interchange.rs"
   }
 }

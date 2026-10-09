@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`ed496a1e` (earlier milestones used `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`6e60921e` (earlier milestones used `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[in-place block editing provenance](block-edit-provenance.json),
 [block scale-reset provenance](block-reset-scale-provenance.json),
 [block addition provenance](block-add-provenance.json),
 [replacement input provenance](block-replace-input-provenance.json),
@@ -43,25 +44,38 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,528 Rust tests:
+5,539 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,075 | 17 |
-| Command | 1,230 | 2 |
-| Document | 242 | 5 |
+| App | 1,077 | 17 |
+| Command | 1,231 | 2 |
+| Document | 249 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,103 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 502 | 0 |
+| Oracle (unit and integration) | 503 | 0 |
 
-The Python suite passed 1,042 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,044 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [BlockResetScale](commands/block-reset-scale.md) adds six document
+The newest [BlockEdit](commands/block-edit.md) adds seven document tests, one
+command test, two GUI tests, one native replay test and two Python validation
+tests. Eight private-Xvfb workflows match all 41 recorded model states for save,
+discard, translated/reflected placements, nonuniform rejection, nested references,
+member/root text and group handling. Save refreshes all original roots as one
+model history entry; discard restores the original document and redo branch.
+Local tests cover created members/layers, protected deletion and group selection,
+failed cyclic saves and file-open/export guards. Captures use point members and
+nested references through the public native command/SDK lifecycle; temporary
+object, selection/history and panel parity remain unverified. Add/Remove Object,
+Set Base Point, nested navigation, double-click opening, linked definitions and
+GPU/performance qualification remain open.
+
+The preceding [BlockResetScale](commands/block-reset-scale.md) adds six document
 tests, two command tests, two GUI tests, one native replay test and two Python
 validation tests. All 77 private-Xvfb workflows match 388 whole-model states
 for One/Automatic, reflections, tilted shear, metadata/groups, preselection,

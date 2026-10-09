@@ -1,50 +1,6 @@
 use super::*;
 
 #[test]
-fn in_place_block_edit_uses_the_shared_getter_and_model_commands() {
-    let (mut app, root, _, _, _) = replacement_fixture();
-    enter(&mut app, "BlockEdit");
-    assert!(app.document.is_block_editing());
-    assert!(!app.document.is_object_selectable(root));
-    let members = app.document.block_edit_objects();
-    app.document
-        .select_objects_direct(members, SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "Move 0,0,0 2,-3,4");
-    enter(&mut app, "BlockEdit SaveAndClose");
-    assert!(!app.document.is_block_editing());
-    assert_eq!(app.document.undo_label(), Some("BlockEdit"));
-    let Geometry::BlockInstance(i) = app.document.object(root).unwrap().geometry() else {
-        panic!()
-    };
-    let Geometry::Point(point) = &*i.members()[0].geometry else {
-        panic!()
-    };
-    assert_eq!(*point, p(3., -3., 4.));
-}
-
-#[test]
-fn in_place_edit_cancel_and_file_rejection_preserve_the_model_and_redo() {
-    let (mut app, root, _, _, _) = replacement_fixture();
-    app.document
-        .add_geometry(Geometry::Point(p(8., 9., 10.)))
-        .unwrap();
-    app.document.undo().unwrap();
-    let before = app.document.objects().cloned().collect::<Vec<_>>();
-    enter(&mut app, "BlockEdit");
-    assert!(app.document.is_block_editing());
-    enter(&mut app, "Point 3,4,5");
-    let edited = app.document.objects().cloned().collect::<Vec<_>>();
-    enter(&mut app, "Open /missing.3dm");
-    assert!(app.document.is_block_editing());
-    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), edited);
-    enter(&mut app, "BlockEdit DiscardAndCancel");
-    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-    assert!(app.document.can_redo());
-    assert!(app.document.object(root).is_some());
-}
-
-#[test]
 fn reset_scale_mode_choice_persists_after_cancel_and_preselection_runs_immediately() {
     let (mut app, _, _, _, _) = replacement_fixture();
     enter(&mut app, "Insert Original 10,20,30 Scale=2,3,4");

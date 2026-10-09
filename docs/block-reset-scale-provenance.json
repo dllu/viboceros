@@ -77,12 +77,8 @@
   "sha256": {
     "crates/viboceros-command/src/block_reset_scale.rs": "7b177f4516a122683f9af8ba29331d3082cb496a0ebe478760690592cc1bf524",
     "crates/viboceros-command/src/block_reset_scale/tests.rs": "f9925c4ec08692fb0177e4916a92a992b011fde638e067eae227f866996875ce",
-    "crates/viboceros-command/src/lib.rs": "6ee8f716a976ede1fb3425cd65fa795a37eed581f13228206ef86072d90bab60",
     "crates/viboceros-document/src/block_scale.rs": "858dd7efb011342c6233c8608442b6a17a201091e379a5ec102c7adbc614eb0e",
     "crates/viboceros-document/src/block_scale/tests.rs": "19455c86fecdcc26daef77f5180c7df3d8f7b5c0a6db99ca85a40d7130113321",
-    "crates/viboceros-document/src/lib.rs": "d2de22ef31b296f1e17580045c21d796049917fd37d534e5e0f89d4a966a6ea3",
-    "crates/viboceros-oracle/src/block_workflow.rs": "cf703cee9007b96cc13a521d3db4e86e6409c64310eae60040f90d5d4b8e9a17",
-    "crates/viboceros-oracle/tests/block_workflow.rs": "6e65686bda773bca8c3d40db2afea3c2598c84f15da7198646a5f3ee543c3c6d",
     "docs/block-reset-scale-boundary-comparison.json": "a51095ac76c96daa3279812e8a563176cc64333804fd148cc65ebc62f77384d0",
     "docs/block-reset-scale-comparison.json": "19b3c1a632b5c76a25a1d02f8a51d0bb4d5a3eaf5ee451130314c28743ab6cc3",
     "docs/block-reset-scale-followup-comparison.json": "4ed0b5af4a38ba4c41bf2e9d1e3887612dc71f55d5bee3dda9410d6af29b451e",
@@ -95,9 +91,6 @@
     "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs": "8866879d384bb846e4fdcb9b011a28ce6b1e0927c68517f3d71a2d44bac0a29c",
     "docs/block-reset-scale-prior-source/tools/rhino_oracle/block_workflow_probe.py": "7e7dbd9727038f9b9d7657e53f1bf31e9054a0ce87d00d762440e0290f7d1fb8",
     "docs/block-reset-scale-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "c3c3b0059a94bed37753b8d5b4f8683403c82e3b3d440b76d68b26f3c2c5bcd7",
-    "src/app/object_selection.rs": "b325f21886b4a87352a0546a1934fe21cebbde61b7680cdf7549bbb1619cae85",
-    "src/app/tests/blocks.rs": "efa19963c0a2e0b30b6321c92869eca0072c5895cd1e214f3d84391fa81ee38f",
-    "tools/rhino_oracle/block_workflow_probe.py": "6032452c24ba1172f857c2d8a1ee7fef540ce2d07034b65d3518c28939ccebac",
     "tools/rhino_oracle/fixtures/block_reset_scale.json": "35988f4bdd422b8713d4004f1d08e300c1431ff367929a035ccde5a258938be2",
     "tools/rhino_oracle/fixtures/block_reset_scale_boundary.json": "d867bb39cac73c11d65ac202afb51cbdab5efaeffd831a3f8efc841084efb939",
     "tools/rhino_oracle/fixtures/block_reset_scale_followup.json": "1378846959bc0554cbc3f6fb8581a9ba63ac8c0d0819ac0b3fb857a2b13e7d17",
@@ -106,12 +99,28 @@
     "tools/rhino_oracle/observations/block_reset_scale_boundary.json": "cda75415a0a63706ca6d0bbb46a8cb762d749d71d195149ea14ab2df84e83913",
     "tools/rhino_oracle/observations/block_reset_scale_followup.json": "d9e3eeda4fe62607fea7de24770e6314a03bf895e537462b15e8b8734903e2df",
     "tools/rhino_oracle/observations/block_reset_scale_precision.json": "2277b47aec70afee62fa095c79697e00c8959b3fa08c5f66b7a7ee6a49d2df04",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "a0b5c70d14c34ecd7baec41b874df65296bbc25396e9df930075ba6df1298cd8"
+    "docs/block-edit-prior-source/crates/viboceros-document/src/lib.rs": "d2de22ef31b296f1e17580045c21d796049917fd37d534e5e0f89d4a966a6ea3",
+    "docs/block-edit-prior-source/crates/viboceros-command/src/lib.rs": "6ee8f716a976ede1fb3425cd65fa795a37eed581f13228206ef86072d90bab60",
+    "docs/block-edit-prior-source/tools/rhino_oracle/block_workflow_probe.py": "6032452c24ba1172f857c2d8a1ee7fef540ce2d07034b65d3518c28939ccebac",
+    "docs/block-edit-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "6e65686bda773bca8c3d40db2afea3c2598c84f15da7198646a5f3ee543c3c6d",
+    "docs/block-edit-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "cf703cee9007b96cc13a521d3db4e86e6409c64310eae60040f90d5d4b8e9a17",
+    "docs/block-edit-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "a0b5c70d14c34ecd7baec41b874df65296bbc25396e9df930075ba6df1298cd8",
+    "docs/block-edit-prior-source/src/app/tests/blocks.rs": "efa19963c0a2e0b30b6321c92869eca0072c5895cd1e214f3d84391fa81ee38f",
+    "src/app/object_selection.rs": "b325f21886b4a87352a0546a1934fe21cebbde61b7680cdf7549bbb1619cae85"
   },
   "remaining_scope": [
     "Wider numerical qualification of the calibrated near-equality band",
     "Native pixel/group picking and selection/history fidelity",
     "Linked definitions and broader block editing",
     "GPU rendering and performance"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-document/src/lib.rs": "docs/block-edit-prior-source/crates/viboceros-document/src/lib.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-edit-prior-source/crates/viboceros-command/src/lib.rs",
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-edit-prior-source/tools/rhino_oracle/block_workflow_probe.py",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-edit-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
+    "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-edit-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-edit-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
+    "src/app/tests/blocks.rs": "docs/block-edit-prior-source/src/app/tests/blocks.rs"
+  }
 }

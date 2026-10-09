@@ -18,6 +18,14 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
     ) -> Result<usize, DocumentError> {
         let indices = self.resolve_object_indices(ids)?;
+        if let Some(id) = self.block_edit.as_ref().and_then(|edit| {
+            indices
+                .iter()
+                .map(|index| self.objects[*index].id)
+                .find(|id| edit.original_ids.contains(id))
+        }) {
+            return Err(DocumentError::ObjectLocked(id));
+        }
         let selected = indices
             .into_iter()
             .map(|index| self.objects[index].id)
@@ -137,7 +145,14 @@ impl Document {
                 continue;
             }
             let attributes = &object.attributes;
-            if !attributes.visible || attributes.locked || !layers.contains(&attributes.layer_id) {
+            if !attributes.visible
+                || attributes.locked
+                || !layers.contains(&attributes.layer_id)
+                || self
+                    .block_edit
+                    .as_ref()
+                    .is_some_and(|edit| edit.original_ids.contains(&object.id))
+            {
                 unselectable = Some(unselectable.map_or(object.id, |id| id.min(object.id)));
             }
         }
@@ -182,6 +197,13 @@ impl Document {
     /// Hidden/locked members can enter the selection through a selectable
     /// group peer. Rhino allows editing that selected set without unlocking it.
     pub(super) fn ensure_object_editable(&self, object: &Object) -> Result<(), DocumentError> {
+        if self
+            .block_edit
+            .as_ref()
+            .is_some_and(|edit| edit.original_ids.contains(&object.id))
+        {
+            return Err(DocumentError::ObjectLocked(object.id));
+        }
         if object.attributes.locked && !self.is_selected(object.id) {
             return Err(DocumentError::ObjectLocked(object.id));
         }
@@ -270,7 +292,13 @@ impl Document {
             .collect::<BTreeMap<_, _>>();
         let selectable = |object: &Object| {
             let attributes = object.attributes();
-            attributes.visible && !attributes.locked && layers.contains(&attributes.layer_id)
+            attributes.visible
+                && !attributes.locked
+                && layers.contains(&attributes.layer_id)
+                && self
+                    .block_edit
+                    .as_ref()
+                    .is_none_or(|edit| !edit.original_ids.contains(&object.id))
         };
         let mut targets = BTreeSet::new();
         let mut groups = BTreeSet::new();
@@ -295,6 +323,9 @@ impl Document {
                     .copied()
                     .filter(|id| objects.contains_key(id)),
             );
+        }
+        if let Some(edit) = &self.block_edit {
+            targets.retain(|id| !edit.original_ids.contains(id));
         }
         targets
     }

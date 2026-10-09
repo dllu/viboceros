@@ -141,7 +141,6 @@ use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
 mod block_add;
-mod block_edit;
 mod block_manager;
 mod blocks;
 mod boolean_solids;
@@ -8834,7 +8833,6 @@ impl eframe::App for VibocerosApp {
         self.show_grid_settings(ui);
         self.show_layers(ui);
         self.show_block_manager(ui.ctx());
-        self.show_block_edit(ui.ctx());
         self.show_replace_block_chooser(ui.ctx());
         self.show_command_line(ui);
         let _ = self.show_viewport_tabs(ui);

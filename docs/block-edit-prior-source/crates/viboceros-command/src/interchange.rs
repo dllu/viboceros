@@ -296,11 +296,6 @@ impl Command for OpenThreeDmCommand {
             return Err(CommandError::Usage("Open3dm path"));
         }
         let path = arguments.join(" ");
-        if document.is_block_editing() {
-            return Err(CommandError::Usage(
-                "finish BlockEdit before opening another document",
-            ));
-        }
         let (opened, message, _) = open_3dm_with_named_views(&path)?;
         *document = opened;
         Ok(message)
@@ -656,11 +651,6 @@ fn write_document_3dm(
 }
 
 pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError> {
-    if document.is_block_editing() {
-        return Err(CommandError::Usage(
-            "finish BlockEdit before saving the document",
-        ));
-    }
     let layers = document
         .layers()
         .map(|layer| {
