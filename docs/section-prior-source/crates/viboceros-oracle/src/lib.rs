@@ -86,7 +86,6 @@ mod distribute;
 mod document_brep;
 mod document_units;
 mod extract_surface;
-mod section_command;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
 mod curve_length_subcurve;
@@ -418,11 +417,6 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: plane_arrays::PlaneArrayFixture,
-    },
-    SectionCommand {
-        id: String,
-        #[serde(flatten)]
-        fixture: section_command::Fixture,
     },
     BoundingBoxCommand {
         id: String,
@@ -2177,7 +2171,6 @@ impl Operation {
             | Self::TrimBoundaryBounds { id, .. }
             | Self::TrimmedBrepBounds { id, .. }
             | Self::PlaneArray { id, .. }
-            | Self::SectionCommand { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
@@ -2815,7 +2808,6 @@ fn execute(
         Operation::PointCloudCommand { fixture, .. } => {
             point_cloud_command::run(fixture, tolerance)?
         }
-        Operation::SectionCommand { fixture, .. } => section_command::run(fixture, tolerance)?,
         Operation::BlockWorkflow { fixture, .. } => block_workflow::run(fixture, tolerance)?,
         Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,
         Operation::PointGridDiagonalPrompt { fixture, .. } => {

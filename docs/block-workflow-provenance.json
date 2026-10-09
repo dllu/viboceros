@@ -77,8 +77,6 @@
   },
   "before_change_note": "Retained command comparison uses the already-generated local values before the document metadata correction, with corresponding command recipe IDs. The earlier document source is archived; no before-change binary or kernel timing claim is made.",
   "sha256": {
-    "crates/viboceros-oracle/src/lib.rs": "168b7c3a158e2f4d953374804ac4d0f67dee2e7988b789bb3b111de3abf8bb3d",
-    "tools/rhino_oracle/rhino_worker.py": "41a5c36797dcb043d45052742dc12709a731cef6752f7b953abd042e9c0e61e4",
     "tools/rhino_oracle/fixtures/block_workflow.json": "a758691e371edb3fc51d5ffaf4f20f71f12438ddf6b87d09415eb658688ac09e",
     "tools/rhino_oracle/fixtures/block_workflow_commands.json": "8a53f585f01ef7fa05ae066a9c4a4e2f92cfd55c98343f3b8d912846829d4563",
     "tools/rhino_oracle/fixtures/block_workflow_metadata.json": "18c8ca7c03ff894d0e39ef2266061017fb584d0a0be1b0311d7392c1c806fe2d",
@@ -103,7 +101,9 @@
     "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "6b67374343bfc9f5f98649725d9e35336d8437c742873d9f0dcad880f546a957",
     "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion.rs": "7cd502f6723636239288fbd34985b774f1c3db9782dc8520c6ed71d61526af5d",
     "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "1aa085c173b9f89efad2a7b0f251375eeedb1807b91c1409142503c948515af0",
-    "docs/block-edit-controls-prior-source/tools/rhino_oracle/client.py": "ba0241e1cbdad911c842f9893f5c7e909a9a59c745a91dda15df32f09f2a1dda"
+    "docs/block-edit-controls-prior-source/tools/rhino_oracle/client.py": "ba0241e1cbdad911c842f9893f5c7e909a9a59c745a91dda15df32f09f2a1dda",
+    "docs/section-prior-source/crates/viboceros-oracle/src/lib.rs": "168b7c3a158e2f4d953374804ac4d0f67dee2e7988b789bb3b111de3abf8bb3d",
+    "docs/section-prior-source/tools/rhino_oracle/rhino_worker.py": "41a5c36797dcb043d45052742dc12709a731cef6752f7b953abd042e9c0e61e4"
   },
   "remaining_scope": [
     "Native grouping, protected-root selection, option memory and history fidelity",
@@ -119,6 +119,8 @@
     "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
     "crates/viboceros-document/src/block_explosion.rs": "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion.rs",
     "crates/viboceros-document/src/block_explosion/tests.rs": "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion/tests.rs",
-    "tools/rhino_oracle/client.py": "docs/block-edit-controls-prior-source/tools/rhino_oracle/client.py"
+    "tools/rhino_oracle/client.py": "docs/block-edit-controls-prior-source/tools/rhino_oracle/client.py",
+    "crates/viboceros-oracle/src/lib.rs": "docs/section-prior-source/crates/viboceros-oracle/src/lib.rs",
+    "tools/rhino_oracle/rhino_worker.py": "docs/section-prior-source/tools/rhino_oracle/rhino_worker.py"
   }
 }

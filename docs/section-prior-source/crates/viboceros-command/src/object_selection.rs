@@ -11,7 +11,6 @@ mod tests;
 pub enum ObjectSelectionFilter {
     #[default]
     Any,
-    Section,
     BlockEditSources,
     Blocks,
     Grouped,
@@ -58,13 +57,6 @@ impl ObjectSelectionFilter {
                     .is_some_and(|curve| curve.is_closed().unwrap_or(false))
             }
             Self::Any | Self::BlockEditSources => true,
-            Self::Section => {
-                geometry.curve_ref().is_some()
-                    || matches!(
-                        geometry,
-                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
-                    )
-            }
             Self::Blocks => matches!(geometry, Geometry::BlockInstance(_)),
             Self::Smooth => geometry.supports_smoothing(),
             Self::Grouped => !object.group_ids().is_empty(),

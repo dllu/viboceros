@@ -16,6 +16,7 @@ mod connected_faces;
 mod draft_angle;
 pub use connected_faces::MeshPartBoundary;
 mod containment;
+mod section;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod closest;
 mod edge_collapse;

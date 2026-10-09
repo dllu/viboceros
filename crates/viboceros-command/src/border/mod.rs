@@ -5,7 +5,7 @@ mod face;
 #[cfg(test)]
 mod tests;
 pub(crate) use assemble::assemble;
-use assemble::surface_components;
+pub(crate) use assemble::surface_components;
 pub(super) use face::DuplicateFaceBorderCommand;
 
 const DUPLICATE_BORDER_USAGE: &str =

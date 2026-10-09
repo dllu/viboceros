@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested BlockEdit restricted-member close choices and empty-workspace retention, nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested Section plane cuts and exact mesh tracing, BlockEdit restricted-member close choices and empty-workspace retention, nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`b218b963` (earlier milestones used `75fc0291`, `a71ee68b`, `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`0a204e46` (earlier milestones used `b218b963`, `75fc0291`, `a71ee68b`, `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[Section provenance](section-command-provenance.json),
 [restricted block member provenance](block-edit-restricted-provenance.json),
 [nested block editor provenance](block-edit-nested-provenance.json),
 [block editor input provenance](block-edit-input-provenance.json),
@@ -47,26 +48,42 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-All commands completed successfully. The complete release workspace run passed
-5,572 Rust tests:
+The final implementation checks completed successfully. The initial workspace run
+failed at one new integer/float JSON diagnostic assertion; its corrected native
+integration rerun and the required workspace doctests passed. The release checks passed
+5,580 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,088 | 17 |
-| Command | 1,234 | 2 |
+| App | 1,090 | 17 |
+| Command | 1,236 | 2 |
 | Document | 265 | 5 |
 | Drafting | 164 | 6 |
-| Geometry | 2,103 | 8 |
+| Geometry | 2,106 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 506 | 0 |
+| Oracle (unit and integration) | 507 | 0 |
 
-The Python suite passed 1,064 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,066 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [restricted BlockEdit close choices](commands/block-edit.md) add
+The newest [Section](commands/section.md) adds three kernel mesh tests, two
+command tests, two application getter tests, one native integration test and two
+Python validation tests. Plane cuts use the CPlane trace, finite-span clipping,
+current/input properties, per-plane grouping and repeated point input. Surface
+and B-rep paths reuse the existing validated intersection kernel. Mesh edge
+intersections use exact dyadic arithmetic and shared endpoint keys, retain face
+winding and trace branches without joining through nonmanifold junctions.
+Thirteen of fourteen native recipes match strict sampled geometry, domains,
+metadata and groups. One coplanar mesh recipe retains a different seam/domain and
+two extra collinear vertices in Rhino; raw comparison differences and exact
+native vertices remain diagnostic evidence. The rectangular locus agrees, but
+parameter equivalence is unfinished. Broader curved/B-rep input qualification,
+hatches/section styles, native junction/seam policies and performance remain open.
+
+The preceding [restricted BlockEdit close choices](commands/block-edit.md) add
 four document tests, one command test, one egui pointer test, one replay test and
 four Python tests. Native Yes releases hidden/locked members with their world
 geometry and flags; No normalizes them and retains their prototype membership;

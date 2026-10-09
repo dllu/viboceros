@@ -43,6 +43,11 @@ releases; native close-time warning choices are captured separately.
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.
 
+[Section](commands/section.md) adds CPlane-aware plane cuts with staged output,
+property/group options and repeated two-point input. Surface/B-rep intersections
+reuse the kernel; mesh sections use exact dyadic edge intersections and shared
+topology tracing. Coplanar mesh parameterization retains a native diagnostic.
+
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.

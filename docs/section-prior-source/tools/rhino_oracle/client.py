@@ -215,10 +215,6 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
-        if any(op.get('op')=='section_command' for op in request.get('operations',[])):
-            from .section_probe import validate
-            for op in request['operations']:
-                if op.get('op')=='section_command':validate(op)
         if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
             from .block_workflow_probe import validate
             if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
@@ -1002,8 +998,6 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
-            if any(op.get('op')=='section_command' for op in request['operations']):
-                shutil.copyfile(worker_source.with_name('section_probe.py'),job_path/'section_probe.py')
             if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('block_workflow_probe.py'), job_path / 'block_workflow_probe.py')
                 if block_controls:

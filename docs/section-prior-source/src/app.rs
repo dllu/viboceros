@@ -176,7 +176,6 @@ mod replace_block;
 mod scale_by_plane;
 mod scale_nu;
 mod scale_positions;
-mod section;
 mod set_point;
 mod set_view;
 mod smooth;
@@ -302,10 +301,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    Section {
-        start: Option<Point3>,
-        options: viboceros_command::section::SectionOptions,
-    },
     BlockEditAdd,
     BlockEditBasePoint,
     AddObjectsToBlock,
@@ -712,7 +707,6 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::Section { .. } => "Section",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
             Self::AddObjectsToBlock => "AddObjectsToBlock",
             Self::CreateUniqueBlock => "CreateUniqueBlock",
@@ -827,12 +821,6 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
-            Self::Section { start: None, .. } => {
-                "Section: pick the section plane start (Esc cancels)"
-            }
-            Self::Section { start: Some(_), .. } => {
-                "Section: pick the section plane end (Esc cancels)"
-            }
             Self::BlockEditAdd => {
                 "BlockEdit: select external objects to copy; Enter accepts, Esc cancels"
             }
@@ -1585,7 +1573,6 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
-            Self::Section { start, .. } => start,
             Self::ScaleByPlane(prompt) => match (prompt.origin, prompt.plane_points) {
                 (Some(p), _) | (_, [_, Some(p)]) | (_, [Some(p), _]) => Some(p),
                 _ => None,
@@ -2300,9 +2287,6 @@ impl VibocerosApp {
         if self.try_continue_object_prompt(&input) {
             return;
         }
-        if self.continue_section_input(&input) {
-            return;
-        }
         if self.try_continue_block_input(&input) {
             return;
         }
@@ -2869,9 +2853,6 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.try_start_section_input(input) {
-            return true;
-        }
         if self.try_start_block_input(input, picked_sources.as_deref()) {
             return true;
         }
@@ -5237,9 +5218,6 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
-        if let Some(accepted) = self.accept_section_point(point) {
-            return accepted;
-        }
         if let Some(accepted) = self.accept_block_point(point) {
             return accepted;
         }
@@ -5256,7 +5234,6 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
-            InteractiveCommand::Section { .. } => return false,
             InteractiveCommand::Block { .. }
             | InteractiveCommand::BlockEditAdd
             | InteractiveCommand::BlockEditBasePoint
@@ -9666,7 +9643,6 @@ mod tests {
     mod scale_by_plane_curve;
     mod scale_nu;
     mod scale_positions;
-    mod section;
     mod set_point;
     mod set_view;
     mod shrink_trimmed;

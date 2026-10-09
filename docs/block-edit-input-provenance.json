@@ -51,8 +51,6 @@
   "native_limits": "One fresh line instance, real owned viewport double click, exposed-member/root-state check and discard/model-ID restoration. Native Add Object viewport groups, ambiguity, point snapping/filter/CPlane semantics, selection/history and pixel equivalence are not newly qualified; prior control captures constrain closed-model edits.",
   "performance_scope": "Cached original source eligibility avoids repeated object-table searches during viewport picking. No native performance or GPU measurement was made.",
   "sha256": {
-    "crates/viboceros-command/src/object_selection.rs": "78402c48726c218d054d89439693bd1a227fcff310786a445b874d994e5bdea2",
-    "src/app.rs": "3bf562a00b3208f08ef500fa5ec91a330135f778e1c4b8a119f3493f6dc01f4b",
     "src/app/blocks.rs": "fddc406d59bf48de50828b48d27da0e438be0d66d5080f0e2644839adf6b9bc7",
     "src/app/object_selection.rs": "12f13cadd77c8426f47dc8c89732795a54c24c3635d82dd34f391484429766b5",
     "src/viewport.rs": "f2ea4ce34bcf0844ddc09b491c8834c61c0cd5adcc3226c287fa1c6821b84bf5",
@@ -66,7 +64,9 @@
     "docs/block-edit-nested-prior-source/crates/viboceros-document/src/block_edit.rs": "b5964b2dfa021161c92d2c270ec4c4f6316bf7e5b0abb9009ad23f4896de96cb",
     "docs/block-edit-nested-prior-source/src/app/block_edit.rs": "c6e68276364c9a517167d9f2f2b1c6a9ec03016c6897a1b2449866c209f611c1",
     "docs/block-edit-nested-prior-source/src/app/tests/blocks.rs": "b10068fcdf26d9e61b17667754334cf2ce3c264015f4aaa00478d996fec35ec9",
-    "docs/block-edit-nested-prior-source/docs/commands/block-edit.md": "c48027769c4b1dcefde07b4851f16c7706782d3ea00e20d2b9c6185c9f3d2e50"
+    "docs/block-edit-nested-prior-source/docs/commands/block-edit.md": "c48027769c4b1dcefde07b4851f16c7706782d3ea00e20d2b9c6185c9f3d2e50",
+    "docs/section-prior-source/src/app.rs": "3bf562a00b3208f08ef500fa5ec91a330135f778e1c4b8a119f3493f6dc01f4b",
+    "docs/section-prior-source/crates/viboceros-command/src/object_selection.rs": "78402c48726c218d054d89439693bd1a227fcff310786a445b874d994e5bdea2"
   },
   "remaining_scope": [
     "Nested-definition navigation",
@@ -79,6 +79,8 @@
     "crates/viboceros-document/src/block_edit.rs": "docs/block-edit-nested-prior-source/crates/viboceros-document/src/block_edit.rs",
     "src/app/block_edit.rs": "docs/block-edit-nested-prior-source/src/app/block_edit.rs",
     "src/app/tests/blocks.rs": "docs/block-edit-nested-prior-source/src/app/tests/blocks.rs",
-    "docs/commands/block-edit.md": "docs/block-edit-nested-prior-source/docs/commands/block-edit.md"
+    "docs/commands/block-edit.md": "docs/block-edit-nested-prior-source/docs/commands/block-edit.md",
+    "src/app.rs": "docs/section-prior-source/src/app.rs",
+    "crates/viboceros-command/src/object_selection.rs": "docs/section-prior-source/crates/viboceros-command/src/object_selection.rs"
   }
 }

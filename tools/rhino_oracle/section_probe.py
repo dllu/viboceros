@@ -1,0 +1,56 @@
+# -*- coding: utf-8 -*-
+"""Owned native Section command geometry, property and group observations."""
+import math
+
+def validate(operation):
+    required=set(('op','id','sources','start','end'))
+    allowed=required|set(('origin','x_axis','y_axis','extend','properties','group'))
+    if not required.issubset(operation) or set(operation)-allowed:raise ValueError('invalid Section fields')
+    sources=operation['sources']
+    if not isinstance(sources,list) or not 1<=len(sources)<=64:raise ValueError('invalid Section sources')
+    for name,default in [('start',None),('end',None),('origin',[0,0,0]),('x_axis',[1,0,0]),('y_axis',[0,1,0])]:
+        value=operation.get(name,default)
+        if not isinstance(value,list) or len(value)!=3 or any(type(v) not in (int,float) or math.isnan(v) or math.isinf(v) for v in value):raise ValueError('invalid finite Section coordinates')
+    if type(operation.get('extend',True))is not bool or type(operation.get('group',False))is not bool or operation.get('properties','current')not in ('current','input'):raise ValueError('invalid Section options')
+
+def run(operation,tolerance,host):
+    validate(operation)
+    import Rhino,System
+    document=Rhino.RhinoDoc.ActiveDoc
+    prefix='VibocerosOracleSection_'+str(System.Guid.NewGuid())+'_'
+    ids=[];layers=[];outputs=[]
+    def xyz(value):return [float(value.X),float(value.Y),float(value.Z)]
+    def record(obj):
+        geometry=obj.Geometry;attributes=obj.Attributes
+        if isinstance(geometry,Rhino.Geometry.Point):kind='point';points=[xyz(geometry.Location)];domain=None;closed=False
+        elif isinstance(geometry,Rhino.Geometry.Curve):
+            kind='curve';domain=[float(geometry.Domain.T0),float(geometry.Domain.T1)];closed=bool(geometry.IsClosed)
+            points=[xyz(geometry.PointAt(geometry.Domain.ParameterAt(i/16.))) for i in range(17)]
+        else:raise ValueError('unsupported native Section output')
+        color=attributes.ObjectColor
+        return dict(kind=kind,points=points,domain=domain,closed=closed,name=str(attributes.Name)if attributes.Name else None,layer='Current' if attributes.LayerIndex==layers[-1] else 'Source'+str(layers.index(attributes.LayerIndex)),color=[int(color.R),int(color.G),int(color.B)],color_source=str(attributes.ColorSource),groups=[int(i)-group_start for i in (attributes.GetGroupList()or[])])
+    old_layer=document.Layers.CurrentLayerIndex
+    group_start=document.Groups.Count
+    try:
+        for i,source in enumerate(operation['sources']):
+            layer=Rhino.DocObjects.Layer();layer.Name=prefix+'Source'+str(i);index=document.Layers.Add(layer);layer.Dispose();layers.append(index)
+            geometry=host['_object_source'](source,tolerance);attributes=Rhino.DocObjects.ObjectAttributes();attributes.LayerIndex=index;attributes.Name='source-'+str(i);attributes.ObjectColor=System.Drawing.Color.FromArgb(21+i,43+i,65+i);attributes.ColorSource=Rhino.DocObjects.ObjectColorSource.ColorFromObject
+            identifier=document.Objects.Add(geometry,attributes);geometry.Dispose();attributes.Dispose()
+            if identifier==System.Guid.Empty:raise ValueError('native Section source admission failed')
+            ids.append(identifier)
+        layer=Rhino.DocObjects.Layer();layer.Name=prefix+'Current';index=document.Layers.Add(layer);layer.Dispose();layers.append(index);document.Layers.SetCurrentLayerIndex(index,True)
+        frame=Rhino.Geometry.Plane(host['_point'](operation.get('origin',[0,0,0])),host['_vector'](operation.get('x_axis',[1,0,0])),host['_vector'](operation.get('y_axis',[0,1,0])))
+        document.Views.ActiveView.ActiveViewport.SetConstructionPlane(frame)
+        document.Objects.UnselectAll()
+        settings=Rhino.DocObjects.ObjectEnumeratorSettings();before=set(o.Id for o in document.Objects.GetObjectList(settings))
+        options='_ExtendSection='+('_Yes'if operation.get('extend',True)else '_No')+' _AssignProperties='+('_ByCurrentLayer'if operation.get('properties','current')=='current'else '_ByInputObject')+' _Output=_CurvesOnly _GroupObjectsBySectionPlane='+('_Yes'if operation.get('group',False)else '_No')
+        script='_Section '+options+' '+' '.join('_SelID '+str(key) for key in ids)+' _Enter w'+','.join('%.17g'%v for v in operation['start'])+' w'+','.join('%.17g'%v for v in operation['end'])+' _Enter'
+        succeeded=Rhino.RhinoApp.RunScript(script,False)
+        outputs=[o.Id for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry]
+        records=[record(document.Objects.FindId(key)) for key in outputs]
+        return dict(succeeded=bool(succeeded),outputs=records,input_count=sum(document.Objects.FindId(key)is not None and not document.Objects.FindId(key).IsDeleted for key in ids)),0
+    finally:
+        document.Layers.SetCurrentLayerIndex(old_layer,True)
+        for key in outputs+ids:document.Objects.Delete(key,True)
+        for index in range(group_start,document.Groups.Count):document.Groups.Delete(index)
+        for index in reversed(layers):document.Layers.Delete(index,True)

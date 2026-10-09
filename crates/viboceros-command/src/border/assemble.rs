@@ -41,7 +41,7 @@ fn mesh_boundary(curve: Polyline3, tolerance: Tolerance) -> Result<Geometry, Geo
     Ok(Geometry::Polyline(Polyline3::try_new(vertices, tolerance)?))
 }
 
-pub(super) fn surface_components(
+pub(crate) fn surface_components(
     surface: &NurbsSurface,
 ) -> Result<Vec<Vec<NurbsCurve>>, GeometryError> {
     let mut components = surface.natural_boundary_curve_loops()?;

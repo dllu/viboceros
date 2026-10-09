@@ -1,0 +1,77 @@
+{
+  "native_curve_vertices": [
+    [
+      -0.9112698372208092,
+      0.0,
+      -2.0
+    ],
+    [
+      -2.0,
+      0.0,
+      -2.0
+    ],
+    [
+      -2.0,
+      0.0,
+      2.0
+    ],
+    [
+      0.911269837220809,
+      0.0,
+      2.0
+    ],
+    [
+      2.0,
+      0.0,
+      2.0
+    ],
+    [
+      2.0,
+      0.0,
+      -2.0
+    ],
+    [
+      -0.9112698372208092,
+      0.0,
+      -2.0
+    ]
+  ],
+  "native_domain": [
+    0,
+    6
+  ],
+  "local_boundary_vertices": [
+    [
+      -2,
+      0,
+      -2
+    ],
+    [
+      2,
+      0,
+      -2
+    ],
+    [
+      2,
+      0,
+      2
+    ],
+    [
+      -2,
+      0,
+      2
+    ],
+    [
+      -2,
+      0,
+      -2
+    ]
+  ],
+  "local_domain": [
+    0,
+    4
+  ],
+  "max_vertex_distance_to_local_boundary": 0.0,
+  "status": "same_rectangular_locus_with_different_seam_and_segmentation",
+  "limit": "Native coplanar mesh Section includes two extra collinear vertices and a different seam. Parameter/domain equivalence remains unresolved and is retained as a strict replay diagnostic."
+}

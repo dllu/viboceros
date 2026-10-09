@@ -1,0 +1,238 @@
+{
+  "absolute_epsilon": 1e-09,
+  "cases": 14,
+  "matched": 13,
+  "mismatched": 1,
+  "native_failed": 0,
+  "operations": [
+    {
+      "comparison": {
+        "differences": [],
+        "id": "line-cross",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "line-cross",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "line-contained",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "line-contained",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "point-on",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "point-on",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "cloud-cross",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "cloud-cross",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "surface-cross",
+        "max_absolute_error": 8.881784197001252e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "surface-cross",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "surface-limited",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "surface-limited",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "properties-input",
+        "max_absolute_error": 8.881784197001252e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "properties-input",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "mesh-cross",
+        "max_absolute_error": 4.440892098500626e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "mesh-cross",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "mesh-reversed",
+        "max_absolute_error": 4.440892098500626e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "mesh-reversed",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [
+          "mesh-coplanar.value.outputs[0].domain[1]: 4 != 6 (error 2, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[0][0]: -2 != -0.91126983722080923 (error 1.09, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[1][0]: -1 != -1.3195436482630059 (error 0.32, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[2][0]: 0 != -1.7278174593052023 (error 1.73, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[3][0]: 1 != -2 (error 3, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[3][2]: -2 != -1.5 (error 0.5, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[4][0]: 2 != -2 (error 4, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[4][2]: -2 != 0 (error 2, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[5][0]: 2 != -2 (error 4, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[5][2]: -1 != 1.5 (error 2.5, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[6][0]: 2 != -1.2721825406947977 (error 3.27, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[6][2]: 0 != 2 (error 2, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[7][0]: 2 != -0.18045635173699437 (error 2.18, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[7][2]: 1 != 2 (error 1, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[8][0]: 2 != 0.91126983722080901 (error 1.09, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[9][0]: 1 != 1.3195436482630056 (error 0.32, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[10][0]: 0 != 1.7278174593052023 (error 1.73, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[11][0]: -1 != 2 (error 3, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[11][2]: 2 != 1.5 (error 0.5, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[12][0]: -2 != 2 (error 4, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[12][2]: 2 != 0 (error 2, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[13][0]: -2 != 2 (error 4, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[13][2]: 1 != -1.5 (error 2.5, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[14][0]: -2 != 1.2721825406947977 (error 3.27, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[14][2]: 0 != -2 (error 2, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[15][0]: -2 != 0.18045635173699426 (error 2.18, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[15][2]: -1 != -2 (error 1, limit 1e-09)",
+          "mesh-coplanar.value.outputs[0].points[16][0]: -2 != -0.91126983722080923 (error 1.09, limit 1e-09)"
+        ],
+        "id": "mesh-coplanar",
+        "max_absolute_error": 4.0,
+        "passed": false,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "mesh-coplanar",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "mesh-limited",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "mesh-limited",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "bilinear-saddle-section",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "bilinear-saddle-section",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "rotated-cplane-section",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "rotated-cplane-section",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "multiple-grouped-sections",
+        "max_absolute_error": 8.881784197001252e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "multiple-grouped-sections",
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

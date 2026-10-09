@@ -60,21 +60,25 @@
     "crates/viboceros-oracle/tests/block_workflow.rs": "fdbd4052dce06c427ad2df92f5107da13c1e270c60c1cb1ea0a5021a3df0aba3",
     "docs/commands/block-edit.md": "5e2fe5d6d19cd83c9a36619d549d5232b6c5051fb0d683dc5c8a833937dd6d2f",
     "src/app/block_edit.rs": "984c6c03c534436314a5f4680a5789431af921f345a6fb64e4eecbfe94468d7f",
-    "src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4",
     "tools/rhino_oracle/block_edit_controls_input.py": "181a6d838bceea46bfd109200a1a79114bce26a0849c6c6fd823692527acd7a5",
     "tools/rhino_oracle/block_edit_restricted_probe.py": "80cb90778b96c57736c567ddfbf3c192c60a6c96456eb6b3e97a3acaa05d70c5",
     "tools/rhino_oracle/block_workflow_probe.py": "3c0b0a7e963fd277ca497181035a14987fff928bdeaa9717ba57d9769373afa7",
-    "tools/rhino_oracle/client.py": "10e41f3cff194d797b2e05e5705a394e416cf4923d6a8cac6582646e82ccd80c",
     "tools/rhino_oracle/fixtures/block_edit_restricted.json": "c75ad5ec6371689e18dcd96d6f9d5b594a811d5d1b38b67db952c9be71505d95",
     "tools/rhino_oracle/observations/block_edit_restricted.json": "1926538bd08b06f9d7a9539f35bd7e84b260dfae76a7fb07e0dac8806db6e19d",
     "tools/rhino_oracle/test_block_edit_controls_input.py": "2304c68b5c533676e1844e9d8afebd26a0da817fdd2c4878f8963d1356a7aee7",
     "tools/rhino_oracle/test_block_workflow_probe.py": "96c22672c71874ae07ab5299b65e064ee3d7955ba98c9500e6dbb84cb9e4cffd",
-    "docs/block-edit-restricted-comparison.json": "f9460b1defcee84626b5df7ec80b14b8e7c328ba9c03eadc86c6d6fd6e6ec53f"
+    "docs/block-edit-restricted-comparison.json": "f9460b1defcee84626b5df7ec80b14b8e7c328ba9c03eadc86c6d6fd6e6ec53f",
+    "docs/section-prior-source/tools/rhino_oracle/client.py": "10e41f3cff194d797b2e05e5705a394e416cf4923d6a8cac6582646e82ccd80c",
+    "docs/section-prior-source/src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4"
   },
   "remaining_scope": [
     "Layer-level restrictions and native choices during context switches",
     "Preexisting restricted prototypes and wider geometry",
     "Linked definitions and persistence of active editors",
     "Native selection/history/panel qualification and performance/GPU measurements"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "tools/rhino_oracle/client.py": "docs/section-prior-source/tools/rhino_oracle/client.py",
+    "src/app/tests/blocks.rs": "docs/section-prior-source/src/app/tests/blocks.rs"
+  }
 }
