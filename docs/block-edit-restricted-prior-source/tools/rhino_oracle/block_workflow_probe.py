@@ -186,7 +186,7 @@ def validate(operation):
         elif action=='edit_roundtrip':
             target=step.get('object')
             required=set(('action','object','translation','save'))
-            allowed=required|set(('expect_failure','add_objects','remove_members','base_point','translation_api','contexts','restricted_members','restricted_action'))
+            allowed=required|set(('expect_failure','add_objects','remove_members','base_point','translation_api','contexts'))
             if (not required.issubset(step) or set(step)-allowed or type(target)is not int or target not in alive
                     or target in protected or handles[target]is None or type(step['save'])is not bool
                     or type(step.get('expect_failure',False))is not bool):raise ValueError('invalid block edit roundtrip')
@@ -213,22 +213,12 @@ def validate(operation):
             name=handles[target];members=definitions[name][:]+[handles[i] for i in sorted(additions)]
             if (not isinstance(removals,list) or any(type(i)is not int or not 0<=i<len(members) for i in removals)
                     or len(set(removals))!=len(removals)):raise ValueError('invalid block-edit removals')
-            restricted=step.get('restricted_members',[])
-            if not isinstance(restricted,list) or any(not isinstance(v,dict) or set(v)!=set(('member','mode')) or type(v['member'])is not int or not 0<=v['member']<len(members) or v['mode']not in ('hidden','locked') for v in restricted):raise ValueError('invalid restricted members')
-            if len(set(v['member'] for v in restricted))!=len(restricted):raise ValueError('duplicate restricted member')
-            if bool(restricted)!=('restricted_action'in step) or restricted and step['restricted_action']not in ('release','restore','cancel'):raise ValueError('invalid restricted member choice')
-            if restricted and (contexts or not step['save'] or step.get('expect_failure',False)):raise ValueError('restricted choices require a root save')
             if 'base_point'in step:_numbers(step['base_point'],3)
             if step.get('expect_failure',False) and (additions or removals or 'base_point'in step):raise ValueError('rejected block edit cannot use controls')
             outputs=[]
             if step['save'] and not step.get('expect_failure',False):
-                if step.get('restricted_action')=='cancel':
-                    outputs=[]
-                else:
-                    releases=[v['member'] for v in restricted] if step.get('restricted_action')=='release' else []
-                    outputs=[members[i] for i in removals+releases]
-                    remaining=[member for i,member in enumerate(members) if i not in removals+releases]
-                    if remaining:definitions[name]=remaining
+                outputs=[members[i] for i in removals]
+                definitions[name]=[member for i,member in enumerate(members) if i not in removals]
                 for key in definitions:leaves(key,[])
         elif action=='reset_scale':
             picks=step.get('objects')
@@ -630,26 +620,8 @@ def run(operation, tolerance, host):
                             for obj in ordered:
                                 if document.Objects.Transform(obj.Id,edit_transform,True)==System.Guid.Empty:raise ValueError('native BlockEdit member transform failed')
 
-                    restricted=step.get('restricted_members',[])
-                    if restricted:
-                        from block_edit_restricted_probe import watch
-                        current=sorted([o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry and o.Id not in released],key=lambda o:int(o.RuntimeSerialNumber))
-                        restricted_ids=[current[v['member']].Id for v in restricted]
-                        watcher=watch(operation['id']+'-'+str(len(states)-1)+'-restricted',step['restricted_action'])
-                        for item,key in zip(restricted,restricted_ids):
-                            if not (document.Objects.Hide(key,True) if item['mode']=='hidden' else document.Objects.Lock(key,True)):raise ValueError('restricted member state failed')
-                        if step['restricted_action']=='release':released.extend(restricted_ids)
                     script='_-BlockEdit '+('_SaveAndClose' if step['save'] else '_DiscardAndCancel')
-                    close_result=rs.Command(script,False)
-                    if restricted:
-                        from block_edit_restricted_probe import finish
-                        finish(watcher)
-                    if restricted and step['restricted_action']=='cancel':
-                        active=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry]
-                        if not active:raise ValueError('cancelled warning did not retain the editor')
-                        if not rs.Command('_-BlockEdit _DiscardAndCancel',False):raise ValueError('discard after cancelled warning failed')
-                        released=[]
-                    elif not close_result:raise ValueError('native BlockEdit close failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
+                    if not rs.Command(script,False):raise ValueError('native BlockEdit close failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
                     closed=True
                     if step['save']:
                         for key in released:

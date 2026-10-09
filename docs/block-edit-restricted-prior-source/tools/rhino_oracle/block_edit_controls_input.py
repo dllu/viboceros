@@ -16,12 +16,6 @@ class BlockEditController:
                 for action in ('add_objects', 'remove_members', 'base_point'):
                     if step.get(action) is not None and step.get(action) != []:
                         self.expected[op['id'] + '-' + str(index) + '-' + action] = (action, step[action])
-        self.restricted = {}
-        self.restricted_seen = set()
-        for op in request['operations']:
-            for index,step in enumerate(op.get('steps',[])):
-                if step.get('restricted_members'):
-                    self.restricted[op['id']+'-'+str(index)+'-restricted'] = step['restricted_action']
         self.contexts = {}
         self.context_seen = set()
         for op in request['operations']:
@@ -33,28 +27,6 @@ class BlockEditController:
         self.submitted = {}
 
     def __call__(self, job, owned_pids):
-        empty_path=job/'block-edit-restricted.json.empty'
-        if empty_path.exists():
-            value=json.loads(empty_path.read_text());token=value.get('token');key=str(token)+'-empty'
-            if key not in self.restricted_seen:
-                if set(value)!={'token','choice','point'} or token not in self.restricted or value['choice']!='empty':raise OracleProtocolError('foreign empty-block warning')
-                point=value['point']
-                if not isinstance(point,list) or len(point)!=2 or any(type(v) not in (int,float) or not 0<=v<2160 for v in point):raise OracleProtocolError('invalid empty-block warning coordinates')
-                if _rhino_window_for_pids(owned_pids) is None:return
-                subprocess.run(['xdotool','mousemove',str(round(point[0])),str(round(point[1])),'click','1'],check=True,timeout=10)
-                self.restricted_seen.add(key)
-            return
-        restricted_path=job/'block-edit-restricted.json'
-        if restricted_path.exists():
-            value=json.loads(restricted_path.read_text());token=value.get('token')
-            if token not in self.restricted_seen:
-                if set(value)!={'token','choice','point'} or self.restricted.get(token)!=value['choice']:raise OracleProtocolError('foreign restricted-member choice')
-                point=value['point']
-                if not isinstance(point,list) or len(point)!=2 or any(type(v) not in (int,float) or not 0<=v<2160 for v in point):raise OracleProtocolError('invalid restricted warning coordinates')
-                if _rhino_window_for_pids(owned_pids) is None:return
-                subprocess.run(['xdotool','mousemove',str(round(point[0])),str(round(point[1])),'click','1'],check=True,timeout=10)
-                self.restricted_seen.add(token)
-            return
         context_path=job/'block-edit-context.json'
         if context_path.exists():
             context=json.loads(context_path.read_text());token=context.get('token')
@@ -149,8 +121,6 @@ class BlockEditController:
         self.submitted[token] = time.monotonic()
 
     def record_diagnostics(self, response):
-        if {token for token in self.restricted_seen if not token.endswith('-empty')} != set(self.restricted):
-            raise OracleProtocolError('incomplete restricted-member choices')
         if self.context_seen != set(self.contexts):
             raise OracleProtocolError('incomplete nested context inputs')
         if self.seen != set(self.expected):

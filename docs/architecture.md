@@ -36,6 +36,9 @@ set, base-point input uses the shared drafting pipeline, and idle block double
 clicks open the editor. Nested contexts use composed frames, atomic scene
 replacement and accepted context checkpoints; broader input/history qualification
 remains open.
+Restricted block members have explicit release or show/unlock save choices.
+An empty accepted workspace retains its prior definition while accepting model
+releases; native close-time warning choices are captured separately.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

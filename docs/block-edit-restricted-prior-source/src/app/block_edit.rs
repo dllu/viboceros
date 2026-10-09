@@ -237,7 +237,6 @@ impl VibocerosApp {
         }
         let mut open = true;
         let mut action = None;
-        let restricted = self.document.block_edit_restricted_objects();
         type TreeCache = (
             viboceros_document::BlockEditTreeRevision,
             Result<Vec<viboceros_document::BlockEditTreeNode>, String>,
@@ -354,23 +353,7 @@ impl VibocerosApp {
                     action = Some("BlockEdit SetBasePoint".to_owned());
                 }
                 ui.separator();
-                if !restricted.is_empty() {
-                    ui.label(format!(
-                        "{} hidden or locked member(s) need a save choice.",
-                        restricted.len()
-                    ));
-                    if ui.button("Remove restricted members and save").clicked() {
-                        action = Some("BlockEdit SaveAndClose Restricted=Release".to_owned());
-                    }
-                    if ui.button("Show and unlock members and save").clicked() {
-                        action = Some("BlockEdit SaveAndClose Restricted=Restore".to_owned());
-                    }
-                    ui.label("Continue editing to postpone this choice.");
-                }
-                if ui
-                    .add_enabled(restricted.is_empty(), egui::Button::new("Save and close"))
-                    .clicked()
-                {
+                if ui.button("Save and close").clicked() {
                     action = Some("BlockEdit SaveAndClose".to_owned());
                 }
                 if ui.button("Discard and cancel").clicked() {

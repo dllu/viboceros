@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested BlockEdit restricted-member close choices and empty-workspace retention, nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`75fc0291` (earlier milestones used `a71ee68b`, `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`b218b963` (earlier milestones used `75fc0291`, `a71ee68b`, `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[restricted block member provenance](block-edit-restricted-provenance.json),
 [nested block editor provenance](block-edit-nested-provenance.json),
 [block editor input provenance](block-edit-input-provenance.json),
 [block editor control provenance](block-edit-controls-provenance.json),
@@ -47,25 +48,40 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,565 Rust tests:
+5,572 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,087 | 17 |
-| Command | 1,233 | 2 |
-| Document | 261 | 5 |
+| App | 1,088 | 17 |
+| Command | 1,234 | 2 |
+| Document | 265 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,103 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 505 | 0 |
+| Oracle (unit and integration) | 506 | 0 |
 
-The Python suite passed 1,060 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,064 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [nested BlockEdit](commands/block-edit.md) adds six document tests,
+The newest [restricted BlockEdit close choices](commands/block-edit.md) add
+four document tests, one command test, one egui pointer test, one replay test and
+four Python tests. Native Yes releases hidden/locked members with their world
+geometry and flags; No normalizes them and retains their prototype membership;
+Cancel returns to the editor. A default local save requires an explicit decision
+and does not mutate the workspace. All nine native workflows match 45 model states with zero sampled numeric
+difference
+including mixed restrictions and all-members release. When no members remain,
+Rhino retains the prior definition while accepting released model objects; the
+local staged close follows that rule. Context navigation requires normalizing
+restricted members first; its native warning behavior is not newly qualified.
+Local Undo restores the model and released object/group state together. Broader
+member types, layer-level restrictions, linked editors and native history/panel
+fidelity remain open; no performance or GPU measurements were made.
+
+The preceding [nested BlockEdit](commands/block-edit.md) adds six document tests,
 one command test, one egui tree test, one native replay test and eight Python
 tests. The tree follows validated member paths in composed instance frames;
 ancestor geometry remains protected. Context changes stage geometry/catalog

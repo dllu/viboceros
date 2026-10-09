@@ -8,20 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_restricted_member_fields_and_choices_reject_before_native_access(self):
-        for members,choice in [([dict(member=True,mode='hidden')],'release'),([dict(member=1,mode='hidden')],'release'),([dict(member=0,mode='invalid')],'restore'),([dict(member=0,mode='hidden'),dict(member=0,mode='locked')],'release'),([dict(member=0,mode='hidden')],'invalid')]:
-            f=self.fixture();f['steps'].append(dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True,restricted_members=members,restricted_action=choice))
-            with self.subTest(members=members,choice=choice),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_restricted_release_allocates_a_handle_but_restore_and_cancel_do_not(self):
-        for choice in ('release','restore','cancel'):
-            f=self.fixture();f['sources'].append(dict(type='point',point=[4,5,6]));f['steps'][0]['sources']=[0,1]
-            f['steps'].append(dict(action='edit_roundtrip',object=2,translation=[0,0,0],save=True,restricted_members=[dict(member=0,mode='hidden')],restricted_action=choice))
-            probe.validate(f);f['steps'].append(dict(action='group',objects=[3]))
-            if choice=='release':probe.validate(f)
-            else:
-                with self.assertRaises(ValueError):probe.validate(f)
-
     def test_nested_context_sequence_is_validated_before_native_access(self):
         f=self.fixture()
         f['steps'].append(dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True,contexts=[dict(definition='leaf',translation=[1,2,3])]))

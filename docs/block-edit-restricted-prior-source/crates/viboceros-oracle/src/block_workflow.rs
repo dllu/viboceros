@@ -127,10 +127,6 @@ pub enum BlockStep {
         translation_api: String,
         #[serde(default)]
         contexts: Vec<BlockEditContext>,
-        #[serde(default)]
-        restricted_members: Vec<BlockEditRestrictedMember>,
-        #[serde(default)]
-        restricted_action: Option<BlockEditRestrictedChoice>,
     },
     DeleteDefinition {
         name: String,
@@ -157,25 +153,6 @@ pub enum BlockEditContextSelection {
     #[default]
     All,
     Points,
-}
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(deny_unknown_fields)]
-pub struct BlockEditRestrictedMember {
-    pub member: usize,
-    pub mode: BlockEditRestrictedMode,
-}
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum BlockEditRestrictedMode {
-    Hidden,
-    Locked,
-}
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum BlockEditRestrictedChoice {
-    Release,
-    Restore,
-    Cancel,
 }
 
 fn sdk_creation_api() -> BlockExplosionApi {
@@ -370,8 +347,6 @@ pub(super) fn run(
                 base_point,
                 translation_api,
                 contexts,
-                restricted_members,
-                restricted_action,
             } => {
                 let target = live(&document, &handles, *object)?;
                 if *expect_failure {
@@ -428,7 +403,7 @@ pub(super) fn run(
                     if !additions.is_empty() {
                         members.extend(document.add_objects_to_block_edit(additions)?);
                     }
-                    let mut released = remove_members
+                    let released = remove_members
                         .iter()
                         .map(|i| members.get(*i).copied().ok_or_else(invalid))
                         .collect::<Result<Vec<_>, _>>()?;
@@ -463,43 +438,7 @@ pub(super) fn run(
                         _ => return Err(invalid()),
                     }
                     if *save {
-                        let current = document.block_edit_objects();
-                        for member in restricted_members {
-                            let id = *current.get(member.member).ok_or_else(invalid)?;
-                            match member.mode {
-                                BlockEditRestrictedMode::Hidden => {
-                                    document.set_objects_visibility([id], false)?;
-                                }
-                                BlockEditRestrictedMode::Locked => {
-                                    document.set_objects_locked([id], true)?;
-                                }
-                            }
-                            if *restricted_action == Some(BlockEditRestrictedChoice::Release) {
-                                released.push(id);
-                            }
-                        }
-                        match restricted_action {
-                            Some(BlockEditRestrictedChoice::Release) => {
-                                document.save_block_edit_with_restrictions(
-                                    viboceros_document::BlockEditRestrictedAction::Release,
-                                )?;
-                            }
-                            Some(BlockEditRestrictedChoice::Restore) => {
-                                document.save_block_edit_with_restrictions(
-                                    viboceros_document::BlockEditRestrictedAction::Restore,
-                                )?;
-                            }
-                            Some(BlockEditRestrictedChoice::Cancel) => {
-                                if document.save_block_edit().is_ok() {
-                                    return Err(invalid());
-                                }
-                                document.discard_block_edit()?;
-                                released.clear();
-                            }
-                            None => {
-                                document.save_block_edit()?;
-                            }
-                        }
+                        document.save_block_edit()?;
                         released
                     } else {
                         document.discard_block_edit()?;

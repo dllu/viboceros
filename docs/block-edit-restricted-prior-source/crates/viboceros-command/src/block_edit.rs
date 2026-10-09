@@ -38,27 +38,6 @@ impl Command for BlockEditCommand {
         }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        if args.first().is_some_and(|word| {
-            word.trim_start_matches('_')
-                .eq_ignore_ascii_case("SaveAndClose")
-        }) {
-            let action = match args {
-                [_] => viboceros_document::BlockEditRestrictedAction::RequireDecision,
-                [_, choice] if choice.eq_ignore_ascii_case("Restricted=Release") => {
-                    viboceros_document::BlockEditRestrictedAction::Release
-                }
-                [_, choice] if choice.eq_ignore_ascii_case("Restricted=Restore") => {
-                    viboceros_document::BlockEditRestrictedAction::Restore
-                }
-                _ => {
-                    return Err(CommandError::Usage(
-                        "BlockEdit SaveAndClose [Restricted=Release|Restore]",
-                    ));
-                }
-            };
-            let count = doc.save_block_edit_with_restrictions(action)?;
-            return Ok(format!("Saved block definition with {count} member(s)"));
-        }
         if let Some(operation) = args.first().map(|s| s.trim_start_matches('_')) {
             if operation.eq_ignore_ascii_case("EditPath") {
                 if args.len() != 2 {
@@ -127,6 +106,14 @@ impl Command for BlockEditCommand {
         {
             doc.discard_block_edit()?;
             return Ok("Discarded block edits".into());
+        }
+        if args.len() == 1
+            && args[0]
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("SaveAndClose")
+        {
+            let count = doc.save_block_edit()?;
+            return Ok(format!("Saved block definition with {count} member(s)"));
         }
         let args = if args
             .first()

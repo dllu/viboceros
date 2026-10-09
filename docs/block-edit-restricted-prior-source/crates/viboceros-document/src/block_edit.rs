@@ -4,14 +4,6 @@ use std::sync::Arc;
 use viboceros_geometry::{Point3, Vector3};
 pub(super) mod navigation;
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum BlockEditRestrictedAction {
-    #[default]
-    RequireDecision,
-    Release,
-    Restore,
-}
-
 #[derive(Clone, Debug)]
 pub(super) struct BlockEditSession {
     baseline: Arc<Document>,
@@ -46,18 +38,6 @@ impl BlockEditSession {
 }
 
 impl Document {
-    pub fn block_edit_restricted_objects(&self) -> Vec<ObjectId> {
-        self.block_edit.as_ref().map_or_else(Vec::new, |edit| {
-            self.objects
-                .iter()
-                .filter(|object| {
-                    !edit.protects(object.id)
-                        && (!object.attributes.visible || object.attributes.locked)
-                })
-                .map(|object| object.id)
-                .collect()
-        })
-    }
     pub fn is_block_edit_protected(&self, id: ObjectId) -> bool {
         self.block_edit
             .as_ref()
@@ -463,47 +443,6 @@ impl Document {
         }
     }
     pub fn save_block_edit(&mut self) -> Result<usize, DocumentError> {
-        self.save_block_edit_with_restrictions(BlockEditRestrictedAction::RequireDecision)
-    }
-    pub fn save_block_edit_with_restrictions(
-        &mut self,
-        action: BlockEditRestrictedAction,
-    ) -> Result<usize, DocumentError> {
-        self.ensure_no_transaction()?;
-        let ids = self.block_edit_restricted_objects();
-        if ids.is_empty() {
-            return self.save_block_edit_prepared();
-        }
-        if action == BlockEditRestrictedAction::RequireDecision {
-            return Err(DocumentError::InvalidBlockCatalog(
-                "hidden or locked block members require Release, Restore, or returning to edit",
-            ));
-        }
-        let mut working = self.clone_block_edit_model();
-        match action {
-            BlockEditRestrictedAction::Release => working
-                .block_edit
-                .as_mut()
-                .unwrap()
-                .settings
-                .released
-                .extend(ids),
-            BlockEditRestrictedAction::Restore => {
-                let ids = ids.into_iter().collect::<BTreeSet<_>>();
-                for object in &mut working.objects {
-                    if ids.contains(&object.id) {
-                        object.attributes.visible = true;
-                        object.attributes.locked = false;
-                    }
-                }
-            }
-            BlockEditRestrictedAction::RequireDecision => unreachable!(),
-        }
-        let count = working.save_block_edit_prepared()?;
-        *self = working;
-        Ok(count)
-    }
-    fn save_block_edit_prepared(&mut self) -> Result<usize, DocumentError> {
         self.ensure_no_transaction()?;
         let edit = self
             .block_edit
@@ -515,7 +454,7 @@ impl Document {
             ));
         }
         let members = self.capture_block_edit_members()?;
-        let mut count = members.len();
+        let count = members.len();
         let mut accepted = (*edit.baseline).clone();
         accepted.layers = self.layers.clone();
         self.restore_block_edit_layer_flags(&mut accepted);
@@ -538,15 +477,9 @@ impl Document {
             .iter()
             .position(|d| d.id() == edit.definition)
             .ok_or(DocumentError::BlockDefinitionNotFound(edit.definition))?;
-        if members.is_empty() {
-            // Native close retains the last nonempty definition while accepting
-            // independently released model objects.
-            count = accepted.block_definitions[index].members().len();
-        } else {
-            accepted.block_definitions[index] = accepted.block_definitions[index]
-                .clone()
-                .with_members(members);
-        }
+        accepted.block_definitions[index] = accepted.block_definitions[index]
+            .clone()
+            .with_members(members);
         blocks::validate_catalog(&accepted, &accepted.block_definitions)?;
         let staged =
             block_instances::stage_catalog_instances(&accepted, &accepted.block_definitions)?;

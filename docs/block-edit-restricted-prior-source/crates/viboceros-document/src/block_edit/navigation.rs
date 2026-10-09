@@ -127,11 +127,6 @@ impl Document {
         if path == edit.path {
             return Ok(self.block_edit_objects());
         }
-        if !self.block_edit_restricted_objects().is_empty() {
-            return Err(DocumentError::InvalidBlockCatalog(
-                "show or unlock restricted members before changing the editing context",
-            ));
-        }
         if path.len() > 64 {
             return Err(DocumentError::InvalidBlockCatalog(
                 "block edit path exceeded its bound",

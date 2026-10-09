@@ -416,32 +416,3 @@ fn nested_edit_contexts_match_native_geometry_metadata_checkpoints_and_shared_us
     assert_eq!(states, 48);
     assert!(numbers > 2000);
 }
-
-#[test]
-fn restricted_member_warning_choices_match_native_release_restore_cancel_and_empty_definition_retention()
- {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/block_edit_restricted.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/block_edit_restricted.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 9);
-    let mut states = 0;
-    let mut numbers = 0;
-    for result in actual.results {
-        let reference = native["results"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .find(|r| r["id"] == result.id)
-            .unwrap();
-        states += result.value["states"].as_array().unwrap().len();
-        compare(&result.value, &reference["value"], &result.id, &mut numbers);
-    }
-    assert_eq!(states, 45);
-    assert!(numbers > 1000);
-}

@@ -121,35 +121,3 @@ fn nested_context_command_routes_member_paths_and_returns_to_the_root() {
         .unwrap();
     assert_eq!(doc.undo_label(), Some("BlockEdit"));
 }
-
-#[test]
-fn restricted_save_options_are_explicit_and_preserve_the_pending_editor_on_rejection() {
-    let registry = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    registry.execute(&mut doc, "Point 1,2,3").unwrap();
-    registry.execute(&mut doc, "SelAll").unwrap();
-    registry.execute(&mut doc, "Block 0,0,0 part").unwrap();
-    let root = doc.objects().next().unwrap().id();
-    registry
-        .execute(&mut doc, &format!("BlockEdit Open {root}"))
-        .unwrap();
-    registry.execute(&mut doc, "SelAll").unwrap();
-    registry.execute(&mut doc, "Lock").unwrap();
-    let before = format!("{doc:?}");
-    assert!(
-        registry
-            .execute(&mut doc, "BlockEdit SaveAndClose")
-            .is_err()
-    );
-    assert_eq!(format!("{doc:?}"), before);
-    assert!(
-        registry
-            .execute(&mut doc, "BlockEdit SaveAndClose Restricted=Invalid")
-            .is_err()
-    );
-    registry
-        .execute(&mut doc, "BlockEdit SaveAndClose Restricted=Restore")
-        .unwrap();
-    assert!(!doc.is_block_editing());
-    assert_eq!(doc.undo_label(), Some("BlockEdit"));
-}

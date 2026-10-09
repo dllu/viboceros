@@ -88,23 +88,3 @@ class BlockEditContextInputTests(unittest.TestCase):
             with patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
                 with self.assertRaises(OracleProtocolError):controller(job,{123})
                 run.assert_not_called()
-
-class BlockEditRestrictedChoiceInputTests(unittest.TestCase):
-    def controller(self):
-        return BlockEditController({'operations':[{'id':'case','steps':[{'action':'edit_roundtrip','restricted_members':[{'member':0,'mode':'hidden'}],'restricted_action':'release'}]}]})
-    def test_prescribed_warning_choice_clicks_once_and_completes_diagnostics(self):
-        controller=self.controller()
-        with tempfile.TemporaryDirectory() as directory:
-            job=Path(directory);token='case-0-restricted'
-            (job/'block-edit-restricted.json').write_text(json.dumps(dict(token=token,choice='release',point=[834,686])))
-            with patch('tools.rhino_oracle.block_edit_controls_input._rhino_window_for_pids',return_value='owned'),patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
-                controller(job,{123});self.assertEqual(run.call_count,1);controller(job,{123});self.assertEqual(run.call_count,1)
-            controller.record_diagnostics({})
-    def test_changed_warning_choice_fails_before_any_pointer_input(self):
-        controller=self.controller()
-        with tempfile.TemporaryDirectory() as directory:
-            job=Path(directory)
-            (job/'block-edit-restricted.json').write_text(json.dumps(dict(token='case-0-restricted',choice='restore',point=[834,686])))
-            with patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
-                with self.assertRaises(OracleProtocolError):controller(job,{123})
-                run.assert_not_called()

@@ -70,20 +70,6 @@ the members back into definition-local coordinates, validates the catalog and
 refreshes every original root before accepting one `BlockEdit` history entry.
 Save failures leave the workspace open for correction or cancellation.
 
-Hidden or locked editable members need an explicit close choice. Bare
-`BlockEdit SaveAndClose` rejects the pending close without changing the editor.
-Use `Restricted=Release` to retain those objects' world geometry and flags in
-the model while removing them from the definition, or `Restricted=Restore` to
-show/unlock them and keep them in the definition. The editor window provides
-both save buttons; continuing to edit postpones the choice. Discard retains its
-normal context-checkpoint behavior. Restricted members must be normalized before
-switching contexts; native warning choices during navigation remain unqualified.
-
-If no member remains after release, the previous nonempty definition stays
-unchanged while the released objects enter the model and the editor closes.
-This follows the recorded native informational warning. The operation and its
-released objects replay together through local Undo/Redo.
-
 Saving preserves root IDs, placements, raw attributes, user text and model group
 memberships. It clears the edited prototype's member group memberships, matching
 the recorded native workflow. New layers are retained; temporary visibility and
@@ -129,11 +115,8 @@ dialog tree; that is retained as a separate native diagnostic. The local tree
 continues to follow the validated definition graph.
 
 Linked definitions remain unimplemented. Saving an
-empty workspace retains the previous definition; placing an already-empty
-catalog definition is still unsupported. See
-[restricted-member evidence](../block-edit-restricted-provenance.json) for the
-native Yes/No/Cancel choices, mixed restrictions and all-members release.
-This milestone adds no GPU or performance measurements and does
+empty definition with existing placements is rejected by the current instance
+admission rules. This milestone adds no GPU or performance measurements and does
 not establish full Rhino BlockEdit compatibility.
 
 Reference: [BlockEdit](https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit).

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "b218b9634df1e901032220e9fbdafd9f89915fe2",
+  "scope": "BlockEdit restricted-member save choices and nonempty-definition retention on empty close",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5572,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1064,
+      "exit_code": 0
+    },
+    "native_replay": {
+      "cases": 9,
+      "states": 45,
+      "matched": 9,
+      "mismatched": 0,
+      "max_absolute_error": 0.0,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "new_document_tests": 4,
+    "new_command_tests": 1,
+    "new_gui_pointer_tests": 1,
+    "new_native_replay_tests": 1,
+    "new_python_tests": 4
+  },
+  "native_capture": {
+    "fixture": "tools/rhino_oracle/fixtures/block_edit_restricted.json",
+    "response": "tools/rhino_oracle/observations/block_edit_restricted.json",
+    "scheme": "VibocerosOracleBlockRestrictedFinal20261009",
+    "cases": 9,
+    "states": 45
+  },
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 through ARM64 Wine/FEX on private Xvfb",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "native_input": "Owned classic Win32 Block Edit warning identified by process, class, title and warning text. Public child-button rectangles drove real pointer Yes/No/Cancel clicks. A separate informational warning confirmed all-members release retains the prior definition; its OK button was acknowledged automatically in the final capture.",
+  "release_contract": "Restricted members are removed from the definition and accepted as world-space model objects with their hidden/locked flags and raw metadata. Group resources and model history replay remain synchronized.",
+  "restore_contract": "The staged workspace normalizes restricted member visibility/locking and saves them in the definition. Default save rejects without mutation until an explicit decision; cancellation of the native close returns to the editor and the harness then discards.",
+  "empty_contract": "If the accepted workspace has no members, retain the prior nonempty definition while accepting released model objects and closing the editor. Native instances and the catalog definition stay intact. Already-empty catalog placements remain unsupported.",
+  "context_scope": "Local context switching rejects restricted active members until they are normalized. Native restriction-warning choices during context navigation, layer-level restrictions and preexisting restricted prototypes are not newly qualified.",
+  "comparison_limits": "Nine fresh point-member workflows and 45 closed-model states at absolute 1e-9 plus relative 1e-12. Root/member metadata, groups, world positions, flags and logical handle allocation are compared in recorded order. Local tests constrain one-step model Undo/Redo; native history and wider member types are unverified. No GPU or performance measurements.",
+  "sha256": {
+    "crates/viboceros-command/src/block_edit.rs": "d2ab3b2d55e517d7ed4765ec8188bab029f5197148315084e68c8655e7d0344c",
+    "crates/viboceros-command/src/block_edit/tests.rs": "2de661c879631f4236eb841c74cbce491ea3334e994222f1e54e4290b4b5af99",
+    "crates/viboceros-document/src/block_edit.rs": "04f060ce7143cb68ae41c990f54bf5d1ea21b6fdb8c4dd9a0de57e0bdc18f06b",
+    "crates/viboceros-document/src/block_edit/navigation.rs": "fbc577cdb008e9e63b318c291ad2f5c83fec615eba7766faaf47b8af2864cd43",
+    "crates/viboceros-document/src/block_edit/tests.rs": "64a176722a8ea38a72c5a65542488bfa4f5c55724b5895c7ce1d8c959225fc89",
+    "crates/viboceros-document/src/lib.rs": "cedc9aa06fb75ace2d01de60b38ce5db7639ea41f7ac2142d1051226d12757bc",
+    "crates/viboceros-oracle/src/block_workflow.rs": "1a972323c5b58b14084fec74af2bdbe7fa770ea3ac93754e20d8c0ff3afd4848",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "fdbd4052dce06c427ad2df92f5107da13c1e270c60c1cb1ea0a5021a3df0aba3",
+    "docs/commands/block-edit.md": "5e2fe5d6d19cd83c9a36619d549d5232b6c5051fb0d683dc5c8a833937dd6d2f",
+    "src/app/block_edit.rs": "984c6c03c534436314a5f4680a5789431af921f345a6fb64e4eecbfe94468d7f",
+    "src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4",
+    "tools/rhino_oracle/block_edit_controls_input.py": "181a6d838bceea46bfd109200a1a79114bce26a0849c6c6fd823692527acd7a5",
+    "tools/rhino_oracle/block_edit_restricted_probe.py": "80cb90778b96c57736c567ddfbf3c192c60a6c96456eb6b3e97a3acaa05d70c5",
+    "tools/rhino_oracle/block_workflow_probe.py": "3c0b0a7e963fd277ca497181035a14987fff928bdeaa9717ba57d9769373afa7",
+    "tools/rhino_oracle/client.py": "10e41f3cff194d797b2e05e5705a394e416cf4923d6a8cac6582646e82ccd80c",
+    "tools/rhino_oracle/fixtures/block_edit_restricted.json": "c75ad5ec6371689e18dcd96d6f9d5b594a811d5d1b38b67db952c9be71505d95",
+    "tools/rhino_oracle/observations/block_edit_restricted.json": "1926538bd08b06f9d7a9539f35bd7e84b260dfae76a7fb07e0dac8806db6e19d",
+    "tools/rhino_oracle/test_block_edit_controls_input.py": "2304c68b5c533676e1844e9d8afebd26a0da817fdd2c4878f8963d1356a7aee7",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "96c22672c71874ae07ab5299b65e064ee3d7955ba98c9500e6dbb84cb9e4cffd",
+    "docs/block-edit-restricted-comparison.json": "f9460b1defcee84626b5df7ec80b14b8e7c328ba9c03eadc86c6d6fd6e6ec53f"
+  },
+  "remaining_scope": [
+    "Layer-level restrictions and native choices during context switches",
+    "Preexisting restricted prototypes and wider geometry",
+    "Linked definitions and persistence of active editors",
+    "Native selection/history/panel qualification and performance/GPU measurements"
+  ]
+}

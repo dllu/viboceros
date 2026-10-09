@@ -351,3 +351,77 @@ fn copied_nested_references_clear_geometry_text_without_changing_the_original() 
     ));
     assert!(definition.members()[0].geometry_user_text().is_empty());
 }
+
+#[test]
+fn restricted_members_require_an_explicit_save_choice_without_mutating_the_editor() {
+    let (mut doc, _, root) = fixture();
+    let extra = doc.add_geometry(Geometry::Point(p(99., 0., 0.))).unwrap();
+    doc.add_objects_to_block(root, [extra]).unwrap();
+    let ids = doc.open_block_edit(root).unwrap();
+    doc.set_objects_visibility([ids[0]], false).unwrap();
+    let before = format!("{doc:?}");
+    assert_eq!(doc.block_edit_restricted_objects(), [ids[0]]);
+    assert!(doc.save_block_edit().is_err());
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(doc.is_block_editing());
+    doc.discard_block_edit().unwrap();
+}
+
+#[test]
+fn releasing_restricted_members_preserves_world_geometry_flags_groups_and_model_history() {
+    let (mut doc, _, root) = fixture();
+    let extra = doc.add_geometry(Geometry::Point(p(99., 0., 0.))).unwrap();
+    doc.add_objects_to_block(root, [extra]).unwrap();
+    let original = doc.objects().cloned().collect::<Vec<_>>();
+    let ids = doc.open_block_edit(root).unwrap();
+    let group = doc.add_group(Some("Temporary".into()), [ids[0]]).unwrap();
+    doc.set_objects_locked([ids[0]], true).unwrap();
+    let world = doc.object(ids[0]).unwrap().clone();
+    assert_eq!(
+        doc.save_block_edit_with_restrictions(BlockEditRestrictedAction::Release)
+            .unwrap(),
+        1
+    );
+    assert_eq!(doc.object(ids[0]).unwrap(), &world);
+    assert!(doc.group(group).unwrap().members().any(|id| id == ids[0]));
+    let saved = doc.objects().cloned().collect::<Vec<_>>();
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), original);
+    doc.redo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), saved);
+}
+
+#[test]
+fn restoring_restricted_members_normalizes_flags_without_releasing_geometry() {
+    let (mut doc, _, root) = fixture();
+    let ids = doc.open_block_edit(root).unwrap();
+    doc.set_objects_visibility([ids[0]], false).unwrap();
+    assert_eq!(
+        doc.save_block_edit_with_restrictions(BlockEditRestrictedAction::Restore)
+            .unwrap(),
+        1
+    );
+    assert!(doc.object(ids[0]).is_none());
+    let definition = doc.block_definition_by_name("part").unwrap();
+    assert!(definition.members()[0].attributes().is_visible());
+    assert!(!definition.members()[0].attributes().is_locked());
+}
+
+#[test]
+fn releasing_every_member_retains_the_prior_definition_and_accepts_the_model_release() {
+    let (mut doc, _, root) = fixture();
+    let original = doc.objects().cloned().collect::<Vec<_>>();
+    let definition = doc.block_definition_by_name("part").unwrap().clone();
+    let ids = doc.open_block_edit(root).unwrap();
+    doc.set_objects_locked([ids[0]], true).unwrap();
+    assert_eq!(
+        doc.save_block_edit_with_restrictions(BlockEditRestrictedAction::Release)
+            .unwrap(),
+        1
+    );
+    assert!(!doc.is_block_editing());
+    assert_eq!(doc.block_definition_by_name("part"), Some(&definition));
+    assert!(doc.object(ids[0]).unwrap().attributes().is_locked());
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), original);
+}

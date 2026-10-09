@@ -992,7 +992,7 @@ class OracleClient:
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 
-        block_controls = any(op.get('op') == 'block_workflow' and step.get('action') == 'edit_roundtrip' and any(step.get(k) is not None and step.get(k) != [] for k in ('add_objects','remove_members','base_point','contexts','restricted_members')) for op in request['operations'] for step in op.get('steps',[]))
+        block_controls = any(op.get('op') == 'block_workflow' and step.get('action') == 'edit_roundtrip' and any(step.get(k) is not None and step.get(k) != [] for k in ('add_objects','remove_members','base_point','contexts')) for op in request['operations'] for step in op.get('steps',[]))
         with tempfile.TemporaryDirectory(prefix="viboceros-rhino-oracle-") as job:
             job_path = Path(job)
             request_path = job_path / "request.json"
@@ -1005,7 +1005,6 @@ class OracleClient:
                     interaction = BlockEditController(request)
                     shutil.copyfile(worker_source.with_name('block_edit_controls_probe.py'),job_path / 'block_edit_controls_probe.py')
                     shutil.copyfile(worker_source.with_name('block_edit_context_probe.py'),job_path / 'block_edit_context_probe.py')
-                    shutil.copyfile(worker_source.with_name('block_edit_restricted_probe.py'),job_path / 'block_edit_restricted_probe.py')
             if any(op.get('op') == 'mesh_edit_records' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('mesh_edit_records_probe.py'), job_path / 'mesh_edit_records_probe.py')
             if any(op.get('op') == 'grip_transform' for op in request.get('operations', [])):
