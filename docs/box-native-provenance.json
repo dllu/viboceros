@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "0eefd36f1fb1c5f8dadf9aa027fd01ef65912ea4",
+  "scope": "Command-compatible native Box connectivity, physical surface/trim parameters and Box-to-Contour seams",
+  "open_source_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "adapted_routines": [
+    "ON_BrepBox",
+    "ON_NurbsSurfaceQuadrilateral",
+    "ON_LineCurve constructors"
+  ],
+  "adaptation": "Attributed modified Rust tables and parameter-extent policy in third_party/opennurbs_rust/box_topology.rs; independent checked geometry/topology construction in Brep::try_command_box.",
+  "license": "third_party/opennurbs_rust/LICENSE (McNeel developer-tools MIT); source copyright and disclaimer retained",
+  "native_contract": "Perimeter-ordered 8 vertices; 12 directed edges; 6 Y-min/X-max/Y-max/X-min/Z-min/Z-max faces; outward UV loops with original reversals and ISO flags. Surface dimensions use maximum opposite edge lengths; edge/trim intervals use length; extents <= ON_ZERO_TOLERANCE fall back to one.",
+  "generic_contract": "Brep::try_box remains normalized; Box command and public-SDK-box oracle use Brep::try_command_box.",
+  "verified": {
+    "rust": {
+      "passed": 5602,
+      "failed": 0,
+      "ignored": 38
+    },
+    "clippy": "passed --workspace --all-targets -- -D warnings",
+    "format_and_diff": "passed",
+    "native_brep_captures": {
+      "cases": 24,
+      "matched": 24,
+      "passed": true
+    },
+    "native_surface_captures": {
+      "cases": 52,
+      "matched": 52,
+      "passed": true
+    },
+    "python": "unchanged since preceding 1070-test full pass",
+    "logs_sha256": {
+      "/tmp/viboceros-native-box-workspace-complete.log": "7c01ac1f10992186789b44985f3c761ae8e7723129d094c0463b028381e53fb8",
+      "/tmp/viboceros-native-box-clippy-final.log": "748bf7ed7991e3d25e9975b9374dd4cf7186a04ac81840c8969cf08b5f75da74",
+      "/tmp/viboceros-native-box-current-audit.log": "7d6c6e3684f7763622ae9925bafba042b0f48814ec79a24fbf2ff8381ab8d219"
+    }
+  },
+  "new_geometry_tests": 3,
+  "new_command_tests": 1,
+  "full_native_parity": false,
+  "live_rhino": "Replayed existing private-Xvfb licensed Rhino observations; no new live launches in the restricted environment.",
+  "git_status": "Git metadata was read-only during verification; a later create/write/delete probe passed after unrestricted filesystem access was restored.",
+  "remaining_scope": [
+    "Broader Box command options and workflow variants",
+    "Collapsed/degenerate boxes",
+    "General affine and extreme-frame qualification",
+    "Performance parity and full Rhino command/kernel coverage"
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/brep.rs": "fbe4d5ceb34f590c6f683ed6eb089261ff57651d368ea027cdeba41a8616ac6e",
+    "crates/viboceros-geometry/src/brep/command_box.rs": "79a3f5402d8be2b05efa91c72ce0b477d17ec81c67045365ed1be427ad85275b",
+    "crates/viboceros-command/src/plane_primitives.rs": "75c04fb6884fb3b87cad8a3d2d71a7ec98e4c51e1c20213d5da67cba2d8ce599",
+    "crates/viboceros-command/src/plane_primitives/tests.rs": "ec3d7afcb34c8fa255220941deb083838619363f2ff617fb4eca2bff55ef462f",
+    "crates/viboceros-oracle/src/plane_arrays.rs": "90b6896aefc805acd991f7eceadfcac52934c67d82d9180fa32088b4154261b5",
+    "third_party/opennurbs_rust/box_topology.rs": "169881ebf4b836360a62648d82155b9aacd3fa7b64756e6087f10f2b0b1d0270",
+    "third_party/opennurbs_rust/README.md": "995077711c93d9b153d2beeb97e9043986f33c9fbb703d273de0134b0d5ee5f5",
+    "third_party/opennurbs_rust/LICENSE": "ed88c38e2f964a455b372f6c611905c6d64109744366106cb37972a421a65661",
+    "third_party/opennurbs/opennurbs_brep_tools.cpp": "68c5a494eb4103b85eb73026aaa2301022b607d30322a6be125a91a0e85f7f71",
+    "third_party/opennurbs/opennurbs_nurbssurface.cpp": "7426fe2a116346458ff31ccf16c53a3bb9b4b87b6d8456376b1b2f2576bc93bb",
+    "third_party/opennurbs/opennurbs_linecurve.cpp": "5db6d9535c3c00d0c8a45b36fb23b1394b9bedf484ea58503ce41f3fc0054141",
+    "docs/commands/surfaces.md": "1457c9c3f21397f11c0f9a3df4546a078f398ef3354cec5a8468d0f32271f205",
+    "docs/box-native-topology.md": "48ef467bb3415d805a6c1261c60ff876f4583943db49e82bf02933a6e0a6e137",
+    "docs/box-native-contour-comparison.json": "25cbe2c307d0769269ef830f91bb8d4351e8dad6266740a87ee2be69e9b1dfe0",
+    "docs/box-native-validation.json": "15a94034cf84930951bef1a7b6718fb1ca50735a0a9d4669ed08afbcc3854ec1",
+    "docs/edge-analysis-prior-source/crates/viboceros-geometry/src/lib.rs": "5670b5977aa8e093b59d2aa8249aaded787b1d011230e9b7effea5e9da8509c2"
+  }
+}

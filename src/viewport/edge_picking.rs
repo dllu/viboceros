@@ -8,6 +8,39 @@ pub struct EdgePick {
 }
 
 impl Viewport {
+    pub(super) fn paint_edge_analysis(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        document: &Document,
+        view: &viboceros_command::edge_analysis::View,
+    ) {
+        let color = Color32::from_rgb(view.color[0], view.color[1], view.color[2]);
+        let mut cache = self.display_cache.borrow_mut();
+        let segments = cache.analysis_segments(&view.edges);
+        for edge in view.displayed().filter(|e| {
+            document.object(e.object).is_some_and(|o| {
+                o.attributes().is_visible()
+                    && document
+                        .layer(o.attributes().layer_id())
+                        .is_some_and(|l| l.is_visible())
+            })
+        }) {
+            if let Some(lines) = segments.get(&(edge.object, edge.index)) {
+                for &[a, b] in lines {
+                    if let Some([a, b]) = self.project_selection_segment(a, b, rect) {
+                        painter.line_segment([a, b], Stroke::new(3., color));
+                    }
+                }
+            }
+            for point in edge.endpoints {
+                if let Some(p) = self.project_selection_point(point, rect) {
+                    painter.circle_filled(p, 4., color);
+                }
+            }
+        }
+    }
+
     pub(super) fn pick_edges(
         &self,
         pointer: Pos2,

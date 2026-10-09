@@ -72,6 +72,8 @@ mod morph;
 mod nurbs;
 mod nurbs2;
 mod nurbs_surface;
+#[path = "../../../third_party/opennurbs_rust/box_topology.rs"]
+mod opennurbs_box_topology;
 #[path = "../../../third_party/opennurbs_rust/chord_adjust.rs"]
 mod opennurbs_chord_adjust;
 mod parameter;
@@ -182,13 +184,14 @@ pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MeshAlignSelection,
-    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEdgeMatchOptions,
-    MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions, MeshExtrudeDirection,
-    MeshExtrudeSelection, MeshFace, MeshFaceExtraction, MeshHoleFill, MeshJoinComponent,
-    MeshJoinOptions, MeshNgon, MeshOffsetDirection, MeshPartBoundary, MeshSingleFaceComponents,
-    MeshSolid, MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions,
-    MeshTruncatedConeOptions, MeshUvSphereOptions, NonPlanarQuadCriterion, QuadSplitMethod,
-    SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes, match_mesh_edges,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshDiagnosticEdge, MeshEdgeFilter,
+    MeshEdgeMatchOptions, MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions,
+    MeshExtrudeDirection, MeshExtrudeSelection, MeshFace, MeshFaceExtraction, MeshHoleFill,
+    MeshJoinComponent, MeshJoinOptions, MeshNgon, MeshOffsetDirection, MeshPartBoundary,
+    MeshSingleFaceComponents, MeshSolid, MeshSubdivisionSphereOptions, MeshTopology,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NonPlanarQuadCriterion,
+    QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes,
+    match_mesh_edges,
 };
 pub use morph::{
     CurvePreviewCage, MAX_MORPH_CURVE_CONTROL_POINTS, MAX_MORPH_SURFACE_AXIS_CONTROLS,

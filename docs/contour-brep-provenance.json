@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "0eefd36f1fb1c5f8dadf9aa027fd01ef65912ea4",
+  "scope": "Brep Contour face domains, trimmed clipping, reversed/coplanar faces, closed seams, scan-line overlap and group threshold",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 via ARM64 Wine/FEX",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=n,b"
+  },
+  "settings_schemes": [
+    "VibocerosOracleContourBrep20261009",
+    "VibocerosOracleContourBrepDetails20261009",
+    "VibocerosOracleContourBrepCoplanar20261009",
+    "VibocerosOracleContourBrepFaceCuts20261009",
+    "VibocerosOracleContourBrepSeamVariants20261009"
+  ],
+  "comparison": {
+    "cases": 24,
+    "matched": 24,
+    "passed": true,
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 1e-12,
+    "max_absolute_field_error": 9.769962616701378e-15
+  },
+  "fixture_assembly": "8 initial recipes + 5 distinct details recipes + 5 coplanar/asymmetric-hole recipes + 6 seam variants. Main input is reconstructed from unchanged first 8 records of the final fixture. Extra native face/type/control/per-face-cut fields remain in raw evidence.",
+  "parameter_contract": "Untrimmed faces reuse surface policy. Trimmed geometry retains existing kernel clipping, then straight contours restore carrier intervals and orientation; split pieces and inner-boundary joins use chord lengths. Coplanar linear loops retain trim seams and hole/reversal winding. Closed multi-face seams use last participating face candidates with canonical sign-independent plane orientation.",
+  "group_contract": "Only planes with at least two outputs are grouped. Singleton points, surface curves and box loops are ungrouped in native captures.",
+  "scan_contract": "A closed UV seam bordering an exactly coincident scalar Bernstein span uses cyclic before/after signs and counts the duplicated endpoint once. Other closed curves retain the existing convention.",
+  "oracle_contract": "Stored domain endpoints are evaluated directly; reconstructing the last parameter from start+(end-start) can exceed the stored end by one ulp.",
+  "source_box_contract": "The public SDK box fixture mirrors native face order and physical UV intervals; the generic normalized geometry constructor remains unchanged.",
+  "verified": {
+    "rust": {
+      "passed": 5598,
+      "failed": 0,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 1070,
+      "failed": 0
+    },
+    "clippy": "passed: --workspace --all-targets -- -D warnings",
+    "native_new": {
+      "cases": 24,
+      "matched": 24,
+      "passed": true
+    },
+    "native_existing": {
+      "cases": 52,
+      "matched": 52,
+      "passed": true
+    },
+    "artifact_target": "/tmp/viboceros-brep-verification-target",
+    "format_and_diff": "passed",
+    "git_write_probe": {
+      "result": "EROFS",
+      "reason": "latest managed profile explicitly mounts .git read-only"
+    },
+    "logs_sha256": {
+      "/tmp/viboceros-contour-brep-workspace-complete.log": "1e3c609739ae8555fcd4289eb75dec57678994e133ff6c0526f4e659a2c7b58e",
+      "/tmp/viboceros-contour-brep-clippy-final.log": "ab74699ff530e165936accf2b1679a2b4c5f89c24f07ea4ae26db111757cb718",
+      "/tmp/viboceros-contour-brep-python-full.log": "4ab6fa64e814a7ff87547f47c572ba010d6736c595fcbc23ecd13720acbf288a",
+      "/tmp/viboceros-contour-brep-planar-regression.log": "eb7958e12d112da06c72d3826d8ba84e2e2727d55ae9e003587e9176573ff067"
+    }
+  },
+  "regressions": {
+    "new_geometry_tests": 2,
+    "new_command_tests": 1,
+    "new_native_integration_tests": 1,
+    "updated_group_history_test": "two sources per plane",
+    "updated_app_group_expectation": "singletons ungrouped"
+  },
+  "verification_notes": [
+    "Broad application regression caught circular-hole Boolean failure under an overly broad cyclic rule; exact seam-overlap qualification restores the prior curved convention. The complete final workspace run passed.",
+    "The original grouping-history test expectation had an incorrect 22-object count; it was corrected to 12 before the complete run.",
+    "Environment changed during execution: Git metadata became read-only, network restricted, and old tool handles disappeared. Verification used an isolated copied release cache after artifact-lock contention. No privileged escalation or permission bypass was attempted."
+  ],
+  "remaining_scope": [
+    "Broader curved and multi-face topology/seam qualification",
+    "Generic Box command versus SDK box face/UV conventions",
+    "Extreme/near-tie UV and interval qualification",
+    "Hatches, section styles and remembered preferences",
+    "Performance parity and complete Rhino command coverage"
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/contour.rs": "31eb9d7951160861a607911721fd681f115730999d9286d6cc02ca413cd80113",
+    "crates/viboceros-command/src/contour/geometry.rs": "eebc23a1a3d89aeed8d9e785719928f5966e36226ba0be44e186223f008f0053",
+    "crates/viboceros-command/src/contour/brep.rs": "d8092795e307150ba9c16b27fe0b81096e1729dfc87e7f913de41159f0f65f41",
+    "crates/viboceros-command/src/contour/tests.rs": "cf0699e7c359f95897bf418172027ad8ba1dcb40accd9b522abd2673e90399f3",
+    "crates/viboceros-oracle/src/contour_command.rs": "503d8725f92e494af4eedc28fabc6b85311c84c0076f0faca655ade9ab5ccadc",
+    "crates/viboceros-oracle/tests/contour_brep.rs": "1cc7f380ae90e96f8d1cf8fdeeac3aa9c1c7561b67ed20f7822494bc36278909",
+    "src/app/tests/contour.rs": "38ca7e7dbcc884d890a5a8fca4a7311758059a745a06eecfc3eb09dad81cc5bc",
+    "tools/rhino_oracle/rhino_worker.py": "acc799a842aedf36bfae231c96654237c128baeaf710c4d30452d62acc46d76a",
+    "tools/rhino_oracle/fixtures/contour_brep.json": "f648600a9c595d7e7effdf131646e6b807a80b9d47af52b145198e616df616fd",
+    "tools/rhino_oracle/observations/contour_brep.json": "e77dc37c4822492a88ed3deaf1fee08e2ce7bd7bee900e3678c995ae56c36a90",
+    "docs/commands/contour.md": "6223f6123b61f65fb993538b858122a90765d2ba26d91bce95d0b029d4870016",
+    "docs/contour-brep-comparison.json": "25cbe2c307d0769269ef830f91bb8d4351e8dad6266740a87ee2be69e9b1dfe0",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-face-cuts.py": "78d35c5ff3521ed40595ed34c39b3138611423da2a523fceae5f3500e9534ae3",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-seam-variants-request.json": "4206f31b69c93671780a3437260a03772c864d1056f93baab1d2debe6cb04c1b",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-seam-variants-native.json": "280429fa9cc77596ad8b322adf0cb01a890298e21382998e5e5a2ff7c9812170",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-native.json": "5a5b59fd3ea4b294a95e9fa27223e75bebea74aa55a158209fb69261b8d33432",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-face-cuts-request.json": "8571d937f039e9de91d996c0b7af566556dec207ddeac17589d76054f0f68e6d",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-details-request.json": "bb97d4b06ff3cb472abdab775af4766dca218549cf696839ee4b18c6bb00a56a",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-face-cuts-native.json": "9d9dfac9633ec67f1c32f02d7fdf3ec0fa0a17abe9f41bb3ccc5b64d1de1b005",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-more-native.json": "971250a75349186dcae5b8a76922d9392205f757a2988308a62ae4067d79a1e2",
+    "docs/contour-brep-capture-source/main-request-reconstructed.json": "3e5586669f7af755ed3f488912f493040d2b20cd6b1de30c40e6b44fee541741",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-details.py": "0c5d5762ffbadc52e22a70d5fdf7d47b46b91e208cf67142e715cbe0f608edae",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-details-helper.py": "1099fc80d485c937af98494c01ef33cb063eed03231bd7474a94abc022571066",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-more-request.json": "2baed52087402b397cda6cb7139e8b2d9d68abdb9d9f534ddbc4326ff66de066",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-face-cuts-helper.py": "2ae568de81fdba36747190da94d1b6075d906ac8c228a89b6da971eed0d3aa0b",
+    "docs/contour-brep-capture-source/viboceros-contour-brep-details-native.json": "b4610497dc3754498ad77281b90de83abfa5d49574a7319fa627507b1c7c7a77",
+    "docs/contour-brep-capture-source/tools/rhino_oracle/contour_probe.py": "0435b1bed188dc7c0f35e322c74587563af0d1909a43538d9dd2d7a0b936138d",
+    "docs/contour-brep-capture-source/tools/rhino_oracle/rhino_worker.py": "acc799a842aedf36bfae231c96654237c128baeaf710c4d30452d62acc46d76a",
+    "docs/contour-brep-validation.json": "db9e10539dcc254ac3caa6400bda2d1eeaa758477d2616acd9ff54ac362cef84",
+    "docs/box-native-prior-source/crates/viboceros-geometry/src/brep.rs": "a79daa09a95bb9e0be0e1dc1464a67042eb70b408ca0d30148ec4a5727090e17",
+    "docs/box-native-prior-source/crates/viboceros-oracle/src/plane_arrays.rs": "4bad2f228719a005ac4479e4df96e8b0b8e17c12d0cdee0fb52f996b5d282f5d",
+    "docs/box-native-prior-source/docs/contour-brep-parameterization.md": "7a1f3088cb3c04700e693bd52dd1ecb8f9d1a0edcb966155991b8e1b3abe3a73"
+  }
+}

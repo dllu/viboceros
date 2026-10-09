@@ -593,7 +593,7 @@ impl Command for BoxCommand {
         let frame = plane.with_origin(base_corner);
         let base_delta = frame.coordinates_of(opposite_corner)?;
         let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
-        let brep = Brep::try_box(
+        let brep = Brep::try_command_box(
             frame,
             [
                 increasing_interval(base_delta[0]),

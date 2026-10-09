@@ -90,16 +90,11 @@
   "sha256": {
     "crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3",
     "Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
-    "crates/viboceros-command/src/lib.rs": "3e4bc50ed58257aab550a51e750b1b1079918598f604dd7f428ca8364d8e3066",
     "crates/viboceros-oracle/src/lib.rs": "1a37ce2ffa046b1cbe4a1f14f329f0590c8505f2a33046af62b18a8b82089ce1",
-    "crates/viboceros-oracle/src/contour_command.rs": "7ca7fa09adf11bcd1f3a503468073ced4aea0bc770dc659db8f0080e8c8ae7fe",
-    "src/app.rs": "41a0b5afcdceb72dc3fbdd57a447a75e7a785eef5f381378b0310edf0ea64b11",
     "src/app/contour.rs": "709c21e48e6479c032588dded0c393bb23dc39244be1bc7262e3ff9a4a587de1",
     "src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710",
-    "src/app/tests/contour.rs": "b84fd1a6bdb90b35bb5c68e46747f76eef50e54baa19883c8b80b66c7492f550",
     "src/app/tests/section.rs": "ed377dda8819f4c3c997391f82c8e69c2f46685ea918850a8857b05fd3a07959",
     "tools/rhino_oracle/client.py": "1f19b6b80652397fd7bd3e7b57df831e35afed36e6024f70d746e0b53691340f",
-    "tools/rhino_oracle/rhino_worker.py": "36f1ecad52ac5d899bfd1e0a2b988b9afd6f59a7c2a916b7aacc0d94ab736050",
     "tools/rhino_oracle/contour_probe.py": "0435b1bed188dc7c0f35e322c74587563af0d1909a43538d9dd2d7a0b936138d",
     "tools/rhino_oracle/test_contour_probe.py": "f821ae8cf6dc03e80518d3fd3b4446823051ceddd3595b66763c82f7e5a9feec",
     "tools/rhino_oracle/fixtures/contour_command.json": "d1bb87c988f957b3512c7a2c94e075185b0fa1b066d418a556765e14a9536d0a",
@@ -115,6 +110,11 @@
     "docs/contour-domains-prior-source/crates/viboceros-oracle/tests/contour_command.rs": "b302f91332efd450e449dd47e4edddf59d44812ba21675b416a9fe5e8088ea5f",
     "docs/contour-domains-prior-source/crates/viboceros-command/src/contour/tests.rs": "6aee3d8c6bb19ab2576764bad5be3b78ec3e01c58d37f9839806b3cca8cc983f",
     "docs/contour-domains-prior-source/docs/contour-command-comparison.json": "4c17d5e998adc0621460ae2836f2f33d91d63e4b3987e37c777cf51f9887efcb",
-    "docs/contour-domains-prior-source/docs/commands/contour.md": "eeaf41ac68551982401a2e1824b996e5484a7bd8c93106769d998c0835db1b35"
+    "docs/contour-domains-prior-source/docs/commands/contour.md": "eeaf41ac68551982401a2e1824b996e5484a7bd8c93106769d998c0835db1b35",
+    "docs/contour-brep-prior-source/tools/rhino_oracle/rhino_worker.py": "36f1ecad52ac5d899bfd1e0a2b988b9afd6f59a7c2a916b7aacc0d94ab736050",
+    "docs/contour-brep-prior-source/src/app/tests/contour.rs": "b84fd1a6bdb90b35bb5c68e46747f76eef50e54baa19883c8b80b66c7492f550",
+    "docs/contour-brep-prior-source/crates/viboceros-oracle/src/contour_command.rs": "7ca7fa09adf11bcd1f3a503468073ced4aea0bc770dc659db8f0080e8c8ae7fe",
+    "docs/edge-analysis-prior-source/crates/viboceros-command/src/lib.rs": "3e4bc50ed58257aab550a51e750b1b1079918598f604dd7f428ca8364d8e3066",
+    "docs/edge-analysis-prior-source/src/app.rs": "41a0b5afcdceb72dc3fbdd57a447a75e7a785eef5f381378b0310edf0ea64b11"
   }
 }

@@ -48,7 +48,7 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-The final workspace release run passed 5,594 Rust tests. A preliminary run
+The final workspace release run passed 5,602 Rust tests. A preliminary run
 caught a command-first source-selection handoff bug; the corrected getter and
 Section regression are included in this final run. Clippy, format and diff
 checks also passed.
@@ -56,12 +56,12 @@ checks also passed.
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
 | App | 1,094 | 17 |
-| Command | 1,245 | 2 |
+| Command | 1,247 | 2 |
 | Document | 265 | 5 |
 | Drafting | 164 | 6 |
-| Geometry | 2,106 | 8 |
+| Geometry | 2,111 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 508 | 0 |
+| Oracle (unit and integration) | 509 | 0 |
 
 The Python suite passed 1,070 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
@@ -1475,3 +1475,55 @@ Broader curved/trimmed B-rep families, extreme and near-tie UV values, closed
 seams, hatches and performance parity remain open. README stays concise;
 details are in [Contour](commands/contour.md) and
 [parameterization](contour-domain-parameterization.md).
+
+## B-rep Contour checkpoint
+
+[B-rep Contour provenance](contour-brep-provenance.json) records a complete
+5,598-test Rust run (38 ignored), 1,070 passing Python tests and clean Clippy,
+formatting and diff checks. All 24 new B-rep/native grouping recipes and the
+existing 52 surface-domain captures pass strict replay at 1e-9 absolute plus
+1e-12 relative epsilon. No domain, ordering or seam exclusions are used.
+
+The application circular-hole Boolean regression passed after limiting the
+cyclic seam change to exactly coincident scan-line spans. Two direct kernel
+regressions cover outer-boundary overextension and hole-side truncation.
+Validation used an isolated target after the environment profile changed and
+an old artifact lock was unavailable to the new tool session.
+
+During this capture, the managed profile protected `.git` as read-only and an
+owned write probe returned EROFS. A later profile restored filesystem access;
+an October 9 create/write/delete probe now succeeds. The historical capture
+record retains its original restriction. Broader geometry/command coverage and
+performance remain open.
+
+## Box topology checkpoint
+
+[Native Box topology](box-native-topology.md) introduces a command-compatible
+constructor using attributed OpenNURBS connectivity and parameter extent tables.
+The Box command and SDK-box oracle share it; the generic normalized constructor
+remains available. Four new regressions cover topology/UV/trim intervals, rotated
+frames, tiny-box fallback and invalid intervals, and Box-to-Contour/Undo.
+The full release run passes 5,602 Rust tests with 38 ignored; Clippy and format
+checks are clean. The existing 24 B-rep and 52 surface-domain native captures
+continue to pass. Python code is unchanged from the preceding 1,070-test run.
+
+The initial tiny-box test used near-zero numerical validation tolerance and
+failed ordinary rounded trim/edge correspondence. Its modelling tolerance was
+set to 1e-24 for 1e-12 geometry; the constructor continues to use the caller's
+tolerance without relaxation. Source attribution and hashes are in
+[provenance](box-native-provenance.json).
+
+## Edge analysis checkpoint
+
+[ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](commands/show-edges.md)
+add transient edge display, mode/color controls, source management, zoom
+navigation and transactional endpoint marking. Eight regressions cover B-rep
+and mesh classifications, geometry edits and Undo, cache reuse, application
+selection handoff and hidden-object drawing.
+
+The complete release run passes 5,610 Rust tests with zero failures and 38
+ignored tests. Clippy with warnings denied, formatting, diff checks and all
+historical source pins pass. The Python implementation is unchanged since the
+preceding 1,070-test run. No new live Rhino edge-analysis capture was performed;
+native UI, ordering, curved drawing and framing parity remain open. Exact
+source and validation-log hashes are in [provenance](edge-analysis-provenance.json).

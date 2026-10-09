@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "contour_command",
+      "id": "box-x",
+      "sources": [
+        {
+          "type": "box_brep",
+          "min": [
+            -2,
+            -2,
+            -2
+          ],
+          "max": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "box-diagonal",
+      "sources": [
+        {
+          "type": "box_brep",
+          "min": [
+            -2,
+            -2,
+            -2
+          ],
+          "max": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        1,
+        1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "box-z",
+      "sources": [
+        {
+          "type": "box_brep",
+          "min": [
+            -2,
+            -2,
+            -2
+          ],
+          "max": [
+            2,
+            2,
+            2
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        0,
+        0,
+        1
+      ],
+      "spacing": 1
+    }
+  ]
+}

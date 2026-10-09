@@ -1,0 +1,25 @@
+{
+  "rust": {
+    "passed": 5602,
+    "failed": 0,
+    "ignored": 38
+  },
+  "clippy": "passed --workspace --all-targets -- -D warnings",
+  "format_and_diff": "passed",
+  "native_brep_captures": {
+    "cases": 24,
+    "matched": 24,
+    "passed": true
+  },
+  "native_surface_captures": {
+    "cases": 52,
+    "matched": 52,
+    "passed": true
+  },
+  "python": "unchanged since preceding 1070-test full pass",
+  "logs_sha256": {
+    "/tmp/viboceros-native-box-workspace-complete.log": "7c01ac1f10992186789b44985f3c761ae8e7723129d094c0463b028381e53fb8",
+    "/tmp/viboceros-native-box-clippy-final.log": "748bf7ed7991e3d25e9975b9374dd4cf7186a04ac81840c8969cf08b5f75da74",
+    "/tmp/viboceros-native-box-current-audit.log": "7d6c6e3684f7763622ae9925bafba042b0f48814ec79a24fbf2ff8381ab8d219"
+  }
+}

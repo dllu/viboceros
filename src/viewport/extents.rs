@@ -62,8 +62,7 @@ impl CameraFit {
 }
 
 impl Viewport {
-    #[cfg(test)]
-    pub(super) fn zoom_bounding_box(&mut self, bounds: BoundingBox3) -> Result<(), &'static str> {
+    pub(crate) fn zoom_bounding_box(&mut self, bounds: BoundingBox3) -> Result<(), &'static str> {
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
         self.fit_bounds(bounds, rect, 1.0)?.apply(self);
         Ok(())

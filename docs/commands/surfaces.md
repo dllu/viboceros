@@ -30,7 +30,9 @@ ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 `Box` follows Rhino's default two-opposite-base-corners and height workflow in
 the active construction plane. The height may be a signed number or a point, and the result is one
 closed B-rep with eight shared vertices, twelve shared edges, six outward
-bilinear faces, and exact rational parameter-space trims.
+bilinear faces, and exact rational parameter-space trims. Box uses the native
+OpenNURBS vertex/edge/face order and length-based surface and trim intervals;
+see [native box topology](../box-native-topology.md).
 Entering `Box` without arguments starts a three-point interactive workflow;
 see [construction planes](../construction-planes.md) for projection and height rules.
 

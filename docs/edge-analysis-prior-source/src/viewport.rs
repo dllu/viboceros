@@ -1,0 +1,5512 @@
+pub use viboceros_command::interface::DisplayMode;
+
+use eframe::egui::{
+    self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
+};
+use nalgebra::Vector3 as NaVector3;
+use viboceros_command::ObjectSelectionFilter;
+use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
+use viboceros_command::interface::RectSelectionMode;
+use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
+use viboceros_geometry::{
+    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3, Real,
+    Tolerance, TriangleMesh, Vector3,
+};
+
+use crate::viewport_gpu::{
+    LineInstance as GpuLineInstance, PointInstance as GpuPointInstance,
+    TriangleVertex as GpuTriangleVertex, ViewUniform as GpuViewUniform,
+    ViewportScene as GpuViewportScene,
+};
+
+#[cfg(test)]
+use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
+
+const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
+const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
+mod camera;
+mod clipping;
+mod drafting;
+mod named_view;
+mod normal_point;
+#[cfg(test)]
+use drafting::clip_drafting_line;
+#[cfg(test)]
+use viboceros_drafting::TrackAxis;
+mod display_cache;
+mod mirror_preview;
+pub(crate) use mirror_preview::MirrorPreview;
+pub(crate) mod affine_preview;
+pub(crate) mod bend_preview;
+pub(crate) mod maelstrom_preview;
+mod morph_preview;
+mod object_preview;
+#[cfg(test)]
+mod preview_test_support;
+pub(crate) mod taper_preview;
+pub(crate) mod twist_preview;
+pub(crate) use affine_preview::AffinePreview;
+pub(crate) use bend_preview::{BendPreview, BendPreviewCache};
+pub(crate) use maelstrom_preview::{MaelstromCursor, MaelstromPreview, MaelstromPreviewCache};
+pub(crate) use taper_preview::{TaperPreview, TaperPreviewCache};
+pub(crate) use twist_preview::{TwistPreview, TwistPreviewCache};
+pub(crate) mod translation_preview;
+pub(crate) use translation_preview::TranslationPreview;
+mod extents;
+pub(crate) use extents::ZoomExtentsBorders;
+mod end_markers;
+mod surface_corners;
+pub(crate) use end_markers::{EndMarker, EndMarkerKind, EndMarkerOptions, collect_end_markers};
+pub(crate) use surface_corners::{SurfaceCornerAction, SurfaceCornerControl};
+mod scene;
+#[cfg(test)]
+use scene::GpuSceneBuilder;
+mod picking;
+mod screen;
+mod selection;
+mod selection_clipping;
+use selection::{ProjectedPrimitives, ScreenCircle, is_crossing_selection, selection_mode};
+#[cfg(test)]
+pub(crate) mod clip_tests;
+#[cfg(test)]
+mod imported_shading_tests;
+#[cfg(test)]
+mod raster_tests;
+#[cfg(test)]
+use camera::zoom_pan;
+mod component_picking;
+mod control_points;
+mod grip_preview;
+pub use control_points::ControlPointSelection;
+mod curve_sampling;
+mod edge_picking;
+pub use component_picking::{ComponentClick, ComponentPick, ComponentPickFilter, ComponentWindow};
+mod edge_point;
+use curve_sampling::ViewportCurve;
+pub use edge_picking::EdgePick;
+const TRACK_CAPTURE_PIXELS: f32 = 8.0;
+const PICK_CAPTURE_PIXELS: f32 = 8.0;
+const CURVE_SAMPLES_PER_SPAN: usize = 16;
+const CIRCLE_SAMPLES: usize = 64;
+const SURFACE_SAMPLES_PER_SPAN: usize = 8;
+const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
+const PICK_PREVIEW_COLOR: Color32 = Color32::from_rgb(40, 165, 235);
+const LOCKED_COLOR: Color32 = Color32::from_gray(145);
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct GridSettings {
+    pub snap_spacing: Real,
+    pub minor_spacing: Real,
+    pub major_interval: u32,
+    pub line_count: u32,
+    pub show_grid: bool,
+    pub show_axes: bool,
+    pub show_world_axes: bool,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct GridMetrics {
+    snap_spacing: Real,
+    minor_spacing: Real,
+    major_interval: u32,
+    line_count: u32,
+}
+
+impl From<GridSettings> for GridMetrics {
+    fn from(grid: GridSettings) -> Self {
+        Self {
+            snap_spacing: grid.snap_spacing,
+            minor_spacing: grid.minor_spacing,
+            major_interval: grid.major_interval,
+            line_count: grid.line_count,
+        }
+    }
+}
+
+impl GridMetrics {
+    fn restore(self, grid: &mut GridSettings) {
+        grid.snap_spacing = self.snap_spacing;
+        grid.minor_spacing = self.minor_spacing;
+        grid.major_interval = self.major_interval;
+        grid.line_count = self.line_count;
+    }
+}
+
+impl Default for GridSettings {
+    fn default() -> Self {
+        Self {
+            snap_spacing: 1.0,
+            minor_spacing: 1.0,
+            major_interval: 5,
+            line_count: 70,
+            show_grid: true,
+            show_axes: true,
+            show_world_axes: false,
+        }
+    }
+}
+
+impl GridSettings {
+    pub(crate) fn valid(self) -> bool {
+        self.snap_spacing.is_finite()
+            && self.snap_spacing > 0.0
+            && self.minor_spacing.is_finite()
+            && self.minor_spacing > 0.0
+            && self.line_count <= 100_000
+            && (self.line_count as Real * self.minor_spacing).is_finite()
+    }
+}
+const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
+const MIN_PERSPECTIVE_CAMERA_DISTANCE: Real = 0.01;
+const MAX_PERSPECTIVE_CAMERA_DISTANCE: Real = 1.0e9;
+const PERSPECTIVE_VERTICAL_FOV_RADIANS: Real = 35.0 * std::f64::consts::PI / 180.0;
+const VIEW_HISTORY_LIMIT: usize = 50;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct CameraSnapshot {
+    kind: ViewKind,
+    two_point_perspective: bool,
+    plan_frame: Frame3,
+    perspective_frame: Option<Frame3>,
+    camera_up_hint: Option<NaVector3<Real>>,
+    cplane_direction: Option<WorldPlane>,
+    synchronized_role: Option<WorldPlane>,
+    pixels_per_unit: Real,
+    pan: Vec2,
+    orbit_yaw: Real,
+    orbit_pitch: Real,
+    perspective_camera_distance: Real,
+    perspective_fov_radians: Real,
+    frustum_near: Real,
+    frustum_far: Real,
+    perspective_lens_shift: [Real; 2],
+    parallel_frustum_shift: [Real; 2],
+    camera_target_offset: NaVector3<Real>,
+    pub(crate) target: NaVector3<Real>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) struct NamedViewSnapshot {
+    camera: CameraSnapshot,
+    plane: Frame3,
+    port_size: [i32; 2],
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ViewKind {
+    Top,
+    Bottom,
+    Plan,
+    Perspective,
+    Front,
+    Back,
+    Right,
+    Left,
+}
+
+impl ViewKind {
+    pub(crate) const fn label(self) -> &'static str {
+        match self {
+            Self::Top => "Top",
+            Self::Bottom => "Bottom",
+            Self::Plan => "Plan",
+            Self::Perspective => "Perspective",
+            Self::Front => "Front",
+            Self::Back => "Back",
+            Self::Right => "Right",
+            Self::Left => "Left",
+        }
+    }
+
+    const fn is_parallel(self) -> bool {
+        !matches!(self, Self::Perspective)
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct DraftingInput {
+    pub active: bool,
+    pub osnap: viboceros_drafting::ObjectSnapModes,
+    pub mesh_edges: bool,
+    pub smart_track: bool,
+    pub grid_snap: bool,
+    pub ortho: bool,
+    pub ortho_snap_to_cplane_z: bool,
+    pub shift_inverts_ortho: bool,
+    pub planar: bool,
+    pub ortho_angle_degrees: f64,
+    pub anchor: Option<Point3>,
+    pub reference: Option<Point3>,
+}
+
+impl Default for DraftingInput {
+    fn default() -> Self {
+        Self {
+            active: false,
+            osnap: Default::default(),
+            mesh_edges: false,
+            smart_track: false,
+            grid_snap: false,
+            ortho: false,
+            ortho_snap_to_cplane_z: false,
+            shift_inverts_ortho: false,
+            planar: false,
+            ortho_angle_degrees: 90.0,
+            anchor: None,
+            reference: None,
+        }
+    }
+}
+
+impl DraftingInput {
+    fn snap_options(self) -> viboceros_drafting::ObjectSnapOptions {
+        viboceros_drafting::ObjectSnapOptions {
+            modes: self.osnap,
+            mesh_edges: self.mesh_edges,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum ZoomTargetInput {
+    PickTarget,
+    PickWindow(Point3),
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum CircularSelectionInput {
+    PickCenter,
+    PickRadius {
+        mode: RectSelectionMode,
+        center: Pos2,
+    },
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum FenceSelectionInput<'a> {
+    PickFirst,
+    Continue(&'a [Point3]),
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum LassoSelectionInput<'a> {
+    Capture {
+        points: &'a [Pos2],
+        mode: RectSelectionMode,
+    },
+    Waiting,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FacePickMode {
+    Mesh,
+    MeshAndBrepAny,
+    MeshAndBrep,
+    SurfaceAndBrepAny,
+    SurfaceAndBrep,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct ViewportInput<'a> {
+    pub drafting: DraftingInput,
+    pub point_filter: Option<viboceros_drafting::PointFilterSession>,
+    pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
+    pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
+    pub normal_surface: Option<(ObjectId, Option<usize>, bool)>,
+    pub zoom_window: bool,
+    pub rect_selection_mode: Option<RectSelectionMode>,
+    pub circular_selection: Option<CircularSelectionInput>,
+    pub fence_selection: Option<FenceSelectionInput<'a>>,
+    pub lasso_selection: Option<LassoSelectionInput<'a>>,
+    pub zoom_target: Option<ZoomTargetInput>,
+    pub object_filter: Option<ObjectSelectionFilter>,
+    pub selection_excluded_object: Option<ObjectId>,
+    pub selection_preview: Option<ObjectSelectionFilter>,
+    pub selection_preview_ids: &'a [ObjectId],
+    pub point_cloud_remove_target: Option<ObjectId>,
+    pub point_cloud_highlights: &'a [usize],
+    pub preview_curve: Option<&'a NurbsCurve>,
+    pub preview_points: &'a [Point3],
+    pub mirror_preview: Option<MirrorPreview<'a>>,
+    pub translation_preview: Option<TranslationPreview<'a>>,
+    pub affine_preview: Option<AffinePreview<'a>>,
+    pub twist_preview: Option<TwistPreview<'a>>,
+    pub bend_preview: Option<BendPreview<'a>>,
+    pub maelstrom_preview: Option<MaelstromPreview<'a>>,
+    pub taper_preview: Option<TaperPreview<'a>>,
+    pub angle_plane: Option<Frame3>,
+    pub face_pick: Option<FacePickMode>,
+    pub edge_pick: bool,
+    /// Allow ordinary curve selection alongside edge hits in the source getter.
+    pub curve_or_edge_pick: bool,
+    pub component_preselection: bool,
+    pub control_point_pick: bool,
+    pub component_pick: Option<ComponentPickFilter>,
+    pub component_highlights: &'a [ComponentPick],
+    pub edge_highlights: &'a [EdgePick],
+    pub edge_endpoints: Option<[Point3; 2]>,
+    pub edge_curve: Option<&'a NurbsCurve>,
+    pub edge_parameters: &'a [Real],
+    pub edge_distance_parameters: Option<&'a [Real]>,
+    pub end_markers: &'a [EndMarker],
+    pub current_end_marker: Option<usize>,
+    pub end_marker_color: Option<Color32>,
+    pub(crate) surface_corners: &'a [SurfaceCornerControl],
+}
+
+fn selection_candidate(
+    document: &Document,
+    object: &viboceros_document::Object,
+    preview: Option<ObjectSelectionFilter>,
+) -> bool {
+    if preview == Some(ObjectSelectionFilter::BlockEditSources) {
+        return document.is_block_edit_add_candidate(object.id());
+    }
+    let attributes = object.attributes();
+    if !document
+        .layer(attributes.layer_id())
+        .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
+    {
+        return false;
+    }
+    match preview {
+        Some(filter) => filter.accepts_object(object),
+        None => {
+            attributes.is_visible()
+                && !attributes.is_locked()
+                && !document.is_block_edit_protected(object.id())
+        }
+    }
+}
+
+impl Default for ViewportInput<'_> {
+    fn default() -> Self {
+        Self {
+            drafting: DraftingInput::default(),
+            point_filter: None,
+            point_constraint: None,
+            translation_constraint: None,
+            normal_surface: None,
+            zoom_window: false,
+            rect_selection_mode: None,
+            circular_selection: None,
+            fence_selection: None,
+            lasso_selection: None,
+            zoom_target: None,
+            object_filter: Some(ObjectSelectionFilter::Any),
+            selection_excluded_object: None,
+            selection_preview: None,
+            selection_preview_ids: &[],
+            point_cloud_remove_target: None,
+            point_cloud_highlights: &[],
+            preview_curve: None,
+            preview_points: &[],
+            mirror_preview: None,
+            translation_preview: None,
+            affine_preview: None,
+            twist_preview: None,
+            bend_preview: None,
+            taper_preview: None,
+            maelstrom_preview: None,
+            angle_plane: None,
+            face_pick: None,
+            edge_pick: false,
+            curve_or_edge_pick: false,
+            component_preselection: false,
+            control_point_pick: false,
+            component_pick: None,
+            component_highlights: &[],
+            edge_highlights: &[],
+            edge_endpoints: None,
+            edge_curve: None,
+            edge_parameters: &[],
+            edge_distance_parameters: None,
+            end_markers: &[],
+            current_end_marker: None,
+            end_marker_color: None,
+            surface_corners: &[],
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ViewportOutput {
+    pub(crate) surface_corner_click: Option<SurfaceCornerAction>,
+    pub zoom_window_result: Option<Result<bool, &'static str>>,
+    pub zoom_window_cancelled: bool,
+    pub zoom_target_pick: Option<(Point3, usize)>,
+    pub zoom_target_result: Option<Result<bool, &'static str>>,
+    pub zoom_target_cancelled: bool,
+    pub edge_click: Option<Vec<EdgePick>>,
+    pub edge_parameter: Option<Real>,
+    pub face_click: Option<(ObjectId, usize)>,
+    pub face_hit_point: Option<Point3>,
+    pub component_click: Option<ComponentClick>,
+    pub component_window: Option<ComponentWindow>,
+    pub control_point_selection: Option<ControlPointSelection>,
+    pub picked_point: Option<Point3>,
+    /// Resolved hovered drafting location, without accepting a point or editing
+    /// the model. Commands can use it for cursor-dependent options.
+    pub drafting_hover: Option<Point3>,
+    /// Outer Some means the hovered viewport evaluated the current cursor;
+    /// inner None means no valid reflection has been previewed yet.
+    pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
+    pub translation_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
+    pub affine_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
+    pub twist_preview: Option<Option<Real>>,
+    pub bend_preview: Option<Option<Point3>>,
+    pub taper_preview: Option<Option<Point3>>,
+    pub maelstrom_preview: Option<MaelstromCursor>,
+    pub selection_click: Option<SelectionClick>,
+    pub object_double_click: Option<ObjectId>,
+    pub selection_choice: Option<SelectionChoice>,
+    pub selection_window: Option<SelectionWindow>,
+    pub circular_center_pick: Option<(Pos2, usize)>,
+    pub fence_point: Option<(Pos2, usize, SelectionMode)>,
+    pub lasso_point: Option<(Pos2, usize, SelectionMode)>,
+    pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
+    pub point_cloud_selection: Option<PointCloudPointSelection>,
+    pub enter_pressed: bool,
+    pub source_viewport_click: bool,
+    pub activated: bool,
+    pub toggle_maximized: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SelectionClick {
+    pub object_id: Option<ObjectId>,
+    pub mode: SelectionMode,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct SelectionChoice {
+    pub object_ids: Vec<ObjectId>,
+    pub mode: SelectionMode,
+    pub pointer: Pos2,
+    pub viewport: usize,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PointCloudPointSelection {
+    pub indices: Vec<usize>,
+    pub mode: SelectionMode,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct SelectionWindow {
+    pub object_ids: Vec<ObjectId>,
+    pub mode: SelectionMode,
+    pub crossing: bool,
+    pub inverted: bool,
+}
+
+pub struct Viewport {
+    display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
+    grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
+    cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
+    cached_clipping: Option<clipping::ClipRefreshKey>,
+    edge_snap_cache: std::cell::RefCell<Option<edge_point::EdgeSnapCache>>,
+    object_snap_cache: std::cell::RefCell<viboceros_drafting::ObjectSnapCache>,
+    #[cfg(test)]
+    edge_snap_queries: std::cell::Cell<usize>,
+    kind: ViewKind,
+    title: Option<String>,
+    title_reference: Option<(CameraSnapshot, Frame3)>,
+    /// View to reactivate when a NewViewport-created view is closed this session.
+    pub(crate) new_viewport_parent: Option<usize>,
+    two_point_perspective: bool,
+    plan_frame: Frame3,
+    perspective_frame: Option<Frame3>,
+    /// Preserve imported CameraUp independently of the orthonormal screen axes.
+    camera_up_hint: Option<NaVector3<Real>>,
+    cplane_direction: Option<WorldPlane>,
+    synchronized_role: Option<WorldPlane>,
+    pub(crate) plane: ConstructionPlaneState,
+    grid_undo: std::collections::VecDeque<GridMetrics>,
+    grid_redo: Vec<GridMetrics>,
+    pub display_mode: DisplayMode,
+    pixels_per_unit: Real,
+    grid: GridSettings,
+    pan: Vec2,
+    orbit_yaw: Real,
+    orbit_pitch: Real,
+    perspective_camera_distance: Real,
+    perspective_fov_radians: Real,
+    frustum_near: Real,
+    frustum_far: Real,
+    perspective_lens_shift: [Real; 2],
+    parallel_frustum_shift: [Real; 2],
+    /// Nominal target relative to the camera axis; independent of lens shift.
+    camera_target_offset: NaVector3<Real>,
+    target: NaVector3<Real>,
+    last_rect: Option<Rect>,
+    selection_drag_start: Option<Pos2>,
+    component_drag: Option<component_picking::ComponentDrag>,
+    lasso_drag_path: Vec<Pos2>,
+    zoom_window_start: Option<Pos2>,
+    navigation_drag_start: Option<CameraSnapshot>,
+    view_undo: Vec<CameraSnapshot>,
+    view_redo: Vec<CameraSnapshot>,
+}
+
+impl Default for Viewport {
+    fn default() -> Self {
+        Self::new(ViewKind::Top)
+    }
+}
+
+impl Viewport {
+    pub fn new(kind: ViewKind) -> Self {
+        Self {
+            display_cache: Default::default(),
+            grip_preview_cache: Default::default(),
+            cached_scene: Default::default(),
+            cached_clipping: None,
+            edge_snap_cache: Default::default(),
+            object_snap_cache: Default::default(),
+            #[cfg(test)]
+            edge_snap_queries: Default::default(),
+            kind,
+            title: None,
+            title_reference: None,
+            new_viewport_parent: None,
+            two_point_perspective: false,
+            plan_frame: WorldPlane::Top.frame(),
+            perspective_frame: None,
+            camera_up_hint: None,
+            cplane_direction: None,
+            synchronized_role: None,
+            plane: ConstructionPlaneState::new(Self::default_plane(kind)),
+            grid_undo: Default::default(),
+            grid_redo: Vec::new(),
+            display_mode: DisplayMode::Wireframe,
+            pixels_per_unit: 40.0,
+            grid: GridSettings::default(),
+            pan: Vec2::ZERO,
+            orbit_yaw: -std::f64::consts::FRAC_PI_4,
+            orbit_pitch: std::f64::consts::FRAC_PI_6,
+            perspective_camera_distance: DEFAULT_PERSPECTIVE_CAMERA_DISTANCE,
+            perspective_fov_radians: PERSPECTIVE_VERTICAL_FOV_RADIANS,
+            frustum_near: if kind == ViewKind::Perspective {
+                DEFAULT_PERSPECTIVE_CAMERA_DISTANCE
+            } else {
+                1.0
+            },
+            frustum_far: 1.0e9,
+            perspective_lens_shift: [0.0; 2],
+            parallel_frustum_shift: [0.0; 2],
+            camera_target_offset: NaVector3::zeros(),
+            target: NaVector3::zeros(),
+            last_rect: None,
+            selection_drag_start: None,
+            component_drag: None,
+            lasso_drag_path: Vec::new(),
+            zoom_window_start: None,
+            navigation_drag_start: None,
+            view_undo: Vec::new(),
+            view_redo: Vec::new(),
+        }
+    }
+
+    pub(crate) fn camera_snapshot(&self) -> CameraSnapshot {
+        CameraSnapshot {
+            kind: self.kind,
+            two_point_perspective: self.two_point_perspective,
+            plan_frame: self.plan_frame,
+            perspective_frame: self.perspective_frame,
+            camera_up_hint: self.camera_up_hint,
+            cplane_direction: self.cplane_direction,
+            synchronized_role: self.synchronized_role,
+            pixels_per_unit: self.pixels_per_unit,
+            pan: self.pan,
+            orbit_yaw: self.orbit_yaw,
+            orbit_pitch: self.orbit_pitch,
+            perspective_camera_distance: self.perspective_camera_distance,
+            perspective_fov_radians: self.perspective_fov_radians,
+            frustum_near: self.frustum_near,
+            frustum_far: self.frustum_far,
+            perspective_lens_shift: self.perspective_lens_shift,
+            parallel_frustum_shift: self.parallel_frustum_shift,
+            camera_target_offset: self.camera_target_offset,
+            target: self.target,
+        }
+    }
+
+    pub(crate) fn named_view_snapshot(&self) -> NamedViewSnapshot {
+        NamedViewSnapshot {
+            camera: self.camera_snapshot(),
+            plane: self.construction_plane(),
+            port_size: self.named_view_port_size(),
+        }
+    }
+
+    pub(crate) fn restore_named_view(&mut self, saved: NamedViewSnapshot) {
+        let previous = self.camera_snapshot();
+        if self.construction_plane() != saved.plane {
+            self.set_construction_plane(saved.plane);
+        }
+        self.restore_camera(saved.camera);
+        self.record_camera_change(previous);
+    }
+
+    pub(crate) fn restore_named_view_with_policy(
+        &mut self,
+        mut saved: NamedViewSnapshot,
+        policy: viboceros_command::named_view::NamedViewPolicy,
+    ) -> Result<(), GeometryError> {
+        if !policy.set_projection
+            && (saved.camera.kind == ViewKind::Perspective) != (self.kind == ViewKind::Perspective)
+        {
+            // Rhino copies the saved pose and raw frustum, then keeps the
+            // destination's parallel/perspective family. World presets use a
+            // different conversion that preserves the target-plane scale.
+            let mut source = Self::named_view_to_3dm(saved, String::new())?;
+            source.projection = if self.kind == ViewKind::Perspective {
+                viboceros_io::ThreeDmProjection::Perspective
+            } else {
+                viboceros_io::ThreeDmProjection::Parallel
+            };
+            saved = Self::named_view_from_3dm(&source)?;
+        }
+        if !policy.set_cplane {
+            saved.plane = self.construction_plane();
+        }
+        self.restore_named_view(saved);
+        Ok(())
+    }
+
+    pub(crate) fn snap_spacing(&self) -> Real {
+        self.grid.snap_spacing
+    }
+
+    pub(crate) fn set_snap_spacing(&mut self, spacing: Real) {
+        debug_assert!(spacing.is_finite() && spacing > 0.0);
+        self.grid.snap_spacing = spacing;
+    }
+
+    pub(crate) fn grid_settings(&self) -> GridSettings {
+        self.grid
+    }
+
+    pub(crate) fn set_grid_settings(&mut self, grid: GridSettings) {
+        debug_assert!(grid.valid());
+        self.grid = grid;
+    }
+
+    pub(crate) fn set_construction_plane(&mut self, frame: Frame3) -> bool {
+        if self.grid_undo.len() == viboceros_command::construction_plane::HISTORY_LIMIT {
+            self.grid_undo.pop_front();
+        }
+        self.grid_undo.push_back(self.grid.into());
+        self.grid_redo.clear();
+        self.plane.set(frame)
+    }
+
+    pub(crate) fn undo_construction_plane(&mut self) -> bool {
+        if !self.plane.undo() {
+            return false;
+        }
+        if let Some(previous) = self.grid_undo.pop_back() {
+            self.grid_redo.push(self.grid.into());
+            previous.restore(&mut self.grid);
+        }
+        true
+    }
+
+    pub(crate) fn redo_construction_plane(&mut self) -> bool {
+        if !self.plane.redo() {
+            return false;
+        }
+        if let Some(next) = self.grid_redo.pop() {
+            self.grid_undo.push_back(self.grid.into());
+            next.restore(&mut self.grid);
+        }
+        true
+    }
+
+    fn restore_camera(&mut self, camera: CameraSnapshot) {
+        self.kind = camera.kind;
+        self.two_point_perspective = camera.two_point_perspective;
+        self.plan_frame = camera.plan_frame;
+        self.perspective_frame = camera.perspective_frame;
+        self.camera_up_hint = camera.camera_up_hint;
+        self.cplane_direction = camera.cplane_direction;
+        self.synchronized_role = camera.synchronized_role;
+        self.pixels_per_unit = camera.pixels_per_unit;
+        self.pan = camera.pan;
+        self.orbit_yaw = camera.orbit_yaw;
+        self.orbit_pitch = camera.orbit_pitch;
+        self.perspective_camera_distance = camera.perspective_camera_distance;
+        self.perspective_fov_radians = camera.perspective_fov_radians;
+        self.frustum_near = camera.frustum_near;
+        self.frustum_far = camera.frustum_far;
+        self.perspective_lens_shift = camera.perspective_lens_shift;
+        self.parallel_frustum_shift = camera.parallel_frustum_shift;
+        self.camera_target_offset = camera.camera_target_offset;
+        self.target = camera.target;
+    }
+
+    fn record_camera_change(&mut self, previous: CameraSnapshot) {
+        if self.camera_snapshot() == previous {
+            return;
+        }
+        if self.view_undo.len() == VIEW_HISTORY_LIMIT {
+            self.view_undo.remove(0);
+        }
+        self.view_undo.push(previous);
+        self.view_redo.clear();
+    }
+
+    pub(crate) fn undo_view(&mut self) -> bool {
+        let Some(previous) = self.view_undo.pop() else {
+            return false;
+        };
+        self.view_redo.push(self.camera_snapshot());
+        self.restore_camera(previous);
+        true
+    }
+
+    pub(crate) fn redo_view(&mut self) -> bool {
+        let Some(next) = self.view_redo.pop() else {
+            return false;
+        };
+        if self.view_undo.len() == VIEW_HISTORY_LIMIT {
+            self.view_undo.remove(0);
+        }
+        self.view_undo.push(self.camera_snapshot());
+        self.restore_camera(next);
+        true
+    }
+
+    pub(crate) fn apparent_intersection_normal(&self) -> Vector3 {
+        let direction = match self.kind {
+            ViewKind::Top => [0.0, 0.0, 1.0],
+            ViewKind::Bottom => [0.0, 0.0, -1.0],
+            ViewKind::Plan => self.plan_frame.z_axis().as_vector().to_array(),
+            ViewKind::Front => [0.0, 1.0, 0.0],
+            ViewKind::Back => [0.0, -1.0, 0.0],
+            ViewKind::Right => [1.0, 0.0, 0.0],
+            ViewKind::Left => [-1.0, 0.0, 0.0],
+            ViewKind::Perspective => {
+                let (_, _, forward) = self.perspective_basis();
+                [forward.x, forward.y, forward.z]
+            }
+        };
+        Vector3::try_from(direction).expect("viewport directions are finite")
+    }
+
+    pub(crate) const fn kind(&self) -> ViewKind {
+        self.kind
+    }
+
+    /// Only the four standard views participate in SynchronizeCPlanes. A
+    /// renamed viewport is a user view, even when it came from a preset.
+    pub(crate) fn synchronization_role(&self) -> Option<WorldPlane> {
+        if self.title.is_some() {
+            return None;
+        }
+        if let Some(role) = self.synchronized_role {
+            return Some(role);
+        }
+        match self.kind {
+            ViewKind::Top => Some(WorldPlane::Top),
+            ViewKind::Front => Some(WorldPlane::Front),
+            ViewKind::Right => Some(WorldPlane::Right),
+            ViewKind::Perspective => Some(WorldPlane::Top),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn synchronization_plane_role(&self) -> Option<(WorldPlane, WorldPlane)> {
+        let named_role = self.synchronization_role()?;
+        if self.kind == ViewKind::Perspective {
+            return Some((named_role, WorldPlane::Top));
+        }
+        let current = self.construction_plane();
+        let plane_role = WorldPlane::ALL
+            .into_iter()
+            .find(|direction| {
+                let preset = direction.frame();
+                [current.x_axis(), current.y_axis()]
+                    .into_iter()
+                    .zip([preset.x_axis(), preset.y_axis()])
+                    .all(|(actual, reference)| {
+                        actual
+                            .as_vector()
+                            .to_array()
+                            .into_iter()
+                            .zip(reference.as_vector().to_array())
+                            .all(|(a, b)| (a - b).abs() <= 1.0e-12)
+                    })
+            })
+            .unwrap_or(named_role);
+        Some((named_role, plane_role))
+    }
+
+    pub(crate) fn synchronize_cplane(
+        &mut self,
+        source: Frame3,
+        named_role: WorldPlane,
+        plane_role: WorldPlane,
+        set_view: bool,
+    ) {
+        if set_view && self.kind != ViewKind::Perspective {
+            self.set_cplane_camera_from_frame(source, plane_role, Some(named_role));
+        }
+        let local = plane_role.frame();
+        let right = source
+            .vector_at(local.x_axis().as_vector().to_array())
+            .expect("finite synchronized plane axis");
+        let up = source
+            .vector_at(local.y_axis().as_vector().to_array())
+            .expect("finite synchronized plane axis");
+        let target = Frame3::try_from_directions(source.origin(), right, up, Tolerance::DEFAULT)
+            .expect("orthonormal synchronized construction plane");
+        self.set_construction_plane(target);
+    }
+
+    pub(crate) fn view_label(&self) -> &str {
+        if let Some(title) = &self.title {
+            return title;
+        }
+        if self.two_point_perspective {
+            return "TwoPointPerspective";
+        }
+        if let Some(role) = self.synchronized_role {
+            return if self.kind == ViewKind::Perspective {
+                "Perspective"
+            } else {
+                role.label()
+            };
+        }
+        match (self.kind, self.cplane_direction) {
+            (ViewKind::Plan, Some(WorldPlane::Top)) => "CPlane Top",
+            (ViewKind::Plan, Some(WorldPlane::Bottom)) => "CPlane Bottom",
+            (ViewKind::Plan, Some(WorldPlane::Front)) => "CPlane Front",
+            (ViewKind::Plan, Some(WorldPlane::Back)) => "CPlane Back",
+            (ViewKind::Plan, Some(WorldPlane::Right)) => "CPlane Right",
+            (ViewKind::Plan, Some(WorldPlane::Left)) => "CPlane Left",
+            (ViewKind::Perspective, Some(WorldPlane::Top)) => "CPlane Top (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Bottom)) => "CPlane Bottom (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Front)) => "CPlane Front (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Back)) => "CPlane Back (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Right)) => "CPlane Right (Perspective)",
+            (ViewKind::Perspective, Some(WorldPlane::Left)) => "CPlane Left (Perspective)",
+            _ => self.kind.label(),
+        }
+    }
+
+    pub(crate) fn set_view_title(&mut self, title: &str) {
+        if title.trim().is_empty() {
+            self.title = None;
+            self.title_reference = None;
+        } else {
+            self.title = Some(title.to_owned());
+            self.title_reference = Some((self.camera_snapshot(), self.construction_plane()));
+        }
+    }
+
+    pub(crate) fn restore_working_view_title(&mut self, title: &str) {
+        let standard = match title {
+            "Top" => Some(WorldPlane::Top),
+            "Front" => Some(WorldPlane::Front),
+            "Right" => Some(WorldPlane::Right),
+            _ => None,
+        };
+        if self.kind == ViewKind::Plan
+            && let Some(role) = standard
+        {
+            self.title = None;
+            self.title_reference = None;
+            self.synchronized_role = Some(role);
+        } else if self.kind == ViewKind::Perspective && title == "Perspective" {
+            self.title = None;
+            self.title_reference = None;
+        } else {
+            self.set_view_title(title);
+        }
+    }
+
+    pub(crate) fn title_modified(&self) -> bool {
+        self.title_reference.is_some_and(|(camera, plane)| {
+            camera != self.camera_snapshot() || plane != self.construction_plane()
+        })
+    }
+
+    pub(crate) fn duplicate_for_layout(&self, title: &str) -> Self {
+        let mut duplicate = Self::new(self.kind);
+        duplicate.display_cache = std::rc::Rc::clone(&self.display_cache);
+        duplicate.plane = ConstructionPlaneState::new(self.construction_plane());
+        duplicate.restore_camera(self.camera_snapshot());
+        duplicate.display_mode = self.display_mode;
+        duplicate.grid = self.grid;
+        duplicate.set_view_title(title);
+        duplicate
+    }
+
+    pub(crate) fn new_for_layout(source: &Self, kind: ViewKind) -> Self {
+        let mut viewport = Self::new(kind);
+        viewport.display_cache = std::rc::Rc::clone(&source.display_cache);
+        viewport.grid = source.grid;
+        viewport
+    }
+
+    #[cfg(test)]
+    pub(crate) fn set_world_view(&mut self, kind: ViewKind) -> Result<(), GeometryError> {
+        self.set_world_view_with_policy(kind, Default::default())
+    }
+
+    pub(crate) fn set_world_view_with_policy(
+        &mut self,
+        kind: ViewKind,
+        policy: viboceros_command::named_view::NamedViewPolicy,
+    ) -> Result<(), GeometryError> {
+        if kind == ViewKind::Perspective {
+            return self.set_world_perspective_view_with_policy(false, policy);
+        }
+        let previous = self.camera_snapshot();
+        let target = self.construction_plane_aligned_to_view()?.origin();
+        let plane_origin = self.construction_plane().origin();
+        let keep_perspective = self.kind == ViewKind::Perspective && !policy.set_projection;
+        let scale = if self.kind == ViewKind::Perspective && !keep_perspective {
+            // World parallel views preserve the perspective frustum at the
+            // target depth, clamped to the current clipping interval.
+            let distance = self
+                .perspective_camera_distance
+                .clamp(self.frustum_near, self.frustum_far);
+            let half_height = distance * (self.perspective_fov_radians * 0.5).tan();
+            f64::from(self.named_view_port_size()[1]) / (2.0 * half_height)
+        } else {
+            self.pixels_per_unit
+        };
+        let raster_scale = scale as f32;
+        if !raster_scale.is_finite() || raster_scale <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "world parallel view scale",
+            });
+        }
+        self.kind = if keep_perspective {
+            ViewKind::Perspective
+        } else {
+            kind
+        };
+        self.two_point_perspective = false;
+        self.perspective_frame =
+            keep_perspective.then(|| Self::default_plane(kind).with_origin(target));
+        self.camera_up_hint = None;
+        self.cplane_direction = None;
+        self.synchronized_role = None;
+        self.target = NaVector3::from(target.to_array());
+        self.camera_target_offset = NaVector3::zeros();
+        self.pan = Vec2::ZERO;
+        self.pixels_per_unit = scale;
+        self.perspective_lens_shift = [0.0; 2];
+        self.parallel_frustum_shift = [0.0; 2];
+        if kind.is_parallel() && policy.set_cplane {
+            self.set_construction_plane(Self::default_plane(kind).with_origin(plane_origin));
+        }
+        self.record_camera_change(previous);
+        Ok(())
+    }
+
+    pub(crate) fn set_plan_view(&mut self) -> Result<(), GeometryError> {
+        let previous = self.camera_snapshot();
+        let scale = if self.kind == ViewKind::Perspective {
+            let height = f64::from(self.named_view_port_size()[1]);
+            // OpenNURBS projects the target plane when it is beyond the near
+            // plane; otherwise it retains the raw near-plane width.
+            let depth = self.perspective_camera_distance.max(self.frustum_near);
+            let half_height = depth * (self.perspective_fov_radians * 0.5).tan();
+            height / (2.0 * half_height)
+        } else {
+            self.pixels_per_unit
+        };
+        let raster_scale = scale as f32;
+        if !raster_scale.is_finite() || raster_scale <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "plan parallel view scale",
+            });
+        }
+        self.pixels_per_unit = scale;
+        self.plan_frame = self.construction_plane();
+        self.parallel_frustum_shift = [0.0; 2];
+        self.kind = ViewKind::Plan;
+        self.two_point_perspective = false;
+        self.perspective_frame = None;
+        self.camera_up_hint = None;
+        self.cplane_direction = None;
+        self.synchronized_role = None;
+        self.target = NaVector3::from(self.plan_frame.origin().to_array());
+        self.camera_target_offset = NaVector3::zeros();
+        self.pan = Vec2::ZERO;
+        self.record_camera_change(previous);
+        Ok(())
+    }
+
+    pub(crate) fn set_cplane_view(&mut self, direction: WorldPlane) {
+        self.set_cplane_camera_from_frame(self.construction_plane(), direction, None);
+    }
+
+    fn set_cplane_camera_from_frame(
+        &mut self,
+        plane: Frame3,
+        direction: WorldPlane,
+        synchronized_name: Option<WorldPlane>,
+    ) {
+        let previous = self.camera_snapshot();
+        let local = direction.frame();
+        let right = plane
+            .vector_at(local.x_axis().as_vector().to_array())
+            .expect("finite CPlane axis");
+        let up = plane
+            .vector_at(local.y_axis().as_vector().to_array())
+            .expect("finite CPlane axis");
+        let camera_frame =
+            Frame3::try_from_directions(plane.origin(), right, up, Tolerance::DEFAULT)
+                .expect("orthonormal CPlane camera frame");
+        self.plan_frame = camera_frame;
+        self.camera_up_hint = None;
+        self.cplane_direction = Some(direction);
+        self.synchronized_role = synchronized_name;
+        if self.kind == ViewKind::Perspective {
+            self.perspective_frame = Some(camera_frame);
+            self.two_point_perspective = false;
+            self.perspective_lens_shift = [0.0; 2];
+        } else {
+            self.kind = ViewKind::Plan;
+            self.perspective_frame = None;
+        }
+        self.target = NaVector3::from(plane.origin().to_array());
+        self.camera_target_offset = NaVector3::zeros();
+        self.pan = Vec2::ZERO;
+        self.parallel_frustum_shift = [0.0; 2];
+        self.record_camera_change(previous);
+    }
+
+    pub(crate) fn construction_plane(&self) -> viboceros_geometry::Frame3 {
+        self.plane.frame()
+    }
+
+    fn default_plane(kind: ViewKind) -> viboceros_geometry::Frame3 {
+        match kind {
+            ViewKind::Top | ViewKind::Perspective => WorldPlane::Top,
+            ViewKind::Bottom => WorldPlane::Bottom,
+            ViewKind::Plan => WorldPlane::Top,
+            ViewKind::Front => WorldPlane::Front,
+            ViewKind::Back => WorldPlane::Back,
+            ViewKind::Right => WorldPlane::Right,
+            ViewKind::Left => WorldPlane::Left,
+        }
+        .frame()
+    }
+
+    pub fn show(
+        &mut self,
+        ui: &mut egui::Ui,
+        document: &Document,
+        input: ViewportInput<'_>,
+        preview_polyline: &[Point3],
+        viewport_index: usize,
+        active: bool,
+    ) -> ViewportOutput {
+        let drafting = input.drafting;
+        let desired_size = ui.available_size().max(Vec2::splat(1.0));
+        let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
+        let rect = response.rect;
+        self.last_rect = Some(rect);
+        // Redraw refreshes saved clip metadata without entering camera history.
+        let previous_preview = input
+            .mirror_preview
+            .and_then(|preview| {
+                preview
+                    .resolve(None, self.construction_plane(), document.tolerance())
+                    .0
+            })
+            .or_else(|| {
+                input
+                    .translation_preview
+                    .and_then(|preview| preview.resolve(None).0)
+            })
+            .or_else(|| {
+                input.affine_preview.and_then(|preview| {
+                    preview
+                        .resolve(None, self.construction_plane(), document.tolerance())
+                        .0
+                })
+            });
+        let previous_twist = input
+            .twist_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_bend = input
+            .bend_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_taper = input
+            .taper_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_maelstrom = input
+            .maelstrom_preview
+            .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let previous_preview = previous_preview
+            .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                previous_twist
+                    .as_ref()
+                    .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
+            })
+            .or_else(|| {
+                previous_bend.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                previous_taper.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                previous_maelstrom.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            });
+        let _ = self.refresh_clipping_with_preview(document, rect, previous_preview);
+        let redraw_camera = self.camera_snapshot();
+
+        let modifiers = ui.input(|input| input.modifiers);
+        if response.drag_started_by(PointerButton::Middle)
+            || response.drag_started_by(PointerButton::Secondary)
+        {
+            self.navigation_drag_start = Some(self.camera_snapshot());
+        }
+        if response.dragged_by(PointerButton::Middle) {
+            self.apply_navigation_drag(PointerButton::Middle, modifiers, response.drag_delta());
+        } else if response.dragged_by(PointerButton::Secondary) {
+            self.apply_navigation_drag(PointerButton::Secondary, modifiers, response.drag_delta());
+        }
+        if (response.drag_stopped_by(PointerButton::Middle)
+            || response.drag_stopped_by(PointerButton::Secondary))
+            && let Some(previous) = self.navigation_drag_start.take()
+        {
+            self.record_camera_change(previous);
+        }
+        let mut zoomed = false;
+        if response.hovered() {
+            let zoom = ui.input(|input| input.smooth_scroll_delta.y);
+            if zoom != 0.0 {
+                self.zoom_by((zoom * 0.002).exp(), response.hover_pos(), rect);
+                zoomed = true;
+            }
+        }
+
+        let component_available = !input.zoom_window
+            && input.zoom_target.is_none()
+            && input.circular_selection.is_none()
+            && input.fence_selection.is_none()
+            && input.lasso_selection.is_none()
+            && !drafting.active;
+        if self.component_drag.is_some_and(|drag| {
+            !component_available
+                || (drag.preselection && !input.component_preselection)
+                || (!drag.preselection && input.component_pick != Some(drag.filter))
+        }) {
+            self.component_drag = None;
+        }
+        let component_hover_mode = component_available
+            .then(|| {
+                input
+                    .component_pick
+                    .map(|filter| (filter, false))
+                    .or_else(|| {
+                        (input.component_preselection
+                            && modifiers.shift
+                            && (modifiers.ctrl || modifiers.command))
+                            .then_some((
+                                if input.object_filter
+                                    == Some(ObjectSelectionFilter::SurfaceComponents)
+                                {
+                                    ComponentPickFilter::Faces
+                                } else {
+                                    ComponentPickFilter::Any
+                                },
+                                true,
+                            ))
+                    })
+            })
+            .flatten();
+        if response.hovered()
+            && ui.input(|input| input.pointer.button_pressed(PointerButton::Primary))
+        {
+            self.component_drag = component_hover_mode.and_then(|(filter, preselection)| {
+                response
+                    .interact_pointer_pos()
+                    .map(|start| component_picking::ComponentDrag {
+                        start,
+                        filter,
+                        preselection,
+                        modifiers,
+                    })
+            });
+        }
+        let component_mode = self
+            .component_drag
+            .map(|drag| (drag.filter, drag.preselection, drag.modifiers))
+            .or(component_hover_mode
+                .map(|(filter, preselection)| (filter, preselection, modifiers)));
+        let component_input = component_mode.is_some()
+            || input.face_pick.is_some()
+            || (input.edge_pick && !input.curve_or_edge_pick)
+            || input.edge_curve.is_some()
+            || input.point_cloud_remove_target.is_some();
+        if input.edge_curve.is_none() {
+            self.edge_snap_cache.borrow_mut().take();
+        }
+        let selecting = !input.zoom_window
+            && input.zoom_target.is_none()
+            && input.circular_selection.is_none()
+            && input.fence_selection.is_none()
+            && input.lasso_selection.is_none()
+            && !drafting.active
+            && !component_input
+            && input.object_filter.is_some();
+        let cloud_selecting = input.point_cloud_remove_target.is_some()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && !drafting.active;
+        let object_filter = input.object_filter.unwrap_or_default();
+        if !selecting && !cloud_selecting {
+            self.selection_drag_start = None;
+        } else if response.drag_started_by(PointerButton::Primary) {
+            self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
+        }
+        let selection_pointer = response.interact_pointer_pos();
+        let component_window = if response.drag_stopped_by(PointerButton::Primary) {
+            self.component_drag.take().and_then(|drag| {
+                let end = selection_pointer?;
+                let mode = input
+                    .rect_selection_mode
+                    .unwrap_or(RectSelectionMode::Automatic);
+                let crossing = mode.crossing(is_crossing_selection(drag.start, end));
+                Some(ComponentWindow {
+                    picks: self.components_in_rectangle(
+                        rect,
+                        Rect::from_two_pos(drag.start, end),
+                        document,
+                        drag.filter,
+                        crossing,
+                        mode.inverted(),
+                    ),
+                    preselection: drag.preselection,
+                    modifiers: drag.modifiers,
+                    crossing,
+                    inverted: mode.inverted(),
+                })
+            })
+        } else {
+            None
+        };
+        let component_click = if response.clicked_by(PointerButton::Primary) {
+            component_mode.and_then(|(filter, preselection, modifiers)| {
+                selection_pointer.map(|pointer| ComponentClick {
+                    picks: self.pick_components(pointer, rect, document, filter),
+                    preselection,
+                    modifiers,
+                })
+            })
+        } else {
+            None
+        };
+        if ui.input(|input| input.pointer.button_released(PointerButton::Primary)) {
+            self.component_drag = None;
+        }
+        let lasso_capture = matches!(
+            input.lasso_selection,
+            Some(LassoSelectionInput::Capture { .. })
+        );
+        if !lasso_capture {
+            self.lasso_drag_path.clear();
+        } else if response.drag_started_by(PointerButton::Primary) {
+            self.lasso_drag_path.clear();
+            if let Some(start) = ui.input(|input| input.pointer.press_origin()) {
+                self.lasso_drag_path.push(start);
+            }
+        }
+        if lasso_capture
+            && response.dragged_by(PointerButton::Primary)
+            && let Some(pointer) = selection_pointer
+            && pointer.is_finite()
+            && self
+                .lasso_drag_path
+                .last()
+                .is_none_or(|last| last.distance(pointer) >= 1.0)
+        {
+            self.lasso_drag_path.push(pointer);
+        }
+        let lasso_stroke = if lasso_capture && response.drag_stopped_by(PointerButton::Primary) {
+            if let Some(pointer) = selection_pointer
+                && pointer.is_finite()
+                && self
+                    .lasso_drag_path
+                    .last()
+                    .is_none_or(|last| last.distance(pointer) >= 0.5)
+            {
+                self.lasso_drag_path.push(pointer);
+            }
+            (!self.lasso_drag_path.is_empty()).then(|| {
+                (
+                    std::mem::take(&mut self.lasso_drag_path),
+                    viewport_index,
+                    selection_mode(modifiers),
+                )
+            })
+        } else {
+            None
+        };
+        let lasso_point = if lasso_capture && response.clicked_by(PointerButton::Primary) {
+            selection_pointer.map(|point| (point, viewport_index, selection_mode(modifiers)))
+        } else {
+            None
+        };
+        if !input.zoom_window {
+            self.zoom_window_start = None;
+        } else if response.drag_started_by(PointerButton::Primary) {
+            self.zoom_window_start = ui.input(|input| input.pointer.press_origin());
+        }
+        let zoom_window_result =
+            if input.zoom_window && response.drag_stopped_by(PointerButton::Primary) {
+                self.zoom_window_start.take().and_then(|start| {
+                    let end = selection_pointer?;
+                    let window = Rect::from_two_pos(start, end).intersect(rect);
+                    if window.width() < 2.0 || window.height() < 2.0 {
+                        return None;
+                    }
+                    Some(self.zoom_window(window, rect))
+                })
+            } else {
+                None
+            };
+        let zoom_drafting = DraftingInput {
+            active: true,
+            anchor: None,
+            reference: None,
+            ..drafting
+        };
+        let zoom_target_cursor = if matches!(input.zoom_target, Some(ZoomTargetInput::PickTarget)) {
+            response
+                .hover_pos()
+                .and_then(|pointer| self.drafting_cursor(pointer, rect, document, zoom_drafting))
+        } else {
+            None
+        };
+        let zoom_target_pick = if response.clicked_by(PointerButton::Primary) {
+            zoom_target_cursor.map(|cursor| (cursor.point, viewport_index))
+        } else {
+            None
+        };
+        let zoom_target_result = if let Some(ZoomTargetInput::PickWindow(target)) =
+            input.zoom_target
+            && response.clicked_by(PointerButton::Primary)
+        {
+            response
+                .interact_pointer_pos()
+                .map(|corner| self.zoom_target(target, corner, rect))
+        } else {
+            None
+        };
+        let mut control_point_selection = None;
+        let selection_window = if selecting && response.drag_stopped_by(PointerButton::Primary) {
+            self.selection_drag_start.take().and_then(|start| {
+                let end = selection_pointer?;
+                let rect_mode = input
+                    .rect_selection_mode
+                    .unwrap_or(RectSelectionMode::Automatic);
+                let resolved_mode = match rect_mode {
+                    RectSelectionMode::Automatic if is_crossing_selection(start, end) => {
+                        RectSelectionMode::Crossing
+                    }
+                    RectSelectionMode::Automatic => RectSelectionMode::Window,
+                    mode => mode,
+                };
+                let crossing = resolved_mode.crossing(false);
+                let selection_rect = Rect::from_two_pos(start, end);
+                if input.control_point_pick {
+                    control_point_selection = Some(ControlPointSelection {
+                        picks: self.control_points_in_window(
+                            rect,
+                            selection_rect,
+                            resolved_mode.inverted(),
+                            document,
+                        ),
+                        mode: selection_mode(modifiers),
+                    });
+                }
+                Some(SelectionWindow {
+                    object_ids: self.objects_in_selection_mode_preview(
+                        rect,
+                        selection_rect,
+                        resolved_mode,
+                        document,
+                        object_filter,
+                        input.selection_preview,
+                    ),
+                    mode: selection_mode(modifiers),
+                    crossing,
+                    inverted: resolved_mode.inverted(),
+                })
+            })
+        } else {
+            None
+        };
+        let circular_center_pick = if matches!(
+            input.circular_selection,
+            Some(CircularSelectionInput::PickCenter)
+        ) && response.clicked_by(PointerButton::Primary)
+        {
+            response
+                .interact_pointer_pos()
+                .map(|point| (point, viewport_index))
+        } else {
+            None
+        };
+        let fence_point =
+            if input.fence_selection.is_some() && response.clicked_by(PointerButton::Primary) {
+                response
+                    .interact_pointer_pos()
+                    .map(|point| (point, viewport_index, selection_mode(modifiers)))
+            } else {
+                None
+            };
+        let circular_result = if let Some(CircularSelectionInput::PickRadius { mode, center }) =
+            input.circular_selection
+            && response.clicked_by(PointerButton::Primary)
+        {
+            response.interact_pointer_pos().and_then(|edge| {
+                let radius = center.distance(edge);
+                (radius.is_finite() && radius > 0.0).then(|| SelectionWindow {
+                    object_ids: self.objects_in_circle_selection_preview(
+                        rect,
+                        ScreenCircle { center, radius },
+                        mode,
+                        document,
+                        object_filter,
+                        input.selection_preview,
+                    ),
+                    mode: selection_mode(modifiers),
+                    crossing: mode.crossing(false),
+                    inverted: mode.inverted(),
+                })
+            })
+        } else {
+            None
+        };
+        let selection_window = selection_window.or(circular_result);
+        let point_cloud_selection = input.point_cloud_remove_target.and_then(|target| {
+            let Geometry::PointCloud(cloud) = document.object(target)?.geometry() else {
+                return None;
+            };
+            if cloud_selecting && response.drag_stopped_by(PointerButton::Primary) {
+                let start = self.selection_drag_start.take()?;
+                let end = selection_pointer?;
+                let window = Rect::from_two_pos(start, end);
+                let indices = self.point_cloud_members_in_window(cloud, rect, window);
+                Some(PointCloudPointSelection {
+                    indices,
+                    mode: selection_mode(modifiers),
+                })
+            } else if cloud_selecting && response.clicked_by(PointerButton::Primary) {
+                let pointer = response.interact_pointer_pos()?;
+                let (index, _) = self.pick_point_cloud_member(pointer, rect, cloud)?;
+                Some(PointCloudPointSelection {
+                    indices: vec![index],
+                    mode: selection_mode(modifiers),
+                })
+            } else {
+                None
+            }
+        });
+
+        if self.camera_snapshot() != redraw_camera {
+            let _ = self.refresh_clipping_with_preview(document, rect, previous_preview);
+        }
+        let mut drafting_cursor = if drafting.active
+            && !component_input
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+        {
+            response.hover_pos().and_then(|pointer| {
+                self.affine_drafting_cursor(pointer, rect, document, drafting, &input)
+            })
+        } else {
+            None
+        };
+        if let Some(target) = input.normal_surface
+            && !input
+                .point_filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+            && let Some(pointer) = response.hover_pos()
+        {
+            let explicit = drafting_cursor
+                .filter(|cursor| cursor.object_snap.is_some() || input.point_filter.is_some());
+            let point = explicit
+                .map(|cursor| cursor.point)
+                .or_else(|| self.normal_surface_point(pointer, rect, document, target));
+            drafting_cursor = point.map(|point| drafting::DraftingCursor {
+                pointer,
+                source_point: point,
+                point,
+                object_snap: explicit.and_then(|cursor| cursor.object_snap),
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            });
+        }
+        if (drafting.active
+            || input.zoom_window
+            || input.zoom_target.is_some()
+            || input.circular_selection.is_some()
+            || input.fence_selection.is_some()
+            || input.lasso_selection.is_some())
+            && response.hovered()
+        {
+            ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+        }
+        let (mirror_preview, mirror_preview_update) =
+            input.mirror_preview.map_or((None, None), |preview| {
+                self.resolve_mirror_preview(
+                    preview,
+                    drafting_cursor.map(|cursor| cursor.point),
+                    document,
+                )
+            });
+        let (translation_preview, translation_preview_update) =
+            input.translation_preview.map_or((None, None), |preview| {
+                self.resolve_translation_preview(
+                    preview,
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|cursor| cursor.point),
+                    document,
+                )
+            });
+        let (affine_preview, affine_preview_update) =
+            input.affine_preview.map_or((None, None), |preview| {
+                self.resolve_affine_preview(
+                    preview,
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|cursor| cursor.point),
+                    document,
+                )
+            });
+        let (twist_preview, twist_preview_update) =
+            input.twist_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
+        let (bend_preview, bend_preview_update) =
+            input.bend_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
+        let (taper_preview, taper_preview_update) =
+            input.taper_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
+        let (maelstrom_preview, maelstrom_preview_update) =
+            input.maelstrom_preview.map_or((None, None), |preview| {
+                preview.resolve(
+                    drafting_cursor
+                        .filter(|_| {
+                            !input.point_filter.is_some_and(
+                                viboceros_drafting::PointFilterSession::awaiting_source,
+                            )
+                        })
+                        .map(|c| c.point),
+                    document,
+                    &self.display_cache,
+                )
+            });
+        let object_preview = mirror_preview
+            .or(translation_preview)
+            .or(affine_preview)
+            .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                twist_preview
+                    .as_ref()
+                    .map(|p| object_preview::ObjectPreview::Deformed(&p.objects))
+            })
+            .or_else(|| {
+                bend_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                taper_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            })
+            .or_else(|| {
+                maelstrom_preview.as_ref().map(|p| {
+                    object_preview::ObjectPreview::Deformed(p.objects_for_mode(self.display_mode))
+                })
+            });
+        if mirror_preview_update.is_some()
+            || translation_preview_update.is_some()
+            || affine_preview_update.is_some()
+            || twist_preview_update.is_some()
+            || bend_preview_update.is_some()
+            || taper_preview_update.is_some()
+            || maelstrom_preview_update.is_some()
+        {
+            let _ = self.refresh_clipping_with_preview(document, rect, object_preview);
+        }
+        let object_prompt_selecting = matches!(
+            input.face_pick,
+            Some(FacePickMode::MeshAndBrepAny | FacePickMode::SurfaceAndBrepAny)
+        ) && !input.zoom_window
+            && input.zoom_target.is_none()
+            && !drafting.active;
+        if input.control_point_pick
+            && selecting
+            && response.clicked_by(PointerButton::Primary)
+            && let Some(pointer) = response.interact_pointer_pos()
+            && let Some(pick) = self.pick_control_point(pointer, rect, document)
+        {
+            control_point_selection = Some(ControlPointSelection {
+                picks: vec![pick],
+                mode: selection_mode(modifiers),
+            });
+        }
+        let selection_pick = if control_point_selection.is_none()
+            && component_mode.is_none()
+            && (selecting || object_prompt_selecting)
+            && input.rect_selection_mode.is_none()
+            && response.clicked_by(PointerButton::Primary)
+        {
+            Some(response.interact_pointer_pos().map(|pointer| {
+                (
+                    pointer,
+                    self.pick_object_candidates_matching_preview_excluding(
+                        pointer,
+                        rect,
+                        document,
+                        object_filter,
+                        input.selection_preview,
+                        input.selection_excluded_object,
+                    ),
+                )
+            }))
+        } else {
+            None
+        };
+        let selection_choice = selection_pick.as_ref().and_then(|pick| {
+            let (pointer, ids) = pick.as_ref()?;
+            (ids.len() > 1).then(|| SelectionChoice {
+                object_ids: ids.clone(),
+                mode: selection_mode(modifiers),
+                pointer: *pointer,
+                viewport: viewport_index,
+            })
+        });
+        let object_double_click = selection_pick.as_ref().and_then(|pick| {
+            let (pointer, ids) = pick.as_ref()?;
+            (ids.len() == 1
+                && pointer.y > rect.top() + 28.
+                && response.double_clicked_by(PointerButton::Primary)
+                && !modifiers.any())
+            .then(|| ids[0])
+        });
+        let selection_click = selection_pick.and_then(|pick| {
+            if selection_choice.is_some() {
+                return None;
+            }
+            Some(SelectionClick {
+                object_id: pick.and_then(|(_, ids)| ids.into_iter().next()),
+                mode: selection_mode(modifiers),
+            })
+        });
+
+        painter.rect_filled(rect, 0.0, self.background_color());
+        self.paint_grid(&painter, rect);
+        self.paint_objects(
+            &painter,
+            rect,
+            document,
+            viewport_index,
+            (input.selection_preview, input.selection_preview_ids),
+            object_preview,
+        );
+        self.paint_component_highlights(&painter, rect, document, input.component_highlights);
+        self.paint_control_points(
+            &painter,
+            rect,
+            document,
+            match object_preview {
+                Some(object_preview::ObjectPreview::Affine(map)) => Some(map),
+                _ => None,
+            },
+        );
+        if let Some((filter, _)) = component_hover_mode
+            && let Some(pointer) = response.hover_pos()
+        {
+            let hover = self.pick_components(pointer, rect, document, filter);
+            self.paint_component_highlights(&painter, rect, document, &hover);
+        }
+        for (index, marker) in input.end_markers.iter().enumerate() {
+            if let Some(pixel) = self.project(marker.point, rect) {
+                let color = if let Some(color) = input.end_marker_color {
+                    color
+                } else {
+                    match marker.kind {
+                        EndMarkerKind::Start => Color32::from_rgb(30, 170, 80),
+                        EndMarkerKind::End => Color32::from_rgb(45, 125, 225),
+                        EndMarkerKind::Seam => Color32::from_rgb(205, 45, 155),
+                        EndMarkerKind::Joint => Color32::from_rgb(145, 75, 205),
+                    }
+                };
+                painter.circle_filled(pixel, 3.5, color);
+                painter.circle_stroke(pixel, 5.5, Stroke::new(1.25, color));
+                if Some(index) == input.current_end_marker {
+                    painter.circle_stroke(
+                        pixel,
+                        8.,
+                        Stroke::new(1.25, Color32::from_rgb(230, 95, 25)),
+                    );
+                }
+            }
+        }
+        self.paint_surface_corners(&painter, input.surface_corners, response.hover_pos(), rect);
+        if let Some(target) = input.point_cloud_remove_target
+            && let Some(object) = document.object(target)
+            && let Geometry::PointCloud(cloud) = object.geometry()
+        {
+            for &index in input.point_cloud_highlights {
+                if let Some(point) = cloud.points().get(index)
+                    && let Some(pixel) = self.project(*point, rect)
+                {
+                    painter.circle_stroke(pixel, 7.0, Stroke::new(2.0, SELECTED_COLOR));
+                }
+            }
+        }
+        self.paint_edge_highlights(&painter, rect, document, input.edge_highlights);
+        if let Some(ends) = input.edge_endpoints {
+            for (point, label) in ends.into_iter().zip(["A", "B"]) {
+                if let Some(pixel) = self.project(point, rect) {
+                    painter.text(
+                        pixel + Vec2::new(5., -5.),
+                        Align2::LEFT_BOTTOM,
+                        label,
+                        FontId::proportional(16.),
+                        Color32::from_rgb(200, 90, 0),
+                    );
+                }
+            }
+        }
+        let edge_hover = if input.edge_pick && !input.zoom_window && input.zoom_target.is_none() {
+            if response.hovered() {
+                ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+            }
+            response
+                .hover_pos()
+                .map(|p| self.pick_edges(p, rect, document))
+                .unwrap_or_default()
+        } else {
+            Vec::new()
+        };
+        self.paint_edge_highlights(&painter, rect, document, &edge_hover);
+        let edge_parameter = input
+            .edge_curve
+            .filter(|_| !input.zoom_window && input.zoom_target.is_none())
+            .and_then(|curve| {
+                for &parameter in input.edge_parameters {
+                    if let Ok(point) = curve.evaluate(parameter)
+                        && let Some(pixel) = self.project(point, rect)
+                    {
+                        painter.circle_stroke(pixel, 4., Stroke::new(2., SELECTED_COLOR));
+                    }
+                }
+                let pointer = response.hover_pos()?;
+                ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
+                let cursor = self.edge_point_cursor(
+                    curve,
+                    input.edge_distance_parameters,
+                    pointer,
+                    rect,
+                    document,
+                    drafting.snap_options(),
+                )?;
+                self.paint_edge_point_cursor(&painter, rect, curve, cursor);
+                Some(cursor.parameter)
+            });
+        if drafting.active {
+            self.paint_draft_points(&painter, rect, preview_polyline);
+            // Non-curve prompts (for example Distance) have an accepted anchor
+            // but no preview polyline. Keep it visible while typing elsewhere,
+            // independently of the hovered viewport's live drafting cursor.
+            if preview_polyline.is_empty()
+                && let Some(anchor) = drafting.anchor
+            {
+                self.paint_draft_points(&painter, rect, std::slice::from_ref(&anchor));
+            }
+        }
+        if drafting.active
+            && let Some(curve) = input.preview_curve
+        {
+            let mut projected = ProjectedPrimitives::default();
+            self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
+            }
+        }
+        if drafting.active {
+            for &point in input.preview_points {
+                if let Some(position) = self.project_selection_point(point, rect) {
+                    painter.circle_filled(position, 3.5, Color32::from_rgb(20, 115, 190));
+                }
+            }
+        }
+        if let Some(cursor) = drafting_cursor {
+            // Radius guides display the radial projection even when an
+            // edge-on fallback or object snap supplies an off-plane point.
+            let cursor = input
+                .taper_preview
+                .and_then(|preview| preview.radius_point(cursor.point))
+                .map_or(cursor, |point| drafting::DraftingCursor { point, ..cursor });
+            let paint_input = input.bend_preview.map_or(drafting, |p| DraftingInput {
+                anchor: Some(p.start),
+                ..drafting
+            });
+            self.paint_drafting_with_rubber_band(
+                &painter,
+                rect,
+                paint_input,
+                cursor,
+                input.bend_preview.is_none()
+                    && input.taper_preview.is_none()
+                    && input.maelstrom_preview.is_none(),
+            );
+        }
+        if let Some(preview) = input.bend_preview {
+            self.paint_bend_guide(&painter, rect, preview, bend_preview.as_deref());
+        }
+        if let Some(preview) = input.maelstrom_preview {
+            self.paint_maelstrom_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
+        }
+        if let Some(preview) = input.taper_preview {
+            self.paint_taper_guide(&painter, rect, preview, drafting_cursor.map(|c| c.point));
+        }
+        if let Some(cursor) = zoom_target_cursor {
+            self.paint_drafting(&painter, rect, zoom_drafting, cursor);
+        }
+        if let (Some(start), Some(end)) = (self.selection_drag_start, selection_pointer) {
+            self.paint_selection_window(&painter, start, end, input.rect_selection_mode);
+        }
+        if let (Some(drag), Some(end)) = (self.component_drag, selection_pointer)
+            && response.dragged_by(PointerButton::Primary)
+        {
+            self.paint_selection_window(&painter, drag.start, end, input.rect_selection_mode);
+        }
+        if let Some(CircularSelectionInput::PickRadius { center, mode }) = input.circular_selection
+            && let Some(edge) = response.hover_pos()
+        {
+            let radius = center.distance(edge);
+            if radius.is_finite() && radius > 0.0 {
+                let color = if mode.crossing(false) {
+                    Color32::from_rgb(45, 145, 75)
+                } else {
+                    Color32::from_rgb(45, 105, 215)
+                };
+                painter.circle_filled(
+                    center,
+                    radius,
+                    Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 28),
+                );
+                painter.circle_stroke(center, radius, Stroke::new(1.25, color));
+            }
+        }
+        if let Some(FenceSelectionInput::Continue(points)) = input.fence_selection {
+            let color = Color32::from_rgb(45, 145, 75);
+            let projected = points
+                .iter()
+                .map(|point| self.project(*point, rect))
+                .collect::<Vec<_>>();
+            for pair in projected.windows(2) {
+                if let [Some(start), Some(end)] = pair {
+                    painter.line_segment([*start, *end], Stroke::new(1.5, color));
+                }
+            }
+            for point in projected.iter().flatten() {
+                painter.circle_filled(*point, 2.5, color);
+            }
+            if let (Some(start), Some(end)) =
+                (projected.last().copied().flatten(), response.hover_pos())
+            {
+                painter.line_segment([start, end], Stroke::new(1.25, color));
+            }
+        }
+        if let Some(LassoSelectionInput::Capture { points, mode }) = input.lasso_selection {
+            let color = if mode.crossing(true) {
+                Color32::from_rgb(45, 145, 75)
+            } else {
+                Color32::from_rgb(45, 105, 215)
+            };
+            let mut path = points.to_vec();
+            path.extend(self.lasso_drag_path.iter().copied());
+            for pair in path.windows(2) {
+                painter.line_segment([pair[0], pair[1]], Stroke::new(1.5, color));
+            }
+            for &point in points {
+                painter.circle_filled(point, 2.5, color);
+            }
+            if self.lasso_drag_path.is_empty()
+                && let (Some(&start), Some(end)) = (path.last(), response.hover_pos())
+            {
+                painter.line_segment([start, end], Stroke::new(1.0, color));
+            }
+        }
+        if let (Some(start), Some(end)) = (self.zoom_window_start, selection_pointer) {
+            painter.rect_stroke(
+                Rect::from_two_pos(start, end).intersect(rect),
+                0.0,
+                Stroke::new(1.5, Color32::from_rgb(35, 115, 210)),
+                egui::StrokeKind::Inside,
+            );
+        }
+        if let Some(ZoomTargetInput::PickWindow(target)) = input.zoom_target
+            && let Some(corner) = response.hover_pos()
+            && let Ok(window) = self.zoom_target_window_rect(target, corner, rect)
+        {
+            painter.rect_stroke(
+                window.intersect(rect),
+                0.0,
+                Stroke::new(1.5, Color32::from_rgb(35, 115, 210)),
+                egui::StrokeKind::Inside,
+            );
+        }
+        painter.rect_stroke(
+            rect.shrink(0.5),
+            0.0,
+            Stroke::new(
+                if active { 2.0 } else { 1.0 },
+                if active {
+                    Color32::from_rgb(35, 115, 210)
+                } else {
+                    Color32::from_gray(155)
+                },
+            ),
+            egui::StrokeKind::Inside,
+        );
+        painter.text(
+            rect.left_top() + Vec2::new(10.0, 8.0),
+            Align2::LEFT_TOP,
+            format!(
+                "{}{} · {} · {} object(s) · {} selected",
+                self.view_label(),
+                if self.title_modified() { "*" } else { "" },
+                self.display_mode.label(),
+                document.objects().len(),
+                document.selected_object_count(),
+            ),
+            FontId::proportional(13.0),
+            Color32::from_gray(100),
+        );
+
+        let face_hit = (input.face_pick.is_some()
+            && component_mode.is_none()
+            && !input.zoom_window
+            && input.zoom_target.is_none()
+            && response.clicked_by(PointerButton::Primary))
+        .then(|| {
+            response.interact_pointer_pos().and_then(|pointer| {
+                self.pick_selected_face_with_point(
+                    pointer,
+                    rect,
+                    document,
+                    input.face_pick.unwrap(),
+                )
+            })
+        })
+        .flatten();
+        let face_click = face_hit.map(|(object, face, _)| (object, face));
+        let face_hit_point = face_hit.and_then(|(_, _, point)| point);
+        let face_point_fallback = matches!(
+            input.face_pick,
+            Some(FacePickMode::MeshAndBrep | FacePickMode::SurfaceAndBrep)
+        ) && face_click.is_none()
+            && response.clicked_by(PointerButton::Primary)
+            && self.has_unmeshed_selected_face_source(document, input.face_pick.unwrap());
+        ViewportOutput {
+            surface_corner_click: response
+                .clicked_by(PointerButton::Primary)
+                .then(|| {
+                    response.interact_pointer_pos().and_then(|pixel| {
+                        self.pick_surface_corner(input.surface_corners, pixel, rect)
+                    })
+                })
+                .flatten(),
+            mirror_preview: mirror_preview_update,
+            translation_preview: translation_preview_update,
+            affine_preview: affine_preview_update,
+            twist_preview: twist_preview_update,
+            bend_preview: bend_preview_update,
+            taper_preview: taper_preview_update,
+            maelstrom_preview: maelstrom_preview_update,
+            toggle_maximized: response.double_clicked_by(PointerButton::Primary)
+                && response
+                    .interact_pointer_pos()
+                    .is_some_and(|pointer| pointer.y <= rect.top() + 28.0),
+            zoom_window_result,
+            zoom_window_cancelled: input.zoom_window
+                && response.clicked_by(PointerButton::Secondary),
+            zoom_target_pick,
+            zoom_target_result,
+            zoom_target_cancelled: input.zoom_target.is_some()
+                && response.clicked_by(PointerButton::Secondary),
+            edge_parameter: response
+                .clicked_by(PointerButton::Primary)
+                .then_some(edge_parameter)
+                .flatten(),
+            edge_click: (input.edge_pick
+                && component_mode.is_none()
+                && !input.zoom_window
+                && input.zoom_target.is_none()
+                && response.clicked_by(PointerButton::Primary))
+            .then(|| {
+                response
+                    .interact_pointer_pos()
+                    .map(|p| self.pick_edges(p, rect, document))
+                    .unwrap_or_default()
+            })
+            .filter(|picks: &Vec<EdgePick>| !input.curve_or_edge_pick || !picks.is_empty()),
+            face_click,
+            face_hit_point,
+            component_click,
+            component_window,
+            control_point_selection,
+            picked_point: (response.clicked_by(PointerButton::Primary)
+                && component_mode.is_none()
+                && (input.face_pick.is_none() || face_point_fallback))
+                .then(|| drafting_cursor.map(|cursor| cursor.source_point))
+                .flatten(),
+            drafting_hover: response
+                .hovered()
+                .then(|| drafting_cursor.map(|cursor| cursor.source_point))
+                .flatten(),
+            selection_click,
+            object_double_click,
+            selection_choice,
+            selection_window,
+            circular_center_pick,
+            fence_point,
+            lasso_point,
+            lasso_stroke,
+            point_cloud_selection,
+            enter_pressed: !input.zoom_window
+                && input.zoom_target.is_none()
+                && response.clicked_by(PointerButton::Secondary),
+            source_viewport_click: response.clicked_by(PointerButton::Primary),
+            activated: response.clicked_by(PointerButton::Primary)
+                || response.clicked_by(PointerButton::Secondary)
+                || response.clicked_by(PointerButton::Middle)
+                || response.dragged_by(PointerButton::Primary)
+                || response.dragged_by(PointerButton::Secondary)
+                || response.dragged_by(PointerButton::Middle)
+                || response.drag_stopped_by(PointerButton::Primary)
+                || response.drag_stopped_by(PointerButton::Secondary)
+                || response.drag_stopped_by(PointerButton::Middle)
+                || zoomed,
+        }
+    }
+
+    fn background_color(&self) -> Color32 {
+        match self.display_mode {
+            DisplayMode::Wireframe => Color32::from_rgb(250, 250, 250),
+            DisplayMode::Shaded => Color32::from_rgb(226, 232, 240),
+            DisplayMode::Ghosted => Color32::from_rgb(242, 246, 250),
+        }
+    }
+}
+
+fn circular_arc_samples(arc: CircularArc3) -> usize {
+    ((arc.sweep_radians() / std::f64::consts::TAU * CIRCLE_SAMPLES as Real).ceil() as usize).max(2)
+}
+
+#[cfg(test)]
+mod tests {
+    mod construction_plane;
+    mod cplane_two_point;
+    mod named_view_policy;
+    mod object_selection;
+    mod two_point;
+    mod world_parallel;
+    mod zoom_extents;
+    use super::*;
+    use viboceros_document::{ColorRgb, Geometry};
+    use viboceros_geometry::{
+        Circle3, CircularArc3, Ellipse3, Frame3, LineSegment, NurbsCurve, NurbsSurface,
+        PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    };
+
+    fn point(x: f64, y: f64, z: f64) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn accepted_draft_points_remain_visible_without_hover_and_follow_the_current_list() {
+        let points = [point(0., 0., 0.), point(3., 2., 1.), point(4., 1., 2.)];
+        let document = Document::default();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            let context = egui::Context::default();
+            let mut viewport = Viewport::new(kind);
+            for (active, count, anchor) in [
+                (true, 3, None),
+                (true, 2, None),
+                (true, 1, None),
+                (true, 0, None),
+                (false, 3, None),
+                (true, 0, Some(points[0])),
+                (true, 1, Some(points[0])),
+                (false, 0, Some(points[0])),
+            ] {
+                let output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    anchor,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &points[..count],
+                            0,
+                            false,
+                        );
+                    },
+                );
+                let segments = output
+                    .shapes
+                    .iter()
+                    .filter(|clipped| {
+                        matches!(
+                            &clipped.shape,
+                            egui::Shape::LineSegment { stroke, .. }
+                                if stroke.color == Color32::from_gray(80) && stroke.width == 1.5
+                        )
+                    })
+                    .count();
+                let markers = output
+                    .shapes
+                    .iter()
+                    .filter(|clipped| {
+                        matches!(
+                            &clipped.shape,
+                            egui::Shape::Circle(circle)
+                                if circle.fill == Color32::from_gray(80) && circle.radius == 2.5
+                        )
+                    })
+                    .count();
+                assert_eq!(
+                    segments,
+                    if active { count.saturating_sub(1) } else { 0 },
+                    "{kind:?}"
+                );
+                let expected_markers = if active {
+                    count.max(usize::from(anchor.is_some()))
+                } else {
+                    0
+                };
+                assert_eq!(
+                    markers, expected_markers,
+                    "{kind:?}, count={count}, anchor={anchor:?}"
+                );
+                output.drop_without_applying_deltas();
+            }
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
+    }
+
+    #[test]
+    fn curve_draft_is_painted_without_hover_in_every_view_but_not_after_drafting() {
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(0., 0., 0.),
+                point(3., 0., 0.),
+                point(4., 2., 1.),
+                point(0., 4., 0.),
+            ],
+            viboceros_geometry::ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let document = Document::default();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            let context = egui::Context::default();
+            let mut viewport = Viewport::new(kind);
+            for active in [true, false] {
+                let output = context.run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        ..Default::default()
+                    },
+                    |ui| {
+                        viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    ..Default::default()
+                                },
+                                preview_curve: Some(&curve),
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            false,
+                        );
+                    },
+                );
+                let has_preview = output.shapes.iter().any(|clipped| matches!(
+                    &clipped.shape,
+                    egui::Shape::LineSegment { stroke, .. }
+                        if stroke.color == Color32::from_rgb(20, 115, 190) && stroke.width == 2.0
+                ));
+                assert_eq!(has_preview, active, "{kind:?}");
+                output.drop_without_applying_deltas();
+            }
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
+    }
+
+    fn gpu_project(
+        viewport: &Viewport,
+        rect: Rect,
+        point: Point3,
+        depth_range: (Real, Real),
+    ) -> (Pos2, f32) {
+        let matrix = viewport
+            .gpu_view_uniform(rect, Some(depth_range))
+            .view_projection;
+        let [x, y, z] = viewport.gpu_position(point).unwrap();
+        let mut position = [x, y, z, 1.0];
+        viewport.encode_gpu_depth(&mut position, viewport.view_depth(point), Some(depth_range));
+        let clip: [f32; 4] = std::array::from_fn(|row| {
+            (0..4)
+                .map(|column| matrix[column][row] * position[column])
+                .sum()
+        });
+        let ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
+        (
+            Pos2::new(
+                rect.center().x + ndc[0] * rect.width() * 0.5,
+                rect.center().y - ndc[1] * rect.height() * 0.5,
+            ),
+            ndc[2],
+        )
+    }
+
+    fn viewport_frame(
+        context: &egui::Context,
+        viewport: &mut Viewport,
+        document: &Document,
+        events: Vec<egui::Event>,
+    ) -> ViewportOutput {
+        viewport_frame_with_modifiers(egui::Modifiers::NONE, context, viewport, document, events)
+    }
+
+    #[test]
+    fn drafting_hover_emits_a_location_without_accepting_a_point() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let document = Document::default();
+        viewport_frame(&context, &mut viewport, &document, Vec::new());
+        for (active, pointer, expected) in [
+            (true, Pos2::new(400., 300.), true),
+            (true, Pos2::new(900., 300.), false),
+            (false, Pos2::new(400., 300.), false),
+        ] {
+            let mut result = ViewportOutput::default();
+            context
+                .run_ui(
+                    egui::RawInput {
+                        screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.))),
+                        events: vec![egui::Event::PointerMoved(pointer)],
+                        ..Default::default()
+                    },
+                    |ui| {
+                        result = viewport.show(
+                            ui,
+                            &document,
+                            ViewportInput {
+                                drafting: DraftingInput {
+                                    active,
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            &[],
+                            0,
+                            true,
+                        );
+                    },
+                )
+                .drop_without_applying_deltas();
+            assert_eq!(result.drafting_hover.is_some(), expected);
+            if let Some(point) = result.drafting_hover {
+                assert!(
+                    viewport
+                        .project(point, viewport.last_rect.unwrap())
+                        .unwrap()
+                        .distance(pointer)
+                        < 0.01
+                );
+            }
+            assert!(result.picked_point.is_none());
+            assert!(result.selection_click.is_none());
+            assert_eq!(document.objects().len(), 0);
+            assert!(!document.can_undo());
+        }
+    }
+
+    #[test]
+    fn subcurve_curve_and_endpoint_overlays_paint_in_every_mode_and_view_without_hover() {
+        let mut document = Document::default();
+        let endpoints = [point(2., 3., 1.), point(3., 4.5, 1.5)];
+        let curve = viboceros_geometry::LineSegment::try_new(
+            endpoints[0],
+            endpoints[1],
+            document.tolerance(),
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsCurve(curve.clone()))
+            .unwrap();
+        document.clear_history().unwrap();
+        let blue = Color32::from_rgb(20, 115, 190);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Right,
+        ] {
+            for mode in [
+                DisplayMode::Wireframe,
+                DisplayMode::Shaded,
+                DisplayMode::Ghosted,
+            ] {
+                let context = egui::Context::default();
+                let mut viewport = Viewport::new(kind);
+                viewport.display_mode = mode;
+                for (active, show_curve) in [(true, true), (true, false), (false, true)] {
+                    let output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(Rect::from_min_size(
+                                Pos2::ZERO,
+                                Vec2::new(800., 600.),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| {
+                            viewport.show(
+                                ui,
+                                &document,
+                                ViewportInput {
+                                    drafting: DraftingInput {
+                                        active,
+                                        ..Default::default()
+                                    },
+                                    preview_curve: show_curve.then_some(&curve),
+                                    preview_points: &endpoints,
+                                    ..Default::default()
+                                },
+                                &[],
+                                0,
+                                true,
+                            );
+                        },
+                    );
+                    let curves = output.shapes.iter().filter(|s| matches!(&s.shape, egui::Shape::LineSegment {stroke, ..} if stroke.color == blue)).count();
+                    let markers = output.shapes.iter().filter(|s| matches!(&s.shape, egui::Shape::Circle(c) if c.fill == blue && c.radius == 3.5)).count();
+                    output.drop_without_applying_deltas();
+                    assert_eq!(curves > 0, active && show_curve, "{kind:?} {mode:?}");
+                    assert_eq!(markers, if active { 2 } else { 0 }, "{kind:?} {mode:?}");
+                }
+            }
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert!(!document.can_undo());
+    }
+
+    fn viewport_frame_with_modifiers(
+        modifiers: egui::Modifiers,
+        context: &egui::Context,
+        viewport: &mut Viewport,
+        document: &Document,
+        mut events: Vec<egui::Event>,
+    ) -> ViewportOutput {
+        events.insert(0, egui::Event::ModifiersChanged(modifiers));
+        let mut output = ViewportOutput::default();
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0))),
+                    events,
+                    ..egui::RawInput::default()
+                },
+                |ui| {
+                    output = viewport.show(ui, document, ViewportInput::default(), &[], 0, true);
+                },
+            )
+            .drop_without_applying_deltas();
+        output
+    }
+
+    fn drag_viewport(
+        context: &egui::Context,
+        viewport: &mut Viewport,
+        document: &Document,
+        button: PointerButton,
+        start: Pos2,
+        end: Pos2,
+    ) -> ViewportOutput {
+        let pointer_event = |position, pressed| egui::Event::PointerButton {
+            pos: position,
+            button,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        };
+        viewport_frame(context, viewport, document, Vec::new());
+        viewport_frame(
+            context,
+            viewport,
+            document,
+            vec![egui::Event::PointerMoved(start), pointer_event(start, true)],
+        );
+        viewport_frame(
+            context,
+            viewport,
+            document,
+            vec![egui::Event::PointerMoved(end)],
+        );
+        viewport_frame(
+            context,
+            viewport,
+            document,
+            vec![egui::Event::PointerMoved(end), pointer_event(end, false)],
+        )
+    }
+
+    #[test]
+    fn camera_crossing_lines_remain_visible_and_pickable() {
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        viewport.frustum_near = 1e-6;
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let (right, _, forward) = viewport.perspective_basis();
+        let camera = viewport.target - forward * viewport.perspective_camera_distance;
+        let to_point = |v: NaVector3<Real>| Point3::try_new(v.x, v.y, v.z).unwrap();
+        let start = to_point(camera - forward * 10.0 + right * 2.0);
+        let end = to_point(camera + forward * 20.0 - right * 2.0);
+        let visible = to_point(camera + forward * 12.5 - right);
+        let pointer = viewport.project(visible, rect).unwrap();
+        assert!(viewport.project(start, rect).is_none());
+        for points in [[start, end], [end, start]] {
+            let line =
+                viboceros_geometry::LineSegment::try_new(points[0], points[1], Tolerance::DEFAULT)
+                    .unwrap();
+            for geometry in [
+                Geometry::Line(line),
+                Geometry::NurbsCurve(line.to_nurbs().unwrap()),
+                Geometry::Polyline(
+                    Polyline3::try_new(points.to_vec(), Tolerance::DEFAULT).unwrap(),
+                ),
+            ] {
+                let mut document = Document::default();
+                let id = document.add_geometry(geometry).unwrap();
+                assert_eq!(viewport.pick_object(pointer, rect, &document), Some(id));
+                let object = document.object(id).unwrap();
+                let projected = viewport.projected_primitives(
+                    object.geometry(),
+                    object.attributes(),
+                    rect,
+                    Tolerance::DEFAULT,
+                );
+                assert!(
+                    projected.is_crossed_by(Rect::from_center_size(pointer, Vec2::splat(10.0)))
+                );
+            }
+            let mut scene = GpuSceneBuilder::new();
+            viewport.add_gpu_line(&mut scene, rect, points[0], points[1], 1.0, Color32::BLACK);
+            assert_eq!(scene.lines.len(), 1);
+            let clipped = viewport.clip_segment(points[0], points[1]).unwrap();
+            assert!(clipped.iter().all(|p| viewport.view_depth(*p) > 0.0));
+        }
+        let behind = to_point(camera - forward * 20.0);
+        assert_eq!(viewport.clip_segment(visible, end), Some([visible, end]));
+        let parallel = Viewport::new(ViewKind::Top);
+        assert_eq!(parallel.clip_segment(start, behind), Some([start, behind]));
+        assert!(viewport.project_segment(start, behind, rect).is_none());
+        let mut scene = GpuSceneBuilder::new();
+        viewport.add_gpu_line(&mut scene, rect, start, behind, 1.0, Color32::BLACK);
+        assert!(scene.lines.is_empty());
+    }
+
+    #[test]
+    fn camera_crossing_faces_remain_visible_and_selectable() {
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        viewport.frustum_near = 1e-6;
+        viewport.frustum_far = 1000.;
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let (right, up, forward) = viewport.perspective_basis();
+        let camera = viewport.target - forward * viewport.perspective_camera_distance;
+        let to_point = |x: Real, y: Real, depth: Real| {
+            let v = camera + right * x + up * y + forward * depth;
+            Point3::try_new(v.x, v.y, v.z).unwrap()
+        };
+        for depths in [
+            [10.0, 10.0, 10.0],
+            [-10.0, 10.0, 10.0],
+            [-10.0, -10.0, 10.0],
+            [-10.0; 3],
+        ] {
+            let vertices = [
+                to_point(-3.0, -2.0, depths[0]),
+                to_point(3.0, -2.0, depths[1]),
+                to_point(0.0, 3.0, depths[2]),
+            ];
+            for indices in [
+                [0, 1, 2],
+                [1, 2, 0],
+                [2, 0, 1],
+                [2, 1, 0],
+                [1, 0, 2],
+                [0, 2, 1],
+            ] {
+                let points = indices.map(|index| vertices[index]);
+                let clipped = viewport.clip_triangle(points);
+                let visible_count = depths.iter().filter(|depth| **depth > 0.0).count();
+                let expected = match visible_count {
+                    0 => 0,
+                    2 => 2,
+                    _ => 1,
+                };
+                assert_eq!(clipped.iter().flatten().count(), expected);
+                let vector = |point: Point3| NaVector3::from(point.to_array());
+                let normal = (vector(points[1]) - vector(points[0]))
+                    .cross(&(vector(points[2]) - vector(points[0])));
+                for triangle in clipped.into_iter().flatten() {
+                    assert!(
+                        triangle
+                            .iter()
+                            .all(|point| viewport.view_depth(*point) > 0.0)
+                    );
+                    let clipped_normal = (vector(triangle[1]) - vector(triangle[0]))
+                        .cross(&(vector(triangle[2]) - vector(triangle[0])));
+                    assert!(normal.dot(&clipped_normal) > 0.0);
+                }
+                let mesh =
+                    TriangleMesh::try_new(points.to_vec(), vec![[0, 1, 2]], Tolerance::DEFAULT)
+                        .unwrap();
+                for mode in [DisplayMode::Shaded, DisplayMode::Ghosted] {
+                    viewport.display_mode = mode;
+                    let mut scene = GpuSceneBuilder::new();
+                    viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+                    assert_eq!(scene.triangles.len(), usize::from(visible_count > 0));
+                    let mut projected = ProjectedPrimitives::default();
+                    viewport.add_projected_mesh(
+                        &mut projected,
+                        rect,
+                        &mesh,
+                        true,
+                        Tolerance::DEFAULT,
+                    );
+                    assert_eq!(projected.triangles.len(), expected);
+                    if visible_count == 0 {
+                        assert!(
+                            viewport
+                                .mesh_pick(rect.center(), rect, &mesh, Tolerance::DEFAULT)
+                                .distance
+                                .is_infinite()
+                        );
+                        continue;
+                    }
+                    // A convex combination strictly inside the original face,
+                    // biased toward the always-visible final source vertex.
+                    let p = vector(vertices[0]) * 0.1
+                        + vector(vertices[1]) * 0.1
+                        + vector(vertices[2]) * 0.8;
+                    let pointer = viewport
+                        .project(Point3::try_new(p.x, p.y, p.z).unwrap(), rect)
+                        .unwrap();
+                    assert_eq!(
+                        viewport
+                            .mesh_pick(pointer, rect, &mesh, Tolerance::DEFAULT)
+                            .distance,
+                        0.0
+                    );
+                    assert!(
+                        projected.is_crossed_by(Rect::from_center_size(pointer, Vec2::splat(2.0)))
+                    );
+                    assert!(scene.min_depth > 0.0);
+                    for (vertex, point) in scene.triangles[0].vertices.iter().zip(points) {
+                        assert_eq!(vertex.position, viewport.gpu_position(point).unwrap());
+                    }
+                    let (gpu_pointer, gpu_depth) = gpu_project(
+                        &viewport,
+                        rect,
+                        Point3::try_new(p.x, p.y, p.z).unwrap(),
+                        scene.depth_range().unwrap(),
+                    );
+                    assert!(gpu_pointer.distance(pointer) < 0.02);
+                    assert!((0.0..=1.0).contains(&gpu_depth));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn projection_rejects_values_outside_f32_range() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let point = Point3::try_new(f64::MAX, 0.0, 0.0).unwrap();
+        assert_eq!(viewport.project(point, rect), None);
+    }
+
+    #[test]
+    fn target_relative_gpu_positions_and_depth_keep_small_translated_features() {
+        let rect = Rect::from_min_size(Pos2::new(20.0, 30.0), Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.frustum_near = 0.005;
+            viewport.target = NaVector3::new(1e12, -2e12, 3e12);
+            viewport.pan = Vec2::new(17.0, -23.0);
+            let model = Point3::try_new(1e12 + 1.0, -2e12 + 2.0, 3e12 + 3.0).unwrap();
+            let expected = match kind {
+                ViewKind::Top => [40.0, 80.0, 0.0],
+                ViewKind::Bottom => [40.0, 80.0, 0.0],
+                ViewKind::Front => [40.0, 0.0, 120.0],
+                ViewKind::Back => [40.0, 0.0, 120.0],
+                ViewKind::Right => [0.0, 80.0, 120.0],
+                ViewKind::Left => [0.0, 80.0, 120.0],
+                ViewKind::Perspective => [1.0, 2.0, 3.0],
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
+            };
+            assert_eq!(viewport.gpu_position(model), Some(expected));
+            let depth = viewport.view_depth(model);
+            let mut origin_view = Viewport::new(kind);
+            origin_view.pan = viewport.pan;
+            let local_model = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+            assert_eq!(depth, origin_view.view_depth(local_model));
+            assert_eq!(
+                viewport.project(model, rect),
+                origin_view.project(local_model, rect)
+            );
+            let (gpu, gpu_depth) = gpu_project(&viewport, rect, model, (depth - 1.0, depth + 1.0));
+            assert!(gpu.distance(viewport.project(model, rect).unwrap()) < 0.001);
+            assert!((0.0..=1.0).contains(&gpu_depth));
+        }
+        let viewport = Viewport {
+            target: NaVector3::new(-Real::MAX, 0.0, 0.0),
+            ..Viewport::default()
+        };
+        assert!(
+            viewport
+                .gpu_position(Point3::try_new(Real::MAX, 0.0, 0.0).unwrap())
+                .is_none()
+        );
+    }
+
+    #[test]
+    fn parallel_gpu_matrices_remain_normal_at_extreme_zoom_scales() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
+            for scale in [1.0, 2.0_f64.powi(126)] {
+                let mut viewport = Viewport::new(kind);
+                viewport.last_rect = Some(rect);
+                viewport.zoom_factor(1.0 / scale).unwrap();
+                let point = Point3::try_new(scale, 2.0 * scale, 3.0 * scale).unwrap();
+                let expected = match kind {
+                    ViewKind::Top => [40.0, 80.0, 0.0],
+                    ViewKind::Bottom => [40.0, 80.0, 0.0],
+                    ViewKind::Front => [40.0, 0.0, 120.0],
+                    ViewKind::Back => [40.0, 0.0, 120.0],
+                    ViewKind::Right => [0.0, 80.0, 120.0],
+                    ViewKind::Left => [0.0, 80.0, 120.0],
+                    _ => unreachable!(),
+                };
+                assert_eq!(viewport.gpu_position(point), Some(expected));
+                let depth = viewport.view_depth(point);
+                let range = (depth - scale, depth + scale);
+                let uniform = viewport.gpu_view_uniform(rect, Some(range));
+                assert!(
+                    uniform
+                        .view_projection
+                        .iter()
+                        .flatten()
+                        .all(|v| *v == 0.0 || v.is_normal())
+                );
+                let (gpu, gpu_depth) = gpu_project(&viewport, rect, point, range);
+                assert!(gpu.distance(viewport.project(point, rect).unwrap()) < 0.001);
+                assert!((0.0..=1.0).contains(&gpu_depth));
+            }
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(rect);
+            viewport.zoom_factor(Real::from_bits(1)).unwrap();
+            let uniform = viewport.gpu_view_uniform(rect, Some((0.0, 0.0)));
+            assert!(
+                uniform
+                    .view_projection
+                    .iter()
+                    .flatten()
+                    .all(|v| *v == 0.0 || v.is_normal())
+            );
+        }
+    }
+
+    #[test]
+    fn parallel_face_sort_depth_stays_finite_at_the_model_range_limit() {
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.display_mode = DisplayMode::Ghosted;
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(-1.0, -1.0, -Real::MAX),
+                point(1.0, -1.0, -Real::MAX),
+                point(0.0, 1.0, -Real::MAX),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut scene = GpuSceneBuilder::new();
+        viewport.add_gpu_mesh_faces(&mut scene, &mesh, Color32::GRAY);
+        assert_eq!(scene.triangles.len(), 1);
+        assert_eq!(scene.triangles[0].depth, Real::MAX);
+    }
+
+    #[test]
+    fn standard_views_project_the_expected_world_axes() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let model = point(2.0, 3.0, 4.0);
+        let projected = |kind| Viewport::new(kind).project(model, rect).unwrap();
+        assert_eq!(projected(ViewKind::Top), Pos2::new(480.0, 180.0));
+        assert_eq!(projected(ViewKind::Bottom), Pos2::new(480.0, 420.0));
+        assert_eq!(projected(ViewKind::Front), Pos2::new(480.0, 140.0));
+        assert_eq!(projected(ViewKind::Back), Pos2::new(320.0, 140.0));
+        assert_eq!(projected(ViewKind::Right), Pos2::new(520.0, 140.0));
+        assert_eq!(projected(ViewKind::Left), Pos2::new(280.0, 140.0));
+    }
+
+    #[test]
+    fn every_view_projects_and_unprojects_its_construction_plane() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(2.25, -3.5, 1.75);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Perspective,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
+            let viewport = Viewport::new(kind);
+            let screen = viewport.project(model, rect).unwrap();
+            let fixed_coordinate = match kind {
+                ViewKind::Top | ViewKind::Bottom | ViewKind::Perspective => model.z(),
+                ViewKind::Front | ViewKind::Back => model.y(),
+                ViewKind::Right | ViewKind::Left => model.x(),
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
+            };
+            let round_trip = viewport.unproject(screen, rect, fixed_coordinate).unwrap();
+            assert!((round_trip.x() - model.x()).abs() < 1.0e-5);
+            assert!((round_trip.y() - model.y()).abs() < 1.0e-5);
+            assert!((round_trip.z() - model.z()).abs() < 1.0e-5);
+        }
+    }
+
+    #[test]
+    fn perspective_foreshortens_geometry_with_depth() {
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let (right, _, forward) = viewport.perspective_basis();
+        let make_point = |vector: NaVector3<Real>| point(vector.x, vector.y, vector.z);
+        let near = make_point(right * 4.0 - forward * 5.0);
+        let far = make_point(right * 4.0 + forward * 5.0);
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        let near_distance = (viewport.project(near, rect).unwrap() - center).length();
+        let far_distance = (viewport.project(far, rect).unwrap() - center).length();
+        assert!(near_distance > far_distance);
+    }
+
+    #[test]
+    fn navigation_drag_accumulates_frame_deltas_once_and_stops_on_release() {
+        let mut document = Document::default();
+        for p in [point(99., 199., 299.), point(101., 201., 301.)] {
+            document.add_geometry(Geometry::Point(p)).unwrap();
+        }
+        let start = Pos2::new(200.0, 150.0);
+        let finish = Pos2::new(240.0, 180.0);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+            ViewKind::Perspective,
+        ] {
+            for (button, modifiers) in [
+                (PointerButton::Middle, egui::Modifiers::NONE),
+                (PointerButton::Secondary, egui::Modifiers::NONE),
+                (PointerButton::Secondary, egui::Modifiers::SHIFT),
+            ] {
+                let context = egui::Context::default();
+                let mut viewport = Viewport::new(kind);
+                viewport.target = NaVector3::new(100.0, 200.0, 300.0);
+                let target = viewport.target;
+                let plane = viewport.construction_plane();
+                let angles = (viewport.orbit_yaw, viewport.orbit_pitch);
+                let button_event = |position, pressed| egui::Event::PointerButton {
+                    pos: position,
+                    button,
+                    pressed,
+                    modifiers,
+                };
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![],
+                );
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![egui::Event::PointerMoved(start), button_event(start, true)],
+                );
+                // The press frame has refreshed clipping before capturing the
+                // drag's starting state. Later redraws add no history entries.
+                let initial_camera = viewport.camera_snapshot();
+                for position in [
+                    Pos2::new(220.0, 160.0),
+                    Pos2::new(230.0, 175.0),
+                    Pos2::new(230.0, 175.0),
+                    finish,
+                ] {
+                    let output = viewport_frame_with_modifiers(
+                        modifiers,
+                        &context,
+                        &mut viewport,
+                        &document,
+                        vec![egui::Event::PointerMoved(position)],
+                    );
+                    assert!(!output.enter_pressed);
+                    assert!(output.selection_click.is_none() && output.selection_window.is_none());
+                    let delta = position - start;
+                    if kind == ViewKind::Perspective
+                        && button == PointerButton::Secondary
+                        && !modifiers.shift
+                    {
+                        assert_eq!(viewport.pan, Vec2::ZERO);
+                        assert!(
+                            (viewport.orbit_yaw - (angles.0 - Real::from(delta.x) * 0.01)).abs()
+                                < 1e-14
+                        );
+                        assert!(
+                            (viewport.orbit_pitch - (angles.1 + Real::from(delta.y) * 0.01)).abs()
+                                < 1e-14
+                        );
+                    } else {
+                        if kind.is_parallel() {
+                            assert_eq!(viewport.pan, delta);
+                        } else {
+                            assert_eq!(viewport.pan, Vec2::ZERO);
+                            let model = point(target.x, target.y, target.z);
+                            let rect = viewport.last_rect.unwrap();
+                            assert!(
+                                viewport
+                                    .project(model, rect)
+                                    .unwrap()
+                                    .distance(rect.center() + delta)
+                                    < 0.001
+                            );
+                        }
+                        assert_eq!((viewport.orbit_yaw, viewport.orbit_pitch), angles);
+                    }
+                }
+                let final_state = (
+                    viewport.pan,
+                    viewport.orbit_yaw,
+                    viewport.orbit_pitch,
+                    viewport.target,
+                );
+                let output = viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![button_event(finish, false)],
+                );
+                assert!(!output.enter_pressed);
+                assert!(output.selection_click.is_none() && output.selection_window.is_none());
+                viewport_frame_with_modifiers(
+                    modifiers,
+                    &context,
+                    &mut viewport,
+                    &document,
+                    vec![egui::Event::PointerMoved(finish + Vec2::new(20.0, 10.0))],
+                );
+                assert_eq!(
+                    (
+                        viewport.pan,
+                        viewport.orbit_yaw,
+                        viewport.orbit_pitch,
+                        viewport.target
+                    ),
+                    final_state
+                );
+                if kind.is_parallel() || (button == PointerButton::Secondary && !modifiers.shift) {
+                    assert_eq!(viewport.target, target);
+                }
+                assert_eq!(viewport.construction_plane(), plane);
+                assert!(viewport.undo_view());
+                assert_eq!(viewport.camera_snapshot(), initial_camera);
+                assert!(!viewport.undo_view());
+                assert!(viewport.redo_view());
+                assert_eq!(
+                    (
+                        viewport.pan,
+                        viewport.orbit_yaw,
+                        viewport.orbit_pitch,
+                        viewport.target
+                    ),
+                    final_state
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn right_drag_matches_parallel_and_perspective_navigation() {
+        let delta = Vec2::new(12.0, -7.0);
+        let mut top = Viewport::new(ViewKind::Top);
+        let top_angles = (top.orbit_yaw, top.orbit_pitch);
+        top.apply_navigation_drag(PointerButton::Secondary, egui::Modifiers::NONE, delta);
+        assert_eq!(top.pan, delta);
+        assert_eq!((top.orbit_yaw, top.orbit_pitch), top_angles);
+
+        let mut perspective = Viewport::new(ViewKind::Perspective);
+        let perspective_angles = (perspective.orbit_yaw, perspective.orbit_pitch);
+        perspective.apply_navigation_drag(PointerButton::Secondary, egui::Modifiers::NONE, delta);
+        assert_eq!(perspective.pan, Vec2::ZERO);
+        assert_ne!(
+            (perspective.orbit_yaw, perspective.orbit_pitch),
+            perspective_angles
+        );
+
+        let mut shifted = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        shifted.last_rect = Some(rect);
+        let shifted_angles = (shifted.orbit_yaw, shifted.orbit_pitch);
+        shifted.apply_navigation_drag(
+            PointerButton::Secondary,
+            egui::Modifiers {
+                shift: true,
+                ..egui::Modifiers::NONE
+            },
+            delta,
+        );
+        assert_eq!(shifted.pan, Vec2::ZERO);
+        assert!(
+            shifted
+                .project(Point3::try_new(0., 0., 0.).unwrap(), rect)
+                .unwrap()
+                .distance(rect.center() + delta)
+                < 0.001
+        );
+        assert_eq!((shifted.orbit_yaw, shifted.orbit_pitch), shifted_angles);
+    }
+
+    #[test]
+    fn right_click_emits_enter_and_activates_the_viewport() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let document = Document::default();
+        let position = Pos2::new(200.0, 150.0);
+        let pointer_event = |pressed| egui::Event::PointerButton {
+            pos: position,
+            button: PointerButton::Secondary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        };
+        viewport_frame(&context, &mut viewport, &document, Vec::new());
+        viewport_frame(
+            &context,
+            &mut viewport,
+            &document,
+            vec![egui::Event::PointerMoved(position), pointer_event(true)],
+        );
+        let output = viewport_frame(
+            &context,
+            &mut viewport,
+            &document,
+            vec![egui::Event::PointerMoved(position), pointer_event(false)],
+        );
+        assert!(output.enter_pressed, "{output:?}");
+        assert!(output.activated, "{output:?}");
+    }
+
+    #[test]
+    fn right_drag_navigates_without_emitting_enter() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let document = Document::default();
+        let output = drag_viewport(
+            &context,
+            &mut viewport,
+            &document,
+            PointerButton::Secondary,
+            Pos2::new(200.0, 150.0),
+            Pos2::new(240.0, 180.0),
+        );
+        assert!(!output.enter_pressed);
+        assert!(output.activated);
+        assert_eq!(viewport.pan, Vec2::new(40.0, 30.0));
+    }
+
+    #[test]
+    fn grid_snap_uses_each_views_construction_plane() {
+        assert_eq!(
+            Viewport::new(ViewKind::Top)
+                .snap_to_grid(point(1.49, -1.51, 7.25))
+                .unwrap(),
+            point(1.0, -2.0, 7.25)
+        );
+        assert_eq!(
+            Viewport::new(ViewKind::Front)
+                .snap_to_grid(point(1.49, 7.25, -1.51))
+                .unwrap(),
+            point(1.0, 7.25, -2.0)
+        );
+        assert_eq!(
+            Viewport::new(ViewKind::Right)
+                .snap_to_grid(point(7.25, 1.49, -1.51))
+                .unwrap(),
+            point(7.25, 1.0, -2.0)
+        );
+    }
+
+    #[test]
+    fn snap_spacing_changes_local_grid_capture_without_changing_other_views() {
+        let mut top = Viewport::new(ViewKind::Top);
+        let front = Viewport::new(ViewKind::Front);
+        top.set_snap_spacing(0.25);
+        assert_eq!(
+            top.snap_to_grid(point(1.36, -1.61, 7.25)),
+            Some(point(1.25, -1.5, 7.25))
+        );
+        assert_eq!(
+            front.snap_to_grid(point(1.36, 7.25, -1.61)),
+            Some(point(1.0, 7.25, -2.0))
+        );
+        assert_eq!(top.snap_spacing(), 0.25);
+        assert_eq!(front.snap_spacing(), 1.0);
+    }
+
+    #[test]
+    fn selection_direction_switches_between_window_and_crossing() {
+        assert!(!is_crossing_selection(
+            Pos2::new(10.0, 20.0),
+            Pos2::new(30.0, 5.0)
+        ));
+        assert!(is_crossing_selection(
+            Pos2::new(30.0, 20.0),
+            Pos2::new(10.0, 35.0)
+        ));
+
+        let viewport = Viewport::new(ViewKind::Top);
+        let viewport_rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let selection_rect = Rect::from_min_max(Pos2::new(390.0, 280.0), Pos2::new(450.0, 320.0));
+        let mut document = Document::default();
+        let crossing_line = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    point(-2.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let enclosed_point = document
+            .add_geometry(Geometry::Point(point(0.5, 0.0, 0.0)))
+            .unwrap();
+
+        assert_eq!(
+            viewport.objects_in_selection(viewport_rect, selection_rect, false, &document),
+            [enclosed_point]
+        );
+        assert_eq!(
+            viewport.objects_in_selection(viewport_rect, selection_rect, true, &document),
+            [crossing_line, enclosed_point]
+        );
+    }
+
+    #[test]
+    fn primary_drag_emits_directional_selection_results() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let mut document = Document::default();
+        let crossing_line = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    point(-2.0, 0.0, 0.0),
+                    point(2.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let enclosed_point = document
+            .add_geometry(Geometry::Point(point(0.5, 0.0, 0.0)))
+            .unwrap();
+
+        let window = drag_viewport(
+            &context,
+            &mut viewport,
+            &document,
+            PointerButton::Primary,
+            Pos2::new(390.0, 280.0),
+            Pos2::new(450.0, 320.0),
+        )
+        .selection_window
+        .unwrap();
+        assert!(!window.crossing);
+        assert_eq!(window.object_ids, [enclosed_point]);
+
+        let crossing = drag_viewport(
+            &context,
+            &mut viewport,
+            &document,
+            PointerButton::Primary,
+            Pos2::new(450.0, 280.0),
+            Pos2::new(390.0, 320.0),
+        )
+        .selection_window
+        .unwrap();
+        assert!(crossing.crossing);
+        assert_eq!(crossing.object_ids, [crossing_line, enclosed_point]);
+    }
+
+    #[test]
+    fn selection_modifiers_match_rhino_add_and_remove_rules() {
+        assert_eq!(
+            selection_mode(egui::Modifiers::NONE),
+            SelectionMode::Replace
+        );
+        assert_eq!(
+            selection_mode(egui::Modifiers {
+                shift: true,
+                ..egui::Modifiers::NONE
+            }),
+            SelectionMode::Add
+        );
+        assert_eq!(
+            selection_mode(egui::Modifiers {
+                command: true,
+                ..egui::Modifiers::NONE
+            }),
+            SelectionMode::Remove
+        );
+    }
+
+    #[test]
+    fn coincident_points_offer_a_choice_without_selecting_either() {
+        let context = egui::Context::default();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        let mut document = Document::default();
+        let point = point(0.0, 0.0, 0.0);
+        let first = document.add_geometry(Geometry::Point(point)).unwrap();
+        let second = document.add_geometry(Geometry::Point(point)).unwrap();
+        let hidden = document.add_geometry(Geometry::Point(point)).unwrap();
+        document.set_objects_visibility([hidden], false).unwrap();
+        let pointer = Pos2::new(400.0, 300.0);
+        let click = |pressed| egui::Event::PointerButton {
+            pos: pointer,
+            button: PointerButton::Primary,
+            pressed,
+            modifiers: egui::Modifiers::NONE,
+        };
+        viewport_frame(&context, &mut viewport, &document, vec![]);
+        viewport_frame(
+            &context,
+            &mut viewport,
+            &document,
+            vec![egui::Event::PointerMoved(pointer), click(true)],
+        );
+        let output = viewport_frame(&context, &mut viewport, &document, vec![click(false)]);
+        assert_eq!(output.selection_click, None);
+        assert_eq!(
+            output.selection_choice,
+            Some(SelectionChoice {
+                object_ids: vec![first, second],
+                mode: SelectionMode::Replace,
+                pointer,
+                viewport: 0,
+            })
+        );
+        assert_eq!(document.selected_object_count(), 0);
+    }
+
+    #[test]
+    fn zoom_extents_border_controls_fit_and_values_below_one_fit_as_one() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mut points = Vec::new();
+        let mut ids = Vec::new();
+        for x in [-10.0, 10.0] {
+            for y in [-5.0, 5.0] {
+                for z in [-2.0, 2.0] {
+                    let p = point(x, y, z);
+                    ids.push(document.add_geometry(Geometry::Point(p)).unwrap());
+                    points.push(p);
+                }
+            }
+        }
+        document
+            .select_objects(ids, SelectionMode::Replace)
+            .unwrap();
+        for kind in [ViewKind::Top, ViewKind::Perspective] {
+            let make_view = || {
+                let mut view = Viewport::new(kind);
+                view.last_rect = Some(rect);
+                view
+            };
+            let mut default = make_view();
+            let mut wide = make_view();
+            let mut small_border = make_view();
+            let mut unit_border = make_view();
+            let mut selected = make_view();
+            let wide_border = ZoomExtentsBorders {
+                parallel: 1.5,
+                perspective: 1.5,
+            };
+            let small_border_settings = ZoomExtentsBorders {
+                parallel: 0.8,
+                perspective: 0.8,
+            };
+            assert_eq!(
+                default.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(wide.zoom_extents(&document, wide_border), Ok(true));
+            assert_eq!(
+                small_border.zoom_extents(&document, small_border_settings),
+                Ok(true)
+            );
+            assert_eq!(
+                unit_border.zoom_extents(
+                    &document,
+                    ZoomExtentsBorders {
+                        parallel: 1.,
+                        perspective: 1.
+                    }
+                ),
+                Ok(true)
+            );
+            assert_eq!(
+                selected.zoom_selected(&document, small_border_settings),
+                Ok(true)
+            );
+            assert_eq!(selected.camera_snapshot(), small_border.camera_snapshot());
+            assert_eq!(
+                unit_border.camera_snapshot(),
+                small_border.camera_snapshot()
+            );
+            if kind.is_parallel() {
+                assert!(wide.pixels_per_unit < default.pixels_per_unit);
+                assert!(default.pixels_per_unit < small_border.pixels_per_unit);
+                assert!(
+                    ((default.pixels_per_unit / small_border.pixels_per_unit) - 1. / 1.1).abs()
+                        < 1e-6
+                );
+            } else {
+                assert!(wide.perspective_camera_distance > default.perspective_camera_distance);
+                assert_eq!(default.camera_snapshot(), small_border.camera_snapshot());
+            }
+            assert!(points.iter().all(|p| {
+                rect.expand(1e-3)
+                    .contains(small_border.project(*p, rect).unwrap())
+            }));
+        }
+        let mut views = [
+            Viewport::new(ViewKind::Top),
+            Viewport::new(ViewKind::Perspective),
+        ];
+        for view in &mut views {
+            view.last_rect = Some(rect);
+        }
+        let before = views
+            .iter()
+            .map(|view| {
+                (
+                    view.target,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                )
+            })
+            .collect::<Vec<_>>();
+        assert!(
+            Viewport::zoom_all(
+                &mut views,
+                &document,
+                false,
+                ZoomExtentsBorders {
+                    parallel: 0.0,
+                    perspective: 1.0
+                }
+            )
+            .is_err()
+        );
+        assert_eq!(
+            views
+                .iter()
+                .map(|view| (
+                    view.target,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance
+                ))
+                .collect::<Vec<_>>(),
+            before
+        );
+    }
+
+    #[test]
+    fn zoom_extents_fits_translated_geometry_and_keeps_gpu_and_picking_aligned() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mut points = Vec::new();
+        for index in 0..8 {
+            let p = point(
+                100.0 + if index & 1 == 0 { -8.0 } else { 8.0 },
+                200.0 + if index & 2 == 0 { -4.0 } else { 4.0 },
+                300.0 + if index & 4 == 0 { -2.0 } else { 2.0 },
+            );
+            document.add_geometry(Geometry::Point(p)).unwrap();
+            points.push(p);
+        }
+        document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(1e9, 1e9, 1e9)),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_visibility(false),
+            )
+            .unwrap();
+        let objects = document.objects().cloned().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            view.pan = Vec2::new(300.0, -200.0);
+            let plane = view.construction_plane();
+            let lens = view.perspective_focal_length_pixels(rect);
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(view.target, NaVector3::new(100.0, 200.0, 300.0));
+            assert_eq!(view.pan, Vec2::ZERO);
+            assert_eq!(view.construction_plane(), plane);
+            assert_eq!(view.perspective_focal_length_pixels(rect), lens);
+            let depths = points
+                .iter()
+                .map(|p| view.view_depth(*p))
+                .collect::<Vec<_>>();
+            let depth_range = (
+                depths.iter().copied().fold(Real::INFINITY, Real::min),
+                depths.iter().copied().fold(Real::NEG_INFINITY, Real::max),
+            );
+            for p in &points {
+                let screen = view.project(*p, rect).unwrap();
+                let expected = if kind.is_parallel() {
+                    rect.shrink(20.0)
+                } else {
+                    rect.expand(1.0)
+                };
+                assert!(expected.contains(screen), "{kind:?}: {screen:?}");
+                let (gpu, depth) = gpu_project(&view, rect, *p, depth_range);
+                assert!(
+                    (screen - gpu).length() < 0.02,
+                    "{kind:?}: {screen:?}, {gpu:?}"
+                );
+                assert!((0.0..=1.0).contains(&depth));
+                let elevation = match kind {
+                    ViewKind::Front => p.y(),
+                    ViewKind::Right => p.x(),
+                    _ => p.z(),
+                };
+                let restored = view.unproject(screen, rect, elevation).unwrap();
+                assert!(restored.distance_to(*p).unwrap() < 1e-4);
+                assert!(view.pick_object(screen, rect, &document).is_some());
+            }
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), objects);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
+    fn all_viewport_zoom_preflights_every_fit_before_changing_any_camera() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(100.0, 200.0, 300.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(110.0, 210.0, 310.0)))
+            .unwrap();
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let mut viewports = [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ]
+        .map(Viewport::new);
+        for (index, viewport) in viewports.iter_mut().enumerate() {
+            viewport.last_rect = Some(Rect::from_min_size(
+                Pos2::ZERO,
+                Vec2::new(400.0 + 100.0 * index as f32, 300.0),
+            ));
+            viewport.pan = Vec2::new(index as f32 * 10.0, 50.0);
+        }
+        assert_eq!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
+            Ok(true)
+        );
+        for viewport in &viewports {
+            assert_eq!(viewport.target, NaVector3::new(105.0, 205.0, 305.0));
+            assert_eq!(viewport.pan, Vec2::ZERO);
+        }
+        let camera_states = |views: &[Viewport]| {
+            views
+                .iter()
+                .map(|view| {
+                    (
+                        view.target,
+                        view.pan,
+                        view.pixels_per_unit,
+                        view.perspective_camera_distance,
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        let fitted = camera_states(&viewports);
+        document
+            .add_geometry(Geometry::Point(point(2e9, 2e9, 2e9)))
+            .unwrap();
+        let mut parallel = Viewport::new(ViewKind::Top);
+        parallel.last_rect = viewports[0].last_rect;
+        assert_eq!(
+            parallel.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        // The last, perspective view exceeds its dolly limit. Earlier valid
+        // parallel plans must not have been committed when this fails.
+        assert!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                false,
+                ZoomExtentsBorders::default()
+            )
+            .is_err()
+        );
+        assert_eq!(camera_states(&viewports), fitted);
+        assert_eq!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
+            Ok(true)
+        );
+        // Selected bounds still determine framing. Visible unselected scene
+        // bounds additionally determine clipping and can relocate parallel
+        // cameras along their view direction.
+        let selected_fit = camera_states(&viewports);
+        for (index, (after, before)) in selected_fit.iter().zip(&fitted).enumerate() {
+            assert_eq!((after.0, after.1, after.2), (before.0, before.1, before.2));
+            if index == 3 {
+                assert_eq!(after.3, before.3);
+            } else {
+                assert!(after.3 > before.3);
+            }
+        }
+        let fitted = selected_fit;
+        viewports[3].last_rect = None;
+        assert!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            )
+            .is_err()
+        );
+        assert_eq!(camera_states(&viewports), fitted);
+        document.clear_selection();
+        assert_eq!(
+            Viewport::zoom_all(
+                &mut viewports,
+                &document,
+                true,
+                ZoomExtentsBorders::default()
+            ),
+            Ok(false)
+        );
+        assert_eq!(camera_states(&viewports), fitted);
+    }
+
+    #[test]
+    fn zoom_selected_ignores_unselected_extents_and_empty_selection_is_a_noop() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(100.0, 200.0, 300.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(102.0, 202.0, 302.0)))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(Real::MAX, Real::MAX, Real::MAX)))
+            .unwrap();
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let original = document.objects().cloned().collect::<Vec<_>>();
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        let undo = document.undo_label().map(str::to_owned);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
+            assert_eq!(
+                viewport.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(viewport.target, NaVector3::new(101.0, 201.0, 301.0));
+            let state = |view: &Viewport| {
+                (
+                    view.target,
+                    view.pan,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                )
+            };
+            let fitted = state(&viewport);
+            assert!(
+                viewport
+                    .zoom_extents(&document, ZoomExtentsBorders::default())
+                    .is_err()
+            );
+            assert_eq!(state(&viewport), fitted);
+            assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), selected);
+            document.clear_selection();
+            assert_eq!(
+                viewport.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(false)
+            );
+            assert_eq!(state(&viewport), fitted);
+            document
+                .select_objects([first, second], SelectionMode::Replace)
+                .unwrap();
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), original);
+        assert_eq!(document.undo_label(), undo.as_deref());
+    }
+
+    #[test]
+    fn zoom_curve_ends_fits_markers_instead_of_the_curves_full_bounds() {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![point(0., 0., 0.), point(1000., 500., 0.), point(2., 0., 0.)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(1e300, 0., 0.)))
+            .unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            viewport.last_rect = Some(rect);
+            assert_eq!(
+                viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(viewport.target, NaVector3::new(1., 0., 0.));
+            assert!(viewport.undo_view());
+            assert_eq!(viewport.target, NaVector3::zeros());
+            let mut full_curve = Viewport::new(kind);
+            full_curve.last_rect = Some(rect);
+            assert_eq!(
+                full_curve.zoom_selected(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(full_curve.target, NaVector3::new(500., 250., 0.));
+        }
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        document.clear_selection();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(rect);
+        let initial = viewport.camera_snapshot();
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(false)
+        );
+        assert_eq!(viewport.camera_snapshot(), initial);
+    }
+
+    #[test]
+    fn zoom_curve_ends_includes_polycurve_joints() {
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(1, vec![point(0., 0., 0.), point(100., 100., 0.)])
+                .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(100., 100., 0.), point(2., 0., 0.)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.)));
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert_eq!(viewport.target, NaVector3::new(50., 50., 0.));
+    }
+
+    #[test]
+    fn end_markers_distinguish_open_ends_seams_and_polycurve_joints() {
+        let mut document = Document::default();
+        let polyline = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![point(0., 0., 0.), point(10., 10., 0.), point(2., 0., 0.)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let normal = UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap();
+        let circle = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(point(20., 0., 0.), 2., normal, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(1, vec![point(30., 0., 0.), point(31., 1., 0.)])
+                .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(31., 1., 0.), point(32., 0., 0.)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let polycurve = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        let source_ids = [polyline, circle, polycurve];
+        let markers =
+            collect_end_markers(&document, source_ids, EndMarkerOptions::default()).unwrap();
+        assert_eq!(
+            markers.iter().map(|marker| marker.kind).collect::<Vec<_>>(),
+            [
+                EndMarkerKind::Start,
+                EndMarkerKind::End,
+                EndMarkerKind::Seam,
+                EndMarkerKind::Start,
+                EndMarkerKind::Joint,
+                EndMarkerKind::End,
+            ]
+        );
+        assert_eq!(markers[4].point, point(31., 1., 0.));
+        let only_joints = collect_end_markers(
+            &document,
+            source_ids,
+            EndMarkerOptions {
+                starts: false,
+                ends: false,
+                seams: false,
+                joints: true,
+            },
+        )
+        .unwrap();
+        assert_eq!(only_joints, vec![markers[4]]);
+    }
+
+    #[test]
+    fn end_marker_right_click_filter_toggles_exclusive_category() {
+        let mut options = EndMarkerOptions::default();
+        options.toggle_exclusive(EndMarkerKind::Seam);
+        assert!(!options.starts && !options.ends && options.seams && !options.joints);
+        options.toggle_exclusive(EndMarkerKind::Seam);
+        assert_eq!(options, EndMarkerOptions::default());
+        options.set(EndMarkerKind::Joint, false);
+        assert!(!options.includes(EndMarkerKind::Joint));
+        assert!(options.includes(EndMarkerKind::Start));
+    }
+
+    #[test]
+    fn zoom_curve_ends_uses_a_closed_curves_seam() {
+        let normal = UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap();
+        let circle = Circle3::try_new(point(10., 20., 0.), 2., normal, Tolerance::DEFAULT).unwrap();
+        let seam = viboceros_geometry::CurveRef::Circle(&circle)
+            .start_point()
+            .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::Circle(circle)).unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let mut viewport = Viewport::new(ViewKind::Top);
+        viewport.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.)));
+        assert_eq!(
+            viewport.zoom_curve_ends(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert_eq!(viewport.target, NaVector3::from(seam.to_array()));
+    }
+
+    #[test]
+    fn zoom_extents_handles_point_scenes_and_large_parallel_extents() {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(200.0, 1_000.0));
+            let mut document = Document::default();
+            let center = point(100.0, 200.0, 300.0);
+            document.add_geometry(Geometry::Point(center)).unwrap();
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            let projected = view.project(center, rect).unwrap();
+            assert!((projected - rect.center()).length() < 0.001);
+            let depth = view.view_depth(center);
+            assert!(
+                (gpu_project(&view, rect, center, (depth, depth)).0 - projected).length() < 0.02
+            );
+            for p in [
+                point(-10_000.0, -10_000.0, -10_000.0),
+                point(10_000.0, 10_000.0, 10_000.0),
+            ] {
+                document.add_geometry(Geometry::Point(p)).unwrap();
+            }
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            for object in document.objects() {
+                let Geometry::Point(p) = object.geometry() else {
+                    unreachable!()
+                };
+                let expected = if kind.is_parallel() {
+                    rect.shrink(5.0)
+                } else {
+                    rect.expand(1.0)
+                };
+                assert!(expected.contains(view.project(*p, rect).unwrap()));
+            }
+            if kind.is_parallel() {
+                assert!(view.pixels_per_unit < 2.0);
+                let scale = view.pixels_per_unit;
+                view.zoom_by(2.0, None, rect);
+                assert_eq!(view.pixels_per_unit, scale * 2.0);
+            }
+        }
+    }
+
+    #[test]
+    fn zoom_extents_empty_and_unrepresentable_scenes_do_not_change_the_view() {
+        for kind in [ViewKind::Top, ViewKind::Perspective] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0)));
+            let state = |v: &Viewport| {
+                (
+                    v.target,
+                    v.pan,
+                    v.pixels_per_unit,
+                    v.perspective_camera_distance,
+                )
+            };
+            let original = state(&view);
+            let mut document = Document::default();
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(false)
+            );
+            assert_eq!(state(&view), original);
+            document
+                .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+                .unwrap();
+            document
+                .add_geometry(Geometry::Point(point(Real::MAX, 0.0, 0.0)))
+                .unwrap();
+            assert!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default())
+                    .is_err()
+            );
+            assert_eq!(state(&view), original);
+        }
+    }
+
+    #[test]
+    fn zoom_extents_accepts_representable_local_geometry_at_extreme_absolute_coordinates() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [ViewKind::Top, ViewKind::Front, ViewKind::Right] {
+            let points = match kind {
+                ViewKind::Top => [
+                    [-2.0, -3.0, 2.0_f64.powi(1020)],
+                    [2.0, 3.0, 2.0_f64.powi(1020)],
+                ],
+                ViewKind::Front => [
+                    [-2.0, 2.0_f64.powi(1020), -3.0],
+                    [2.0, 2.0_f64.powi(1020), 3.0],
+                ],
+                ViewKind::Right => [
+                    [2.0_f64.powi(1020), -2.0, -3.0],
+                    [2.0_f64.powi(1020), 2.0, 3.0],
+                ],
+                _ => unreachable!(),
+            }
+            .map(|p| Point3::try_from(p).unwrap());
+            let mut document = Document::default();
+            for point in points {
+                document.add_geometry(Geometry::Point(point)).unwrap();
+            }
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true),
+                "{kind:?}"
+            );
+            for point in points {
+                assert!(view.gpu_position(point).is_some());
+                let (gpu, depth) = gpu_project(&view, rect, point, (-1.0, 1.0));
+                assert!(gpu.distance(view.project(point, rect).unwrap()) < 0.001);
+                assert!(rect.shrink(20.0).contains(gpu));
+                assert!((0.0..=1.0).contains(&depth));
+            }
+        }
+        let point = Point3::try_from([Real::MAX; 3]).unwrap();
+        let mut document = Document::default();
+        document.add_geometry(Geometry::Point(point)).unwrap();
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            assert_eq!(view.target, NaVector3::repeat(Real::MAX));
+            assert_eq!(view.project(point, rect), Some(rect.center()));
+            assert_eq!(view.gpu_position(point), Some([0.0; 3]));
+            let depth = view.view_depth(point);
+            let (gpu, gpu_depth) = gpu_project(&view, rect, point, (depth - 1.0, depth + 1.0));
+            assert!(gpu.distance(rect.center()) < 0.001);
+            assert!((0.0..=1.0).contains(&gpu_depth));
+        }
+    }
+
+    #[test]
+    fn invalid_navigation_preserves_camera_state() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let mut viewport = Viewport::new(kind);
+            let state = |view: &Viewport| {
+                (
+                    view.pan,
+                    view.pixels_per_unit,
+                    view.perspective_camera_distance,
+                    view.orbit_yaw,
+                    view.orbit_pitch,
+                    view.target,
+                )
+            };
+            let original = state(&viewport);
+            for delta in [Vec2::new(f32::NAN, 1.0), Vec2::new(1.0, f32::INFINITY)] {
+                for button in [PointerButton::Middle, PointerButton::Secondary] {
+                    viewport.apply_navigation_drag(button, egui::Modifiers::default(), delta);
+                    assert_eq!(state(&viewport), original);
+                }
+            }
+            for factor in [f32::NAN, f32::INFINITY, 0.0, -1.0] {
+                viewport.zoom_by(factor, None, rect);
+                assert_eq!(state(&viewport), original);
+            }
+            viewport.zoom_by(2.0, Some(Pos2::new(f32::NAN, 1.0)), rect);
+            assert_eq!(state(&viewport), original);
+            for invalid in [
+                Rect::NOTHING,
+                Rect::EVERYTHING,
+                Rect::from_min_size(Pos2::ZERO, Vec2::ZERO),
+            ] {
+                viewport.zoom_by(2.0, None, invalid);
+                assert_eq!(state(&viewport), original);
+            }
+            viewport.pan = Vec2::splat(f32::MAX);
+            let large = state(&viewport);
+            viewport.apply_navigation_drag(
+                PointerButton::Middle,
+                egui::Modifiers::default(),
+                Vec2::splat(f32::MAX),
+            );
+            assert_eq!(state(&viewport), large);
+            if kind.is_parallel() {
+                viewport.zoom_by(2.0, Some(Pos2::ZERO), rect);
+                assert_eq!(state(&viewport), large);
+            }
+        }
+    }
+
+    #[test]
+    fn projection_round_trips_and_zoom_keeps_the_pointer_pinned() {
+        let mut viewport = Viewport {
+            pan: Vec2::new(17.0, -23.0),
+            ..Viewport::default()
+        };
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(3.25, -2.75, 9.0);
+        let screen = viewport.project(model, rect).unwrap();
+        let round_trip = viewport.unproject(screen, rect, model.z()).unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(round_trip.x(), model.x()));
+        assert!(Tolerance::DEFAULT.approx_eq(round_trip.y(), model.y()));
+        assert_eq!(round_trip.z(), model.z());
+
+        viewport.zoom_by(2.0, Some(screen), rect);
+        let after_zoom = viewport.project(model, rect).unwrap();
+        assert!((after_zoom - screen).length() <= f32::EPSILON);
+    }
+
+    #[test]
+    fn zoom_pan_handles_large_intermediates_and_rejects_unrepresentable_results() {
+        let rect = Rect::from_center_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        assert_eq!(
+            zoom_pan(
+                Vec2::splat(f32::MAX),
+                Pos2::new(-f32::MAX, -f32::MAX),
+                rect,
+                0.5
+            ),
+            Some(Vec2::ZERO)
+        );
+        assert_eq!(zoom_pan(Vec2::splat(f32::MAX), Pos2::ZERO, rect, 2.0), None);
+        let mut viewport = Viewport {
+            pixels_per_unit: Real::from(f32::MIN_POSITIVE),
+            ..Default::default()
+        };
+        viewport.zoom_by(f32::MAX, Some(rect.center()), rect);
+        assert!(viewport.pixels_per_unit > Real::from(f32::MIN_POSITIVE));
+        assert_eq!(viewport.pan, Vec2::ZERO);
+        // A ratio exceeding f32's range still pins the center exactly.
+        assert_eq!(
+            zoom_pan(Vec2::ZERO, rect.center(), rect, 1e41),
+            Some(Vec2::ZERO)
+        );
+    }
+
+    #[test]
+    fn perspective_zoom_pins_the_camera_target_plane_after_retargeting() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        for pitch in [0.0, 0.5, -0.5] {
+            for factor in [0.5, 2.0] {
+                let mut view = Viewport::new(ViewKind::Perspective);
+                view.target = NaVector3::new(100.0, 200.0, 300.0);
+                view.orbit_pitch = pitch;
+                view.pan = Vec2::new(17.0, -23.0);
+                let (right, up, _) = view.perspective_basis();
+                let world = view.target + right * 2.0 + up * 3.0;
+                let model = point(world.x, world.y, world.z);
+                let pointer = view.project(model, rect).unwrap();
+                let plane = view.construction_plane();
+                let lens = view.perspective_focal_length_pixels(rect);
+                view.zoom_by(factor, Some(pointer), rect);
+                assert!(
+                    (view.project(model, rect).unwrap() - pointer).length() < 0.001,
+                    "pitch {pitch}, factor {factor}"
+                );
+                assert_eq!(view.world_origin(rect), rect.center());
+                assert_eq!(view.construction_plane(), plane);
+                assert_eq!(view.perspective_focal_length_pixels(rect), lens);
+            }
+        }
+    }
+
+    #[test]
+    fn perspective_zoom_dollies_the_camera_without_changing_the_lens() {
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(5.0, 0.0, 0.0);
+        let origin = viewport.world_origin(rect);
+        let before = viewport.project(model, rect).unwrap();
+        let focal_length = viewport.perspective_focal_length_pixels(rect);
+        let camera_distance = viewport.perspective_camera_distance;
+
+        viewport.zoom_by(0.5, None, rect);
+
+        let after = viewport.project(model, rect).unwrap();
+        assert_eq!(viewport.perspective_focal_length_pixels(rect), focal_length);
+        assert_eq!(viewport.perspective_camera_distance, camera_distance * 2.0);
+        assert!((after - origin).length() < (before - origin).length());
+
+        let on_construction_plane = point(3.25, -2.75, 0.0);
+        let projected = viewport.project(on_construction_plane, rect).unwrap();
+        let round_trip = viewport.unproject(projected, rect, 0.0).unwrap();
+        assert!((round_trip.x() - on_construction_plane.x()).abs() < 1.0e-5);
+        assert!((round_trip.y() - on_construction_plane.y()).abs() < 1.0e-5);
+        assert!(round_trip.z().abs() < 1.0e-5);
+    }
+
+    #[test]
+    fn gpu_projection_matches_interaction_projection_and_orders_depth() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(3.25, -2.75, 1.5);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+            ViewKind::Perspective,
+        ] {
+            let viewport = Viewport {
+                kind,
+                pan: Vec2::new(17.0, -23.0),
+                ..Viewport::default()
+            };
+            let depth = viewport.view_depth(model);
+            let depth_range = (depth - 10.0, depth + 10.0);
+            let cpu = viewport.project(model, rect).unwrap();
+            let (gpu, gpu_depth) = gpu_project(&viewport, rect, model, depth_range);
+            assert!(
+                (gpu - cpu).length() < 1.0e-3,
+                "{kind:?}: {gpu:?} != {cpu:?}"
+            );
+            assert!((0.0..=1.0).contains(&gpu_depth), "{kind:?}: {gpu_depth}");
+
+            let (near, far) = match kind {
+                ViewKind::Top => (point(0.0, 0.0, 5.0), point(0.0, 0.0, -5.0)),
+                ViewKind::Bottom => (point(0.0, 0.0, -5.0), point(0.0, 0.0, 5.0)),
+                ViewKind::Front => (point(0.0, -5.0, 0.0), point(0.0, 5.0, 0.0)),
+                ViewKind::Back => (point(0.0, 5.0, 0.0), point(0.0, -5.0, 0.0)),
+                ViewKind::Right => (point(5.0, 0.0, 0.0), point(-5.0, 0.0, 0.0)),
+                ViewKind::Left => (point(-5.0, 0.0, 0.0), point(5.0, 0.0, 0.0)),
+                ViewKind::Plan => unreachable!("Plan uses a captured CPlane frame"),
+                ViewKind::Perspective => {
+                    let (_, _, forward) = viewport.perspective_basis();
+                    let camera = -forward * viewport.perspective_camera_distance;
+                    let near = camera + forward * 40.0;
+                    let far = camera + forward * 60.0;
+                    (point(near.x, near.y, near.z), point(far.x, far.y, far.z))
+                }
+            };
+            let near_depth = viewport.view_depth(near);
+            let far_depth = viewport.view_depth(far);
+            let range = (near_depth.min(far_depth), near_depth.max(far_depth));
+            let (_, near_gpu_depth) = gpu_project(&viewport, rect, near, range);
+            let (_, far_gpu_depth) = gpu_project(&viewport, rect, far, range);
+            assert!(
+                near_gpu_depth < far_gpu_depth,
+                "{kind:?}: near={near_gpu_depth}, far={far_gpu_depth}"
+            );
+        }
+    }
+
+    #[test]
+    fn plan_view_uses_captured_rotated_cplane_for_cpu_gpu_and_history() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(frame);
+        let before = view.camera_snapshot();
+        view.set_plan_view().unwrap();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.construction_plane(), frame);
+        assert_eq!(view.target, NaVector3::from(frame.origin().to_array()));
+        let model = frame.point_at([2.0, 3.0, 4.0]).unwrap();
+        let screen = view.project(model, rect).unwrap();
+        let scale = view.pixels_per_unit;
+        assert!(
+            (screen - Pos2::new((400.0 + 2.0 * scale) as f32, (300.0 - 3.0 * scale) as f32))
+                .length()
+                < 1.0e-3
+        );
+        let on_plane = view.unproject_drafting_plane(screen, rect, None).unwrap();
+        let expected_plane = frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        assert!(
+            (NaVector3::from(on_plane.to_array()) - NaVector3::from(expected_plane.to_array()))
+                .norm()
+                < 1.0e-6
+        );
+        let round_trip = view.unproject(screen, rect, 4.0).unwrap();
+        assert!(
+            (NaVector3::from(round_trip.to_array()) - NaVector3::from(model.to_array())).norm()
+                < 1.0e-6
+        );
+        let depth = view.view_depth(model);
+        assert!((depth + 4.0).abs() < 1.0e-10);
+        let (gpu, gpu_depth) = gpu_project(&view, rect, model, (depth - 10.0, depth + 10.0));
+        assert!((gpu - screen).length() < 1.0e-3);
+        assert!((0.0..=1.0).contains(&gpu_depth));
+
+        view.plane.set(WorldPlane::Right.frame());
+        assert_eq!(view.project(model, rect), Some(screen));
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), before);
+        assert_eq!(view.construction_plane(), WorldPlane::Right.frame());
+        assert!(view.redo_view());
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.project(model, rect), Some(screen));
+    }
+
+    #[test]
+    fn plan_view_preserves_parallel_zoom() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.pixels_per_unit = 125.0;
+        view.set_plan_view().unwrap();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+    }
+
+    #[test]
+    fn plan_from_perspective_uses_frustum_near_for_parallel_scale() {
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.last_rect = Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(705.0, 365.0)));
+        view.perspective_camera_distance = 102.2259663795381;
+        view.frustum_near = 120.50535531728079;
+        let raw_width = 111.72332120374747;
+        let aspect = 705.0 / 365.0;
+        view.perspective_fov_radians =
+            2.0 * (raw_width / (2.0 * aspect * view.frustum_near)).atan();
+        let rect = view.last_rect.unwrap();
+        let perspective_scale = f64::from(view.pixels_per_model_unit_at_origin(rect));
+        let before = view.camera_snapshot();
+        let encoded_before =
+            Viewport::named_view_to_3dm(view.named_view_snapshot(), "Before".into()).unwrap();
+        assert!((encoded_before.frustum[1] - encoded_before.frustum[0] - raw_width).abs() < 1e-10);
+
+        view.set_plan_view().unwrap();
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert!((view.pixels_per_unit - 6.3102313143225155).abs() < 1e-6);
+        assert!(
+            (view.pixels_per_unit / perspective_scale
+                - view.perspective_camera_distance / view.frustum_near)
+                .abs()
+                < 1e-7
+        );
+        let encoded_after =
+            Viewport::named_view_to_3dm(view.named_view_snapshot(), "After".into()).unwrap();
+        assert!((encoded_after.frustum[1] - encoded_after.frustum[0] - raw_width).abs() < 1e-5);
+        assert_eq!(encoded_after.frustum[4..], encoded_before.frustum[4..]);
+        assert!(view.undo_view());
+        assert_eq!(view.camera_snapshot(), before);
+        assert!(view.redo_view());
+        assert_eq!(view.kind(), ViewKind::Plan);
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_projection_and_plane_in_all_six_directions() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for direction in WorldPlane::ALL {
+            let local_camera_point = direction.frame().point_at([2.0, 3.0, 4.0]).unwrap();
+            let model = plane.point_at(local_camera_point.to_array()).unwrap();
+            for starting_kind in [ViewKind::Top, ViewKind::Perspective] {
+                let mut view = Viewport::new(starting_kind);
+                view.frustum_near = 0.005;
+                view.plane.set(plane);
+                let previous = view.camera_snapshot();
+                view.set_cplane_view(direction);
+                assert_eq!(view.construction_plane(), plane);
+                assert!(view.view_label().contains(direction.label()));
+                assert_eq!(
+                    view.kind(),
+                    if starting_kind == ViewKind::Perspective {
+                        ViewKind::Perspective
+                    } else {
+                        ViewKind::Plan
+                    }
+                );
+                let expected = if starting_kind == ViewKind::Perspective {
+                    let focal = view.perspective_focal_length_pixels(rect) as f32;
+                    let depth = (DEFAULT_PERSPECTIVE_CAMERA_DISTANCE - 4.0) as f32;
+                    Pos2::new(400.0 + 2.0 * focal / depth, 300.0 - 3.0 * focal / depth)
+                } else {
+                    Pos2::new(480.0, 180.0)
+                };
+                let screen = view.project(model, rect).unwrap();
+                assert!(
+                    (screen - expected).length() < 1.0e-3,
+                    "{starting_kind:?} {direction:?}"
+                );
+                let depth = view.view_depth(model);
+                let (gpu, gpu_depth) =
+                    gpu_project(&view, rect, model, (depth - 10.0, depth + 10.0));
+                assert!(
+                    (gpu - screen).length() < 1.0e-3,
+                    "{starting_kind:?} {direction:?}"
+                );
+                assert!((0.0..=1.0).contains(&gpu_depth));
+
+                view.plane.set(WorldPlane::Left.frame());
+                assert_eq!(view.project(model, rect), Some(screen));
+                assert!(view.undo_view());
+                assert_eq!(view.camera_snapshot(), previous);
+                assert_eq!(view.construction_plane(), WorldPlane::Left.frame());
+                assert!(view.redo_view());
+                assert_eq!(view.project(model, rect), Some(screen));
+            }
+        }
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_perspective_camera_distance() {
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.perspective_camera_distance = 125.0;
+        view.set_cplane_view(WorldPlane::Front);
+        assert_eq!(view.perspective_camera_distance, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.perspective_camera_distance, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.perspective_camera_distance, 125.0);
+    }
+
+    #[test]
+    fn set_view_cplane_preserves_parallel_zoom() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.pixels_per_unit = 125.0;
+        view.set_cplane_view(WorldPlane::Front);
+        assert_eq!(view.kind(), ViewKind::Plan);
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.undo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+        assert!(view.redo_view());
+        assert_eq!(view.pixels_per_unit, 125.0);
+    }
+
+    #[test]
+    fn perspective_cplane_view_orbits_without_losing_its_camera_roll() {
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(plane);
+        view.set_cplane_view(WorldPlane::Front);
+        let before = view.perspective_basis();
+        view.apply_navigation_drag(
+            PointerButton::Secondary,
+            egui::Modifiers::default(),
+            Vec2::new(20.0, 10.0),
+        );
+        let after = view.perspective_basis();
+        assert_ne!(after, before);
+        assert_eq!(view.view_label(), "Perspective");
+        assert_eq!(view.construction_plane(), plane);
+        assert!((after.0.norm() - 1.0).abs() < 1.0e-12);
+        assert!((after.1.norm() - 1.0).abs() < 1.0e-12);
+        assert!(after.0.dot(&after.1).abs() < 1.0e-12);
+        view.set_world_view(ViewKind::Perspective).unwrap();
+        assert!(view.perspective_frame.is_none());
+        assert_eq!(view.view_label(), "Perspective");
+        assert_eq!(view.construction_plane(), plane);
+    }
+
+    #[test]
+    fn cplane_perspective_view_fits_scene_and_captures_cloud_members() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let plane = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut view = Viewport::new(ViewKind::Perspective);
+        view.plane.set(plane);
+        view.set_cplane_view(WorldPlane::Front);
+        view.last_rect = Some(rect);
+        let first = view.plan_frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        let second = view.plan_frame.point_at([-2.0, -3.0, 0.0]).unwrap();
+        let mut document = Document::default();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(vec![first, second]).unwrap(),
+            ))
+            .unwrap();
+        let pointer = view.project(first, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            first
+        );
+        assert_eq!(
+            view.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert!(rect.contains(view.project(first, rect).unwrap()));
+        assert!(rect.contains(view.project(second, rect).unwrap()));
+        assert_eq!(view.kind(), ViewKind::Perspective);
+        assert_eq!(view.construction_plane(), plane);
+    }
+
+    #[test]
+    fn plan_view_fits_rotated_extents_and_picks_point_clouds() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = Frame3::try_from_directions(
+            point(10.0, 20.0, 30.0),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let first = frame.point_at([2.0, 3.0, 0.0]).unwrap();
+        let second = frame.point_at([-2.0, -3.0, 0.0]).unwrap();
+        let mut view = Viewport::new(ViewKind::Top);
+        view.plane.set(frame);
+        view.set_plan_view().unwrap();
+        view.last_rect = Some(rect);
+        let mut document = Document::default();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                viboceros_geometry::PointCloud3::try_new(vec![first, second]).unwrap(),
+            ))
+            .unwrap();
+        let pointer = view.project(first, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            first
+        );
+        assert_eq!(
+            view.zoom_extents(&document, ZoomExtentsBorders::default()),
+            Ok(true)
+        );
+        assert!(rect.contains(view.project(first, rect).unwrap()));
+        assert!(rect.contains(view.project(second, rect).unwrap()));
+        let pointer = view.project(second, rect).unwrap();
+        assert_eq!(view.pick_object(pointer, rect, &document), Some(cloud_id));
+        assert_eq!(
+            view.object_snap(
+                pointer,
+                rect,
+                &document,
+                viboceros_drafting::ObjectSnapModes::ALL
+            )
+            .unwrap()
+            .point(),
+            second
+        );
+    }
+
+    #[test]
+    fn plan_screen_projection_does_not_require_representable_normal_depth() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let frame = WorldPlane::Top
+            .frame()
+            .with_origin(point(0.0, 0.0, -Real::MAX));
+        let mut view = Viewport::new(ViewKind::Top);
+        view.plane.set(frame);
+        view.set_plan_view().unwrap();
+        let model = point(1.0, 2.0, Real::MAX);
+        assert_eq!(view.project(model, rect), Some(Pos2::new(440.0, 220.0)));
+        assert_eq!(view.gpu_position(model), Some([40.0, 80.0, 0.0]));
+    }
+
+    #[test]
+    fn polycurve_picking_follows_curved_segments_without_a_closing_chord() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(
+                2,
+                vec![
+                    point(-4.0, 0.0, 0.0),
+                    point(0.0, 6.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                ],
+            )
+            .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(4.0, 0.0, 0.0), point(4.0, -3.0, 0.0)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        for location in [point(0.0, 3.0, 0.0), point(4.0, -1.5, 0.0)] {
+            let pointer = viewport.project(location, rect).unwrap();
+            assert_eq!(viewport.pick_object(pointer, rect, &document), Some(id));
+        }
+        for location in [point(0.0, 0.0, 0.0), point(0.0, -1.5, 0.0)] {
+            let pointer = viewport.project(location, rect).unwrap();
+            assert_eq!(viewport.pick_object(pointer, rect, &document), None);
+        }
+    }
+
+    #[test]
+    fn picking_supports_points_point_clouds_lines_and_nurbs_curves() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let point_id = document
+            .add_geometry(Geometry::Point(point(-4.0, 0.0, 0.0)))
+            .unwrap();
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    point(-1.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(
+                NurbsCurve::try_clamped_uniform(
+                    1,
+                    vec![point(3.0, 0.0, 0.0), point(5.0, 1.0, 0.0)],
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![point(-5.0, 4.0, 8.0), point(2.0, 4.0, -3.0)]).unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(0.0, 0.15, 0.0)))
+            .unwrap();
+
+        let near_point = viewport.project(point(-3.9, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_point, rect, &document),
+            Some(point_id)
+        );
+        let near_line = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_line, rect, &document),
+            Some(line_id)
+        );
+        let on_curve = viewport.project(point(4.0, 0.5, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_curve, rect, &document),
+            Some(curve_id)
+        );
+        let near_cloud_point = viewport.project(point(2.1, 4.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_cloud_point, rect, &document),
+            Some(cloud_id)
+        );
+    }
+
+    #[test]
+    fn front_view_point_cloud_picking_uses_the_xz_projection() {
+        let viewport = Viewport::new(ViewKind::Front);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let target = document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![point(2.0, 100.0, 3.0)]).unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![point(2.0, 0.0, 8.0)]).unwrap(),
+            ))
+            .unwrap();
+        let pointer = viewport.project(point(2.0, 0.0, 3.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(pointer, rect, &document), Some(target));
+    }
+
+    #[test]
+    fn picking_supports_analytic_circles_arcs_and_ellipses() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let circle_id = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(point(-3.0, 0.0, 0.0), 1.0, normal, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let arc_id = document
+            .add_geometry(Geometry::Arc(
+                CircularArc3::try_from_three_points(
+                    point(2.0, 0.0, 0.0),
+                    point(3.0, 1.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let ellipse_id = document
+            .add_geometry(Geometry::Ellipse(
+                Ellipse3::try_from_three_points(
+                    point(0.0, -3.0, 0.0),
+                    point(2.0, -3.0, 0.0),
+                    point(0.0, -2.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+
+        let on_circle = viewport.project(point(-2.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_circle, rect, &document),
+            Some(circle_id)
+        );
+        let on_arc = viewport.project(point(3.0, 1.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(on_arc, rect, &document), Some(arc_id));
+        let on_ellipse = viewport.project(point(2.0, -3.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_ellipse, rect, &document),
+            Some(ellipse_id)
+        );
+        let inside_circle = viewport.project(point(-3.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(inside_circle, rect, &document), None);
+    }
+
+    #[test]
+    fn picking_supports_polyline_segments_without_filling_closed_regions() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(2.0, 2.0, 0.0),
+                        point(-2.0, 2.0, 0.0),
+                        point(-2.0, -2.0, 0.0),
+                    ],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let viewport = Viewport::default();
+        let edge = viewport.project(point(2.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(edge, rect, &document), Some(id));
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), None);
+    }
+
+    #[test]
+    fn shaded_meshes_pick_by_face_while_wireframe_picks_edges() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+
+        let wireframe = Viewport::default();
+        assert_eq!(wireframe.pick_object(center, rect, &document), None);
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(mesh_id));
+    }
+
+    #[test]
+    fn wireframe_quad_picking_ignores_the_triangulation_diagonal() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new_faces(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(2.0, 2.0, 0.0),
+                        point(-2.0, 2.0, 0.0),
+                    ],
+                    vec![viboceros_geometry::MeshFace::Quad([0, 1, 2, 3])],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            None
+        );
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(mesh_id));
+    }
+
+    #[test]
+    fn shaded_nurbs_surfaces_pick_from_their_display_tessellation() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            point(-2.0, -2.0, 0.0),
+            point(2.0, -2.0, 0.0),
+            point(2.0, 2.0, 1.0),
+            point(-2.0, 2.0, 1.0),
+        ])
+        .unwrap();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let viewport = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            Some(surface_id)
+        );
+        assert_eq!(
+            viewport.pick_object(center, rect, &document),
+            Some(surface_id)
+        );
+        let off_isocurve = viewport.project(point(1.0, 1.0, 0.0), rect).unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(off_isocurve, rect, &document),
+            None
+        );
+        assert_eq!(
+            viewport.pick_object(off_isocurve, rect, &document),
+            Some(surface_id)
+        );
+
+        let mut boundary_only = Document::default();
+        boundary_only
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface),
+                ObjectAttributes::on_layer(boundary_only.current_layer_id())
+                    .try_with_wire_density(-1)
+                    .unwrap(),
+            )
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &boundary_only),
+            None
+        );
+    }
+
+    #[test]
+    fn shaded_breps_pick_faces_while_wireframe_uses_density_wires() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[-2.0, 2.0], [-2.0, 2.0], [0.0, 3.0]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            Some(brep_id)
+        );
+        let off_wire = Viewport::default()
+            .project(point(1.0, 1.0, 0.0), rect)
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(off_wire, rect, &document),
+            None
+        );
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(brep_id));
+    }
+
+    #[test]
+    fn shaded_trimmed_brep_respects_a_concave_cap_boundary() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(1.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_extruded_curve(
+                    &profile,
+                    Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Vector3::try_new(0.0, 0.0, 4.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let inside = shaded.project(point(0.5, 2.0, 0.0), rect).unwrap();
+        let outside_notch = shaded.project(point(2.0, 2.0, 0.0), rect).unwrap();
+        assert_eq!(shaded.pick_object(inside, rect, &document), Some(brep_id));
+        assert_eq!(shaded.pick_object(outside_notch, rect, &document), None);
+    }
+
+    #[test]
+    fn shaded_trimmed_brep_does_not_pick_through_an_inner_loop() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let closed_rectangle = |min_x, min_y, max_x, max_y| {
+            Polyline3::try_new(
+                vec![
+                    point(min_x, min_y, 0.0),
+                    point(max_x, min_y, 0.0),
+                    point(max_x, max_y, 0.0),
+                    point(min_x, max_y, 0.0),
+                    point(min_x, min_y, 0.0),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+        };
+        let outer = closed_rectangle(-3.0, -3.0, 3.0, 3.0);
+        let hole = closed_rectangle(-1.0, -1.0, 1.0, 1.0);
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let material = shaded.project(point(2.0, 0.0, 0.0), rect).unwrap();
+        let through_hole = shaded.project(point(0.0, 0.0, 0.0), rect).unwrap();
+
+        assert_eq!(shaded.pick_object(material, rect, &document), Some(brep_id));
+        assert_eq!(shaded.pick_object(through_hole, rect, &document), None);
+    }
+
+    #[test]
+    fn picking_ignores_locked_or_hidden_objects_and_prefers_point_features() {
+        let viewport = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let locked_layer = document
+            .add_layer("Locked", ColorRgb::new(1, 2, 3))
+            .unwrap();
+        document.set_current_layer(locked_layer).unwrap();
+        document
+            .add_geometry(Geometry::Point(point(4.0, 0.0, 0.0)))
+            .unwrap();
+        let default = document.layer_by_name("Default").unwrap().id();
+        document.set_current_layer(default).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(center, rect, &document),
+            Some(point_id)
+        );
+        document.set_objects_locked([point_id], true).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), Some(mesh_id));
+        document.set_objects_locked([point_id], false).unwrap();
+        document.set_objects_visibility([point_id], false).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), Some(mesh_id));
+        let locked = viewport.project(point(4.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(locked, rect, &document), None);
+    }
+
+    #[test]
+    fn translated_parallel_osnap_respects_pixel_capture_radius() {
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Bottom,
+            ViewKind::Front,
+            ViewKind::Back,
+            ViewKind::Right,
+            ViewKind::Left,
+        ] {
+            let mut view = Viewport::new(kind);
+            view.target = NaVector3::repeat(2.0_f64.powi(54));
+            let target = point(view.target.x, view.target.y, view.target.z);
+            let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+            for geometry in [
+                Geometry::Point(target),
+                Geometry::PointCloud(PointCloud3::try_new(vec![target]).unwrap()),
+            ] {
+                let mut document = Document::default();
+                document.add_geometry(geometry).unwrap();
+                let projected = view.project(target, rect).unwrap();
+                for offset in [0.0, 11.0, 12.0, 13.0, 20.0] {
+                    let cursor = view
+                        .drafting_cursor(
+                            projected + Vec2::new(offset, 0.0),
+                            rect,
+                            &document,
+                            DraftingInput {
+                                active: true,
+                                osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                                mesh_edges: false,
+                                ..Default::default()
+                            },
+                        )
+                        .unwrap();
+                    assert_eq!(
+                        cursor.object_snap.is_some(),
+                        offset <= OSNAP_CAPTURE_PIXELS,
+                        "offset={offset}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn reversed_world_views_capture_the_correct_point_cloud_member() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        for (kind, first, second) in [
+            (
+                ViewKind::Bottom,
+                point(0.0, 2.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ),
+            (ViewKind::Back, point(2.0, 0.0, 0.0), point(-2.0, 0.0, 0.0)),
+            (ViewKind::Left, point(0.0, 2.0, 0.0), point(0.0, -2.0, 0.0)),
+        ] {
+            let view = Viewport::new(kind);
+            let mut document = Document::default();
+            document
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![first, second]).unwrap(),
+                ))
+                .unwrap();
+            let pointer = view.project(first, rect).unwrap();
+            let snap = view
+                .object_snap(
+                    pointer,
+                    rect,
+                    &document,
+                    viboceros_drafting::ObjectSnapModes::ALL,
+                )
+                .unwrap();
+            assert_eq!(snap.point(), first, "{kind:?}");
+
+            let mut separate = Document::default();
+            let first_id = separate
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![first]).unwrap(),
+                ))
+                .unwrap();
+            separate
+                .add_geometry(Geometry::PointCloud(
+                    PointCloud3::try_new(vec![second]).unwrap(),
+                ))
+                .unwrap();
+            assert_eq!(view.pick_object(pointer, rect, &separate), Some(first_id));
+        }
+    }
+
+    #[test]
+    fn reversed_world_views_fit_visible_extents_and_restore_camera_history() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let points = [point(-5.0, -3.0, -1.0), point(5.0, 3.0, 1.0)];
+        let mut document = Document::default();
+        for point in points {
+            document.add_geometry(Geometry::Point(point)).unwrap();
+        }
+        for kind in [ViewKind::Bottom, ViewKind::Back, ViewKind::Left] {
+            let mut view = Viewport::new(kind);
+            view.last_rect = Some(rect);
+            let before = view.camera_snapshot();
+            assert_eq!(
+                view.zoom_extents(&document, ZoomExtentsBorders::default()),
+                Ok(true)
+            );
+            for point in points {
+                assert!(rect.contains(view.project(point, rect).unwrap()));
+            }
+            assert!(view.undo_view());
+            assert_eq!(view.camera_snapshot(), before);
+        }
+    }
+
+    #[test]
+    fn filtered_cursor_previews_composite_but_retains_source_pick() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut filter = viboceros_drafting::PointFilterSession::new(
+            viboceros_drafting::PointFilter::parse(".x").unwrap(),
+            viewport.construction_plane(),
+        );
+        assert_eq!(filter.offer_point(point(1.0, 2.0, 3.0)).unwrap(), None);
+        let pointer = viewport.project(point(4.0, 5.0, 0.0), rect).unwrap();
+        let cursor = viewport
+            .filtered_drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    active: true,
+                    ..Default::default()
+                },
+                Some(filter),
+                None,
+            )
+            .unwrap();
+        assert!(
+            cursor
+                .source_point
+                .distance_to(point(4.0, 5.0, 0.0))
+                .unwrap()
+                < 1e-12
+        );
+        assert!(cursor.point.distance_to(point(1.0, 5.0, 0.0)).unwrap() < 1e-12);
+    }
+
+    #[test]
+    fn drafting_cursor_prefers_object_snaps_to_tracking() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    point(0.0, 0.0, 3.0),
+                    point(4.0, 0.0, 3.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let pointer = viewport.project(point(0.1, 0.05, 0.0), rect).unwrap();
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &document,
+                DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
+                    smart_track: true,
+                    grid_snap: false,
+                    ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
+                    planar: false,
+                    ortho_angle_degrees: 90.0,
+                    anchor: Some(point(0.0, 0.0, 8.0)),
+                    reference: None,
+                },
+            )
+            .unwrap();
+        assert_eq!(cursor.point, point(0.0, 0.0, 3.0));
+        assert!(cursor.object_snap.is_some());
+        assert!(cursor.track.is_none());
+    }
+
+    #[test]
+    fn front_view_osnap_uses_screen_projection() {
+        let viewport = Viewport::new(ViewKind::Front);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let target_point = point(2.0, 100.0, 3.0);
+        let target = document
+            .add_geometry(Geometry::Point(target_point))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(2.0, 0.0, 8.0)))
+            .unwrap();
+        let pointer = viewport.project(target_point, rect).unwrap();
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &document,
+                DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
+                    smart_track: false,
+                    grid_snap: false,
+                    ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
+                    planar: false,
+                    ortho_angle_degrees: 90.0,
+                    anchor: None,
+                    reference: None,
+                },
+            )
+            .unwrap();
+        assert_eq!(cursor.point, target_point);
+        assert_eq!(cursor.object_snap.unwrap().object_id(), target);
+    }
+
+    #[test]
+    fn drafting_cursor_tracks_from_the_previous_pick() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let document = Document::default();
+        let anchor = point(0.0, 0.0, 5.0);
+        let pointer = viewport.project(point(3.0, 0.1, 5.0), rect).unwrap();
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &document,
+                DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
+                    smart_track: true,
+                    grid_snap: false,
+                    ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
+                    planar: false,
+                    ortho_angle_degrees: 90.0,
+                    anchor: Some(anchor),
+                    reference: None,
+                },
+            )
+            .unwrap();
+        assert_eq!(cursor.point, point(3.0, 0.0, 5.0));
+        assert_eq!(cursor.track.unwrap().axis(), TrackAxis::Horizontal);
+    }
+
+    #[test]
+    fn ortho_constrains_from_the_last_pick_before_smarttrack_and_grid() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 5.0);
+        let pointer = viewport.project(point(3.0, 2.0, 5.0), rect).unwrap();
+        for (angle, expected) in [(90.0, point(3.0, 0.0, 5.0)), (45.0, point(2.5, 2.5, 5.0))] {
+            let cursor = viewport
+                .drafting_cursor(
+                    pointer,
+                    rect,
+                    &Document::default(),
+                    DraftingInput {
+                        active: true,
+                        smart_track: true,
+                        grid_snap: true,
+                        ortho: true,
+                        ortho_angle_degrees: angle,
+                        anchor: Some(anchor),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            assert!(Tolerance::DEFAULT.approx_eq(cursor.point.x(), expected.x()));
+            assert!(Tolerance::DEFAULT.approx_eq(cursor.point.y(), expected.y()));
+            assert_eq!(cursor.point.z(), expected.z());
+            assert!(cursor.ortho);
+            assert!(!cursor.grid_snapped);
+            assert!(cursor.track.is_none());
+        }
+    }
+
+    #[test]
+    fn holding_shift_temporarily_inverts_ortho_without_changing_its_setting() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 5.0);
+        let pointer = viewport.project(point(3.0, 2.0, 5.0), rect).unwrap();
+        for (ortho, shift, expected, constrained) in [
+            (false, false, point(3.0, 2.0, 5.0), false),
+            (false, true, point(3.0, 0.0, 5.0), true),
+            (true, false, point(3.0, 0.0, 5.0), true),
+            (true, true, point(3.0, 2.0, 5.0), false),
+        ] {
+            let cursor = viewport
+                .drafting_cursor(
+                    pointer,
+                    rect,
+                    &Document::default(),
+                    DraftingInput {
+                        active: true,
+                        planar: true,
+                        ortho,
+                        shift_inverts_ortho: shift,
+                        anchor: Some(anchor),
+                        ..Default::default()
+                    },
+                )
+                .unwrap();
+            assert_eq!(cursor.point, expected);
+            assert_eq!(cursor.ortho, constrained);
+        }
+    }
+
+    #[test]
+    fn ortho_cplane_z_tracks_a_visible_axis_in_perspective() {
+        let viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let anchor = point(0.0, 0.0, 0.0);
+        let target = point(0.0, 0.0, 4.0);
+        let pointer = viewport.project(target, rect).unwrap();
+        let input = DraftingInput {
+            active: true,
+            ortho: true,
+            ortho_snap_to_cplane_z: true,
+            anchor: Some(anchor),
+            ..Default::default()
+        };
+        let cursor = viewport
+            .drafting_cursor(pointer, rect, &Document::default(), input)
+            .unwrap();
+        assert!(cursor.ortho_z);
+        assert!(cursor.point.distance_to(target).unwrap() < 1e-5);
+        let without_z = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    ortho_snap_to_cplane_z: false,
+                    ..input
+                },
+            )
+            .unwrap();
+        assert!(!without_z.ortho_z);
+        assert!(without_z.point.distance_to(target).unwrap() > 1.0);
+        let top = Viewport::new(ViewKind::Top);
+        let top_pointer = top.project(point(3.0, 2.0, 0.0), rect).unwrap();
+        let edge_on = top
+            .drafting_cursor(top_pointer, rect, &Document::default(), input)
+            .unwrap();
+        assert!(!edge_on.ortho_z);
+        assert_eq!(edge_on.point, point(3.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn object_snap_overrides_ortho_and_no_anchor_does_not_constrain() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let target = point(3.0, 2.0, 5.0);
+        let pointer = viewport.project(target, rect).unwrap();
+        let mut document = Document::default();
+        document.add_geometry(Geometry::Point(target)).unwrap();
+        let input = DraftingInput {
+            active: true,
+            osnap: viboceros_drafting::ObjectSnapModes::ALL,
+            ortho: true,
+            ortho_angle_degrees: 90.0,
+            anchor: Some(point(0.0, 0.0, 5.0)),
+            ..Default::default()
+        };
+        let cursor = viewport
+            .drafting_cursor(pointer, rect, &document, input)
+            .unwrap();
+        assert_eq!(cursor.point, target);
+        assert!(cursor.object_snap.is_some());
+        assert!(!cursor.ortho);
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &Document::default(),
+                DraftingInput {
+                    anchor: None,
+                    ..input
+                },
+            )
+            .unwrap();
+        assert!(!cursor.ortho);
+        assert_eq!(cursor.point, point(3.0, 2.0, 0.0));
+    }
+
+    #[test]
+    fn drafting_cursor_uses_grid_snap_when_higher_priority_aids_do_not_capture() {
+        let viewport = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let document = Document::default();
+        let pointer = viewport.project(point(1.49, -2.49, 6.0), rect).unwrap();
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &document,
+                DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::ALL,
+                    mesh_edges: false,
+                    smart_track: true,
+                    grid_snap: true,
+                    ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
+                    planar: true,
+                    ortho_angle_degrees: 90.0,
+                    anchor: Some(point(8.0, 8.0, 6.0)),
+                    reference: None,
+                },
+            )
+            .unwrap();
+        assert_eq!(cursor.point, point(1.0, -2.0, 6.0));
+        assert!(cursor.grid_snapped);
+        assert!(cursor.object_snap.is_none());
+        assert!(cursor.track.is_none());
+    }
+
+    #[test]
+    fn disabled_drafting_aids_leave_the_cursor_unsnapped() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 4.0)))
+            .unwrap();
+        let raw = point(0.1, 0.05, 0.0);
+        let pointer = viewport.project(raw, rect).unwrap();
+        let cursor = viewport
+            .drafting_cursor(
+                pointer,
+                rect,
+                &document,
+                DraftingInput {
+                    active: true,
+                    osnap: viboceros_drafting::ObjectSnapModes::NONE,
+                    mesh_edges: false,
+                    smart_track: false,
+                    grid_snap: false,
+                    ortho: false,
+                    ortho_snap_to_cplane_z: false,
+                    shift_inverts_ortho: false,
+                    planar: false,
+                    ortho_angle_degrees: 90.0,
+                    anchor: None,
+                    reference: None,
+                },
+            )
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(cursor.point.x(), raw.x()));
+        assert!(Tolerance::DEFAULT.approx_eq(cursor.point.y(), raw.y()));
+        assert_eq!(cursor.point.z(), 0.0);
+        assert!(cursor.object_snap.is_none());
+        assert!(cursor.track.is_none());
+    }
+}

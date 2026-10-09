@@ -5,6 +5,9 @@ pub(super) fn cut(
     frame: Frame3,
     tolerance: Tolerance,
 ) -> Result<Vec<Geometry>, CommandError> {
+    if let Geometry::Brep(brep) = source {
+        return super::brep::cut(brep, frame, tolerance);
+    }
     let mut result = section::section_geometry(source, frame, 1., true, tolerance)?;
     let Geometry::NurbsSurface(surface) = source else {
         return Ok(result);
@@ -84,7 +87,7 @@ fn linear_with_domain(
         ],
     )
 }
-fn straight_segment(curve: &NurbsCurve, tolerance: Tolerance) -> bool {
+pub(super) fn straight_segment(curve: &NurbsCurve, tolerance: Tolerance) -> bool {
     let controls = curve.control_points();
     if controls
         .iter()

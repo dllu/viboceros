@@ -1,0 +1,34 @@
+{
+  "rust": {
+    "passed": 5598,
+    "failed": 0,
+    "ignored": 38
+  },
+  "python": {
+    "passed": 1070,
+    "failed": 0
+  },
+  "clippy": "passed: --workspace --all-targets -- -D warnings",
+  "native_new": {
+    "cases": 24,
+    "matched": 24,
+    "passed": true
+  },
+  "native_existing": {
+    "cases": 52,
+    "matched": 52,
+    "passed": true
+  },
+  "artifact_target": "/tmp/viboceros-brep-verification-target",
+  "format_and_diff": "passed",
+  "git_write_probe": {
+    "result": "EROFS",
+    "reason": "latest managed profile explicitly mounts .git read-only"
+  },
+  "logs_sha256": {
+    "/tmp/viboceros-contour-brep-workspace-complete.log": "1e3c609739ae8555fcd4289eb75dec57678994e133ff6c0526f4e659a2c7b58e",
+    "/tmp/viboceros-contour-brep-clippy-final.log": "ab74699ff530e165936accf2b1679a2b4c5f89c24f07ea4ae26db111757cb718",
+    "/tmp/viboceros-contour-brep-python-full.log": "4ab6fa64e814a7ff87547f47c572ba010d6736c595fcbc23ecd13720acbf288a",
+    "/tmp/viboceros-contour-brep-planar-regression.log": "eb7958e12d112da06c72d3826d8ba84e2e2727d55ae9e003587e9176573ff067"
+  }
+}

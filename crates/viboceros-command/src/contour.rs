@@ -4,6 +4,7 @@ use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::{ToPrimitive, Zero};
 use viboceros_geometry::Frame3;
+mod brep;
 mod geometry;
 #[cfg(test)]
 mod tests;
@@ -220,7 +221,7 @@ impl Command for ContourCommand {
         }
         let mut groups = Vec::new();
         for plane in &staged {
-            groups.push(if options.group && !plane.is_empty() {
+            groups.push(if options.group && plane.len() > 1 {
                 Some(doc.add_empty_group(Some(doc.next_unused_group_name()))?)
             } else {
                 None

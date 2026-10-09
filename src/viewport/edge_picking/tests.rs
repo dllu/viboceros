@@ -205,3 +205,42 @@ fn mixed_curve_edge_getter_delivers_ordinary_curve_clicks_and_surface_edge_hits(
     }
     assert_eq!(doc.selected_object_count(), 0);
 }
+#[test]
+fn diagnostic_edges_and_endpoint_markers_paint_without_model_changes_and_hide_with_sources() {
+    let registry = viboceros_command::CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    let id = doc
+        .add_geometry(Geometry::NurbsSurface(surface(0.)))
+        .unwrap();
+    doc.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut doc, "ShowEdges Show=Naked Color=10,20,30")
+        .unwrap();
+    let view = registry.edge_analysis_view(&doc).unwrap().unwrap();
+    assert_eq!(view.displayed().count(), 4);
+    let context = egui::Context::default();
+    let viewport = Viewport::new(ViewKind::Top);
+    let output = context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(rect()),
+            ..Default::default()
+        },
+        |ui| viewport.paint_edge_analysis(ui.painter(), rect(), &doc, &view),
+    );
+    let color = Color32::from_rgb(10, 20, 30);
+    let lines=output.shapes.iter().filter(|s|matches!(&s.shape,egui::epaint::Shape::LineSegment {stroke,..} if stroke.color==color)).count();
+    assert_eq!(lines, 4);
+    assert_eq!(doc.objects().len(), 1);
+    doc.set_objects_visibility([id], false).unwrap();
+    let output = context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(rect()),
+            ..Default::default()
+        },
+        |ui| viewport.paint_edge_analysis(ui.painter(), rect(), &doc, &view),
+    );
+    assert!(!output.shapes.iter().any(
+        |s| matches!(&s.shape,egui::epaint::Shape::LineSegment {stroke,..} if stroke.color==color)
+    ));
+}

@@ -1,0 +1,349 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "full-face-x",
+      "comparison": {
+        "id": "full-face-x",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "full-face-y",
+      "comparison": {
+        "id": "full-face-y",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "full-face-origin-shift",
+      "comparison": {
+        "id": "full-face-origin-shift",
+        "passed": true,
+        "max_absolute_error": 1.3877787807814457e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-rectangle",
+      "comparison": {
+        "id": "trimmed-rectangle",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-hole",
+      "comparison": {
+        "id": "trimmed-hole",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-input-properties",
+      "comparison": {
+        "id": "trimmed-input-properties",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-x",
+      "comparison": {
+        "id": "box-x",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-diagonal",
+      "comparison": {
+        "id": "box-diagonal",
+        "passed": true,
+        "max_absolute_error": 7.993605777301127e-15,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "reversed-face",
+      "comparison": {
+        "id": "reversed-face",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-rectangle-offset",
+      "comparison": {
+        "id": "trimmed-rectangle-offset",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "single-grouped-line",
+      "comparison": {
+        "id": "single-grouped-line",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "single-grouped-surface",
+      "comparison": {
+        "id": "single-grouped-surface",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "single-grouped-box",
+      "comparison": {
+        "id": "single-grouped-box",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "full-face-x-coplanar",
+      "comparison": {
+        "id": "full-face-x-coplanar",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-rectangle-coplanar",
+      "comparison": {
+        "id": "trimmed-rectangle-coplanar",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "trimmed-hole-coplanar",
+      "comparison": {
+        "id": "trimmed-hole-coplanar",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-x-coplanar",
+      "comparison": {
+        "id": "box-x-coplanar",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "asymmetric-hole",
+      "comparison": {
+        "id": "asymmetric-hole",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-negative-diagonal",
+      "comparison": {
+        "id": "box-negative-diagonal",
+        "passed": true,
+        "max_absolute_error": 7.105427357601002e-15,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-negative-z",
+      "comparison": {
+        "id": "box-negative-z",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-negative-x",
+      "comparison": {
+        "id": "box-negative-x",
+        "passed": true,
+        "max_absolute_error": 6.661338147750939e-16,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-asymmetric",
+      "comparison": {
+        "id": "box-asymmetric",
+        "passed": true,
+        "max_absolute_error": 9.769962616701378e-15,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "box-offset-direction",
+      "comparison": {
+        "id": "box-offset-direction",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "coplanar-reversed-face",
+      "comparison": {
+        "id": "coplanar-reversed-face",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 0.0,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 24,
+  "matched": 24,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

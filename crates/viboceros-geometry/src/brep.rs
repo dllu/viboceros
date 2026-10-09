@@ -15,6 +15,7 @@ use crate::{
 
 mod boolean;
 mod borders;
+mod command_box;
 pub use boolean::{
     BrepBooleanOperation, BrepConvexBooleanPlan, BrepConvexIntersection, BrepConvexRegion,
     BrepCoplanarPartitionComponent, BrepDifferenceComponent, BrepOpenSplitComponent,
@@ -8213,6 +8214,11 @@ fn collect_trim_scan_data(
         .map(|control| control.weight())
         .fold(0.0, Real::max);
     let near_zero = (fixed_epsilon / coordinate_scale) * (weight_min / weight_max);
+    let seam_overlap = spans.first().into_iter().chain(spans.last()).any(|span| {
+        span.coefficients
+            .iter()
+            .all(|coefficient| *coefficient == 0.)
+    });
     let mut roots = Vec::new();
     for span in spans {
         if span
@@ -8258,7 +8264,12 @@ fn collect_trim_scan_data(
         }
     }
 
+    let closed = seam_overlap
+        && curve.evaluate(*curve_domain.start())? == curve.evaluate(*curve_domain.end())?;
     for (index, root) in unique_roots.iter().copied().enumerate() {
+        if closed && root == *curve_domain.end() {
+            continue;
+        }
         let before_bound = index
             .checked_sub(1)
             .map_or(*curve_domain.start(), |previous| unique_roots[previous]);
@@ -8282,7 +8293,25 @@ fn collect_trim_scan_data(
         } else {
             None
         };
-        let toggles = if root == *curve_domain.start() {
+        let toggles = if closed && root == *curve_domain.start() {
+            let previous = unique_roots
+                .iter()
+                .rev()
+                .copied()
+                .find(|p| *p < *curve_domain.end())
+                .unwrap_or(*curve_domain.start());
+            let wrapped_before = coordinate_sign_between(
+                curve,
+                fixed_axis,
+                fixed_value,
+                previous,
+                *curve_domain.end(),
+            )?;
+            matches!(
+                (wrapped_before, after),
+                (Some(-1), Some(1)) | (Some(1), Some(-1))
+            )
+        } else if root == *curve_domain.start() {
             at_root.map_or(after == Some(1), |at_root| {
                 after.is_some_and(|after| after != at_root)
             })
@@ -14643,6 +14672,98 @@ mod tests {
                 .unwrap()
                 .len(),
             1
+        );
+    }
+}
+#[cfg(test)]
+mod closed_trim_scan_regressions {
+    use super::*;
+    fn trim(points: &[[Real; 2]]) -> BrepTrim {
+        let mut points = points.to_vec();
+        points.push(points[0]);
+        let curve = NurbsCurve2::try_new_rational(
+            1,
+            points
+                .into_iter()
+                .map(|p| WeightedPoint2::try_new(Point2::try_new(p[0], p[1]).unwrap(), 1.).unwrap())
+                .collect(),
+            vec![0., 0., 1., 2., 3., 4., 4.],
+        )
+        .unwrap();
+        BrepTrim::try_new(
+            [0, 0],
+            Some(0),
+            false,
+            curve,
+            BrepTrimType::Boundary,
+            SurfaceIso::NotIso,
+            [0., 0.],
+        )
+        .unwrap()
+    }
+    fn face(outer: &[[Real; 2]], holes: &[Vec<[Real; 2]>]) -> BrepFace {
+        let surface = NurbsSurface::try_bilinear(
+            [[0., 0., 0.], [1., 0., 0.], [1., 1., 0.], [0., 1., 0.]]
+                .map(|p| Point3::try_from(p).unwrap()),
+        )
+        .unwrap();
+        let mut loops = vec![BrepLoop::try_new(BrepLoopType::Outer, vec![trim(outer)]).unwrap()];
+        loops.extend(
+            holes
+                .iter()
+                .map(|p| BrepLoop::try_new(BrepLoopType::Inner, vec![trim(p)]).unwrap()),
+        );
+        BrepFace::try_new(surface, false, loops).unwrap()
+    }
+    #[test]
+    fn closed_polygon_seam_on_scan_line_does_not_extend_an_outer_trim() {
+        let face = face(
+            &[
+                [0.125, 0.125],
+                [0.875, 0.125],
+                [0.875, 0.875],
+                [0.125, 0.875],
+            ],
+            &[],
+        );
+        for point in [[0.9, 0.125], [1., 0.125], [0.1, 0.125]] {
+            assert!(
+                !face
+                    .contains_parameters(point[0], point[1], Tolerance::DEFAULT)
+                    .unwrap()
+            );
+        }
+        for point in [[0.125, 0.125], [0.5, 0.125], [0.875, 0.125], [0.5, 0.5]] {
+            assert!(
+                face.contains_parameters(point[0], point[1], Tolerance::DEFAULT)
+                    .unwrap()
+            );
+        }
+    }
+    #[test]
+    fn closed_hole_seam_retains_both_sides_and_the_coincident_boundary() {
+        let face = face(
+            &[[0., 0.], [1., 0.], [1., 1.], [0., 1.]],
+            &[vec![[0.25, 0.25], [0.25, 0.75], [0.75, 0.75], [0.75, 0.25]]],
+        );
+        for u in [0.1, 0.25, 0.5, 0.75, 0.9] {
+            assert!(
+                face.contains_parameters(u, 0.25, Tolerance::DEFAULT)
+                    .unwrap()
+            );
+        }
+        assert!(
+            !face
+                .contains_parameters(0.5, 0.5, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            face.contains_parameters(0.1, 0.5, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            face.contains_parameters(0.9, 0.5, Tolerance::DEFAULT)
+                .unwrap()
         );
     }
 }

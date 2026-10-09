@@ -12,10 +12,50 @@ use viboceros_document::{GeometrySnapshot, Object};
 
 #[derive(Default)]
 pub(super) struct DisplayCache {
+    analysis: Option<AnalysisDrawing>,
     entries: HashMap<ObjectId, Rc<DisplayGeometry>>,
 }
 
+struct AnalysisDrawing {
+    edges: std::sync::Arc<[viboceros_command::edge_analysis::Edge]>,
+    segments: HashMap<(ObjectId, usize), Vec<[Point3; 2]>>,
+}
+
 impl DisplayCache {
+    pub(super) fn analysis_segments(
+        &mut self,
+        edges: &std::sync::Arc<[viboceros_command::edge_analysis::Edge]>,
+    ) -> &HashMap<(ObjectId, usize), Vec<[Point3; 2]>> {
+        if self
+            .analysis
+            .as_ref()
+            .is_none_or(|cache| !std::sync::Arc::ptr_eq(&cache.edges, edges))
+        {
+            let mut segments = HashMap::new();
+            for edge in edges.iter() {
+                let mut lines = Vec::new();
+                if edge.curve.degree() == 1
+                    && edge.curve.control_points().iter().all(|p| p.weight() > 0.)
+                {
+                    lines.extend(
+                        edge.curve
+                            .control_points()
+                            .windows(2)
+                            .map(|p| [p[0].point(), p[1].point()]),
+                    );
+                } else {
+                    edge.curve.visit_segments(|a, b| lines.push([a, b]));
+                }
+                segments.insert((edge.object, edge.index), lines);
+            }
+            self.analysis = Some(AnalysisDrawing {
+                edges: edges.clone(),
+                segments,
+            });
+        }
+        &self.analysis.as_ref().unwrap().segments
+    }
+
     pub(super) fn get(&mut self, object: &Object, tolerance: Tolerance) -> Rc<DisplayGeometry> {
         let density = object.attributes().wire_density();
         let entry = self.entries.entry(object.id()).or_insert_with(|| {

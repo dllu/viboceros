@@ -170,6 +170,15 @@ pub struct MeshTopology {
     closed: bool,
 }
 
+/// One exact-location topology edge with diagnostic incidence and seam flags.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MeshDiagnosticEdge {
+    pub index: usize,
+    pub points: [Point3; 2],
+    pub face_count: usize,
+    pub unwelded: bool,
+}
+
 /// Selects topology edges for mesh-curve extraction.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MeshEdgeFilter {
@@ -2598,6 +2607,23 @@ impl TriangleMesh {
         data.edges
             .keys()
             .map(|&(a, b)| [data.topological_points[a], data.topological_points[b]])
+            .collect()
+    }
+
+    /// Diagnoses polygon sides with the same indices as mesh edge selectors.
+    /// Tessellation diagonals are excluded. Coincident raw-vertex seams retain
+    /// their unwelded flag even though topology locations are shared.
+    pub fn diagnostic_edges(&self) -> Vec<MeshDiagnosticEdge> {
+        let data = self.topology_data();
+        data.edges
+            .iter()
+            .enumerate()
+            .map(|(index, (&(a, b), incidence))| MeshDiagnosticEdge {
+                index,
+                points: [data.topological_points[a], data.topological_points[b]],
+                face_count: incidence.count,
+                unwelded: edge_uses_are_unwelded(incidence.uses()),
+            })
             .collect()
     }
 

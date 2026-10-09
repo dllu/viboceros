@@ -22,8 +22,8 @@ Options:
 - `AssignProperties=ByCurrentLayer|ByInputObject` (default ByCurrentLayer).
   Current layer output gets fresh attributes; input output copies source
   attributes. Input group memberships are not copied.
-- `GroupObjectsByContourPlane=Yes|No` (default No). Each nonempty plane gets one
-  group. Captured group indices increase along the direction; output object
+- `GroupObjectsByContourPlane=Yes|No` (default No). Planes with at least two outputs get one
+  group; single point, curve and closed-loop outputs remain ungrouped. Captured group indices increase along the direction; output object
   records run in the opposite order.
 - `Output=All|CurvesOnly`. Section styles and hatches are not implemented, so
   both currently emit curves and points.
@@ -60,3 +60,10 @@ options and performance remain open. See [expanded comparison](../contour-domain
 Reference: [McNeel Contour](https://docs.mcneel.com/rhino/8/help/en-us/commands/contour.htm).
 The recorded Rhino 8.32 behavior accepts full 3D normals even though the help
 page also describes CPlane-perpendicular planes.
+
+B-rep cuts restore face-local domains after trim clipping, retain reversed-face
+traversal and clipped/split interval policies, and use closed polyline length
+parameters with plane-relative winding and face-based seams. Closed trim scan
+lines handle a coincident seam cyclically, preventing outer-boundary extension
+and loss of the retained region beside a hole. See
+[B-rep contour evidence](../contour-brep-parameterization.md).

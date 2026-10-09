@@ -836,3 +836,14 @@ native successes/errors in one dispatch pass and compares all successful raw
 records. Global validation and process failures remain distinct from observations.
 The dedicated `brep_interchange` oracle module checks [morphed 3DM exports](brep-3dm-interchange.md)
 through both readers, keeping source fitting, serialization and meshing checks separate.
+
+[B-rep Contour](contour-brep-parameterization.md) restores face/trim domains,
+reversed traversal, closed-loop length parameters and native group thresholds.
+A closed-seam scan-line correction prevents extension outside outer trims and
+truncation beside holes; 24 new native recipes pass strict replay.
+
+[Edge analysis](commands/show-edges.md) shares a registry-owned transient session
+between console commands, the control window and viewport overlays. Topology is
+cached against document geometry snapshots and tolerance; sampled edges share
+the viewport display cache. Marked endpoints enter document history as points.
+Native edge-analysis dialog and ordering parity remain unqualified.

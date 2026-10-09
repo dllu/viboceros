@@ -55,10 +55,8 @@
   "sha256": {
     "crates/viboceros-command/src/border/assemble.rs": "18499c4f71dca7e11dc5ae088b637a9eb4309f3aa7c6d0379939407509d1ce28",
     "crates/viboceros-command/src/border/mod.rs": "cc229a0ef1c5b01cde3f51df272147691e53e86f832bf2563f60f7d83a2c3455",
-    "crates/viboceros-command/src/object_selection.rs": "db0cd661f0479ed7bca745e093adf527c3d45787b45c0a0fe6301ab3f9088172",
     "crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468",
     "crates/viboceros-command/src/section/tests.rs": "d60da25b7665239bd1cc86d083a030b82e2b7c92e1b29247ff26a44672e9dded",
-    "crates/viboceros-geometry/src/mesh.rs": "52e480a5db70f49bd109bb3c6f633788d61bae3aa20d90e5e9c90a416154d174",
     "crates/viboceros-geometry/src/mesh/section.rs": "0a92425924ec2d1408b5642eee5b112c18033f8f8a3bda3b91f92f891d4ed5d8",
     "crates/viboceros-geometry/src/mesh/section/tests.rs": "9fe1311b8a683951d589d708b19bdb607ea2439ff27ef1bd009e0ad1bcab0283",
     "crates/viboceros-oracle/src/section_command.rs": "717d24167f51288a7cdf153b9fc9aa05b32db42640cd90b2b81325f375072959",
@@ -76,7 +74,9 @@
     "docs/contour-prior-source/crates/viboceros-oracle/src/lib.rs": "f9f6a80212f280fc4fbf94290525bdc22c039fa23e13daba49297a5d7a30d09e",
     "docs/contour-prior-source/crates/viboceros-command/src/lib.rs": "342c1e0f09ee8ae980e5c1702d09588f754bad0a3406652fda7a0283b89a176a",
     "docs/contour-prior-source/src/app.rs": "603f654e0f16d34f76a205ca9bc89191880ffa8523310dca0ae82c91a3474c48",
-    "docs/contour-prior-source/src/app/tests/section.rs": "7cb82e96882dc54d912e89d572531e14b000113786a3b7982fade608afa900b1"
+    "docs/contour-prior-source/src/app/tests/section.rs": "7cb82e96882dc54d912e89d572531e14b000113786a3b7982fade608afa900b1",
+    "docs/edge-analysis-prior-source/crates/viboceros-geometry/src/mesh.rs": "52e480a5db70f49bd109bb3c6f633788d61bae3aa20d90e5e9c90a416154d174",
+    "docs/edge-analysis-prior-source/crates/viboceros-command/src/object_selection.rs": "db0cd661f0479ed7bca745e093adf527c3d45787b45c0a0fe6301ab3f9088172"
   },
   "remaining_scope": [
     "Coplanar/closed mesh seam and parameter-domain fidelity",

@@ -12,6 +12,7 @@ pub enum ObjectSelectionFilter {
     #[default]
     Any,
     Section,
+    EdgeAnalysis,
     BlockEditSources,
     Blocks,
     Grouped,
@@ -45,6 +46,10 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::EdgeAnalysis => matches!(
+                geometry,
+                Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+            ),
             Self::Volume => matches!(
                 geometry,
                 Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)

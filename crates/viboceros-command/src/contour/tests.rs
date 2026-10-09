@@ -7,6 +7,7 @@ fn contour_preserves_sources_and_undoes_all_planes_and_groups_together() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();
     registry.execute(&mut doc, "Line -2,0,0 2,0,0").unwrap();
+    registry.execute(&mut doc, "Line -2,1,0 2,1,0").unwrap();
     registry.execute(&mut doc, "SelAll").unwrap();
     let source = doc.objects().next().unwrap().clone();
     registry
@@ -15,7 +16,7 @@ fn contour_preserves_sources_and_undoes_all_planes_and_groups_together() {
             "Contour 0,0,0 1,0,0 1 GroupObjectsByContourPlane=Yes",
         )
         .unwrap();
-    assert_eq!(doc.objects().len(), 6);
+    assert_eq!(doc.objects().len(), 12);
     assert_eq!(doc.groups().len(), 5);
     assert_eq!(doc.object(source.id()), Some(&source));
     let points = doc
@@ -25,12 +26,12 @@ fn contour_preserves_sources_and_undoes_all_planes_and_groups_together() {
             _ => None,
         })
         .collect::<Vec<_>>();
-    assert_eq!(points, vec![2., 1., 0., -1., -2.]);
+    assert_eq!(points, vec![2., 2., 1., 1., 0., 0., -1., -1., -2., -2.]);
     doc.undo().unwrap();
-    assert_eq!(doc.objects().len(), 1);
+    assert_eq!(doc.objects().len(), 2);
     assert_eq!(doc.groups().len(), 0);
     doc.redo().unwrap();
-    assert_eq!(doc.objects().len(), 6);
+    assert_eq!(doc.objects().len(), 12);
     assert_eq!(doc.groups().len(), 5);
 }
 #[test]
@@ -186,4 +187,21 @@ fn contour_exact_isocurve_lineage_preserves_shifted_uv_domains_and_flattens_line
         assert!(curve.evaluate(-6.).unwrap().y().abs() < 1e-12);
     }
     assert_eq!(source, Geometry::NurbsSurface(surface));
+}
+#[test]
+fn one_output_per_plane_is_not_grouped_even_when_grouping_is_enabled() {
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry.execute(&mut doc, "Line -2,0,0 2,0,0").unwrap();
+    registry.execute(&mut doc, "SelAll").unwrap();
+    registry
+        .execute(
+            &mut doc,
+            "Contour 0,0,0 1,0,0 1 GroupObjectsByContourPlane=Yes",
+        )
+        .unwrap();
+    assert_eq!(doc.objects().len(), 6);
+    assert_eq!(doc.groups().len(), 0);
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().len(), 1);
 }

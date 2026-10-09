@@ -417,3 +417,29 @@ fn picked_circle_and_polygon_tilt_and_box_corners_project_like_the_prompt() {
     };
     assert!((*polygon.domain().end() - polygon.length().unwrap()).abs() < 1e-12);
 }
+#[test]
+fn box_command_and_contour_use_native_topology_and_closed_seams() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Box -2,-2,-2 2,2,-2 4")
+        .unwrap();
+    registry.execute(&mut document, "SelAll").unwrap();
+    let source = document.objects().next().unwrap().clone();
+    registry
+        .execute(&mut document, "Contour 0,0,0 1,0,0 1")
+        .unwrap();
+    let mut x = Vec::new();
+    for object in document.objects().filter(|o| o.id() != source.id()) {
+        let curve = object.geometry().curve_ref().unwrap();
+        assert!(curve.is_closed().unwrap());
+        assert_eq!(curve.domain(), 0. ..=16.);
+        let start = curve.evaluate(0.).unwrap().to_array();
+        assert_eq!([start[1], start[2]], [2., 2.]);
+        x.push(start[0]);
+    }
+    assert_eq!(x, vec![2., 1., 0., -1., -2.]);
+    assert_eq!(document.object(source.id()), Some(&source));
+    document.undo().unwrap();
+    assert_eq!(document.objects().len(), 1);
+}

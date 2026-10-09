@@ -152,6 +152,7 @@ mod curve_preview;
 mod curve_prompt;
 mod distance;
 mod domain;
+mod edge_analysis;
 mod edge_commands;
 mod evaluate_point;
 mod evaluate_uv;
@@ -8873,6 +8874,7 @@ impl eframe::App for VibocerosApp {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        self.show_edge_analysis(ui);
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
@@ -9166,6 +9168,11 @@ impl eframe::App for VibocerosApp {
             }
             _ => None,
         };
+        let edge_analysis_view = self
+            .commands
+            .edge_analysis_view(&self.document)
+            .ok()
+            .flatten();
         let mut edge_highlights = self
             .edge_prompt
             .as_ref()
@@ -9474,6 +9481,7 @@ impl eframe::App for VibocerosApp {
                             component_highlights: &component_highlights,
                             edge_pick,
                             curve_or_edge_pick,
+                            edge_analysis: edge_analysis_view.as_ref(),
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
                             edge_curve,
@@ -9681,6 +9689,7 @@ mod tests {
     mod distribute;
     mod domain;
     mod draft_angle;
+    mod edge_analysis;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;

@@ -52,7 +52,6 @@
   "performance_scope": "Cached original source eligibility avoids repeated object-table searches during viewport picking. No native performance or GPU measurement was made.",
   "sha256": {
     "src/app/blocks.rs": "fddc406d59bf48de50828b48d27da0e438be0d66d5080f0e2644839adf6b9bc7",
-    "src/viewport.rs": "f2ea4ce34bcf0844ddc09b491c8834c61c0cd5adcc3226c287fa1c6821b84bf5",
     "src/viewport/scene.rs": "267547c8b44998119ee7d544c5a8d0699ce68d256a1909049f3d5fec212595ae",
     "src/viewport/scene/block_tests.rs": "1a3632c10350d6396602ba422819aa66b38a5f8604443efe93358915ff56bae6",
     "src/viewport/tests/object_selection.rs": "d77d189e875a8d99c0c4fcede60298c31ba7d3ef9aa5dc428888214ee0c10c02",
@@ -66,7 +65,8 @@
     "docs/block-edit-nested-prior-source/docs/commands/block-edit.md": "c48027769c4b1dcefde07b4851f16c7706782d3ea00e20d2b9c6185c9f3d2e50",
     "docs/section-prior-source/src/app.rs": "3bf562a00b3208f08ef500fa5ec91a330135f778e1c4b8a119f3493f6dc01f4b",
     "docs/section-prior-source/crates/viboceros-command/src/object_selection.rs": "78402c48726c218d054d89439693bd1a227fcff310786a445b874d994e5bdea2",
-    "docs/contour-prior-source/src/app/object_selection.rs": "12f13cadd77c8426f47dc8c89732795a54c24c3635d82dd34f391484429766b5"
+    "docs/contour-prior-source/src/app/object_selection.rs": "12f13cadd77c8426f47dc8c89732795a54c24c3635d82dd34f391484429766b5",
+    "docs/edge-analysis-prior-source/src/viewport.rs": "f2ea4ce34bcf0844ddc09b491c8834c61c0cd5adcc3226c287fa1c6821b84bf5"
   },
   "remaining_scope": [
     "Nested-definition navigation",

@@ -39,3 +39,12 @@ outputs, omits the native normalization of supplied components, and returns
 only snapped components. Rotate, Rotate3D and the Twist point map use the
 kernel’s explicit `try_rotation_with_cardinal_cleanup` entry point. The general
 `try_rotation` entry point preserves small rotations without this cutoff.
+
+`box_topology.rs` is a modified Rust adaptation of the connectivity tables in
+`ON_BrepBox` (`opennurbs_brep_tools.cpp`) and parameter-extent policy in
+`ON_NurbsSurfaceQuadrilateral` / `ON_LineCurve` at pinned revision
+`23fc677ba06e49212296ca75fab7fb6c2851b4ce`, under the [MIT license](LICENSE).
+It retains the source copyright/disclaimer, native vertex/edge/face order,
+max-opposite-edge surface domains, and the tiny-length unit-domain fallback.
+The Rust kernel independently constructs and validates geometry/topology in
+`Brep::try_command_box`; `Brep::try_box` keeps its normalized convention.

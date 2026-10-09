@@ -44,6 +44,10 @@ pub enum SurfaceOrBrepSource {
         #[serde(flatten)]
         fixture: Box<TrimmedBrepFixture>,
     },
+    BoxBrep {
+        min: [f64; 3],
+        max: [f64; 3],
+    },
 }
 
 impl ArraySource {
@@ -54,6 +58,14 @@ impl ArraySource {
             }
             Self::SurfaceOrBrep(SurfaceOrBrepSource::Brep { fixture }) => {
                 Geometry::Brep(trimmed_brep::build(fixture, tolerance)?)
+            }
+            Self::SurfaceOrBrep(SurfaceOrBrepSource::BoxBrep { min, max }) => {
+                let frame = viboceros_command::CommandContext::default().construction_plane;
+                Geometry::Brep(Brep::try_command_box(
+                    frame,
+                    std::array::from_fn(|i| [min[i], max[i]]),
+                    tolerance,
+                )?)
             }
             Self::Curve(curve) => curve.geometry()?.into(),
         })

@@ -1,0 +1,16934 @@
+# -*- coding: utf-8 -*-
+"""Standalone RhinoPython worker for the versioned compatibility oracle.
+
+This file is copied beside request.json and executed inside Rhino. Keep its
+syntax compatible with both Rhino 8 Python 3 and the legacy IronPython host.
+"""
+
+import json
+import math
+import re
+import os
+from contextlib import contextmanager
+from timeit import default_timer
+
+import Rhino
+import System
+
+
+PROTOCOL_VERSION = 1
+MAX_ITERATIONS = 1000000
+MAX_STATE_CYCLE_OBJECTS = 100000
+DEFAULT_TOLERANCE = {
+    "absolute": 1.0e-9,
+    "relative": 1.0e-12,
+    "angular": 1.0e-10,
+}
+LAST_PROGRESS_STAGE = "worker loading"
+try:
+    string_types = (basestring,)
+except NameError:
+    string_types = (str,)
+try:
+    iteration_range = xrange
+except NameError:
+    iteration_range = range
+
+
+def _record_progress(stage):
+    global LAST_PROGRESS_STAGE
+    LAST_PROGRESS_STAGE = stage
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "worker-progress.log"
+    )
+    try:
+        with open(path, "a") as stream:
+            stream.write(stage + "\n")
+            stream.flush()
+    except Exception:
+        pass
+
+
+def _point(coordinates):
+    values = [_finite(value, "point coordinate") for value in coordinates]
+    if len(values) != 3:
+        raise ValueError("point must contain exactly three coordinates")
+    return Rhino.Geometry.Point3d(values[0], values[1], values[2])
+
+
+def _vector(coordinates):
+    values = [_finite(value, "vector coordinate") for value in coordinates]
+    if len(values) != 3:
+        raise ValueError("vector must contain exactly three coordinates")
+    return Rhino.Geometry.Vector3d(values[0], values[1], values[2])
+
+
+def _xyz(value):
+    return [float(value.X), float(value.Y), float(value.Z)]
+
+
+def _command_point(coordinates):
+    point = _point(coordinates)
+    return "%.17g,%.17g,%.17g" % (point.X, point.Y, point.Z)
+
+
+def _xy(value):
+    return [float(value.X), float(value.Y)]
+
+
+def _finite(value, context):
+    number = float(value)
+    if math.isnan(number) or math.isinf(number):
+        raise ValueError("%s must be finite" % context)
+    return number
+
+
+def _wildcard_matches(pattern, candidate):
+    pattern = pattern.lower()
+    candidate = candidate.lower()
+    pattern_index = 0
+    candidate_index = 0
+    star_index = None
+    star_candidate_index = 0
+    while candidate_index < len(candidate):
+        if pattern_index < len(pattern) and (
+            pattern[pattern_index] == "?"
+            or pattern[pattern_index] == candidate[candidate_index]
+        ):
+            pattern_index += 1
+            candidate_index += 1
+        elif pattern_index < len(pattern) and pattern[pattern_index] == "*":
+            star_index = pattern_index
+            pattern_index += 1
+            star_candidate_index = candidate_index
+        elif star_index is not None:
+            pattern_index = star_index + 1
+            star_candidate_index += 1
+            candidate_index = star_candidate_index
+        else:
+            return False
+    while pattern_index < len(pattern) and pattern[pattern_index] == "*":
+        pattern_index += 1
+    return pattern_index == len(pattern)
+
+
+def _state_cycle_indices(operation, name, object_count):
+    values = operation.get(name)
+    if not isinstance(values, list):
+        raise ValueError("%s must be an array" % name)
+    indices = set()
+    for value in values:
+        if isinstance(value, bool) or int(value) != value:
+            raise ValueError("%s must contain integer indices" % name)
+        index = int(value)
+        if index < 0 or index >= object_count:
+            raise ValueError(
+                "%s index %d is outside object count %d"
+                % (name, index, object_count)
+            )
+        indices.add(index)
+    return sorted(indices)
+
+
+def _unit(vector, tolerance, context):
+    length = float(vector.Length)
+    if not length > tolerance:
+        raise ValueError("%s is degenerate" % context)
+    vector /= length
+    return vector
+
+
+def _measure(iterations, operation):
+    value = operation()
+    started = default_timer()
+    for _unused in iteration_range(iterations):
+        value = operation()
+    elapsed_ns = int(round((default_timer() - started) * 1000000000.0))
+    return value, max(0, elapsed_ns)
+
+
+def _measure_disposable(iterations, operation, record):
+    # The operation owns any partial result on failure; successful results
+    # transfer here. Match native replacement timing and extract only once.
+    value = operation()
+    try:
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            replacement = operation()
+            previous, value = value, replacement
+            previous.Dispose()
+        elapsed_ns = int(round((default_timer() - started) * 1000000000.0))
+        return record(value), max(0, elapsed_ns)
+    finally:
+        value.Dispose()
+
+
+def _canonical_join_segments(curves):
+    polylines = []
+    for curve in curves:
+        segments = curve.DuplicateSegments()
+        if segments is None or len(segments) == 0:
+            values = [[_xyz(curve.PointAtStart), _xyz(curve.PointAtEnd)]]
+        else:
+            values = [
+                [_xyz(segment.PointAtStart), _xyz(segment.PointAtEnd)]
+                for segment in segments
+            ]
+        if tuple(values[-1][1]) < tuple(values[0][0]):
+            values.reverse()
+            values = [[segment[1], segment[0]] for segment in values]
+        polylines.append(values)
+    polylines.sort(
+        key=lambda segments: tuple(
+            tuple(point) for segment in segments for point in segment
+        )
+    )
+    return polylines
+
+
+def _set_knots(target, full_knots, context):
+    values = [_finite(value, context) for value in full_knots]
+    if len(values) != target.Count + 2:
+        raise ValueError(
+            "%s count must be Rhino knot count plus two" % context
+        )
+    for index, value in enumerate(values[1:-1]):
+        target[index] = value
+
+
+def _set_curve_controls(curve, controls):
+    if len(controls) != curve.Points.Count:
+        raise ValueError("NURBS curve control-point count does not match")
+    for index, control in enumerate(controls):
+        point = _point(control["point"])
+        weight = _finite(control.get("weight", 1.0), "control-point weight")
+        if weight == 0.0 or not curve.Points.SetPoint(index, point, weight):
+            raise ValueError("invalid NURBS curve control point")
+
+
+def _set_surface_controls(surface, controls, count_u, count_v):
+    if len(controls) != count_u * count_v:
+        raise ValueError("NURBS surface control-net size does not match")
+    for v_index in range(count_v):
+        for u_index in range(count_u):
+            control = controls[v_index * count_u + u_index]
+            point = _point(control["point"])
+            weight = _finite(control.get("weight", 1.0), "control-point weight")
+            if weight == 0.0 or not surface.Points.SetPoint(
+                u_index, v_index, point, weight
+            ):
+                raise ValueError("invalid NURBS surface control point")
+
+
+def _polygon_mesh(vertices, faces):
+    mesh = Rhino.Geometry.Mesh()
+    try:
+        for vertex in vertices:
+            if mesh.Vertices.Add(_point(vertex)) < 0:
+                raise ValueError("could not add mesh vertex")
+        for face in faces:
+            if len(face) not in (3, 4):
+                raise ValueError("mesh face must contain three or four indices")
+            if any(
+                isinstance(index, bool) or int(index) != index for index in face
+            ):
+                raise ValueError("mesh face index must be an integer")
+            indices = [int(index) for index in face]
+            added = (
+                mesh.Faces.AddFace(indices[0], indices[1], indices[2])
+                if len(indices) == 3
+                else mesh.Faces.AddFace(
+                    indices[0], indices[1], indices[2], indices[3]
+                )
+            )
+            if added < 0:
+                raise ValueError("could not add mesh face")
+        if not mesh.IsValid:
+            raise ValueError("mesh is invalid")
+        return mesh
+    except Exception:
+        mesh.Dispose()
+        raise
+
+
+def _triangle_mesh(vertices, triangles):
+    if any(len(triangle) != 3 for triangle in triangles):
+        raise ValueError("triangle mesh face must contain exactly three indices")
+    return _polygon_mesh(vertices, triangles)
+
+
+def _mesh_triangles(mesh):
+    triangles = []
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        if not face.IsTriangle:
+            raise ValueError("oracle mesh unexpectedly contains a quad")
+        triangles.append([int(face.A), int(face.B), int(face.C)])
+    return triangles
+
+
+def _mesh_radial_topology_value(mesh):
+    """Inspect public topology before/after radial sorting; no geometry edits."""
+    edges = []
+    for index in range(mesh.TopologyEdges.Count):
+        endpoints = mesh.TopologyEdges.GetTopologyVertices(index)
+        edges.append({
+            "vertices": [int(endpoints.I), int(endpoints.J)],
+            "faces": [int(face) for face in mesh.TopologyEdges.GetConnectedFaces(index)],
+        })
+    vertices = []
+    for index in range(mesh.TopologyVertices.Count):
+        before = list(mesh.TopologyVertices.ConnectedEdges(index) or [])
+        sorted_ok = bool(mesh.TopologyVertices.SortEdges(index))
+        vertices.append({
+            "mesh_vertices": [int(raw) for raw in mesh.TopologyVertices.MeshVertexIndices(index)],
+            "edges_before": [int(edge) for edge in before],
+            "edges_after": [int(edge) for edge in (mesh.TopologyVertices.ConnectedEdges(index) or [])],
+            "sorted": sorted_ok,
+        })
+    return {"edges": edges, "vertices": vertices}
+
+
+def _mesh_value(mesh):
+    return {
+        "triangles": _mesh_triangles(mesh),
+        "vertices": [
+            _xyz(mesh.Vertices.Point3dAt(index))
+            for index in range(mesh.Vertices.Count)
+        ],
+    }
+
+
+def _polygon_mesh_value(mesh):
+    faces = []
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        indices = [int(face.A), int(face.B), int(face.C)]
+        if face.IsQuad:
+            indices.append(int(face.D))
+        faces.append(indices)
+    return {
+        "faces": faces,
+        "vertices": [
+            _xyz(mesh.Vertices.Point3dAt(index))
+            for index in range(mesh.Vertices.Count)
+        ],
+    }
+
+
+def _canonical_polygon_mesh_face_value(mesh):
+    faces = []
+    triangle_count = 0
+    quad_count = 0
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        indices = [int(face.A), int(face.B), int(face.C)]
+        if face.IsQuad:
+            indices.append(int(face.D))
+            quad_count += 1
+        else:
+            triangle_count += 1
+        points = [
+            tuple(_xyz(mesh.Vertices.Point3dAt(vertex))) for vertex in indices
+        ]
+        rotations = [tuple(points[offset:] + points[:offset]) for offset in range(len(points))]
+        faces.append(min(rotations))
+    faces.sort()
+    return {
+        "faces": faces,
+        "quad_count": quad_count,
+        "triangle_count": triangle_count,
+    }
+
+
+def _mesh_to_nurb_brep_value(brep):
+    faces = []
+    for face in brep.Faces:
+        surface = face.UnderlyingSurface()
+        domain_u = surface.Domain(0)
+        domain_v = surface.Domain(1)
+        loops = []
+        for loop in face.Loops:
+            trims = []
+            for trim in loop.Trims:
+                trims.append(
+                    {
+                        "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                        "end": _xy(trim.PointAtEnd),
+                        "iso": str(trim.IsoStatus),
+                        "reversed": bool(trim.IsReversed()),
+                        "start": _xy(trim.PointAtStart),
+                        "type": str(trim.TrimType),
+                    }
+                )
+            loops.append({"trims": trims, "type": str(loop.LoopType)})
+        faces.append(
+            {
+                "corners": [
+                    _xyz(surface.PointAt(domain_u.T0, domain_v.T0)),
+                    _xyz(surface.PointAt(domain_u.T1, domain_v.T0)),
+                    _xyz(surface.PointAt(domain_u.T1, domain_v.T1)),
+                    _xyz(surface.PointAt(domain_u.T0, domain_v.T1)),
+                ],
+                "degree": [int(surface.Degree(0)), int(surface.Degree(1))],
+                "loops": loops,
+                "reversed": bool(face.OrientationIsReversed),
+            }
+        )
+    return {
+        "edge_count": int(brep.Edges.Count),
+        "edges": [
+            {
+                "domain": [float(edge.Domain.T0), float(edge.Domain.T1)],
+                "vertices": [
+                    int(edge.StartVertex.VertexIndex),
+                    int(edge.EndVertex.VertexIndex),
+                ],
+            }
+            for edge in brep.Edges
+        ],
+        "faces": faces,
+        "is_solid": bool(brep.IsSolid),
+        "vertex_count": int(brep.Vertices.Count),
+        "vertices": [_xyz(vertex.Location) for vertex in brep.Vertices],
+    }
+
+
+def _nurbs_curve_definition(curve, canonicalize_parameters=False):
+    nurbs = curve.ToNurbsCurve()
+    if nurbs is None:
+        raise ValueError("could not convert curve to NURBS form")
+    try:
+        knots = [float(nurbs.Knots[0])]
+        knots.extend(float(nurbs.Knots[index]) for index in range(nurbs.Knots.Count))
+        knots.append(float(nurbs.Knots[nurbs.Knots.Count - 1]))
+        domain = [float(nurbs.Domain.T0), float(nurbs.Domain.T1)]
+        if canonicalize_parameters:
+            rank = 0
+            ranks = []
+            previous = None
+            for knot in knots:
+                if previous is not None and knot != previous:
+                    rank += 1
+                ranks.append(rank)
+                previous = knot
+            final_rank = float(max(rank, 1))
+            knots = [value / final_rank for value in ranks]
+            domain = [0.0, 1.0]
+        return {
+            "control_points": [
+                {
+                    "point": _xyz(nurbs.Points[index].Location),
+                    "weight": float(nurbs.Points[index].Weight),
+                }
+                for index in range(nurbs.Points.Count)
+            ],
+            "degree": int(nurbs.Degree),
+            "domain": domain,
+            "knots": knots,
+        }
+    finally:
+        nurbs.Dispose()
+
+
+def _nurbs_parameter_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    for control in definition["control_points"]:
+        control["point"] = control["point"][:2]
+    return definition
+
+
+def _surface_split_trim_value(curve, surface, sample_geometry):
+    if not sample_geometry:
+        return _nurbs_parameter_curve_definition(curve)
+    points = [curve.PointAtStart]
+    for index in range(1, 64):
+        success, parameter = curve.NormalizedLengthParameter(index / 64.0, 1e-12)
+        if not success:
+            raise ValueError("could not sample the split trim at equal UV arc lengths")
+        points.append(curve.PointAt(parameter))
+    points.append(curve.PointAtEnd)
+    return {
+        "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+        "uv_points": [_xy(point) for point in points],
+        "surface_points": [_xyz(surface.PointAt(point.X, point.Y)) for point in points],
+    }
+
+
+def _polycurve_document_record(curve):
+    document = Rhino.RhinoDoc.ActiveDoc
+
+    def object_ids():
+        settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+        settings.NormalObjects = True
+        settings.LockedObjects = True
+        settings.HiddenObjects = True
+        return set(obj.Id for obj in document.Objects.GetObjectList(settings))
+
+    def outputs(command, describe):
+        document.Objects.UnselectAll()
+        before = object_ids()
+        source_id = document.Objects.AddCurve(curve)
+        if source_id == System.Guid.Empty:
+            raise ValueError("could not add polycurve command source")
+        try:
+            script = "_-%s _SelID %s _Enter" % (command, source_id)
+            if not Rhino.RhinoApp.RunScript(script, False):
+                raise ValueError("polycurve command failed: " + command)
+            return [describe(document.Objects.FindId(object_id).Geometry)
+                    for object_id in object_ids() - before - set([source_id])]
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids() - before:
+                document.Objects.Delete(object_id, True)
+
+    points = outputs("ExtractPt _Output=Points _OutputLayer=Current", lambda geometry: _xyz(geometry.Location))
+
+    def polygon(geometry):
+        success, polyline = geometry.TryGetPolyline()
+        if not success:
+            raise ValueError("control polygon output is not a polyline")
+        return [_xyz(point) for point in polyline]
+
+    polygons = outputs("ExtractControlPolygon _OutputLayer=Current", polygon)
+    exploded = outputs("Explode", _nurbs_curve_definition)
+    exploded.sort(key=lambda item: item["domain"][0])
+    model = Rhino.FileIO.File3dm()
+    decoded = None
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "polycurve-%s.3dm" % System.Guid.NewGuid())
+    reversed_curve = curve.DuplicateCurve()
+    reparameterized = curve.DuplicateCurve()
+    try:
+        if model.Layers.AddDefaultLayer("Default", System.Drawing.Color.Black) < 0:
+            raise ValueError("could not add polycurve 3DM layer")
+        model.Objects.AddCurve(curve)
+        if not model.Write(path, 8):
+            raise ValueError("could not write polycurve 3DM")
+        decoded = Rhino.FileIO.File3dm.Read(path)
+        if decoded is None:
+            raise ValueError("could not read polycurve 3DM")
+        objects = list(decoded.Objects)
+        if len(objects) != 1 or not isinstance(objects[0].Geometry, Rhino.Geometry.PolyCurve):
+            raise ValueError("3DM polycurve type was lost")
+        result = objects[0].Geometry
+        segments = []
+        for index in range(result.SegmentCount):
+            segment = result.SegmentCurve(index).DuplicateCurve()
+            try:
+                segment.Domain = result.SegmentDomain(index)
+                segments.append(_nurbs_curve_definition(segment))
+            finally:
+                segment.Dispose()
+        if not reversed_curve.Reverse():
+            raise ValueError("could not reverse polycurve")
+        reparameterized.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+        return {"extract_points": sorted(points, key=lambda p: tuple(round(v * 1e9) for v in p)), "control_polygons": sorted(polygons),
+                "exploded": exploded, "round_trip_segments": segments,
+                "reversed_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reversed_curve)),
+                "reparameterized_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reparameterized))}
+    finally:
+        reversed_curve.Dispose()
+        reparameterized.Dispose()
+        if decoded is not None:
+            decoded.Dispose()
+        model.Dispose()
+        if os.path.exists(path):
+            os.remove(path)
+
+
+def _polycurve_geometry(operation, iterations, tolerance):
+    source = Rhino.Geometry.PolyCurve()
+    try:
+        for definition in operation["segments"]:
+            segment = _nurbs_curve_from_definition(definition)
+            try:
+                if not source.AppendSegment(segment):
+                    raise ValueError("could not append exact polycurve segment")
+            finally:
+                segment.Dispose()
+        if not source.IsValid:
+            raise ValueError("invalid polycurve fixture")
+
+        def record(curve):
+            if operation["op"] == "polycurve_document":
+                return _polycurve_document_record(curve)
+            count = curve.SegmentCount if isinstance(curve, Rhino.Geometry.PolyCurve) else 1
+            domains = [curve.SegmentDomain(i) for i in range(count)] if isinstance(curve, Rhino.Geometry.PolyCurve) else [curve.Domain]
+            parameters = [float(curve.Domain.ParameterAt(float(i) / 32.0)) for i in range(33)]
+            parameters.extend(float(domain.T0) for domain in domains)
+            parameters.append(float(curve.Domain.T1))
+            samples = []
+            for parameter in sorted(set(parameters)):
+                derivatives = curve.DerivativeAt(parameter, 2)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("could not evaluate polycurve derivatives")
+                samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
+                                "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2])})
+            segments = []
+            for i, domain in enumerate(domains):
+                segment = curve.SegmentCurve(i).DuplicateCurve() if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.DuplicateCurve()
+                try:
+                    segment.Domain = domain
+                    segments.append(_nurbs_curve_definition(segment))
+                finally:
+                    segment.Dispose()
+            divisions = curve.DivideByCount(17, True)
+            expected_count = 17 if curve.IsClosed else 18
+            if divisions is None or len(divisions) != expected_count:
+                raise ValueError("polycurve division returned an unexpected point count")
+            division_points = []
+            exact_nurbs = curve.ToNurbsCurve()
+            if exact_nurbs is None:
+                raise ValueError("could not convert polycurve for length inversion")
+            try:
+                for index in range(expected_count):
+                    # Check public division topology above. Use the exact NURBS
+                    # form for tolerance-bearing length inversion: the composite
+                    # API retains coarse internal segment-length inversions.
+                    success, parameter = exact_nurbs.NormalizedLengthParameter(float(index) / 17.0, tolerance["relative"] * 0.001)
+                    if not success:
+                        raise ValueError("could not divide polycurve at requested tolerance")
+                    division_points.append(_xyz(exact_nurbs.PointAt(parameter)))
+            finally:
+                exact_nurbs.Dispose()
+            return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+                    "segment_domains": [[float(d.T0), float(d.T1)] for d in domains],
+                    "segments": segments, "samples": samples, "closed": bool(curve.IsClosed),
+                    "length": float(curve.GetLength(tolerance["relative"])),
+                    "division_points": division_points,
+                    "division_count_without_ends": len(curve.DivideByCount(17, False))}
+
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed", False) and not curve.Reverse():
+                    raise ValueError("could not reverse polycurve")
+                if operation.get("trim") is not None:
+                    curve = curve.Trim(Rhino.Geometry.Interval(*operation["trim"]))
+                    if curve is None:
+                        raise ValueError("could not trim polycurve")
+                    owned.append(curve)
+                if operation.get("split") is not None:
+                    curves = curve.Split(float(operation["split"]))
+                    if curves is None or len(curves) != 2:
+                        raise ValueError("could not split polycurve")
+                    owned.extend(curves)
+                else:
+                    curves = [curve]
+                if operation["op"] == "polycurve_document":
+                    return record(curve)
+                return {"curves": [record(c) for c in curves]}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
+def _trimmed_brep_from_definition(operation, tolerance):
+    brep = Rhino.Geometry.Brep()
+    owned = []
+    try:
+        capped = operation.get("cap_surface") is not None
+        parameter_indices = []
+        for index, boundary in enumerate(operation["boundaries"]):
+            spatial = _nurbs_curve_from_definition(boundary["curve"])
+            owned.append(spatial)
+            parameter = _nurbs_curve_from_definition(boundary["parameter_curve"], 2)
+            owned.append(parameter)
+            # Parameter-space closure must not use model-space IsClosed's
+            # origin-relative degeneracy threshold on large UV offsets.
+            uv_gap = _finite(parameter.PointAtStart.DistanceTo(parameter.PointAtEnd), "UV closure gap")
+            if not spatial.IsClosed or uv_gap > tolerance["absolute"]:
+                raise ValueError("mass property boundaries must be closed")
+            brep.Vertices.Add(spatial.PointAtStart, 0.0)
+            curve_index = brep.Curves3D.Add(spatial)
+            brep.Edges.Add(index, index, curve_index, 0.0)
+            parameter_indices.append(brep.Curves2D.Add(parameter))
+
+        def add_face(definition, reversed_face):
+            surface = _nurbs_surface_from_definition(definition)
+            owned.append(surface)
+            face = brep.Faces.Add(brep.AddSurface(surface))
+            face.OrientationIsReversed = reversed_face
+            for index, parameter_index in enumerate(parameter_indices):
+                loop_type = Rhino.Geometry.BrepLoopType.Outer if index == 0 else Rhino.Geometry.BrepLoopType.Inner
+                loop = brep.Loops.Add(loop_type, face)
+                trim = brep.Trims.Add(brep.Edges[index], False, loop, parameter_index)
+                trim.TrimType = Rhino.Geometry.BrepTrimType.Mated if capped else Rhino.Geometry.BrepTrimType.Boundary
+                trim.IsoStatus = getattr(Rhino.Geometry.IsoStatus, "None")
+                trim.SetTolerances(0.0, 0.0)
+
+        reversed_face = bool(operation.get("reversed", False))
+        add_face(operation["surface"], reversed_face)
+        cap = operation.get("cap_surface")
+        if cap is not None:
+            add_face(cap, not reversed_face)
+        valid, log = brep.IsValidWithLog()
+        if not valid:
+            raise ValueError("invalid mass property B-rep: %s" % log)
+        if capped and not brep.IsSolid:
+            raise ValueError("capped mass property fixture is not solid")
+        u, v = operation["interior_uv"]
+        if str(brep.Faces[0].IsPointOnFace(u, v)) != "Interior":
+            raise ValueError("mass property interior point must lie in the retained face")
+
+        return brep
+    except Exception:
+        brep.Dispose()
+        raise
+    finally:
+        for geometry in reversed(owned):
+            geometry.Dispose()
+
+
+def _trimmed_surface_isocurves(operation, iterations, tolerance):
+    parameters = operation["parameters"]
+    if not 1 <= len(parameters) <= 64:
+        raise ValueError("isocurve probes require 1..=64 UV pairs")
+    for pair in parameters:
+        if len(pair) != 2:
+            raise ValueError("isocurve probes require UV pairs")
+        for value in pair:
+            _finite(value, "isocurve parameter")
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        def sample(face, direction, fixed):
+            domain = face.Domain(1 - direction)
+            if not domain.T0 <= fixed <= domain.T1:
+                raise ValueError("isocurve parameter outside native domain")
+            curves = face.TrimAwareIsoCurve(direction, fixed)
+            if curves is None:
+                raise ValueError("trim-aware isocurve extraction failed")
+            try:
+                records = []
+                for curve in curves:
+                    # Reparameterize only after extraction. Native trim roots
+                    # have already been chosen and any lost bits remain lost.
+                    curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                    if curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+                        raise ValueError("isocurve reparameterization failed")
+                    reverse = _xyz(curve.PointAt(0.0)) > _xyz(curve.PointAt(1.0))
+                    records.append([
+                        [_finite(x, "isocurve sample") for x in _xyz(curve.PointAt(1.0-t if reverse else t))]
+                        for t in [0.0, 0.125, 0.3, 0.5, 0.875, 1.0]
+                    ])
+                return sorted(records)
+            finally:
+                for curve in curves:
+                    curve.Dispose()
+
+        def compute():
+            return [[[sample(face, 0, v), sample(face, 1, u)] for u, v in parameters]
+                    for face in brep.Faces]
+        return _measure(iterations, compute)
+    finally:
+        brep.Dispose()
+
+
+def _surface_wire_sort_key(points):
+    key = []
+    for point in points:
+        for value in point:
+            scaled = value*1e9
+            key.append(value if math.isinf(scaled) else float(round(scaled))/1e9)
+    return tuple(key)
+
+
+def _surface_wires(operation, iterations):
+    density = operation["density"]
+    if isinstance(density, bool) or not isinstance(density, int) or not -1 <= density <= 99:
+        raise ValueError("wire density must be an integer in [-1,99]")
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        def compute():
+            brep = Rhino.Geometry.Brep.CreateFromSurface(surface)
+            if brep is None:
+                raise ValueError("surface-to-B-rep construction failed")
+            try:
+                valid, log = brep.IsValidWithLog()
+                if not valid:
+                    raise ValueError("invalid surface B-rep: " + str(log))
+                curves = brep.GetWireframe(density)
+                if curves is None:
+                    raise ValueError("surface wireframe extraction failed")
+                try:
+                    records = []
+                    for curve in curves:
+                        curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                        if curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+                            raise ValueError("wire reparameterization failed")
+                        def sample(reverse):
+                            return [[_finite(x, "wire sample") for x in _xyz(curve.PointAt(1.0-t if reverse else t))]
+                                    for t in [0.0, 0.125, 0.3, 0.5, 0.875, 1.0]]
+                        records.append(min(sample(False), sample(True)))
+                    # Stabilize ordering at symmetric coordinates without
+                    # rounding any samples in the returned records.
+                    records.sort(key=_surface_wire_sort_key)
+                finally:
+                    for curve in curves:
+                        curve.Dispose()
+                trims = list(brep.Trims)
+                return dict(vertices=brep.Vertices.Count, edges=brep.Edges.Count, faces=brep.Faces.Count,
+                            trims=len(trims), is_solid=bool(brep.IsSolid),
+                            seam_trims=sum(t.TrimType == Rhino.Geometry.BrepTrimType.Seam for t in trims),
+                            singular_trims=sum(t.TrimType == Rhino.Geometry.BrepTrimType.Singular for t in trims),
+                            surface_wires=records, brep_wires=records)
+            finally:
+                brep.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        surface.Dispose()
+
+
+def _trimmed_surface_mass_properties(operation, iterations, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        def trim_records():
+            return [[[_nurbs_parameter_curve_definition(trim) for trim in loop.Trims]
+                     for loop in face.Loops] for face in brep.Faces]
+        # Keep extraction outside the timed measurements, and verify that the
+        # native API has not changed any trim parameterization while measuring.
+        trims = trim_records()
+        def compute():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(
+                brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
+            )
+            if properties is None:
+                raise ValueError("trimmed surface area integration failed")
+            try:
+                area = float(properties.Area)
+            finally:
+                properties.Dispose()
+            volume = None
+            if brep.IsSolid:
+                properties = Rhino.Geometry.VolumeMassProperties.Compute(
+                    brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
+                )
+                if properties is None:
+                    raise ValueError("trimmed surface volume integration failed")
+                try:
+                    volume = float(properties.Volume)
+                finally:
+                    properties.Dispose()
+            return {"area": area, "volume": volume, "is_solid": bool(brep.IsSolid)}
+        value, elapsed = _measure(iterations, compute)
+        if trim_records() != trims:
+            raise ValueError("mass property measurement changed trim geometry")
+        value["trim_curves"] = trims
+        return value, elapsed
+    finally:
+        brep.Dispose()
+
+
+def _canonical_closed_intersection_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    controls = definition["control_points"]
+    if definition["degree"] != 1 or len(controls) < 3:
+        return definition
+    first = controls[0]["point"]
+    last = controls[-1]["point"]
+    if sum((first[index] - last[index]) ** 2 for index in range(3)) > 1e-18:
+        return definition
+    unique = controls[:-1]
+    seam = min(
+        range(len(unique)),
+        key=lambda index: tuple(
+            round(value, 9) for value in unique[index]["point"]
+        ),
+    )
+    rotated = unique[seam:] + unique[:seam]
+    rotated.append(rotated[0])
+    segment_count = len(rotated) - 1
+    definition["control_points"] = rotated
+    definition["domain"] = [0.0, 1.0]
+    definition["knots"] = (
+        [0.0, 0.0]
+        + [float(index) / float(segment_count) for index in range(1, segment_count)]
+        + [1.0, 1.0]
+    )
+    return definition
+
+
+def _canonical_linear_intersection_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    controls = definition["control_points"]
+    if definition["degree"] != 1 or len(controls) < 2:
+        return definition
+    if any(abs(control["weight"] - controls[0]["weight"]) > 1e-12 for control in controls):
+        return definition
+    quantized_point = lambda control: tuple(
+        round(value, 9) for value in control["point"]
+    )
+    first = controls[0]["point"]
+    last = controls[-1]["point"]
+    closed = sum((first[index] - last[index]) ** 2 for index in range(3)) <= 1e-18
+    if closed:
+        unique = controls[:-1]
+        seam = min(range(len(unique)), key=lambda index: quantized_point(unique[index]))
+        forward = unique[seam:] + unique[:seam]
+        reverse = [forward[0]] + list(reversed(forward[1:]))
+        if tuple(map(quantized_point, reverse)) < tuple(map(quantized_point, forward)):
+            forward = reverse
+        controls = forward + [forward[0]]
+    elif quantized_point(controls[-1]) < quantized_point(controls[0]):
+        controls = list(reversed(controls))
+    segment_count = len(controls) - 1
+    definition["control_points"] = controls
+    definition["domain"] = [0.0, 1.0]
+    definition["knots"] = (
+        [0.0, 0.0]
+        + [float(index) / float(segment_count) for index in range(1, segment_count)]
+        + [1.0, 1.0]
+    )
+    return definition
+
+
+def _curve_parameter_samples(operation, iterations):
+    if any(isinstance(t, bool) or not isinstance(t, (int, float)) for t in operation["fractions"]):
+        raise ValueError("curve sampling fractions must be numbers in [0, 1]")
+    fractions = [_finite(t, "curve sampling fraction") for t in operation["fractions"]]
+    if any(t < 0 or t > 1 for t in fractions):
+        raise ValueError("curve sampling fractions must be numbers in [0, 1]")
+    curve = _nurbs_curve_from_definition(operation["curve"])
+    try:
+        native_domain = [float(curve.Domain.T0), float(curve.Domain.T1)]
+        # Shape oracle, not native-parameter rounding parity: this privately
+        # owned reference alone gets a unit domain before fractional sampling.
+        curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+        if not curve.IsValid or curve.Domain.T0 != 0.0 or curve.Domain.T1 != 1.0:
+            raise ValueError("curve sampling reference normalization failed")
+
+        def compute():
+            points = [_xyz(curve.PointAt(t)) for t in fractions]
+            span_points = []
+            for index in range(curve.SpanCount):
+                interval = curve.SpanDomain(index)
+                samples = []
+                for t in fractions:
+                    parameter = interval.ParameterAt(t)
+                    side = (Rhino.Geometry.CurveEvaluationSide.Below if parameter == interval.T1
+                            else Rhino.Geometry.CurveEvaluationSide.Above)
+                    values = curve.DerivativeAt(parameter, 0, side)
+                    if values is None or len(values) != 1:
+                        raise ValueError("one-sided curve point sampling failed")
+                    samples.append(_xyz(values[0]))
+                span_points.append(samples)
+            return dict(domain=native_domain, points=points, span_points=span_points)
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
+def _curve_conic_centers(operation, iterations, tolerance):
+    """Use public conic recognition without normalizing the source parameter domain."""
+    absolute = _finite(tolerance["absolute"], "conic tolerance")
+    if absolute <= 0:
+        raise ValueError("conic tolerance must be positive")
+    curve = _nurbs_curve_from_definition(operation["curve"])
+    try:
+        def center(result):
+            success, conic = result
+            if not success:
+                return None
+            if not conic.IsValid:
+                raise ValueError("conic recognition returned invalid geometry")
+            return [_finite(v, "conic center") for v in _xyz(conic.Center)]
+        def compute():
+            return dict(circle_center=center(curve.TryGetCircle(absolute)),
+                        ellipse_center=center(curve.TryGetEllipse(absolute)))
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
+def _nurbs_curve_from_definition(definition, dimension=3):
+    degree = int(definition["degree"])
+    controls = definition["control_points"]
+    curve = Rhino.Geometry.NurbsCurve(dimension, True, degree + 1, len(controls))
+    try:
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, definition["knots"], "curve knot")
+        domain = definition.get("domain")
+        if domain is not None:
+            curve.Domain = Rhino.Geometry.Interval(
+                _finite(domain[0], "curve domain"),
+                _finite(domain[1], "curve domain"),
+            )
+        if not curve.IsValid:
+            raise ValueError("NURBS curve definition is invalid")
+        return curve
+    except Exception:
+        curve.Dispose()
+        raise
+
+
+def _brep_face_with_v_split(surface, trim_v, upper, tolerance):
+    brep = Rhino.Geometry.Brep.CreateFromSurface(surface)
+    if brep is None:
+        raise ValueError("could not create B-rep from face surface")
+    if trim_v is None:
+        return brep
+    try:
+        trim_v = _finite(trim_v, "B-rep face V split")
+        v_domain = surface.Domain(1)
+        if not v_domain.T0 < trim_v < v_domain.T1:
+            raise ValueError("B-rep face V split must be interior")
+        cutter = surface.IsoCurve(0, trim_v)
+        if cutter is None:
+            raise ValueError("could not construct B-rep face split isocurve")
+        try:
+            split = brep.Faces[0].Split(
+                [cutter], float(tolerance["absolute"])
+            )
+            if split is None or split.Faces.Count != 2:
+                raise ValueError("B-rep face split did not create two faces")
+            try:
+                u_domain = surface.Domain(0)
+                u_middle = 0.5 * (u_domain.T0 + u_domain.T1)
+                v_probe = 0.5 * (
+                    trim_v + (v_domain.T1 if upper else v_domain.T0)
+                )
+                selected = [
+                    face for face in split.Faces
+                    if face.IsPointOnFace(u_middle, v_probe)
+                    == Rhino.Geometry.PointFaceRelation.Interior
+                ]
+                if len(selected) != 1:
+                    raise ValueError("could not identify split B-rep face")
+                piece = selected[0].DuplicateFace(False)
+                if piece is None:
+                    raise ValueError("could not duplicate split B-rep face")
+            finally:
+                split.Dispose()
+        finally:
+            cutter.Dispose()
+    finally:
+        brep.Dispose()
+    return piece
+
+
+def _nurbs_surface_from_definition(definition):
+    degree_u = int(definition["degree_u"])
+    degree_v = int(definition["degree_v"])
+    count_u = int(definition["control_point_count_u"])
+    count_v = int(definition["control_point_count_v"])
+    surface = Rhino.Geometry.NurbsSurface.Create(
+        3, True, degree_u + 1, degree_v + 1, count_u, count_v
+    )
+    if surface is None:
+        raise ValueError("could not allocate NURBS surface")
+    try:
+        _set_surface_controls(surface, definition["control_points"], count_u, count_v)
+        _set_knots(surface.KnotsU, definition["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, definition["knots_v"], "surface V knot")
+        domain_u = definition.get("domain_u")
+        domain_v = definition.get("domain_v")
+        if (domain_u is None) != (domain_v is None):
+            raise ValueError("surface boundary requires both domains or neither")
+        if domain_u is not None:
+            set_u = surface.SetDomain(
+                0,
+                Rhino.Geometry.Interval(
+                    _finite(domain_u[0], "surface U domain"),
+                    _finite(domain_u[1], "surface U domain"),
+                ),
+            )
+            set_v = surface.SetDomain(
+                1,
+                Rhino.Geometry.Interval(
+                    _finite(domain_v[0], "surface V domain"),
+                    _finite(domain_v[1], "surface V domain"),
+                ),
+            )
+            if not set_u or not set_v:
+                raise ValueError("surface boundary domains are invalid")
+        if not surface.IsValid:
+            raise ValueError("NURBS surface boundary is invalid")
+        return surface
+    except Exception:
+        surface.Dispose()
+        raise
+
+
+def _offset_surface_face_geometry(operation, iterations, tolerance):
+    if "sphere" in operation:
+        definition = operation["sphere"]
+        radius = _finite(definition["radius"], "sphere radius")
+        if radius <= 0.0:
+            raise ValueError("sphere radius must be positive")
+        sphere = Rhino.Geometry.Sphere(_point(definition["center"]), radius)
+        surface = None
+        source = sphere.ToBrep()
+    elif "cylinder" in operation:
+        definition = operation["cylinder"]
+        radius = _finite(definition["radius"], "cylinder radius")
+        height = _finite(definition["height"], "cylinder height")
+        if radius <= 0.0 or height <= 0.0:
+            raise ValueError("cylinder radius and height must be positive")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        circle = Rhino.Geometry.Circle(plane, radius)
+        cylinder = Rhino.Geometry.Cylinder(circle, height)
+        surface = None
+        source = cylinder.ToBrep(False, False)
+    elif "cone" in operation:
+        definition = operation["cone"]
+        radius = _finite(definition["radius"], "cone radius")
+        height = _finite(definition["height"], "cone height")
+        if radius <= 0.0 or height <= 0.0:
+            raise ValueError("cone radius and height must be positive")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        cone = Rhino.Geometry.Cone(plane, height, radius)
+        surface = None
+        source = cone.ToBrep(False)
+    elif "torus" in operation:
+        definition = operation["torus"]
+        major = _finite(definition["major_radius"], "torus major radius")
+        minor = _finite(definition["minor_radius"], "torus minor radius")
+        if minor <= 0.0 or major <= minor:
+            raise ValueError("torus requires major radius greater than minor radius")
+        plane = Rhino.Geometry.Plane(
+            _point(definition["center"]), _vector(definition["axis"])
+        )
+        torus = Rhino.Geometry.Torus(plane, major, minor)
+        surface = None
+        source = torus.ToBrep()
+    else:
+        corners = operation["corners"]
+        if len(corners) != 4:
+            raise ValueError("offset face requires four corners")
+        surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+            *[_point(corner) for corner in corners]
+        )
+        if surface is None or not surface.IsValid:
+            raise ValueError("invalid source surface")
+        source = Rhino.Geometry.Brep.CreateFromSurface(surface)
+    if source is None or not source.IsValid or source.Faces.Count != 1:
+        raise ValueError("invalid source face")
+    distance = _finite(operation["distance"], "offset distance")
+    both_sides = bool(operation.get("both_sides", False))
+    solid = bool(operation.get("solid", False))
+    def create():
+        result = Rhino.Geometry.Brep.CreateFromOffsetFace(
+            source.Faces[0], distance, tolerance["absolute"], both_sides, solid
+        )
+        if result is None:
+            raise ValueError("Rhino could not offset the source face")
+        return result
+    try:
+        def record(result):
+            bounds = result.GetBoundingBox(True)
+            face_samples = []
+            for face in result.Faces:
+                u = (face.Domain(0).T0 + face.Domain(0).T1) * 0.5
+                v = (face.Domain(1).T0 + face.Domain(1).T1) * 0.5
+                point = face.PointAt(u, v)
+                face_normal = face.NormalAt(u, v)
+                face_samples.append({
+                    "point": [float(point.X), float(point.Y), float(point.Z)],
+                    "normal": [float(face_normal.X), float(face_normal.Y), float(face_normal.Z)],
+                    "reversed": bool(face.OrientationIsReversed),
+                    "domain_u": [float(face.Domain(0).T0), float(face.Domain(0).T1)],
+                    "domain_v": [float(face.Domain(1).T0), float(face.Domain(1).T1)],
+                })
+            volume = None
+            admitted_volume = None
+            if result.IsSolid:
+                mass = Rhino.Geometry.VolumeMassProperties.Compute(result)
+                if mass is not None:
+                    volume = float(mass.Volume)
+                    mass.Dispose()
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = document.Objects.AddBrep(result)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("Rhino rejected offset B-rep insertion")
+                try:
+                    admitted = document.Objects.FindId(object_id).Geometry
+                    admitted_mass = Rhino.Geometry.VolumeMassProperties.Compute(admitted)
+                    if admitted_mass is not None:
+                        admitted_volume = float(admitted_mass.Volume)
+                        admitted_mass.Dispose()
+                finally:
+                    document.Objects.Delete(object_id, True)
+            value = {
+                "created": True,
+                "valid": bool(result.IsValid),
+                "solid": bool(result.IsSolid),
+                "faces": int(result.Faces.Count),
+                "edges": int(result.Edges.Count),
+                "vertices": int(result.Vertices.Count),
+                "face_samples": face_samples,
+                "bbox_min": [float(bounds.Min.X), float(bounds.Min.Y), float(bounds.Min.Z)],
+                "bbox_max": [float(bounds.Max.X), float(bounds.Max.Y), float(bounds.Max.Z)],
+                "volume": volume,
+                "admitted_volume": admitted_volume,
+            }
+            if operation.get("topology", False):
+                value["topology"] = {
+                    "edges": [
+                        [int(edge.StartVertex.VertexIndex), int(edge.EndVertex.VertexIndex)]
+                        for edge in result.Edges
+                    ],
+                    "faces": [
+                        [
+                            {
+                                "type": str(loop.LoopType),
+                                "trims": [
+                                    {
+                                        "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                                        "type": str(trim.TrimType),
+                                        "reversed": bool(trim.IsReversed()),
+                                    }
+                                    for trim in loop.Trims
+                                ],
+                            }
+                            for loop in face.Loops
+                        ]
+                        for face in result.Faces
+                    ],
+                }
+            return value
+        return _measure_disposable(iterations, create, record)
+    finally:
+        source.Dispose()
+        if surface is not None:
+            surface.Dispose()
+
+
+def _nurbs_surface_evaluate(operation, iterations):
+    definition = {key: operation[key] for key in (
+        "degree_u", "degree_v", "control_point_count_u", "control_point_count_v",
+        "control_points", "knots_u", "knots_v")}
+    surface = _nurbs_surface_from_definition(definition)
+    try:
+        u = _finite(operation["u"], "surface U parameter")
+        v = _finite(operation["v"], "surface V parameter")
+        value, elapsed = _measure(iterations, lambda: surface.Evaluate(u, v, 1))
+        if value is None or len(value) < 3 or not value[0]:
+            raise ValueError("NURBS surface evaluation failed")
+        if value[2] is None or len(value[2]) < 2:
+            raise ValueError("NURBS surface derivatives are missing")
+        # Query the public normal independently. Crossing rounded derivatives
+        # with a model-length cutoff merely repeats the native implementation's
+        # former error and is not an independent normal oracle. Retain a zero
+        # result verbatim; NormalAt has no separate success/error return value.
+        normal = surface.NormalAt(u, v)
+        return dict(point=_xyz(value[1]), derivative_u=_xyz(value[2][0]),
+                    derivative_v=_xyz(value[2][1]), normal=_xyz(normal)), elapsed
+    finally:
+        surface.Dispose()
+
+
+def _curve_extension_boundary_from_definition(definition, tolerance):
+    surface_definition = definition.get("surface")
+    if surface_definition is not None:
+        return _nurbs_surface_from_definition(surface_definition)
+    planar_face_definition = definition.get("planar_face")
+    if planar_face_definition is not None:
+        curves = []
+        try:
+            curves.append(
+                _nurbs_curve_from_definition(planar_face_definition["outer"])
+            )
+            for hole in planar_face_definition.get("holes", []):
+                curves.append(_nurbs_curve_from_definition(hole))
+            breps = Rhino.Geometry.Brep.CreatePlanarBreps(
+                curves, tolerance["absolute"]
+            )
+            if breps is None or len(breps) != 1 or not breps[0].IsValid:
+                if breps is not None:
+                    for brep in breps:
+                        brep.Dispose()
+                raise ValueError("planar-face boundary is invalid")
+            return breps[0]
+        finally:
+            for curve in curves:
+                curve.Dispose()
+    box_definition = definition.get("box")
+    if box_definition is not None:
+        intervals = [
+            Rhino.Geometry.Interval(
+                _finite(box_definition[axis][0], "box boundary interval"),
+                _finite(box_definition[axis][1], "box boundary interval"),
+            )
+            for axis in ("x", "y", "z")
+        ]
+        box = Rhino.Geometry.Box(
+            Rhino.Geometry.Plane.WorldXY,
+            intervals[0],
+            intervals[1],
+            intervals[2],
+        )
+        brep = box.ToBrep()
+        if brep is None or not brep.IsValid:
+            if brep is not None:
+                brep.Dispose()
+            raise ValueError("box boundary is invalid")
+        return brep
+    return _nurbs_curve_from_definition(definition)
+
+
+def _surface_split_cutter_from_definition(definition, tolerance):
+    if "degree_u" in definition:
+        return _nurbs_surface_from_definition(definition)
+    return _curve_extension_boundary_from_definition(definition, tolerance)
+
+
+def _nurbs_surface_definition(surface):
+    nurbs = surface.ToNurbsSurface()
+    if nurbs is None:
+        raise ValueError("could not convert surface to NURBS form")
+    try:
+        count_u = int(nurbs.Points.CountU)
+        count_v = int(nurbs.Points.CountV)
+        controls = []
+        for v_index in range(count_v):
+            for u_index in range(count_u):
+                control = nurbs.Points.GetControlPoint(u_index, v_index)
+                controls.append(
+                    {
+                        "point": _xyz(control.Location),
+                        "weight": float(control.Weight),
+                    }
+                )
+        knots_u = [float(nurbs.KnotsU[0])]
+        knots_u.extend(float(nurbs.KnotsU[index]) for index in range(nurbs.KnotsU.Count))
+        knots_u.append(float(nurbs.KnotsU[nurbs.KnotsU.Count - 1]))
+        knots_v = [float(nurbs.KnotsV[0])]
+        knots_v.extend(float(nurbs.KnotsV[index]) for index in range(nurbs.KnotsV.Count))
+        knots_v.append(float(nurbs.KnotsV[nurbs.KnotsV.Count - 1]))
+        return {
+            "control_count": [count_u, count_v],
+            "control_points": controls,
+            "degree": [int(nurbs.Degree(0)), int(nurbs.Degree(1))],
+            "domain_u": [float(nurbs.Domain(0).T0), float(nurbs.Domain(0).T1)],
+            "domain_v": [float(nurbs.Domain(1).T0), float(nurbs.Domain(1).T1)],
+            "knots_u": knots_u,
+            "knots_v": knots_v,
+        }
+    finally:
+        nurbs.Dispose()
+
+
+def _mesh_fill_hole_value(mesh, source_vertex_count, source_face_count):
+    patch_triangles = []
+    for index in range(source_face_count, mesh.Faces.Count):
+        face = mesh.Faces[index]
+        if not face.IsTriangle:
+            raise ValueError("mesh hole patch unexpectedly contains a quad")
+        triangle = [
+            int(face.A) - source_vertex_count,
+            int(face.B) - source_vertex_count,
+            int(face.C) - source_vertex_count,
+        ]
+        if any(vertex < 0 for vertex in triangle):
+            raise ValueError("mesh hole patch unexpectedly reuses a source vertex")
+        triangle.sort()
+        patch_triangles.append(triangle)
+    patch_triangles.sort()
+    return {
+        "added_vertices": [
+            _xyz(mesh.Vertices.Point3dAt(index))
+            for index in range(source_vertex_count, mesh.Vertices.Count)
+        ],
+        "patch_triangles": patch_triangles,
+    }
+
+
+def _mesh_unweld_value(mesh):
+    face_points = []
+    point_groups = {}
+    for face_index in range(mesh.Faces.Count):
+        face = mesh.Faces[face_index]
+        raw_vertices = [int(face.A), int(face.B), int(face.C)]
+        if not face.IsTriangle:
+            raw_vertices.append(int(face.D))
+        face_points.append(
+            [_xyz(mesh.Vertices.Point3dAt(raw)) for raw in raw_vertices]
+        )
+        for raw in raw_vertices:
+            point = tuple(_xyz(mesh.Vertices.Point3dAt(raw)))
+            raw_groups = point_groups.setdefault(point, {})
+            raw_groups.setdefault(raw, []).append(face_index)
+    vertex_face_groups = []
+    for point in sorted(point_groups):
+        face_groups = [
+            sorted(faces) for faces in point_groups[point].values()
+        ]
+        face_groups.sort()
+        vertex_face_groups.append({
+            "face_groups": face_groups,
+            "point": list(point),
+        })
+    return {
+        "face_points": face_points,
+        "vertex_count": int(mesh.Vertices.Count),
+        "vertex_face_groups": vertex_face_groups,
+    }
+
+
+def _join_close_input(definition):
+    kind = definition["type"]
+    if kind == "circle":
+        x = Rhino.Geometry.Vector3d(*definition["x_axis"])
+        normal = Rhino.Geometry.Vector3d(*definition["normal"])
+        y = Rhino.Geometry.Vector3d.CrossProduct(normal, x)
+        plane = Rhino.Geometry.Plane(_point(definition["center"]), x, y)
+        return Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(plane, float(definition["radius"])))
+    if kind == "ellipse":
+        plane = Rhino.Geometry.Plane(_point(definition["center"]), Rhino.Geometry.Vector3d(*definition["x_axis"]), Rhino.Geometry.Vector3d(*definition["y_axis"]))
+        return Rhino.Geometry.Ellipse(plane, float(definition["radius_x"]), float(definition["radius_y"])).ToNurbsCurve()
+    if kind == "line":
+        return Rhino.Geometry.LineCurve(_point(definition["start"]), _point(definition["end"]))
+    if kind == "polyline":
+        return Rhino.Geometry.PolylineCurve([_point(point) for point in definition["vertices"]])
+    if kind == "arc":
+        return Rhino.Geometry.ArcCurve(Rhino.Geometry.Arc(*[_point(point) for point in definition["points"]]))
+    if kind == "nurbs":
+        return _nurbs_curve_from_definition(definition)
+    if kind == "polycurve":
+        curve = Rhino.Geometry.PolyCurve()
+        try:
+            for definition in definition["segments"]:
+                segment = _join_close_input(definition)
+                try:
+                    if not curve.AppendSegment(segment):
+                        raise ValueError("could not append join/close segment")
+                finally:
+                    segment.Dispose()
+            return curve
+        except Exception:
+            curve.Dispose()
+            raise
+    raise ValueError("unsupported join/close curve type")
+
+
+def _join_close_record(curve, inspect_native=False):
+    if isinstance(curve, Rhino.Geometry.PolyCurve):
+        curve.RemoveNesting()
+        segments = []
+        for index in range(curve.SegmentCount):
+            segment = curve.SegmentCurve(index).DuplicateCurve()
+            try:
+                segment.Domain = curve.SegmentDomain(index)
+                segments.append(_nurbs_curve_definition(segment))
+            finally:
+                segment.Dispose()
+        kind = "polycurve"
+    else:
+        segments = [_nurbs_curve_definition(curve)]
+        kind = "nurbs"
+        if isinstance(curve, Rhino.Geometry.LineCurve):
+            kind = "line"
+        elif isinstance(curve, Rhino.Geometry.ArcCurve):
+            kind = "arc"
+        elif isinstance(curve, Rhino.Geometry.PolylineCurve):
+            kind = "polyline"
+    value = {"type": kind, "closed": bool(curve.IsClosed), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+            "segments": segments, "length": float(curve.GetLength(1e-12))}
+    if inspect_native:
+        value["native"] = _polycurve_native_record(curve, {"relative": 1e-12})
+    return value
+
+
+def _curve_frames(operation, iterations):
+    curve = _join_close_input(operation["curve"])
+    try:
+        if operation.get("domain") is not None:
+            domain = [_finite(t, "curve frame domain") for t in operation["domain"]]
+            if len(domain) != 2 or domain[0] >= domain[1]:
+                raise ValueError("invalid curve frame domain")
+            curve.Domain = Rhino.Geometry.Interval(*domain)
+        if operation.get("reversed", False) and not curve.Reverse():
+            raise ValueError("curve frame reversal failed")
+        if operation.get("translation") is not None:
+            translation = Rhino.Geometry.Transform.Translation(_vector(operation["translation"]))
+            if not curve.Transform(translation):
+                raise ValueError("curve frame translation failed")
+        parameters = [_finite(t, "curve frame parameter") for t in operation["parameters"]]
+        if not parameters or any(a >= b for a, b in zip(parameters, parameters[1:])):
+            raise ValueError("curve frame parameters must be strictly increasing")
+        if any(t < curve.Domain.T0 or t > curve.Domain.T1 for t in parameters):
+            raise ValueError("curve frame parameter is outside its domain")
+
+        def compute():
+            frames = curve.GetPerpendicularFrames(parameters)
+            if frames is not None and len(frames) != len(parameters):
+                raise ValueError("Rhino could not produce the requested curve frames")
+            return frames
+
+        frames, elapsed = _measure(iterations, compute)
+        domain = [float(curve.Domain.T0), float(curve.Domain.T1)]
+        if frames is None:
+            return {"domain": domain, "available": False, "samples": []}, elapsed
+        seed = [_xyz(axis) for axis in [frames[0].XAxis, frames[0].YAxis, frames[0].ZAxis]]
+        samples = []
+        for t, frame in zip(parameters, frames):
+            axes = [_xyz(axis) for axis in [frame.XAxis, frame.YAxis, frame.ZAxis]]
+            rotation = [
+                [sum(axes[k][i] * seed[k][j] for k in range(3)) for j in range(3)]
+                for i in range(3)
+            ]
+            samples.append({
+                "parameter": t, "point": _xyz(frame.Origin),
+                "tangent": axes[2], "rotation": rotation,
+            })
+        return {"domain": domain, "available": True, "samples": samples}, elapsed
+    finally:
+        curve.Dispose()
+
+
+def _curve_area(operation, iterations):
+    curve = _join_close_input(operation["curve"])
+    try:
+        def compute():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(curve)
+            if properties is None:
+                raise ValueError("could not compute enclosed curve area")
+            try:
+                return {"area": float(properties.Area)}
+            finally:
+                properties.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        curve.Dispose()
+
+
+def _ellipse_offset_geometry(operation, iterations, tolerance):
+    definition = operation["curve"]
+    if definition["type"] != "ellipse" or not 8 <= operation["samples"] <= 513 or operation["distance"] <= 0:
+        raise ValueError("invalid ellipse offset fixture")
+    plane = Rhino.Geometry.Plane(_point(definition["center"]),
+                                 Rhino.Geometry.Vector3d(*definition["x_axis"]),
+                                 Rhino.Geometry.Vector3d(*definition["y_axis"]))
+    source = _join_close_input(definition)
+    try:
+        def compute():
+            curves = source.Offset(_point(operation["side"]), plane.Normal,
+                                   float(operation["distance"]), float(tolerance["absolute"]),
+                                   Rhino.Geometry.CurveOffsetCornerStyle.Sharp)
+            if curves is None or len(curves) != 1:
+                if curves is not None:
+                    for curve in curves: curve.Dispose()
+                raise ValueError("ellipse offset did not produce one curve")
+            return curves[0]
+
+        def record(curve):
+            samples = []
+            for index in range(operation["samples"]):
+                angle = 2.0 * math.pi * index / (operation["samples"] - 1)
+                target = plane.PointAt(float(definition["radius_x"]) * math.cos(angle),
+                                       float(definition["radius_y"]) * math.sin(angle))
+                found, parameter = curve.ClosestPoint(target)
+                if not found:
+                    raise ValueError("ellipse offset closest-point search failed")
+                samples.append(_xyz(curve.PointAt(parameter)))
+            return {"closed": bool(curve.IsClosed), "samples": samples}
+
+        return _measure_disposable(iterations, compute, record)
+    finally:
+        source.Dispose()
+
+
+def _curve_offset_geometry(operation, iterations, tolerance):
+    if operation["curve"]["type"] != "nurbs" or operation["distance"] <= 0:
+        raise ValueError("curve offset geometry probe requires a NURBS source and positive distance")
+    fractions = operation["source_fractions"]
+    queries = operation["queries"]
+    if not 1 <= len(fractions) <= 128 or len(queries) > 128 or any(not 0 <= float(f) <= 1 for f in fractions):
+        raise ValueError("invalid curve offset geometry sampling")
+    source = _join_close_input(operation["curve"])
+    try:
+        normal = Rhino.Geometry.Vector3d(*operation["normal"])
+        style = getattr(Rhino.Geometry.CurveOffsetCornerStyle, operation["corner"])
+
+        def compute():
+            outputs = source.Offset(_point(operation["side"]), normal,
+                                    float(operation["distance"]), float(tolerance["absolute"]), style)
+            if outputs is None or len(outputs) == 0:
+                raise ValueError("curve offset geometry probe failed")
+            try:
+                def nearest(query):
+                    best = None
+                    for output in outputs:
+                        success, parameter = output.ClosestPoint(query)
+                        if not success:
+                            raise ValueError("offset closest-point search failed")
+                        location = output.PointAt(parameter)
+                        distance = query.DistanceTo(location)
+                        if best is None or distance < best[0]:
+                            best = (distance, location)
+                    return _xyz(best[1])
+
+                return dict(
+                    closed=len(outputs) == 1 and bool(outputs[0].IsClosed),
+                    samples=[nearest(source.PointAt(source.Domain.ParameterAt(float(f)))) for f in fractions],
+                    queries=[nearest(_point(query)) for query in queries],
+                )
+            finally:
+                for output in outputs:
+                    output.Dispose()
+
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
+def _curve_native(operation, iterations, tolerance):
+    source = _join_close_input(operation["curve"])
+    try:
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed") and not curve.Reverse():
+                    raise ValueError("native curve reversal failed")
+                if operation.get("transform") is not None:
+                    transform = Rhino.Geometry.Transform.Identity
+                    for row, values in enumerate(operation["transform"]):
+                        for column, value in enumerate(values):
+                            transform[row, column] = float(value)
+                    # Explicitly prepare exact deformation for maps that do
+                    # not preserve circles; direct ArcCurve.Transform fits a circle.
+                    if transform.SimilarityType == Rhino.Geometry.TransformSimilarityType.NotSimilarity:
+                        curve = curve.ToNurbsCurve()
+                        if curve is None:
+                            raise ValueError("could not prepare exact affine deformation")
+                        owned.append(curve)
+                    if not curve.Transform(transform):
+                        raise ValueError("native curve transform failed")
+                edit = operation.get("edit")
+                if edit is None:
+                    value = _curve_native_record(curve, tolerance, operation.get("differential_only", False), operation.get("sided_parameters", []))
+                    if operation.get("parameter_map"):
+                        mapping = []
+                        for i in range(65):
+                            t = float(curve.Domain.ParameterAt(float(i) / 64.0))
+                            ok_n, n = curve.GetNurbsFormParameterFromCurveParameter(t)
+                            ok_c, c = curve.GetCurveParameterFromNurbsFormParameter(t)
+                            if not ok_n or not ok_c:
+                                raise ValueError("native/rational parameter correspondence failed")
+                            mapping.append({"parameter": t, "nurbs": float(n), "native": float(c)})
+                        value["parameter_map"] = mapping
+                    return value
+                kind = edit["kind"]
+                if kind == "seam":
+                    if not curve.ChangeClosedCurveSeam(float(edit["parameter"])):
+                        raise ValueError("native seam relocation failed")
+                    curves = [curve]
+                elif kind == "split":
+                    curves = curve.Split(System.Array[System.Double](edit["parameters"]))
+                    if curves is None:
+                        raise ValueError("native multiple split failed")
+                    owned.extend(curves)
+                else:
+                    start, end = edit["domain"]
+                    reverse = kind == "subcurve" and start > end and not curve.IsClosed
+                    interval = Rhino.Geometry.Interval(end, start) if reverse else Rhino.Geometry.Interval(start, end)
+                    result = curve.Trim(interval)
+                    if result is None:
+                        raise ValueError("native curve trim failed")
+                    owned.append(result)
+                    if reverse and not result.Reverse():
+                        raise ValueError("native subcurve reversal failed")
+                    curves = [result]
+                records = []
+                for result in curves:
+                    value = _curve_native_record(result, tolerance, operation.get("differential_only", False), operation.get("sided_parameters", []))
+                    value["type"] = ("arc" if isinstance(result, Rhino.Geometry.ArcCurve) else
+                                     "line" if isinstance(result, Rhino.Geometry.LineCurve) else
+                                     "polyline" if isinstance(result, Rhino.Geometry.PolylineCurve) else
+                                     "polycurve" if isinstance(result, Rhino.Geometry.PolyCurve) else "nurbs")
+                    records.append(value)
+                return {"curves": records}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
+def _curve_native_record(curve, tolerance, differential_only=False, sided_parameters=()):
+    samples = []
+    for i in range(33):
+        parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
+        derivatives = curve.DerivativeAt(parameter, 2)
+        if derivatives is None or len(derivatives) != 3:
+            raise ValueError("native curve derivatives failed")
+        samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
+                        "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2]),
+                        "tangent": _xyz(curve.TangentAt(parameter))})
+    value = {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+             "samples": samples, "nurbs": _nurbs_curve_definition(curve)}
+    if sided_parameters:
+        sides = []
+        for parameter in sided_parameters:
+            sample = {"parameter": float(parameter)}
+            for name, side in [("left", Rhino.Geometry.CurveEvaluationSide.Below), ("right", Rhino.Geometry.CurveEvaluationSide.Above)]:
+                derivatives = curve.DerivativeAt(float(parameter), 2, side)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("one-sided curve derivatives failed")
+                tangent = Rhino.Geometry.Vector3d(derivatives[1])
+                if not tangent.Unitize():
+                    # TangentAt has no public side argument. Restrict its
+                    # domain to the selected side at a stationary point.
+                    below = parameter == curve.Domain.T1 or (name == "left" and parameter > curve.Domain.T0)
+                    interval = (Rhino.Geometry.Interval(curve.Domain.T0, parameter) if below else
+                                Rhino.Geometry.Interval(parameter, curve.Domain.T1))
+                    piece = curve.Trim(interval)
+                    if piece is None:
+                        raise ValueError("could not restrict stationary tangent to one side")
+                    try:
+                        tangent = piece.TangentAt(float(parameter))
+                        if not tangent.Unitize():
+                            raise ValueError("one-sided curve tangent is degenerate")
+                    finally:
+                        piece.Dispose()
+                sample[name] = {"point": _xyz(derivatives[0]), "first": _xyz(derivatives[1]),
+                                "second": _xyz(derivatives[2]), "tangent": _xyz(tangent)}
+            sides.append(sample)
+        value["sides"] = sides
+    if differential_only:
+        return value
+    divisions = []
+    for i in range(18):
+        if i == 0:
+            parameter = float(curve.Domain.T0)
+        elif i == 17:
+            parameter = float(curve.Domain.T1)
+        else:
+            success, parameter = curve.NormalizedLengthParameter(float(i) / 17.0, tolerance["relative"])
+            if not success:
+                raise ValueError("native curve length inversion failed")
+        divisions.append({"parameter": float(parameter), "point": _xyz(curve.PointAt(parameter)), "tangent": _xyz(curve.TangentAt(parameter))})
+    value["length"] = float(curve.GetLength(tolerance["relative"]))
+    value["divisions"] = divisions
+    return value
+
+def _cut_source(definition):
+    if "native" not in definition:
+        return _nurbs_curve_from_definition(definition)
+    curve = _join_close_input(definition["native"])
+    try:
+        if definition.get("domain") is not None:
+            curve.Domain = Rhino.Geometry.Interval(*definition["domain"])
+        if definition.get("reversed") and not curve.Reverse():
+            raise ValueError("cut source reversal failed")
+        return curve
+    except Exception:
+        curve.Dispose()
+        raise
+
+
+def _cut_native_record(curve):
+    kind = ("arc" if isinstance(curve, Rhino.Geometry.ArcCurve) else
+            "line" if isinstance(curve, Rhino.Geometry.LineCurve) else
+            "polyline" if isinstance(curve, Rhino.Geometry.PolylineCurve) else
+            "polycurve" if isinstance(curve, Rhino.Geometry.PolyCurve) else "nurbs")
+    return {"type": kind, "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+            "points": [_xyz(curve.PointAt(curve.Domain.ParameterAt(float(i) / 16.0))) for i in range(17)]}
+
+
+def _polycurve_native_record(curve, tolerance):
+    segments = []
+    count = curve.SegmentCount if isinstance(curve, Rhino.Geometry.PolyCurve) else 1
+    for index in range(count):
+        segment = curve.SegmentCurve(index).DuplicateCurve() if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.DuplicateCurve()
+        try:
+            domain = curve.SegmentDomain(index) if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.Domain
+            segment.Domain = domain
+            kind = "nurbs"
+            if isinstance(segment, Rhino.Geometry.LineCurve):
+                kind = "line"
+            elif isinstance(segment, Rhino.Geometry.ArcCurve):
+                kind = "arc"
+            elif isinstance(segment, Rhino.Geometry.PolylineCurve):
+                kind = "polyline"
+            samples = []
+            for fraction in [0.0, 0.125, 0.375, 0.5, 0.875, 1.0]:
+                parameter = float(domain.T1) if fraction == 1.0 else float(domain.T0 + domain.Length * fraction)
+                derivatives = segment.DerivativeAt(parameter, 2)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("could not evaluate native segment derivatives")
+                samples.append({"parameter": parameter, "point": _xyz(segment.PointAt(parameter)),
+                                "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2])})
+            segments.append({"type": kind, "domain": [float(domain.T0), float(domain.T1)],
+                             "samples": samples, "nurbs": _nurbs_curve_definition(segment)})
+        finally:
+            segment.Dispose()
+    return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+            "length": float(curve.GetLength(tolerance["relative"])), "segments": segments}
+
+
+def _polycurve_native(operation, iterations, tolerance):
+    source = _join_close_input(operation["curve"])
+    try:
+        if not isinstance(source, Rhino.Geometry.PolyCurve) or not source.IsValid:
+            raise ValueError("native polycurve fixture requires a valid composite")
+        source.RemoveNesting()
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed") and not curve.Reverse():
+                    raise ValueError("native reverse failed")
+                if operation.get("trim") is not None:
+                    curve = curve.Trim(*operation["trim"])
+                    if curve is None:
+                        raise ValueError("native trim failed")
+                    owned.append(curve)
+                if operation.get("deformable") and not curve.MakeDeformable():
+                    raise ValueError("could not make native polycurve deformable")
+                if operation.get("transform") is not None:
+                    transform = Rhino.Geometry.Transform.Identity
+                    for row, values in enumerate(operation["transform"]):
+                        for column, value in enumerate(values):
+                            transform[row, column] = float(value)
+                    if not curve.Transform(transform):
+                        raise ValueError("native transform failed")
+                curves = [curve]
+                if operation.get("split") is not None:
+                    curves = curve.Split(float(operation["split"]))
+                    if curves is None or len(curves) != 2:
+                        raise ValueError("native split failed")
+                    owned.extend(curves)
+                results = []
+                for c in curves:
+                    value = _polycurve_native_record(c, tolerance)
+                    if operation.get("document_checks"):
+                        value["document"] = _polycurve_document_record(c)
+                    results.append(value)
+                return {"curves": results}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
+def _curve_join_close(operation, iterations, tolerance):
+    curves = [_join_close_input(definition) for definition in operation["curves"]]
+    try:
+        if not all(curve.IsValid for curve in curves):
+            raise ValueError("invalid join/close source curve")
+        if operation["action"] == "join":
+            def compute():
+                results = Rhino.Geometry.Curve.JoinCurves(curves, operation.get("join_tolerance", tolerance["absolute"]), operation.get("preserve_direction", False))
+                if results is None:
+                    raise ValueError("JoinCurves failed")
+                try:
+                    return [_join_close_record(curve, operation.get("inspect_native", False)) for curve in results]
+                finally:
+                    for curve in results:
+                        curve.Dispose()
+        else:
+            def compute():
+                document = Rhino.RhinoDoc.ActiveDoc
+                settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+                settings.NormalObjects = True
+                before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+                document.Objects.UnselectAll()
+                ids = [document.Objects.AddCurve(curve) for curve in curves]
+                groups = {}
+                try:
+                    selectors = " ".join("_SelID %s" % object_id for object_id in ids)
+                    if operation["action"] == "join_command":
+                        for index, object_id in enumerate(ids):
+                            group = document.Groups.Add()
+                            groups[group] = "source-%d" % index
+                            document.Groups.AddToGroup(group, object_id)
+                            obj = document.Objects.FindId(object_id)
+                            attributes = obj.Attributes.Duplicate()
+                            attributes.Name = "source-%d" % index
+                            document.Objects.ModifyAttributes(object_id, attributes, True)
+                        group = document.Groups.Add()
+                        groups[group] = "shared"
+                        for object_id in ids:
+                            document.Groups.AddToGroup(group, object_id)
+                        macro = "_-Join %s _Enter" % selectors
+                    else:
+                        macro = "_-CloseCrv _CloseWideGapsWithLine=%s _Tolerance=%.17g %s _Enter" % (
+                            "Yes" if operation.get("close_wide_gaps_with_line", True) else "No",
+                            operation.get("close_tolerance", tolerance["absolute"]), selectors)
+                    succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+                    results = []
+                    for obj in document.Objects.GetObjectList(settings):
+                        if obj.Id not in before:
+                            duplicate = obj.Geometry.DuplicateCurve()
+                            try:
+                                value = _join_close_record(duplicate, operation.get("inspect_native", False))
+                                if operation["action"] == "join_command":
+                                    value["name"] = obj.Attributes.Name
+                                    value["source_index"] = ids.index(obj.Id) if obj.Id in ids else None
+                                    value["groups"] = sorted(groups[index] for index in (obj.Attributes.GetGroupList() or []) if index in groups)
+                                results.append(value)
+                            finally:
+                                duplicate.Dispose()
+                    if operation["action"] == "join_command":
+                        results.sort(key=lambda value: value["name"])
+                    return {"succeeded": succeeded, "curves": results}
+                finally:
+                    document.Objects.UnselectAll()
+                    for obj in list(document.Objects.GetObjectList(settings)):
+                        if obj.Id not in before:
+                            document.Objects.Delete(obj.Id, True)
+                    for group in groups:
+                        document.Groups.Delete(group)
+        return _measure(iterations, compute)
+    finally:
+        for curve in curves:
+            curve.Dispose()
+
+
+def _interchange_curve_record(curve):
+    if not curve.IsValid:
+        raise ValueError("Viboceros exported an invalid Rhino curve")
+    classes = [
+        (Rhino.Geometry.PolyCurve, "polycurve"),
+        (Rhino.Geometry.NurbsCurve, "nurbs"),
+        (Rhino.Geometry.LineCurve, "line"),
+        (Rhino.Geometry.ArcCurve, "arc"),
+        (Rhino.Geometry.PolylineCurve, "polyline"),
+    ]
+    kind = next((name for cls, name in classes if isinstance(curve, cls)), None)
+    if kind is None:
+        raise ValueError("unexpected interchange curve type")
+    value = {
+        "type": kind,
+        "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+        "closed": bool(curve.IsClosed),
+        "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)],
+    }
+    if kind == "nurbs":
+        value["definition"] = _nurbs_curve_definition(curve)
+    if kind == "polycurve":
+        value["parameters"] = [float(curve.SegmentDomain(0).T0)] + [
+            float(curve.SegmentDomain(i).T1) for i in range(curve.SegmentCount)
+        ]
+        value["segments"] = [
+            _interchange_curve_record(curve.SegmentCurve(i)) for i in range(curve.SegmentCount)
+        ]
+    return value
+
+
+def _three_dm_curve_interchange(operation, iterations):
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("three_dm_curve_interchange requires compare mode to create the shared file")
+    if path.startswith("/"):
+        path = "Z:" + path.replace("/", "\\")
+
+    def read():
+        model = Rhino.FileIO.File3dm.Read(path)
+        if model is None:
+            raise ValueError("Rhino could not read the Viboceros-written file")
+        try:
+            objects = []
+            for item in model.Objects:
+                a = item.Attributes
+                color = a.ObjectColor
+                groups = a.GetGroupList()
+                objects.append({
+                    "name": a.Name, "visible": bool(a.Visible),
+                    "locked": a.Mode == Rhino.DocObjects.ObjectMode.Locked,
+                    "color": [int(color.R), int(color.G), int(color.B)],
+                    "color_source": int(a.ColorSource), "wire_density": int(a.WireDensity),
+                    "groups": [] if groups is None else [int(i) for i in groups],
+                    "layer": int(a.LayerIndex), "curve": _interchange_curve_record(item.Geometry),
+                })
+            layers = []
+            for layer in model.AllLayers:
+                color = layer.Color
+                layers.append({
+                    "name": layer.Name, "color": [int(color.R), int(color.G), int(color.B)],
+                    "visible": bool(layer.IsVisible), "locked": bool(layer.IsLocked),
+                })
+            return {
+                "groups": [g.Name for g in model.AllGroups],
+                "layers": layers, "objects": objects,
+            }
+        finally:
+            model.Dispose()
+
+    return _measure(iterations, read)
+
+
+def _interchange_brep_record(brep, include_samples=True):
+    """Retain definitions and topology, with optional evaluation-only samples."""
+    def curve_record(curve):
+        record = {"definition": _nurbs_curve_definition(curve)}
+        if include_samples:
+            record["samples"] = [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]
+        return record
+
+    faces = []
+    for face in brep.Faces:
+        surface = face.UnderlyingSurface()
+        loops = []
+        for loop in face.Loops:
+            trims = []
+            for trim in loop.Trims:
+                record = {"iso": int(trim.IsoStatus), "tolerance": list(trim.GetTolerances()),
+                          "definition": _nurbs_parameter_curve_definition(trim)}
+                if include_samples:
+                    lifted = []
+                    for i in range(33):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i / 32.0))
+                        lifted.append(_xyz(surface.PointAt(uv.X, uv.Y)))
+                    record["lifted"] = lifted
+                trims.append(record)
+            loops.append(trims)
+        record = {"definition": _nurbs_surface_definition(surface), "loops": loops}
+        if include_samples:
+            record["samples"] = [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i / 8.0),
+                                                      surface.Domain(1).ParameterAt(j / 8.0)))
+                                 for j in range(9) for i in range(9)]
+        faces.append(record)
+    return {"topology": _brep_morph_topology(brep),
+            "vertices": [{"point": _xyz(v.Location), "tolerance": float(v.Tolerance)} for v in brep.Vertices],
+            "edges": [{"tolerance": float(e.Tolerance), "curve": curve_record(e)} for e in brep.Edges],
+            "faces": faces}
+
+
+def _brep_solid_orientation(operation, iterations):
+    if iterations != 1:
+        raise ValueError("solid orientation requires one iteration")
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("solid orientation requires a shared artifact from compare mode")
+    if path.startswith("/"): path = "Z:" + path.replace("/", "\\")
+    model = Rhino.FileIO.File3dm.Read(path)
+    if model is None: raise ValueError("cannot read solid orientation artifact")
+    try:
+        items = list(model.Objects)
+        if len(items) != 1 or not isinstance(items[0].Geometry, Rhino.Geometry.Brep):
+            raise ValueError("solid orientation artifact must contain one B-rep")
+        brep = items[0].Geometry
+        if not brep.IsValid: raise ValueError("invalid solid orientation B-rep")
+        # Do not insert into a document: insertion can normalize face sense.
+        return dict(orientation=str(brep.SolidOrientation), solid=bool(brep.IsSolid),
+                    closed=all(edge.Valence == Rhino.Geometry.EdgeAdjacency.Interior for edge in brep.Edges),
+                    geometry=_interchange_brep_record(brep, include_samples=False)), 0
+    finally:
+        model.Dispose()
+
+
+def _interchange_brep_mesh_flags(brep):
+    parameters = mesh = None
+    parts = []
+    try:
+        parameters = Rhino.Geometry.MeshingParameters(0.0)
+        parameters.SimplePlanes = False
+        parameters.JaggedSeams = False
+        parts = Rhino.Geometry.Mesh.CreateFromBrep(brep, parameters) or []
+        if not parts:
+            raise ValueError("Rhino could not mesh the imported B-rep")
+        mesh = Rhino.Geometry.Mesh()
+        for part in parts:
+            mesh.Append(part)
+        if not mesh.IsValid:
+            raise ValueError("Rhino meshed the imported B-rep into invalid geometry")
+        manifold, oriented, _has_boundary = _coordinate_welded_mesh_flags(mesh)
+        boundaries = list(mesh.GetNakedEdges() or [])
+        return {"closed": bool(mesh.IsClosed), "manifold": bool(manifold), "oriented": bool(oriented),
+                "boundary_loops": len(boundaries), "boundaries_closed": all(b.IsClosed for b in boundaries)}
+    finally:
+        for item in list(parts) + [mesh, parameters]:
+            if item is not None:
+                item.Dispose()
+
+
+def _three_dm_brep_interchange(operation, iterations):
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("three_dm_brep_interchange requires compare mode to create the shared file")
+    if path.startswith("/"):
+        path = "Z:" + path.replace("/", "\\")
+
+    def read():
+        model = Rhino.FileIO.File3dm.Read(path)
+        if model is None:
+            raise ValueError("Rhino could not read the Viboceros-written file")
+        try:
+            items = list(model.Objects)
+            if len(items) != 1 or not isinstance(items[0].Geometry, Rhino.Geometry.Brep):
+                raise ValueError("interchange must contain exactly one B-rep")
+            brep = items[0].Geometry
+            if not brep.IsValid:
+                raise ValueError("Viboceros exported an invalid Rhino B-rep: %s" % (brep.IsValidWithLog(),))
+        except Exception:
+            model.Dispose()
+            raise
+        return model
+
+    model = None
+    try:
+        model = read()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            model.Dispose()
+            model = None
+            model = read()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        brep = next(iter(model.Objects)).Geometry
+        record = _interchange_brep_record(brep)
+        record["mesh"] = _interchange_brep_mesh_flags(brep)
+        return record, max(0, elapsed)
+    finally:
+        if model is not None:
+            model.Dispose()
+
+
+def _surface_grid(operation, iterations):
+    if operation.get("command", False):
+        return _surface_grid_command(operation, iterations)
+    points = [_point(p) for p in operation["points"]]
+    count_u, count_v = operation["count"]
+    degree_u, degree_v = operation.get("degree", [3, 3])
+    closed_u, closed_v = operation.get("closed", [False, False])
+    result = []
+    def build():
+        for surface in result:
+            surface.Dispose()
+        del result[:]
+        if operation.get("control", False):
+            surface = Rhino.Geometry.NurbsSurface.CreateFromPoints(
+                points, count_u, count_v, degree_u, degree_v)
+        else:
+            surface = Rhino.Geometry.NurbsSurface.CreateThroughPoints(
+                points, count_u, count_v, degree_u, degree_v, closed_u, closed_v)
+        if surface is not None:
+            result.append(surface)
+    try:
+        _unused, elapsed = _measure(iterations, build)
+        if not result:
+            return None, elapsed
+        return _surface_grid_record(result[0], operation), elapsed
+    finally:
+        for surface in result:
+            surface.Dispose()
+
+
+def _surface_grid_record(surface, operation, include_constraints=True):
+    definition = _nurbs_surface_definition(surface)
+    return {"surface": definition,
+            "closed": [bool(surface.IsClosed(axis)) for axis in range(2)],
+            "periodic": [bool(surface.IsPeriodic(axis)) for axis in range(2)],
+            "valid": bool(surface.IsValid),
+            "samples": [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i/12.0),
+                                              surface.Domain(1).ParameterAt(j/12.0)))
+                        for j in range(13) for i in range(13)],
+            "constraints": _surface_grid_constraints(surface, definition, operation) if include_constraints else None}
+
+
+def _surface_grid_constraints(surface, definition, operation):
+    if operation.get("control", False):
+        return None
+    points = [_point(p) for p in operation["points"]]
+    count = operation["count"]
+    parameters = []
+    for axis in range(2):
+        degree = definition["degree"][axis]
+        if operation.get("closed", [False, False])[axis] and degree > 1:
+            knots = definition["knots_u" if axis == 0 else "knots_v"]
+            parameters.append([sum(knots[i+1:i+degree+1])/degree for i in range(count[axis])])
+        else:
+            values = [0.0]
+            def point(i, j):
+                return points[i * count[1] + j] if axis == 0 else points[j * count[1] + i]
+            for i in range(count[axis] - 1):
+                delta = sum(point(i, j).DistanceTo(point(i+1, j)) for j in range(count[1-axis])) / count[1-axis]
+                values.append(values[-1] + delta)
+            parameters.append(values)
+    samples = [_xyz(surface.PointAt(u, v)) for v in parameters[1] for u in parameters[0]]
+    return {"parameters": parameters, "samples": samples,
+            "outside_domain": [any(t < surface.Domain(axis).T0 or t > surface.Domain(axis).T1
+                                   for t in parameters[axis]) for axis in range(2)]}
+
+
+def _surface_grid_command(operation, iterations):
+    counts = operation["count"]
+    degrees = operation.get("degree", [3, 3])
+    closure = operation.get("closed", [False, False])
+    if any(len(values) != 2 for values in [counts, degrees, closure]):
+        raise ValueError("point grid command requires two counts, degrees, and closure flags")
+    for degree, count, closed in zip(degrees, counts, closure):
+        if any(isinstance(value, bool) or int(value) != value for value in [degree, count]):
+            raise ValueError("point grid command counts and degrees must be integers")
+        if not 1 <= degree <= 11 or not (3 if closed else 2) <= count <= 256 or count <= degree:
+            raise ValueError("point grid command counts must exceed degrees (and closed directions need three stations)")
+    if len(operation["points"]) != counts[0] * counts[1]:
+        raise ValueError("point grid command requires the complete rectangular point array")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    control = operation.get("control", False)
+    macro = "_SrfControlPtGrid " if control else "_SrfPtGrid "
+    macro += "_KeepPoints=%s " % ("Yes" if operation.get("keep_points", False) else "No")
+    for axis, degree, count, closed in zip("UV", operation.get("degree", [3, 3]), operation["count"],
+                                            operation.get("closed", [False, False])):
+        macro += "_Degree%s=%d " % ("" if control else axis, degree)
+        if not control:
+            macro += "_Closed%s=%s " % (axis, "Yes" if closed else "No")
+        macro += "%d " % count
+    macro += " ".join(_command_point(p) for p in operation["points"])
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        try:
+            document.Objects.UnselectAll()
+            marker = document.Objects.AddPoint(Rhino.Geometry.Point3d(93, 97, 101))
+            if marker == System.Guid.Empty:
+                raise ValueError("could not add point grid selection sentinel")
+            document.Objects.Select(marker)
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+            outputs = [obj for obj in document.Objects.GetObjectList(settings) if obj.Id not in before and obj.Id != marker]
+            if not succeeded or not outputs:
+                raise ValueError("point grid command failed: %r; history: %s" % (
+                    macro, Rhino.RhinoApp.CommandHistoryWindowText[-3000:]))
+            records, points = [], []
+            for obj in outputs:
+                if isinstance(obj.Geometry, (Rhino.Geometry.Point, Rhino.Geometry.PointCloud)):
+                    cloud = isinstance(obj.Geometry, Rhino.Geometry.PointCloud)
+                    points.append({"kind": "point_cloud" if cloud else "point",
+                                   "points": [_xyz(p) for p in obj.Geometry.GetPoints()] if cloud else [_xyz(obj.Geometry.Location)],
+                                   "selected": bool(obj.IsSelected(False)), "name": obj.Attributes.Name,
+                                   "group_count": obj.Attributes.GroupCount})
+                    continue
+                brep = obj.Geometry
+                if not isinstance(brep, Rhino.Geometry.Brep):
+                    raise ValueError("point grid command must produce a B-rep")
+                faces = [(_surface_grid_record(face, operation, False), bool(face.OrientationIsReversed))
+                         for face in brep.Faces]
+                faces.sort(key=lambda item: (item[0]["surface"]["domain_v"], item[0]["surface"]["domain_u"]))
+                value = {"faces": [item[0] for item in faces], "face_reversed": [item[1] for item in faces],
+                         "valid": bool(brep.IsValid), "vertices": brep.Vertices.Count, "edges": brep.Edges.Count}
+                value.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                             group_count=obj.Attributes.GroupCount)
+                records.append(value)
+            expected_degree = [max(1, min(11, d, n-1)) for d, n in zip(operation.get("degree", [3, 3]), operation["count"])]
+            if len(records) != 1 or any(face["surface"]["degree"] != expected_degree for face in records[0]["faces"]):
+                raise ValueError("point grid command ignored the requested degrees: %r" % (
+                    [face["surface"]["degree"] for output in records for face in output["faces"]],))
+            original = document.Objects.FindId(marker)
+            return {"outputs": records, "points": points,
+                    "sentinel_present": original is not None,
+                    "sentinel_selected": bool(original and original.IsSelected(False)),
+                    "sentinel_point": _xyz(original.Geometry.Location) if original else None}
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    return _measure(iterations, compute)
+
+
+def _edge_surface(operation, iterations):
+    curves = []
+    result = []
+    def build():
+        for brep in result:
+            brep.Dispose()
+        del result[:]
+        brep = Rhino.Geometry.Brep.CreateEdgeSurface(curves)
+        if brep is not None:
+            result.append(brep)
+    try:
+        for definition in operation["curves"]:
+            curves.append(_nurbs_curve_from_definition(definition))
+        if operation.get("command", False):
+            def record(obj):
+                result = _edge_surface_record(obj.Geometry, operation.get("comparison_degree"))
+                result.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                              group_count=obj.Attributes.GroupCount)
+                return result
+            return _curve_surface_command(curves, "_-EdgeSrf _Enter", iterations, "edge-surface", record)
+        _unused, elapsed = _measure(iterations, build)
+        if not result:
+            return None, elapsed
+        brep = result[0]
+        return _edge_surface_record(brep, operation.get("comparison_degree")), elapsed
+    finally:
+        for brep in result:
+            brep.Dispose()
+        for curve in curves:
+            curve.Dispose()
+
+
+def _edge_surface_record(brep, comparison_degree):
+    definitions, samples = [], []
+    for face in brep.Faces:
+        points, parameters = [], []
+        for j in range(13):
+            for i in range(13):
+                uv = (face.Domain(0).ParameterAt(i/12.0), face.Domain(1).ParameterAt(j/12.0))
+                parameters.append(uv)
+                points.append(_xyz(face.PointAt(*uv)))
+        canonical = face.ToNurbsSurface()
+        if canonical is None:
+            raise ValueError("could not convert edge surface to NURBS")
+        try:
+            if comparison_degree is not None:
+                u, v = comparison_degree
+                if u < canonical.Degree(0) or v < canonical.Degree(1):
+                    raise ValueError("comparison degree must not lower the edge surface degree")
+                if not canonical.IncreaseDegreeU(u) or not canonical.IncreaseDegreeV(v):
+                    raise ValueError("edge surface comparison degree elevation failed")
+            for uv, p in zip(parameters, points):
+                q = _xyz(canonical.PointAt(*uv))
+                if any(abs(a-b)>2e-12+1e-14*max(abs(a),abs(b)) for a,b in zip(p,q)):
+                    raise ValueError("comparison degree elevation changed edge surface geometry")
+            definitions.append(_nurbs_surface_definition(canonical))
+        finally:
+            canonical.Dispose()
+        samples.append(points)
+    return {"surfaces": definitions, "samples": samples,
+            "face_reversed": [bool(face.OrientationIsReversed) for face in brep.Faces],
+            "valid": bool(brep.IsValid), "vertices": brep.Vertices.Count, "edges": brep.Edges.Count,
+            "singular_trims": sum(1 for trim in brep.Trims if trim.TrimType == Rhino.Geometry.BrepTrimType.Singular)}
+
+
+def _sweep1(operation, iterations, tolerance):
+    owned, result = [], []
+    try:
+        rail = _join_close_input(operation["rail"])
+        owned.append(rail)
+        for definition in operation["sections"]:
+            owned.append(_join_close_input(definition))
+
+        if operation.get("command", False):
+            if "roadlike_axis" in operation:
+                raise ValueError("roadlike Sweep1 command instrumentation is not implemented")
+            def macro(ids):
+                Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
+                return _sweep1_macro(operation, ids)
+            value, elapsed = _curve_surface_command(owned, macro, iterations, "sweep",
+                lambda obj: _sweep1_record(obj.Geometry, operation), verify_script=True)
+            records = [face for output in value["outputs"] for face in output]
+            return records, 0
+
+        def build():
+            for brep in result:
+                brep.Dispose()
+            del result[:]
+            result.extend(Rhino.Geometry.Brep.CreateFromSweep(
+                rail, owned[1:], Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+                System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if "roadlike_axis" in operation else 0),
+                _vector(operation["roadlike_axis"]) if "roadlike_axis" in operation else Rhino.Geometry.Vector3d.Unset,
+                operation.get("closed", False),
+                System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
+                System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
+                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 0), 0, 0.0,
+            ) or [])
+
+        _, elapsed = _measure(iterations, build)
+        return [face for brep in result for face in _sweep1_record(brep, operation)], elapsed
+    finally:
+        for geometry in result + owned:
+            geometry.Dispose()
+
+
+def _sweep1_macro(operation, ids):
+    # Rhino's script options differ from the labels in the sweep dialog.
+    # Set all supported sticky choices explicitly, independent of prior runs.
+    text = "_-Sweep1 '_-SelID %s " % ids[0]
+    text += " ".join("'_-SelID %s" % i for i in ids[1:])
+    text += " _Enter _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
+        "Global" if operation.get("blend", 0) else "Local",
+        "Yes" if operation.get("refit_rail", False) else "No")
+    return text
+
+
+def _sweep1_record(brep, operation):
+    if not brep.IsValid:
+        raise ValueError("Rhino sweep produced an invalid BRep")
+    surfaces = []
+    for face in brep.Faces:
+        samples = []
+        if operation.get("queries") is not None:
+            for query in operation["queries"]:
+                found, u, v = face.ClosestPoint(_point(query))
+                if not found:
+                    raise ValueError("sweep surface closest point failed")
+                samples.append(_xyz(face.PointAt(u, v)))
+        else:
+            samples = [_xyz(face.PointAt(face.Domain(0).ParameterAt(i/8.0),
+                                        face.Domain(1).ParameterAt(j/8.0)))
+                       for j in range(9) for i in range(9)]
+        record = {"samples": samples}
+        if operation.get("inspect_definition", False):
+            record["definition"] = _nurbs_surface_definition(face)
+        surfaces.append(record)
+    return surfaces
+
+
+def _loft_surface_record(surface, operation):
+    value = _nurbs_surface_definition(surface)
+    if operation.get("sample_geometry", False):
+        du, dv = surface.Domain(0), surface.Domain(1)
+        value["samples"] = [
+            _xyz(surface.PointAt(du.ParameterAt(u / 16.0), dv.ParameterAt(v / 16.0)))
+            for u in range(17) for v in range(17)
+        ]
+    return value
+
+
+def _loft(operation, iterations):
+    curves = []
+    styles = {
+        "normal": Rhino.Geometry.LoftType.Normal,
+        "loose": Rhino.Geometry.LoftType.Loose,
+        "tight": Rhino.Geometry.LoftType.Tight,
+        "straight": Rhino.Geometry.LoftType.Straight,
+        "uniform": Rhino.Geometry.LoftType.Uniform,
+    }
+    result = []
+    def build():
+        for brep in result:
+            brep.Dispose()
+        del result[:]
+        result.extend(Rhino.Geometry.Brep.CreateFromLoft(
+            curves, Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+            styles[operation.get("style", "normal")], operation.get("closed", False)
+        ) or [])
+        if not result:
+            raise ValueError("Rhino could not create the loft")
+    try:
+        for definition in operation["curves"]:
+            curves.append(_nurbs_curve_from_definition(definition))
+        if operation.get("command", False):
+            return _loft_command(operation, iterations, curves)
+        _unused, elapsed = _measure(iterations, build)
+        surfaces = []
+        for brep in result:
+            if not brep.IsValid:
+                raise ValueError("Rhino loft is invalid")
+            for face in brep.Faces:
+                surfaces.append(_loft_surface_record(face, operation))
+        return surfaces, elapsed
+    finally:
+        for brep in result:
+            brep.Dispose()
+        for curve in curves:
+            curve.Dispose()
+
+
+def _loft_command(operation, iterations, curves):
+    def record(obj):
+        # Face indices are topology allocation details, not loft geometry.
+        faces = [(_loft_surface_record(face, operation), bool(face.OrientationIsReversed))
+                 for face in obj.Geometry.Faces]
+        faces.sort(key=lambda item: (item[0]["domain_v"], item[0]["domain_u"]))
+        return {"surfaces": [item[0] for item in faces],
+                "face_reversed": [item[1] for item in faces],
+                "valid": bool(obj.Geometry.IsValid),
+                "vertices": obj.Geometry.Vertices.Count, "edges": obj.Geometry.Edges.Count,
+                "selected": bool(obj.IsSelected(False)), "name": obj.Attributes.Name,
+                "group_count": obj.Attributes.GroupCount}
+    seam = "_Enter " if all(curve.IsClosed for curve in curves) else ""
+    macro = "_-Loft %s_Type=%s _Closed=%s _Enter" % (
+        seam, operation.get("style", "normal"),
+        "Yes" if operation.get("closed", False) else "No")
+    return _curve_surface_command(curves, macro, iterations, "loft", record)
+
+
+def _run_surface_script(script, verify):
+    before = Rhino.RhinoApp.CommandHistoryWindowText if verify else ""
+    succeeded = bool(Rhino.RhinoApp.RunScript(script, verify))
+    if verify:
+        after = Rhino.RhinoApp.CommandHistoryWindowText
+        if after.startswith(before):
+            history = after[len(before):]
+        else:
+            # The history window may have discarded its oldest entries.
+            marker = "Command: " + script.split()[0]
+            history = after.rsplit(marker, 1)[-1]
+        if "unknown command:" in history.lower():
+            raise ValueError("surface command rejected an option: %s" % history[-2000:])
+    return succeeded
+
+
+def _curve_surface_command(curves, macro, iterations, prefix, record, verify_script=False):
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        ids = []
+        try:
+            document.Objects.UnselectAll()
+            for i, curve in enumerate(curves):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "%s-source-%d" % (prefix, i)
+                    object_id = document.Objects.AddCurve(curve, attributes)
+                finally:
+                    attributes.Dispose()
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add %s profile" % prefix)
+                ids.append(object_id)
+                document.Objects.Select(ids[-1])
+            script = macro(ids) if callable(macro) else macro
+            succeeded = _run_surface_script(script, verify_script)
+            outputs = [obj for obj in document.Objects.GetObjectList(settings)
+                       if obj.Id not in before and obj.Id not in ids]
+            if not succeeded or not outputs:
+                raise ValueError("surface command failed: %r; history: %s" % (
+                    script, Rhino.RhinoApp.CommandHistoryWindowText[-2000:]))
+            return {
+                "succeeded": succeeded,
+                "originals_present": [document.Objects.FindId(i) is not None for i in ids],
+                "originals_selected": [bool(document.Objects.FindId(i) and document.Objects.FindId(i).IsSelected(False)) for i in ids],
+                "outputs": [record(obj) for obj in outputs],
+            }
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    return _measure(iterations, compute)
+
+
+def _surface_jets(operation, iterations, curvature=False):
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    owned = [surface]
+    try:
+        for axis, name in [(0, "reverse_u"), (1, "reverse_v")]:
+            if operation.get(name, False):
+                result = surface.Reverse(axis)
+                if result is None:
+                    raise ValueError("surface reversal failed")
+                owned.append(result)
+                surface = result
+        if operation.get("swap_uv", False):
+            result = surface.Transpose()
+            if result is None:
+                raise ValueError("surface transpose failed")
+            owned.append(result)
+            surface = result
+        if operation.get("translation") is not None:
+            if not surface.Transform(Rhino.Geometry.Transform.Translation(_vector(operation["translation"]))):
+                raise ValueError("surface translation failed")
+        domains = [surface.Domain(0), surface.Domain(1)]
+        samples = operation.get("samples")
+        if samples is None:
+            samples = [{"parameter": [domains[0].ParameterAt(i / 4.0), domains[1].ParameterAt(j / 4.0)]}
+                       for j in range(5) for i in range(5)]
+        if not samples:
+            raise ValueError("surface jets need samples")
+        prepared = []
+        extended = operation.get("extended", False)
+        for sample in samples:
+            uv = [_finite(t, "surface jet parameter") for t in sample["parameter"]]
+            if len(uv) != 2:
+                raise ValueError("surface jet needs two parameters")
+            intervals = []
+            trim = False
+            explicit_sides = "side_u" in sample or "side_v" in sample
+            for axis, key in [(0, "side_u"), (1, "side_v")]:
+                side = sample.get(key, "right")
+                if side not in ("left", "right") or (extended and side == "left"):
+                    raise ValueError("invalid surface evaluation side")
+                domain = domains[axis]
+                t = uv[axis]
+                if not extended and not domain.T0 <= t <= domain.T1:
+                    raise ValueError("surface parameter is outside its domain")
+                # RhinoCommon Evaluate has no quadrant argument. Exact trimming
+                # makes the selected span the sole interior boundary limit;
+                # no parameter perturbation or finite difference is involved.
+                if explicit_sides and not extended and domain.T0 < t < domain.T1:
+                    intervals.append(Rhino.Geometry.Interval(domain.T0, t) if side == "left"
+                                     else Rhino.Geometry.Interval(t, domain.T1))
+                    trim = True
+                else:
+                    intervals.append(domain)
+            target = surface
+            if trim:
+                target = surface.Trim(intervals[0], intervals[1])
+                if target is None:
+                    raise ValueError("could not isolate surface evaluation quadrant")
+                owned.append(target)
+            prepared.append((target, uv))
+
+        def compute():
+            values = []
+            for target, uv in prepared:
+                if curvature:
+                    values.append(target.CurvatureAt(uv[0], uv[1]))
+                    continue
+                success, point, derivatives = target.Evaluate(uv[0], uv[1], 2)
+                if not success or derivatives is None or len(derivatives) != 5:
+                    raise ValueError("Rhino could not evaluate second surface partials")
+                values.append((point, derivatives))
+            return values
+
+        jets, elapsed = _measure(iterations, compute)
+        records = []
+        for (_, uv), value in zip(prepared, jets):
+            if curvature:
+                record = _surface_curvature_record(value)
+                record["parameter"] = uv
+                records.append(record)
+                continue
+            point, derivatives = value
+            record = {"parameter": uv, "point": _xyz(point)}
+            for key, derivative in zip(["du", "dv", "duu", "duv", "dvv"], derivatives):
+                record[key] = _xyz(derivative)
+            records.append(record)
+        return {"domain_u": [float(domains[0].T0), float(domains[0].T1)],
+                "domain_v": [float(domains[1].T0), float(domains[1].T1)],
+                "samples": records}, elapsed
+    finally:
+        for item in reversed(owned):
+            item.Dispose()
+
+
+def _surface_curvature_record(value):
+    if value is None:
+        return {"available": False}
+    principal = [float(value.Kappa(i)) for i in range(2)]
+    directions = [_xyz(value.Direction(i)) for i in range(2)]
+    operator = [[sum(principal[k]*directions[k][i]*directions[k][j] for k in range(2))
+                 for j in range(3)] for i in range(3)]
+    return {"available": True, "point": _xyz(value.Point), "normal": _xyz(value.Normal),
+            "principal": sorted(principal, reverse=True), "gaussian": float(value.Gaussian),
+            "mean": float(value.Mean), "shape_operator": operator}
+
+
+def _curvature_marker(geometry, tolerance):
+    if isinstance(geometry, Rhino.Geometry.Point):
+        return {"kind": "point", "point": _xyz(geometry.Location)}
+    if geometry.IsLinear(tolerance):
+        start, end = _xyz(geometry.PointAtStart), _xyz(geometry.PointAtEnd)
+        chord = [a*0.5-b*0.5 for a,b in zip(start,end)]
+        return {"kind": "line", "center": [a*0.5+b*0.5 for a,b in zip(start,end)],
+                "half_chord_tensor": [[x*y for y in chord] for x in chord]}
+    success, circle = geometry.TryGetCircle(tolerance)
+    if success:
+        normal = _xyz(circle.Plane.Normal)
+        return {"kind": "circle", "center": _xyz(circle.Center), "radius": float(circle.Radius),
+                "plane_tensor": [[x*y for y in normal] for x in normal]}
+    success, arc = geometry.TryGetArc(tolerance)
+    if success:
+        start, end = _xyz(arc.StartPoint), _xyz(arc.EndPoint)
+        chord = [a*0.5-b*0.5 for a,b in zip(start,end)]
+        normal = _xyz(arc.Plane.Normal)
+        return {"kind": "arc", "center": _xyz(arc.Center), "radius": float(arc.Radius),
+                "sweep": float(arc.Angle), "midpoint": _xyz(arc.MidPoint),
+                "end_midpoint": [a*0.5+b*0.5 for a,b in zip(start,end)],
+                "half_chord_tensor": [[x*y for y in chord] for x in chord],
+                "plane_tensor": [[x*y for y in normal] for x in normal]}
+    return {"kind": "other_curve", "samples": [_xyz(geometry.PointAt(geometry.Domain.ParameterAt(i/12.0))) for i in range(13)]}
+
+
+def _distance_command(operation):
+    return _point_measurement_command("Distance", [operation["start"], operation["end"]], operation)
+
+
+def _angle_command(operation):
+    points = operation["points"]
+    if len(points) != 4:
+        raise ValueError("angle command requires four points")
+    return _point_measurement_command("Angle", points, operation)
+
+
+def _evaluate_point_command(operation):
+    return _point_measurement_command("EvaluatePt", [operation["point"]], operation)
+
+
+def _point_measurement_command(name, points, operation):
+    """Capture public command output in the oracle-owned document, without geometry edits."""
+    document = Rhino.RhinoDoc.ActiveDoc
+    viewport = document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    plane = Rhino.Geometry.Plane(
+        _point(operation.get("origin", [0, 0, 0])),
+        _vector(operation.get("x_axis", [1, 0, 0])),
+        _vector(operation.get("y_axis", [0, 1, 0])))
+    if not plane.IsValid:
+        raise ValueError("invalid measurement construction plane")
+    options = " _Label=Off" if name == "EvaluatePt" else ""
+    macro = "! _" + name + options + " " + " ".join("w" + _command_point(point) for point in points)
+    try:
+        viewport.SetConstructionPlane(plane)
+        return _measurement_history(name, macro)
+    finally:
+        viewport.SetConstructionPlane(original_plane)
+
+
+def _measurement_history(name, macro, allow_cancel=False):
+    marker = "Viboceros measurement probe " + str(System.Guid.NewGuid())
+    Rhino.RhinoApp.WriteLine(marker)
+    succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+    parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+    if (not succeeded and not allow_cancel) or len(parts) != 2:
+        raise ValueError("measurement command failed or history marker was lost: %s" %
+                         Rhino.RhinoApp.CommandHistoryWindowText[-3000:])
+    history = parts[1].strip()
+    labels = {
+        "EvaluatePt": ["Point in world coordinates =", "CPlane coordinates ="],
+        "EvaluateUVPt": ["UV coordinates of point ="],
+    }.get(name, [name + " ="])
+    reported = (("Curve domain =" in history or all(label in history for label in
+                 ["Surface U domain =", "Surface V domain ="])) if name == "Domain"
+                else all(label in history for label in labels))
+    if "Unknown command:" in history or not reported:
+        raise ValueError("measurement command produced no measurement: %s" % history[-3000:])
+    return {"history": history}, 0
+
+
+def _checked_closest_parameter(domain, parameter):
+    parameter = _finite(parameter, "closest-point parameter")
+    if not float(domain.T0) <= parameter <= float(domain.T1):
+        raise ValueError("closest-point parameter is outside the active domain")
+    return parameter
+
+
+def _nurbs_curve_closest_point(operation, iterations):
+    degree = int(operation["degree"])
+    controls = operation["control_points"]
+    curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+    try:
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        target = _point(operation["target"])
+
+        def query():
+            success, parameter = curve.ClosestPoint(target)
+            if not success:
+                raise ValueError("NURBS curve closest-point search failed")
+            parameter = _checked_closest_parameter(curve.Domain, parameter)
+            closest = curve.PointAt(parameter)
+            if not closest.IsValid:
+                raise ValueError("NURBS curve closest point is invalid")
+            distance = _finite(closest.DistanceTo(target), "curve closest-point distance")
+            if distance < 0.0:
+                raise ValueError("NURBS curve closest-point distance is negative")
+            return {"distance": distance, "parameter": parameter, "point": _xyz(closest)}
+
+        return _measure(iterations, query)
+    finally:
+        curve.Dispose()
+
+
+def _surface_closest_point(operation, iterations):
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        targets = [_point(point) for point in operation["points"]]
+        parameters, elapsed = _measure(iterations, lambda: [surface.ClosestPoint(point) for point in targets])
+        result = []
+        for target, entry in zip(targets, parameters):
+            found, u, v = entry
+            if not found:
+                raise ValueError("surface closest point failed")
+            u = _checked_closest_parameter(surface.Domain(0), u)
+            v = _checked_closest_parameter(surface.Domain(1), v)
+            point = surface.PointAt(u,v)
+            if not point.IsValid:
+                raise ValueError("surface closest point is invalid")
+            result.append({"parameters": [u,v], "normalized_parameters": [
+                surface.Domain(0).NormalizedParameterAt(u), surface.Domain(1).NormalizedParameterAt(v)],
+                "point": _xyz(point), "distance": point.DistanceTo(target)})
+        return result, elapsed
+    finally:
+        surface.Dispose()
+
+
+def _evaluate_uv_macro(operation):
+    for key in ("normalized", "create_point", "inherit_options", "undo_redo"):
+        if key in operation and type(operation[key]) is not bool:
+            raise ValueError("invalid UV boolean")
+    if "point" in operation and "events" in operation:
+        raise ValueError("UV probe needs a point or events, not both")
+    tokens = ["!", "_EvaluateUVPt"]
+    if not operation.get("inherit_options", False):
+        tokens.extend(["_Normalized=%s" % ("Yes" if operation.get("normalized", False) else "No"),
+                       "_CreatePoint=%s" % ("Yes" if operation.get("create_point", False) else "No")])
+    elif "normalized" in operation or "create_point" in operation:
+        raise ValueError("inherited UV options cannot also be specified")
+    events = operation.get("events", [{"point": operation.get("point")}])
+    if not 1 <= len(events) <= 32:
+        raise ValueError("invalid UV event count")
+    for event in events:
+        if not event or set(event) - set(["point", "normalized", "create_point"]):
+            raise ValueError("invalid UV event")
+        for key, name in [("normalized", "Normalized"), ("create_point", "CreatePoint")]:
+            if key in event:
+                if type(event[key]) is not bool:
+                    raise ValueError("invalid UV boolean")
+                tokens.append("_%s=%s" % (name, "Yes" if event[key] else "No"))
+        if "point" in event:
+            tokens.append("w" + _command_point(event["point"]))
+    ending = operation.get("ending", "enter")
+    if ending not in ("enter", "cancel"):
+        raise ValueError("invalid UV ending")
+    tokens.append("_Enter" if ending == "enter" else "!")
+    return " ".join(tokens)
+
+
+def _evaluate_uv_command(operation):
+    macro = _evaluate_uv_macro(operation)
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    existing = list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in existing)
+    selected = [obj.Id for obj in existing if obj.IsSelected(False)]
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    try:
+        document.Objects.UnselectAll()
+        source = document.Objects.AddSurface(surface)
+        if source == System.Guid.Empty:
+            raise ValueError("could not add UV source")
+        document.Objects.Select(source)
+        checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+        if operation.get("ending") == "cancel":
+            result, _ = _measurement_history("EvaluateUVPt", macro, allow_cancel=True)
+        else:
+            result, _ = _measurement_history("EvaluateUVPt", macro)
+        def points():
+            result = []
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before and obj.Id != source:
+                    if not isinstance(obj.Geometry, Rhino.Geometry.Point):
+                        raise ValueError("UV command created unexpected geometry")
+                    result.append(_xyz(obj.Geometry.Location))
+            return sorted(result)
+        result["created_points"] = points()
+        result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        if operation.get("undo_redo", False):
+            for command in ("Undo", "Redo"):
+                marker = "Viboceros UV history probe " + str(System.Guid.NewGuid())
+                Rhino.RhinoApp.WriteLine(marker)
+                _run_surface_script("_" + command, True)
+                parts = Rhino.RhinoApp.CommandHistoryWindowText.split(marker, 1)
+                if len(parts) != 2:
+                    raise ValueError("UV history probe lost its marker")
+                result[command.lower() + "_history"] = parts[1].strip()
+                result["after_" + command.lower()] = points()
+                result["source_exists_after_" + command.lower()] = document.Objects.FindId(source) is not None
+        return result, 0
+    finally:
+        # The private oracle command owns all additions after this snapshot.
+        for obj in list(document.Objects.GetObjectList(settings)):
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        surface.Dispose()
+
+
+def _surface_face_uv_api(operation):
+    definitions = operation.get("surfaces", [])
+    queries = operation.get("queries", [])
+    if not 2 <= len(definitions) <= 8 or not 1 <= len(queries) <= 32:
+        raise ValueError("face UV probe requires 2..8 surfaces and 1..32 queries")
+    brep = Rhino.Geometry.Brep()
+    owned = []
+    try:
+        for definition in definitions:
+            surface = _nurbs_surface_from_definition(definition)
+            owned.append(surface)
+            part = Rhino.Geometry.Brep.CreateFromSurface(surface)
+            if part is None:
+                raise ValueError("could not make face UV probe B-rep")
+            owned.append(part)
+            brep.Append(part)
+        if brep.Faces.Count != len(definitions) or not brep.IsValid:
+            raise ValueError("face UV probe B-rep is invalid")
+        result = []
+        for query in queries:
+            face_index = query["face"]
+            if type(face_index) is not int or not 0 <= face_index < brep.Faces.Count:
+                raise ValueError("face UV probe index is out of range")
+            target = _point(query["point"])
+            surface = brep.Faces[face_index].UnderlyingSurface()
+            found, u, v = surface.ClosestPoint(target)
+            if not found:
+                raise ValueError("face UV probe closest point failed")
+            u = _checked_closest_parameter(surface.Domain(0), u)
+            v = _checked_closest_parameter(surface.Domain(1), v)
+            projected = surface.PointAt(u, v)
+            if not projected.IsValid:
+                raise ValueError("face UV probe point is invalid")
+            result.append({
+                "face": face_index,
+                "parameters": [u, v],
+                "normalized_parameters": [
+                    surface.Domain(0).NormalizedParameterAt(u),
+                    surface.Domain(1).NormalizedParameterAt(v),
+                ],
+                "point": _xyz(projected),
+                "distance": projected.DistanceTo(target),
+            })
+        return {"face_count": brep.Faces.Count, "queries": result}, 0
+    finally:
+        brep.Dispose()
+        for item in reversed(owned):
+            item.Dispose()
+
+
+def _domain_command(operation):
+    curve = "curve" in operation
+    if curve == ("surface" in operation):
+        raise ValueError("domain command needs exactly one curve or surface")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    geometry = (_nurbs_curve_from_definition(operation["curve"]) if curve else
+                _nurbs_surface_from_definition(operation["surface"]))
+    owned = [geometry]
+    source = System.Guid.Empty
+    subcurve_source = System.Guid.Empty
+    try:
+        result = ({"domain": [geometry.Domain.T0, geometry.Domain.T1]} if curve else
+                  {"domain_u": [geometry.Domain(0).T0, geometry.Domain(0).T1],
+                   "domain_v": [geometry.Domain(1).T0, geometry.Domain(1).T1]})
+        if "subcurve_parameters" in operation:
+            if not curve:
+                raise ValueError("domain subcurve needs a curve source")
+            parameters = operation["subcurve_parameters"]
+            if len(parameters) != 2:
+                raise ValueError("domain subcurve needs two parameters")
+            start, end = [_finite(value, "subcurve parameter") for value in parameters]
+            if start == end or not (geometry.Domain.T0 <= start <= geometry.Domain.T1 and
+                                    geometry.Domain.T0 <= end <= geometry.Domain.T1):
+                raise ValueError("domain subcurve parameters must be distinct and in range")
+            if start > end and not geometry.IsClosed:
+                subcurve = geometry.Trim(end, start)
+                if subcurve is not None and not subcurve.Reverse():
+                    subcurve.Dispose()
+                    raise ValueError("could not reverse domain subcurve")
+            else:
+                subcurve = geometry.Trim(Rhino.Geometry.Interval(start, end))
+            if subcurve is None:
+                raise ValueError("could not trim domain subcurve")
+            owned.append(subcurve)
+            result["subcurve_domain"] = [subcurve.Domain.T0, subcurve.Domain.T1]
+            result["subcurve_start"] = _xyz(subcurve.PointAtStart)
+            result["subcurve_end"] = _xyz(subcurve.PointAtEnd)
+        as_brep = operation.get("as_brep", False)
+        if as_brep:
+            if curve:
+                raise ValueError("domain B-rep source must be a surface")
+            geometry = geometry.ToBrep()
+            if geometry is None:
+                raise ValueError("could not create domain B-rep source")
+            owned.append(geometry)
+        document.Objects.UnselectAll()
+        source = (document.Objects.AddCurve(geometry) if curve else
+                  document.Objects.AddBrep(geometry) if as_brep else document.Objects.AddSurface(geometry))
+        if source == System.Guid.Empty:
+            raise ValueError("could not add domain source")
+        document.Objects.Select(source)
+        checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+        report, _ = _measurement_history("Domain", "! _Domain")
+        result.update(report)
+        result["source_geometry_unchanged"] = document.Objects.FindId(source).Geometry.DataCRC(0) == checksum
+        if "subcurve_parameters" in operation:
+            document.Objects.UnselectAll()
+            subcurve_source = document.Objects.AddCurve(subcurve)
+            if subcurve_source == System.Guid.Empty:
+                raise ValueError("could not add domain subcurve")
+            document.Objects.Select(subcurve_source)
+            subcurve_report, _ = _measurement_history("Domain", "! _Domain")
+            result["subcurve_history"] = subcurve_report["history"]
+        return result, 0
+    finally:
+        if subcurve_source != System.Guid.Empty:
+            document.Objects.Delete(subcurve_source, True)
+        if source != System.Guid.Empty:
+            document.Objects.Delete(source, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        for item in reversed(owned):
+            item.Dispose()
+
+
+def _radius_command(operation):
+    name = "Diameter" if operation.get("diameter", False) else "Radius"
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    geometry = _nurbs_curve_from_definition(operation["curve"])
+    source = System.Guid.Empty
+    try:
+        document.Objects.UnselectAll()
+        source = document.Objects.AddCurve(geometry)
+        if source == System.Guid.Empty:
+            raise ValueError("could not add radius source")
+        found, parameter = geometry.ClosestPoint(_point(operation["point"]))
+        if not found:
+            raise ValueError("could not locate radius evaluation point")
+        curvature = geometry.CurvatureAt(parameter).Length
+        result = {"parameter": parameter, "curvature": curvature,
+                  "radius": None if curvature == 0 else 1.0 / curvature,
+                  "diameter": None if curvature == 0 else 2.0 / curvature}
+        if operation.get("capture_command", False):
+            # Circular preselection reports immediately. General
+            # pointwise evaluation above is separate public-API evidence.
+            document.Objects.Select(source)
+            report, _ = _measurement_history(name, "! _" + name)
+            result.update(report)
+        return result, 0
+    finally:
+        if source != System.Guid.Empty:
+            document.Objects.Delete(source, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+        geometry.Dispose()
+
+
+def _angle_objects_command(operation):
+    definitions = operation["objects"]
+    if len(definitions) != 2:
+        raise ValueError("object angle needs exactly two objects")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    selected = [obj.Id for obj in document.Objects.GetObjectList(settings) if obj.IsSelected(False)]
+    owned = []
+    try:
+        document.Objects.UnselectAll()
+        for definition in definitions:
+            if definition["kind"] == "line":
+                object_id = document.Objects.AddLine(_point(definition["start"]), _point(definition["end"]))
+            elif definition["kind"] == "plane":
+                plane = Rhino.Geometry.Plane(_point(definition["origin"]), _vector(definition["normal"]))
+                if not plane.IsValid:
+                    raise ValueError("invalid angle plane")
+                surface = Rhino.Geometry.PlaneSurface(plane, Rhino.Geometry.Interval(0, 1), Rhino.Geometry.Interval(0, 1))
+                try:
+                    object_id = document.Objects.AddSurface(surface)
+                finally:
+                    surface.Dispose()
+            else:
+                raise ValueError("unsupported angle object kind")
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add angle object")
+            owned.append(object_id)
+            document.Objects.Select(object_id)
+        # Two preselected objects enter object mode automatically. Appending
+        # TwoObjects would be parsed as a new command after Angle completes.
+        return _measurement_history("Angle", "! _Angle")
+    finally:
+        for object_id in reversed(owned):
+            document.Objects.Delete(object_id, True)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+
+
+def _curvature_command(operation, iterations, tolerance):
+    curve = "curve" in operation
+    if curve == ("surface" in operation):
+        raise ValueError("curvature command needs exactly one curve or surface")
+    macro = "_Curvature _MarkCurvature=%s %s _Enter" % (
+        "Yes" if operation.get("mark", False) else "No", _command_point(operation["point"]))
+    geometry = (_nurbs_curve_from_definition(operation["curve"]) if curve else
+                _nurbs_surface_from_definition(operation["surface"]))
+    owned = [geometry]
+    brep = operation.get("as_brep", False) or operation.get("reverse_face", False)
+    if brep:
+        try:
+            if curve:
+                raise ValueError("a curve cannot be a curvature B-rep source")
+            geometry = geometry.ToBrep()
+            if geometry is None:
+                raise ValueError("could not create curvature B-rep source")
+            owned.append(geometry)
+            if operation.get("reverse_face", False):
+                geometry.Flip()
+        except Exception:
+            for item in reversed(owned): item.Dispose()
+            raise
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        try:
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.Name = "curvature-source"
+                source = (document.Objects.AddCurve(geometry, attributes) if curve else
+                          document.Objects.AddBrep(geometry, attributes) if brep else
+                          document.Objects.AddSurface(geometry, attributes))
+            finally:
+                attributes.Dispose()
+            if source == System.Guid.Empty:
+                raise ValueError("could not add curvature source")
+            document.Objects.UnselectAll()
+            document.Objects.Select(source)
+            checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+            history_marker = "Viboceros curvature probe " + str(System.Guid.NewGuid())
+            Rhino.RhinoApp.WriteLine(history_marker)
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            # Rhino bounds its history buffer. Offsetting by its previous
+            # length loses all output once that buffer fills in a long batch.
+            history_parts = Rhino.RhinoApp.CommandHistoryWindowText.split(history_marker, 1)
+            if len(history_parts) != 2:
+                raise ValueError("curvature history marker was not retained")
+            history = history_parts[1]
+            if not succeeded:
+                raise ValueError("curvature command failed: %s" % history[-3000:])
+            reported = ("Curve curvature evaluation at parameter" in history or
+                        "Radius of curvature is infinite." in history) if curve else (
+                        "Surface curvature evaluation at parameter" in history)
+            if not reported:
+                raise ValueError("curvature command produced no measurement: %s" % history[-3000:])
+            outputs = []
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before and obj.Id != source:
+                    value = _curvature_marker(obj.Geometry, tolerance["absolute"])
+                    value.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                                 group_count=obj.Attributes.GroupCount)
+                    outputs.append(value)
+            outputs.sort(key=lambda x: (x["kind"], x.get("center", x.get("point", [])),
+                                       x.get("half_chord_tensor", []), -x.get("radius", 0.0)))
+            original = document.Objects.FindId(source)
+            value = {"outputs": outputs, "source_present": original is not None,
+                     "reported": reported,
+                     "source_selected": bool(original and original.IsSelected(False)),
+                     "source_name": original.Attributes.Name if original else None,
+                     "source_geometry_unchanged": bool(original and original.Geometry.DataCRC(0) == checksum)}
+            return value
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    try:
+        return _measure(iterations, compute)
+    finally:
+        for item in reversed(owned): item.Dispose()
+
+
+def _curve_surface_morph(operation, iterations, tolerance):
+    return _geometry_surface_morph(operation, iterations, tolerance, False)
+
+
+def _surface_surface_morph(operation, iterations, tolerance):
+    return _geometry_surface_morph(operation, iterations, tolerance, True)
+
+
+def _surface_point_morph(operation, tolerance, surface):
+    frame = Rhino.Geometry.Plane(_point(operation["source_origin"]),
+                                 _vector(operation["source_x"]), _vector(operation["source_y"]))
+    if not frame.IsValid:
+        raise ValueError("invalid morph source plane")
+    morph = Rhino.Geometry.Morphs.SplopSpaceMorph(frame, surface,
+        Rhino.Geometry.Point2d(*operation["uv"]), float(operation["scale"]), float(operation["angle"]))
+    try:
+        morph.Tolerance = _finite(operation.get("fit_tolerance", tolerance["absolute"]), "morph tolerance")
+        if morph.Tolerance <= 0.0:
+            raise ValueError("morph tolerance must be positive")
+        morph.QuickPreview = False
+        morph.PreserveStructure = False
+        return morph
+    except Exception:
+        morph.Dispose()
+        raise
+
+
+def _geometry_surface_morph(operation, iterations, tolerance, is_surface):
+    source = (_nurbs_surface_from_definition(operation["source"]) if is_surface
+              else _nurbs_curve_from_definition(operation["curve"]))
+    surface = None
+    morph = None
+    fitted = None
+    try:
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        morph = _surface_point_morph(operation, tolerance, surface)
+        if is_surface:
+            domains = [source.Domain(axis) for axis in range(2)]
+            # Offset interior samples from dyadic interpolation/refinement knots.
+            fractions = [0.0] + [(i - 0.3819660112501051) / 32.0 for i in range(1, 32)] + [1.0]
+            parameters = [(domains[0].ParameterAt(u), domains[1].ParameterAt(v))
+                          for v in fractions for u in fractions]
+        else:
+            parameters = [(source.Domain.ParameterAt(i / 256.0),) for i in range(257)]
+        exact = [_xyz(morph.MorphPoint(source.PointAt(*uv))) for uv in parameters]
+
+        def compute():
+            # Use the single-face B-rep surface-fitting path, rather than
+            # applying the morph directly to raw NURBS controls.
+            candidate = source.ToBrep() if is_surface else source.DuplicateCurve()
+            if candidate is None:
+                raise ValueError("could not prepare morph geometry")
+            try:
+                if not morph.Morph(candidate) or not candidate.IsValid:
+                    raise ValueError("Rhino could not morph the geometry")
+                return candidate
+            except Exception:
+                candidate.Dispose()
+                raise
+
+        fitted = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            fitted.Dispose()
+            fitted = None
+            fitted = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        if is_surface and fitted.Faces.Count != 1:
+            raise ValueError("surface morph did not retain a single face")
+        evaluated = fitted.Faces[0] if is_surface else fitted
+        result = {"exact_samples": exact,
+                  "fitted_samples": [_xyz(evaluated.PointAt(*uv)) for uv in parameters]}
+        if is_surface:
+            for axis, name in enumerate(["domain_u", "domain_v"]):
+                domain = evaluated.Domain(axis)
+                result[name] = [float(domain.T0), float(domain.T1)]
+        else:
+            result["domain"] = [float(fitted.Domain.T0), float(fitted.Domain.T1)]
+        return result, max(0, elapsed)
+    finally:
+        for item in [fitted, morph, surface, source]:
+            if item is not None:
+                item.Dispose()
+
+
+def _brep_morph_plan(source):
+    def fraction(i, count):
+        return 0.0 if i == 0 else 1.0 if i == count else (i - 0.3819660112501051) / count
+    plan = [("vertex", i) for i in range(source.Vertices.Count)]
+    for i, edge in enumerate(source.Edges):
+        plan.extend(("edge", i, edge.Domain.ParameterAt(fraction(j, 64))) for j in range(65))
+    for f, face in enumerate(source.Faces):
+        for j in range(17):
+            for i in range(17):
+                u = face.Domain(0).ParameterAt(fraction(i, 16))
+                v = face.Domain(1).ParameterAt(fraction(j, 16))
+                if str(face.IsPointOnFace(u, v)) != "Exterior":
+                    plan.append(("face", f, u, v))
+        for l, loop in enumerate(face.Loops):
+            for t, trim in enumerate(loop.Trims):
+                plan.extend(("trim", f, l, t, trim.Domain.ParameterAt(fraction(i, 64))) for i in range(65))
+    return plan
+
+
+def _brep_morph_point(brep, sample):
+    kind, index = sample[:2]
+    if kind == "vertex":
+        return brep.Vertices[index].Location
+    if kind == "edge":
+        return brep.Edges[index].PointAt(sample[2])
+    face = brep.Faces[index]
+    if kind == "face":
+        return face.PointAt(sample[2], sample[3])
+    uv = face.Loops[sample[2]].Trims[sample[3]].PointAt(sample[4])
+    return face.PointAt(uv.X, uv.Y)
+
+
+def _brep_morph_corresponding_point(brep, sample, target):
+    if sample[0] == "edge":
+        edge = brep.Edges[sample[1]]
+        success, parameter = edge.ClosestPoint(_point(target))
+        if not success:
+            raise ValueError("Rhino could not locate a corresponding morphed edge point")
+        return edge.PointAt(parameter)
+    return _brep_morph_point(brep, sample)
+
+
+def _brep_morph_topology(brep):
+    def endpoints(curve):
+        return [int(curve.StartVertex.VertexIndex), int(curve.EndVertex.VertexIndex)]
+    return {"vertices": int(brep.Vertices.Count), "solid": bool(brep.IsSolid),
+            "edges": [endpoints(edge) for edge in brep.Edges],
+            "faces": [{"reversed": bool(face.OrientationIsReversed),
+                       "loops": [{"outer": str(loop.LoopType) == "Outer",
+                                  "trims": [{"vertices": endpoints(trim),
+                                             "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                                             "reversed": bool(trim.IsReversed()), "type": str(trim.TrimType)}
+                                            for trim in loop.Trims]} for loop in face.Loops]}
+                      for face in brep.Faces]}
+
+
+def _brep_surface_morph(operation, iterations, tolerance):
+    source = _trimmed_brep_from_definition(operation["source"], tolerance)
+    surface = morph = fitted = None
+    try:
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        morph = _surface_point_morph(operation, tolerance, surface)
+        plan = _brep_morph_plan(source)
+        exact = [_xyz(morph.MorphPoint(_brep_morph_point(source, sample))) for sample in plan]
+
+        def compute():
+            candidate = source.DuplicateBrep()
+            try:
+                if not morph.Morph(candidate) or not candidate.IsValid:
+                    raise ValueError("Rhino could not morph the B-rep")
+                return candidate
+            except Exception:
+                candidate.Dispose()
+                raise
+
+        fitted = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            fitted.Dispose()
+            fitted = None
+            fitted = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        return {"source_topology": _brep_morph_topology(source),
+                "fitted_topology": _brep_morph_topology(fitted), "exact_samples": exact,
+                "fitted_samples": [_xyz(_brep_morph_corresponding_point(fitted, sample, target))
+                                   for sample, target in zip(plan, exact)]}, max(0, elapsed)
+    finally:
+        for item in [fitted, morph, surface, source]:
+            if item is not None:
+                item.Dispose()
+
+
+def _refined_box_brep(operation, tolerance):
+    origin = operation.get("origin", [0.0, 0.0, 0.0])
+    base = Rhino.Geometry.Brep.CreateFromBox(Rhino.Geometry.BoundingBox(
+        _point(origin), _point([x + 1.0 for x in origin])))
+    if base is None:
+        raise ValueError("could not create boundary-meshing box")
+    source = None
+    try:
+        def find_face(brep, center):
+            target = _point([origin[i] + center[i] for i in range(3)])
+            for i, face in enumerate(brep.Faces):
+                middle = face.PointAt(face.Domain(0).Mid, face.Domain(1).Mid)
+                if middle.DistanceTo(target) <= tolerance["absolute"]:
+                    return i
+            raise ValueError("unknown box face center")
+        indices = [find_face(base, face["center"]) for face in operation["faces"]]
+        source = base.DuplicateSubBrep(System.Array[System.Int32](indices))
+        if source is None:
+            raise ValueError("could not duplicate box face subset")
+        for definition in operation["faces"]:
+            face = source.Faces[find_face(source, definition["center"])]
+            surface = face.UnderlyingSurface().ToNurbsSurface()
+            if surface is None:
+                raise ValueError("could not convert box face to NURBS")
+            try:
+                for axis, name in [(0, "knots_u"), (1, "knots_v")]:
+                    knots = surface.KnotsU if axis == 0 else surface.KnotsV
+                    for fraction in definition.get(name, []):
+                        if not 0.0 <= fraction <= 1.0:
+                            raise ValueError("box-face knot fraction is outside its domain")
+                        if not knots.InsertKnot(surface.Domain(axis).ParameterAt(fraction), 1):
+                            raise ValueError("could not refine box-face knots")
+                if not face.ChangeSurface(source.AddSurface(surface)):
+                    raise ValueError("could not replace refined box-face surface")
+            finally:
+                surface.Dispose()
+        source.Compact()
+        if not source.IsValid:
+            raise ValueError("refined box face subset is invalid")
+        result = source
+        source = None
+        return result
+    finally:
+        if source is not None:
+            source.Dispose()
+        base.Dispose()
+
+
+def _mesh_polygon_positions(mesh):
+    record = _polygon_mesh_value(mesh)
+    return [[record["vertices"][i] for i in face] for face in record["faces"]]
+
+
+def _coordinate_welded_mesh_flags(mesh):
+    # Match native exact-location topology. On the tested Rhino build, the
+    # direct topological IsManifold query on appended, unwelded face meshes
+    # disagrees with their public edge incidence. Explicit coordinate welding
+    # resolves that discrepancy without moving or deleting any polygon.
+    expected = _mesh_polygon_positions(mesh)
+    welded = mesh.DuplicateMesh()
+    if welded is None:
+        raise ValueError("could not duplicate mesh for coordinate-topology checks")
+    try:
+        welded.Vertices.CombineIdentical(True, True)
+        if _mesh_polygon_positions(welded) != expected:
+            raise ValueError("coordinate welding changed mesh polygon geometry")
+        return welded.IsManifold(True)
+    finally:
+        welded.Dispose()
+
+
+def _brep_mesh_boundary_record(brep, mesh):
+    loops = list(mesh.GetNakedEdges() or [])
+    lines = [Rhino.Geometry.Line(loop[i], loop[i + 1]) for loop in loops for i in range(loop.Count - 1)]
+    queries = set()
+    for edge in brep.Edges:
+        if str(edge.Valence) == "Naked":
+            for fraction in [0.0, 0.25, 0.5, 0.75, 1.0]:
+                queries.add(tuple(_xyz(edge.PointAt(edge.Domain.ParameterAt(fraction)))))
+    samples = []
+    for query in sorted(queries):
+        target = _point(query)
+        if not lines:
+            raise ValueError("Rhino mesh lost a box boundary")
+        candidates = [line.ClosestPoint(target, True) for line in lines]
+        samples.append(_xyz(min(candidates, key=lambda point: point.DistanceTo(target))))
+    manifold, oriented, _has_boundary = _coordinate_welded_mesh_flags(mesh)
+    properties = Rhino.Geometry.AreaMassProperties.Compute(mesh)
+    if properties is None:
+        raise ValueError("could not measure meshed box faces")
+    try:
+        area = float(properties.Area)
+    finally:
+        properties.Dispose()
+    return {"area": area, "boundary_length": sum(float(line.Length) for line in lines),
+            "boundary_loops": len(loops), "boundaries_closed": all(loop.IsClosed for loop in loops),
+            "closed": bool(mesh.IsClosed), "manifold": bool(manifold), "oriented": bool(oriented),
+            "boundary_samples": samples}
+
+
+def _brep_mesh_boundaries(operation, iterations, tolerance):
+    density = _finite(operation["density"], "B-rep mesh density")
+    if not 0.0 <= density <= 1.0:
+        raise ValueError("B-rep mesh density must lie in [0, 1]")
+    source = _refined_box_brep(operation, tolerance)
+    parameters = mesh = None
+    try:
+        parameters = Rhino.Geometry.MeshingParameters(density)
+        parameters.SimplePlanes = operation["simple_planes"]
+        parameters.JaggedSeams = False
+
+        def compute():
+            parts = Rhino.Geometry.Mesh.CreateFromBrep(source, parameters)
+            if not parts:
+                raise ValueError("Rhino could not mesh refined box faces")
+            combined = None
+            try:
+                combined = Rhino.Geometry.Mesh()
+                for part in parts:
+                    combined.Append(part)
+                if not combined.IsValid:
+                    raise ValueError("Rhino returned an invalid combined mesh")
+                result = combined
+                combined = None
+                return result
+            finally:
+                if combined is not None:
+                    combined.Dispose()
+                for part in parts:
+                    part.Dispose()
+
+        mesh = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            mesh.Dispose()
+            mesh = None
+            mesh = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        return _brep_mesh_boundary_record(source, mesh), max(0, elapsed)
+    finally:
+        for item in [mesh, parameters, source]:
+            if item is not None:
+                item.Dispose()
+
+
+def _point_input_script(points):
+    if not 2 <= len(points) <= 256:
+        raise ValueError("point input requires 2-256 points")
+    for token in points:
+        if not isinstance(token, string_types) or not token or len(token) > 512:
+            raise ValueError("invalid point token")
+        if token.lower() in (".x", ".y", ".z", ".xy", ".yx", ".xz", ".zx", ".yz", ".zy",
+                             ".wx", ".wy", ".wz", ".wxy", ".wyx", ".wxz", ".wzx", ".wyz", ".wzy"):
+            continue
+        body = token.lstrip("rRwW@")
+        if re.match(r'''^<[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)\Z''', body):
+            continue
+        # A narrow surveyor/DMS form keeps the macro coordinate-only while
+        # permitting Rhino's documented N30d22'54.43"W bearing syntax.
+        if re.match(r'''^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)<[NnSs][0-9]+(?:\.[0-9]+)?[dD][0-9]+(?:\.[0-9]+)?'[0-9]+(?:\.[0-9]+)?"[EeWw]\Z''', body):
+            continue
+        if re.match(r'''^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)<[0-9]+[dD][0-9]+'[0-9]+(?:\.[0-9]+)?"\Z''', body):
+            continue
+        allowed_names = ("pi", "degrees", "radians", "gradians", "sin", "cos", "tan",
+                         "asin", "acos", "atan", "atan2", "ln", "log10", "exp",
+                         "sinh", "cosh", "tanh", "pow", "sqrt", "mm", "millimeter",
+                         "millimeters", "cm", "centimeter", "centimeters", "m", "meter",
+                         "meters", "in", "inch", "inches", "ft", "foot", "feet")
+        if (not body or
+                (body[0] not in "+-.(0123456789" and not body.lower().startswith(allowed_names)) or
+                any(c not in "0123456789eE+-,.<>rRwW@*/()'\"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" for c in token) or
+                any(name.lower() not in allowed_names + ("e",) for name in re.findall(r"[A-Za-z]+[0-9]*", body)
+                    if not (name.lower().startswith("e") and name[1:].isdigit()))):
+            raise ValueError("point tokens cannot contain commands or whitespace")
+    return "_Polyline " + " ".join(points) + " _Enter"
+
+
+def _plane_primitive_script(operation):
+    primitive = operation["primitive"]
+    points = operation["points"]
+    value = operation.get("value")
+    if primitive in ("Circle", "Polygon"):
+        expected = 1 if value is not None else 2
+    elif primitive in ("CircleDiameter", "CircleCircumference", "CircleArea") and value is not None:
+        expected = 1
+    elif primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick", "CircleVertical"):
+        expected = 2
+    elif primitive == "CircleOrientation" and value is not None:
+        expected = 2
+    elif primitive == "CircleOrientationPick" and value is None:
+        expected = 3
+    elif primitive in ("CircleOrientationDiameterPick", "CircleOrientationCircumferencePick", "CircleOrientationAreaPick") and value is None:
+        expected = 3
+    elif primitive == "Circle2Point" and value is None:
+        expected = 2
+    elif primitive == "Circle3Point" and value is None:
+        expected = 3
+    elif primitive == "Circle3PointRadius" and value is not None:
+        expected = 3
+    elif primitive == "Circle3PointRadiusPick" and value is None:
+        expected = 3
+    elif primitive in ("ArcCenterAngle", "ArcCenterLength") and value is not None:
+        expected = 2
+    elif primitive in ("ArcStartCenterAngle", "ArcStartCenterLength") and value is not None:
+        expected = 2
+    elif primitive in ("ArcMidpointAngle", "ArcMidpointLength") and value is not None:
+        expected = 2
+    elif primitive == "ArcDefaultAngle" and value is not None:
+        expected = 2
+    elif primitive == "ArcMidpointEndpoint" and value is None:
+        expected = 3
+    elif primitive in ("ArcCenterEndpoint", "ArcStartCenterEndpoint", "ArcDefaultEndpoint") and value is None:
+        expected = 3
+    elif primitive == "ArcStartThroughPoint" and value is None:
+        expected = 3
+    elif primitive == "ArcStartDirection" and value is None:
+        expected = 3
+    elif primitive in ("Box", "MeshBox"):
+        expected = 2 if value is not None else 3
+    elif primitive in ("Rectangle", "MeshPlane") and value is None:
+        expected = 2
+    else:
+        raise ValueError("unsupported plane primitive")
+    if len(points) != expected:
+        raise ValueError("incorrect primitive arguments")
+    script = {"Circle2Point": "_Circle _2Point ",
+              "Circle3Point": "_Circle _3Point ",
+              "Circle3PointRadius": "_Circle _3Point ",
+              "Circle3PointRadiusPick": "_Circle _3Point ",
+              "ArcCenterAngle": "_Arc _Center ",
+              "ArcCenterLength": "_Arc _Center ",
+              "ArcCenterEndpoint": "_Arc _Center ",
+              "ArcStartCenterAngle": "_Arc _StartPoint ",
+              "ArcStartCenterLength": "_Arc _StartPoint ",
+              "ArcStartCenterEndpoint": "_Arc _StartPoint ",
+              "ArcMidpointAngle": "_Arc _Center ",
+              "ArcMidpointLength": "_Arc _Center ",
+              "ArcMidpointEndpoint": "_Arc _Center ",
+              "ArcDefaultAngle": "_Arc ",
+              "ArcDefaultEndpoint": "_Arc ",
+              "ArcStartThroughPoint": "_Arc _StartPoint ",
+              "ArcStartDirection": "_Arc _StartPoint ",
+              "CircleVertical": "_Circle _Vertical ",
+              "CircleOrientation": "_Circle ",
+              "CircleOrientationPick": "_Circle ",
+              "CircleOrientationDiameterPick": "_Circle ",
+              "CircleOrientationCircumferencePick": "_Circle ",
+              "CircleOrientationAreaPick": "_Circle ",
+              "CircleDiameter": "_Circle ",
+              "CircleCircumference": "_Circle ",
+              "CircleArea": "_Circle ",
+              "CircleDiameterPick": "_Circle ",
+              "CircleCircumferencePick": "_Circle ",
+              "CircleAreaPick": "_Circle "}.get(primitive, "_" + primitive + " ")
+    if primitive == "Polygon":
+        script += "_NumSides=5 _Mode=_Inscribed "
+    if primitive == "MeshPlane":
+        script += "_XCount=2 _YCount=3 "
+    if primitive == "MeshBox":
+        script += "_XCount=2 _YCount=3 _ZCount=2 "
+    if primitive == "CircleVertical" and value is not None:
+        script += "w" + _command_point(points[0])
+        script += " %.17g" % _finite(value, "primitive size")
+        script += " w" + _command_point(points[1])
+        return script
+    if primitive in ("ArcCenterAngle", "ArcCenterLength"):
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        if primitive == "ArcCenterLength":
+            script += " _Length"
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcDefaultAngle":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcDefaultEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Pause"
+        return script
+    if primitive == "ArcStartThroughPoint":
+        script += "w" + _command_point(points[0])
+        script += " _ThroughPoint w" + _command_point(points[1])
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive in ("ArcStartCenterAngle", "ArcStartCenterLength"):
+        script += "w" + _command_point(points[0])
+        script += " _Center w" + _command_point(points[1])
+        if primitive == "ArcStartCenterLength":
+            script += " _Length"
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive in ("ArcMidpointAngle", "ArcMidpointLength"):
+        script += "w" + _command_point(points[0])
+        script += " _Midpoint w" + _command_point(points[1])
+        if primitive == "ArcMidpointLength":
+            script += " _Length"
+        script += " %.17g" % _finite(value, "primitive arc size")
+        return script
+    if primitive == "ArcMidpointEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " _Midpoint w" + _command_point(points[1])
+        script += " _Pause"
+        return script
+    if primitive == "ArcStartCenterEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " _Center w" + _command_point(points[1])
+        script += " _Pause"
+        return script
+    if primitive == "ArcCenterEndpoint":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Pause"
+        return script
+    if primitive == "ArcStartDirection":
+        script += "w" + _command_point(points[0])
+        script += " _Direction w" + _command_point(points[1])
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive == "Circle3PointRadius":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Radius %.17g" % _finite(value, "primitive size")
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive == "Circle3PointRadiusPick":
+        script += "w" + _command_point(points[0])
+        script += " w" + _command_point(points[1])
+        script += " _Radius w" + _command_point(points[2])
+        return script
+    if primitive == "CircleOrientation":
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        script += " %.17g" % _finite(value, "primitive size")
+        return script
+    if primitive == "CircleOrientationPick":
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        script += " w" + _command_point(points[2])
+        return script
+    if primitive in ("CircleOrientationDiameterPick", "CircleOrientationCircumferencePick", "CircleOrientationAreaPick"):
+        script += "w" + _command_point(points[0])
+        script += " _Orientation w" + _command_point(points[1])
+        option = primitive[len("CircleOrientation"):-len("Pick")]
+        script += " _" + option + " w" + _command_point(points[2])
+        return script
+    if primitive in ("CircleDiameterPick", "CircleCircumferencePick", "CircleAreaPick"):
+        script += "w" + _command_point(points[0])
+        script += " _" + primitive[len("Circle"):-len("Pick")]
+        script += " w" + _command_point(points[1])
+    else:
+        script += " ".join("w" + _command_point(p) for p in points)
+    if value is not None:
+        if primitive in ("CircleDiameter", "CircleCircumference", "CircleArea"):
+            script += " _" + primitive[len("Circle"):]
+        script += " %.17g" % _finite(value, "primitive size")
+        if primitive == "Polygon":
+            # A numeric polygon radius constrains the next pick; choose the
+            # positive construction-plane X direction explicitly.
+            axis = _vector(operation["x_axis"])
+            if not axis.Unitize():
+                raise ValueError("invalid polygon plane axis")
+            center = _point(points[0])
+            target = center + float(value) * axis
+            script += " w" + _command_point(_xyz(target))
+    return script
+
+
+def _canonical_box_record(record):
+    def key(p):
+        return tuple(round(v * 1e6) for v in p)
+    vertices = sorted([v["point"] for v in record["vertices"]], key=key)
+    edges = []
+    for edge in record["edges"]:
+        points = list(edge["curve"]["samples"])
+        if key(points[0]) > key(points[-1]):
+            points.reverse()
+        edges.append(points)
+    edges.sort(key=lambda e: (key(e[0]), key(e[-1])))
+    faces = []
+    for face, topology in zip(record["faces"], record["topology"]["faces"]):
+        points = face["samples"]
+        a = [x-y for x,y in zip(points[8], points[0])]
+        b = [x-y for x,y in zip(points[72], points[0])]
+        normal = [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]
+        length = math.sqrt(sum(v*v for v in normal))
+        normal = [v / length * (-1 if topology["reversed"] else 1) for v in normal]
+        loops = []
+        for boundary in face["loops"]:
+            trims = [list(trim["lifted"]) for trim in boundary]
+            if topology["reversed"]:
+                trims = [list(reversed(t)) for t in reversed(trims)]
+            start = min(range(len(trims)), key=lambda i: key(trims[i][0]))
+            loops.append(trims[start:] + trims[:start])
+        faces.append({"samples":sorted(points, key=key), "normal":normal, "loops":loops})
+    faces.sort(key=lambda f: key([sum(p[i] for p in f["samples"])/len(f["samples"]) for i in range(3)]))
+    return {"solid":record["topology"]["solid"], "vertices":vertices, "edges":edges, "faces":faces}
+
+
+def _canonical_mesh_record(record):
+    def key(p):
+        return tuple(round(v * 1e6) for v in p)
+    vertices = sorted(record["vertices"], key=key)
+    faces = []
+    for face in record["faces"]:
+        points = [record["vertices"][i] for i in face]
+        start = min(range(len(points)), key=lambda i: key(points[i]))
+        faces.append(points[start:] + points[:start])
+    faces.sort(key=lambda f: tuple(key(p) for p in f))
+    return {"vertices":vertices,"faces":faces}
+
+
+def _plane_primitive_record(geometry, raw_representation=False, primitive=None):
+    if not geometry.IsValid:
+        raise ValueError("invalid primitive output")
+    if isinstance(geometry, Rhino.Geometry.Extrusion):
+        brep = geometry.ToBrep()
+        try:
+            record = _interchange_brep_record(brep)
+            return record if raw_representation else _canonical_box_record(record)
+        finally:
+            if brep is not None:
+                brep.Dispose()
+    if isinstance(geometry, Rhino.Geometry.Brep):
+        record = _interchange_brep_record(geometry)
+        return record if raw_representation else _canonical_box_record(record)
+    if isinstance(geometry, Rhino.Geometry.Mesh):
+        record = _polygon_mesh_value(geometry)
+        return _canonical_mesh_record(record) if primitive == "MeshBox" and not raw_representation else record
+    return _cut_native_record(geometry)
+
+
+def _plane_transform_script(operation):
+    name = operation["command"]
+    refs, value = operation["references"], operation.get("value")
+    expected = {"Rotate": 1 if value is not None else 3,
+                "Scale2D": 1 if value is not None else 3,
+                "Mirror": 2, "Shear": 2 if value is not None else 3,
+                "ProjectToCPlane": 0, "SetPt": 1}
+    if name not in expected or len(refs) != expected[name]:
+        raise ValueError("unsupported plane transform or reference count")
+    if name in ("Mirror", "ProjectToCPlane", "SetPt") and value is not None:
+        raise ValueError("unexpected transform value")
+    copy = operation["copy"]
+    if not isinstance(copy, bool):
+        raise ValueError("copy must be boolean")
+    if name == "ProjectToCPlane":
+        return "_ProjectToCPlane _" + ("No" if copy else "Yes")
+    if name == "SetPt":
+        axes = operation.get("axes", [True, True, True])
+        alignment = operation.get("alignment", "World")
+        if (not isinstance(axes, list) or len(axes) != 3
+                or any(type(enabled) is not bool for enabled in axes)
+                or not any(axes) or alignment not in ("World", "CPlane")):
+            raise ValueError("invalid SetPt axes or alignment")
+        options = " ".join("_%sSet=_%s" % (axis, "Yes" if enabled else "No")
+                           for axis, enabled in zip("XYZ", axes))
+        return "_-SetPt %s _Alignment=_%s _Copy=_%s w%s%s" % (
+            options, alignment, "Yes" if copy else "No", _command_point(refs[0]),
+            " _Enter" if copy else "")
+    script = "_" + name + " _Copy=" + ("Yes" if copy else "No")
+    if name == "Shear":
+        script += " _Rigid=No"
+    script += " " + " ".join("w" + _command_point(p) for p in refs)
+    if value is not None:
+        script += " %.17g" % _finite(value, "transform value")
+    if copy and name in ("Rotate", "Scale2D", "Shear"):
+        script += " _Enter"
+    return script
+
+
+def _plane_transform(operation):
+    script = _plane_transform_script(operation)
+    if not 1 <= len(operation["sources"]) <= 256:
+        raise ValueError("expected 1 to 256 transform witnesses")
+    document = Rhino.RhinoDoc.ActiveDoc
+    viewport = document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid transform construction plane")
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    source_ids = []
+    try:
+        viewport.SetConstructionPlane(plane)
+        document.Objects.UnselectAll()
+        for index, point in enumerate(operation["sources"]):
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            attributes.Name = str(index)
+            object_id = document.Objects.AddPoint(_point(point), attributes)
+            if object_id == System.Guid.Empty:
+                raise ValueError("failed transform witness insertion")
+            source_ids.append(object_id)
+            document.Objects.Select(object_id)
+        if not source_ids or not _run_surface_script(script, True):
+            raise ValueError("plane transform command failed")
+        records = [{"source": int(obj.Attributes.Name), "point": _xyz(obj.Geometry.Location),
+                    "original": obj.Id in source_ids, "selected": bool(obj.IsSelected(False))}
+                   for obj in objects() if obj.Id not in before]
+        records.sort(key=lambda r: (r["source"], not r["original"]))
+        return {"objects": records}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        viewport.SetConstructionPlane(original_plane)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+
+
+def _point_input(operation):
+    expected = operation.get("expected_point_count", len(operation["points"]))
+    if type(expected) is not int or not 2 <= expected <= len(operation["points"]):
+        raise ValueError("invalid expected point-filter output count")
+    script = _point_input_script(operation["points"])
+    return _in_construction_plane(operation, script, None)
+
+
+def _non_manifold_selection(operation):
+    as_brep = operation["as_brep"]
+    preselect = operation["preselect"]
+    if type(as_brep) is not bool or type(preselect) is not bool:
+        raise ValueError("selection modes must be boolean")
+    vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, -1, 1]]
+    tetra = [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
+    document = Rhino.RhinoDoc.ActiveDoc
+    selected = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    try:
+        document.Objects.UnselectAll()
+        for faces in [[[0, 2, 1]], tetra, tetra + [[0, 1, 4]]]:
+            mesh = _triangle_mesh(vertices, faces)
+            try:
+                if as_brep:
+                    brep = Rhino.Geometry.Brep.CreateFromMesh(mesh, True)
+                    if brep is None:
+                        raise ValueError("could not construct selection B-rep")
+                    try:
+                        key = document.Objects.AddBrep(brep)
+                    finally:
+                        brep.Dispose()
+                else:
+                    key = document.Objects.AddMesh(mesh)
+                if key == System.Guid.Empty:
+                    raise ValueError("could not add selection fixture")
+                ids.append(key)
+            finally:
+                mesh.Dispose()
+        if preselect:
+            document.Objects.Select(ids[0])
+        if not Rhino.RhinoApp.RunScript("_SelNonManifold", False):
+            raise ValueError("non-manifold selection command failed")
+        return {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in selected:
+            document.Objects.Select(key)
+
+
+def _volume_selection(operation):
+    sources = operation["sources"]
+    radius = _finite(operation["radius"], "sphere radius")
+    center = _point(operation["center"])
+    mode = operation["mode"]
+    if not isinstance(sources, list) or not 1 <= len(sources) <= 64:
+        raise ValueError("sphere selection requires 1 to 64 curve sources")
+    if radius <= 0 or mode not in ("Window", "Crossing", "InvertWindow", "InvertCrossing"):
+        raise ValueError("invalid sphere selection radius or mode")
+    document = Rhino.RhinoDoc.ActiveDoc
+    previous = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    try:
+        document.Objects.UnselectAll()
+        for source in sources:
+            curve = _join_close_input(source)
+            try:
+                if not curve.IsValid:
+                    raise ValueError("invalid sphere selection curve")
+                key = document.Objects.AddCurve(curve)
+                if key == System.Guid.Empty:
+                    raise ValueError("could not add sphere selection curve")
+                ids.append(key)
+            finally:
+                curve.Dispose()
+        script = "_SelVolumeSphere _SelectionMode=_%s w%s %.17g" % (
+            mode, _command_point(_xyz(center)), radius)
+        completed, errors = [], []
+        def ended(sender, event):
+            try:
+                if event.CommandEnglishName == "SelVolumeSphere":
+                    completed.append(str(event.CommandResult))
+            except Exception as error:
+                errors.append(str(error))
+        Rhino.Commands.Command.EndCommand += ended
+        try:
+            Rhino.RhinoApp.RunScript(script, False)
+        finally:
+            Rhino.Commands.Command.EndCommand -= ended
+        if errors or completed != ["Success"]:
+            raise ValueError("sphere selection command did not complete successfully: %s %s" %
+                             (completed, errors))
+        return {"selected": [i for i, key in enumerate(ids)
+                if document.Objects.FindId(key).IsSelected(False)]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in previous:
+            document.Objects.Select(key)
+
+
+def _short_curve_selection(operation):
+    lengths = operation["lengths"]
+    curve_kind = operation.get("curve_kind", "line")
+    refinement = operation.get("refinement", 0)
+    degree = operation.get("degree", 2)
+    if type(degree) is not int or not 2 <= degree <= 5 or (degree != 2 and curve_kind not in ("nurbs_circle", "bezier_arch")):
+        raise ValueError("invalid short-curve degree elevation")
+    if type(refinement) is not int or not 0 <= refinement <= 4 or (refinement and curve_kind not in ("nurbs_circle", "bezier_arch")):
+        raise ValueError("invalid short-curve knot refinement")
+    if type(operation.get("inspect", False)) is not bool:
+        raise ValueError("invalid short-curve inspection flag")
+    if curve_kind not in ("line", "circle", "nurbs_circle", "bezier_arch"):
+        raise ValueError("unsupported short-curve fixture geometry")
+    if (type(operation["maximum_length"]) not in (int, float)
+            or not isinstance(lengths, list)
+            or any(type(value) not in (int, float) for value in lengths)):
+        raise ValueError("short-curve fixture requires numeric lengths")
+    maximum = float(operation["maximum_length"])
+    _finite(maximum, "maximum curve length")
+    if maximum <= 0 or not 1 <= len(lengths) <= 32:
+        raise ValueError("invalid short-curve fixture")
+    lengths = [float(value) for value in lengths]
+    for value in lengths:
+        _finite(value, "curve length")
+        if value <= 0:
+            raise ValueError("invalid curve length")
+    document = Rhino.RhinoDoc.ActiveDoc
+    selected = [obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+    ids = []
+    measurements = []
+    try:
+        document.Objects.UnselectAll()
+        for index, length in enumerate(lengths):
+            if curve_kind == "line":
+                curve = Rhino.Geometry.LineCurve(_point([0, index, 0]), _point([length, index, 0]))
+            elif curve_kind == "bezier_arch":
+                # Exact arc length of (t, 2t(1-t)) on [0,1].
+                scale = length / (0.5 * math.sqrt(5.0) + 0.25 * math.log(2.0 + math.sqrt(5.0)))
+                curve = Rhino.Geometry.NurbsCurve.Create(False, 2, [_point([0, index, 0]), _point([0.5 * scale, index + scale, 0]), _point([scale, index, 0])])
+            else:
+                circle = Rhino.Geometry.Circle(_point([0, index, 0]), length / (2.0 * math.pi))
+                curve = circle.ToNurbsCurve() if curve_kind == "nurbs_circle" else Rhino.Geometry.ArcCurve(circle)
+            try:
+                if curve_kind in ("nurbs_circle", "bezier_arch") and degree != 2 and not curve.IncreaseDegree(degree):
+                    raise ValueError("short-curve degree elevation failed")
+                for _ in range(refinement):
+                    knots = sorted(set(float(knot) for knot in curve.Knots))
+                    for first, last in zip(knots, knots[1:]):
+                        if not curve.Knots.InsertKnot(first + (last - first) * 0.5, 1):
+                            raise ValueError("short-curve knot refinement failed")
+                object_id = document.Objects.AddCurve(curve)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add short-curve fixture")
+                ids.append(object_id)
+                if operation.get("inspect", False):
+                    measurement = {"length": curve.GetLength(),
+                                         "is_short": curve.IsShort(maximum),
+                                         "is_short_with_allowance": curve.IsShort(maximum * 1.000001)}
+                    if curve_kind in ("nurbs_circle", "bezier_arch"):
+                        controls = [cp.Location for cp in curve.Points]
+                        measurement["control_count"] = len(controls)
+                        measurement["control_polygon_length"] = sum(a.DistanceTo(b) for a, b in zip(controls, controls[1:]))
+                    measurements.append(measurement)
+            finally:
+                curve.Dispose()
+        if not Rhino.RhinoApp.RunScript("_SelShortCrv %.17g" % maximum, False):
+            raise ValueError("short-curve command failed")
+        value = {"selected": [i for i, key in enumerate(ids) if document.Objects.FindId(key).IsSelected(False)]}
+        if operation.get("inspect", False):
+            value["measurements"] = measurements
+        return value, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for key in ids:
+            document.Objects.Delete(key, True)
+        document.Objects.UnselectAll()
+        for key in selected:
+            document.Objects.Select(key)
+
+
+def _control_point_prompt_script(operation, interpolate=False):
+    points = operation["points"]
+    _point_input_script(points)  # Reuse the coordinate-only macro whitelist.
+    degree = operation.get("degree", 3)
+    if type(degree) is not int or not 1 <= degree <= 11:
+        raise ValueError("invalid control-point prompt degree")
+    command = "_InterpCrv _Knots=_Chord" if interpolate else "_Curve"
+    closure = operation.get("closure", "Open")
+    if not interpolate and closure != "Open":
+        raise ValueError("closure probes require InterpCrv")
+    # PointOnly diagnoses whether a seam input itself completes the command.
+    # Non-closing inputs intentionally remain subject to the client's timeout.
+    endings = {"Open": "_Enter", "Smooth": "_Close", "Sharp": "_Sharp _Close", "PointOnly": ""}
+    if closure not in endings:
+        raise ValueError("invalid curve prompt closure")
+    return "%s _Degree=%d _SubDFriendly=_No %s %s" % (command, degree, " ".join(points), endings[closure])
+
+
+def _control_point_prompt(operation, interpolate=False):
+    def record(geometry):
+        curve = geometry.ToNurbsCurve()
+        try:
+            value = {"degree": curve.Degree, "closed": curve.IsClosed,
+                     "control_points": [_xyz(cp.Location) for cp in curve.Points]}
+            if interpolate:
+                value["periodic"] = curve.IsPeriodic
+            return value
+        finally:
+            curve.Dispose()
+    try:
+        return _in_construction_plane(operation, _control_point_prompt_script(operation, interpolate), record)
+    except _PointInputCommandFailed:
+        if not interpolate:
+            raise
+        # This diagnostic probes inputs that Rhino may refuse to interpolate.
+        # Record command rejection without losing the other batch measurements.
+        return {"command_succeeded": False}, 0
+
+
+class _PointInputCommandFailed(ValueError):
+    pass
+
+
+def _in_construction_plane(operation, script, record):
+    document = Rhino.RhinoDoc.ActiveDoc
+    view = document.Views.ActiveView
+    viewport = view.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    endpoint_click = operation.get("primitive") in ("ArcCenterEndpoint", "ArcStartCenterEndpoint", "ArcMidpointEndpoint", "ArcDefaultEndpoint")
+    original_projection = Rhino.DocObjects.ViewportInfo(viewport) if endpoint_click else None
+    original_name = viewport.Name if endpoint_click else None
+    original_target = viewport.CameraTarget if endpoint_click else None
+    aid = Rhino.ApplicationSettings.ModelAidSettings if endpoint_click else None
+    track = Rhino.ApplicationSettings.SmartTrackSettings if endpoint_click else None
+    original_aid = aid.GetCurrentState() if endpoint_click else None
+    original_track = track.GetCurrentState() if endpoint_click else None
+    marker_id = None
+    unit_name = operation.get("model_units")
+    if unit_name is not None and unit_name not in ("Millimeters", "Meters", "Inches"):
+        raise ValueError("unsupported point-input model units")
+    original_units = document.ModelUnitSystem if unit_name is not None else None
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid point-input construction plane")
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    try:
+        if unit_name is not None:
+            document.AdjustModelUnitSystem(getattr(Rhino.UnitSystem, unit_name), False)
+        if endpoint_click:
+            if not viewport.SetProjection(Rhino.Display.DefinedViewportProjection.Top, "Arc endpoint", False):
+                raise ValueError("could not set arc endpoint Top projection")
+            coords = operation["points"]
+            lo = [min(p[i] for p in coords) - 6.0 for i in range(3)]
+            hi = [max(p[i] for p in coords) + 6.0 for i in range(3)]
+            if not viewport.ZoomBoundingBox(Rhino.Geometry.BoundingBox(_point(lo), _point(hi))):
+                raise ValueError("could not fit arc endpoint view")
+            aid.GridSnap = aid.Ortho = aid.Planar = False
+            aid.Osnap = True
+            aid.OsnapModes = Rhino.ApplicationSettings.OsnapModes.Point
+            aid.OnlySnapToSelected = False
+            aid.OsnapPickboxRadius = 16
+            track.UseSmartTrack = False
+            marker_id = document.Objects.AddPoint(_point(coords[2]))
+            if marker_id == System.Guid.Empty:
+                raise ValueError("could not add arc endpoint snap marker")
+            before.add(marker_id)
+        viewport.SetConstructionPlane(plane)
+        document.Objects.UnselectAll()
+        if endpoint_click:
+            document.Views.Redraw()
+            pixel = viewport.WorldToClient(_point(operation["points"][2]))
+            x, y = int(pixel.X), int(pixel.Y)
+            if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
+                raise ValueError("arc endpoint outside owned viewport")
+            screen = view.ClientToScreen(System.Drawing.Point(x, y))
+            _record_progress("PICK @arc:%s %d %d" % (operation["id"], screen.X, screen.Y))
+        if not _run_surface_script(script, True):
+            raise _PointInputCommandFailed("point-input command failed")
+        outputs = [obj for obj in objects() if obj.Id not in before]
+        if len(outputs) != 1:
+            raise ValueError("expected one point-input polyline")
+        if record is not None:
+            return record(outputs[0].Geometry), 0
+        success, polyline = outputs[0].Geometry.TryGetPolyline()
+        if not success or len(polyline) != operation.get("expected_point_count", len(operation["points"])):
+            raise ValueError("Polyline did not consume every typed point")
+        return {"points": [_xyz(point) for point in polyline]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        if marker_id is not None:
+            document.Objects.Delete(marker_id, True)
+        if endpoint_click:
+            viewport.SetViewProjection(original_projection, False)
+            viewport.SetCameraTarget(original_target, False)
+            viewport.Name = original_name
+            aid.UpdateFromState(original_aid)
+            track.UpdateFromState(original_track)
+        viewport.SetConstructionPlane(original_plane)
+        if unit_name is not None:
+            document.AdjustModelUnitSystem(original_units, False)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+
+
+def _point_grid_command(operation, diagonal=False):
+    counts = operation.get("count", [3, 2, 1])
+    if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 100 for n in counts):
+        raise ValueError("PointGrid probe counts must be three integers in [1,100]")
+    points = operation["points"]
+    three_point = operation.get("three_point", False)
+    third_width = operation.get("third_width")
+    width_choice_point = operation.get("width_choice_point")
+    centered = operation.get("centered", False)
+    vertical = operation.get("vertical", False)
+    if type(centered) is not bool or type(vertical) is not bool or type(diagonal) is not bool or sum(bool(mode) for mode in [centered, three_point, vertical, diagonal]) > 1:
+        raise ValueError("PointGrid base modes must be mutually exclusive booleans")
+    if type(three_point) is not bool or len(points) != (3 if (three_point or vertical) and third_width is None else 2):
+        raise ValueError("PointGrid requires two corners or three base points")
+    if third_width is not None and not (three_point or vertical):
+        raise ValueError("third_width requires 3Point or Vertical mode")
+    if (third_width is None) != (width_choice_point is None):
+        raise ValueError("numeric 3Point width requires a rectangle choice point")
+    if third_width is not None and (type(third_width) not in (int, float) or _finite(third_width, "grid width") == 0):
+        raise ValueError("grid width must be a finite nonzero number")
+    if diagonal and operation.get("height") is not None:
+        raise ValueError("diagonal prompt diagnostics use height_point, not a numeric height")
+    height_point = operation.get("height_point")
+    if height_point is not None and not diagonal:
+        raise ValueError("height_point is only supported by the diagonal prompt diagnostic")
+    height_suffix = " w" + _command_point(height_point) if height_point is not None else ""
+    if diagonal:
+        # Editing a count in Rhino 8.32 removes Diagonal from that prompt.
+        # Seed remembered counts with a separate, owned ordinary grid instead.
+        plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+        setup = dict(operation, points=[_xyz(plane.Origin), _xyz(plane.PointAt(1, 1))], height=1)
+        setup.pop("height_point", None)
+        _point_grid_command(setup)
+        script = "_PointGrid "
+    else:
+        script = "_PointGrid _XCount=%d _YCount=%d _ZCount=%d " % tuple(counts)
+    if three_point:
+        script += "_3Point "
+    if vertical:
+        script += "_Vertical "
+    if centered:
+        script += "_Center "
+    if diagonal:
+        script += "_Diagonal "
+    script += " ".join("w" + _command_point(p) for p in points)
+    if third_width is not None:
+        script += " %.17g w%s" % (_finite(third_width, "grid width"), _command_point(width_choice_point))
+    if not diagonal or operation.get("height") is not None:
+        script += (" %.17g" % _finite(operation["height"], "grid height")
+                   if operation.get("height") is not None else " _Enter")
+    script += height_suffix
+    def record(geometry):
+        if not isinstance(geometry, Rhino.Geometry.PointCloud):
+            raise ValueError("PointGrid did not produce a point cloud")
+        if diagonal:
+            return {"points": [_xyz(p) for p in geometry.GetPoints()]}
+        third = width_choice_point if third_width is not None else (points[2] if three_point or vertical else None)
+        if vertical:
+            construction = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+            edge = _point(points[1]) - _point(points[0])
+            plane = Rhino.Geometry.Plane(_point(points[0]), edge, construction.Normal)
+            signed_width = Rhino.Geometry.Vector3d.Multiply(_point(third) - plane.Origin, plane.YAxis)
+            if signed_width < 0:
+                plane = Rhino.Geometry.Plane(_point(points[0]), edge, -construction.Normal)
+        else:
+            plane = (Rhino.Geometry.Plane(_point(points[0]), _point(points[1]), _point(third)) if three_point else
+                     Rhino.Geometry.Plane(_point(points[0]), _vector(operation["x_axis"]), _vector(operation["y_axis"])))
+        axes = [plane.XAxis, plane.YAxis, plane.ZAxis]
+        delta = _point(points[1]) - plane.Origin
+        size = [Rhino.Geometry.Vector3d.Multiply(delta, axis) for axis in axes]
+        if three_point:
+            size[1] = (abs(third_width) if third_width is not None else
+                       Rhino.Geometry.Vector3d.Multiply(_point(points[2]) - plane.Origin, plane.YAxis))
+        if vertical:
+            size[1] = abs(third_width) if third_width is not None and third_width > 0 else abs(signed_width)
+        size[2] = operation.get("height") if operation.get("height") is not None else abs(size[1]) * (2 if centered else 1)
+        dimensions = [max(2, counts[0]), max(2, counts[1]), counts[2]]
+        def key(p):
+            local = p - plane.Origin
+            return tuple(int(round(Rhino.Geometry.Vector3d.Multiply(local, axes[i]) / size[i] * (dimensions[i] - 1)))
+                         for i in [2, 1, 0])
+        # Point clouds have no edges or face connectivity. Match lattice stations
+        # without rounding any reported coordinates or discarding duplicate points.
+        return {"points": [_xyz(p) for p in sorted(geometry.GetPoints(), key=key)]}
+    return _in_construction_plane(operation, script, record)
+
+
+def _interface_script(command):
+    """Whitelist interface-only input; never forward an unrestricted macro."""
+    if not isinstance(command, string_types) or not 1 <= len(command) <= 512:
+        raise ValueError("invalid interface command")
+    tokens = command.split()
+    if not tokens:
+        raise ValueError("empty interface command")
+    name = tokens.pop(0).lstrip("'_- ").lower()
+    switches = {"setsnap": "SetSnap", "smarttrack": "SmartTrack",
+                "setortho": "SetOrtho", "setplanar": "SetPlanar"}
+    if name in ("snap", "ortho", "planar") and not tokens:
+        return "_" + name.title()
+    if name in switches and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("on", "off", "toggle"):
+        return "_%s _%s" % (switches[name], tokens[0].lstrip("_").title())
+    if name == "orthoangle" and len(tokens) == 1:
+        try:
+            angle = float(tokens[0])
+        except ValueError:
+            raise ValueError("invalid ortho angle")
+        if math.isnan(angle) or math.isinf(angle) or not 0 < angle <= 180:
+            raise ValueError("invalid ortho angle")
+        return "_OrthoAngle %.17g" % angle
+    if name == "orthosnaptocplanez" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_OrthoSnapToCPlaneZ _%s" % tokens[0].lstrip("_").title()
+    if name == "disableosnap" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_DisableOsnap _%s" % tokens[0].lstrip("_").title()
+    if name == "snaptomeshes" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_SnapToMeshes _%s" % tokens[0].lstrip("_").title()
+    if name != "setdisplaymode":
+        raise ValueError("unsupported interface command or options")
+    options = {}
+    while tokens:
+        token = tokens.pop(0)
+        if "=" in token:
+            key, value = token.split("=", 1)
+        elif token.lstrip("_").lower() in ("viewport", "mode"):
+            if not tokens:
+                raise ValueError("missing interface option value")
+            key, value = token, tokens.pop(0)
+        else:
+            key, value = "mode", token
+        key, value = key.lstrip("_").lower(), value.lstrip("_").lower()
+        if key in options or key not in ("viewport", "mode"):
+            raise ValueError("duplicate or unknown interface option")
+        options[key] = value
+    mode, viewport = options.get("mode"), options.get("viewport", "active")
+    if mode not in ("wireframe", "shaded", "ghosted") or viewport not in ("active", "all"):
+        raise ValueError("unsupported interface mode or viewport")
+    # Mode finishes the command, so target the viewport before supplying it.
+    return "_-SetDisplayMode _Viewport=_%s _Mode=_%s" % (viewport.title(), mode.title())
+
+
+def _interface_state(views, aid, track, extras=()):
+    active = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
+    value = {"grid_snap": bool(aid.GridSnap), "osnap": bool(aid.Osnap),
+            "smart_track": bool(track.UseSmartTrack),
+            "active_viewport": next(i for i, view in enumerate(views) if view.ActiveViewportID == active.ActiveViewportID),
+            "display_modes": [view.ActiveViewport.DisplayMode.EnglishName for view in views]}
+    if "ortho" in extras:
+        value["ortho"] = bool(aid.Ortho)
+    if "planar" in extras:
+        value["planar"] = bool(aid.Planar)
+    if "ortho_angle_degrees" in extras:
+        value["ortho_angle_degrees"] = math.degrees(float(aid.OrthoAngle))
+    if "ortho_snap_to_cplane_z" in extras:
+        value["ortho_snap_to_cplane_z"] = bool(aid.OrthoUseZ)
+    return value
+
+
+def _interface_commands(operation):
+    commands = operation["commands"]
+    if not isinstance(commands, list) or not 1 <= len(commands) <= 128:
+        raise ValueError("expected 1 to 128 interface commands")
+    scripts = [_interface_script(command) for command in commands]
+    mesh_requested = "snap_to_meshes" in operation
+    if mesh_requested and type(operation["snap_to_meshes"]) is not bool:
+        raise ValueError("snap_to_meshes must be boolean")
+    if not mesh_requested and any(script.startswith("_SnapToMeshes ") for script in scripts):
+        raise ValueError("mesh snap commands require an explicit initial setting")
+    aid_keys = ("ortho", "planar", "ortho_angle_degrees", "ortho_snap_to_cplane_z")
+    aid_commands = {"ortho": ("_Ortho", "_SetOrtho "),
+                    "planar": ("_Planar", "_SetPlanar "),
+                    "ortho_angle_degrees": ("_OrthoAngle ",),
+                    "ortho_snap_to_cplane_z": ("_OrthoSnapToCPlaneZ ",)}
+    for key in aid_keys:
+        if key in operation:
+            value = operation[key]
+            if key == "ortho_angle_degrees":
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or math.isnan(value) or math.isinf(value) or not 0 < value <= 180:
+                    raise ValueError("invalid initial ortho angle")
+            elif type(value) is not bool:
+                raise ValueError("interface aid flags must be booleans")
+        elif any(script == prefix or (prefix.endswith(" ") and script.startswith(prefix))
+                 for script in scripts for prefix in aid_commands[key]):
+            raise ValueError("interface aid commands require an explicit initial setting")
+    if any(not isinstance(operation[key], bool) for key in ("grid_snap", "osnap", "smart_track")):
+        raise ValueError("interface flags must be booleans")
+    index = operation["active_viewport"]
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < 4:
+        raise ValueError("invalid active viewport index")
+    names = operation["display_modes"]
+    if not isinstance(names, list) or len(names) != 4 or any(name not in ("Wireframe", "Shaded", "Ghosted") for name in names):
+        raise ValueError("expected four supported display modes")
+    modes = [Rhino.Display.DisplayModeDescription.FindByName(name) for name in names]
+    if any(mode is None for mode in modes):
+        raise ValueError("display mode unavailable")
+    document = Rhino.RhinoDoc.ActiveDoc
+    views = list(document.Views.GetViewList(True, False))
+    if len(views) != 4:
+        raise ValueError("interface probes require four model views")
+    aid = Rhino.ApplicationSettings.ModelAidSettings
+    track = Rhino.ApplicationSettings.SmartTrackSettings
+    original_aid = aid.GetCurrentState()
+    original_track = track.GetCurrentState()
+    original_modes = [view.ActiveViewport.DisplayMode for view in views]
+    original_view = document.Views.ActiveView
+    original_mesh = None
+    def record():
+        value = _interface_state(views, aid, track, tuple(key for key in aid_keys if key in operation))
+        if mesh_requested:
+            value["snap_to_meshes"] = mesh_snap_settings_probe.current(globals())
+        return value
+    try:
+        if mesh_requested:
+            import mesh_snap_settings_probe
+            original_mesh = mesh_snap_settings_probe.current(globals())
+            mesh_snap_settings_probe.set_enabled(operation["snap_to_meshes"], globals())
+        aid.GridSnap = operation["grid_snap"]
+        aid.Osnap = operation["osnap"]
+        if "ortho" in operation:
+            aid.Ortho = operation["ortho"]
+        if "planar" in operation:
+            aid.Planar = operation["planar"]
+        if "ortho_angle_degrees" in operation:
+            aid.OrthoAngle = math.radians(operation["ortho_angle_degrees"])
+        if "ortho_snap_to_cplane_z" in operation:
+            aid.OrthoUseZ = operation["ortho_snap_to_cplane_z"]
+        track.UseSmartTrack = operation["smart_track"]
+        for view, mode in zip(views, modes):
+            view.ActiveViewport.DisplayMode = mode
+        document.Views.ActiveView = views[index]
+        states = [record()]
+        for script in scripts:
+            _record_progress("interface command: " + script)
+            if not _run_surface_script(script, True):
+                raise ValueError("interface command failed: " + script)
+            states.append(record())
+        return {"states": states}, 0
+    finally:
+        # Settings are application-global even in a private Xvfb. Restore the
+        # full snapshots, not just the three switches under test.
+        try:
+            Rhino.RhinoApp.RunScript("!", False)
+            aid.UpdateFromState(original_aid)
+            track.UpdateFromState(original_track)
+            for view, mode in zip(views, original_modes):
+                view.ActiveViewport.DisplayMode = mode
+            document.Views.ActiveView = original_view
+        finally:
+            # A failure restoring another setting must not skip this switch.
+            if original_mesh is not None:
+                mesh_snap_settings_probe.set_enabled(original_mesh, globals())
+
+
+def _viewport_arrangement_probe(operation):
+    """Record public model-view state after bounded native layout commands."""
+    commands = operation.get("commands")
+    allowed = ("NewViewport", "CloseViewport", "3View", "4View", "MaxViewport",
+               "4View Projection FirstAngle", "4View Projection ThirdAngle",
+               "SplitViewportHorizontal", "SplitViewportVertical",
+               "SetView World Bottom", "SetView World Back", "SetView World Left")
+    if not isinstance(commands, list) or not 1 <= len(commands) <= 12:
+        raise ValueError("expected 1 to 12 viewport arrangement commands")
+    if any(command not in allowed for command in commands):
+        raise ValueError("unsupported viewport arrangement command")
+    document = Rhino.RhinoDoc.ActiveDoc
+    if operation.get("baseline_four_view"):
+        if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+            raise ValueError("could not establish four-view baseline")
+        for view in document.Views.GetViewList(True, False):
+            viewport = view.ActiveViewport
+            plane = viewport.GetConstructionPlane()
+            plane.GridSpacing = 1.0
+            plane.SnapSpacing = 1.0
+            viewport.SetConstructionPlane(plane)
+    active_name = operation.get("active_name")
+    if active_name is not None:
+        if active_name not in ("Perspective", "Top", "Front", "Right"):
+            raise ValueError("unsupported active viewport name")
+        matching = [view for view in document.Views.GetViewList(True, False)
+                    if view.ActiveViewport.Name == active_name]
+        if len(matching) != 1:
+            raise ValueError("active viewport name is missing or ambiguous")
+        document.Views.ActiveView = matching[0]
+    source_mode = operation.get("source_display_mode")
+    if source_mode is not None:
+        if source_mode not in ("Wireframe", "Shaded", "Ghosted"):
+            raise ValueError("unsupported source display mode")
+        mode = Rhino.Display.DisplayModeDescription.FindByName(source_mode)
+        if mode is None:
+            raise ValueError("source display mode unavailable")
+        document.Views.ActiveView.ActiveViewport.DisplayMode = mode
+    shift = operation.get("camera_target_shift")
+    if shift is not None:
+        viewport = document.Views.ActiveView.ActiveViewport
+        viewport.SetCameraTarget(viewport.CameraTarget + _vector(shift), True)
+    if "source_grid_spacing" in operation or "source_snap_spacing" in operation:
+        viewport = document.Views.ActiveView.ActiveViewport
+        plane = viewport.GetConstructionPlane()
+        def spacing(key, label):
+            value = _finite(operation[key], label)
+            if value <= 0.0:
+                raise ValueError(label + " must be positive")
+            return value
+        if "source_grid_spacing" in operation:
+            plane.GridSpacing = spacing("source_grid_spacing", "grid spacing")
+        if "source_snap_spacing" in operation:
+            plane.SnapSpacing = spacing("source_snap_spacing", "snap spacing")
+        viewport.SetConstructionPlane(plane)
+
+    def rectangle(value):
+        return [int(value.Left), int(value.Top), int(value.Right), int(value.Bottom)]
+
+    def record():
+        views = list(document.Views.GetViewList(True, False))
+        active = document.Views.ActiveView
+        return {
+            "active_viewport": next(
+                (i for i, view in enumerate(views)
+                 if view.ActiveViewportID == active.ActiveViewportID), None),
+            "views": [{
+                "name": view.ActiveViewport.Name,
+                "bounds": rectangle(view.Bounds),
+                "screen_rectangle": rectangle(view.ScreenRectangle),
+                "floating": bool(view.Floating),
+                "maximized": bool(view.Maximized),
+                "display_mode": view.ActiveViewport.DisplayMode.EnglishName,
+                "perspective": bool(view.ActiveViewport.IsPerspectiveProjection),
+                "camera_location": _xyz(view.ActiveViewport.CameraLocation),
+                "camera_target": _xyz(view.ActiveViewport.CameraTarget),
+                "camera_direction": _xyz(view.ActiveViewport.CameraDirection),
+                "camera_up": _xyz(view.ActiveViewport.CameraUp),
+                "grid_spacing": float(view.ActiveViewport.GetConstructionPlane().GridSpacing),
+                "snap_spacing": float(view.ActiveViewport.GetConstructionPlane().SnapSpacing),
+            } for view in views],
+        }
+
+    states = [record()]
+    for command in commands:
+        _record_progress("viewport arrangement: " + command)
+        script = {
+            "4View": "_4View _Enter",
+            "4View Projection FirstAngle": "_4View _Projection=_FirstAngle _Enter",
+            "4View Projection ThirdAngle": "_4View _Projection=_ThirdAngle _Enter",
+            "SetView World Bottom": "_SetView _World _Bottom",
+            "SetView World Back": "_SetView _World _Back",
+            "SetView World Left": "_SetView _World _Left",
+        }.get(command, "_" + command)
+        if not _run_surface_script(script, True):
+            raise ValueError("viewport arrangement failed: " + command)
+        states.append(record())
+    return {"commands": commands, "states": states}, 0
+
+
+def _synchronize_cplanes_probe(operation):
+    """Record native standard-view CPlanes and cameras after a private click."""
+    if operation.get("set_view") not in ("Yes", "No"):
+        raise ValueError("SetView must be Yes or No")
+    if operation.get("id") is None:
+        raise ValueError("synchronization probe needs an id")
+    document = Rhino.RhinoDoc.ActiveDoc
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four standard viewports")
+    views = list(document.Views.GetViewList(True, False))
+    matching = [view for view in views if view.ActiveViewport.Name == "Top"]
+    if len(matching) != 1:
+        raise ValueError("expected one Top viewport")
+    source = matching[0]
+    document.Views.ActiveView = source
+    axes = operation.get("axes", [[0, 1, 0], [0, 0, 1]])
+    if not isinstance(axes, list) or len(axes) != 2:
+        raise ValueError("expected two construction plane axes")
+    frame = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(7, 8, 9),
+                                 _vector(axes[0]), _vector(axes[1]))
+    if not frame.IsValid or source.ActiveViewport.SetConstructionPlane(frame) is False:
+        raise ValueError("could not set source CPlane")
+
+    def state():
+        result = {}
+        for view in document.Views.GetViewList(True, False):
+            viewport = view.ActiveViewport
+            plane = viewport.ConstructionPlane()
+            plane_record = viewport.GetConstructionPlane()
+            rectangle = view.ScreenRectangle
+            result[viewport.Name] = {
+                "screen_rectangle": [int(rectangle.Left), int(rectangle.Top),
+                                     int(rectangle.Right), int(rectangle.Bottom)],
+                "plane": {
+                    "name": str(getattr(plane_record, "Name", "")),
+                    "origin": _xyz(plane.Origin),
+                    "x": _xyz(plane.XAxis),
+                    "y": _xyz(plane.YAxis),
+                    "z": _xyz(plane.ZAxis),
+                },
+                "perspective": bool(viewport.IsPerspectiveProjection),
+                "camera_direction": _xyz(viewport.CameraDirection),
+                "camera_up": _xyz(viewport.CameraUp),
+                "camera_target": _xyz(viewport.CameraTarget),
+            }
+        return result
+
+    before = state()
+    bounds = source.ScreenRectangle
+    x = int((bounds.Left + bounds.Right) / 2)
+    y = int((bounds.Top + bounds.Bottom) / 2)
+    _record_progress("PICK %s %d %d" % (operation["id"], x, y))
+    script = "_SynchronizeCPlanes _SetView=_%s _Pause" % operation["set_view"]
+    if not _run_surface_script(script, True):
+        raise ValueError("SynchronizeCPlanes failed")
+    return {"before": before, "after": state(), "set_view": operation["set_view"],
+            "pick": [x, y], "active_after": document.Views.ActiveView.ActiveViewport.Name}, 0
+
+
+def _copy_cplane_probe(operation):
+    command = operation.get("command")
+    if command not in ("CopyCPlaneToAll", "CopyCPlaneSettingsToAll"):
+        raise ValueError("unknown CPlane copy command")
+    document = Rhino.RhinoDoc.ActiveDoc
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four standard viewports")
+    views = list(document.Views.GetViewList(True, False))
+    matching = [view for view in views if view.ActiveViewport.Name == "Top"]
+    if len(matching) != 1:
+        raise ValueError("expected one Top viewport")
+    source = matching[0]
+    plane = source.ActiveViewport.GetConstructionPlane()
+    plane.Plane = Rhino.Geometry.Plane(
+        Rhino.Geometry.Point3d(7, 8, 9), Rhino.Geometry.Vector3d(0, 1, 0),
+        Rhino.Geometry.Vector3d(0, 0, 1))
+    plane.GridSpacing = 3.5
+    plane.SnapSpacing = 0.25
+    plane.GridLineCount = 30
+    plane.ThickLineFrequency = 3
+    plane.ShowGrid = False
+    plane.ShowAxes = False
+    if source.ActiveViewport.SetConstructionPlane(plane) is False:
+        raise ValueError("could not set source CPlane")
+    source.ActiveViewport.ConstructionGridVisible = False
+    source.ActiveViewport.ConstructionAxesVisible = False
+    source.ActiveViewport.WorldAxesVisible = True
+    for view in views:
+        if view is source:
+            continue
+        settings = view.ActiveViewport.GetConstructionPlane()
+        settings.GridSpacing = 1.0
+        settings.SnapSpacing = 1.0
+        settings.GridLineCount = 70
+        settings.ThickLineFrequency = 5
+        settings.ShowGrid = True
+        settings.ShowAxes = True
+        if view.ActiveViewport.SetConstructionPlane(settings) is False:
+            raise ValueError("could not reset target CPlane settings")
+        view.ActiveViewport.ConstructionGridVisible = True
+        view.ActiveViewport.ConstructionAxesVisible = True
+        view.ActiveViewport.WorldAxesVisible = False
+    active = next(view for view in views if view.ActiveViewport.Name == "Perspective")
+    document.Views.ActiveView = active
+
+    def state():
+        return {
+            view.ActiveViewport.Name: {
+                "origin": _xyz(view.ActiveViewport.ConstructionPlane().Origin),
+                "axes": [_xyz(view.ActiveViewport.ConstructionPlane().XAxis),
+                         _xyz(view.ActiveViewport.ConstructionPlane().YAxis),
+                         _xyz(view.ActiveViewport.ConstructionPlane().ZAxis)],
+                "grid_spacing": float(view.ActiveViewport.GetConstructionPlane().GridSpacing),
+                "snap_spacing": float(view.ActiveViewport.GetConstructionPlane().SnapSpacing),
+                "grid_line_count": int(view.ActiveViewport.GetConstructionPlane().GridLineCount),
+                "thick_line_frequency": int(view.ActiveViewport.GetConstructionPlane().ThickLineFrequency),
+                "show_grid": bool(view.ActiveViewport.ConstructionGridVisible),
+                "show_axes": bool(view.ActiveViewport.ConstructionAxesVisible),
+                "show_world_axes": bool(view.ActiveViewport.WorldAxesVisible),
+                "camera_location": _xyz(view.ActiveViewport.CameraLocation),
+            } for view in views
+        }
+
+    before = state()
+    bounds = source.ScreenRectangle
+    x, y = int((bounds.Left + bounds.Right) / 2), int((bounds.Top + bounds.Bottom) / 2)
+    _record_progress("PICK %s %d %d" % (operation["id"], x, y))
+    script = "_%s _Pause" % command
+    if not _run_surface_script(script, True):
+        raise ValueError("CPlane copy command failed: " + script)
+    after = state()
+    active_after = document.Views.ActiveView.ActiveViewport.Name
+    after_undo = None
+    if command == "CopyCPlaneToAll":
+        target = next(view for view in views if view.ActiveViewport.Name == "Front")
+        document.Views.ActiveView = target
+        if not _run_surface_script("_CPlane _Undo", True):
+            raise ValueError("CPlane Undo after copy failed")
+        after_undo = state()
+    return {"before": before, "after": after, "after_undo": after_undo,
+            "active_after": active_after, "source": source.ActiveViewport.Name}, 0
+
+
+def _construction_plane_script(step):
+    kind = step["kind"]
+    def point(value):
+        return "w" + _command_point(value)
+    if kind == "world" and step["view"] in ("Top", "Bottom", "Front", "Back", "Right", "Left"):
+        return "_CPlane _World _" + step["view"]
+    if kind == "origin":
+        return "_CPlane " + point(step["point"])
+    if kind == "three_point" and len(step["points"]) == 3:
+        return "_CPlane _3Point " + " ".join(point(p) for p in step["points"])
+    if kind == "three_point_vertical" and len(step["points"]) == 2:
+        origin, x_point = step["points"]
+        return "_CPlane _3Point %s _Vertical %s" % (point(origin), point(x_point))
+    if kind == "three_point_z_axis" and len(step["points"]) == 2:
+        origin, z_point = step["points"]
+        return "_CPlane _3Point %s _ZAxis %s" % (point(origin), point(z_point))
+    if kind == "three_point_input" and len(step["points"]) == 3:
+        _point_input_script(step["points"])
+        return "_CPlane _3Point " + " ".join(step["points"])
+    if kind == "origin_input":
+        _point_input_script([step["point"], "0"])
+        return "_CPlane " + step["point"]
+    if kind == "elevation":
+        return "_CPlane _Elevation %.17g" % _finite(step["distance"], "CPlane elevation")
+    if kind == "through":
+        return "_CPlane _Through " + point(step["point"])
+    if kind == "rotate" and len(step["axis"]) == 2:
+        return "_CPlane _Rotate %s %s %.17g" % (point(step["axis"][0]), point(step["axis"][1]), _finite(step["angle"], "CPlane angle"))
+    if kind == "rotate_points" and len(step["axis"]) == 2 and len(step["references"]) == 2:
+        return "_CPlane _Rotate %s %s %s %s" % (
+            point(step["axis"][0]), point(step["axis"][1]),
+            point(step["references"][0]), point(step["references"][1]))
+    if kind in ("undo", "redo"):
+        return "_CPlane _" + kind.title()
+    raise ValueError("unsupported CPlane step")
+
+
+def _construction_plane_all_probe(operation):
+    """Record independent viewport planes after the two multi-view options."""
+    origin = operation.get("origin")
+    through = operation.get("through")
+    if (not isinstance(origin, list) or len(origin) != 3
+            or not isinstance(through, list) or len(through) != 3):
+        raise ValueError("CPlane All probe requires origin and through points")
+    if not _run_surface_script("_4View _Projection=_ThirdAngle _Enter", True):
+        raise ValueError("could not establish four-view baseline")
+    document = Rhino.RhinoDoc.ActiveDoc
+    active_name = operation.get("active_view", "Top")
+    if active_name not in ("Top", "Front", "Right", "Perspective"):
+        raise ValueError("invalid CPlane All active viewport")
+    matching = [view for view in document.Views.GetViewList(True, False)
+                if view.ActiveViewport.Name == active_name]
+    if len(matching) != 1:
+        raise ValueError("expected one active viewport")
+    document.Views.ActiveView = matching[0]
+    _run_surface_script("_SetActiveViewport _" + active_name, True)
+    if document.Views.ActiveView.ActiveViewport.Name != active_name:
+        raise ValueError("could not activate requested viewport")
+    steps = operation.get("steps", ["all", "through_all"])
+    if not isinstance(steps, list) or not steps or any(
+            step not in ("origin", "all", "all_toggle", "all_toggle_on",
+                         "all_toggle_twice", "all_cancel", "all_reject_view",
+                         "all_no_reject_curve", "through", "through_all",
+                         "through_all_toggle", "through_all_toggle_off",
+                         "through_all_cancel", "through_all_local", "through_all_no")
+            for step in steps):
+        raise ValueError("invalid CPlane All probe steps")
+    with _independent_construction_planes():
+        if not _run_surface_script("_CPlane _World _" + (
+                "Top" if active_name == "Perspective" else active_name), True):
+            raise ValueError("could not reset active CPlane through command")
+        axes = operation.get("top_axes")
+        if axes is not None:
+            if not isinstance(axes, list) or len(axes) != 2:
+                raise ValueError("expected two active construction plane axes")
+            frame = Rhino.Geometry.Plane(Rhino.Geometry.Point3d(0, 0, 0),
+                                         _vector(axes[0]), _vector(axes[1]))
+            if not frame.IsValid:
+                raise ValueError("invalid oblique Top plane")
+            script = "_CPlane _3Point w0,0,0 w%s w%s" % (
+                _command_point(axes[0]), _command_point(axes[1]))
+            if not _run_surface_script(script, True):
+                raise ValueError("could not set oblique active plane")
+
+        def state():
+            result = {}
+            for view in document.Views.GetViewList(True, False):
+                viewport = view.ActiveViewport
+                plane = viewport.ConstructionPlane()
+                result[viewport.Name] = {
+                    "origin": _xyz(plane.Origin),
+                    "x": _xyz(plane.XAxis),
+                    "y": _xyz(plane.YAxis),
+                    "z": _xyz(plane.ZAxis),
+                    "camera_target": _xyz(viewport.CameraTarget),
+                }
+            return {"active": document.Views.ActiveView.ActiveViewport.Name,
+                    "views": result}
+
+        states = [state()]
+        histories = []
+        for step in steps:
+            scripts = {
+                "origin": "_CPlane w" + _command_point(through),
+                "all": "_CPlane _All=_Yes w" + _command_point(origin),
+                "all_toggle": "_CPlane _All w" + _command_point(origin),
+                "all_toggle_on": "_CPlane _All=_No _All w" + _command_point(origin),
+                "all_toggle_twice": "_CPlane _All=_No _All _All w" + _command_point(origin),
+                "all_cancel": "_CPlane _All=_Yes !",
+                "all_reject_view": "_CPlane _All=_Yes _View w" + _command_point(origin),
+                "all_no_reject_curve": "_CPlane _All=_No _Curve w" + _command_point(origin),
+                "through": "_CPlane _Through w" + _command_point(through),
+                "through_all": "_CPlane _Through _All=_Yes w" + _command_point(through),
+                "through_all_toggle": "_CPlane _Through _All w" + _command_point(through),
+                "through_all_toggle_off": "_CPlane _Through _All=_Yes _All w" + _command_point(through),
+                "through_all_cancel": "_CPlane _Through _All=_Yes !",
+                "through_all_local": "_CPlane _Through _All=_Yes " + _command_point(through),
+                "through_all_no": "_CPlane _Through _All=_No w" + _command_point(through),
+            }
+            script = scripts[step]
+            _record_progress("CPlane multi-view: " + script)
+            before = Rhino.RhinoApp.CommandHistoryWindowText
+            # These two diagnostic paths deliberately submit an unavailable
+            # option, then finish the point prompt. Preserve the raw rejection.
+            succeeded = (bool(Rhino.RhinoApp.RunScript(script, True))
+                         if step in ("all_reject_view", "all_no_reject_curve")
+                         else _run_surface_script(script, True))
+            if not succeeded and not step.endswith("_cancel"):
+                raise ValueError("CPlane multi-view command failed: " + script)
+            after = Rhino.RhinoApp.CommandHistoryWindowText
+            histories.append(after[len(before):][-1500:] if after.startswith(before)
+                             else after[-1500:])
+            states.append(state())
+        return {"states": states, "steps": steps, "histories": histories}, 0
+
+
+@contextmanager
+def _independent_construction_planes():
+    document = Rhino.RhinoDoc.ActiveDoc
+    views = list(document.Views.GetViewList(True, False))
+    original_planes = [view.ActiveViewport.ConstructionPlane() for view in views]
+    aid = Rhino.ApplicationSettings.ModelAidSettings
+    original_aid = aid.GetCurrentState()
+    try:
+        aid.UniversalConstructionPlaneMode = False
+        yield document.Views.ActiveView.ActiveViewport
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for view, original in zip(views, original_planes):
+            view.ActiveViewport.SetConstructionPlane(original)
+        aid.UpdateFromState(original_aid)
+
+
+def _construction_plane(operation):
+    if not 1 <= len(operation["steps"]) <= 128:
+        raise ValueError("expected 1 to 128 CPlane steps")
+    object_kinds = (
+        "object_line", "object_polyline", "object_polycurve", "object_nurbs", "object_circle",
+        "object_arc", "object_ellipse", "object_surface", "object_mesh_face",
+        "object_brep_face", "surface_cplane", "surface_cplane_trimmed", "curve_cplane_line",
+        "curve_cplane_polyline", "curve_cplane_circle", "curve_cplane_nurbs",
+    )
+    has_objects = any(step["kind"] in object_kinds for step in operation["steps"])
+    for step in operation["steps"]:
+        if step["kind"] not in object_kinds:
+            _construction_plane_script(step)
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid initial CPlane")
+    document = Rhino.RhinoDoc.ActiveDoc
+    def record():
+        current = viewport.ConstructionPlane()
+        return {"origin": _xyz(current.Origin), "axes": [_xyz(current.XAxis), _xyz(current.YAxis), _xyz(current.ZAxis)]}
+    with _independent_construction_planes() as viewport:
+        selected = ([obj.Id for obj in document.Objects.GetSelectedObjects(False, False)]
+                    if has_objects else [])
+        owned = []
+        try:
+            viewport.SetConstructionPlane(plane)
+            states = [record()]
+            for step in operation["steps"]:
+                if step["kind"] == "object_line":
+                    object_id = document.Objects.AddLine(
+                        _point(step["start"]), _point(step["end"]))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object line")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "curve_cplane_line":
+                    object_id = document.Objects.AddLine(
+                        _point(step["start"]), _point(step["end"]))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve line")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_polyline":
+                    vertices = step["vertices"]
+                    if len(vertices) < 2:
+                        raise ValueError("CPlane Curve polyline needs two vertices")
+                    object_id = document.Objects.AddPolyline([_point(p) for p in vertices])
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve polyline")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_circle":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane Curve circle radius")
+                    if not frame.IsValid or radius <= 0:
+                        raise ValueError("invalid CPlane Curve circle")
+                    object_id = document.Objects.AddCircle(Rhino.Geometry.Circle(frame, radius))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve circle")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "curve_cplane_nurbs":
+                    curve = _nurbs_curve_from_definition(step["definition"])
+                    try:
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Curve NURBS")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    pick = step.get("pick")
+                    script = "_CPlane _Curve _SelID %s %s" % (
+                        object_id, "w" + _command_point(pick) if pick is not None else "_Enter")
+                elif step["kind"] == "object_polyline":
+                    vertices = step["vertices"]
+                    if len(vertices) < 2:
+                        raise ValueError("CPlane object polyline needs at least two vertices")
+                    object_id = document.Objects.AddPolyline([_point(p) for p in vertices])
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object polyline")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_polycurve":
+                    curve = _join_close_input({"type": "polycurve", "segments": step["segments"]})
+                    try:
+                        if not curve.IsValid:
+                            raise ValueError("invalid CPlane object polycurve")
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object polycurve")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_nurbs":
+                    curve = _nurbs_curve_from_definition(step["definition"])
+                    try:
+                        object_id = document.Objects.AddCurve(curve)
+                    finally:
+                        curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object NURBS")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_circle":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane object circle radius")
+                    if not frame.IsValid or radius <= 0:
+                        raise ValueError("invalid CPlane object circle")
+                    object_id = document.Objects.AddCircle(Rhino.Geometry.Circle(frame, radius))
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object circle")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_arc":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius = _finite(step["radius"], "CPlane object arc radius")
+                    sweep = _finite(step["sweep_radians"], "CPlane object arc sweep")
+                    if not frame.IsValid or radius <= 0 or not 0 < sweep < math.pi * 2:
+                        raise ValueError("invalid CPlane object arc")
+                    circle = Rhino.Geometry.Circle(frame, radius)
+                    arc = Rhino.Geometry.Arc(circle.PointAt(0), circle.PointAt(sweep / 2),
+                                             circle.PointAt(sweep))
+                    if not arc.IsValid:
+                        raise ValueError("invalid CPlane object arc")
+                    object_id = document.Objects.AddArc(arc)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object arc")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_ellipse":
+                    frame = Rhino.Geometry.Plane(_point(step["center"]),
+                                                 _vector(step["x_axis"]), _vector(step["y_axis"]))
+                    radius_x = _finite(step["radius_x"], "CPlane object ellipse X radius")
+                    radius_y = _finite(step["radius_y"], "CPlane object ellipse Y radius")
+                    if not frame.IsValid or radius_x <= 0 or radius_y <= 0:
+                        raise ValueError("invalid CPlane object ellipse")
+                    ellipse = Rhino.Geometry.Ellipse(frame, radius_x, radius_y).ToNurbsCurve()
+                    if ellipse is None or not ellipse.IsValid:
+                        raise ValueError("invalid CPlane object ellipse curve")
+                    object_id = document.Objects.AddCurve(ellipse)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object ellipse")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "object_surface":
+                    if len(step["corners"]) != 4:
+                        raise ValueError("CPlane object surface requires four corners")
+                    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                        *[_point(corner) for corner in step["corners"]])
+                    if surface is None or not surface.IsValid:
+                        raise ValueError("invalid CPlane object surface")
+                    object_id = document.Objects.AddSurface(surface)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object surface")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    script = "_CPlane _Object _SelID %s _Enter" % object_id
+                elif step["kind"] == "surface_cplane":
+                    if len(step["corners"]) != 4:
+                        raise ValueError("CPlane Surface requires four corners")
+                    surface = Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                        *[_point(corner) for corner in step["corners"]])
+                    if surface is None or not surface.IsValid:
+                        raise ValueError("invalid CPlane Surface geometry")
+                    try:
+                        object_id = document.Objects.AddSurface(surface)
+                    finally:
+                        surface.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane Surface geometry")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    origin = step.get("pick_origin")
+                    direction = step.get("pick_x")
+                    options = ""
+                    for key, name in (("flip", "Flip"), ("ignore_trims", "IgnoreTrims")):
+                        if key in step:
+                            if type(step[key]) is not bool:
+                                raise ValueError("CPlane Surface %s must be Boolean" % name)
+                            options += " _%s=_%s" % (name, "Yes" if step[key] else "No")
+                    script = "_CPlane _Surface _SelID %s%s %s %s" % (
+                        object_id,
+                        options,
+                        "w" + _command_point(origin) if origin is not None else "_Enter",
+                        "w" + _command_point(direction) if direction is not None else "_Enter")
+                elif step["kind"] == "surface_cplane_trimmed":
+                    outlines = [step["outer"]] + step.get("holes", [])
+                    curves = []
+                    try:
+                        for outline in outlines:
+                            if len(outline) < 3:
+                                raise ValueError("CPlane trimmed surface outline needs three points")
+                            points = [_point(p) for p in outline]
+                            curves.append(Rhino.Geometry.PolylineCurve(points + [points[0]]))
+                        breps = Rhino.Geometry.Brep.CreatePlanarBreps(curves, 1e-7)
+                        if breps is None or len(breps) != 1 or not breps[0].IsValid:
+                            if breps is not None:
+                                for brep in breps:
+                                    brep.Dispose()
+                            raise ValueError("could not create CPlane trimmed surface")
+                        try:
+                            object_id = document.Objects.AddBrep(breps[0])
+                        finally:
+                            for brep in breps:
+                                brep.Dispose()
+                    finally:
+                        for curve in curves:
+                            curve.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane trimmed surface")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    options = ""
+                    if "ignore_trims" in step:
+                        if type(step["ignore_trims"]) is not bool:
+                            raise ValueError("CPlane Surface IgnoreTrims must be Boolean")
+                        options = " _IgnoreTrims=_%s" % ("Yes" if step["ignore_trims"] else "No")
+                    origin = step.get("pick_origin")
+                    direction = step.get("pick_x")
+                    script = "_CPlane _Surface _SelID %s%s %s %s" % (
+                        object_id,
+                        options,
+                        "w" + _command_point(origin) if origin is not None else "_Enter",
+                        "w" + _command_point(direction) if direction is not None else "_Enter")
+                elif step["kind"] == "object_mesh_face":
+                    mesh = _polygon_mesh(step["vertices"], step["faces"])
+                    try:
+                        object_id = document.Objects.AddMesh(mesh)
+                    finally:
+                        mesh.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object mesh")
+                    owned.append(object_id)
+                    face_index = step["face"]
+                    if (type(face_index) is not int or face_index < 0
+                            or face_index >= len(step["faces"])):
+                        raise ValueError("invalid CPlane object mesh face index")
+                    document.Objects.UnselectAll()
+                    mesh_object = document.Objects.FindId(object_id)
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshFace, face_index)
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select CPlane object mesh face")
+                    script = "_CPlane _Object _Enter"
+                elif step["kind"] == "object_brep_face":
+                    corners = step["box"]
+                    if len(corners) != 2:
+                        raise ValueError("CPlane object B-rep box needs two corners")
+                    brep = Rhino.Geometry.Brep.CreateFromBox(
+                        Rhino.Geometry.BoundingBox(_point(corners[0]), _point(corners[1])))
+                    if brep is None or not brep.IsValid:
+                        raise ValueError("invalid CPlane object B-rep box")
+                    try:
+                        face_index = step["face"]
+                        if (type(face_index) is not int or face_index < 0
+                                or face_index >= brep.Faces.Count):
+                            raise ValueError("invalid CPlane object B-rep face index")
+                        object_id = document.Objects.AddBrep(brep)
+                    finally:
+                        brep.Dispose()
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add CPlane object B-rep")
+                    owned.append(object_id)
+                    document.Objects.UnselectAll()
+                    brep_object = document.Objects.FindId(object_id)
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.BrepFace, face_index)
+                    if brep_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select CPlane object B-rep face")
+                    script = "_CPlane _Object _Enter"
+                else:
+                    script = _construction_plane_script(step)
+                _record_progress("CPlane command: " + script)
+                history_before = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
+                if not _run_surface_script(script, True):
+                    history_after = getattr(Rhino.RhinoApp, "CommandHistoryWindowText", "")
+                    history = (history_after[len(history_before):] if history_after.startswith(history_before)
+                               else history_after[-1500:])
+                    raise ValueError("CPlane command failed: %s; history: %s" % (script, history[-1500:]))
+                states.append(record())
+            return {"states": states}, 0
+        finally:
+            if has_objects:
+                document.Objects.UnselectAll()
+                for object_id in owned:
+                    document.Objects.Delete(object_id, True)
+                for object_id in selected:
+                    document.Objects.Select(object_id)
+
+
+def _construction_plane_input(operation):
+    before, after = operation["before"], operation["after"]
+    if not isinstance(before, list) or not isinstance(after, list) or not before or not after:
+        raise ValueError("nested CPlane probe needs before and after point lists")
+    _point_input_script(before + after)
+    script = "_Polyline " + " ".join(before) + " '" + _construction_plane_script(operation["step"]) + " " + " ".join(after) + " _Enter"
+    with _independent_construction_planes():
+        return _in_construction_plane(dict(operation, points=before + after), script, None)
+
+
+def _plane_array_script(operation):
+    name = operation["command"]
+    if name == "Array":
+        counts, distances, mode = operation["counts"], operation["distances"], operation["mode"]
+        if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 64 for n in counts) or not 2 <= counts[0] * counts[1] * counts[2] <= 256:
+            raise ValueError("invalid rectangular array counts")
+        if len(distances) != 3 or mode not in ("UnitCell", "Fill"):
+            raise ValueError("invalid rectangular array options")
+        distances = [_finite(v, "array distance") for v in distances]
+        preview = ""
+        if mode == "Fill" and operation.get("explicit_lengths", False):
+            preview = " " + " ".join("_%sLength %.17g" % (axis, d) for axis, n, d in zip("XYZ", counts, distances) if n > 1)
+        return "_-Array _Mode=_%s %s %s%s _Enter" % (mode, " ".join(str(n) for n in counts), " ".join("%.17g" % d for n, d in zip(counts, distances) if n > 1), preview)
+    count = operation["item_count"]
+    if type(count) is not int or not 2 <= count <= 256:
+        raise ValueError("invalid array item count")
+    if name == "ArrayLinear":
+        if len(operation["references"]) != 2:
+            raise ValueError("expected two linear array references")
+        return "_ArrayLinear %d %s" % (count, " ".join("w" + _command_point(p) for p in operation["references"]))
+    if name == "ArrayPolar":
+        angle = _finite(operation["angle"], "array angle")
+        offset = _finite(operation["z_offset"], "array offset")
+        if angle == 0 or not isinstance(operation["rotate"], bool):
+            raise ValueError("invalid polar array options")
+        return "_-ArrayPolar w%s %d _Rotate=_%s _ZOffset %.17g %.17g _Enter" % (_command_point(operation["center"]), count, "Yes" if operation["rotate"] else "No", offset, angle)
+    raise ValueError("unsupported array command")
+
+
+def _plane_array_geometry_record(geometry, is_surface):
+    if is_surface:
+        if isinstance(geometry, Rhino.Geometry.Brep):
+            if geometry.Faces.Count != 1:
+                raise ValueError("array surface output is not a single face")
+            geometry = geometry.Faces[0].UnderlyingSurface()
+        u, v = geometry.Domain(0), geometry.Domain(1)
+        domain = [[float(u.T0), float(u.T1)], [float(v.T0), float(v.T1)]]
+        points = [_xyz(geometry.PointAt(u.ParameterAt(i / 4.0), v.ParameterAt(j / 4.0))) for j in range(5) for i in range(5)]
+    else:
+        domain = [float(geometry.Domain.T0), float(geometry.Domain.T1)]
+        points = [_xyz(geometry.PointAt(geometry.Domain.ParameterAt(i / 32.0))) for i in range(33)]
+    return domain, points
+
+
+def _plane_array_brep_record(brep):
+    domains, points = [], []
+    for face in brep.Faces:
+        u, v = face.Domain(0), face.Domain(1)
+        domains.append([[float(u.T0),float(u.T1)],[float(v.T0),float(v.T1)]])
+        points.extend(_xyz(face.PointAt(u.ParameterAt(i/4.0),v.ParameterAt(j/4.0))) for j in range(5) for i in range(5))
+        for loop in face.Loops:
+            for trim in loop.Trims:
+                for i in range(9):
+                    uv = trim.PointAt(trim.Domain.ParameterAt(i/8.0))
+                    points.append(_xyz(face.PointAt(uv.X,uv.Y)))
+    return domains, points
+
+
+def _plane_array(operation, tolerance):
+    script = _plane_array_script(operation)
+    if not 1 <= len(operation["sources"]) <= 16:
+        raise ValueError("expected 1 to 16 array sources")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    original_groups = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    source_ids = []
+    curves = []
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid array plane")
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for index, definition in enumerate(operation["sources"]):
+                is_surface = definition["type"] == "surface"
+                is_brep = definition["type"] == "brep"
+                curve = _trimmed_brep_from_definition(definition, tolerance) if is_brep else (_nurbs_surface_from_definition(definition) if is_surface else _join_close_input(definition))
+                curves.append(curve)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = str(index)
+                object_id = document.Objects.AddBrep(curve, attributes) if is_brep else (document.Objects.AddSurface(curve, attributes) if is_surface else document.Objects.AddCurve(curve, attributes))
+                if object_id == System.Guid.Empty:
+                    raise ValueError("failed array source insertion")
+                source_ids.append(object_id)
+                document.Objects.Select(object_id)
+            for members in operation.get("groups", [list(range(len(source_ids)))]):
+                if not members or any(type(i) is not int or not 0 <= i < len(source_ids) for i in members) or len(set(members)) != len(members):
+                    raise ValueError("invalid array source group")
+                if document.Groups.Add("Viboceros plane array " + str(System.Guid.NewGuid()), [source_ids[i] for i in members]) < 0:
+                    raise ValueError("failed array source grouping")
+            _record_progress("plane array: " + script)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            if not _run_surface_script(script, True):
+                raise ValueError("plane array command failed")
+            outputs = [obj for obj in objects() if obj.Id not in before]
+            counts = operation.get("counts")
+            count = counts[0] * counts[1] * counts[2] if operation["command"] == "Array" else operation["item_count"]
+            expected_count = operation.get("expected_object_count", count * len(source_ids))
+            if not operation.get("inspect_bounds", False) and len(outputs) != expected_count:
+                raise ValueError("array command produced %d objects, expected %d" % (len(outputs), expected_count))
+            records = []
+            for obj in outputs:
+                curve = obj.Geometry
+                source_type = operation["sources"][int(obj.Attributes.Name)]["type"]
+                domain, points = _plane_array_brep_record(curve) if source_type == "brep" else _plane_array_geometry_record(curve, source_type == "surface")
+                records.append({"source": int(obj.Attributes.Name), "original": obj.Id in source_ids,
+                                "selected": bool(obj.IsSelected(False)), "domain": domain, "points": points})
+            # Quantize only sort keys, never the reported coordinates.
+            records.sort(key=lambda r: (r["source"], not r["original"], tuple(round(v, 8) for p in r["points"] for v in p)))
+            groups = []
+            for index in range(document.Groups.Count):
+                if index not in original_groups and not document.Groups.IsDeleted(index):
+                    members = document.Groups.GroupMembers(index)
+                    # Rhino leaves unused empty table entries for single-object
+                    # arrays. Compare live memberships, not empty table slots.
+                    if members:
+                        groups.append(sorted(int(obj.Attributes.Name) for obj in members))
+            value = {"objects": records, "groups": sorted(groups)}
+            if operation.get("inspect_bounds", False):
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                value["history"] = history_after[len(history_before):] if history_after.startswith(history_before) else history_after[-5000:]
+                value["bounds"] = []
+                for curve, definition in zip(curves, operation["sources"]):
+                    for local in [False, True]:
+                        temporary = curve.Duplicate() if definition["type"] in ("surface", "brep") else curve.DuplicateCurve()
+                        try:
+                            if local:
+                                temporary.Transform(Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY))
+                            boxes = [temporary.GetBoundingBox(accurate) for accurate in [False, True]]
+                            value["bounds"].append({"local":local,"fast":[_xyz(boxes[0].Min),_xyz(boxes[0].Max)],"tight":[_xyz(boxes[1].Min),_xyz(boxes[1].Max)]})
+                        finally:
+                            temporary.Dispose()
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+            for index in range(document.Groups.Count):
+                if index not in original_groups and not document.Groups.IsDeleted(index):
+                    document.Groups.Delete(index)
+            document.Objects.UnselectAll()
+            for object_id in selected:
+                document.Objects.Select(object_id)
+            for curve in curves:
+                curve.Dispose()
+
+
+def _surface_parameter_curve_bounds(operation, tolerance):
+    owned = []
+    try:
+        if any(float(c["point"][2]) != 0.0 for c in operation["parameter_curve"]["control_points"]):
+            raise ValueError("parameter curves must have zero Z coordinates")
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        owned.append(surface)
+        curve = _nurbs_curve_from_definition(operation["parameter_curve"], 2)
+        owned.append(curve)
+        reference = _nurbs_curve_from_definition(operation["reference_curve"])
+        owned.append(reference)
+        if curve.Domain.T0 != reference.Domain.T0 or curve.Domain.T1 != reference.Domain.T1:
+            raise ValueError("reference curve parameter domain differs")
+        samples = []
+        reference_samples = []
+        for i in range(65):
+            t = curve.Domain.ParameterAt(i/64.0)
+            uv = curve.PointAt(t)
+            point = surface.PointAt(uv.X, uv.Y)
+            expected = reference.PointAt(t)
+            scale = max([abs(x) for x in _xyz(point)+_xyz(expected)])
+            if point.DistanceTo(expected) > max(tolerance["absolute"],tolerance["relative"]*scale):
+                raise ValueError("parameter image samples differ from the independent spatial reference")
+            samples.append(_xyz(point))
+            reference_samples.append(_xyz(expected))
+        bounds = reference.GetBoundingBox(True)
+        if not bounds.IsValid:
+            raise ValueError("invalid reference curve bounds")
+        # This is an independently supplied exact curve, not a corresponding
+        # Rhino composition algorithm, so elapsed=0 is intentional.
+        return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples,"reference_samples":reference_samples},0
+    finally:
+        for geometry in reversed(owned):
+            geometry.Dispose()
+
+
+def _trim_boundary_bounds(operation, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        faces = []
+        for face in brep.Faces:
+            bounds = None
+            samples = []
+            for loop in face.Loops:
+                for trim in loop.Trims:
+                    if trim.Edge is None:
+                        raise ValueError("boundary reference fixture requires explicit spatial edges")
+                    edge_bounds = trim.Edge.GetBoundingBox(True)
+                    if not edge_bounds.IsValid:
+                        raise ValueError("invalid boundary reference bounds")
+                    if bounds is None:
+                        bounds = edge_bounds
+                    else:
+                        bounds.Union(edge_bounds)
+                    values = []
+                    for i in range(65):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i/64.0))
+                        values.append(_xyz(face.PointAt(uv.X,uv.Y)))
+                    samples.append(values)
+            if bounds is None:
+                raise ValueError("boundary reference fixture requires nonempty trims")
+            faces.append({"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples})
+        return {"faces":faces},0
+    finally:
+        brep.Dispose()
+
+
+def _trimmed_brep_bounds(operation, iterations, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        bounds, elapsed = _measure(iterations, lambda: brep.GetBoundingBox(True))
+        if not bounds.IsValid:
+            raise ValueError("invalid trimmed B-rep bounds")
+        samples = []
+        for face in brep.Faces:
+            u, v = operation["interior_uv"]
+            values = [_xyz(face.PointAt(u,v))]
+            for loop in face.Loops:
+                for trim in loop.Trims:
+                    for i in range(65):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i/64.0))
+                        values.append(_xyz(face.PointAt(uv.X,uv.Y)))
+            samples.append(values)
+        return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples},elapsed
+    finally:
+        brep.Dispose()
+
+
+def _object_source(definition, tolerance):
+    kind = definition["type"]
+    if kind == "point":
+        return Rhino.Geometry.Point(_point(definition["point"]))
+    if kind == "point_cloud":
+        cloud = Rhino.Geometry.PointCloud()
+        try:
+            for point in definition["points"]:
+                cloud.Add(_point(point))
+            return cloud
+        except Exception:
+            cloud.Dispose()
+            raise
+    if kind == "mesh":
+        return _polygon_mesh(definition["vertices"], definition["faces"])
+    if kind == "surface":
+        return _nurbs_surface_from_definition(definition)
+    if kind == "brep":
+        return _trimmed_brep_from_definition(definition, tolerance)
+    return _join_close_input(definition)
+
+
+def _bounding_box_geometry_record(geometry):
+    if isinstance(geometry, Rhino.Geometry.Brep):
+        record = {"kind":"brep","points":[_xyz(v.Location) for v in geometry.Vertices],
+                  "faces":geometry.Faces.Count,"closed":bool(geometry.IsSolid)}
+    elif isinstance(geometry, Rhino.Geometry.Mesh):
+        record = {"kind":"mesh","points":[_xyz(v) for v in geometry.Vertices],
+                  "face_sizes":sorted(3 if f.IsTriangle else 4 for f in geometry.Faces),"closed":bool(geometry.IsClosed)}
+    elif isinstance(geometry, Rhino.Geometry.Curve):
+        success, polyline = geometry.TryGetPolyline()
+        if not success:
+            raise ValueError("bounding curve is not a polyline")
+        record = {"kind":"curve","points":[list(p) for p in sorted(set(tuple(_xyz(p)) for p in polyline))],
+                  "closed":bool(geometry.IsClosed),"degree":int(geometry.Degree)}
+    elif isinstance(geometry, Rhino.Geometry.Point):
+        record = {"kind":"point","points":[_xyz(geometry.Location)]}
+    else:
+        raise ValueError("unsupported BoundingBox output")
+    record["points"].sort(key=lambda p:tuple(round(x,8) for x in p))
+    return record
+
+
+def _bounding_box_command(operation, tolerance):
+    coordinates, output = operation["coordinate_system"], operation["output"]
+    cumulative = operation["cumulative"]
+    if (coordinates not in ("World", "CPlane")
+            or output not in ("Solids", "Meshes", "Curves", "None")
+            or not isinstance(cumulative, bool)):
+        raise ValueError("invalid BoundingBox options")
+    if not 1 <= len(operation["sources"]) <= 16:
+        raise ValueError("expected 1 to 16 BoundingBox sources")
+    script = "_-BoundingBox _CoordinateSystem=_%s _Cumulative=_%s _Output=_%s _Enter" % (
+        coordinates, "Yes" if cumulative else "No", output)
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    original_groups = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    plane = Rhino.Geometry.Plane(
+        _point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid BoundingBox plane")
+    owned, source_ids = [], []
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for index, definition in enumerate(operation["sources"]):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "bbox-source-%d" % index
+                    kind = definition["type"]
+                    if kind == "point":
+                        object_id = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud":
+                        object_id = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh":
+                        object_id = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface":
+                        object_id = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep":
+                        object_id = document.Objects.AddBrep(geometry, attributes)
+                    else:
+                        object_id = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if object_id == System.Guid.Empty:
+                    raise ValueError("BoundingBox source insertion failed")
+                source_ids.append(object_id)
+                document.Objects.Select(object_id)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            _record_progress("bounding box: " + script)
+            script_result = bool(_run_surface_script(script, True))
+            history_after = Rhino.RhinoApp.CommandHistoryWindowText
+            history = (history_after[len(history_before):] if history_after.startswith(history_before)
+                       else history_after.rsplit("Command: _-BoundingBox", 1)[-1])
+            # Rhino returns False for a valid 3D Output=None report, but True
+            # for a planar one. Record observable reports/failure, not that flag.
+            reported_boxes = history.count("dimensions =")
+            succeeded = reported_boxes > 0 and "BoundingBox failed" not in history
+            if not reported_boxes and "BoundingBox failed" not in history:
+                raise ValueError("BoundingBox produced neither a report nor a failure: " + history)
+            records = []
+            for obj in objects():
+                if obj.Id in before or obj.Id in source_ids:
+                    continue
+                record = _bounding_box_geometry_record(obj.Geometry)
+                record.update(selected=bool(obj.IsSelected(False)),
+                              current_layer=obj.Attributes.LayerIndex == document.Layers.CurrentLayerIndex,
+                              name=obj.Attributes.Name or None)
+                records.append(record)
+            records.sort(key=lambda r:(r["kind"],tuple(round(x,8) for p in r["points"] for x in p)))
+            group_sizes = []
+            for i in range(document.Groups.Count):
+                if i not in original_groups and not document.Groups.IsDeleted(i):
+                    members = document.Groups.GroupMembers(i)
+                    if members:
+                        group_sizes.append(len(members))
+            remaining = {obj.Id:obj for obj in objects()}
+            value = {"succeeded":succeeded,"reported_boxes":reported_boxes,"objects":records,"group_sizes":sorted(group_sizes),
+                     "sources_retained":[i for i,key in enumerate(source_ids) if key in remaining],
+                     "selected_sources":[i for i,key in enumerate(source_ids) if key in remaining and remaining[key].IsSelected(False)]}
+            if operation.get("inspect", False):
+                value["history"] = history
+                value["script_result"] = script_result
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in original_groups and not document.Groups.IsDeleted(i):
+                    document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected:
+                document.Objects.Select(key)
+            for geometry in reversed(owned):
+                geometry.Dispose()
+
+
+def _distribute_script(operation):
+    mode = operation["mode"]
+    direction = operation["direction"]
+    if mode not in ("Center", "Gap") or direction not in ("XAxis", "YAxis", "ZAxis", "Direction"):
+        raise ValueError("invalid Distribute mode or direction")
+    spacing = operation.get("spacing")
+    spacing_token = "_Automatic" if spacing is None else "%.17g" % _finite(spacing, "distribution spacing")
+    direction_token = "_" + direction
+    if direction == "Direction":
+        if len(operation["references"]) != 2:
+            raise ValueError("expected two distribution direction points")
+        direction_token += " " + " ".join("w" + _command_point(p) for p in operation["references"])
+    return "_-Distribute _Mode=_%s _Spacing %s %s" % (mode, spacing_token, direction_token)
+
+
+def _distribute(operation, tolerance):
+    script = _distribute_script(operation)
+    if operation["direction"] == "Direction":
+        start, end = operation["references"]
+        delta = [_finite(float(b) - float(a), "distribution direction") for a, b in zip(start, end)]
+        # Nested two-argument hypot also works in Rhino's IronPython runtime.
+        distance = _finite(math.hypot(math.hypot(delta[0], delta[1]), delta[2]), "distribution direction length")
+        if distance <= tolerance["absolute"]:
+            raise ValueError("distribution direction points must be distinct")
+    return _object_layout(operation, tolerance, script, 3)
+
+
+def _align_script(operation, target_id=None):
+    mode = operation["mode"]
+    coordinates = operation.get("align_to", "CPlane")
+    if mode not in ("Left", "Right", "Top", "Bottom", "HorizCenter", "VertCenter", "Concentric", "ToLine", "ToPlane", "ToFitPlane", "ToCurve"):
+        raise ValueError("invalid Align mode")
+    if coordinates not in ("World", "CPlane"):
+        raise ValueError("invalid Align coordinate system")
+    three_point = operation.get("three_point", False)
+    if type(three_point) is not bool or three_point and mode != "ToPlane":
+        raise ValueError("invalid alignment plane option")
+    if mode != "ToCurve" and operation.get("curve") is not None:
+        raise ValueError("curve target requires ToCurve")
+    if mode == "ToCurve":
+        index = operation.get("curve")
+        sources = operation.get("sources", [])
+        if type(index) is not int or not 0 <= index < len(sources):
+            raise ValueError("invalid alignment target curve index")
+        if sources[index]["type"] not in ("line", "polyline", "polycurve", "circle", "arc", "ellipse", "nurbs"):
+            raise ValueError("alignment target must be a curve")
+        selected = operation.get("selected")
+        if selected is None or index in selected:
+            # SelID cannot pick an already selected moving source in Rhino's
+            # alignment-curve prompt; the macro would remain interactive.
+            raise ValueError("alignment target must not be selected")
+        if operation.get("target") is not None or operation.get("references"):
+            raise ValueError("curve alignment does not use reference points")
+        ending = "" if target_id is None else "_SelID %s" % target_id
+    elif mode in ("ToLine", "ToPlane"):
+        references = operation.get("references", [])
+        expected = 3 if three_point else 2
+        if len(references) != expected or operation.get("target") is not None:
+            raise ValueError("invalid alignment reference point count")
+        ending = " ".join("w" + _command_point(p) for p in references)
+        if expected == 3:
+            ending = "_3Point " + ending
+        if references[0] == references[1]:
+            raise ValueError("alignment references must be distinct")
+    elif mode == "ToFitPlane":
+        if operation.get("target") is not None or operation.get("references"):
+            raise ValueError("plane-fit alignment does not use reference points")
+        ending = ""
+    else:
+        if operation.get("references"):
+            raise ValueError("bounding-box alignment does not use reference pairs")
+        target = operation.get("target")
+        ending = "_Enter" if target is None else "w" + _command_point(target)
+    return "_Align _AlignTo=_%s _%s %s" % (coordinates, mode, ending)
+
+
+def _align(operation, tolerance):
+    script = _align_script(operation)
+    if operation["mode"] == "ToCurve":
+        script = lambda ids: _align_script(operation, ids[operation["curve"]])
+    if operation["mode"] in ("ToLine", "ToPlane"):
+        _validate_alignment_references(operation, tolerance)
+    return _object_layout(operation, tolerance, script, 1)
+
+
+def _validate_alignment_references(operation, tolerance):
+    # Reject incomplete/degenerate macros before they can leave Rhino waiting
+    # for another point. This batch safety guard is not the native kernel's
+    # exact nondegeneracy policy; extreme-range inputs are tested natively.
+    def difference(a, b):
+        return [_finite(float(x) - float(y), "alignment direction") for x, y in zip(a, b)]
+    def cross(a, b):
+        return [_finite(a[(i+1)%3]*b[(i+2)%3] - a[(i+2)%3]*b[(i+1)%3], "alignment normal") for i in range(3)]
+    def unit(a, threshold):
+        length = _finite(math.hypot(math.hypot(a[0], a[1]), a[2]), "alignment direction length")
+        if length <= threshold:
+            raise ValueError("degenerate alignment references")
+        return [x / length for x in a]
+    points = operation["references"]
+    direction = unit(difference(points[1], points[0]), tolerance["absolute"])
+    if operation["mode"] == "ToPlane":
+        if operation.get("three_point", False):
+            other = difference(points[2], points[0])
+            threshold = tolerance["absolute"]
+        else:
+            other = [0., 0., 1.] if operation.get("align_to", "CPlane") == "World" else unit(
+                cross(operation["x_axis"], operation["y_axis"]), 0.)
+            threshold = tolerance["angular"]
+        unit(cross(direction, other), threshold)
+
+
+def _object_layout(operation, tolerance, script, minimum_selection):
+    """Owned geometry/selection lifecycle shared by whitelisted layout probes."""
+    preselect = operation.get("preselect", True)
+    if type(preselect) is not bool:
+        raise ValueError("invalid layout preselection")
+    definitions = operation["sources"]
+    if not 1 <= len(definitions) <= 32:
+        raise ValueError("expected 1 to 32 layout sources")
+    groups = operation.get("groups", [])
+    for group in groups:
+        if not group or len(set(group)) != len(group) or any(type(i) is not int or not 0 <= i < len(definitions) for i in group):
+            raise ValueError("invalid layout group")
+    selected_indices = operation.get("selected")
+    if selected_indices is None:
+        selected_indices = list(range(len(definitions)))
+    if len(set(selected_indices)) != len(selected_indices) or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected_indices):
+        raise ValueError("invalid layout selection")
+    if len(selected_indices) < minimum_selection:
+        # Too few top-level objects leave Rhino in an interactive selection
+        # prompt. This batch operation requires completed preselection; native
+        # command/UI tests cover the minimum-selection error separately.
+        raise ValueError("layout probe has too few selected objects")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid layout plane")
+    owned, ids = [], []
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = str(i)
+                    attributes.LayerIndex = document.Layers.CurrentLayerIndex
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if key == System.Guid.Empty:
+                    raise ValueError("layout source insertion failed")
+                ids.append(key)
+            for group in groups:
+                if document.Groups.Add("Viboceros layout " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
+                    raise ValueError("layout grouping failed")
+            if callable(script):
+                script = script(ids)
+            if preselect:
+                for i in selected_indices:
+                    document.Objects.Select(ids[i])
+            else:
+                name, options = script.split(" ", 1)
+                picks = " ".join("_SelID %s" % ids[i] for i in selected_indices)
+                script = name + " " + picks + " _Enter " + options
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            _record_progress("object layout: " + script)
+            try:
+                succeeded = _run_surface_script(script, True)
+            except ValueError:
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                history = history_after[len(history_before):] if history_after.startswith(history_before) else history_after.rsplit("Command: _-Distribute", 1)[-1]
+                if not script.startswith("_-Distribute ") or "At least three groups of objects must be selected" not in history:
+                    raise
+                # Rhino aborts before reading the whitelisted options when
+                # selection has fewer than three object/group units.
+                succeeded = False
+            records = []
+            for obj in objects():
+                if obj.Id in before:
+                    continue
+                index = int(obj.Attributes.Name)
+                kind = definitions[index]["type"]
+                geometry = obj.Geometry
+                domain = None
+                if kind == "point": points = [_xyz(geometry.Location)]
+                elif kind == "point_cloud": points = [_xyz(p) for p in geometry.GetPoints()]
+                elif kind == "mesh": points = [_xyz(p) for p in geometry.Vertices]
+                elif kind == "brep": domain, points = _plane_array_brep_record(geometry)
+                else: domain, points = _plane_array_geometry_record(geometry, kind == "surface")
+                records.append({"source": index, "retained": obj.Id == ids[index],
+                                "selected": bool(obj.IsSelected(False)), "domain": domain, "points": points,
+                                "current_layer": obj.Attributes.LayerIndex == document.Layers.CurrentLayerIndex})
+            records.sort(key=lambda r:r["source"])
+            result_groups = []
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i):
+                    members = document.Groups.GroupMembers(i)
+                    if members: result_groups.append(sorted(int(obj.Attributes.Name) for obj in members))
+            value = {"succeeded": bool(succeeded), "objects": records, "groups": sorted(result_groups)}
+            if operation.get("inspect", False):
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                value["history"] = history_after[len(history_before):] if history_after.startswith(history_before) else history_after[-5000:]
+                value["source_plane_bounds"] = []
+                transform = Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY)
+                for geometry in owned:
+                    local = geometry.Duplicate()
+                    try:
+                        if not local.Transform(transform):
+                            raise ValueError("layout inspection transform failed")
+                        box = local.GetBoundingBox(True)
+                        value["source_plane_bounds"].append({"min":_xyz(box.Min),"max":_xyz(box.Max)})
+                    finally:
+                        local.Dispose()
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
+def _group_memberships(operation, tolerance):
+    definitions, groups, steps = operation["sources"], operation["groups"], operation["steps"]
+    if not 1 <= len(definitions) <= 32 or len(groups) > 16 or len(steps) > 64:
+        raise ValueError("invalid group membership fixture size")
+    def indices(values, count, unique=True):
+        if any(type(i) is not int or not 0 <= i < count for i in values) or (unique and len(set(values)) != len(values)):
+            raise ValueError("invalid membership indices")
+    scripts = {"Copy": "_Copy w0,0,0 w10,0,0 _Enter", "Ungroup": "_Ungroup", "UngroupAll": "_UngroupAll",
+               "RemoveFromGroup": "_RemoveFromGroup", "RemoveFromGroupCopy": "_RemoveFromGroup",
+               "Explode": "_Explode", "ConvertToBeziers": "_ConvertToBeziers _Yes", "Delete": "_Delete",
+               "Distribute": "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis",
+               "Array": "_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
+               "ArrayPolar": "_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
+               "ArrayLinear": "_ArrayLinear 2 w0,0,0 w10,0,0",
+               "SelNone": "_SelNone", "Move": "_Move w0,0,0 w0,1,0"}
+    for group in groups:
+        indices(group, len(definitions))
+    live_groups = set(range(len(groups)))
+    for step in steps:
+        kind = step["kind"]
+        if kind == "set":
+            indices([step["object"]], len(definitions))
+            indices(step["groups"], len(groups))
+            if any(i not in live_groups for i in step["groups"]): raise ValueError("deleted membership group")
+        elif kind == "add":
+            indices([step["group"]], len(groups))
+            indices(step["objects"], len(definitions), False)
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
+        elif kind == "add_to_group":
+            indices([step["group"]], len(groups))
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
+        elif kind == "delete_group":
+            indices([step["group"]], len(groups))
+            if step["group"] not in live_groups: raise ValueError("deleted membership group")
+            live_groups.remove(step["group"])
+        elif kind == "select": indices(step["objects"], len(definitions))
+        elif kind == "recall_previous":
+            if step.get("deselect_others") is not None and type(step["deselect_others"]) is not bool:
+                raise ValueError("invalid selection recall flags")
+        elif kind != "command" or step["name"] not in scripts:
+            raise ValueError("unsupported group command step")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    requested_names = set("Group-%d" % i for i in range(len(groups)))
+    if any(document.Groups.GroupName(i) in requested_names for i in groups_before):
+        raise ValueError("group probe name collides with an existing definition")
+    owned, ids, group_ids = [], [], []
+    source_by_id = {}
+    def record():
+        # The private Rhino document reserves auto names after earlier cases.
+        # Preserve their format/relative numbering without comparing that counter.
+        automatic = sorted((int(document.Groups.GroupName(i)[5:]), i) for i in range(document.Groups.Count)
+                           if i not in groups_before and not document.Groups.IsDeleted(i)
+                           and re.match(r"^Group[0-9]+\Z", document.Groups.GroupName(i) or ""))
+        automatic = dict((index, "CopyGroup-%d" % rank) for rank, (_number, index) in enumerate(automatic))
+        def group_name(index): return automatic.get(index, document.Groups.GroupName(index))
+        records = []
+        for obj in objects():
+            if obj.Id in before: continue
+            source = source_by_id[obj.Id]
+            geometry = obj.Geometry
+            domain = None
+            if isinstance(geometry, Rhino.Geometry.Point): points = [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud): points = [_xyz(p) for p in geometry.GetPoints()]
+            elif isinstance(geometry, Rhino.Geometry.Mesh): points = [_xyz(p) for p in geometry.Vertices]
+            elif isinstance(geometry, Rhino.Geometry.Brep): domain, points = _plane_array_brep_record(geometry)
+            else: domain, points = _plane_array_geometry_record(geometry, isinstance(geometry, Rhino.Geometry.Surface))
+            records.append(dict(source=source, name=obj.Attributes.Name or None, domain=domain, points=points, selected=bool(obj.IsSelected(False)), retained=obj.Id == ids[source],
+                                groups=[group_name(i) for i in (obj.Attributes.GetGroupList() or [])]))
+        records.sort(key=lambda r:(r["source"],r["points"][0],r["groups"],r["selected"],r["retained"]))
+        table = []
+        for i in range(document.Groups.Count):
+            if i in groups_before or document.Groups.IsDeleted(i): continue
+            members = sorted(source_by_id[obj.Id] for obj in (document.Groups.GroupMembers(i) or []))
+            table.append(dict(name=group_name(i), members=members))
+        table.sort(key=lambda g:g["name"])
+        return dict(objects=records, groups=table)
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(Rhino.Geometry.Plane.WorldXY)
+            document.Objects.UnselectAll()
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = str(i)
+                    attributes.LayerIndex = document.Layers.CurrentLayerIndex
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if key == System.Guid.Empty: raise ValueError("group probe source insertion failed")
+                ids.append(key)
+                source_by_id[key] = i
+            for i, group in enumerate(groups):
+                index = document.Groups.Add("Group-%d" % i, [ids[j] for j in group])
+                if index < 0: raise ValueError("group probe definition insertion failed")
+                group_ids.append(index)
+            states = [record()]
+            for step in steps:
+                _record_progress("group step: " + repr(step))
+                kind = step["kind"]
+                if kind == "set":
+                    key = ids[step["object"]]
+                    obj = document.Objects.FindId(key)
+                    if obj is None: raise ValueError("group source no longer exists")
+                    attributes = obj.Attributes.Duplicate()
+                    try:
+                        attributes.RemoveFromAllGroups()
+                        for i in step["groups"]: attributes.AddToGroup(group_ids[i])
+                        if not document.Objects.ModifyAttributes(key, attributes, True): raise ValueError("group attribute replacement failed")
+                    finally:
+                        attributes.Dispose()
+                elif kind == "add":
+                    group = group_ids[step["group"]]
+                    keys = [ids[i] for i in step["objects"]]
+                    if any(document.Objects.FindId(key) is None for key in keys): raise ValueError("group source no longer exists")
+                    document.Groups.AddToGroup(group, keys)
+                    # Rhino reports false for a valid all-existing no-op.
+                    if any(group not in (document.Objects.FindId(key).Attributes.GetGroupList() or []) for key in keys):
+                        raise ValueError("group membership insertion failed")
+                elif kind == "delete_group":
+                    if not document.Groups.Delete(group_ids[step["group"]]): raise ValueError("group deletion failed")
+                elif kind == "select":
+                    if any(document.Objects.FindId(ids[i]) is None for i in step["objects"]): raise ValueError("group source no longer exists")
+                    document.Objects.UnselectAll()
+                    for i in step["objects"]: document.Objects.Select(ids[i])
+                elif kind == "add_to_group":
+                    selected = [obj for obj in objects() if obj.Id not in before and obj.IsSelected(False)]
+                    if not selected: raise ValueError("add to group requires completed preselection")
+                    _run_surface_script("_AddToGroup Group-%d _Enter" % step["group"], True)
+                elif kind == "recall_previous":
+                    script = "_SelPrev" if step.get("deselect_others") is None else "_-SelPrev _DeselectOthersBeforeSelect=_%s _Enter" % ("Yes" if step["deselect_others"] else "No")
+                    _run_surface_script(script, True)
+                else:
+                    selected = [obj for obj in objects() if obj.Id not in before and obj.IsSelected(False)]
+                    if not selected and step["name"] != "SelNone": raise ValueError("group command requires completed preselection")
+                    if step["name"] in ("Ungroup", "UngroupAll") and not any(obj.Attributes.GetGroupList() for obj in selected):
+                        raise ValueError("ungroup requires a preselected group")
+                    if step["name"] == "Distribute" and len(selected) < 3:
+                        raise ValueError("distribution requires three preselected objects")
+                    source_candidates = set(source_by_id[obj.Id] for obj in selected)
+                    if step['name'] in ('RemoveFromGroup', 'RemoveFromGroupCopy'):
+                        eligible = [obj for obj in selected if obj.Attributes.GetGroupList()]
+                        if not eligible: raise ValueError('remove from group requires grouped sources')
+                        document.Objects.UnselectAll()
+                        script = '_RemoveFromGroup _Copy=_%s %s _Enter' % (
+                            'Yes' if step['name'] == 'RemoveFromGroupCopy' else 'No',
+                            ' '.join('_SelID %s' % obj.Id for obj in eligible))
+                        _run_surface_script(script, True)
+                    else:
+                        _run_surface_script(scripts[step["name"]], True)
+                    for obj in objects():
+                        if obj.Id in before or obj.Id in source_by_id: continue
+                        name = obj.Attributes.Name
+                        if name is not None and str(name) in [str(i) for i in range(len(ids))]:
+                            source = int(name)
+                        elif len(source_candidates) == 1:
+                            # Single-input decomposition has unambiguous provenance,
+                            # even when Rhino intentionally discards its attributes.
+                            source = next(iter(source_candidates))
+                        else: raise ValueError("ambiguous group output source")
+                        source_by_id[obj.Id] = source
+                states.append(record())
+            return dict(states=states), 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
+def _points_command(operation):
+    events = operation["events"]
+    cancel = operation.get("cancel", False)
+    if not isinstance(events, list) or len(events) > 100 or type(cancel) is not bool:
+        raise ValueError("invalid Points fixture")
+    tokens = []
+    for event in events:
+        if event == "undo": tokens.append("_Undo")
+        elif isinstance(event, list) and len(event) == 3: tokens.append("w" + _command_point(event))
+        else: raise ValueError("invalid Points event")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selection = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    def record():
+        result = []
+        for obj in sorted(objects(), key=lambda o:o.RuntimeSerialNumber):
+            if obj.Id in before: continue
+            if not isinstance(obj.Geometry, Rhino.Geometry.Point): raise ValueError("Points created unexpected geometry")
+            result.append(dict(point=_xyz(obj.Geometry.Location), selected=bool(obj.IsSelected(False))))
+        return result
+    try:
+        document.Objects.UnselectAll()
+        _run_surface_script("_Points " + " ".join(tokens) + (" !" if cancel else " _Enter"), True)
+        return dict(after=record()), 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+        for key in selection: document.Objects.Select(key)
+
+
+def _point_cloud_conversion(operation, tolerance):
+    sources = operation["sources"]
+    selected = operation.get("selected", list(range(len(sources))))
+    postselect = operation.get("postselect", False)
+    if not 1 <= len(sources) <= 16 or type(postselect) is not bool:
+        raise ValueError("invalid point cloud fixture")
+    if not selected or any(type(i) is not int or not 0 <= i < len(sources) for i in selected) or len(set(selected)) != len(selected):
+        raise ValueError("invalid point cloud selection")
+    eligible = [i for i in selected if sources[i]["type"] in ("point", "mesh")]
+    if not eligible or (not postselect and any(sources[i]["type"] == "point_cloud" for i in selected)):
+        raise ValueError("fixture must create a cloud, not enter Add/Remove")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selection_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    layer_before = document.Layers.CurrentLayerIndex
+    ids, owned, layers = [], [], []
+    def record():
+        output = []
+        for obj in objects():
+            if obj.Id in before: continue
+            geometry = obj.Geometry
+            if isinstance(geometry, Rhino.Geometry.Point): kind, points = "point", [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud): kind, points = "point_cloud", [_xyz(p) for p in geometry.GetPoints()]
+            elif isinstance(geometry, Rhino.Geometry.Mesh): kind, points = "mesh", [_xyz(p) for p in geometry.Vertices]
+            else: kind, points = "other", []
+            attributes = obj.Attributes
+            output.append(dict(original=ids.index(obj.Id) if obj.Id in ids else None, kind=kind, points=points,
+                               name=attributes.Name or None, selected=bool(obj.IsSelected(False)),
+                               layer="Source" if attributes.LayerIndex == layers[0] else "Current" if attributes.LayerIndex == layers[1] else "Unexpected",
+                               color_source=str(attributes.ColorSource),
+                               has_colors=bool(geometry.ContainsColors) if kind == "point_cloud" else False))
+        output.sort(key=lambda obj: (obj["original"] is None, obj["original"] if obj["original"] is not None else -1))
+        return output
+    try:
+        document.Objects.UnselectAll()
+        for label in ("Source", "Current"):
+            layer = Rhino.DocObjects.Layer()
+            try:
+                layer.Name = "Vibo Cloud " + label + " " + str(System.Guid.NewGuid())
+                index = document.Layers.Add(layer)
+                if index < 0: raise ValueError("point cloud layer insertion failed")
+                layers.append(index)
+            finally: layer.Dispose()
+        document.Layers.SetCurrentLayerIndex(layers[1], True)
+        for i, source in enumerate(sources):
+            geometry = _object_source(source, tolerance)
+            owned.append(geometry)
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.LayerIndex = layers[0]
+                attributes.Name = "source-%d" % i
+                kind = source["type"]
+                if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                else: key = document.Objects.AddCurve(geometry, attributes)
+                if key == System.Guid.Empty: raise ValueError("point cloud source insertion failed")
+                ids.append(key)
+            finally: attributes.Dispose()
+        if not postselect:
+            for i in selected: document.Objects.Select(ids[i])
+        script = "_PointCloud"
+        if postselect:
+            script += " _UsePointColors=_No " + " ".join("_SelID %s" % ids[i] for i in eligible) + " _Enter"
+        _run_surface_script(script, True)
+        return dict(objects=record()), 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Layers.SetCurrentLayerIndex(layer_before, True)
+        for i in reversed(layers): document.Layers.Delete(i, True)
+        document.Objects.UnselectAll()
+        for key in selection_before: document.Objects.Select(key)
+        for geometry in reversed(owned): geometry.Dispose()
+
+
+def _conversion_accepts_source(command, definition):
+    kind = definition["type"]
+    if command == "MeshToNURB": return kind == "mesh"
+    if command == "ToNURBS": return kind not in ("point", "point_cloud")
+    if command == "ConvertToSingleSpans": return kind == "surface" or (kind == "brep" and definition.get("cap_surface") is None)
+    return kind in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or (kind == "brep" and definition.get("cap_surface") is None)
+
+
+def _conversion_arguments(operation, command, direction):
+    definitions = operation["sources"]
+    selected = operation.get("selected", list(range(len(definitions))))
+    delete = operation.get("delete_input")
+    undo_after = operation.get("undo_after", False)
+    if type(undo_after) is not bool: raise ValueError("invalid conversion undo flag")
+    toggles = operation.get("toggles", 0)
+    if type(toggles) is not int or not 0 <= toggles <= 3: raise ValueError("invalid conversion toggle count")
+    trim = operation.get("trim_triangular_faces")
+    if trim is not None and (type(trim) is not bool or command not in ("ToNURBS", "MeshToNURB")):
+        raise ValueError("invalid mesh conversion option")
+    ngons = operation.get("use_ngons")
+    postselect = operation.get("postselect", False)
+    cancel = operation.get("cancel", False)
+    cancel_at_selection = operation.get("cancel_at_selection", False)
+    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command not in ("MeshToNURB", "ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans")) or (cancel and ((not postselect and command not in ("ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans")) or undo_after)):
+        raise ValueError("invalid conversion selection/cancellation path")
+    if type(cancel_at_selection) is not bool or (cancel_at_selection and (not cancel or not postselect or command not in ("ToNURBS", "ConvertToBeziers", "ConvertToSingleSpans"))):
+        raise ValueError("invalid conversion cancellation stage")
+    initial_selection = operation.get("initial_selection", [])
+    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or _conversion_accepts_source(command, definitions[i]) for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
+        raise ValueError("invalid initial ineligible selection")
+    if ngons is not None and (type(ngons) is not bool or command != "MeshToNURB"):
+        raise ValueError("invalid n-gon conversion option")
+    if command == "MeshToNURB" and delete is not None:
+        raise ValueError("MeshToNURB has no deletion choice")
+    if not 1 <= len(definitions) <= 16 or (delete is not None and type(delete) is not bool):
+        raise ValueError("invalid conversion fixture")
+    if (not selected and not cancel) or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
+        raise ValueError("invalid conversion preselection")
+    if trim is not None and not any(definitions[i]["type"] == "mesh" for i in selected) and not (cancel and any(d["type"] == "mesh" for d in definitions)):
+        raise ValueError("mesh options require a selected mesh")
+    if command not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS", "MeshToNURB") or direction not in (None,"U","V","Both"):
+        raise ValueError("invalid conversion command")
+    if command != "ConvertToSingleSpans" and (direction is not None or toggles):
+        raise ValueError("direction options require ConvertToSingleSpans")
+    if direction == "Both" and toggles: raise ValueError("Toggle requires U or V direction")
+    if command == "ConvertToSingleSpans" and not any(_conversion_accepts_source(command, definitions[i]) for i in selected) and not (cancel_at_selection and any(_conversion_accepts_source(command, d) for d in definitions)):
+        raise ValueError("single span conversion requires a surface")
+    # At least one known curve/surface avoids an interactive object prompt.
+    if not cancel and not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
+               (definitions[i]["type"] == "brep" and definitions[i].get("cap_surface") is None) or
+               (command in ("ToNURBS", "MeshToNURB") and definitions[i]["type"] in ("mesh", "brep")) for i in selected):
+        raise ValueError("conversion requires an eligible object")
+    if command == "MeshToNURB" and not any(definitions[i]["type"] == "mesh" for i in selected) and not (cancel and any(d["type"] == "mesh" for d in definitions)):
+        raise ValueError("MeshToNURB requires a mesh")
+    if command == "ToNURBS" and postselect and not any(definitions[i]["type"] not in ("point", "point_cloud") for i in selected) and not (cancel and any(d["type"] not in ("point", "point_cloud") for d in definitions)):
+        raise ValueError("ToNURBS selection prompt requires eligible fixture geometry")
+    if command == "ToNURBS" and cancel and not cancel_at_selection and not any(definitions[i]["type"] in ("line", "arc", "circle", "polyline", "polycurve", "mesh") for i in selected):
+        raise ValueError("ToNURBS options require a convertible pick")
+    if command == "ConvertToBeziers":
+        eligible = any(_conversion_accepts_source(command, definitions[i]) for i in selected)
+        if not eligible and not (cancel_at_selection and any(_conversion_accepts_source(command, d) for d in definitions)):
+            raise ValueError("Bezier conversion requires an eligible pick")
+    if command == "ConvertToBeziers":
+        script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
+    elif command == "ToNURBS":
+        script="_ToNURBS"+(" _DeleteInputObjects="+("Yes" if delete else "No") if delete is not None else "")
+        if trim is not None: script+=" _MeshOptions _TrimTriangularFaces="+("Yes" if trim else "No")+" _Enter"
+        script+=" _Enter"
+    elif command == "MeshToNURB":
+        script="_MeshToNURB"
+        if trim is not None: script+=" _TrimTriangularFaces="+("Yes" if trim else "No")
+        if ngons is not None: script+=" _UseNgons="+("Yes" if ngons else "No")
+    else:
+        script="_ConvertToSingleSpans"
+        if direction is not None: script+=" _Direction _"+direction
+        if delete is not None: script+=" _DeleteInput="+("Yes" if delete else "No")
+        script+=" _Toggle"*toggles
+        script+=" _Enter"
+    return definitions, selected, undo_after, script
+
+
+def _conversion_selection_script(operation, command, script, ids, selected):
+    """Keep selection, confirmation, and nested mesh options in their real order."""
+    definitions = operation["sources"]
+    postselect = operation.get("postselect", False)
+    cancel = operation.get("cancel", False)
+    if command == "MeshToNURB":
+        if not postselect: return "_MeshToNURB"
+        picks = " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] == "mesh")
+        return script + " " + picks + (" !" if cancel else " _Enter")
+    if command == "ToNURBS":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] not in ("point", "point_cloud"))
+            if operation.get("cancel_at_selection", False): return "_ToNURBS " + picks + " !"
+            options = script[len("_ToNURBS"):]
+            if cancel: options = options.rsplit(" _Enter", 1)[0] + " !"
+            return "_ToNURBS " + picks + " _Enter" + options
+        if cancel: return script.rsplit(" _Enter", 1)[0] + " !"
+    if command == "ConvertToBeziers":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if _conversion_accepts_source(command, definitions[i]))
+            if operation.get("cancel_at_selection", False): return "_ConvertToBeziers " + picks + " !"
+            return "_ConvertToBeziers " + picks + " _Enter " + ("!" if cancel else script.split()[-1])
+        if cancel: return "_ConvertToBeziers !"
+    if command == "ConvertToSingleSpans":
+        if postselect:
+            picks = " ".join("_SelID %s" % ids[i] for i in selected if _conversion_accepts_source(command, definitions[i]))
+            if operation.get("cancel_at_selection", False): return "_ConvertToSingleSpans " + picks + " !"
+            options = script[len("_ConvertToSingleSpans"):]
+            if cancel: options = options.rsplit(" _Enter", 1)[0] + " !"
+            return "_ConvertToSingleSpans " + picks + " _Enter" + options
+        if cancel: return script.rsplit(" _Enter", 1)[0] + " !"
+    return script
+
+
+def _seed_mesh_conversion_options(document, objects, mesh, script):
+    """Set options on owned temporary geometry before the measured preselection."""
+    before = set(obj.Id for obj in objects())
+    try:
+        seed = document.Objects.AddMesh(mesh)
+        if seed == System.Guid.Empty: raise ValueError("mesh option seed insertion failed")
+        _run_surface_script(script + " _SelID %s _Enter" % seed, True)
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+        document.Objects.UnselectAll()
+
+
+def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direction=None):
+    definitions, selected, undo_after, script = _conversion_arguments(operation, command, direction)
+    inspect_sources = command in ("ToNURBS", "MeshToNURB")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    layer_before = document.Layers.CurrentLayerIndex
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    owned, ids, layers = [], [], []
+    group_names = {}
+    suffix = str(System.Guid.NewGuid())
+    def record():
+        records = []
+        for obj in objects():
+            if obj.Id in before: continue
+            original = ids.index(obj.Id) if obj.Id in ids else None
+            geometry = obj.Geometry
+            domain, definition = None, None
+            if isinstance(geometry, Rhino.Geometry.Point):
+                kind, points = "point", [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.Mesh):
+                kind, points = "mesh", [_xyz(p) for p in geometry.Vertices]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud):
+                kind, points = "point_cloud", [_xyz(p) for p in geometry.GetPoints()]
+            elif inspect_sources and isinstance(geometry, Rhino.Geometry.Brep) and (original is None or definitions[original]["type"] != "surface"):
+                kind = "brep"
+                domain, points = _plane_array_brep_record(geometry)
+                definition = dict(topology=_mesh_to_nurb_brep_value(geometry), surfaces=[_nurbs_surface_definition(face.UnderlyingSurface()) for face in geometry.Faces])
+            elif isinstance(geometry, Rhino.Geometry.Brep) and original is not None and definitions[original]["type"]=="brep":
+                kind = "brep"
+                domain, points = _plane_array_brep_record(geometry)
+            elif isinstance(geometry, (Rhino.Geometry.Brep, Rhino.Geometry.Surface)):
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1: raise ValueError("Bezier output must be a single surface")
+                    if original is None and not geometry.IsSurface: raise ValueError("Bezier output unexpectedly retains trims")
+                    geometry = geometry.Faces[0].UnderlyingSurface()
+                kind = "surface"
+                domain, points = _plane_array_geometry_record(geometry, True)
+                if original is None or inspect_sources: definition = _nurbs_surface_definition(geometry)
+            else:
+                kind = "curve"
+                domain, points = _plane_array_geometry_record(geometry, False)
+                if original is None or inspect_sources: definition = _nurbs_curve_definition(geometry)
+            attributes = obj.Attributes
+            name = attributes.Name or None
+            layer = "Source" if attributes.LayerIndex == layers[0] else "Current" if attributes.LayerIndex == layers[1] else "Unexpected"
+            color = attributes.ObjectColor
+            memberships = [group_names.get(i, document.Groups.GroupName(i)) for i in (attributes.GetGroupList() or [])]
+            value = dict(original=original, kind=kind, domain=domain, points=points, definition=definition,
+                         name=name, layer=layer, color=[int(color.R),int(color.G),int(color.B)],
+                         color_source=str(attributes.ColorSource), groups=memberships, selected=bool(obj.IsSelected(False)))
+            if inspect_sources:
+                value["representation"] = geometry.GetType().Name if isinstance(geometry, Rhino.Geometry.Curve) else kind
+            key = (original is None, -1 if original is None else original, kind, tuple(round(x, 8) for p in points for x in p))
+            records.append((key, obj.Id, obj.RuntimeSerialNumber, value))
+        # Equivalent outputs have identical fresh attributes; use actual creation
+        # order to break geometric ties, never object-enumerator ordering.
+        records.sort(key=lambda r:(r[0],r[2]))
+        index = dict((record[1],i) for i,record in enumerate(records))
+        table = []
+        for i in range(document.Groups.Count):
+            if i in groups_before or document.Groups.IsDeleted(i): continue
+            table.append(dict(name=group_names.get(i,document.Groups.GroupName(i)), members=sorted(index[obj.Id] for obj in (document.Groups.GroupMembers(i) or []))))
+        table.sort(key=lambda g:g["name"])
+        order = sorted(range(len(records)), key=lambda i:records[i][2])
+        return dict(objects=[r[3] for r in records], groups=table, creation_order=order)
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(Rhino.Geometry.Plane.WorldXY)
+            document.Objects.UnselectAll()
+            for label in ("Source", "Current"):
+                layer = Rhino.DocObjects.Layer()
+                try:
+                    layer.Name = "Viboceros Bezier " + label + " " + suffix
+                    index = document.Layers.Add(layer)
+                    if index < 0: raise ValueError("Bezier layer insertion failed")
+                    layers.append(index)
+                finally: layer.Dispose()
+            if not document.Layers.SetCurrentLayerIndex(layers[1], True): raise ValueError("Bezier current layer failed")
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "source-%d" % i
+                    attributes.LayerIndex = layers[0]
+                    attributes.ObjectColor = System.Drawing.Color.FromArgb(11+i,22,33)
+                    attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally: attributes.Dispose()
+                if key == System.Guid.Empty: raise ValueError("Bezier source insertion failed")
+                ids.append(key)
+            for i, members in enumerate([ids, [ids[0]], []]):
+                index = document.Groups.Add("Viboceros Bezier Group %d " % i + suffix, members)
+                if index < 0: raise ValueError("Bezier group insertion failed")
+                group_names[index] = "Group-%d" % i
+            postselect = operation.get("postselect", False)
+            if command == "MeshToNURB" and not postselect and (operation.get("trim_triangular_faces") is not None or operation.get("use_ngons") is not None):
+                # Rhino hides options for preselected inputs. Seed only its
+                # choices using a separate owned mesh, then measure the actual
+                # preselection path without normalizing source selection.
+                i = next(i for i in selected if definitions[i]["type"] == "mesh")
+                _seed_mesh_conversion_options(document, objects, owned[i], script)
+            preselected = operation.get("initial_selection", []) if postselect else selected
+            for i in preselected:
+                if not document.Objects.Select(ids[i]): raise ValueError("conversion source preselection failed")
+            if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in preselected): raise ValueError("conversion source preselection incomplete")
+            initial = record()
+            script = _conversion_selection_script(operation, command, script, ids, selected)
+            _record_progress(command + ": command")
+            _run_surface_script(script, True)
+            _record_progress(command + ": record")
+            result = dict(before=initial, after=record())
+            if undo_after:
+                if initial == result["after"]: raise ValueError("cannot undo a no-op conversion")
+                _run_surface_script("_Undo", True)
+            return result, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Layers.SetCurrentLayerIndex(layer_before, True)
+            for i in reversed(layers): document.Layers.Delete(i, True)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
+def _conversion_session(operation, tolerance):
+    steps = operation["steps"]
+    if not 1 <= len(steps) <= 32: raise ValueError("invalid conversion session size")
+    seeded = set()
+    direction = None
+    mesh_seeded = False
+    for step in steps:
+        name = step["command"]
+        if name not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS", "MeshToNURB"): raise ValueError("invalid conversion session command")
+        _conversion_arguments(step, name, step.get("direction"))
+        if name not in seeded:
+            if name == "MeshToNURB":
+                if type(step.get("trim_triangular_faces")) is not bool or type(step.get("use_ngons")) is not bool:
+                    raise ValueError("conversion session must seed mesh conversion options")
+            elif type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
+            if name == "ConvertToBeziers" and step.get("cancel", False):
+                raise ValueError("cancelled Bezier conversion cannot seed options")
+            if name == "ToNURBS" and (step.get("cancel", False) or not any(source["type"] in ("line","arc","circle","polyline","polycurve","mesh") for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"]))))):
+                raise ValueError("ToNURBS no-op cannot seed conversion options")
+            if name == "ConvertToSingleSpans" and (step.get("direction") not in ("U","V","Both") or step.get("cancel_at_selection", False)):
+                raise ValueError("conversion session must seed direction")
+            seeded.add(name)
+        if name == "ToNURBS" and any(source["type"] == "mesh" for i,source in enumerate(step["sources"]) if i in step.get("selected",range(len(step["sources"])))):
+            if not mesh_seeded and type(step.get("trim_triangular_faces")) is not bool:
+                raise ValueError("conversion session must seed triangle trimming")
+            mesh_seeded = True
+        if name == "ConvertToSingleSpans" and not step.get("cancel_at_selection", False):
+            direction = step.get("direction") or direction
+            if step.get("toggles", 0):
+                if direction == "Both": raise ValueError("Toggle requires U or V direction")
+                if step["toggles"] % 2: direction = "V" if direction == "U" else "U"
+    states = []
+    for step in steps:
+        value, _ = _geometry_conversion(step, tolerance, step["command"], step.get("direction"))
+        states.append(value)
+    return dict(states=states), 0
+
+
+def _execute(operation, iterations, tolerance):
+    if operation.get('op')=='contour_command':
+        import contour_probe
+        return contour_probe.run(operation,tolerance,globals())
+    if operation.get('op')=='section_command':
+        import section_probe
+        return section_probe.run(operation,tolerance,globals())
+    if operation.get("op") == "transform_copy_command":
+        import transform_copy_probe
+        return transform_copy_probe.run(operation, globals())
+    if operation.get("op") == "copy_options_command":
+        import copy_options_probe
+        return copy_options_probe.run(operation, globals())
+    if operation.get("op") == "connect_command":
+        extension = operation.get("other_extension", "Line")
+        if extension not in ("Line", "Smooth"):
+            raise ValueError("invalid Connect extension style")
+        document = Rhino.RhinoDoc.ActiveDoc
+        first = _join_close_input(operation["source_first"])
+        second = _join_close_input(operation["source_second"])
+        ids = []
+        result_ids = []
+        try:
+            ids = [document.Objects.AddCurve(first), document.Objects.AddCurve(second)]
+            if any(identifier == System.Guid.Empty for identifier in ids):
+                raise ValueError("could not add connect probe curves")
+            document.Objects.UnselectAll()
+            for identifier in ids:
+                document.Objects.Select(identifier)
+            before = {item.Id for item in document.Objects}
+            command = "_Connect _ExtendOtherCurvesBy=_%s _SelID %s _SelID %s _Enter" % (extension, ids[0], ids[1])
+            succeeded = Rhino.RhinoApp.RunScript(command, True)
+            if not succeeded:
+                if operation.get("allow_failure"):
+                    return {"failed": True}, 0
+                raise ValueError("Connect command failed: %s" % Rhino.RhinoApp.CommandHistoryWindowText[-1000:])
+            results = [item for item in document.Objects if item.Id in ids or item.Id not in before]
+            result_ids = [item.Id for item in results]
+            curves = []
+            for item in results:
+                geometry = item.Geometry
+                if not isinstance(geometry, Rhino.Geometry.Curve):
+                    continue
+                nurbs = geometry.ToNurbsCurve()
+                try:
+                    curves.append({
+                        "kind": "line" if isinstance(geometry, Rhino.Geometry.LineCurve) else "nurbs",
+                        "start": _xyz(geometry.PointAtStart),
+                        "end": _xyz(geometry.PointAtEnd),
+                        "control_points": [_xyz(nurbs.Points[index].Location) for index in range(nurbs.Points.Count)],
+                    })
+                finally:
+                    nurbs.Dispose()
+            curves.sort(key=lambda curve: (curve["kind"] != "nurbs", tuple(curve["start"])))
+            return {"curves": curves}, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            document.Objects.UnselectAll()
+            for identifier in result_ids + ids:
+                document.Objects.Delete(identifier, True)
+            first.Dispose()
+            second.Dispose()
+    if operation.get("op") == "blend_curve":
+        continuity = operation.get("continuity")
+        continuity_first = operation.get("continuity_first", continuity)
+        continuity_second = operation.get("continuity_second", continuity)
+        if continuity_first not in ("position", "tangency", "curvature") or continuity_second not in ("position", "tangency", "curvature"):
+            raise ValueError("invalid blend continuity")
+        pick_first = operation.get("pick_first", "end")
+        pick_second = operation.get("pick_second", "start")
+        if pick_first not in ("start", "end") or pick_second not in ("start", "end"):
+            raise ValueError("invalid blend endpoint pick")
+        bulge_first = operation.get("bulge_first")
+        bulge_second = operation.get("bulge_second")
+        if (bulge_first is None) != (bulge_second is None):
+            raise ValueError("blend bulge overload requires both bulges")
+        first = operation.get("first")
+        second = operation.get("second")
+        source_first = operation.get("source_first")
+        source_second = operation.get("source_second")
+        if (source_first is None) == (first is None) or (source_second is None) == (second is None):
+            raise ValueError("blend source requires exactly one curve definition")
+        if (first is not None and (not isinstance(first, list) or len(first) != 2)) or (second is not None and (not isinstance(second, list) or len(second) != 2)):
+            raise ValueError("blend line source requires two endpoints")
+        first_curve = None
+        second_curve = None
+        blend = None
+        try:
+            first_curve = _join_close_input(source_first) if source_first is not None else Rhino.Geometry.LineCurve(_point(first[0]), _point(first[1]))
+            second_curve = _join_close_input(source_second) if source_second is not None else Rhino.Geometry.LineCurve(_point(second[0]), _point(second[1]))
+            mode_first = getattr(Rhino.Geometry.BlendContinuity, continuity_first.capitalize())
+            mode_second = getattr(Rhino.Geometry.BlendContinuity, continuity_second.capitalize())
+            if bulge_first is not None:
+                if continuity_first != continuity_second or pick_first != "end" or pick_second != "start":
+                    raise ValueError("blend bulge overload needs equal continuity and default ends")
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(
+                    first_curve, second_curve, mode_first,
+                    _finite(bulge_first, "blend first bulge"),
+                    _finite(bulge_second, "blend second bulge"))
+            elif "continuity_first" in operation or "continuity_second" in operation or "pick_first" in operation or "pick_second" in operation:
+                first_parameter = first_curve.Domain.T0 if pick_first == "start" else first_curve.Domain.T1
+                second_parameter = second_curve.Domain.T0 if pick_second == "start" else second_curve.Domain.T1
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(
+                    first_curve, first_parameter, pick_first == "start", mode_first,
+                    second_curve, second_parameter, pick_second == "start", mode_second)
+            else:
+                blend = Rhino.Geometry.Curve.CreateBlendCurve(first_curve, second_curve, mode_first)
+            if blend is None:
+                raise ValueError("Rhino could not create the blend")
+            return _nurbs_curve_definition(blend), 0
+        finally:
+            if blend is not None:
+                blend.Dispose()
+            if first_curve is not None:
+                first_curve.Dispose()
+            if second_curve is not None:
+                second_curve.Dispose()
+    if operation.get("op") == "point_snap":
+        import point_snap_probe
+        return point_snap_probe.run(operation, tolerance, globals())
+    if operation.get("op") == "mesh_snap_settings":
+        import mesh_snap_settings_probe
+        return mesh_snap_settings_probe.run(operation, globals())
+    if operation.get("op") == "points_command":
+        return _points_command(operation)
+    if operation.get("op") == "point_cloud_command":
+        return _point_cloud_conversion(operation, tolerance)
+    if operation.get("op") == "block_workflow":
+        import block_workflow_probe
+        return block_workflow_probe.run(operation, tolerance, globals())
+    if operation.get("op") == "document_units":
+        from generate_document_units_reference import generate_case
+        return generate_case(operation["source"], operation["target"], operation["rescale"]), 0
+    if operation["op"] == "mesh_nurbs_conversion":
+        return _geometry_conversion(operation, tolerance, "MeshToNURB")
+    if operation["op"] == "nurbs_conversion":
+        return _geometry_conversion(operation, tolerance, "ToNURBS")
+    if operation["op"] == "conversion_session":
+        return _conversion_session(operation, tolerance)
+    if operation["op"] == "single_span_conversion":
+        if operation.get("toggles", 0) and operation.get("direction") is None:
+            raise ValueError("standalone Toggle probe requires explicit direction")
+        return _geometry_conversion(operation, tolerance, "ConvertToSingleSpans", operation.get("direction"))
+    if operation["op"] == "bezier_conversion":
+        return _geometry_conversion(operation, tolerance)
+    if operation["op"] == "group_memberships":
+        return _group_memberships(operation, tolerance)
+    if operation["op"] == "distribute":
+        return _distribute(operation, tolerance)
+    if operation["op"] == "align":
+        return _align(operation, tolerance)
+    if operation["op"] == "border_command":
+        import border_probe
+        return border_probe.run(operation, tolerance, globals())
+    if operation["op"] == "join_command":
+        import join_probe
+        return join_probe.run(operation, tolerance, globals())
+    if operation["op"] == "pipe_round_probe":
+        import pipe_round_probe
+        return pipe_round_probe.run(operation, tolerance, globals())
+    if operation["op"] == "polygon_count_probe":
+        import polygon_count_probe
+        return polygon_count_probe.run(operation, globals())
+    if operation["op"] == "self_intersect_probe":
+        import self_intersect_probe
+        return self_intersect_probe.run(operation, globals())
+    if operation["op"] == "mesh_offset_probe":
+        import mesh_offset_probe
+        return mesh_offset_probe.run(operation, globals())
+    if operation["op"] == "mesh_face_metrics":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        try:
+            return {"aspect_ratios": [float(mesh.Faces.GetFaceAspectRatio(i))
+                                      for i in range(mesh.Faces.Count)]}, 0
+        finally:
+            mesh.Dispose()
+    if operation["op"] == "mesh_connected_faces_api":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        try:
+            if not mesh.FaceNormals.ComputeFaceNormals():
+                raise ValueError("could not compute connected-face normals")
+            indices = mesh.Faces.GetConnectedFaces(
+                int(operation["seed"]), math.radians(float(operation["angle"])),
+                bool(operation["greater_than"]))
+            return {"faces": sorted(int(index) for index in indices)}, 0
+        finally:
+            mesh.Dispose()
+    if operation["op"] in ("mesh_connected_command_probe", "mesh_part_command_probe"):
+        if not operation.get("mouse_pick"):
+            raise ValueError("mesh face command probe requires a mouse pick")
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        document = Rhino.RhinoDoc.ActiveDoc
+        source_id = document.Objects.AddMesh(mesh)
+        created = []
+        try:
+            document.Objects.UnselectAll()
+            Rhino.RhinoApp.RunScript("_SetView _World _Top", False)
+            Rhino.RhinoApp.RunScript("_Zoom _Extents", False)
+            mode = Rhino.Display.DisplayModeDescription.FindByName("Shaded")
+            if mode is None:
+                raise ValueError("Shaded display mode is unavailable")
+            document.Views.ActiveView.ActiveViewport.DisplayMode = mode
+            document.Views.Redraw()
+            view = document.Views.ActiveView
+            viewport = view.ActiveViewport
+            pick_points = operation.get("pick_points", [operation.get("pick_point")])
+            if not pick_points or any(point is None for point in pick_points):
+                raise ValueError("mesh face command probe needs pick points")
+            path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "worker-progress.log")
+            with open(path, "a") as stream:
+                for index, pick_point in enumerate(pick_points):
+                    pixel = viewport.WorldToClient(_point(pick_point))
+                    x, y = int(pixel.X), int(pixel.Y)
+                    if not 1 <= x < viewport.Size.Width - 1 or not 1 <= y < viewport.Size.Height - 1:
+                        raise ValueError("mesh face mouse pick lies outside viewport")
+                    screen = view.ClientToScreen(System.Drawing.Point(x, y))
+                    name = (operation["id"] if len(pick_points) == 1 else
+                            "%s-%d" % (operation["id"], index + 1))
+                    stream.write("PICK %s %d %d\n" % (name, screen.X, screen.Y))
+                stream.flush()
+            before = set(obj.Id for obj in document.Objects)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            if operation["op"] == "mesh_connected_command_probe":
+                angle = float(operation["angle"])
+                compare = "GreaterThan" if operation["greater_than"] else "LessThan"
+                macro = ("! _-ExtractConnectedMeshFaces _AngleBetween=%s "
+                         "_SelectFacesBy=_%s _MakeCopy=_Yes _Pause" % (angle, compare))
+            else:
+                whole = "Yes" if operation.get("whole_disjoint", False) else "No"
+                macro = ("! _-ExtractMeshPart _ExtractWholeDisjointParts=_%s "
+                         "_MakeCopy=_Yes" % whole)
+                if "join_output" in operation:
+                    join = "Yes" if operation["join_output"] else "No"
+                    macro += " _JoinOutput=_%s" % join
+                macro += " _Pause"
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            history = Rhino.RhinoApp.CommandHistoryWindowText
+            if history.startswith(history_before):
+                history = history[len(history_before):]
+            created = [obj.Id for obj in document.Objects if obj.Id not in before]
+            outputs = []
+            for identifier in created:
+                obj = document.Objects.FindId(identifier)
+                if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
+                    outputs.append(_canonical_polygon_mesh_face_value(obj.Geometry))
+            # Compare extracted regions independently of object creation order.
+            outputs.sort(key=lambda value: (
+                len(value["faces"]), json.dumps(value, sort_keys=True, separators=(",", ":"))))
+            source = document.Objects.FindId(source_id)
+            remaining = (_polygon_mesh_value(source.Geometry) if source is not None
+                         and isinstance(source.Geometry, Rhino.Geometry.Mesh) else None)
+            result = {"succeeded": succeeded, "created_count": len(created),
+                      "output": outputs, "source": remaining}
+            if operation.get("include_history"):
+                result["history"] = history
+            return result, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for identifier in created:
+                document.Objects.Delete(identifier, True)
+            document.Objects.Delete(source_id, True)
+            mesh.Dispose()
+    if operation["op"] in ("mesh_aspect_command_probe", "mesh_area_command_probe",
+                           "mesh_edge_length_command_probe"):
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        document = Rhino.RhinoDoc.ActiveDoc
+        source_id = document.Objects.AddMesh(mesh)
+        created = []
+        try:
+            before = set(obj.Id for obj in document.Objects)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            command = {
+                "mesh_area_command_probe": "_-ExtractMeshFacesByArea",
+                "mesh_aspect_command_probe": "_-ExtractMeshFacesByAspectRatio",
+                "mesh_edge_length_command_probe": "_-ExtractMeshFacesByEdgeLength",
+            }[operation["op"]]
+            macro = "! {} _SelID {} {}".format(command, source_id, operation["macro"])
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            history = Rhino.RhinoApp.CommandHistoryWindowText
+            if history.startswith(history_before):
+                history = history[len(history_before):]
+            created = [obj.Id for obj in document.Objects if obj.Id not in before]
+            output = []
+            for identifier in created:
+                obj = document.Objects.FindId(identifier)
+                if isinstance(obj.Geometry, Rhino.Geometry.Mesh):
+                    output.append(_polygon_mesh_value(obj.Geometry))
+            return {"succeeded": succeeded, "history": history,
+                    "created_count": len(created), "output": output}, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for identifier in created:
+                document.Objects.Delete(identifier, True)
+            document.Objects.Delete(source_id, True)
+            mesh.Dispose()
+    if operation["op"] == "cap_command":
+        import cap_probe
+        return cap_probe.run(operation, tolerance, globals())
+    if operation["op"] == "mesh_cap_command":
+        import mesh_cap_probe
+        return mesh_cap_probe.run(operation, tolerance, globals())
+    if operation["op"] == "mesh_draft_angle_command":
+        import mesh_draft_angle_probe
+        return mesh_draft_angle_probe.run(operation, tolerance, globals())
+    if operation["op"] in ("merge_edges_command", "merge_edge_command"):
+        import merge_edges_probe
+        return merge_edges_probe.run(operation, tolerance, globals())
+    if operation["op"] == "split_edge_command":
+        import split_edge_probe
+        return split_edge_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_merge_edge":
+        import merge_edge_probe
+        return merge_edge_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_remove_holes":
+        import remove_holes_probe
+        return remove_holes_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_unjoin_edges":
+        import unjoin_edges_probe
+        return unjoin_edges_probe.run(operation, tolerance, globals())
+    if operation["op"] == "unjoin_edge_command":
+        import unjoin_edge_command_probe
+        return unjoin_edge_command_probe.run(operation, tolerance, globals())
+    if operation["op"] in ("shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command"):
+        import shrink_trimmed_probe
+        return shrink_trimmed_probe.run(operation, tolerance, globals())
+    if operation["op"] == "extract_srf_command":
+        import extract_srf_probe
+        return extract_srf_probe.run(operation, tolerance, globals())
+    if operation["op"] == "untrim_command":
+        import untrim_component_probe
+        return untrim_component_probe.run(operation, tolerance, globals())
+    if operation["op"] == "brep_join":
+        import brep_join_probe
+        return brep_join_probe.run(operation, tolerance, globals())
+    kind = operation["op"]
+    if kind == "surface_closest_point":
+        return _surface_closest_point(operation, iterations)
+    if kind == "bounding_box_command":
+        return _bounding_box_command(operation, tolerance)
+    if kind == "surface_parameter_curve_bounds":
+        return _surface_parameter_curve_bounds(operation, tolerance)
+    if kind == "trim_boundary_bounds":
+        return _trim_boundary_bounds(operation, tolerance)
+    if kind == "trimmed_brep_bounds":
+        return _trimmed_brep_bounds(operation, iterations, tolerance)
+    if kind in ("curve_bounds", "surface_bounds"):
+        geometry = _join_close_input(operation["curve"]) if kind == "curve_bounds" else _nurbs_surface_from_definition(operation["surface"])
+        try:
+            if not geometry.IsValid:
+                raise ValueError("invalid bounds geometry")
+            _record_progress("bounds: accurate box")
+            bounds, elapsed = _measure(iterations, lambda: geometry.GetBoundingBox(True))
+            if not bounds.IsValid:
+                raise ValueError("invalid geometry bounds")
+            value = {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max)}
+            if kind == "surface_bounds" and operation.get("sample_grid", False):
+                _record_progress("bounds: sample grid")
+                u, v = geometry.Domain(0), geometry.Domain(1)
+                points = [_xyz(geometry.PointAt(u.ParameterAt(i/40.0),v.ParameterAt(j/40.0))) for j in range(41) for i in range(41)]
+                _record_progress("bounds: sample box")
+                sample_min, sample_max = list(points[0]), list(points[0])
+                for point in points[1:]:
+                    for i in range(3):
+                        sample_min[i] = min(sample_min[i],point[i])
+                        sample_max[i] = max(sample_max[i],point[i])
+                value["sample_bounds"] = {"min":sample_min,"max":sample_max}
+            return value, elapsed
+        finally:
+            geometry.Dispose()
+    if kind == "plane_array":
+        return _plane_array(operation, tolerance)
+    if kind == "construction_plane_input":
+        return _construction_plane_input(operation)
+    if kind == "construction_plane":
+        return _construction_plane(operation)
+    if kind == "construction_plane_all_probe":
+        return _construction_plane_all_probe(operation)
+    if kind == "interface_commands":
+        return _interface_commands(operation)
+    if kind == "viewport_arrangement_probe":
+        return _viewport_arrangement_probe(operation)
+    if kind == "synchronize_cplanes_probe":
+        return _synchronize_cplanes_probe(operation)
+    if kind == "copy_cplane_probe":
+        return _copy_cplane_probe(operation)
+    if kind == "set_view_prompt_probe":
+        from set_view_prompt_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
+    if kind == "named_view_policy_probe":
+        from named_view_policy_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
+    if kind == "zoom_extents_probe":
+        from zoom_extents_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress,
+                                             "empty_guid": System.Guid.Empty, "System": System}), 0
+    if kind == "view_camera_probe":
+        from view_camera_probe import run
+        with _independent_construction_planes() as viewport:
+            return run(operation, viewport, {"Rhino": Rhino, "progress": _record_progress}), 0
+    if kind == "plane_transform":
+        return _plane_transform(operation)
+    if kind == "point_grid_command":
+        return _point_grid_command(operation)
+    if kind == "point_grid_diagonal_prompt":
+        return _point_grid_command(operation, diagonal=True)
+    if kind == "plane_primitive":
+        return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
+    if kind == "point_input":
+        return _point_input(operation)
+    if kind == "angle_cursor_diagnostic":
+        from angle_cursor_probe import run
+        return run(operation, globals())
+    if kind == 'mirror_preview':
+        from mirror_preview_probe import run
+        return run(operation, globals())
+    if kind == 'translation_preview':
+        from translation_preview_probe import run
+        return run(operation,globals())
+    if kind == 'twist_command':
+        from twist_command_probe import run
+        return run(operation,globals())
+    if kind == 'twist_options_command':
+        from twist_options_probe import run
+        return run(operation,globals())
+    if kind == 'twist_points':
+        from twist_probe import run
+        return run(operation,globals(),iterations)
+    if kind == 'bend_geometry_command':
+        from bend_command_probe import run
+        return run(operation, globals())
+    if kind == 'bend_options_command':
+        from bend_options_probe import run
+        return run(operation, globals())
+    if kind in ('bend_points', 'bend_command_points'):
+        from bend_probe import run
+        return run(operation,globals(),iterations)
+    if kind in ('taper_points', 'taper_command_points'):
+        from taper_probe import run
+        return run(operation, globals(), iterations)
+    if kind in ('maelstrom_points','maelstrom_command_points'):
+        from maelstrom_probe import run
+        return run(operation, globals(), iterations)
+    if kind == 'maelstrom_geometry_command':
+        from maelstrom_command_probe import run
+        return run(operation, globals())
+    if kind == 'maelstrom_circle_command':
+        from maelstrom_circle_probe import run
+        return run(operation, globals())
+    if kind == 'maelstrom_fit_points_command':
+        from maelstrom_fit_points_probe import run
+        return run(operation, globals())
+    if kind == 'circle_fit_points':
+        from circle_fit_probe import run
+        return run(operation, globals())
+    if kind == 'circle_fit_selection':
+        from circle_fit_selection_probe import run
+        return run(operation, globals())
+    if kind in ('circle_fit_grips', 'circle_fit_grips_commands'):
+        from circle_fit_grips_probe import run
+        return run(operation, globals())
+    if kind == 'mesh_edit_records':
+        from mesh_edit_records_probe import run
+        return run(operation, globals())
+    if kind == 'scale_nu_reference':
+        from scale_nu_reference_probe import run
+        return run(operation, globals())
+    if kind == 'scale_nu':
+        from scale_nu_probe import run
+        return run(operation, globals())
+    if kind == 'scale_nu_options':
+        from scale_nu_options_probe import run
+        return run(operation, globals())
+    if kind == 'scale_positions':
+        from scale_positions_probe import run
+        return run(operation, globals())
+    if kind == 'scale_by_plane_curve':
+        from scale_by_plane_curve_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_union_command':
+        from boolean_union_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_crossing_hole':
+        from surface_rebuild_crossing_hole_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_singular_trim':
+        from surface_rebuild_singular_trim_probe import run
+        return run(operation,globals())
+    if kind == 'surface_retrim_profile':
+        from surface_retrim_profile_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_seam_trim':
+        from surface_rebuild_seam_trim_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_closed_degrees':
+        from surface_rebuild_closed_degrees_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_closed':
+        from surface_rebuild_closed_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_natural':
+        from surface_rebuild_natural_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_retrim_followup':
+        from surface_rebuild_retrim_followup_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_retrim':
+        from surface_rebuild_retrim_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_option_followup':
+        from surface_rebuild_option_followup_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild_options':
+        from surface_rebuild_options_probe import run
+        return run(operation,globals())
+    if kind == 'surface_rebuild':
+        from surface_rebuild_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_control_followup':
+        from tween_surfaces_control_followup_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_control_rows':
+        from tween_surfaces_control_rows_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_control':
+        from tween_surfaces_control_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_corner_sequences':
+        from tween_surfaces_corner_sequences_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_corners':
+        from tween_surfaces_corners_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_sample_memory':
+        from tween_surfaces_sample_memory_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_options':
+        from tween_surfaces_options_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_interaction':
+        from tween_surfaces_interaction_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_refit':
+        from tween_surfaces_refit_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_sampling':
+        from tween_surfaces_sampling_probe import run
+        return run(operation,globals())
+    if kind == 'tween_surfaces_command':
+        from tween_surfaces_probe import run
+        return run(operation,globals())
+    if kind == 'planar_circle_scale':
+        from planar_circle_scale_probe import run
+        return run(operation,globals())
+    if kind == 'planar_boolean_scale':
+        from planar_boolean_scale_probe import run
+        return run(operation,globals())
+    if kind == 'planar_boolean_mixed':
+        from planar_boolean_mixed_probe import run
+        return run(operation,globals())
+    if kind == 'planar_boolean_circular':
+        from planar_boolean_circular_probe import run
+        return run(operation,globals())
+    if kind == 'planar_boolean_topology':
+        from planar_boolean_topology_probe import run
+        return run(operation,globals())
+    if kind == 'planar_boolean_command':
+        from planar_boolean_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_two_coplanar':
+        from boolean_two_coplanar_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_two_open':
+        from boolean_two_open_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_two_command':
+        from boolean_two_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_split_topology':
+        from boolean_split_topology_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_split_mixed_open':
+        from boolean_split_mixed_open_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_split_open':
+        from boolean_split_open_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_split_plane':
+        from boolean_split_plane_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_split_command':
+        from boolean_split_probe import run
+        return run(operation, globals())
+    if kind == 'boolean_difference_order_command':
+        from boolean_difference_order_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_difference_command':
+        from boolean_difference_probe import run
+        return run(operation,globals())
+    if kind == 'boolean_intersection_command':
+        from boolean_intersection_probe import run
+        return run(operation,globals())
+    if kind == 'convex_boolean':
+        from convex_boolean_probe import run
+        return run(operation,globals())
+    if kind == 'polyhedral_boolean':
+        from polyhedral_boolean_probe import run
+        return run(operation,globals())
+    if kind == 'compound_intersection':
+        from compound_intersection_probe import run
+        return run(operation, globals())
+    if kind == 'compound_pairs':
+        from compound_pairs_probe import run
+        return run(operation, globals())
+    if kind == 'common_participation':
+        from common_participation_probe import run
+        return run(operation, globals())
+    if kind == 'surface_curve_image':
+        from surface_curve_image_probe import run
+        return run(operation, globals())
+    if kind == 'apply_uv_curves_command':
+        from apply_uv_curves_probe import run
+        return run(operation, globals())
+    if kind == 'create_uv_curves_command':
+        from create_uv_curves_probe import run
+        return run(operation, globals())
+    if kind == 'uv_face_reference_command':
+        from uv_face_reference_probe import run
+        return run(operation,globals())
+    if kind == 'uv_subcurve_input_command':
+        from uv_subcurve_input_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_numeric_followup':
+        from subcurve_numeric_followup_probe import run
+        return run(operation, globals())
+    if kind == 'standalone_subcurve':
+        from standalone_subcurve_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_mark_ends':
+        from subcurve_mark_ends_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_midpoint':
+        from subcurve_midpoint_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_preferences':
+        from subcurve_preferences_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_direction':
+        from subcurve_direction_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_direction_grid':
+        from subcurve_direction_grid_probe import run
+        return run(operation, globals())
+    if kind == 'subcurve_edge':
+        from subcurve_edge_probe import run
+        return run(operation, globals())
+    if kind == 'surface_pullback_endpoints':
+        from surface_pullback_endpoints_probe import run
+        return run(operation, globals())
+    if kind == 'surface_pullback_linear':
+        from surface_pullback_linear_probe import run
+        return run(operation, globals())
+    if kind == 'surface_pullback_interpolation':
+        from surface_pullback_interpolation_probe import run
+        return run(operation, globals())
+    if kind == 'polyhedral_boolean_command':
+        from polyhedral_command_probe import run
+        return run(operation,globals())
+    if kind == 'grip_alias':
+        from grip_alias_probe import run
+        return run(operation,globals())
+    if kind == 'smooth_workflow':
+        from smooth_workflow_probe import run
+        return run(operation,globals())
+    if kind == 'smooth_uvn':
+        from smooth_uvn_probe import run
+        return run(operation,globals())
+    if kind == 'smooth_command':
+        from smooth_probe import run
+        return run(operation,globals())
+    if kind == 'smooth_frames':
+        from smooth_frames_probe import run
+        return run(operation,globals())
+    if kind == 'scale_by_plane_object':
+        from scale_by_plane_object_probe import run
+        return run(operation,globals())
+    if kind == 'scale_by_plane':
+        from scale_by_plane_probe import run
+        return run(operation, globals())
+    if kind == 'point_input_precision':
+        from point_input_precision_probe import run
+        return run(operation, globals())
+    if kind == 'scale_positions_cursor':
+        from scale_positions_cursor_probe import run
+        return run(operation, globals())
+    if kind == 'grip_transform':
+        from grip_transform_probe import run
+        return run(operation, globals())
+    if kind == 'circle_fit_benchmark':
+        from circle_fit_benchmark import run
+        return run(operation, globals())
+    if kind == 'circle_fit_diagnostics':
+        from circle_fit_diagnostics import run
+        return run(operation, globals())
+    if kind == 'maelstrom_input_command':
+        from maelstrom_input_probe import run
+        return run(operation, globals())
+    if kind == 'maelstrom_options_command':
+        from maelstrom_options_probe import run
+        return run(operation, globals())
+    if kind == 'taper_options_command':
+        from taper_options_probe import run
+        return run(operation, globals())
+    if kind == 'taper_geometry_command':
+        from taper_command_probe import run
+        return run(operation, globals())
+    if kind == 'twist_preview':
+        from twist_preview_probe import run
+        return run(operation,globals())
+    if kind == 'maelstrom_preview':
+        from maelstrom_preview_probe import run
+        return run(operation, globals())
+    if kind == 'taper_preview':
+        from taper_preview_probe import run
+        return run(operation, globals())
+    if kind == 'bend_preview':
+        from bend_preview_probe import run
+        return run(operation, globals())
+    if kind == 'affine_preview':
+        from affine_preview_probe import run
+        return run(operation,globals())
+    if kind == "control_point_prompt":
+        return _control_point_prompt(operation)
+    if kind == "interpolation_point_prompt":
+        return _control_point_prompt(operation, True)
+    if kind == "short_curve_selection":
+        return _short_curve_selection(operation)
+    if kind == "non_manifold_selection":
+        return _non_manifold_selection(operation)
+    if kind == "volume_selection":
+        return _volume_selection(operation)
+    if kind == "sweep1":
+        return _sweep1(operation, iterations, tolerance)
+    if kind == "curve_frames":
+        return _curve_frames(operation, iterations)
+    if kind == "brep_mesh_boundaries":
+        return _brep_mesh_boundaries(operation, iterations, tolerance)
+    if kind == "loft":
+        return _loft(operation, iterations)
+    if kind == "edge_surface":
+        return _edge_surface(operation, iterations)
+    if kind == "surface_grid":
+        return _surface_grid(operation, iterations)
+    if kind == "curve_surface_morph":
+        return _curve_surface_morph(operation, iterations, tolerance)
+    if kind == "surface_surface_morph":
+        return _surface_surface_morph(operation, iterations, tolerance)
+    if kind == "brep_surface_morph":
+        return _brep_surface_morph(operation, iterations, tolerance)
+    if kind == "surface_jets":
+        return _surface_jets(operation, iterations)
+    if kind == "surface_curvature":
+        return _surface_jets(operation, iterations, True)
+    if kind == "curvature_command":
+        return _curvature_command(operation, iterations, tolerance)
+    if kind == "distance_command":
+        return _distance_command(operation)
+    if kind == "area_centroid_command":
+        import area_centroid_probe
+        return area_centroid_probe.run(operation, tolerance, globals())
+    if kind == "volume_centroid_command":
+        import area_centroid_probe
+        return area_centroid_probe.run(operation, tolerance, globals(), "volume")
+    if kind == "orientation_audit":
+        import orientation_probe
+        return orientation_probe.run(operation, tolerance, globals())
+    if kind == "untrim_holes_command":
+        import untrim_holes_probe
+        return untrim_holes_probe.run(operation, tolerance, globals())
+    if kind in ("untrim_all_command", "untrim_border_command"):
+        import untrim_probe
+        return untrim_probe.run(operation, tolerance, globals())
+    if kind == "brep_solid_orientation":
+        return _brep_solid_orientation(operation, iterations)
+    if kind == "document_brep":
+        import document_brep_probe
+        return document_brep_probe.run(operation, iterations, globals())
+    if kind == "document_brep_import":
+        import document_brep_probe
+        return document_brep_probe.run_import(operation, iterations, tolerance, globals())
+    if kind == "volume_command":
+        import area_centroid_probe
+        return area_centroid_probe.run(operation, tolerance, globals(), "volume", False)
+    if kind == "angle_command":
+        return _angle_command(operation)
+    if kind == "angle_objects_command":
+        return _angle_objects_command(operation)
+    if kind == "radius_command":
+        return _radius_command(operation)
+    if kind == "evaluate_point_command":
+        return _evaluate_point_command(operation)
+    if kind == "domain_command":
+        return _domain_command(operation)
+    if kind == "evaluate_uv_command":
+        return _evaluate_uv_command(operation)
+    if kind == "surface_face_uv_api":
+        return _surface_face_uv_api(operation)
+    if kind == "three_dm_curve_interchange":
+        return _three_dm_curve_interchange(operation, iterations)
+    if kind == "three_dm_brep_interchange":
+        return _three_dm_brep_interchange(operation, iterations)
+    if kind == "curve_join_close":
+        return _curve_join_close(operation, iterations, tolerance)
+    if kind == "curve_direction_match":
+        reference = _join_close_input(operation["reference"])
+        target = _join_close_input(operation["target"])
+        try:
+            return {"match": bool(Rhino.Geometry.Curve.DoDirectionsMatch(reference, target))}, 0
+        finally:
+            target.Dispose()
+            reference.Dispose()
+    if kind == "curve_end_continuity":
+        first = _join_close_input(operation["first"])
+        second = _join_close_input(operation["second"])
+        try:
+            at_first_end = bool(operation["first_at_end"])
+            at_second_end = bool(operation["second_at_end"])
+            u = first.Domain.T1 if at_first_end else first.Domain.T0
+            v = second.Domain.T1 if at_second_end else second.Domain.T0
+            a = _xyz(first.PointAt(u))
+            b = _xyz(second.PointAt(v))
+            tangent_a = _xyz(first.TangentAt(u))
+            tangent_b = _xyz(second.TangentAt(v))
+            if not at_first_end:
+                tangent_a = [-x for x in tangent_a]
+            if at_second_end:
+                tangent_b = [-x for x in tangent_b]
+            cross = [tangent_a[1]*tangent_b[2]-tangent_a[2]*tangent_b[1],
+                     tangent_a[2]*tangent_b[0]-tangent_a[0]*tangent_b[2],
+                     tangent_a[0]*tangent_b[1]-tangent_a[1]*tangent_b[0]]
+            angle = math.degrees(math.atan2(math.sqrt(sum(x*x for x in cross)),
+                                            sum(x*y for x,y in zip(tangent_a,tangent_b))))
+            curvature_a = _xyz(first.CurvatureAt(u))
+            curvature_b = _xyz(second.CurvatureAt(v))
+            return {"gap": math.sqrt(sum((x-y)**2 for x,y in zip(a,b))),
+                    "angle_degrees": angle,
+                    "curvature_delta": math.sqrt(sum((x-y)**2 for x,y in zip(curvature_a,curvature_b)))}, 0
+        finally:
+            second.Dispose()
+            first.Dispose()
+    if kind == "curve_match_geometry":
+        first = _join_close_input(operation["first"])
+        second = _join_close_input(operation["second"])
+        try:
+            continuity = getattr(Rhino.Geometry.BlendContinuity,
+                                 operation.get("continuity", "Tangency"))
+            preserve = getattr(Rhino.Geometry.PreserveEnd,
+                               operation.get("preserve_other_end", "None"))
+            outputs = Rhino.Geometry.Curve.CreateMatchCurve(
+                first, bool(operation.get("reverse_first", False)), continuity,
+                second, bool(operation.get("reverse_second", False)), preserve,
+                bool(operation.get("average", False)))
+            if outputs is None:
+                outputs = []
+            try:
+                return {"outputs": [{"definition": _nurbs_curve_definition(curve),
+                                     "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 16.0)))
+                                                 for i in range(17)]}
+                                    for curve in outputs]}, 0
+            finally:
+                for curve in outputs:
+                    curve.Dispose()
+        finally:
+            second.Dispose()
+            first.Dispose()
+    if kind == "polycurve_native":
+        return _polycurve_native(operation, iterations, tolerance)
+    if kind == "curve_native":
+        return _curve_native(operation, iterations, tolerance)
+    if kind == "curve_area":
+        return _curve_area(operation, iterations)
+    if kind == "ellipse_offset_geometry":
+        return _ellipse_offset_geometry(operation, iterations, tolerance)
+    if kind == "curve_offset_geometry":
+        return _curve_offset_geometry(operation, iterations, tolerance)
+    if kind == "curve_fillet_corners_geometry":
+        source = (
+            _join_close_input(operation["curve"])
+            if "curve" in operation
+            else Rhino.Geometry.PolylineCurve(
+                [_point(vertex) for vertex in operation["vertices"]]
+            )
+        )
+        radius = _finite(operation["radius"], "fillet radius")
+
+        def fillet_corners():
+            curve = Rhino.Geometry.Curve.CreateFilletCornersCurve(
+                source, radius, tolerance["absolute"], tolerance["angular"]
+            )
+            if curve is None:
+                raise ValueError("Rhino fillet corners failed")
+            try:
+                samples = []
+                if "queries" in operation:
+                    for query in operation["queries"]:
+                        success, parameter = curve.ClosestPoint(_point(query))
+                        if not success:
+                            raise ValueError("Rhino fillet closest-point search failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
+                else:
+                    for index in range(65):
+                        success, parameter = curve.NormalizedLengthParameter(
+                            index / 64.0, 1e-12
+                        )
+                        if not success:
+                            raise ValueError("Rhino fillet arc-length sampling failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
+                return {
+                    "closed": bool(curve.IsClosed),
+                    "length": float(curve.GetLength(1e-12)),
+                    "samples": samples,
+                }
+            finally:
+                curve.Dispose()
+
+        try:
+            return _measure(iterations, fillet_corners)
+        finally:
+            source.Dispose()
+    if kind in ("curve_fillet_pair_geometry", "curve_fillet_pair_parts"):
+        first = _join_close_input(operation["curve0"])
+        second = _join_close_input(operation["curve1"])
+        pick0 = _point(operation["pick0"])
+        pick1 = _point(operation["pick1"])
+        radius = _finite(operation["radius"], "fillet radius")
+        join = operation.get("join", True)
+        trim = operation.get("trim", True)
+        if not isinstance(join, bool) or not isinstance(trim, bool):
+            raise ValueError("fillet join and trim must be booleans")
+
+        def fillet_pair():
+            curves = Rhino.Geometry.Curve.CreateFilletCurves(
+                first, pick0, second, pick1, radius, join, trim, True,
+                tolerance["absolute"], tolerance["angular"]
+            )
+            if curves is None or len(curves) == 0:
+                raise ValueError("Rhino fillet failed")
+            try:
+                parts = []
+                for curve in curves:
+                    samples = []
+                    for index in range(65):
+                        success, parameter = curve.NormalizedLengthParameter(
+                            index / 64.0, 1e-12
+                        )
+                        if not success:
+                            raise ValueError("Rhino fillet arc-length sampling failed")
+                        samples.append(_xyz(curve.PointAt(parameter)))
+                    parts.append({
+                        "closed": bool(curve.IsClosed),
+                        "length": float(curve.GetLength(1e-12)),
+                        "samples": samples,
+                    })
+                if kind == "curve_fillet_pair_parts":
+                    return {"parts": parts}
+                if len(parts) != 1:
+                    raise ValueError("Rhino joined fillet returned multiple curves")
+                return parts[0]
+            finally:
+                for part in curves:
+                    part.Dispose()
+
+        try:
+            return _measure(iterations, fillet_pair)
+        finally:
+            first.Dispose()
+            second.Dispose()
+    if kind in ("polycurve_geometry", "polycurve_document"):
+        return _polycurve_geometry(operation, iterations, tolerance)
+    if kind == "trimmed_surface_mass_properties":
+        return _trimmed_surface_mass_properties(operation, iterations, tolerance)
+    if kind == "trimmed_surface_isocurves":
+        return _trimmed_surface_isocurves(operation, iterations, tolerance)
+    if kind == "surface_wires":
+        return _surface_wires(operation, iterations)
+    if kind == "mesh_weld_vertex":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        vertex_indices = operation["vertex_indices"]
+        if not isinstance(vertex_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in vertex_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh weld vertex indices must be integers")
+        vertex_indices = [int(index) for index in vertex_indices]
+        before = int(source.Vertices.Count)
+        if not vertex_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "removed_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+        source.Dispose()
+
+        def weld_mesh_vertices():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh weld vertex oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in vertex_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyVertex,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology vertex")
+                # As with UnweldVertex, RunScript can report false for a
+                # command nested inside the Python oracle even after its
+                # synchronous topology edit completed.
+                Rhino.RhinoApp.RunScript("_-WeldVertices _Enter", False)
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh weld vertex command removed its source")
+                return {
+                    "accepted": True,
+                    "removed_vertices": before - int(mesh_object.Geometry.Vertices.Count),
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, weld_mesh_vertices)
+
+    if kind == "mesh_weld_edge":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        edge_indices = operation["edge_indices"]
+        if not isinstance(edge_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in edge_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh weld edge indices must be integers")
+        edge_indices = [int(index) for index in edge_indices]
+        before = int(source.Vertices.Count)
+        if not edge_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "removed_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+        source.Dispose()
+
+        def weld_mesh_edges():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh weld edge oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in edge_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyEdge,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology edge")
+                if not Rhino.RhinoApp.RunScript("_-WeldEdge _Enter", False):
+                    raise ValueError("mesh weld edge command failed")
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh weld edge command removed its source")
+                return {
+                    "accepted": True,
+                    "removed_vertices": before - int(mesh_object.Geometry.Vertices.Count),
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, weld_mesh_edges)
+
+    if kind == "mesh_unweld_vertex":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        vertex_indices = operation["vertex_indices"]
+        if not isinstance(vertex_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in vertex_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh unweld vertex indices must be integers")
+        vertex_indices = [int(index) for index in vertex_indices]
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            source.Dispose()
+            raise ValueError("mesh unweld vertex modify_normals must be a boolean")
+        before = int(source.Vertices.Count)
+
+        if not vertex_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "added_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+
+        source.Dispose()
+
+        def unweld_mesh_vertices():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh unweld vertex oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in vertex_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyVertex,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology vertex")
+                command = "_-UnweldVertex _ModifyNormals=_%s _Enter" % (
+                    "Yes" if modify_normals else "No"
+                )
+                # RunScript reports false when nested inside the oracle's
+                # Python command, but the documented command completes its
+                # synchronous topology edit before returning.
+                Rhino.RhinoApp.RunScript(command, False)
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh unweld vertex command removed its source")
+                return {
+                    "accepted": True,
+                    "added_vertices": int(mesh_object.Geometry.Vertices.Count) - before,
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, unweld_mesh_vertices)
+
+    if kind == "document_surface_orient_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Surface Orient " + suffix + " "
+        fixture_group_indices = set()
+        target_ids = []
+
+        def fixture_objects():
+            return [
+                rhino_object
+                for rhino_object in document.Objects
+                if rhino_object.Attributes.Name is not None
+                and rhino_object.Attributes.Name.startswith(name_prefix)
+            ]
+
+        def curve_record(rhino_object, scenario_prefix):
+            curve = rhino_object.Geometry
+            if not isinstance(curve, Rhino.Geometry.Curve):
+                raise ValueError("surface-orient fixture contains a non-curve")
+            nurbs = curve.ToNurbsCurve()
+            if nurbs is None:
+                raise ValueError("could not convert surface-orient curve to NURBS")
+            try:
+                return {
+                    "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+                    "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 256.0))) for i in range(257)],
+                    "degree": int(nurbs.Degree),
+                    "is_rational": bool(nurbs.IsRational),
+                    "name": rhino_object.Attributes.Name[len(scenario_prefix):],
+                    "selected": rhino_object.IsSelected(False) > 0,
+                }
+            finally:
+                nurbs.Dispose()
+
+        def record_key(record):
+            first = record["samples"][0]
+            return tuple([record["name"], record["degree"]] + first)
+
+        def scenario_groups(objects, scenario_prefix):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    curve_record(member, scenario_prefix)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(key=lambda group: tuple(record_key(item) for item in group))
+            return groups
+
+        def create_surface(surface_kind):
+            if surface_kind == "bilinear":
+                surface = Rhino.Geometry.NurbsSurface.Create(
+                    3, False, 2, 2, 2, 2
+                )
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [12.0, 10.0, 10.0]},
+                ]
+                control_count_u = 2
+                u_knots = [0.0, 0.0, 1.0, 1.0]
+                v_knots = [0.0, 0.0, 1.0, 1.0]
+            else:
+                surface = Rhino.Geometry.NurbsSurface.Create(
+                    3, surface_kind == "cylinder", 3, 2, 3, 2
+                )
+                control_count_u = 3
+                u_knots = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+                v_knots = [0.0, 0.0, 1.0, 1.0]
+            if surface is None:
+                raise ValueError("could not allocate surface-orient fixture")
+            if surface_kind == "cylinder":
+                middle_weight = math.sqrt(0.5)
+                controls = [
+                    {"point": [10.0, 0.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 0.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 0.0, 10.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 10.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 10.0], "weight": 1.0},
+                ]
+            elif surface_kind != "bilinear":
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [5.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [0.0, 20.0, 10.0]},
+                    {"point": [10.0, 10.0, 10.0]},
+                ]
+            _set_surface_controls(surface, controls, control_count_u, 2)
+            _set_knots(
+                surface.KnotsU,
+                u_knots,
+                "surface-orient U knot",
+            )
+            _set_knots(
+                surface.KnotsV,
+                v_knots,
+                "surface-orient V knot",
+            )
+            return surface
+
+        def run_scenario(
+            label,
+            surface_kind,
+            reference_point,
+            copy,
+            rigid,
+            flip,
+            scale,
+            rotation,
+        ):
+            _record_progress("document_surface_orient_cycle: %s start" % label)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            source_ids = []
+            scenario_prefix = name_prefix + label + " "
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = scenario_prefix + axis
+                source_id = document.Objects.AddLine(origin, origin + offset, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add surface-orient fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Surface Orient Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group surface-orient fixture lines")
+            fixture_group_indices.add(group_index)
+            surface = create_surface(surface_kind)
+            if surface is None or not surface.IsValid:
+                raise ValueError("surface-orient fixture surface is invalid")
+            target_id = document.Objects.AddSurface(surface)
+            if target_id == System.Guid.Empty:
+                raise ValueError("could not add surface-orient target")
+            target_ids.append(target_id)
+            target_point = surface.PointAt(0.3, 0.4)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                document.Objects.Select(source_id)
+            command = (
+                "_-OrientOnSrf 1,2,3 %s '_-SelID %s "
+                "_Copy=_%s _Rigid=_%s _Flip=_%s %.17g,%.17g,%.17g %.17g %.17g _Enter"
+                % (
+                    reference_point,
+                    target_id,
+                    "Yes" if copy else "No",
+                    "Yes" if rigid else "No",
+                    "Yes" if flip else "No",
+                    target_point.X,
+                    target_point.Y,
+                    target_point.Z,
+                    scale,
+                    rotation,
+                )
+            )
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_surface_orient_cycle: %s command complete" % label
+            )
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(scenario_prefix)
+            ]
+            expected_count = len(source_ids) * (2 if copy else 1)
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "OrientOnSrf macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (command, succeeded, len(objects), history[-2000:])
+                )
+            records = [curve_record(item, scenario_prefix) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(succeeded),
+                "groups": scenario_groups(objects, scenario_prefix),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+                "surface_selected": (
+                    document.Objects.FindId(target_id).IsSelected(False) > 0
+                ),
+            }
+
+        try:
+            value = {
+                "deformable": run_scenario(
+                    "deformable", "cylinder", "2,2,3", True, False, False, 1.0, 0.0
+                ),
+                "flip": run_scenario(
+                    "flip", "cylinder", "2,2,3", True, False, True, 1.0, 0.0
+                ),
+                "scale_rotate": run_scenario(
+                    "scale-rotate", "cylinder", "2,2,3", True, False, False, 2.0, 90.0
+                ),
+                "rigid": run_scenario(
+                    "rigid", "cylinder", "2,2,3", True, True, False, 2.0, 35.0
+                ),
+                "oblique_source": run_scenario(
+                    "oblique-source", "bilinear", "2,3,4", True, False, False, 1.0, 0.0
+                ),
+                "copy_no": run_scenario(
+                    "copy-no", "warped", "2,2,3", False, False, False, 1.0, 0.0
+                ),
+            }
+            timing_surface = create_surface("cylinder")
+            timing_plane = Rhino.Geometry.Plane(
+                Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                Rhino.Geometry.Vector3d.XAxis,
+                Rhino.Geometry.Vector3d.YAxis,
+            )
+            timing_morph = Rhino.Geometry.Morphs.SplopSpaceMorph(
+                timing_plane,
+                timing_surface,
+                Rhino.Geometry.Point2d(0.3, 0.4),
+            )
+            try:
+                timing_point = Rhino.Geometry.Point3d(3.0, 0.5, 3.75)
+                _unused, elapsed = _measure(
+                    iterations, lambda: timing_morph.MorphPoint(timing_point)
+                )
+            finally:
+                timing_morph.Dispose()
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                if not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+            for target_id in target_ids:
+                document.Objects.Delete(target_id, True)
+    if kind == "document_surface_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Surface Array " + suffix + " "
+        fixture_group_indices = set()
+        target_ids = []
+
+        def fixture_xyz(value):
+            coordinates = [round(float(component), 6) for component in value]
+            return [0.0 if component == 0.0 else component for component in coordinates]
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": fixture_xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": fixture_xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            return tuple(record["start"] + record["end"] + [record["name"]])
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def create_surface(surface_kind):
+            if surface_kind == "bilinear":
+                return Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                    Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(12.0, 10.0, 10.0),
+                    Rhino.Geometry.Point3d(0.0, 10.0, 10.0),
+                )
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, surface_kind == "cylinder", 3, 2, 3, 2
+            )
+            if surface is None:
+                raise ValueError("could not allocate surface-array fixture")
+            if surface_kind == "cylinder":
+                middle_weight = math.sqrt(0.5)
+                controls = [
+                    {"point": [10.0, 0.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 0.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 0.0, 10.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 10.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 10.0], "weight": 1.0},
+                ]
+            else:
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [5.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [0.0, 20.0, 10.0]},
+                    {"point": [10.0, 10.0, 10.0]},
+                ]
+            _set_surface_controls(surface, controls, 3, 2)
+            _set_knots(
+                surface.KnotsU,
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                "surface-array U knot",
+            )
+            _set_knots(
+                surface.KnotsV,
+                [0.0, 0.0, 1.0, 1.0],
+                "surface-array V knot",
+            )
+            return surface
+
+        def run_scenario(
+            label, surface_kind, command_template, u_count, v_count
+        ):
+            _record_progress("document_surface_array_cycle: %s start" % label)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            source_ids = []
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(
+                    origin, origin + offset, attributes
+                )
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add surface-array fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Surface Array Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group surface-array fixture lines")
+            fixture_group_indices.add(group_index)
+            surface = create_surface(surface_kind)
+            if surface is None or not surface.IsValid:
+                raise ValueError("surface-array fixture surface is invalid")
+            target_id = document.Objects.AddSurface(surface)
+            if target_id == System.Guid.Empty:
+                raise ValueError("could not add surface-array fixture surface")
+            target_ids.append(target_id)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                document.Objects.Select(source_id)
+            command = command_template.replace("{target_id}", str(target_id))
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_surface_array_cycle: %s command complete" % label
+            )
+            scenario_prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(scenario_prefix)
+            ]
+            expected_count = len(source_ids) * (1 + u_count * v_count)
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArraySrf macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+                "surface_selected": (
+                    document.Objects.FindId(target_id).IsSelected(False) > 0
+                ),
+            }
+
+        try:
+            base = "_-ArraySrf _Mode={mode} 1,2,3 {up} '_-SelID {target_id} "
+            value = {
+                "uv": run_scenario(
+                    "uv",
+                    "bilinear",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "3 2 _Enter",
+                    3,
+                    2,
+                ),
+                "cylinder_uv": run_scenario(
+                    "cylinder-uv",
+                    "cylinder",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "4 2 _Enter",
+                    4,
+                    2,
+                ),
+                "cylinder_isocurve": run_scenario(
+                    "cylinder-isocurve",
+                    "cylinder",
+                    base.format(
+                        mode="_Isocurve", up="_Enter", target_id="{target_id}"
+                    )
+                    + "4 2 _Enter",
+                    4,
+                    2,
+                ),
+                "warped_isocurve": run_scenario(
+                    "warped-isocurve",
+                    "warped",
+                    base.format(
+                        mode="_Isocurve", up="_Enter", target_id="{target_id}"
+                    )
+                    + "4 3 _Enter",
+                    4,
+                    3,
+                ),
+                "single": run_scenario(
+                    "single",
+                    "warped",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "1 1 _Enter",
+                    1,
+                    1,
+                ),
+                "custom_up": run_scenario(
+                    "custom-up",
+                    "bilinear",
+                    base.format(mode="_UV", up="1,3,3", target_id="{target_id}")
+                    + "1 1 _Enter",
+                    1,
+                    1,
+                ),
+            }
+            timing_surface = create_surface("cylinder")
+            _unused, elapsed = _measure(
+                iterations, lambda: timing_surface.FrameAt(0.37, 0.62)
+            )
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                if not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+            for target_id in target_ids:
+                document.Objects.Delete(target_id, True)
+    if kind == "document_orient_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Orient " + suffix + " "
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": _xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": _xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            rounded = [round(value, 12) for value in coordinates]
+            return tuple(rounded + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def run_scenario(label, command, expected_object_count):
+            _record_progress("document_orient_cycle: %s start" % label)
+            source_ids = []
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(origin, origin + offset, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add orient fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Orient Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group orient fixture lines")
+            fixture_group_indices.add(group_index)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                if not document.Objects.Select(source_id):
+                    raise ValueError("could not select orient fixture line")
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress("document_orient_cycle: %s command complete" % label)
+            objects = scenario_objects(label)
+            if len(objects) != expected_object_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "orient macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        command_succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(command_succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+            }
+
+        try:
+            orient = "_-Orient 1,2,3 3,2,3 "
+            targets = " 10,-1,4 10,5,4 _Enter"
+            orient3 = "_-Orient3Pt 1,2,3 3,2,3 1,3,4 "
+            targets3 = " 10,-1,4 10,5,4 8,-1,8 _Enter"
+            value = {
+                "orient_default": run_scenario(
+                    "orient-default", orient + targets, 3
+                ),
+                "orient_copy_no": run_scenario(
+                    "orient-copy-no",
+                    orient + "_Copy=_Yes _Scale=_No" + targets + " _Enter",
+                    6,
+                ),
+                "orient_copy_1d": run_scenario(
+                    "orient-copy-1d",
+                    orient + "_Copy=_Yes _Scale=_1D" + targets + " _Enter",
+                    6,
+                ),
+                "orient_copy_3d": run_scenario(
+                    "orient-copy-3d",
+                    orient + "_Copy=_Yes _Scale=_3D" + targets + " _Enter",
+                    6,
+                ),
+                "orient_spatial": run_scenario(
+                    "orient-spatial",
+                    "_-Orient 1,2,3 2,4,6 _Copy=_Yes _Scale=_No "
+                    "-5,4,2 -7,8,3 _Enter _Enter",
+                    6,
+                ),
+                "orient3_default": run_scenario(
+                    "orient3-default", orient3 + targets3, 3
+                ),
+                "orient3_copy_scale": run_scenario(
+                    "orient3-copy-scale",
+                    orient3 + "_Copy=_Yes _Scale=_Yes" + targets3 + " _Enter",
+                    6,
+                ),
+            }
+            source_direction = Rhino.Geometry.Vector3d(1.0, 2.0, 3.0)
+            target_direction = Rhino.Geometry.Vector3d(-2.0, 4.0, 1.0)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            _unused, elapsed = _measure(
+                iterations,
+                lambda: Rhino.Geometry.Transform.Rotation(
+                    source_direction, target_direction, origin
+                ),
+            )
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+    if kind in ("document_curve_array_cycle", "document_curve_array_corner_cycle"):
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Curve Array " + suffix + " "
+        path_ids = []
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def fixture_xyz(value):
+            return [float(component) for component in value]
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": fixture_xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": fixture_xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            rounded = [round(value, 12) for value in coordinates]
+            return tuple(rounded + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def add_path(path_kind):
+            if path_kind == "polyline":
+                return document.Objects.AddPolyline([
+                    _point(p) for p in [[0, 0, 0], [1, 0, 0], [1, 1, 0], [1, 1, 1]]
+                ])
+            if path_kind == "line":
+                return document.Objects.AddLine(
+                    Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+                )
+            if path_kind == "nurbs":
+                curve = Rhino.Geometry.NurbsCurve(3, True, 4, 5)
+                _set_curve_controls(
+                    curve,
+                    [
+                        {"point": [0.0, 0.0, 0.0]},
+                        {"point": [2.0, 0.0, 3.0]},
+                        {"point": [4.0, 3.0, -1.0]},
+                        {"point": [7.0, 5.0, 4.0]},
+                        {"point": [10.0, 8.0, 6.0]},
+                    ],
+                )
+                _set_knots(
+                    curve.Knots,
+                    [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+                    "curve-array NURBS knot",
+                )
+                if not curve.IsValid:
+                    raise ValueError("curve-array NURBS path is invalid")
+                return document.Objects.AddCurve(curve)
+            return document.Objects.AddArc(
+                Rhino.Geometry.Arc(
+                    Rhino.Geometry.Point3d(5.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(0.0, 3.0, 4.0),
+                    Rhino.Geometry.Point3d(-5.0, 0.0, 0.0),
+                )
+            )
+
+        def run_scenario(
+            label,
+            path_kind,
+            source_anchor,
+            command_template,
+            expected_instance_count,
+        ):
+            _record_progress("document_curve_array_cycle: %s start" % label)
+            anchor = _point(source_anchor)
+            source_ids = []
+            source_axis_length = 1.0
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(source_axis_length, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, source_axis_length, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, source_axis_length)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(
+                    anchor, anchor + offset, attributes
+                )
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add curve-array fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Curve Array Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group curve-array fixture objects")
+            fixture_group_indices.add(group_index)
+            path_id = add_path(path_kind)
+            if path_id == System.Guid.Empty:
+                raise ValueError("could not add curve-array fixture path")
+            path_ids.append(path_id)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                if not document.Objects.Select(source_id):
+                    raise ValueError("could not select curve-array fixture object")
+
+            command = command_template.replace("{path_id}", str(path_id))
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_curve_array_cycle: %s command complete" % label
+            )
+            objects = scenario_objects(label)
+            expected_count = len(source_ids) * expected_instance_count
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArrayCrv macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        command_succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            _record_progress(
+                "document_curve_array_cycle: %s objects captured" % label
+            )
+            groups = scenario_groups(objects)
+            _record_progress(
+                "document_curve_array_cycle: %s groups captured" % label
+            )
+            originals_selected = []
+            for index, source_id in enumerate(source_ids):
+                source_object = document.Objects.FindId(source_id)
+                if (
+                    source_object is not None
+                    and source_object.IsSelected(False) > 0
+                ):
+                    originals_selected.append(index)
+            path_object = document.Objects.FindId(path_id)
+            _record_progress(
+                "document_curve_array_cycle: %s selection captured" % label
+            )
+            result = {
+                "command_succeeded": bool(command_succeeded),
+                "groups": groups,
+                "objects": records,
+                "originals_selected": originals_selected,
+                "path_selected": (
+                    path_object is not None and path_object.IsSelected(False) > 0
+                ),
+            }
+            return result
+
+        timing_curve = None
+        try:
+            if kind == "document_curve_array_corner_cycle":
+                return run_scenario(
+                    "freeform-polyline", "polyline", [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} _Orientation _Freeform 4", 4,
+                ), 0
+            value = {
+                "base_point": run_scenario(
+                    "base-point",
+                    "line",
+                    [20.0, 0.0, 0.0],
+                    "_-ArrayCrv _Basepoint 20,0,0 "
+                    "'_-SelID {path_id} _Orientation _NoRotation 4",
+                    5,
+                ),
+                "freeform": run_scenario(
+                    "freeform",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Freeform 4",
+                    4,
+                ),
+                "freeform_nurbs": run_scenario(
+                    "freeform-nurbs",
+                    "nurbs",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Freeform 5",
+                    5,
+                ),
+                "no_rotation_distance": run_scenario(
+                    "no-rotation-distance",
+                    "line",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _NoRotation _Distance 3 _Enter",
+                    4,
+                ),
+                "no_rotation_items": run_scenario(
+                    "no-rotation-items",
+                    "line",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _NoRotation 4",
+                    4,
+                ),
+                "roadlike": run_scenario(
+                    "roadlike",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Roadlike 4",
+                    4,
+                ),
+                "stairlike": run_scenario(
+                    "stairlike",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Stairlike 4",
+                    4,
+                ),
+            }
+            timing_curve = Rhino.Geometry.LineCurve(
+                Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+            )
+            _unused, elapsed = _measure(
+                iterations, lambda: timing_curve.DivideByCount(3, True)
+            )
+            _record_progress("document_curve_array_cycle: timing complete")
+            return value, elapsed
+        finally:
+            _record_progress("document_curve_array_cycle: cleanup start")
+            if timing_curve is not None:
+                timing_curve.Dispose()
+            try:
+                document.Objects.UnselectAll()
+            except Exception:
+                pass
+            try:
+                objects = fixture_objects()
+                for group_index in sorted(fixture_group_indices, reverse=True):
+                    try:
+                        document.Groups.Delete(group_index)
+                    except Exception:
+                        pass
+                for item in objects:
+                    try:
+                        document.Objects.Delete(item.Id, True)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            for path_id in path_ids:
+                try:
+                    document.Objects.Delete(path_id, True)
+                except Exception:
+                    pass
+    if kind == "document_rectangular_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Rectangular Array " + suffix + " "
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def point_key(item):
+            return (
+                round(float(item.Geometry.Location.X), 12),
+                round(float(item.Geometry.Location.Y), 12),
+                round(float(item.Geometry.Location.Z), 12),
+                item.Attributes.Name,
+            )
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=point_key)
+            return objects
+
+        def locations(objects):
+            return [_xyz(item.Geometry.Location) for item in objects]
+
+        def selected_locations(objects):
+            return locations([item for item in objects if item.IsSelected(False) > 0])
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                fixture_members = [
+                    member for member in members if member.Id in fixture_ids
+                ]
+                if fixture_members:
+                    fixture_group_indices.add(group_index)
+                    fixture_members.sort(key=point_key)
+                    groups.append(locations(fixture_members))
+            groups.sort(
+                key=lambda group: tuple(
+                    tuple(round(value, 12) for value in point) for point in group
+                )
+            )
+            return groups
+
+        def run_scenario(label, command, x_count, y_count, z_count):
+            _record_progress("document_rectangular_array_cycle: %s start" % label)
+            original_ids = []
+            for index, coordinates in enumerate(
+                ((1.0, 2.0, 3.0), (4.0, 2.0, 3.0))
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + str(index)
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(*coordinates), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add rectangular-array fixture point")
+                original_ids.append(object_id)
+            original_group_index = document.Groups.Add(
+                "Viboceros Rectangular Array Group " + suffix + " " + label,
+                original_ids,
+            )
+            if original_group_index < 0:
+                raise ValueError("could not group rectangular-array fixture objects")
+            fixture_group_indices.add(original_group_index)
+            document.Objects.UnselectAll()
+            for object_id in original_ids:
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select rectangular-array fixture object")
+
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_rectangular_array_cycle: %s command complete" % label
+            )
+            array_objects = scenario_objects(label)
+            expected_count = 2 * x_count * y_count * z_count
+            if len(array_objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "Array macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (command, command_succeeded, len(array_objects), history[-2000:])
+                )
+            return {
+                "command_succeeded": bool(command_succeeded),
+                "groups_after_array": scenario_groups(array_objects),
+                "locations_after_array": locations(array_objects),
+                "names_after_array": [
+                    item.Attributes.Name[len(name_prefix):] for item in array_objects
+                ],
+                "originals_selected_after_array": [
+                    index
+                    for index, object_id in enumerate(original_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ],
+                "selected_after_array": selected_locations(array_objects),
+            }
+
+        try:
+            value = {
+                "fill": run_scenario(
+                    "fill",
+                    "_-Array _Mode=_Fill 3 2 1 10 -6 _Enter",
+                    3,
+                    2,
+                    1,
+                ),
+                "unit_cell": run_scenario(
+                    "unit-cell",
+                    "_-Array _Mode=_UnitCell 3 2 2 2 -1 4 _Enter",
+                    3,
+                    2,
+                    2,
+                ),
+            }
+
+            source_points = [
+                Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                Rhino.Geometry.Point3d(4.0, 2.0, 3.0),
+            ]
+
+            def compute_array_points():
+                return [
+                    point
+                    + Rhino.Geometry.Vector3d(
+                        2.0 * x_index, -1.0 * y_index, 4.0 * z_index
+                    )
+                    for z_index in range(2)
+                    for y_index in range(2)
+                    for x_index in range(3)
+                    if x_index != 0 or y_index != 0 or z_index != 0
+                    for point in source_points
+                ]
+
+            _unused, elapsed = _measure(iterations, compute_array_points)
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+    if kind == "document_polar_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Polar Array " + suffix + " "
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": _xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": _xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            return tuple([round(value, 12) for value in coordinates] + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(key=lambda group: tuple(record_key(record) for record in group))
+            return groups
+
+        def run_scenario(
+            label,
+            item_count,
+            angle_degrees,
+            rotate,
+            z_offset=None,
+        ):
+            _record_progress("document_polar_array_cycle: %s start" % label)
+            original_ids = []
+            source_lines = (
+                ((2.0, 0.0, 0.0), (4.0, 1.0, 0.0)),
+                ((1.0, -1.0, 2.0), (2.0, -0.5, 3.0)),
+            )
+            for index, endpoints in enumerate(source_lines):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + str(index)
+                line = Rhino.Geometry.Line(_point(endpoints[0]), _point(endpoints[1]))
+                object_id = document.Objects.AddLine(line, attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add polar-array fixture line")
+                original_ids.append(object_id)
+            group_index = document.Groups.Add(
+                "Viboceros Polar Array Group " + suffix + " " + label,
+                original_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group polar-array fixture objects")
+            fixture_group_indices.add(group_index)
+            document.Objects.UnselectAll()
+            for object_id in original_ids:
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select polar-array fixture object")
+
+            options = "_Rotate=_%s" % ("Yes" if rotate else "No")
+            options += " _ZOffset %.17g" % (0.0 if z_offset is None else z_offset)
+            command = "_-ArrayPolar %s %d %s %.17g _Enter" % (
+                "0,0,0",
+                item_count,
+                options,
+                angle_degrees,
+            )
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress("document_polar_array_cycle: %s command complete" % label)
+            objects = scenario_objects(label)
+            expected_count = len(source_lines) * item_count
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArrayPolar macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (command, command_succeeded, len(objects), history[-2000:])
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(command_succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, object_id in enumerate(original_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ],
+            }
+
+        try:
+            value = {
+                "full_rotate_yes": run_scenario("full", 4, 360.0, True),
+                "negative_full_rotate_yes": run_scenario(
+                    "negative-full", 4, -360.0, True
+                ),
+                "multi_turn_z_offset_rotate_yes": run_scenario(
+                    "multi-turn", 4, 720.0, True, z_offset=2.0
+                ),
+                "partial_rotate_no": run_scenario("partial-no", 4, 180.0, False),
+                "partial_rotate_yes": run_scenario("partial-yes", 4, 180.0, True),
+                "z_offset_rotate_yes": run_scenario(
+                    "z-offset", 4, 180.0, True, z_offset=2.0
+                ),
+            }
+            source_points = [
+                Rhino.Geometry.Point3d(2.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(4.0, 1.0, 0.0),
+            ]
+            transforms = [
+                Rhino.Geometry.Transform.Rotation(
+                    math.radians(90.0 * copy_index),
+                    Rhino.Geometry.Vector3d.ZAxis,
+                    Rhino.Geometry.Point3d.Origin,
+                )
+                for copy_index in range(1, 4)
+            ]
+
+            def compute_array_points():
+                result = []
+                for transform in transforms:
+                    for source in source_points:
+                        point = Rhino.Geometry.Point3d(source)
+                        point.Transform(transform)
+                        result.append(point)
+                return result
+
+            _unused, elapsed = _measure(iterations, compute_array_points)
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+    if kind == "document_linear_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Linear Array " + suffix + " "
+        original_ids = []
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            objects.sort(
+                key=lambda item: (
+                    float(item.Geometry.Location.X),
+                    float(item.Geometry.Location.Y),
+                    float(item.Geometry.Location.Z),
+                    item.Attributes.Name,
+                )
+            )
+            return objects
+
+        def locations(objects):
+            return [_xyz(item.Geometry.Location) for item in objects]
+
+        def selected_locations(objects):
+            return locations([item for item in objects if item.IsSelected(False) > 0])
+
+        def fixture_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                fixture_members = [
+                    member for member in members if member.Id in fixture_ids
+                ]
+                if fixture_members:
+                    fixture_group_indices.add(group_index)
+                    fixture_members.sort(
+                        key=lambda item: (
+                            float(item.Geometry.Location.X),
+                            float(item.Geometry.Location.Y),
+                            float(item.Geometry.Location.Z),
+                        )
+                    )
+                    groups.append(locations(fixture_members))
+            groups.sort(key=lambda group: tuple(tuple(point) for point in group))
+            return groups
+
+        try:
+            for index, coordinates in enumerate(((1.0, 2.0, 3.0), (4.0, 2.0, 3.0))):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + str(index)
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(*coordinates), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add linear-array fixture point")
+                original_ids.append(object_id)
+            original_group_index = document.Groups.Add(
+                "Viboceros Linear Array Group " + suffix, original_ids
+            )
+            if original_group_index < 0:
+                raise ValueError("could not group linear-array fixture objects")
+            fixture_group_indices.add(original_group_index)
+            document.Objects.UnselectAll()
+            for object_id in original_ids:
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select linear-array fixture object")
+
+            command_succeeded = Rhino.RhinoApp.RunScript(
+                "_-ArrayLinear 4 0,0,0 2,-1,3 _Enter", False
+            )
+            array_objects = fixture_objects()
+            if len(array_objects) != 8:
+                raise ValueError(
+                    "ArrayLinear returned %r and left %d fixture objects"
+                    % (command_succeeded, len(array_objects))
+                )
+            value = {
+                "command_succeeded": bool(command_succeeded),
+                "groups_after_array": fixture_groups(array_objects),
+                "locations_after_array": locations(array_objects),
+                "names_after_array": [
+                    item.Attributes.Name[len(name_prefix):] for item in array_objects
+                ],
+                "originals_selected_after_array": [
+                    index
+                    for index, object_id in enumerate(original_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ],
+                "selected_after_array": selected_locations(array_objects),
+            }
+
+            source_points = [
+                Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                Rhino.Geometry.Point3d(4.0, 2.0, 3.0),
+            ]
+            spacing = Rhino.Geometry.Vector3d(2.0, -1.0, 3.0)
+
+            def compute_array_points():
+                return [
+                    point + spacing * copy_index
+                    for copy_index in range(1, 4)
+                    for point in source_points
+                ]
+
+            _unused, elapsed = _measure(iterations, compute_array_points)
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+    if kind == "three_dm_group_round_trip":
+        _record_progress("three_dm_group_round_trip: start")
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "groups.3dm")
+        model = Rhino.FileIO.File3dm()
+        _record_progress("three_dm_group_round_trip: model created")
+        decoded = None
+        try:
+            layer_index = model.Layers.AddDefaultLayer(
+                "Default", System.Drawing.Color.Black
+            )
+            _record_progress("three_dm_group_round_trip: layer added")
+            if layer_index < 0:
+                raise ValueError("could not add file group fixture layer")
+            group_names = ["Assembly α", "Inspection", "Empty Group"]
+            group_indices = []
+            for name in group_names:
+                group_index = model.AllGroups.AddGroup()
+                group = model.AllGroups.FindIndex(group_index)
+                if group_index < 0 or group is None:
+                    raise ValueError("could not add file group fixture group")
+                group.Name = name
+                group_indices.append(group_index)
+                _record_progress("three_dm_group_round_trip: group added")
+
+            memberships = [[0], [0, 1], [1], []]
+            object_colors = [
+                [12, 34, 56],
+                [23, 45, 67],
+                [34, 56, 78],
+                [45, 67, 89],
+            ]
+            color_sources = [
+                Rhino.DocObjects.ObjectColorSource.ColorFromObject,
+                Rhino.DocObjects.ObjectColorSource.ColorFromLayer,
+                Rhino.DocObjects.ObjectColorSource.ColorFromMaterial,
+                Rhino.DocObjects.ObjectColorSource.ColorFromParent,
+            ]
+            for object_index, membership in enumerate(memberships):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = layer_index
+                attributes.Name = "P%d" % object_index
+                color = object_colors[object_index]
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(
+                    color[0], color[1], color[2]
+                )
+                attributes.ColorSource = color_sources[object_index]
+                for group_position in membership:
+                    attributes.AddToGroup(group_indices[group_position])
+                object_id = model.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(object_index), 0.0, 0.0),
+                    attributes,
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add file group fixture point")
+                _record_progress("three_dm_group_round_trip: object added")
+            if not model.Write(path, 8):
+                raise ValueError("could not write file group fixture")
+            _record_progress("three_dm_group_round_trip: model written")
+
+            decoded = Rhino.FileIO.File3dm.Read(path)
+            _record_progress("three_dm_group_round_trip: model read")
+            if decoded is None:
+                raise ValueError("could not read file group fixture")
+            decoded_objects = sorted(
+                list(decoded.Objects), key=lambda item: item.Attributes.Name
+            )
+            _record_progress("three_dm_group_round_trip: objects decoded")
+            decoded_groups = sorted(
+                list(decoded.AllGroups), key=lambda item: int(item.Index)
+            )
+            _record_progress("three_dm_group_round_trip: groups decoded")
+            decoded_group_names = [group.Name for group in decoded_groups]
+            group_names_by_index = {
+                int(group.Index): group.Name for group in decoded_groups
+            }
+            _record_progress("three_dm_group_round_trip: names decoded")
+            group_positions_by_index = {
+                int(group.Index): position
+                for position, group in enumerate(decoded_groups)
+            }
+            # File3dmGroupTable.GroupMembers throws on this Rhino/Wine host;
+            # invert the persisted ObjectAttributes lists instead.
+            group_members = [[] for _group in decoded_groups]
+            object_groups = []
+            decoded_object_colors = []
+            decoded_color_sources = []
+            for object_position, item in enumerate(decoded_objects):
+                _record_progress(
+                    "three_dm_group_round_trip: reading object %s groups"
+                    % item.Attributes.Name
+                )
+                indices = item.Attributes.GetGroupList()
+                indices = [] if indices is None else [int(index) for index in indices]
+                object_groups.append(
+                    [group_names_by_index[index] for index in indices]
+                )
+                for index in indices:
+                    group_members[group_positions_by_index[index]].append(object_position)
+                color = item.Attributes.ObjectColor
+                decoded_object_colors.append(
+                    [int(color.R), int(color.G), int(color.B)]
+                )
+                source = item.Attributes.ColorSource
+                if source == Rhino.DocObjects.ObjectColorSource.ColorFromLayer:
+                    decoded_color_sources.append("layer")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromObject:
+                    decoded_color_sources.append("object")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromMaterial:
+                    decoded_color_sources.append("material")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromParent:
+                    decoded_color_sources.append("parent")
+                else:
+                    raise ValueError("file group fixture has an unknown color source")
+            _record_progress("three_dm_group_round_trip: memberships decoded")
+            value = {
+                "color_sources": decoded_color_sources,
+                "group_members": group_members,
+                "group_names": decoded_group_names,
+                "object_colors": decoded_object_colors,
+                "object_groups": object_groups,
+                "unsupported_object_count": 0,
+            }
+            _unused, elapsed = _measure(
+                iterations,
+                lambda: sum(
+                    int(item.Attributes.GroupCount) for item in decoded_objects
+                ),
+            )
+            _record_progress("three_dm_group_round_trip: complete")
+            return value, elapsed
+        finally:
+            if decoded is not None:
+                decoded.Dispose()
+            model.Dispose()
+            if os.path.exists(path):
+                os.remove(path)
+    if kind == "document_point_cloud_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid()).replace("-", "")
+        default_layer_index = int(document.Layers.CurrentLayerIndex)
+        layer_indices = []
+        source_ids = []
+
+        def all_object_ids():
+            settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+            settings.NormalObjects = True
+            settings.LockedObjects = True
+            settings.HiddenObjects = True
+            return set(obj.Id for obj in document.Objects.GetObjectList(settings))
+
+        def layer_label(layer_index):
+            if layer_index == default_layer_index:
+                return "Current"
+            if layer_index == layer_indices[0]:
+                return "A"
+            if layer_index == layer_indices[1]:
+                return "B"
+            return "Unexpected"
+
+        def selected_labels():
+            labels = []
+            for label, object_id in zip(
+                ("line", "mesh", "cloud", "point"), source_ids
+            ):
+                rhino_object = document.Objects.FindId(object_id)
+                if (
+                    rhino_object is not None
+                    and rhino_object.IsSelected(False) != 0
+                ):
+                    labels.append(label)
+            return labels
+
+        def describe(ids):
+            values = []
+            for object_id in ids:
+                rhino_object = document.Objects.FindId(object_id)
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.PointCloud):
+                    geometry_type = "point_cloud"
+                    points = [_xyz(point) for point in geometry.GetPoints()]
+                elif isinstance(geometry, Rhino.Geometry.Point):
+                    geometry_type = "point"
+                    points = [_xyz(geometry.Location)]
+                else:
+                    geometry_type = str(rhino_object.ObjectType)
+                    points = []
+                values.append(
+                    {
+                        "layer": layer_label(
+                            int(rhino_object.Attributes.LayerIndex)
+                        ),
+                        "name": rhino_object.Attributes.Name,
+                        "points": points,
+                        "selected": rhino_object.IsSelected(False) != 0,
+                        "type": geometry_type,
+                    }
+                )
+            values.sort(
+                key=lambda value: (
+                    value["layer"],
+                    value["type"],
+                    value["points"],
+                )
+            )
+            return values
+
+        def delete_objects(ids):
+            document.Objects.UnselectAll()
+            for object_id in ids:
+                if not document.Objects.Delete(object_id, True):
+                    raise ValueError("could not delete point-cloud cycle output")
+
+        def run_extract(ids, output, output_layer):
+            document.Objects.UnselectAll()
+            before = all_object_ids()
+            command = (
+                "_-ExtractPt _OutputLayer=%s _Output=%s %s _Enter"
+                % (
+                    output_layer,
+                    output,
+                    " ".join("_SelID %s" % object_id for object_id in ids),
+                )
+            )
+            succeeded = bool(
+                Rhino.RhinoApp.RunScript(command, False)
+            )
+            new_ids = list(all_object_ids() - before)
+            value = {
+                "objects": describe(new_ids),
+                "source_selection": selected_labels(),
+                "succeeded": succeeded,
+            }
+            delete_objects(new_ids)
+            return value
+
+        try:
+            for label in ("A", "B"):
+                layer = Rhino.DocObjects.Layer()
+                layer.Name = "ViboPointCloud%s%s" % (label, suffix)
+                layer_index = document.Layers.Add(layer)
+                if layer_index < 0:
+                    raise ValueError("could not add point-cloud cycle layer")
+                layer_indices.append(layer_index)
+
+            line_attributes = Rhino.DocObjects.ObjectAttributes()
+            line_attributes.LayerIndex = layer_indices[0]
+            line_attributes.Name = "LineSource"
+            line_id = document.Objects.AddLine(
+                Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 0.0, 0.0),
+                line_attributes,
+            )
+            mesh_attributes = Rhino.DocObjects.ObjectAttributes()
+            mesh_attributes.LayerIndex = layer_indices[1]
+            mesh_attributes.Name = "MeshSource"
+            mesh_id = document.Objects.AddMesh(
+                _triangle_mesh(
+                    [[10.0, 0.0, 0.0], [12.0, 0.0, 0.0], [10.0, 2.0, 0.0]],
+                    [[0, 1, 2]],
+                ),
+                mesh_attributes,
+            )
+            cloud_attributes = Rhino.DocObjects.ObjectAttributes()
+            cloud_attributes.LayerIndex = layer_indices[0]
+            cloud_attributes.Name = "CloudSource"
+            cloud_id = document.Objects.AddPointCloud(
+                System.Array[Rhino.Geometry.Point3d](
+                    [
+                        Rhino.Geometry.Point3d(20.0, 0.0, 0.0),
+                        Rhino.Geometry.Point3d(21.0, 1.0, 0.0),
+                        Rhino.Geometry.Point3d(22.0, 0.0, 0.0),
+                    ]
+                ),
+                cloud_attributes,
+            )
+            point_attributes = Rhino.DocObjects.ObjectAttributes()
+            point_attributes.LayerIndex = layer_indices[1]
+            point_attributes.Name = "PointSource"
+            point_id = document.Objects.AddPoint(
+                Rhino.Geometry.Point3d(30.0, 0.0, 0.0), point_attributes
+            )
+            source_ids.extend([line_id, mesh_id, cloud_id, point_id])
+            if any(object_id == System.Guid.Empty for object_id in source_ids):
+                raise ValueError("could not add point-cloud cycle source")
+
+            value = {
+                "cloud_to_cloud_input": run_extract(
+                    [cloud_id], "_PointCloud", "_Input"
+                ),
+                "line_mesh_cloud_current": run_extract(
+                    [line_id, mesh_id, cloud_id], "_PointCloud", "_Current"
+                ),
+                "mesh_line_cloud_input": run_extract(
+                    [mesh_id, line_id], "_PointCloud", "_Input"
+                ),
+            }
+
+            document.Objects.UnselectAll()
+            value["sel_pt_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript("_-SelPt", False)
+            )
+            value["sel_pt"] = selected_labels()
+            document.Objects.UnselectAll()
+            value["sel_pt_cloud_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript("_-SelPtCloud", False)
+            )
+            value["sel_pt_cloud"] = selected_labels()
+
+            document.Objects.UnselectAll()
+            before_explode = all_object_ids()
+            # Match the native command's preselection. Postselection through
+            # SelID inside Explode has different output-selection behavior.
+            document.Objects.Select(cloud_id)
+            value["explode_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript("_-Explode", False)
+            )
+            exploded_ids = list(all_object_ids() - before_explode)
+            value["explode"] = describe(exploded_ids)
+            value["explode_source_exists"] = document.Objects.FindId(cloud_id) is not None
+            delete_objects(exploded_ids)
+
+            equality_deltas = [
+                1.0e-16,
+                1.0e-15,
+                1.0e-14,
+                1.0e-13,
+                1.0e-12,
+                1.0e-11,
+                1.0e-10,
+                1.0e-9,
+                1.0e-8,
+                1.0e-7,
+            ]
+            equality_base = Rhino.Geometry.PointCloud(
+                [
+                    Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                    Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                ]
+            )
+
+            def point_cloud_geometry_equals(left, right_points):
+                right = Rhino.Geometry.PointCloud(right_points)
+                try:
+                    return bool(
+                        Rhino.Geometry.GeometryBase.GeometryEquals(left, right)
+                    )
+                finally:
+                    right.Dispose()
+
+            try:
+                value["geometry_equals_delta"] = [
+                    point_cloud_geometry_equals(
+                        equality_base,
+                        [
+                            Rhino.Geometry.Point3d(1.0 + delta, 2.0, 3.0),
+                            Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                        ],
+                    )
+                    for delta in equality_deltas
+                ]
+                value["geometry_equals_reversed"] = point_cloud_geometry_equals(
+                    equality_base,
+                    [
+                        Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                        Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                    ],
+                )
+                relative_equals = []
+                for scale in (1.0, 1.0e3, 1.0e6, 1.0e9):
+                    relative_base = Rhino.Geometry.PointCloud(
+                        [
+                            Rhino.Geometry.Point3d(scale, 0.0, 0.0),
+                            Rhino.Geometry.Point3d(0.0, scale, 0.0),
+                        ]
+                    )
+                    try:
+                        relative_equals.append(
+                            point_cloud_geometry_equals(
+                                relative_base,
+                                [
+                                    Rhino.Geometry.Point3d(
+                                        scale * (1.0 + 1.0e-10), 0.0, 0.0
+                                    ),
+                                    Rhino.Geometry.Point3d(0.0, scale, 0.0),
+                                ],
+                            )
+                        )
+                    finally:
+                        relative_base.Dispose()
+                value["geometry_equals_relative_delta"] = relative_equals
+            finally:
+                equality_base.Dispose()
+
+            query_cloud = Rhino.Geometry.PointCloud(
+                [
+                    Rhino.Geometry.Point3d(
+                        float(index % 64), float(index // 64), 0.0
+                    )
+                    for index in iteration_range(4096)
+                ]
+            )
+            query = Rhino.Geometry.Point3d(31.25, 27.75, 0.0)
+            _unused, elapsed = _measure(
+                iterations, lambda: query_cloud.ClosestPoint(query)
+            )
+            query_cloud.Dispose()
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in source_ids:
+                document.Objects.Delete(object_id, True)
+            for layer_index in reversed(layer_indices):
+                document.Layers.Delete(layer_index, True)
+    if kind == "document_layer_assignment_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid()).replace("-", "")
+        default_layer_index = int(document.Layers.CurrentLayerIndex)
+        layer_indices = []
+        object_ids = []
+        original_group_index = None
+
+        def set_layer_mode(layer_index, visible, locked):
+            layer = document.Layers[layer_index]
+            layer.IsVisible = visible
+            layer.IsLocked = locked
+            if not document.Layers.Modify(layer, layer_index, True):
+                raise ValueError("could not modify layer-assignment layer")
+
+        try:
+            for label, visible, locked in (
+                ("Normal", True, False),
+                ("Hidden", False, False),
+                ("Locked", True, True),
+            ):
+                layer = Rhino.DocObjects.Layer()
+                layer.Name = "ViboLayerAssignment%s%s" % (label, suffix)
+                layer.IsVisible = visible
+                layer.IsLocked = locked
+                layer_index = document.Layers.Add(layer)
+                if layer_index < 0:
+                    raise ValueError("could not add layer-assignment layer")
+                layer_indices.append(layer_index)
+
+            for index in range(5):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = default_layer_index
+                attributes.Name = "Part%d" % index
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add layer-assignment point")
+                object_ids.append(object_id)
+            original_group_index = document.Groups.Add(
+                "ViboLayerAssignmentAssembly" + suffix, object_ids[:2]
+            )
+            if original_group_index < 0:
+                raise ValueError("could not add layer-assignment group")
+
+            layer_labels = {
+                default_layer_index: "Default",
+                layer_indices[0]: "Normal",
+                layer_indices[1]: "Hidden",
+                layer_indices[2]: "Locked",
+            }
+
+            def point_ids():
+                settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+                settings.NormalObjects = True
+                settings.LockedObjects = True
+                settings.HiddenObjects = True
+                settings.ObjectTypeFilter = Rhino.DocObjects.ObjectType.Point
+                return set(
+                    obj.Id for obj in document.Objects.GetObjectList(settings)
+                )
+
+            def selected_indices(ids):
+                return [
+                    index
+                    for index, object_id in enumerate(ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def select_only(ids):
+                document.Objects.UnselectAll()
+                for object_id in ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError(
+                            "could not preselect layer-assignment object"
+                        )
+
+            def object_layer_indices(ids):
+                return [
+                    int(document.Objects.FindId(object_id).Attributes.LayerIndex)
+                    for object_id in ids
+                ]
+
+            def object_layer_labels(ids):
+                labels = []
+                for layer_index in object_layer_indices(ids):
+                    if layer_index not in layer_labels:
+                        raise ValueError(
+                            "layer-assignment object used an unexpected layer"
+                        )
+                    labels.append(layer_labels[layer_index])
+                return labels
+
+            def group_indices_for(ids):
+                ids = set(ids)
+                result = []
+                for group_index in range(document.Groups.Count):
+                    members = document.Groups.GroupMembers(group_index)
+                    if members is None:
+                        continue
+                    if any(member.Id in ids for member in members):
+                        result.append(group_index)
+                return result
+
+            def group_sizes_for(ids):
+                ids = set(ids)
+                sizes = []
+                for group_index in group_indices_for(ids):
+                    members = document.Groups.GroupMembers(group_index)
+                    size = sum(1 for member in members if member.Id in ids)
+                    if size:
+                        sizes.append(size)
+                return sorted(sizes)
+
+            def modify_object_layers(ids, layer_index):
+                changed = 0
+                for object_id in ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("layer-assignment object disappeared")
+                    if int(rhino_object.Attributes.LayerIndex) == layer_index:
+                        continue
+                    attributes = rhino_object.Attributes.Duplicate()
+                    attributes.LayerIndex = layer_index
+                    if not document.Objects.ModifyAttributes(
+                        rhino_object, attributes, True
+                    ):
+                        raise ValueError(
+                            "could not modify layer-assignment object"
+                        )
+                    changed += 1
+                return changed
+
+            def run_layer_command(command_name, layer_index):
+                layer_name = document.Layers[layer_index].Name
+                if not Rhino.RhinoApp.RunScript(
+                    "_-%s %s _Enter" % (command_name, layer_name), False
+                ):
+                    raise ValueError(
+                        "%s failed in layer-assignment cycle" % command_name
+                    )
+
+            def new_point_ids(before):
+                ids = list(point_ids() - before)
+                ids.sort(
+                    key=lambda object_id: document.Objects.FindId(
+                        object_id
+                    ).Geometry.Location.X
+                )
+                return ids
+
+            def reset_from_destination(ids, layer_index):
+                layer = document.Layers[layer_index]
+                visible = bool(layer.IsVisible)
+                locked = bool(layer.IsLocked)
+                if not visible or locked:
+                    set_layer_mode(layer_index, True, False)
+                modify_object_layers(ids, default_layer_index)
+                if not visible or locked:
+                    set_layer_mode(layer_index, visible, locked)
+
+            def delete_copies(ids, layer_index):
+                for group_index in reversed(group_indices_for(ids)):
+                    document.Groups.Delete(group_index)
+                layer = document.Layers[layer_index]
+                visible = bool(layer.IsVisible)
+                locked = bool(layer.IsLocked)
+                if not visible or locked:
+                    set_layer_mode(layer_index, True, False)
+                for object_id in ids:
+                    document.Objects.Show(object_id, True)
+                    document.Objects.Unlock(object_id, True)
+                    if not document.Objects.Delete(object_id, True):
+                        raise ValueError("could not delete layer-assignment copy")
+                if not visible or locked:
+                    set_layer_mode(layer_index, visible, locked)
+
+            current_before = int(document.Layers.CurrentLayerIndex)
+            select_only(object_ids[:2])
+            before_change_layers = object_layer_indices(object_ids[:2])
+            run_layer_command("ChangeLayer", layer_indices[0])
+            after_change_layers = object_layer_indices(object_ids[:2])
+            change_count = sum(
+                1
+                for before, after in zip(
+                    before_change_layers, after_change_layers
+                )
+                if before != after
+            )
+            change_layers = object_layer_labels(object_ids[:2])
+            change_selected = selected_indices(object_ids)
+            change_group_sizes = group_sizes_for(object_ids[:2])
+            current_after_change = (
+                "Default"
+                if int(document.Layers.CurrentLayerIndex)
+                == default_layer_index
+                else "Unexpected"
+            )
+            reset_from_destination(object_ids[:2], layer_indices[0])
+
+            before_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            copy_ids = new_point_ids(before_copy)
+            copy_count = len(copy_ids)
+            copy_layers = object_layer_labels(copy_ids)
+            copy_names = [
+                document.Objects.FindId(object_id).Attributes.Name
+                for object_id in copy_ids
+            ]
+            copy_group_sizes = group_sizes_for(copy_ids)
+            copy_selected = selected_indices(copy_ids)
+            original_selected_after_copy = selected_indices(object_ids)
+            delete_copies(copy_ids, layer_indices[0])
+
+            modify_object_layers([object_ids[0]], layer_indices[0])
+            before_mixed_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            mixed_copy_ids = new_point_ids(before_mixed_copy)
+            mixed_copy_count = len(mixed_copy_ids)
+            mixed_copy_layers = object_layer_labels(mixed_copy_ids)
+            mixed_copy_group_sizes = group_sizes_for(mixed_copy_ids)
+            delete_copies(mixed_copy_ids, layer_indices[0])
+            reset_from_destination([object_ids[0]], layer_indices[0])
+
+            modify_object_layers(object_ids[:2], layer_indices[0])
+            before_same_layer_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            same_layer_copy_ids = new_point_ids(before_same_layer_copy)
+            same_layer_copy_count = len(same_layer_copy_ids)
+            delete_copies(same_layer_copy_ids, layer_indices[0])
+            reset_from_destination(object_ids[:2], layer_indices[0])
+
+            select_only([object_ids[2]])
+            before_hidden_change = object_layer_indices([object_ids[2]])
+            run_layer_command("ChangeLayer", layer_indices[1])
+            hidden_change_count = int(
+                before_hidden_change
+                != object_layer_indices([object_ids[2]])
+            )
+            hidden_change_selected = selected_indices(object_ids)
+            reset_from_destination([object_ids[2]], layer_indices[1])
+
+            select_only([object_ids[3]])
+            before_locked_change = object_layer_indices([object_ids[3]])
+            run_layer_command("ChangeLayer", layer_indices[2])
+            locked_change_count = int(
+                before_locked_change
+                != object_layer_indices([object_ids[3]])
+            )
+            locked_change_selected = selected_indices(object_ids)
+            reset_from_destination([object_ids[3]], layer_indices[2])
+
+            before_hidden_copy = point_ids()
+            select_only([object_ids[2]])
+            run_layer_command("CopyToLayer", layer_indices[1])
+            hidden_copy_ids = new_point_ids(before_hidden_copy)
+            hidden_copy_count = len(hidden_copy_ids)
+            hidden_copy_layers = object_layer_labels(hidden_copy_ids)
+            hidden_copy_selected = selected_indices(hidden_copy_ids)
+            delete_copies(hidden_copy_ids, layer_indices[1])
+
+            before_locked_copy = point_ids()
+            select_only([object_ids[3]])
+            run_layer_command("CopyToLayer", layer_indices[2])
+            locked_copy_ids = new_point_ids(before_locked_copy)
+            locked_copy_count = len(locked_copy_ids)
+            locked_copy_layers = object_layer_labels(locked_copy_ids)
+            locked_copy_selected = selected_indices(locked_copy_ids)
+            original_selected_after_destination_copies = selected_indices(
+                object_ids
+            )
+            delete_copies(locked_copy_ids, layer_indices[2])
+
+            value = {
+                "change_count": change_count,
+                "change_group_sizes": change_group_sizes,
+                "change_layers": change_layers,
+                "change_selected": change_selected,
+                "copy_count": copy_count,
+                "copy_group_sizes": copy_group_sizes,
+                "copy_layers": copy_layers,
+                "copy_names": copy_names,
+                "copy_selected": copy_selected,
+                "current_after_change": current_after_change,
+                "current_unchanged": (
+                    int(document.Layers.CurrentLayerIndex) == current_before
+                ),
+                "hidden_change_count": hidden_change_count,
+                "hidden_change_selected": hidden_change_selected,
+                "hidden_copy_count": hidden_copy_count,
+                "hidden_copy_layers": hidden_copy_layers,
+                "hidden_copy_selected": hidden_copy_selected,
+                "locked_change_count": locked_change_count,
+                "locked_change_selected": locked_change_selected,
+                "locked_copy_count": locked_copy_count,
+                "locked_copy_layers": locked_copy_layers,
+                "locked_copy_selected": locked_copy_selected,
+                "mixed_copy_count": mixed_copy_count,
+                "mixed_copy_group_sizes": mixed_copy_group_sizes,
+                "mixed_copy_layers": mixed_copy_layers,
+                "original_selected_after_copy": original_selected_after_copy,
+                "original_selected_after_destination_copies": (
+                    original_selected_after_destination_copies
+                ),
+                "same_layer_copy_count": same_layer_copy_count,
+            }
+
+            modify_object_layers(object_ids[:2], layer_indices[0])
+            modify_object_layers(object_ids[:2], default_layer_index)
+            started = default_timer()
+            for _unused in iteration_range(iterations):
+                modify_object_layers(object_ids[:2], layer_indices[0])
+                modify_object_layers(object_ids[:2], default_layer_index)
+            elapsed_ns = int(
+                round((default_timer() - started) * 1000000000.0)
+            )
+            return value, max(0, elapsed_ns)
+        finally:
+            document.Objects.UnselectAll()
+            for layer_index in layer_indices:
+                layer = document.Layers[layer_index]
+                if layer is not None and (
+                    not layer.IsVisible or layer.IsLocked
+                ):
+                    set_layer_mode(layer_index, True, False)
+            if original_group_index is not None and original_group_index >= 0:
+                document.Groups.Delete(original_group_index)
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+            for layer_index in reversed(layer_indices):
+                document.Layers.Delete(layer_index, True)
+    if kind == "document_object_state_cycle":
+        object_count_value = operation.get("object_count")
+        if (
+            isinstance(object_count_value, bool)
+            or int(object_count_value) != object_count_value
+        ):
+            raise ValueError("object_count must be an integer")
+        object_count = int(object_count_value)
+        if object_count < 1 or object_count > MAX_STATE_CYCLE_OBJECTS:
+            raise ValueError(
+                "object_count must be from 1 through %d"
+                % MAX_STATE_CYCLE_OBJECTS
+            )
+        hide_indices = _state_cycle_indices(
+            operation, "hide_indices", object_count
+        )
+        lock_indices = _state_cycle_indices(
+            operation, "lock_indices", object_count
+        )
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(object_count):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document state-cycle point")
+                object_ids.append(object_id)
+
+            hide_ids = [object_ids[index] for index in hide_indices]
+            lock_ids = [object_ids[index] for index in lock_indices]
+
+            def object_modes():
+                modes = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("document state-cycle object disappeared")
+                    if rhino_object.IsHidden:
+                        modes.append("hidden")
+                    elif rhino_object.IsLocked:
+                        modes.append("locked")
+                    else:
+                        modes.append("normal")
+                return modes
+
+            def state_cycle():
+                document.Objects.UnselectAll()
+                for object_id in hide_ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select object to hide")
+                hide_count = sum(
+                    1
+                    for object_id in hide_ids
+                    if document.Objects.Hide(object_id, True)
+                )
+                modes_after_hide = object_modes()
+                selected_after_hide = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                show_count = sum(
+                    1
+                    for object_id in hide_ids
+                    if document.Objects.Show(object_id, True)
+                )
+                modes_after_show = object_modes()
+                for object_id in lock_ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select object to lock")
+                lock_count = sum(
+                    1
+                    for object_id in lock_ids
+                    if document.Objects.Lock(object_id, True)
+                )
+                modes_after_lock = object_modes()
+                selected_after_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                unlock_count = sum(
+                    1
+                    for object_id in lock_ids
+                    if document.Objects.Unlock(object_id, True)
+                )
+                modes_after_unlock = object_modes()
+                return {
+                    "hide_count": hide_count,
+                    "lock_count": lock_count,
+                    "modes_after_hide": modes_after_hide,
+                    "modes_after_lock": modes_after_lock,
+                    "modes_after_show": modes_after_show,
+                    "modes_after_unlock": modes_after_unlock,
+                    "selected_after_hide": selected_after_hide,
+                    "selected_after_lock": selected_after_lock,
+                    "show_count": show_count,
+                    "unlock_count": unlock_count,
+                }
+
+            return _measure(iterations, state_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_object_swap_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(3):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document swap-cycle point")
+                object_ids.append(object_id)
+            if not document.Objects.Hide(object_ids[1], True):
+                raise ValueError("could not seed hidden object")
+            if not document.Objects.Lock(object_ids[2], True):
+                raise ValueError("could not seed locked object")
+
+            layer_suffix = str(System.Guid.NewGuid())
+            hidden_layer = Rhino.DocObjects.Layer()
+            hidden_layer.Name = "Viboceros Swap Cycle Hidden " + layer_suffix
+            hidden_layer.IsVisible = False
+            hidden_layer_index = document.Layers.Add(hidden_layer)
+            locked_layer = Rhino.DocObjects.Layer()
+            locked_layer.Name = "Viboceros Swap Cycle Locked " + layer_suffix
+            locked_layer.IsLocked = True
+            locked_layer_index = document.Layers.Add(locked_layer)
+            if hidden_layer_index < 0 or locked_layer_index < 0:
+                raise ValueError("could not add document swap-cycle layers")
+            for layer_index in (hidden_layer_index, locked_layer_index):
+                for mode_index in range(3):
+                    attributes = Rhino.DocObjects.ObjectAttributes()
+                    attributes.LayerIndex = layer_index
+                    object_id = document.Objects.AddPoint(
+                        Rhino.Geometry.Point3d(float(len(object_ids)), 0.0, 0.0),
+                        attributes,
+                    )
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add layered swap-cycle point")
+                    object_ids.append(object_id)
+                    if mode_index == 1 and not document.Objects.Hide(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered hidden object")
+                    if mode_index == 2 and not document.Objects.Lock(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered locked object")
+
+            def swap_modes():
+                result = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object.IsHidden:
+                        result.append("hidden")
+                    elif rhino_object.IsLocked:
+                        result.append("locked")
+                    else:
+                        result.append("normal")
+                return result
+
+            def layer_allows_swap(rhino_object):
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def hide_swap():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if not layer_allows_swap(rhino_object):
+                        continue
+                    if rhino_object.IsHidden:
+                        changed += int(document.Objects.Show(object_id, True))
+                    elif not rhino_object.IsLocked:
+                        changed += int(document.Objects.Hide(object_id, True))
+                return changed
+
+            def lock_swap():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if not layer_allows_swap(rhino_object) or rhino_object.IsHidden:
+                        continue
+                    if rhino_object.IsLocked:
+                        changed += int(document.Objects.Unlock(object_id, True))
+                    else:
+                        changed += int(document.Objects.Lock(object_id, True))
+                return changed
+
+            labels = [
+                "default-normal",
+                "default-hidden",
+                "default-locked",
+                "hidden-layer-normal",
+                "hidden-layer-hidden",
+                "hidden-layer-locked",
+                "locked-layer-normal",
+                "locked-layer-hidden",
+                "locked-layer-locked",
+            ]
+
+            def swap_cycle():
+                document.Objects.UnselectAll()
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select object before HideSwap")
+                hide_count_once = hide_swap()
+                hide_once = swap_modes()
+                selected_after_hide = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                hide_count_twice = hide_swap()
+                hide_twice = swap_modes()
+
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select object before LockSwap")
+                lock_count_once = lock_swap()
+                lock_once = swap_modes()
+                selected_after_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                lock_count_twice = lock_swap()
+                return {
+                    "hide_count_once": hide_count_once,
+                    "hide_count_twice": hide_count_twice,
+                    "hide_once": hide_once,
+                    "hide_twice": hide_twice,
+                    "labels": labels,
+                    "lock_count_once": lock_count_once,
+                    "lock_count_twice": lock_count_twice,
+                    "lock_once": lock_once,
+                    "lock_twice": swap_modes(),
+                    "selected_after_hide": selected_after_hide,
+                    "selected_after_lock": selected_after_lock,
+                }
+
+            return _measure(iterations, swap_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_object_isolation_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        isolated_hidden = []
+        isolated_locked = []
+        try:
+            for index in range(4):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document isolation-cycle point")
+                object_ids.append(object_id)
+            if not document.Objects.Hide(object_ids[2], True):
+                raise ValueError("could not seed isolation-cycle hidden object")
+            if not document.Objects.Lock(object_ids[3], True):
+                raise ValueError("could not seed isolation-cycle locked object")
+
+            layer_suffix = str(System.Guid.NewGuid())
+            hidden_layer = Rhino.DocObjects.Layer()
+            hidden_layer.Name = "Viboceros Isolation Cycle Hidden " + layer_suffix
+            hidden_layer.IsVisible = False
+            hidden_layer_index = document.Layers.Add(hidden_layer)
+            locked_layer = Rhino.DocObjects.Layer()
+            locked_layer.Name = "Viboceros Isolation Cycle Locked " + layer_suffix
+            locked_layer.IsLocked = True
+            locked_layer_index = document.Layers.Add(locked_layer)
+            if hidden_layer_index < 0 or locked_layer_index < 0:
+                raise ValueError("could not add document isolation-cycle layers")
+            for layer_index in (hidden_layer_index, locked_layer_index):
+                for mode_index in range(3):
+                    attributes = Rhino.DocObjects.ObjectAttributes()
+                    attributes.LayerIndex = layer_index
+                    object_id = document.Objects.AddPoint(
+                        Rhino.Geometry.Point3d(float(len(object_ids)), 0.0, 0.0),
+                        attributes,
+                    )
+                    if object_id == System.Guid.Empty:
+                        raise ValueError(
+                            "could not add layered isolation-cycle point"
+                        )
+                    object_ids.append(object_id)
+                    if mode_index == 1 and not document.Objects.Hide(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered hidden object")
+                    if mode_index == 2 and not document.Objects.Lock(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered locked object")
+
+            def isolation_modes():
+                result = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object.IsHidden:
+                        result.append("hidden")
+                    elif rhino_object.IsLocked:
+                        result.append("locked")
+                    else:
+                        result.append("normal")
+                return result
+
+            def layer_allows_isolation(rhino_object):
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def isolate():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        rhino_object.IsSelected(False) != 0
+                        or rhino_object.IsHidden
+                        or rhino_object.IsLocked
+                        or not layer_allows_isolation(rhino_object)
+                    ):
+                        continue
+                    if document.Objects.Hide(object_id, True):
+                        isolated_hidden.append(object_id)
+                        changed += 1
+                return changed
+
+            def unisolate():
+                changed = sum(
+                    1
+                    for object_id in isolated_hidden
+                    if document.Objects.Show(object_id, True)
+                )
+                del isolated_hidden[:]
+                return changed
+
+            def isolate_lock():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        rhino_object.IsSelected(False) != 0
+                        or rhino_object.IsHidden
+                        or rhino_object.IsLocked
+                        or not layer_allows_isolation(rhino_object)
+                    ):
+                        continue
+                    if document.Objects.Lock(object_id, True):
+                        isolated_locked.append(object_id)
+                        changed += 1
+                return changed
+
+            def unisolate_lock():
+                changed = sum(
+                    1
+                    for object_id in isolated_locked
+                    if document.Objects.Unlock(object_id, True)
+                )
+                del isolated_locked[:]
+                return changed
+
+            labels = [
+                "default-selected",
+                "default-normal",
+                "default-hidden",
+                "default-locked",
+                "hidden-layer-normal",
+                "hidden-layer-hidden",
+                "hidden-layer-locked",
+                "locked-layer-normal",
+                "locked-layer-hidden",
+                "locked-layer-locked",
+            ]
+
+            def isolation_cycle():
+                document.Objects.UnselectAll()
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select isolation survivor")
+                isolate_count = isolate()
+                isolate_repeat_count = isolate()
+                after_isolate = isolation_modes()
+                selected_after_isolate = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                unisolate_count = unisolate()
+                unisolate_repeat_count = unisolate()
+                after_unisolate = isolation_modes()
+                selected_after_unisolate = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                if (
+                    document.Objects.FindId(object_ids[0]).IsSelected(False) == 0
+                    and not document.Objects.Select(object_ids[0])
+                ):
+                    raise ValueError("could not select isolation-lock survivor")
+                isolate_lock_count = isolate_lock()
+                isolate_lock_repeat_count = isolate_lock()
+                after_isolate_lock = isolation_modes()
+                selected_after_isolate_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                unisolate_lock_count = unisolate_lock()
+                unisolate_lock_repeat_count = unisolate_lock()
+                selected_after_unisolate_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                return {
+                    "after_isolate": after_isolate,
+                    "after_isolate_lock": after_isolate_lock,
+                    "after_unisolate": after_unisolate,
+                    "after_unisolate_lock": isolation_modes(),
+                    "isolate_count": isolate_count,
+                    "isolate_lock_count": isolate_lock_count,
+                    "isolate_lock_repeat_count": isolate_lock_repeat_count,
+                    "isolate_repeat_count": isolate_repeat_count,
+                    "labels": labels,
+                    "selected_after_isolate": selected_after_isolate,
+                    "selected_after_isolate_lock": selected_after_isolate_lock,
+                    "selected_after_unisolate": selected_after_unisolate,
+                    "selected_after_unisolate_lock": selected_after_unisolate_lock,
+                    "unisolate_count": unisolate_count,
+                    "unisolate_lock_count": unisolate_lock_count,
+                    "unisolate_lock_repeat_count": unisolate_lock_repeat_count,
+                    "unisolate_repeat_count": unisolate_repeat_count,
+                }
+
+            return _measure(iterations, isolation_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_action_selection_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        batch_ids = []
+        state = {"previous": []}
+        try:
+            for index in range(4):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add action-selection point")
+                object_ids.append(object_id)
+            for index in range(2):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 1.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add batch action-selection point")
+                batch_ids.append(object_id)
+            all_ids = object_ids + batch_ids
+            last_changed = [object_ids[3]]
+            batch_last_changed = list(batch_ids)
+
+            def current_selection():
+                return [
+                    object_id
+                    for object_id in all_ids
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def assign_selection(ids):
+                ids = set(ids)
+                document.Objects.UnselectAll()
+                for object_id in all_ids:
+                    if object_id in ids and not document.Objects.Select(object_id):
+                        raise ValueError("could not select action-selection object")
+
+            def apply_selection(ids, deselect_others):
+                current = current_selection()
+                target = set(ids)
+                if deselect_others:
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in target
+                    ]
+                else:
+                    combined = set(current)
+                    combined.update(target)
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in combined
+                    ]
+                if not set(current).issubset(set(next_selection)):
+                    state["previous"] = current
+                assign_selection(next_selection)
+                return len(next_selection)
+
+            def select_previous(deselect_others):
+                current = current_selection()
+                previous = set(state["previous"])
+                if deselect_others:
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in previous
+                    ]
+                else:
+                    combined = set(current)
+                    combined.update(previous)
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in combined
+                    ]
+                assign_selection(next_selection)
+                state["previous"] = current
+                return len(next_selection)
+
+            def selected_indices(ids):
+                return [
+                    index
+                    for index, object_id in enumerate(ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def establish_previous():
+                apply_selection([object_ids[0], object_ids[1]], True)
+                apply_selection([], True)
+                apply_selection([object_ids[2]], False)
+
+            def action_selection_cycle():
+                apply_selection([], True)
+                apply_selection([object_ids[0]], True)
+                last_default_count = apply_selection(last_changed, True)
+                last_default = selected_indices(object_ids)
+                previous_once_count = select_previous(True)
+                previous_once = selected_indices(object_ids)
+                previous_twice_count = select_previous(True)
+                previous_twice = selected_indices(object_ids)
+
+                apply_selection([object_ids[0]], True)
+                last_add_count = apply_selection(last_changed, False)
+                last_add = selected_indices(object_ids)
+
+                establish_previous()
+                previous_default_count = select_previous(True)
+                previous_default = selected_indices(object_ids)
+                previous_default_twice_count = select_previous(True)
+                previous_default_twice = selected_indices(object_ids)
+
+                establish_previous()
+                previous_add_count = select_previous(False)
+                previous_add = selected_indices(object_ids)
+
+                apply_selection([], True)
+                batch_last_count = apply_selection(batch_last_changed, True)
+                return {
+                    "batch_last": selected_indices(batch_ids),
+                    "batch_last_count": batch_last_count,
+                    "last_add": last_add,
+                    "last_add_count": last_add_count,
+                    "last_default": last_default,
+                    "last_default_count": last_default_count,
+                    "previous_add": previous_add,
+                    "previous_add_count": previous_add_count,
+                    "previous_default": previous_default,
+                    "previous_default_count": previous_default_count,
+                    "previous_default_twice": previous_default_twice,
+                    "previous_default_twice_count": previous_default_twice_count,
+                    "previous_once": previous_once,
+                    "previous_once_count": previous_once_count,
+                    "previous_twice": previous_twice,
+                    "previous_twice_count": previous_twice_count,
+                }
+
+            return _measure(iterations, action_selection_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids + batch_ids:
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_attribute_selection_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        group_indices = []
+        suffix = " " + str(System.Guid.NewGuid())
+        hidden_layer = Rhino.DocObjects.Layer()
+        hidden_layer.Name = "Hidden Parts" + suffix
+        hidden_layer.Color = System.Drawing.Color.FromArgb(10, 20, 30)
+        hidden_layer_index = document.Layers.Add(hidden_layer)
+        locked_layer = Rhino.DocObjects.Layer()
+        locked_layer.Name = "Locked Parts" + suffix
+        locked_layer.Color = System.Drawing.Color.FromArgb(40, 50, 60)
+        locked_layer_index = document.Layers.Add(locked_layer)
+        if hidden_layer_index < 0 or locked_layer_index < 0:
+            raise ValueError("could not add attribute-selection layers")
+        default_layer_index = document.Layers.CurrentLayerIndex
+        probe_layer_indices = [
+            default_layer_index,
+            hidden_layer_index,
+            locked_layer_index,
+        ]
+
+        def set_layer_mode(layer_index, visible, locked):
+            layer = document.Layers[layer_index]
+            if layer.IsVisible == visible and layer.IsLocked == locked:
+                return
+            settings = Rhino.DocObjects.Layer()
+            settings.CopyAttributesFrom(layer)
+            settings.Name = layer.Name
+            settings.ParentLayerId = layer.ParentLayerId
+            settings.IsVisible = visible
+            settings.IsLocked = locked
+            if not document.Layers.Modify(settings, layer.Id, True):
+                raise ValueError(
+                    "could not change attribute-selection layer %d to visible=%r locked=%r"
+                    % (layer_index, visible, locked)
+                )
+
+        try:
+            specifications = [
+                (default_layer_index, None),
+                (default_layer_index, "BoltA"),
+                (default_layer_index, "bolta"),
+                (default_layer_index, "BoltLong"),
+                (default_layer_index, "Peer"),
+                (default_layer_index, "BoltA"),
+                (default_layer_index, "BoltA"),
+                (hidden_layer_index, "BoltA"),
+                (hidden_layer_index, "BoltA"),
+                (locked_layer_index, "BoltA"),
+                (locked_layer_index, "BoltA"),
+            ]
+            for index, (layer_index, name) in enumerate(specifications):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = layer_index
+                attributes.Name = name
+                if index in (0, 1, 5, 6):
+                    attributes.ObjectColor = System.Drawing.Color.FromArgb(
+                        10, 20, 30
+                    )
+                    attributes.ColorSource = (
+                        Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                    )
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add attribute-selection point")
+                object_ids.append(object_id)
+            for index in (5, 8):
+                if not document.Objects.Hide(object_ids[index], True):
+                    raise ValueError("could not hide attribute-selection point")
+            for index in (6, 10):
+                if not document.Objects.Lock(object_ids[index], True):
+                    raise ValueError("could not lock attribute-selection point")
+
+            for name, members in (
+                ("Team" + suffix, [object_ids[1], object_ids[4], object_ids[6]]),
+                ("team" + suffix, [object_ids[2]]),
+                ("Overlap" + suffix, [object_ids[1], object_ids[3]]),
+            ):
+                group_index = document.Groups.Add(
+                    name, System.Array[System.Guid](members)
+                )
+                if group_index < 0:
+                    raise ValueError("could not add attribute-selection group")
+                group_indices.append(group_index)
+
+            def object_is_selectable(object_id):
+                rhino_object = document.Objects.FindId(object_id)
+                if (
+                    rhino_object is None
+                    or rhino_object.IsHidden
+                    or rhino_object.IsLocked
+                ):
+                    return False
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def selected_indices():
+                return [
+                    index
+                    for index, object_id in enumerate(object_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ]
+
+            def select_ids(ids):
+                for object_id in ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        object_is_selectable(object_id)
+                        and rhino_object.IsSelected(False) <= 0
+                        and not document.Objects.Select(object_id)
+                    ):
+                        raise ValueError("could not select attribute-selection point")
+                return int(document.Objects.GetSelectedObjectCount(False))
+
+            def select_name(pattern):
+                matches = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    name = rhino_object.Attributes.Name or ""
+                    if _wildcard_matches(pattern, name):
+                        matches.append(object_id)
+                return select_ids(matches)
+
+            def select_group(name):
+                matches = []
+                for group_index in group_indices:
+                    if document.Groups.GroupName(group_index) != name:
+                        continue
+                    members = document.Groups.GroupMembers(group_index)
+                    if members is not None:
+                        matches.extend(member.Id for member in members)
+                return select_ids(matches)
+
+            def select_layers(pattern):
+                matching_layers = []
+                for layer_index in probe_layer_indices:
+                    layer = document.Layers[layer_index]
+                    if _wildcard_matches(pattern, layer.Name):
+                        matching_layers.append(layer_index)
+                        set_layer_mode(layer_index, True, False)
+                return select_ids(
+                    object_id
+                    for object_id in object_ids
+                    if document.Objects.FindId(object_id).Attributes.LayerIndex
+                    in matching_layers
+                )
+
+            def select_color(red, green, blue):
+                matches = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    attributes = rhino_object.Attributes
+                    if int(attributes.GroupCount) > 0:
+                        continue
+                    color = attributes.DrawColor(document)
+                    if (int(color.R), int(color.G), int(color.B)) == (
+                        red,
+                        green,
+                        blue,
+                    ):
+                        matches.append(object_id)
+                return select_ids(matches)
+
+            def seed_selection():
+                document.Objects.UnselectAll()
+                return select_ids([object_ids[0]])
+
+            def attribute_selection_cycle():
+                set_layer_mode(hidden_layer_index, False, False)
+                set_layer_mode(locked_layer_index, True, True)
+
+                seed_selection()
+                name_count = select_name("BOLT?")
+                name = selected_indices()
+
+                seed_selection()
+                group_upper_count = select_group("Team" + suffix)
+                group_upper = selected_indices()
+                group_lower_count = select_group("team" + suffix)
+                group_lower = selected_indices()
+                group_wrong_case_count = select_group("TEAM" + suffix)
+                group_wrong_case = selected_indices()
+
+                seed_selection()
+                hidden_layer_count = select_layers("hidden parts*")
+                hidden_layer_selection = selected_indices()
+                hidden_layer_visible = bool(
+                    document.Layers[hidden_layer_index].IsVisible
+                )
+                locked_layer_count = select_layers("LOCKED*")
+                locked_layer_selection = selected_indices()
+                locked_layer_locked = bool(
+                    document.Layers[locked_layer_index].IsLocked
+                )
+                all_layers_count = select_layers("*")
+                all_layers = selected_indices()
+
+                document.Objects.UnselectAll()
+                select_ids([object_ids[9]])
+                color_count = select_color(10, 20, 30)
+                color = selected_indices()
+                return {
+                    "all_layers": all_layers,
+                    "all_layers_count": all_layers_count,
+                    "color": color,
+                    "color_count": color_count,
+                    "group_lower": group_lower,
+                    "group_lower_count": group_lower_count,
+                    "group_upper": group_upper,
+                    "group_upper_count": group_upper_count,
+                    "group_wrong_case": group_wrong_case,
+                    "group_wrong_case_count": group_wrong_case_count,
+                    "hidden_layer": hidden_layer_selection,
+                    "hidden_layer_count": hidden_layer_count,
+                    "hidden_layer_visible": hidden_layer_visible,
+                    "locked_layer": locked_layer_selection,
+                    "locked_layer_count": locked_layer_count,
+                    "locked_layer_locked": locked_layer_locked,
+                    "name": name,
+                    "name_count": name_count,
+                }
+
+            return _measure(iterations, attribute_selection_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for group_index in reversed(group_indices):
+                document.Groups.Delete(group_index)
+            set_layer_mode(hidden_layer_index, True, False)
+            set_layer_mode(locked_layer_index, True, False)
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_object_naming_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(3):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document naming-cycle point")
+                object_ids.append(object_id)
+
+            def object_names():
+                return [
+                    document.Objects.FindId(object_id).Attributes.Name
+                    for object_id in object_ids
+                ]
+
+            def assign_names(names):
+                changed = 0
+                for object_id, name in zip(object_ids, names):
+                    rhino_object = document.Objects.FindId(object_id)
+                    attributes = rhino_object.Attributes.Duplicate()
+                    attributes.Name = name
+                    changed += int(
+                        document.Objects.ModifyAttributes(
+                            rhino_object, attributes, True
+                        )
+                    )
+                return changed
+
+            def naming_cycle():
+                shared_count = assign_names(["Sample", "Sample", "Sample"])
+                shared = object_names()
+                counter_count = assign_names(
+                    ["Sample 0", "Sample 1", "Sample 2"]
+                )
+                counter = object_names()
+                clear_count = assign_names([None, None, None])
+                return {
+                    "clear_count": clear_count,
+                    "cleared": object_names(),
+                    "counter": counter,
+                    "counter_count": counter_count,
+                    "shared": shared,
+                    "shared_count": shared_count,
+                }
+
+            return _measure(iterations, naming_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_duplicate_selection_cycle":
+        geometries = []
+        selectable = []
+
+        def remember(geometry, is_selectable=True):
+            if geometry is None or not geometry.IsValid:
+                raise ValueError("could not create duplicate-selection geometry")
+            geometries.append(geometry)
+            selectable.append(bool(is_selectable))
+            return len(geometries) - 1
+
+        try:
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(30.0, 0.0, 0.0)))
+            point_original = remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0))
+            )
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)))
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)))
+            remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)),
+                False,
+            )
+            remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)),
+                False,
+            )
+            point_near = remember(
+                Rhino.Geometry.Point(
+                    Rhino.Geometry.Point3d(
+                        0.5 * tolerance["absolute"], 0.0, 0.0
+                    )
+                )
+            )
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(20.0, 0.0, 0.0)))
+
+            line_start = Rhino.Geometry.Point3d(0.0, 10.0, 0.0)
+            line_end = Rhino.Geometry.Point3d(5.0, 10.0, 0.0)
+            line_original = remember(Rhino.Geometry.LineCurve(line_start, line_end))
+            remember(Rhino.Geometry.LineCurve(line_start, line_end))
+            line_reversed = remember(Rhino.Geometry.LineCurve(line_end, line_start))
+            line_nurbs_geometry = Rhino.Geometry.NurbsCurve.Create(
+                False,
+                1,
+                System.Array[Rhino.Geometry.Point3d]([line_start, line_end]),
+            )
+            line_nurbs = remember(line_nurbs_geometry)
+            line_near = remember(
+                Rhino.Geometry.LineCurve(
+                    line_start,
+                    Rhino.Geometry.Point3d(
+                        5.0 + 0.5 * tolerance["absolute"], 10.0, 0.0
+                    ),
+                )
+            )
+
+            open_vertices = [
+                Rhino.Geometry.Point3d(0.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 22.0, 0.0),
+            ]
+            open_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](open_vertices)
+                )
+            )
+            remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](open_vertices)
+                )
+            )
+            open_polyline_reversed = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](list(reversed(open_vertices)))
+                )
+            )
+
+            closed_vertices = [
+                Rhino.Geometry.Point3d(10.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(12.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(12.0, 22.0, 0.0),
+                Rhino.Geometry.Point3d(10.0, 20.0, 0.0),
+            ]
+            closed_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](closed_vertices)
+                )
+            )
+            shifted_closed_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](
+                        [
+                            closed_vertices[1],
+                            closed_vertices[2],
+                            closed_vertices[0],
+                            closed_vertices[1],
+                        ]
+                    )
+                )
+            )
+
+            circle_center = Rhino.Geometry.Point3d(0.0, 30.0, 0.0)
+            circle_plane = Rhino.Geometry.Plane(
+                circle_center,
+                Rhino.Geometry.Vector3d.XAxis,
+                Rhino.Geometry.Vector3d.YAxis,
+            )
+            opposite_circle_plane = Rhino.Geometry.Plane(
+                circle_center,
+                Rhino.Geometry.Vector3d.XAxis,
+                -Rhino.Geometry.Vector3d.YAxis,
+            )
+            circle_original = remember(
+                Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(circle_plane, 3.0))
+            )
+            remember(Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(circle_plane, 3.0)))
+            circle_opposite = remember(
+                Rhino.Geometry.ArcCurve(
+                    Rhino.Geometry.Circle(opposite_circle_plane, 3.0)
+                )
+            )
+
+            mesh_vertices = [
+                [0.0, 40.0, 0.0],
+                [2.0, 40.0, 0.0],
+                [0.0, 42.0, 0.0],
+            ]
+            mesh_original = remember(
+                _triangle_mesh(mesh_vertices, [[0, 1, 2]])
+            )
+            remember(_triangle_mesh(mesh_vertices, [[0, 1, 2]]))
+            mesh_reversed = remember(
+                _triangle_mesh(mesh_vertices, [[0, 2, 1]])
+            )
+            mesh_reindexed = remember(
+                _triangle_mesh(
+                    [mesh_vertices[1], mesh_vertices[2], mesh_vertices[0]],
+                    [[2, 0, 1]],
+                )
+            )
+
+            def geometry_equal(left, right):
+                return bool(
+                    Rhino.Geometry.GeometryBase.GeometryEquals(
+                        geometries[left], geometries[right]
+                    )
+                )
+
+            def duplicate_classes():
+                classes = []
+                for index in range(len(geometries)):
+                    if not selectable[index]:
+                        continue
+                    matching = None
+                    for candidate_class in classes:
+                        if geometry_equal(index, candidate_class[0]):
+                            matching = candidate_class
+                            break
+                    if matching is None:
+                        classes.append([index])
+                    else:
+                        matching.append(index)
+                return [candidate_class for candidate_class in classes if len(candidate_class) > 1]
+
+            def duplicate_selection_cycle():
+                classes = duplicate_classes()
+                selected_all = set([0])
+                selected_without_originals = set([0])
+                for candidate_class in classes:
+                    selected_all.update(candidate_class)
+                    selected_without_originals.update(candidate_class[1:])
+                return {
+                    "all": sorted(selected_all),
+                    "all_count": len(selected_all),
+                    "circle_opposite_equal": geometry_equal(
+                        circle_original, circle_opposite
+                    ),
+                    "closed_shifted_equal": geometry_equal(
+                        closed_polyline, shifted_closed_polyline
+                    ),
+                    "line_nurbs_equal": geometry_equal(
+                        line_original, line_nurbs
+                    ),
+                    "line_near_equal": geometry_equal(line_original, line_near),
+                    "line_reversed_equal": geometry_equal(
+                        line_original, line_reversed
+                    ),
+                    "mesh_reindexed_equal": geometry_equal(
+                        mesh_original, mesh_reindexed
+                    ),
+                    "mesh_reversed_equal": geometry_equal(
+                        mesh_original, mesh_reversed
+                    ),
+                    "point_near_equal": geometry_equal(
+                        point_original, point_near
+                    ),
+                    "polyline_reversed_equal": geometry_equal(
+                        open_polyline, open_polyline_reversed
+                    ),
+                    "without_original_count": len(selected_without_originals),
+                }
+
+            return _measure(iterations, duplicate_selection_cycle)
+        finally:
+            for geometry in geometries:
+                geometry.Dispose()
+
+    if kind == "point_distance":
+        a = _point(operation["a"])
+        b = _point(operation["b"])
+        value, elapsed = _measure(iterations, lambda: a.DistanceTo(b))
+        return float(value), elapsed
+
+    if kind == "line_point":
+        line = Rhino.Geometry.Line(
+            _point(operation["start"]), _point(operation["end"])
+        )
+        if not line.IsValid:
+            raise ValueError("line is degenerate")
+        parameter = _finite(operation["parameter"], "line parameter")
+        value, elapsed = _measure(iterations, lambda: line.PointAt(parameter))
+        return _xyz(value), elapsed
+
+    if kind == "circle_point":
+        center = _point(operation["center"])
+        normal = _unit(
+            _vector(operation["normal"]), tolerance["absolute"], "circle normal"
+        )
+        x_axis = _unit(
+            _vector(operation["x_axis"]), tolerance["absolute"], "circle x axis"
+        )
+        projection = x_axis - normal * (x_axis * normal)
+        projected_length = float(projection.Length)
+        x_axis = _unit(projection, tolerance["angular"], "circle x axis")
+        y_axis = Rhino.Geometry.Vector3d.CrossProduct(normal, x_axis)
+        radius = _finite(operation["radius"], "circle radius") * projected_length
+        if not radius > tolerance["absolute"]:
+            raise ValueError("circle radius is degenerate")
+        plane = Rhino.Geometry.Plane(center, x_axis, y_axis)
+        circle = Rhino.Geometry.Circle(plane, radius)
+        angle = _finite(operation["angle_radians"], "circle angle")
+        value, elapsed = _measure(iterations, lambda: circle.PointAt(angle))
+        return _xyz(value), elapsed
+
+    if kind == "arc_three_point":
+        arc = Rhino.Geometry.Arc(
+            _point(operation["start"]),
+            _point(operation["through"]),
+            _point(operation["end"]),
+        )
+        if not arc.IsValid:
+            raise ValueError("three-point arc is degenerate")
+        normalized = _finite(
+            operation["normalized_parameter"], "normalized arc parameter"
+        )
+        if normalized < 0.0 or normalized > 1.0:
+            raise ValueError("normalized arc parameter is outside [0, 1]")
+        parameter = arc.AngleDomain.ParameterAt(normalized)
+        value, elapsed = _measure(iterations, lambda: arc.PointAt(parameter))
+        return {
+            "center": _xyz(arc.Center),
+            "point": _xyz(value),
+            "radius": float(arc.Radius),
+            "sweep_radians": float(arc.Angle),
+        }, elapsed
+
+    if kind == "ellipse_three_point":
+        ellipse = Rhino.Geometry.Ellipse(
+            _point(operation["center"]),
+            _point(operation["first_axis_point"]),
+            _point(operation["second_axis_point"]),
+        )
+        if not ellipse.IsValid:
+            raise ValueError("three-point ellipse is degenerate")
+        angle = _finite(operation["angle_radians"], "ellipse angle")
+        plane = ellipse.Plane
+
+        def ellipse_point():
+            return plane.PointAt(
+                ellipse.Radius1 * math.cos(angle),
+                ellipse.Radius2 * math.sin(angle),
+            )
+
+        value, elapsed = _measure(iterations, ellipse_point)
+        return {
+            "center": _xyz(plane.Origin),
+            "point": _xyz(value),
+            "radius_x": float(ellipse.Radius1),
+            "radius_y": float(ellipse.Radius2),
+            "x_axis": _xyz(plane.XAxis),
+            "y_axis": _xyz(plane.YAxis),
+        }, elapsed
+
+    if kind == "polyline_length":
+        polyline = Rhino.Geometry.Polyline(
+            [_point(vertex) for vertex in operation["vertices"]]
+        )
+        if not polyline.IsValid:
+            raise ValueError("polyline is invalid")
+        value, elapsed = _measure(iterations, lambda: polyline.Length)
+        return float(value), elapsed
+
+    if kind == "polyline_area":
+        polyline = Rhino.Geometry.Polyline(
+            [_point(vertex) for vertex in operation["vertices"]]
+        )
+        if not polyline.IsValid or not polyline.IsClosed:
+            raise ValueError("area polyline must be valid and closed")
+        curve = Rhino.Geometry.PolylineCurve(polyline)
+
+        def polyline_area():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(curve)
+            if properties is None:
+                raise ValueError("could not compute polyline area")
+            area = float(properties.Area)
+            properties.Dispose()
+            return area
+
+        value, elapsed = _measure(iterations, polyline_area)
+        return value, elapsed
+
+    if kind == "polyline_join":
+        curves = []
+        for vertices in operation["polylines"]:
+            polyline = Rhino.Geometry.Polyline(
+                [_point(vertex) for vertex in vertices]
+            )
+            if not polyline.IsValid:
+                raise ValueError("polyline to join is invalid")
+            curves.append(Rhino.Geometry.PolylineCurve(polyline))
+
+        def join_curves():
+            return Rhino.Geometry.Curve.JoinCurves(
+                curves, tolerance["absolute"], False
+            )
+
+        value, elapsed = _measure(iterations, join_curves)
+        return _canonical_join_segments(value), elapsed
+
+    if kind == "nurbs_curve_parameter_samples":
+        return _curve_parameter_samples(operation, iterations)
+
+    if kind == "nurbs_curve_conic_centers":
+        return _curve_conic_centers(operation, iterations, tolerance)
+
+    if kind == "nurbs_curve_evaluate":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        parameter = _finite(operation["parameter"], "curve parameter")
+        value, elapsed = _measure(
+            iterations, lambda: curve.DerivativeAt(parameter, 1)
+        )
+        if value is None or len(value) < 2:
+            raise ValueError("NURBS curve evaluation failed")
+        return {"point": _xyz(value[0]), "derivative": _xyz(value[1])}, elapsed
+
+    if kind == "nurbs_curve_closest_point":
+        return _nurbs_curve_closest_point(operation, iterations)
+
+    if kind == "nurbs_curve_length":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        value, elapsed = _measure(
+            iterations, lambda: curve.GetLength(tolerance["relative"])
+        )
+        return float(value), elapsed
+
+    if kind == "nurbs_curve_short_filter":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        maximum_length = _finite(
+            operation["maximum_length"], "maximum curve length"
+        )
+        if not maximum_length > 0.0:
+            raise ValueError("maximum curve length must be strictly positive")
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_short_filter():
+            return bool(
+                curve.GetLength(tolerance["relative"]) <= maximum_length
+            )
+
+        return _measure(iterations, curve_short_filter)
+
+    if kind == "nurbs_curve_topology":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_topology():
+            return {
+                "is_closed": bool(curve.IsClosed),
+                "is_periodic": bool(curve.IsPeriodic),
+            }
+
+        return _measure(iterations, curve_topology)
+
+    if kind == "nurbs_curve_classification":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_classification():
+            is_linear_zero = bool(curve.IsLinear())
+            return {
+                "is_linear_model": bool(
+                    curve.IsLinear(tolerance["absolute"])
+                ),
+                "is_linear_zero": is_linear_zero,
+                "is_planar_model": bool(
+                    curve.IsPlanar(tolerance["absolute"])
+                ),
+                "sel_line_match": bool(
+                    curve.SpanCount == 1 and is_linear_zero
+                ),
+                "sel_polyline_match": bool(
+                    curve.Degree == 1 and curve.Points.Count > 2
+                ),
+            }
+
+        return _measure(iterations, curve_classification)
+
+    if kind == "nurbs_curve_extract_points":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_id = document.Objects.AddCurve(curve)
+        if object_id == System.Guid.Empty:
+            raise ValueError("could not add NURBS curve grip probe")
+        curve_object = document.Objects.FindId(object_id)
+        try:
+            curve_object.GripsOn = True
+            grips = curve_object.GetGrips()
+            if grips is None:
+                raise ValueError("could not enable NURBS curve grips")
+            return _measure(
+                iterations,
+                lambda: [_xyz(grip.CurrentLocation) for grip in grips],
+            )
+        finally:
+            curve_object.GripsOn = False
+            document.Objects.Delete(object_id, True)
+
+    if kind == "nurbs_curve_divide":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        segment_count = int(operation["segment_count"])
+        include_ends = bool(operation["include_ends"])
+        first_index = 0 if include_ends else 1
+        last_index = segment_count if include_ends and not curve.IsClosed else segment_count - 1
+        fractions = System.Array[System.Double](
+            [
+                float(index) / float(segment_count)
+                for index in iteration_range(first_index, last_index + 1)
+            ]
+        )
+        default_parameters = curve.DivideByCount(segment_count, include_ends)
+        if default_parameters is None or len(default_parameters) != len(fractions):
+            raise ValueError("NURBS curve division returned an unexpected point count")
+
+        def divide_curve():
+            parameters = []
+            for fraction in fractions:
+                # DivideByCount uses RhinoCommon's fixed 1e-8 fractional
+                # tolerance. Its point count is checked above; use the public
+                # tolerance-bearing solver for coordinate comparisons and
+                # leave margin for the external epsilon check.
+                success, parameter = curve.NormalizedLengthParameter(
+                    fraction, tolerance["relative"] * 0.001
+                )
+                if not success:
+                    raise ValueError("NURBS curve division failed")
+                parameters.append(parameter)
+            return [_xyz(curve.PointAt(parameter)) for parameter in parameters]
+
+        return _measure(iterations, divide_curve)
+
+    if kind == "nurbs_curve_reverse":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        normalized = _finite(
+            operation["normalized_parameter"], "normalized curve parameter"
+        )
+        if normalized < 0.0 or normalized > 1.0:
+            raise ValueError("normalized curve parameter must be in [0, 1]")
+
+        def reverse_curve():
+            reversed_curve = curve.DuplicateCurve()
+            if reversed_curve is None:
+                raise ValueError("could not duplicate NURBS curve")
+            try:
+                if not reversed_curve.Reverse():
+                    raise ValueError("could not reverse NURBS curve")
+                parameter = reversed_curve.Domain.ParameterAt(normalized)
+                values = reversed_curve.DerivativeAt(parameter, 1)
+                if values is None or len(values) < 2:
+                    raise ValueError("reversed NURBS curve evaluation failed")
+                return {"point": _xyz(values[0]), "derivative": _xyz(values[1])}
+            finally:
+                reversed_curve.Dispose()
+
+        return _measure(iterations, reverse_curve)
+
+    if kind == "mesh_radial_topology":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def radial_topology():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                return _mesh_radial_topology_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, radial_topology)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_face_normals":
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def compute_face_normals():
+            if not mesh.FaceNormals.ComputeFaceNormals():
+                raise ValueError("mesh face normal computation failed")
+            return [_xyz(mesh.FaceNormals[index]) for index in range(mesh.Faces.Count)]
+
+        try:
+            return _measure(iterations, compute_face_normals)
+        finally:
+            mesh.Dispose()
+
+    if kind == "mesh_unify_normals":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def unify_mesh_normals():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                flipped_faces = int(mesh.UnifyNormals())
+                if flipped_faces < 0:
+                    raise ValueError("mesh face unification failed")
+                return {
+                    "flipped_faces": flipped_faces,
+                    "triangles": _mesh_triangles(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, unify_mesh_normals)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_disjoint_pieces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def split_disjoint_mesh():
+            pieces = source.SplitDisjointPieces()
+            if pieces is None:
+                raise ValueError("mesh disjoint split failed")
+            try:
+                return {
+                    "disjoint_mesh_count": int(source.DisjointMeshCount),
+                    "pieces": [
+                        _mesh_value(piece) for piece in pieces
+                    ],
+                }
+            finally:
+                for piece in pieces:
+                    piece.Dispose()
+
+        try:
+            return _measure(iterations, split_disjoint_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_combine_identical_vertices":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        def combine_identical_vertices():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                changed = bool(mesh.Vertices.CombineIdentical(True, True))
+                return {
+                    "changed": changed,
+                    "removed_vertices": before - int(mesh.Vertices.Count),
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, combine_identical_vertices)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_weld":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        angle_radians = _finite(operation["angle_radians"], "mesh weld angle")
+        def weld_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                mesh.Weld(angle_radians)
+                return {
+                    "removed_vertices": before - int(mesh.Vertices.Count),
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, weld_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_unweld":
+        angle_radians = _finite(operation["angle_radians"], "mesh unweld angle")
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            raise ValueError("mesh unweld modify_normals must be a boolean")
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        def unweld_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                mesh.Unweld(angle_radians, modify_normals)
+                return mesh
+            except:
+                mesh.Dispose()
+                raise
+        try:
+            before = int(source.Vertices.Count)
+            def record_unwelded(mesh):
+                return {
+                    "added_vertices": int(mesh.Vertices.Count) - before,
+                    "mesh": _mesh_value(mesh),
+                }
+            return _measure_disposable(iterations, unweld_mesh, record_unwelded)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_unweld_edge":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        edge_indices = operation["edge_indices"]
+        if not isinstance(edge_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in edge_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh unweld edge indices must be integers")
+        edge_indices = [int(index) for index in edge_indices]
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            source.Dispose()
+            raise ValueError("mesh unweld edge modify_normals must be a boolean")
+        def unweld_mesh_edges():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                accepted = bool(mesh.UnweldEdge(edge_indices, modify_normals))
+                return {
+                    "accepted": accepted,
+                    "added_vertices": int(mesh.Vertices.Count) - before,
+                    "mesh": _mesh_unweld_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, unweld_mesh_edges)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_cull_unused_vertices":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        def cull_unused_vertices():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                removed_vertices = int(mesh.Vertices.CullUnused())
+                if removed_vertices < 0:
+                    raise ValueError("mesh vertex culling failed")
+                return {
+                    "changed": removed_vertices > 0,
+                    "removed_vertices": removed_vertices,
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, cull_unused_vertices)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_volume":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        try:
+            return _measure(iterations, lambda: float(source.Volume()))
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_extract_duplicate_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def extract_duplicate_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.Faces.ExtractDuplicateFaces()
+                return {
+                    "extracted": (
+                        None if extracted is None else _mesh_value(extracted)
+                    ),
+                    "remainder": _mesh_value(remainder),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_duplicate_faces)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_extract_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        face_indices = operation["face_indices"]
+        if not isinstance(face_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in face_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh extraction face indices must be integers")
+        face_indices = [int(index) for index in face_indices]
+
+        def extract_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.Faces.ExtractFaces(face_indices)
+                if extracted is None:
+                    raise ValueError("mesh face extraction failed")
+                return {
+                    "extracted": _mesh_value(extracted),
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_faces)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_delete_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        face_indices = operation["face_indices"]
+        if not isinstance(face_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in face_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh deletion face indices must be integers")
+        face_indices = [int(index) for index in face_indices]
+
+        def delete_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                deleted_face_count = int(
+                    remainder.Faces.DeleteFaces(face_indices, True)
+                )
+                if deleted_face_count != len(face_indices):
+                    raise ValueError("mesh face deletion failed")
+                return {
+                    "deleted_face_count": deleted_face_count,
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, delete_faces)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_triangulate":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def triangulate_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Faces.QuadCount)
+                if not mesh.Faces.ConvertQuadsToTriangles():
+                    raise ValueError("mesh triangulation failed")
+                converted = before - int(mesh.Faces.QuadCount)
+                return {
+                    "converted_quad_count": converted,
+                    "mesh": _polygon_mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, triangulate_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_swap_edge":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh swap edge requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh swap edge endpoints do not identify an edge")
+
+        def swap_mesh_edge():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(mesh.TopologyEdges.SwapEdge(topology_edge_index))
+                return {
+                    "accepted": accepted,
+                    "mesh": _polygon_mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, swap_mesh_edge)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_collapse_edge":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh collapse edge requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh collapse edge endpoints do not identify an edge")
+
+        def collapse_mesh_edge():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(mesh.TopologyEdges.CollapseEdge(topology_edge_index))
+                return {
+                    "accepted": accepted,
+                    "mesh": (
+                        None
+                        if mesh.Faces.Count == 0
+                        else _polygon_mesh_value(mesh)
+                    ),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, collapse_mesh_edge)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_split_edge":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh split edge requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh split edge endpoints do not identify an edge")
+
+        def split_mesh_edge():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(
+                    mesh.TopologyEdges.SplitEdge(
+                        topology_edge_index, float(operation["parameter"])
+                    )
+                )
+                return {
+                    "accepted": accepted,
+                    "mesh": _polygon_mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, split_mesh_edge)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_fill_hole":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh fill hole requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh fill hole endpoints do not identify an edge")
+
+        def fill_mesh_hole():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                # Rhino 8's public binding exposes the historical spelling;
+                # current RhinoCommon documentation aliases it as FillHole.
+                accepted = bool(mesh.FileHole(topology_edge_index))
+                return {
+                    "accepted": accepted,
+                    "mesh": _mesh_fill_hole_value(
+                        mesh, source.Vertices.Count, source.Faces.Count
+                    ),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, fill_mesh_hole)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_fill_holes":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def fill_mesh_holes():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(mesh.FillHoles())
+                return {
+                    "accepted": accepted,
+                    "mesh": _mesh_fill_hole_value(
+                        mesh, source.Vertices.Count, source.Faces.Count
+                    ),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, fill_mesh_holes)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_extract_non_manifold":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        selective = operation["selective"]
+        if not isinstance(selective, bool):
+            source.Dispose()
+            raise ValueError("mesh extraction selective flag must be boolean")
+
+        def extract_non_manifold():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.ExtractNonManifoldEdges(selective)
+                return {
+                    "extracted": (
+                        None if extracted is None else _mesh_value(extracted)
+                    ),
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_non_manifold)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_to_nurb":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        trimmed = bool(operation["trim_triangular_faces"])
+
+        def convert_mesh():
+            brep = Rhino.Geometry.Brep.CreateFromMesh(source, trimmed)
+            if brep is None:
+                raise ValueError("could not convert mesh to B-rep")
+            try:
+                return _mesh_to_nurb_brep_value(brep)
+            finally:
+                brep.Dispose()
+
+        try:
+            return _measure(iterations, convert_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_plane":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        x_interval = Rhino.Geometry.Interval(
+            _finite(operation["x_interval"][0], "mesh-plane x interval"),
+            _finite(operation["x_interval"][1], "mesh-plane x interval"),
+        )
+        y_interval = Rhino.Geometry.Interval(
+            _finite(operation["y_interval"][0], "mesh-plane y interval"),
+            _finite(operation["y_interval"][1], "mesh-plane y interval"),
+        )
+        x_count = int(operation["x_count"])
+        y_count = int(operation["y_count"])
+
+        def create_mesh_plane():
+            mesh = Rhino.Geometry.Mesh.CreateFromPlane(
+                plane, x_interval, y_interval, x_count, y_count
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh plane")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_plane)
+
+    if kind == "mesh_box":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        intervals = [
+            Rhino.Geometry.Interval(
+                _finite(operation[name][0], "mesh-box interval"),
+                _finite(operation[name][1], "mesh-box interval"),
+            )
+            for name in ("x_interval", "y_interval", "z_interval")
+        ]
+        box = Rhino.Geometry.Box(plane, intervals[0], intervals[1], intervals[2])
+        counts = [
+            int(operation[name]) for name in ("x_count", "y_count", "z_count")
+        ]
+
+        def create_mesh_box():
+            mesh = Rhino.Geometry.Mesh.CreateFromBox(
+                box, counts[0], counts[1], counts[2]
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh box")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_box)
+
+    if kind == "mesh_cylinder":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-cylinder radius")
+        heights = [
+            _finite(value, "mesh-cylinder height")
+            for value in operation["heights"]
+        ]
+        base_origin = plane.Origin + heights[0] * plane.ZAxis
+        base_plane = Rhino.Geometry.Plane(base_origin, plane.XAxis, plane.YAxis)
+        circle = Rhino.Geometry.Circle(base_plane, radius)
+        cylinder = Rhino.Geometry.Cylinder(circle, heights[1] - heights[0])
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        cap_bottom = bool(operation["cap_bottom"])
+        cap_top = bool(operation["cap_top"])
+        circumscribe = bool(operation["circumscribe"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def create_mesh_cylinder():
+            mesh = Rhino.Geometry.Mesh.CreateFromCylinder(
+                cylinder,
+                vertical,
+                around,
+                # Rhino 8.32's Python binding exposes these two positional
+                # booleans in physical top-then-bottom order.
+                cap_top,
+                cap_bottom,
+                circumscribe,
+                quad_caps,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh cylinder")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_cylinder)
+
+    if kind == "mesh_cone":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-cone radius")
+        height_to_base = _finite(
+            operation["height_to_base"], "mesh-cone height"
+        )
+        cone = Rhino.Geometry.Cone(plane, height_to_base, radius)
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        solid = bool(operation["solid"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def create_mesh_cone():
+            mesh = Rhino.Geometry.Mesh.CreateFromCone(
+                cone,
+                vertical,
+                around,
+                solid,
+                quad_caps,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh cone")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_cone)
+
+    if kind == "mesh_sphere":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-sphere radius")
+        sphere = Rhino.Geometry.Sphere(plane, radius)
+        around = int(operation["around"])
+        vertical = int(operation["vertical"])
+
+        def create_mesh_sphere():
+            mesh = Rhino.Geometry.Mesh.CreateFromSphere(
+                sphere,
+                around,
+                vertical,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh sphere")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_sphere)
+
+    if kind == "mesh_ellipsoid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radii = [
+            _finite(value, "mesh-ellipsoid radius")
+            for value in operation["radii"]
+        ]
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def point_text(point):
+            return "%.17g,%.17g,%.17g" % (point.X, point.Y, point.Z)
+
+        center = plane.Origin
+        first_axis = center + radii[0] * plane.XAxis
+        second_axis = center + radii[1] * plane.YAxis
+        third_axis = center + radii[2] * plane.ZAxis
+        command = (
+            "_-MeshEllipsoid _VerticalFaces=%d _AroundFaces=4 "
+            "_CapFaceStyle=_%s _AroundFaces=%d %s %s %s %s"
+            % (
+                vertical,
+                "Quad" if quad_caps else "Tri",
+                around,
+                point_text(center),
+                point_text(first_axis),
+                point_text(second_axis),
+                point_text(third_axis),
+            )
+        )
+
+        def create_mesh_ellipsoid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            try:
+                meshes = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Mesh)
+                ]
+                if len(meshes) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MeshEllipsoid macro %r returned %r and created %d meshes; history tail: %s"
+                        % (command, succeeded, len(meshes), history[-2000:])
+                    )
+                return _polygon_mesh_value(meshes[0])
+            finally:
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_mesh_ellipsoid)
+
+    if kind == "mesh_truncated_cone":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        base_radius = _finite(
+            operation["base_radius"], "mesh truncated-cone base radius"
+        )
+        end_radius = _finite(
+            operation["end_radius"], "mesh truncated-cone end radius"
+        )
+        height = _finite(operation["height"], "mesh truncated-cone height")
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        solid = bool(operation["solid"])
+        quad_caps = bool(operation["quad_caps"])
+        option_text = "_VerticalFaces=%d _AroundFaces=%d _Solid=_No" % (
+            vertical,
+            around,
+        )
+        if solid:
+            # CapFaceStyle is offered only while AroundFaces is even. Set a
+            # temporary even count, choose the style, then restore the target;
+            # Rhino itself falls back to triangle caps for odd target counts.
+            option_text = (
+                "_VerticalFaces=%d _AroundFaces=4 _Solid=_Yes "
+                "_CapFaceStyle=_%s _AroundFaces=%d"
+                % (
+                    vertical,
+                    "Quad" if quad_caps else "Tri",
+                    around,
+                )
+            )
+        command = "_-MeshTruncatedCone %s 0,0,0 %.17g %.17g %.17g" % (
+            option_text,
+            base_radius,
+            height,
+            end_radius,
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_mesh_truncated_cone():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            try:
+                meshes = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Mesh)
+                ]
+                if len(meshes) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MeshTruncatedCone macro %r returned %r and created %d meshes; history tail: %s"
+                        % (command, succeeded, len(meshes), history[-2000:])
+                    )
+                mesh = meshes[0].DuplicateMesh()
+                if mesh is None:
+                    raise ValueError("could not duplicate mesh truncated cone")
+                try:
+                    if not mesh.Transform(transform):
+                        raise ValueError("could not orient mesh truncated cone")
+                    return _polygon_mesh_value(mesh)
+                finally:
+                    mesh.Dispose()
+            finally:
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_mesh_truncated_cone)
+
+    if kind == "parabola":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        radius = _finite(operation["radius"], "parabola radius")
+        height = _finite(operation["height"], "parabola height")
+        if not radius > 0.0 or not height > 0.0:
+            raise ValueError("parabola dimensions must be positive")
+        focal_distance = 0.25 * radius * (radius / height)
+        if math.isnan(focal_distance) or math.isinf(focal_distance):
+            raise ValueError("parabola focal distance must be finite")
+        half = bool(operation["half"])
+        command = (
+            "_-Parabola _Vertex _MarkFocus=_No _Half=_%s "
+            "0,0,0 0,0,%.17g %.17g,0,0"
+            % ("Yes" if half else "No", focal_distance, radius)
+        )
+
+        def create_parabola():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "parabola macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError("parabola did not create curve geometry")
+                if not curve.Transform(transform):
+                    raise ValueError("could not orient parabola")
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_parabola)
+
+    if kind == "parabola_three_point":
+        document = Rhino.RhinoDoc.ActiveDoc
+        mode = str(operation["mode"])
+        mode_option = {
+            "focus": "Focus",
+            "through_point": "ThroughPoint",
+            "vertex": "Vertex",
+        }.get(mode)
+        if mode_option is None:
+            raise ValueError("unknown three-point parabola mode: %s" % mode)
+        start = _point(operation["start"])
+        special = _point(operation["special"])
+        end = _point(operation["end"])
+        command = (
+            "_-Parabola3Pt _Mode=_%s _PickOrder=_EndsFirst _MarkFocus=_No "
+            "%s %s %s"
+            % (
+                mode_option,
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(special)),
+            )
+        )
+        if mode == "through_point":
+            direction = _vector(operation.get("opening_direction"))
+            _unit(
+                Rhino.Geometry.Vector3d(direction),
+                tolerance["absolute"],
+                "three-point parabola opening direction",
+            )
+            direction_point = special + direction
+            command += " " + _command_point(_xyz(direction_point))
+
+        def create_parabola_three_point():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "three-point parabola macro %r returned %r and created "
+                        "%d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError(
+                        "three-point parabola did not create curve geometry"
+                    )
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_parabola_three_point)
+
+    if kind == "helix":
+        origin = _point(operation["origin"])
+        plane = Rhino.Geometry.Plane(
+            origin,
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "helix radius")
+        height = _finite(operation["height"], "helix height")
+        turns = _finite(operation["turns"], "helix turns")
+        if not radius > 0.0 or not height > 0.0 or turns == 0.0:
+            raise ValueError("helix dimensions must be positive and nonzero")
+        radius_point = origin + radius * plane.XAxis
+        pitch = height / abs(turns)
+
+        def create_helix():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                origin,
+                plane.ZAxis,
+                radius_point,
+                pitch,
+                turns,
+                radius,
+                radius,
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create helix")
+            try:
+                curve.Domain = Rhino.Geometry.Interval(0.0, abs(turns))
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        return _measure(iterations, create_helix)
+
+    if kind == "spiral":
+        origin = _point(operation["origin"])
+        plane = Rhino.Geometry.Plane(
+            origin,
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        height = _finite(operation["height"], "spiral height")
+        turns = _finite(operation["turns"], "spiral turns")
+        radii = [
+            _finite(value, "spiral radius") for value in operation["radii"]
+        ]
+        if turns == 0.0 or (radii[0] == 0.0 and radii[1] == 0.0):
+            raise ValueError("spiral requires turns and at least one nonzero radius")
+        radius_point = origin + plane.XAxis
+        pitch = height / abs(turns)
+
+        def create_spiral():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                origin,
+                plane.ZAxis,
+                radius_point,
+                pitch,
+                turns,
+                radii[0],
+                radii[1],
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create spiral")
+            try:
+                curve.Domain = Rhino.Geometry.Interval(0.0, abs(turns))
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        return _measure(iterations, create_spiral)
+
+    if kind == "swept_spiral":
+        degree = int(operation["rail_degree"])
+        controls = operation["rail_control_points"]
+        rail = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(rail, controls)
+        _set_knots(rail.Knots, operation["rail_knots"], "rail knot")
+        if not rail.IsValid:
+            raise ValueError("swept-spiral rail is invalid")
+        radius_point = _point(operation["radius_point"])
+        turns = _finite(operation["turns"], "swept-spiral turns")
+        if turns == 0.0:
+            raise ValueError("swept spiral requires a nonzero turn count")
+        pitch = rail.GetLength() / abs(turns)
+        if turns < 0.0:
+            pitch = -pitch
+        radii = [
+            _finite(value, "swept-spiral radius")
+            for value in operation["radii"]
+        ]
+        points_per_turn = int(operation["points_per_turn"])
+
+        def create_swept_spiral():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                rail,
+                rail.Domain.T0,
+                rail.Domain.T1,
+                radius_point,
+                pitch,
+                turns,
+                radii[0],
+                radii[1],
+                points_per_turn,
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create swept spiral")
+            try:
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        try:
+            return _measure(iterations, create_swept_spiral)
+        finally:
+            rail.Dispose()
+
+    if kind == "catenary":
+        document = Rhino.RhinoDoc.ActiveDoc
+        start = _point(operation["start"])
+        end = _point(operation["end"])
+        axis_direction = _vector(operation["axis_direction"])
+        construction = operation["construction"]
+        mode = construction["mode"]
+        smooth = bool(operation["smooth"])
+        point_count = int(operation["point_count"])
+
+        axis_direction.Unitize()
+        axis_point = Rhino.Geometry.Point3d(
+            start.X + axis_direction.X,
+            start.Y + axis_direction.Y,
+            start.Z + axis_direction.Z,
+        )
+        if mode in ("through_point", "apex"):
+            mode_value = _command_point(construction["point"])
+        else:
+            mode_value = "%.17g" % _finite(
+                construction["value"], "catenary mode value"
+            )
+        mode_name = {
+            "through_point": "ThroughPoint",
+            "length": "Length",
+            "parameter": "Parameter",
+            "apex": "Apex",
+        }.get(mode)
+        if mode_name is None:
+            raise ValueError("unknown catenary construction mode")
+        command = (
+            "_-Catenary %s %s %s _Output=_%s _PointCount=%d "
+            "_MarkApex=_No _Mode=_%s %s"
+            % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(axis_point)),
+                "Smooth" if smooth else "Polyline",
+                point_count,
+                mode_name,
+                mode_value,
+            )
+        )
+
+        def create_catenary():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                curves = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Curve)
+                ]
+                if len(curves) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "catenary macro %r returned %r and created %d curves; "
+                        "history tail: %s"
+                        % (command, succeeded, len(curves), history[-3000:])
+                    )
+                curve = curves[0].DuplicateCurve()
+                curve_type = curve.GetType().Name
+                definition = _nurbs_curve_definition(curve)
+                if curve_type == "PolylineCurve":
+                    return {
+                        "curve_type": curve_type,
+                        "points": [
+                            control["point"]
+                            for control in definition["control_points"]
+                        ],
+                    }
+                return {"curve": definition, "curve_type": curve_type}
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_catenary)
+
+    if kind == "curve_through_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = operation["source"]
+        point_sets = operation["point_sets"]
+        degree = int(operation["degree"])
+        curve_type = operation["curve_type"]
+        knots = operation["knots"]
+        closed = bool(operation.get("closed", False))
+        if source not in ("points", "polylines"):
+            raise ValueError("curve-through source must be points or polylines")
+        if curve_type not in ("control_point", "interpolated"):
+            raise ValueError("unknown curve-through curve type")
+        knot_name = {
+            "uniform": "Uniform",
+            "chord": "Chord",
+            "sqrt_chord": "SqrtChord",
+        }.get(knots)
+        if knot_name is None:
+            raise ValueError("unknown curve-through knot style")
+        curve_type_name = {
+            "control_point": "ControlPoint",
+            "interpolated": "Interpolated",
+        }[curve_type]
+        if source == "points":
+            knot_option = " _Knots=_%s" % knot_name if curve_type == "interpolated" else ""
+            command = (
+                "_-CurveThroughPt _Degree=%d _CurveType=_%s%s _Closed=_%s _Enter"
+                % (degree, curve_type_name, knot_option, "Yes" if closed else "No")
+            )
+        else:
+            knot_option = " _Knots=_%s" % knot_name if curve_type == "interpolated" else ""
+            command = (
+                "_-CurveThroughPolyline _Degree=%d _CurveType=_%s%s "
+                "_DeleteInput=_No _Enter"
+                % (degree, curve_type_name, knot_option)
+            )
+
+        def create_curves_through_geometry():
+            before_all = set(obj.Id for obj in document.Objects)
+            source_ids = []
+            try:
+                if source == "points":
+                    if len(point_sets) != 1:
+                        raise ValueError("point source requires one point set")
+                    for coordinates in point_sets[0]:
+                        source_ids.append(document.Objects.AddPoint(_point(coordinates)))
+                else:
+                    for coordinates in point_sets:
+                        polyline = Rhino.Geometry.Polyline(
+                            [_point(point) for point in coordinates]
+                        )
+                        source_ids.append(document.Objects.AddPolyline(polyline))
+                document.Objects.UnselectAll()
+                for source_id in source_ids:
+                    document.Objects.Select(source_id, True)
+                before_output = set(obj.Id for obj in document.Objects)
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                curves = [
+                    obj
+                    for obj in document.Objects
+                    if obj.Id not in before_output
+                    and isinstance(obj.Geometry, Rhino.Geometry.Curve)
+                    and obj.Geometry.GetType().Name != "PolylineCurve"
+                ]
+                curves.sort(key=lambda obj: obj.RuntimeSerialNumber)
+                if len(curves) != len(point_sets):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "curve-through macro %r returned %r and created %d curves; "
+                        "history tail: %s"
+                        % (command, succeeded, len(curves), history[-3000:])
+                    )
+                definitions = []
+                for obj in curves:
+                    definition = _nurbs_curve_definition(obj.Geometry)
+                    definition["knots"] = definition["knots"][1:-1]
+                    definition["closed"] = bool(obj.Geometry.IsClosed)
+                    definition["periodic"] = bool(obj.Geometry.IsPeriodic)
+                    definitions.append(definition)
+                return {"curves": definitions}
+            finally:
+                for obj in list(document.Objects):
+                    if obj.Id not in before_all:
+                        document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_curves_through_geometry)
+
+    if kind == "brep_retrim_geometry":
+        original=_trimmed_brep_from_definition(operation['fixture'],tolerance)
+        target=_nurbs_surface_from_definition(operation['surface'])
+        try:
+            def retrim():
+                result=Rhino.Geometry.Brep.CreateTrimmedSurface(original.Faces[0],target,tolerance['absolute'])
+                if result is None:raise ValueError('Rhino retrim failed')
+                try:return {'brep':_interchange_brep_record(result)}
+                finally:result.Dispose()
+            return _measure(iterations,retrim)
+        finally:target.Dispose();original.Dispose()
+
+    if kind == "surface_rebuild_geometry":
+        count, degree = operation['point_count'], operation['degree']
+        if (not isinstance(count,list) or not isinstance(degree,list) or len(count)!=2 or len(degree)!=2
+                or any(type(n)is not int or type(p)is not int or not 1<=p<n<=256 for n,p in zip(count,degree))):
+            raise ValueError('surface rebuild resource limit')
+        source=_nurbs_surface_from_definition(operation['surface'])
+        try:
+            def rebuild_surface():
+                result=source.Rebuild(degree[0],degree[1],count[0],count[1])
+                if result is None:raise ValueError('Rhino surface rebuild failed')
+                try:return {'surface':_nurbs_surface_definition(result)}
+                finally:result.Dispose()
+            return _measure(iterations,rebuild_surface)
+        finally:source.Dispose()
+
+    if kind == "surface_tween_sampled_geometry":
+        number, sample = operation.get('number'), operation.get('sample_number')
+        if type(number) is not int or not 1 <= number <= 4096 or type(sample) is not int or not 2 <= sample <= 255 or (sample+1)**2*number > 1000000:
+            raise ValueError('surface tween resource limit')
+        surfaces=[]
+        try:
+            for key in ('start_surface','end_surface'):
+                surfaces.append(_nurbs_surface_from_definition(operation[key]))
+            def sampled_surface_tweens():
+                results=Rhino.Geometry.Surface.CreateTweenSurfacesWithSampling(surfaces[0],surfaces[1],number,sample,tolerance['absolute'])
+                if results is None or len(results)!=number:raise ValueError('Rhino surface tween returned wrong result count')
+                try:return {'surfaces':[_nurbs_surface_definition(s) for s in results]}
+                finally:
+                    for result in results:result.Dispose()
+            return _measure(iterations,sampled_surface_tweens)
+        finally:
+            for surface in surfaces:surface.Dispose()
+
+    if kind == "curve_tween_geometry":
+        curves = []
+        try:
+            for curve_name in ("start_curve", "end_curve"):
+                curves.append(_nurbs_curve_from_definition(operation[curve_name]))
+
+            method = operation["method"]
+            num_curves = int(operation["number"])
+            num_samples = int(operation.get("sample_number", 100))
+
+            def create_tween_curves():
+                if method == "control_point":
+                    result = Rhino.Geometry.Curve.CreateTweenCurves(
+                        curves[0], curves[1], num_curves, tolerance["absolute"]
+                    )
+                elif method == "refit":
+                    result = Rhino.Geometry.Curve.CreateTweenCurvesWithMatching(
+                        curves[0], curves[1], num_curves, tolerance["absolute"]
+                    )
+                elif method == "sample_points":
+                    result = Rhino.Geometry.Curve.CreateTweenCurvesWithSampling(
+                        curves[0],
+                        curves[1],
+                        num_curves,
+                        num_samples,
+                        tolerance["absolute"],
+                    )
+                else:
+                    raise ValueError("unknown curve tween method")
+                if result is None:
+                    raise ValueError("Rhino curve tween returned no result")
+                try:
+                    return {
+                        "curves": [_nurbs_curve_definition(curve) for curve in result]
+                    }
+                finally:
+                    for curve in result:
+                        curve.Dispose()
+
+            return _measure(iterations, create_tween_curves)
+        finally:
+            for curve in curves:
+                curve.Dispose()
+
+    if kind == "curve_fit_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        fit_tolerance = _finite(operation["fit_tolerance"], "curve fit tolerance")
+        angle_tolerance = _finite(
+            operation.get("angle_tolerance_radians", tolerance["angular"]),
+            "curve fit angle tolerance",
+        )
+
+        def fit_curve():
+            result = curve.Fit(degree, fit_tolerance, angle_tolerance)
+            if result is None:
+                raise ValueError("Rhino curve fit returned no result")
+            try:
+                return _nurbs_curve_definition(result)
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, fit_curve)
+        finally:
+            curve.Dispose()
+
+    if kind == "curve_rebuild_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        point_count = int(operation["point_count"])
+        preserve_tangents = bool(operation.get("preserve_tangents", False))
+
+        def rebuild_curve():
+            result = curve.Rebuild(point_count, degree, preserve_tangents)
+            if result is None:
+                raise ValueError("Rhino curve rebuild returned no result")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, rebuild_curve)
+        finally:
+            curve.Dispose()
+
+    if kind == "curve_make_uniform_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+
+        def make_uniform_curve():
+            duplicate = curve.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for uniformization")
+            try:
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino could not convert curve for uniformization")
+                try:
+                    if not nurbs.MakeUniform():
+                        raise ValueError("Rhino curve uniformization failed")
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_uniform_curve)
+        finally:
+            curve.Dispose()
+
+    if kind == "curve_insert_knot_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve knot parameter")
+        multiplicity = int(operation["multiplicity"])
+
+        def insert_curve_knot():
+            duplicate = curve.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for knot insertion")
+            try:
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino could not convert curve for knot insertion")
+                try:
+                    if not nurbs.Knots.InsertKnot(parameter, multiplicity):
+                        raise ValueError("Rhino curve knot insertion failed")
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, insert_curve_knot)
+        finally:
+            curve.Dispose()
+
+    if kind == "curve_remove_knot_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve knot parameter")
+
+        def remove_curve_knot():
+            nurbs = curve.Duplicate()
+            if nurbs is None:
+                raise ValueError("Rhino could not duplicate curve for knot removal")
+            try:
+                if not isinstance(nurbs, Rhino.Geometry.NurbsCurve):
+                    raise ValueError("Rhino duplicate was not a NURBS curve")
+                if not nurbs.Knots.RemoveKnotAt(parameter):
+                    raise ValueError("Rhino curve knot removal failed")
+                definition = _nurbs_curve_definition(nurbs)
+                definition["closed"] = bool(nurbs.IsClosed)
+                definition["periodic"] = bool(nurbs.IsPeriodic)
+                return definition
+            finally:
+                nurbs.Dispose()
+
+        try:
+            return _measure(iterations, remove_curve_knot)
+        finally:
+            curve.Dispose()
+
+    if kind == "curve_remove_multi_knot_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        remove_fully = bool(operation.get("remove_fully_multiple_knots", False))
+        max_kink_angle = _finite(
+            operation.get("maximum_kink_angle_degrees", 1.0),
+            "maximum kink angle",
+        )
+
+        def remove_multi_knot_command():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveMultiKnot source curve")
+                command = "_-RemoveMultiKnot _RemoveFullyMultipleKnots=_%s" % (
+                    "Yes" if remove_fully else "No"
+                )
+                if remove_fully:
+                    command += " _MaxKinkAngle=%.17g" % max_kink_angle
+                command += " _SelID %s _Enter" % str(object_id)
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveMultiKnot removed the source object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("RemoveMultiKnot returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, remove_multi_knot_command)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_change_seam_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "closed curve seam parameter")
+
+        def change_curve_seam():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for seam relocation")
+            try:
+                if not duplicate.ChangeClosedCurveSeam(parameter):
+                    raise ValueError("Rhino closed curve seam relocation failed")
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino seam relocation returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, change_curve_seam)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_reparameterize_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        try:
+            domain = operation.get("domain")
+            if domain is None:
+                domain = [0.0, float(source.GetLength())]
+            if len(domain) != 2:
+                raise ValueError("curve reparameterization requires a two-value domain")
+            target = Rhino.Geometry.Interval(
+                _finite(domain[0], "curve domain start"),
+                _finite(domain[1], "curve domain end"),
+            )
+            if not target.IsIncreasing:
+                raise ValueError("curve reparameterization domain must be increasing")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def reparameterize_curve():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for reparameterization")
+            try:
+                duplicate.Domain = target
+                actual = duplicate.Domain
+                if actual.T0 != target.T0 or actual.T1 != target.T1:
+                    raise ValueError("Rhino curve reparameterization failed")
+                definition = _nurbs_curve_definition(duplicate)
+                definition["closed"] = bool(duplicate.IsClosed)
+                definition["periodic"] = bool(duplicate.IsPeriodic)
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, reparameterize_curve)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_extend_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        values = operation["domain"]
+        if len(values) != 2:
+            source.Dispose()
+            raise ValueError("curve extension domain requires two parameters")
+        target = Rhino.Geometry.Interval(
+            _finite(values[0], "curve extension domain start"),
+            _finite(values[1], "curve extension domain end"),
+        )
+        if not target.IsIncreasing:
+            source.Dispose()
+            raise ValueError("curve extension domain must be increasing")
+
+        def extend_curve():
+            result = source.Extend(target)
+            if result is None:
+                raise ValueError("Rhino natural curve extension failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_curve)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_extend_length_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        length = _finite(operation["length"], "curve extension length")
+        if not length > 0.0:
+            source.Dispose()
+            raise ValueError("curve extension length must be positive")
+        side_name = str(operation["side"]).lower()
+        sides = {
+            "start": Rhino.Geometry.CurveEnd.Start,
+            "end": Rhino.Geometry.CurveEnd.End,
+            "both": Rhino.Geometry.CurveEnd.Both,
+        }
+        style_name = str(operation.get("style", "smooth")).lower()
+        styles = {
+            "line": Rhino.Geometry.CurveExtensionStyle.Line,
+            "arc": Rhino.Geometry.CurveExtensionStyle.Arc,
+            "smooth": Rhino.Geometry.CurveExtensionStyle.Smooth,
+        }
+        if side_name not in sides or style_name not in styles:
+            source.Dispose()
+            raise ValueError("invalid curve extension side or style")
+
+        def extend_curve_by_length():
+            result = source.Extend(sides[side_name], length, styles[style_name])
+            if result is None:
+                raise ValueError("Rhino curve length extension failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_curve_by_length)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_extend_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        length = _finite(operation["length"], "curve extension length")
+        if not length > 0.0:
+            source.Dispose()
+            raise ValueError("curve extension length must be positive")
+        side_name = str(operation["side"]).lower()
+        style_name = str(operation["style"]).lower()
+        join_name = str(operation["join"]).lower()
+        if side_name not in ("start", "end", "both"):
+            source.Dispose()
+            raise ValueError("invalid curve extension side")
+        if style_name not in ("natural", "arc", "line", "smooth"):
+            source.Dispose()
+            raise ValueError("invalid curve extension style")
+        if join_name not in ("merge", "yes", "no"):
+            source.Dispose()
+            raise ValueError("invalid curve extension join mode")
+
+        def crossing_selection(point, radius):
+            return "_SelCrossing %.17g,%.17g %.17g,%.17g" % (
+                point.X - radius,
+                point.Y - radius,
+                point.X + radius,
+                point.Y + radius,
+            )
+
+        def extend_curve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            object_id = System.Guid.Empty
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Extend Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                object_id = document.Objects.AddCurve(source, attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add Extend command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Extend Group " + str(System.Guid.NewGuid()),
+                    [object_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Extend command source curve")
+                Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)
+                radius = max(1.0, float(source.GetBoundingBox(True).Diagonal.Length)) * 0.02
+                selections = []
+                if side_name in ("start", "both"):
+                    selections.append(crossing_selection(source.PointAtStart, radius))
+                if side_name in ("end", "both"):
+                    selections.append(crossing_selection(source.PointAtEnd, radius))
+                command = "_-Extend _Type=_%s _Join=_%s %.17g %s _Enter" % (
+                    (
+                        "Natural"
+                        if style_name == "natural"
+                        else (
+                            "Arc"
+                            if style_name == "arc"
+                            else ("Line" if style_name == "line" else "Smooth")
+                        )
+                    ),
+                    (
+                        "Merge"
+                        if join_name == "merge"
+                        else ("Yes" if join_name == "yes" else "No")
+                    ),
+                    length,
+                    " ".join(selections),
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                expected_count = 1 + (
+                    (2 if side_name == "both" else 1) if join_name == "no" else 0
+                )
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Extend macro %r returned %r and left %d curve objects; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Extend Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(item.Geometry),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == object_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: (
+                        record["original_id"],
+                        tuple(record["curve"]["control_points"][0]["point"]),
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, extend_curve_command)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_extend_boundary_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        boundaries = []
+        try:
+            for definition in operation["boundaries"]:
+                boundaries.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise
+        side_name = str(operation["side"]).lower()
+        style_name = str(operation["style"]).lower()
+        join_name = str(operation["join"]).lower()
+        if not boundaries or side_name not in ("start", "end", "both"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension side")
+        if style_name not in ("natural", "arc", "line", "smooth"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension style")
+        if join_name not in ("merge", "yes", "no"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension join mode")
+
+        def crossing_selection(point, radius):
+            return "_SelCrossing %.17g,%.17g %.17g,%.17g" % (
+                point.X - radius,
+                point.Y - radius,
+                point.X + radius,
+                point.Y + radius,
+            )
+
+        def extend_curve_to_boundaries_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            boundary_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Extend Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddCurve(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Extend command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Extend Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Extend command source curve")
+                for boundary in boundaries:
+                    if isinstance(boundary, Rhino.Geometry.Curve):
+                        boundary_id = document.Objects.AddCurve(boundary)
+                    elif isinstance(boundary, Rhino.Geometry.Surface):
+                        boundary_id = document.Objects.AddSurface(boundary)
+                    elif isinstance(boundary, Rhino.Geometry.Brep):
+                        boundary_id = document.Objects.AddBrep(boundary)
+                    else:
+                        raise ValueError("unsupported Extend boundary geometry")
+                    if boundary_id == System.Guid.Empty:
+                        raise ValueError("could not add Extend command boundary curve")
+                    boundary_ids.append(boundary_id)
+                    document.Objects.Select(boundary_id)
+                Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)
+                radius = max(1.0, float(source.GetBoundingBox(True).Diagonal.Length)) * 0.02
+                selections = []
+                if side_name in ("start", "both"):
+                    selections.append(crossing_selection(source.PointAtStart, radius))
+                if side_name in ("end", "both"):
+                    selections.append(crossing_selection(source.PointAtEnd, radius))
+                command = "_-Extend _Type=_%s _Join=_%s %s _Enter" % (
+                    (
+                        "Natural"
+                        if style_name == "natural"
+                        else (
+                            "Arc"
+                            if style_name == "arc"
+                            else ("Line" if style_name == "line" else "Smooth")
+                        )
+                    ),
+                    (
+                        "Merge"
+                        if join_name == "merge"
+                        else ("Yes" if join_name == "yes" else "No")
+                    ),
+                    " ".join(selections),
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and item.Id not in boundary_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                expected_count = 1 + (
+                    (2 if side_name == "both" else 1) if join_name == "no" else 0
+                )
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "boundary Extend macro %r returned %r and left %d result curves; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Extend Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(
+                            item.Geometry,
+                            bool(operation.get("canonicalize_curve_parameters", False)),
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: (
+                        record["original_id"],
+                        tuple(record["curve"]["control_points"][0]["point"]),
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, extend_curve_to_boundaries_command)
+        finally:
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+
+    if kind == "curve_subcurve_arc_length":
+        from curve_length_subcurve_probe import run
+        return run(operation,globals(),iterations)
+
+    if kind == "curve_subcurve_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        start = _finite(operation["start"], "subcurve start parameter")
+        end = _finite(operation["end"], "subcurve end parameter")
+
+        def extract_subcurve():
+            if source.IsClosed or start < end:
+                result = source.Trim(Rhino.Geometry.Interval(start, end))
+            else:
+                result = source.Trim(Rhino.Geometry.Interval(end, start))
+                if result is not None and not result.Reverse():
+                    result.Dispose()
+                    raise ValueError("Rhino could not reverse the open subcurve")
+            if result is None:
+                raise ValueError("Rhino subcurve extraction failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extract_subcurve)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        curves = [
+            _nurbs_curve_from_definition(definition)
+            for definition in operation["curves"]
+        ]
+
+        def intersect_curves_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                for curve in curves:
+                    object_id = document.Objects.AddCurve(curve, attributes)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add Intersect command input curve")
+                    input_ids.append(object_id)
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Intersect command input curves")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = ("point", float(location.X), float(location.Y), float(location.Z))
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_curves_command)
+        finally:
+            for curve in curves:
+                curve.Dispose()
+
+    if kind == "curve_surface_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        surface = _nurbs_surface_from_definition(operation["surface"])
+
+        def intersect_curve_surface_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                curve_id = document.Objects.AddCurve(curve, attributes)
+                surface_id = document.Objects.AddSurface(surface, attributes)
+                if curve_id == System.Guid.Empty or surface_id == System.Guid.Empty:
+                    raise ValueError("could not add curve/surface Intersect inputs")
+                input_ids.extend([curve_id, surface_id])
+                for object_id in input_ids:
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group curve/surface Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "curve/surface Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_curve_surface_command)
+        finally:
+            curve.Dispose()
+            surface.Dispose()
+
+    if kind == "curve_brep_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        box_min = _point(operation["box_min"])
+        box_max = _point(operation["box_max"])
+        brep = Rhino.Geometry.Brep.CreateFromBox(
+            Rhino.Geometry.BoundingBox(box_min, box_max)
+        )
+        if brep is None:
+            curve.Dispose()
+            raise ValueError("could not create curve/B-rep Intersect box")
+
+        def intersect_curve_brep_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                curve_id = document.Objects.AddCurve(curve, attributes)
+                brep_id = document.Objects.AddBrep(brep, attributes)
+                if curve_id == System.Guid.Empty or brep_id == System.Guid.Empty:
+                    raise ValueError("could not add curve/B-rep Intersect inputs")
+                input_ids.extend([curve_id, brep_id])
+                for object_id in input_ids:
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group curve/B-rep Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "curve/B-rep Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_curve_brep_command)
+        finally:
+            curve.Dispose()
+            brep.Dispose()
+
+    if kind in (
+        "sphere_plane_surface_intersection",
+        "sphere_sphere_surface_intersection",
+        "sphere_cylinder_surface_intersection",
+        "sphere_cone_surface_intersection",
+        "torus_sphere_surface_intersection",
+        "torus_plane_surface_intersection",
+        "torus_cylinder_surface_intersection",
+        "torus_cone_surface_intersection",
+        "torus_torus_surface_intersection",
+        "cylinder_plane_surface_intersection",
+        "cylinder_cylinder_surface_intersection",
+        "cone_plane_surface_intersection",
+        "cone_cylinder_surface_intersection",
+    ):
+        source_brep = None
+        patch_brep = None
+        if kind in (
+            "sphere_plane_surface_intersection",
+            "sphere_sphere_surface_intersection",
+            "sphere_cylinder_surface_intersection",
+            "sphere_cone_surface_intersection",
+        ):
+            sphere_def = operation["sphere"]
+            source = Rhino.Geometry.Sphere(
+                _point(sphere_def["center"]),
+                _finite(sphere_def["radius"], "sphere radius"),
+            ).ToNurbsSurface()
+        elif kind in (
+            "cylinder_plane_surface_intersection",
+            "cylinder_cylinder_surface_intersection",
+        ):
+            cylinder_def = operation["cylinder"]
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(cylinder_def["center"]),
+                _vector(cylinder_def["axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(cylinder_def["radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(cylinder_def["height"], "cylinder height"),
+            )
+            source_brep = cylinder.ToBrep(False, False)
+            source = source_brep.Faces[0].ToNurbsSurface()
+        elif kind in (
+            "torus_sphere_surface_intersection",
+            "torus_plane_surface_intersection",
+            "torus_cylinder_surface_intersection",
+            "torus_cone_surface_intersection",
+            "torus_torus_surface_intersection",
+        ):
+            torus_def = operation["torus"]
+            torus_plane = Rhino.Geometry.Plane(
+                _point(torus_def["center"]),
+                _vector(torus_def["axis"]),
+            )
+            torus = Rhino.Geometry.Torus(
+                torus_plane,
+                _finite(torus_def["major_radius"], "torus major radius"),
+                _finite(torus_def["minor_radius"], "torus minor radius"),
+            )
+            source_brep = torus.ToBrep()
+            source = source_brep.Faces[0].ToNurbsSurface()
+        else:
+            cone_def = operation["cone"]
+            cone_plane = Rhino.Geometry.Plane(
+                _point(cone_def["apex"]),
+                _vector(cone_def["axis"]),
+            )
+            cone = Rhino.Geometry.Cone(
+                cone_plane,
+                _finite(cone_def["height"], "cone height"),
+                _finite(cone_def["radius"], "cone radius"),
+            )
+            source_brep = cone.ToBrep(False)
+            source = source_brep.Faces[0].ToNurbsSurface()
+        if kind == "sphere_sphere_surface_intersection":
+            other_def = operation["other_sphere"]
+            patch = Rhino.Geometry.Sphere(
+                _point(other_def["center"]),
+                _finite(other_def["radius"], "other sphere radius"),
+            ).ToNurbsSurface()
+        elif kind == "torus_sphere_surface_intersection":
+            sphere_def = operation["sphere"]
+            patch = Rhino.Geometry.Sphere(
+                _point(sphere_def["center"]),
+                _finite(sphere_def["radius"], "sphere radius"),
+            ).ToNurbsSurface()
+        elif kind == "torus_torus_surface_intersection":
+            other_def = operation["other_torus"]
+            other_plane = Rhino.Geometry.Plane(
+                _point(other_def["center"]),
+                _vector(other_def["axis"]),
+            )
+            other = Rhino.Geometry.Torus(
+                other_plane,
+                _finite(other_def["major_radius"], "other torus major radius"),
+                _finite(other_def["minor_radius"], "other torus minor radius"),
+            )
+            patch_brep = other.ToBrep()
+            patch = patch_brep.Faces[0].ToNurbsSurface()
+        elif kind in (
+            "sphere_cylinder_surface_intersection",
+            "cylinder_cylinder_surface_intersection",
+            "cone_cylinder_surface_intersection",
+            "torus_cylinder_surface_intersection",
+        ):
+            cylinder_def = operation[
+                "other_cylinder"
+                if kind == "cylinder_cylinder_surface_intersection"
+                else "cylinder"
+            ]
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(cylinder_def["center"]),
+                _vector(cylinder_def["axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(cylinder_def["radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(cylinder_def["height"], "cylinder height"),
+            )
+            patch_brep = cylinder.ToBrep(False, False)
+            patch = patch_brep.Faces[0].ToNurbsSurface()
+        elif kind in (
+            "sphere_cone_surface_intersection",
+            "torus_cone_surface_intersection",
+        ):
+            cone_def = operation["cone"]
+            cone_plane = Rhino.Geometry.Plane(
+                _point(cone_def["apex"]),
+                _vector(cone_def["axis"]),
+            )
+            cone = Rhino.Geometry.Cone(
+                cone_plane,
+                _finite(cone_def["height"], "cone height"),
+                _finite(cone_def["radius"], "cone radius"),
+            )
+            patch_brep = cone.ToBrep(False)
+            patch = patch_brep.Faces[0].ToNurbsSurface()
+        else:
+            plane_def = operation["plane"]
+            if "axes" in plane_def:
+                plane = Rhino.Geometry.Plane(
+                    _point(plane_def["origin"]),
+                    _vector(plane_def["axes"][0]),
+                    _vector(plane_def["axes"][1]),
+                )
+            else:
+                plane = Rhino.Geometry.Plane(
+                    _point(plane_def["origin"]), _vector(plane_def["normal"])
+                )
+            x_domain = plane_def["x_domain"]
+            y_domain = plane_def["y_domain"]
+            patch = Rhino.Geometry.PlaneSurface(
+                plane,
+                Rhino.Geometry.Interval(float(x_domain[0]), float(x_domain[1])),
+                Rhino.Geometry.Interval(float(y_domain[0]), float(y_domain[1])),
+            )
+
+        def intersect_analytic_surfaces():
+            success, curves, points = (
+                Rhino.Geometry.Intersect.Intersection.SurfaceSurface(
+                    source,
+                    patch,
+                    float(tolerance["absolute"]),
+                )
+            )
+            curve_records = []
+            for curve in curves or []:
+                domain = curve.Domain
+                values = [
+                    curve.PointAt(domain.T0),
+                    curve.PointAt(0.5 * (domain.T0 + domain.T1)),
+                    curve.PointAt(domain.T1),
+                ]
+                nurbs = curve.ToNurbsCurve()
+                curve_records.append({
+                    "degree": int(nurbs.Degree),
+                    "closed": bool(curve.IsClosed),
+                    "samples": [
+                        [float(value.X), float(value.Y), float(value.Z)]
+                        for value in values
+                    ],
+                    "length": float(curve.GetLength()),
+                })
+                nurbs.Dispose()
+                curve.Dispose()
+            point_records = [
+                [float(point.X), float(point.Y), float(point.Z)]
+                for point in (points or [])
+            ]
+            return {
+                "success": bool(success),
+                "curves": curve_records,
+                "points": point_records,
+            }
+
+        try:
+            return _measure(iterations, intersect_analytic_surfaces)
+        finally:
+            source.Dispose()
+            if source_brep is not None:
+                source_brep.Dispose()
+            patch.Dispose()
+            if patch_brep is not None:
+                patch_brep.Dispose()
+
+    if kind == "surface_surface_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        surfaces = [
+            _nurbs_surface_from_definition(operation["first"]),
+            _nurbs_surface_from_definition(operation["second"]),
+        ]
+
+        def intersect_surfaces_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                for surface in surfaces:
+                    object_id = document.Objects.AddSurface(surface, attributes)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add surface/surface Intersect input")
+                    input_ids.append(object_id)
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group surface/surface Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        else:
+                            definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "surface/surface Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_surfaces_command)
+        finally:
+            for surface in surfaces:
+                surface.Dispose()
+
+    if kind in (
+        "surface_brep_intersect_command",
+        "surface_brep_face_intersect_command",
+        "cylinder_brep_intersect_command",
+    ):
+        document = Rhino.RhinoDoc.ActiveDoc
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        surface_input = None
+        if kind == "surface_brep_face_intersect_command":
+            brep_surface = _nurbs_surface_from_definition(operation["brep_surface"])
+            try:
+                brep = _brep_face_with_v_split(
+                    brep_surface,
+                    operation.get("brep_trim_v"),
+                    operation.get("brep_trim_upper", False),
+                    tolerance,
+                )
+            finally:
+                brep_surface.Dispose()
+        elif kind == "cylinder_brep_intersect_command":
+            cylinder_plane = Rhino.Geometry.Plane(
+                _point(operation["cylinder_center"]),
+                _vector(operation["cylinder_axis"]),
+            )
+            cylinder_circle = Rhino.Geometry.Circle(
+                cylinder_plane,
+                _finite(operation["cylinder_radius"], "cylinder radius"),
+            )
+            cylinder = Rhino.Geometry.Cylinder(
+                cylinder_circle,
+                _finite(operation["cylinder_height"], "cylinder height"),
+            )
+            trim_u = operation.get("trim_u")
+            trim_v = operation.get("trim_v")
+            if trim_u is not None and trim_v is not None:
+                raise ValueError("cylinder wall cannot be split in U and V at once")
+            if trim_u is None and trim_v is None:
+                brep = cylinder.ToBrep(True, True)
+            else:
+                split_u = trim_u is not None
+                split_value = _finite(
+                    trim_u if split_u else trim_v, "cylinder trim parameter"
+                )
+                wall_brep = cylinder.ToBrep(False, False)
+                wall_surface = wall_brep.Faces[0].ToNurbsSurface()
+                original_ids = set(item.Id for item in document.Objects)
+                brep = None
+                split_stage = "add source"
+                try:
+                    document.Objects.UnselectAll()
+                    source_id = document.Objects.AddSurface(wall_surface)
+                    if source_id == System.Guid.Empty:
+                        raise ValueError("could not add cylinder wall for trim")
+                    document.Objects.Select(source_id)
+                    radius = float(operation["cylinder_radius"])
+                    if split_u:
+                        pick = cylinder_plane.PointAt(
+                            radius * math.cos(split_value),
+                            radius * math.sin(split_value),
+                            float(operation["cylinder_height"]) * 0.5,
+                        )
+                        direction = "V"
+                        coordinate = "X"
+                    else:
+                        pick = cylinder_plane.PointAt(0.0, radius, split_value)
+                        direction = "U"
+                        coordinate = "Y"
+                    # Rhino names the direction along the isocurve; the other
+                    # parameter is fixed at the split value.
+                    split_stage = "run isocurve Split"
+                    command = (
+                        "_-Split _Isocurve _Direction=_%s _Shrink=_No %s _Enter"
+                        % (direction, _command_point(_xyz(pick)))
+                    )
+                    succeeded = Rhino.RhinoApp.RunScript(command, False)
+                    pieces = []
+                    piece_errors = []
+                    split_stage = "inspect split pieces"
+                    for item in document.Objects:
+                        if item.Id in original_ids or not isinstance(
+                            item.Geometry, Rhino.Geometry.Brep
+                        ) or item.Geometry.Faces.Count != 1:
+                            continue
+                        try:
+                            face = item.Geometry.Faces[0]
+                            if face.Loops.Count == 0:
+                                piece_errors.append("one face has no loops")
+                                continue
+                            trims = face.OuterLoop.Trims
+                            positions = []
+                            for trim in trims:
+                                try:
+                                    positions.extend([
+                                        float(getattr(trim.PointAtStart, coordinate)),
+                                        float(getattr(trim.PointAtEnd, coordinate)),
+                                    ])
+                                except Exception as error:
+                                    piece_errors.append("trim endpoint: %s" % error)
+                            if positions:
+                                pieces.append((min(positions), item.Geometry))
+                            else:
+                                piece_errors.append("one face has no usable trim endpoints")
+                        except Exception as error:
+                            piece_errors.append("one face: %s" % error)
+                    pieces.sort(key=lambda entry: entry[0])
+                    if not succeeded or len(pieces) != 2:
+                        found = [
+                            "%s(faces=%s)" % (
+                                type(item.Geometry).__name__,
+                                getattr(getattr(item.Geometry, "Faces", None), "Count", "-"),
+                            )
+                            for item in document.Objects
+                            if item.Id not in original_ids
+                        ]
+                        raise ValueError(
+                            "cylinder wall Split returned %r and %d pieces: %s; %s"
+                            % (succeeded, len(pieces), found, piece_errors)
+                        )
+                    split_stage = "duplicate retained piece"
+                    retain_high = operation.get("trim_east" if split_u else "trim_upper", False)
+                    brep = pieces[1 if retain_high else 0][1].DuplicateBrep()
+                except Exception as error:
+                    raise ValueError(
+                        "cylinder wall Split at %s: %s" % (split_stage, error)
+                    )
+                finally:
+                    document.Objects.UnselectAll()
+                    for item in list(document.Objects):
+                        if item.Id not in original_ids:
+                            document.Objects.Delete(item.Id, True)
+                    wall_surface.Dispose()
+                    wall_brep.Dispose()
+            if operation.get("surface_as_brep", False):
+                surface_input = Rhino.Geometry.Brep.CreateFromSurface(surface)
+        else:
+            box_min = _point(operation["box_min"])
+            box_max = _point(operation["box_max"])
+            brep = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(box_min, box_max)
+            )
+        if brep is None:
+            surface.Dispose()
+            raise ValueError("could not create surface/B-rep Intersect box")
+
+        def intersect_surface_brep_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                if surface_input is None:
+                    surface_id = document.Objects.AddSurface(surface, attributes)
+                else:
+                    surface_id = document.Objects.AddBrep(surface_input, attributes)
+                brep_id = document.Objects.AddBrep(brep, attributes)
+                if surface_id == System.Guid.Empty or brep_id == System.Guid.Empty:
+                    raise ValueError("could not add surface/B-rep Intersect inputs")
+                if operation.get("brep_first", False):
+                    input_ids.extend([brep_id, surface_id])
+                else:
+                    input_ids.extend([surface_id, brep_id])
+                for object_id in input_ids:
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group surface/B-rep Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        elif operation.get("canonicalize_linear_curves", False):
+                            definition = (
+                                _canonical_linear_intersection_curve_definition(geometry)
+                            )
+                        else:
+                            definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "surface/B-rep Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_surface_brep_command)
+        finally:
+            surface.Dispose()
+            if surface_input is not None:
+                surface_input.Dispose()
+            brep.Dispose()
+
+    if kind in ("brep_brep_intersect_command", "brep_face_brep_face_intersect_command"):
+        document = Rhino.RhinoDoc.ActiveDoc
+        if kind == "brep_face_brep_face_intersect_command":
+            first_surface = _nurbs_surface_from_definition(operation["first"])
+            second_surface = _nurbs_surface_from_definition(operation["second"])
+            try:
+                first = _brep_face_with_v_split(
+                    first_surface,
+                    operation.get("first_trim_v"),
+                    operation.get("first_trim_upper", False),
+                    tolerance,
+                )
+                try:
+                    second = _brep_face_with_v_split(
+                        second_surface,
+                        operation.get("second_trim_v"),
+                        operation.get("second_trim_upper", False),
+                        tolerance,
+                    )
+                except Exception:
+                    first.Dispose()
+                    raise
+            finally:
+                first_surface.Dispose()
+                second_surface.Dispose()
+        else:
+            first = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(
+                    _point(operation["first_box_min"]),
+                    _point(operation["first_box_max"]),
+                )
+            )
+            second = Rhino.Geometry.Brep.CreateFromBox(
+                Rhino.Geometry.BoundingBox(
+                    _point(operation["second_box_min"]),
+                    _point(operation["second_box_max"]),
+                )
+            )
+        if first is None or second is None:
+            if first is not None:
+                first.Dispose()
+            if second is not None:
+                second.Dispose()
+            raise ValueError("could not create B-rep/B-rep Intersect boxes")
+
+        def intersect_breps_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                first_id = document.Objects.AddBrep(first, attributes)
+                second_id = document.Objects.AddBrep(second, attributes)
+                if first_id == System.Guid.Empty or second_id == System.Guid.Empty:
+                    raise ValueError("could not add B-rep/B-rep Intersect inputs")
+                if operation.get("reverse_selection", False):
+                    input_ids.extend([second_id, first_id])
+                else:
+                    input_ids.extend([first_id, second_id])
+                for object_id in input_ids:
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group B-rep/B-rep Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        elif operation.get("canonicalize_linear_curves", False):
+                            definition = (
+                                _canonical_linear_intersection_curve_definition(geometry)
+                            )
+                        else:
+                            definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "B-rep/B-rep Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_breps_command)
+        finally:
+            first.Dispose()
+            second.Dispose()
+
+    if kind == "curve_extrude_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _cut_source(operation["curve"])
+        def extrude_native_curve():
+            original_ids = set(item.Id for item in document.Objects)
+            try:
+                document.Objects.UnselectAll()
+                source_id = document.Objects.AddCurve(source)
+                document.Objects.Select(source_id)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    raise ValueError("native extrusion command failed")
+                surfaces = []
+                for item in document.Objects:
+                    if item.Id == source_id or item.Id in original_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep) and geometry.Faces.Count == 1:
+                        geometry = geometry.Faces[0].UnderlyingSurface()
+                    if not isinstance(geometry, Rhino.Geometry.Surface):
+                        raise ValueError("native extrusion did not produce one surface")
+                    surfaces.append(_nurbs_surface_definition(geometry))
+                if not surfaces:
+                    raise ValueError("native extrusion left no surfaces")
+                return {"surfaces": surfaces}
+            finally:
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+        try:
+            return _measure(iterations, extrude_native_curve)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_split_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _cut_source(operation["curve"])
+        cutters = []
+        try:
+            for definition in operation["cutters"]:
+                cutters.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+            raise
+
+        def split_curve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            cutter_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddCurve(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Split command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Split command source curve")
+                for cutter in cutters:
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported Split cutter geometry")
+                    if cutter_id == System.Guid.Empty:
+                        raise ValueError("could not add Split command cutter object")
+                    cutter_ids.append(cutter_id)
+                document.Objects.Select(source_id)
+                command = "_-Split %s _Enter" % " ".join(
+                    "_SelID %s" % str(cutter_id) for cutter_id in cutter_ids
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and item.Id not in cutter_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                if not objects:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Split macro %r returned %r and left no result curves; history tail: %s"
+                        % (command, succeeded, history[-3000:])
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(item.Geometry),
+                        "native": _cut_native_record(item.Geometry),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: tuple(
+                        record["native"]["domain"]
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_curve_command)
+        finally:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+
+    if kind == "surface_split_cutting_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_surface_from_definition(operation["surface"])
+        cutters = [
+            _surface_split_cutter_from_definition(definition, tolerance)
+            for definition in operation["cutters"]
+        ]
+
+        def split_surface_cutting_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            cutter_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Surface Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddSurface(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add cutting Split source surface")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Surface Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group cutting Split source surface")
+                document.Objects.Select(source_id)
+                pretrim = operation.get("pretrim")
+                if pretrim is not None:
+                    pretrim_direction = str(pretrim["direction"]).lower()
+                    if pretrim_direction not in ("u", "v", "both"):
+                        raise ValueError(
+                            "surface cutting Split pretrim direction must be u, v, or both"
+                        )
+                    pretrim_command = (
+                        "_-Split _Isocurve _Direction=_%s _Shrink=_No %s _Enter"
+                        % (
+                            pretrim_direction.upper()
+                            if pretrim_direction != "both"
+                            else "Both",
+                            _command_point(pretrim["point"]),
+                        )
+                    )
+                    pretrim_succeeded = Rhino.RhinoApp.RunScript(
+                        pretrim_command, False
+                    )
+                    pretrim_pieces = []
+                    for item in document.Objects:
+                        if item.Id in original_ids:
+                            continue
+                        geometry = item.Geometry
+                        if not (
+                            isinstance(geometry, Rhino.Geometry.Brep)
+                            and geometry.Faces.Count == 1
+                        ):
+                            continue
+                        face = geometry.Faces[0]
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
+                        if not trim_points:
+                            continue
+                        bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                        pretrim_pieces.append((bounds, item.Id))
+                    pretrim_pieces.sort(
+                        key=lambda piece: (
+                            piece[0][0],
+                            piece[0][2],
+                            piece[0][1],
+                            piece[0][3],
+                        )
+                    )
+                    expected_pretrim_count = (
+                        4 if pretrim_direction == "both" else 2
+                    )
+                    piece_index = int(pretrim["piece"])
+                    if (
+                        not pretrim_succeeded
+                        or len(pretrim_pieces) != expected_pretrim_count
+                        or piece_index < 0
+                        or piece_index >= len(pretrim_pieces)
+                    ):
+                        raise ValueError(
+                            "surface cutting Split pretrim macro %r returned %r and left %d "
+                            "rectangular pieces; expected %d with retained index %d"
+                            % (
+                                pretrim_command,
+                                pretrim_succeeded,
+                                len(pretrim_pieces),
+                                expected_pretrim_count,
+                                piece_index,
+                            )
+                        )
+                    source_id = pretrim_pieces[piece_index][1]
+                    for _bounds, piece_id in pretrim_pieces:
+                        if piece_id != source_id:
+                            document.Objects.Delete(piece_id, True)
+                    document.Objects.UnselectAll()
+                    document.Objects.Select(source_id)
+                for cutter in cutters:
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported cutting Split cutter geometry")
+                    if cutter_id == System.Guid.Empty:
+                        raise ValueError("could not add cutting Split cutter")
+                    cutter_ids.append(cutter_id)
+                document.Objects.Select(source_id)
+                command = "_-Split %s _Enter" % " ".join(
+                    "_SelID %s" % str(cutter_id) for cutter_id in cutter_ids
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in cutter_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Surface):
+                        surface_geometry = geometry
+                        object_kind = "surface"
+                        topology = None
+                        trim_curves = []
+                        trim_bounds = [
+                            float(geometry.Domain(0).T0),
+                            float(geometry.Domain(0).T1),
+                            float(geometry.Domain(1).T0),
+                            float(geometry.Domain(1).T1),
+                        ]
+                    elif (
+                        isinstance(geometry, Rhino.Geometry.Brep)
+                        and geometry.Faces.Count == 1
+                    ):
+                        face = geometry.Faces[0]
+                        surface_geometry = face.UnderlyingSurface()
+                        topology = _mesh_to_nurb_brep_value(geometry)
+                        object_kind = "brep"
+                        trim_curves = [
+                            _surface_split_trim_value(
+                                trim, surface_geometry,
+                                operation.get("sample_trim_geometry", False),
+                            )
+                            for brep_face in geometry.Faces
+                            for loop in brep_face.Loops
+                            for trim in loop.Trims
+                            if str(trim.IsoStatus) == "None"
+                        ]
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
+                        if not trim_points:
+                            raise ValueError(
+                                "cutting Split returned an empty outer trim loop"
+                            )
+                        trim_bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                    else:
+                        continue
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Surface Source"
+                            and int(item.Attributes.LayerIndex)
+                            == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "object_kind": object_kind,
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                        "surface": _nurbs_surface_definition(surface_geometry),
+                        "topology": topology,
+                        "trim_curves": trim_curves,
+                        "trim_bounds": trim_bounds,
+                    })
+                if not records:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "surface cutting Split macro %r returned %r and left no "
+                        "surface pieces; history tail: %s"
+                        % (command, succeeded, history[-3000:])
+                    )
+                records.sort(key=lambda record: (
+                    record["trim_bounds"][0],
+                    record["trim_bounds"][2],
+                    record["trim_bounds"][1],
+                    record["trim_bounds"][3],
+                ))
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "cutters_selected": [
+                        document.Objects.FindId(cutter_id).IsSelected(False) > 0
+                        for cutter_id in cutter_ids
+                    ],
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_surface_cutting_command)
+        finally:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+
+    if kind == "surface_split_isocurve_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_surface_from_definition(operation["surface"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v", "both"):
+            source.Dispose()
+            raise ValueError("surface Split direction must be u, v, or both")
+        shrink = bool(operation.get("shrink", True))
+        point = _command_point(operation["point"])
+
+        def split_surface_isocurve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Surface Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddSurface(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Split command source surface")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Surface Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Split command source surface")
+                document.Objects.Select(source_id)
+                pretrim = operation.get("pretrim")
+                if pretrim is not None:
+                    pretrim_direction = str(pretrim["direction"]).lower()
+                    if pretrim_direction not in ("u", "v", "both"):
+                        raise ValueError(
+                            "surface Split pretrim direction must be u, v, or both"
+                        )
+                    pretrim_command = (
+                        "_-Split _Isocurve _Direction=_%s _Shrink=_No %s _Enter"
+                        % (
+                            pretrim_direction.upper()
+                            if pretrim_direction != "both"
+                            else "Both",
+                            _command_point(pretrim["point"]),
+                        )
+                    )
+                    pretrim_succeeded = Rhino.RhinoApp.RunScript(
+                        pretrim_command, False
+                    )
+                    pretrim_pieces = []
+                    for item in document.Objects:
+                        if item.Id in original_ids:
+                            continue
+                        geometry = item.Geometry
+                        if not (
+                            isinstance(geometry, Rhino.Geometry.Brep)
+                            and geometry.Faces.Count == 1
+                        ):
+                            continue
+                        face = geometry.Faces[0]
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend(
+                                [trim.PointAtStart, trim.PointAtEnd]
+                            )
+                        if not trim_points:
+                            continue
+                        bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                        pretrim_pieces.append((bounds, item.Id))
+                    pretrim_pieces.sort(
+                        key=lambda piece: (
+                            piece[0][0],
+                            piece[0][2],
+                            piece[0][1],
+                            piece[0][3],
+                        )
+                    )
+                    expected_pretrim_count = (
+                        4 if pretrim_direction == "both" else 2
+                    )
+                    piece_index = int(pretrim["piece"])
+                    if (
+                        not pretrim_succeeded
+                        or len(pretrim_pieces) != expected_pretrim_count
+                        or piece_index < 0
+                        or piece_index >= len(pretrim_pieces)
+                    ):
+                        raise ValueError(
+                            "surface Split pretrim macro %r returned %r and left %d "
+                            "rectangular pieces; expected %d with retained index %d"
+                            % (
+                                pretrim_command,
+                                pretrim_succeeded,
+                                len(pretrim_pieces),
+                                expected_pretrim_count,
+                                piece_index,
+                            )
+                        )
+                    source_id = pretrim_pieces[piece_index][1]
+                    for _bounds, piece_id in pretrim_pieces:
+                        if piece_id != source_id:
+                            document.Objects.Delete(piece_id, True)
+                    document.Objects.UnselectAll()
+                    document.Objects.Select(source_id)
+                command = "_-Split _Isocurve _Direction=_%s _Shrink=_%s %s _Enter" % (
+                    direction.upper() if direction != "both" else "Both",
+                    "Yes" if shrink else "No",
+                    point,
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = []
+                unexpected_geometry_types = []
+                for item in document.Objects:
+                    if item.Id in original_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Surface):
+                        surface_geometry = geometry
+                        object_kind = "surface"
+                        topology = None
+                        trim_bounds = [
+                            float(geometry.Domain(0).T0),
+                            float(geometry.Domain(0).T1),
+                            float(geometry.Domain(1).T0),
+                            float(geometry.Domain(1).T1),
+                        ]
+                    elif (
+                        isinstance(geometry, Rhino.Geometry.Brep)
+                        and geometry.Faces.Count == 1
+                    ):
+                        face = geometry.Faces[0]
+                        surface_geometry = face.UnderlyingSurface()
+                        object_kind = "brep"
+                        topology = _mesh_to_nurb_brep_value(geometry)
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
+                        if not trim_points:
+                            raise ValueError("surface Split returned an empty outer trim loop")
+                        trim_bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                    else:
+                        if isinstance(geometry, Rhino.Geometry.Brep):
+                            unexpected_geometry_types.append(
+                                "%s(faces=%d, loops=%d, trims=%d, edges=%d, vertices=%d)"
+                                % (
+                                    geometry.GetType().FullName,
+                                    geometry.Faces.Count,
+                                    geometry.Loops.Count,
+                                    geometry.Trims.Count,
+                                    geometry.Edges.Count,
+                                    geometry.Vertices.Count,
+                                )
+                            )
+                        else:
+                            unexpected_geometry_types.append(
+                                geometry.GetType().FullName
+                            )
+                        continue
+                    definition = _nurbs_surface_definition(surface_geometry)
+                    objects.append(
+                        (item, definition, object_kind, trim_bounds, topology)
+                    )
+                expected_count = 4 if direction == "both" else 2
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "surface Split macro %r returned %r and left %d surface objects; "
+                        "expected %d; unexpected geometry types: %r; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            unexpected_geometry_types,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item, definition, object_kind, trim_bounds, topology in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Surface Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "object_kind": object_kind,
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                        "surface": definition,
+                        "topology": topology,
+                        "trim_bounds": trim_bounds,
+                    })
+                records.sort(key=lambda record: (
+                    record["trim_bounds"][0],
+                    record["trim_bounds"][2],
+                    record["trim_bounds"][1],
+                    record["trim_bounds"][3],
+                ))
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_surface_isocurve_command)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_trim_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _cut_source(operation["curve"])
+        cutters = []
+        try:
+            for definition in operation["cutters"]:
+                cutters.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+            raise
+        pick = _point(operation["pick"])
+
+        def crossing_selection(point, radius):
+            return "_SelCrossing %.17g,%.17g %.17g,%.17g" % (
+                point.X - radius,
+                point.Y - radius,
+                point.X + radius,
+                point.Y + radius,
+            )
+
+        def trim_curve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            cutter_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Trim Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddCurve(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Trim command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Trim Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Trim command source curve")
+                for cutter in cutters:
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported Trim cutter geometry")
+                    if cutter_id == System.Guid.Empty:
+                        raise ValueError("could not add Trim command cutter object")
+                    cutter_ids.append(cutter_id)
+                    document.Objects.Select(cutter_id)
+                Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)
+                radius = max(1.0, float(source.GetBoundingBox(True).Diagonal.Length)) * 0.02
+                apparent = bool(operation.get("apparent_intersections", True))
+                command = "_-Trim _ApparentIntersections=_%s %s _Enter" % (
+                    "Yes" if apparent else "No",
+                    crossing_selection(pick, radius),
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and item.Id not in cutter_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                if not objects:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Trim macro %r returned %r and left no result curves; history tail: %s"
+                        % (command, succeeded, history[-3000:])
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Trim Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(item.Geometry),
+                        "native": _cut_native_record(item.Geometry),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: tuple(
+                        record["native"]["domain"]
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, trim_curve_command)
+        finally:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+
+    if kind == "curve_split_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve split parameter")
+
+        def split_curve():
+            pieces = source.Split(parameter)
+            if pieces is None or len(pieces) != 2:
+                if pieces is not None:
+                    for piece in pieces:
+                        piece.Dispose()
+                raise ValueError("Rhino curve split failed")
+            try:
+                definitions = []
+                for piece in pieces:
+                    definition = _nurbs_curve_definition(piece)
+                    definition["closed"] = bool(piece.IsClosed)
+                    definition["periodic"] = bool(piece.IsPeriodic)
+                    definitions.append(definition)
+                return definitions
+            finally:
+                for piece in pieces:
+                    piece.Dispose()
+
+        try:
+            return _measure(iterations, split_curve)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_multi_split_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameters = System.Array[System.Double](
+            [
+                _finite(parameter, "curve split parameter")
+                for parameter in operation["parameters"]
+            ]
+        )
+
+        def split_curve_multiple():
+            pieces = source.Split(parameters)
+            if pieces is None:
+                raise ValueError("Rhino multiple curve split failed")
+            try:
+                definitions = []
+                for piece in pieces:
+                    definition = _nurbs_curve_definition(piece)
+                    definition["closed"] = bool(piece.IsClosed)
+                    definition["periodic"] = bool(piece.IsPeriodic)
+                    definitions.append(definition)
+                return definitions
+            finally:
+                for piece in pieces:
+                    piece.Dispose()
+
+        try:
+            return _measure(iterations, split_curve_multiple)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_change_seam_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v", "both"):
+            raise ValueError("surface seam direction must be u, v, or both")
+        parameters = operation["parameter"]
+        if len(parameters) != 2:
+            raise ValueError("surface seam relocation requires a u,v parameter")
+        parameter_u = _finite(parameters[0], "surface U seam parameter")
+        parameter_v = _finite(parameters[1], "surface V seam parameter")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface seam source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface seam source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def change_surface_seam():
+            current = source.ToBrep()
+            if current is None or current.Faces.Count != 1:
+                raise ValueError("could not create a one-face surface seam B-rep")
+            try:
+                axes = []
+                if direction in ("u", "both"):
+                    axes.append((0, parameter_u))
+                if direction in ("v", "both"):
+                    axes.append((1, parameter_v))
+                for axis, parameter in axes:
+                    changed = Rhino.Geometry.Brep.ChangeSeam(
+                        current.Faces[0], axis, parameter, tolerance["absolute"]
+                    )
+                    if changed is None:
+                        raise ValueError("Rhino surface seam relocation failed")
+                    current.Dispose()
+                    current = changed
+                nurbs = current.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface seam relocation returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                current.Dispose()
+
+        try:
+            return _measure(iterations, change_surface_seam)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_reparameterize_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface reparameterization source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface reparameterization source is invalid")
+            domain_u = operation.get("domain_u")
+            domain_v = operation.get("domain_v")
+            if domain_u is None and domain_v is None:
+                sized, width, height = source.GetSurfaceSize()
+                if not sized:
+                    raise ValueError("Rhino could not estimate the NURBS surface size")
+                domain_u = [0.0, float(width)]
+                domain_v = [0.0, float(height)]
+            elif domain_u is None or domain_v is None:
+                raise ValueError(
+                    "surface reparameterization requires both domains or neither"
+                )
+            if len(domain_u) != 2 or len(domain_v) != 2:
+                raise ValueError("surface reparameterization requires U and V domains")
+            targets = [
+                Rhino.Geometry.Interval(
+                    _finite(domain_u[0], "surface U domain start"),
+                    _finite(domain_u[1], "surface U domain end"),
+                ),
+                Rhino.Geometry.Interval(
+                    _finite(domain_v[0], "surface V domain start"),
+                    _finite(domain_v[1], "surface V domain end"),
+                ),
+            ]
+            if not all(target.IsIncreasing for target in targets):
+                raise ValueError("surface reparameterization domains must be increasing")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def reparameterize_surface():
+            duplicate = source.Duplicate()
+            if duplicate is None or not isinstance(
+                duplicate, Rhino.Geometry.NurbsSurface
+            ):
+                raise ValueError("Rhino could not duplicate surface for reparameterization")
+            try:
+                for axis, target in enumerate(targets):
+                    if not duplicate.SetDomain(axis, target):
+                        raise ValueError("Rhino surface reparameterization failed")
+                definition = _nurbs_surface_definition(duplicate)
+                definition["periodic_u"] = bool(duplicate.IsPeriodic(0))
+                definition["periodic_v"] = bool(duplicate.IsPeriodic(1))
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, reparameterize_surface)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_extend_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface extension direction must be u or v")
+        values = operation["domain"]
+        if len(values) != 2:
+            raise ValueError("surface extension domain requires two parameters")
+        target = Rhino.Geometry.Interval(
+            _finite(values[0], "surface extension domain start"),
+            _finite(values[1], "surface extension domain end"),
+        )
+        if not target.IsIncreasing:
+            raise ValueError("surface extension domain must be increasing")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface extension source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface extension source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def extend_surface():
+            duplicate = source.Duplicate()
+            if duplicate is None or not isinstance(
+                duplicate, Rhino.Geometry.NurbsSurface
+            ):
+                raise ValueError("Rhino could not duplicate surface for extension")
+            try:
+                axis = 0 if direction == "u" else 1
+                if not duplicate.Extend(axis, target):
+                    raise ValueError("Rhino natural surface extension failed")
+                definition = _nurbs_surface_definition(duplicate)
+                definition["periodic_u"] = bool(duplicate.IsPeriodic(0))
+                definition["periodic_v"] = bool(duplicate.IsPeriodic(1))
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, extend_surface)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_extend_length_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        edge_name = str(operation["edge"]).lower()
+        edges = {
+            "west": Rhino.Geometry.IsoStatus.West,
+            "south": Rhino.Geometry.IsoStatus.South,
+            "east": Rhino.Geometry.IsoStatus.East,
+            "north": Rhino.Geometry.IsoStatus.North,
+        }
+        if edge_name not in edges:
+            raise ValueError("surface extension edge must be west, south, east, or north")
+        length = _finite(operation["length"], "surface extension length")
+        smooth = bool(operation.get("smooth", True))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface length-extension source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface length-extension source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def extend_surface_by_length():
+            if length < 0.0:
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = System.Guid.Empty
+                nurbs = None
+                try:
+                    document.Objects.UnselectAll()
+                    object_id = document.Objects.AddSurface(source)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add surface shrink source")
+                    surface_object = document.Objects.FindId(object_id)
+                    brep = surface_object.Geometry
+                    edge_index = None
+                    if (
+                        isinstance(brep, Rhino.Geometry.Brep)
+                        and brep.Faces.Count == 1
+                    ):
+                        for trim in brep.Faces[0].OuterLoop.Trims:
+                            if (
+                                trim.IsoStatus == edges[edge_name]
+                                and trim.Edge is not None
+                            ):
+                                edge_index = int(trim.Edge.EdgeIndex)
+                                break
+                    if edge_index is None:
+                        raise ValueError("could not locate natural surface shrink edge")
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.BrepEdge,
+                        edge_index,
+                    )
+                    if surface_object.SelectSubObject(
+                        component, True, True, False
+                    ) == 0:
+                        raise ValueError("could not select surface shrink edge")
+                    command = "_-ExtendSrf _Type=_%s _Merge=_Yes %.17g _Enter" % (
+                        "Smooth" if smooth else "Line",
+                        length,
+                    )
+                    Rhino.RhinoApp.RunScript(command, False)
+                    result_object = document.Objects.FindId(object_id)
+                    if result_object is None:
+                        raise ValueError("surface shrink removed its source")
+                    geometry = result_object.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep):
+                        if geometry.Faces.Count != 1:
+                            raise ValueError("surface shrink returned a polysurface")
+                        nurbs = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                    else:
+                        nurbs = geometry.ToNurbsSurface()
+                    if nurbs is None:
+                        raise ValueError("surface shrink returned no NURBS surface")
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    if nurbs is not None:
+                        nurbs.Dispose()
+                    document.Objects.UnselectAll()
+                    if document.Objects.FindId(object_id) is not None:
+                        document.Objects.Delete(object_id, True)
+
+            result = source.Extend(edges[edge_name], length, smooth)
+            if result is None:
+                raise ValueError("Rhino surface length extension failed")
+            try:
+                nurbs = result.ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface length extension returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_surface_by_length)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_direction_edit_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        edit = str(operation["edit"]).lower()
+        if edit not in ("u_reverse", "v_reverse", "swap_uv"):
+            raise ValueError("surface direction edit must be u_reverse, v_reverse, or swap_uv")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface direction source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface direction source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def edit_surface_direction():
+            if edit == "u_reverse":
+                result = source.Reverse(0)
+            elif edit == "v_reverse":
+                result = source.Reverse(1)
+            else:
+                result = source.Transpose()
+            if result is None:
+                raise ValueError("Rhino surface direction edit failed")
+            try:
+                nurbs = result.ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface direction edit returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, edit_surface_direction)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_insert_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(
+            operation["parameter"], "curve control-point insertion parameter"
+        )
+        midpoint = bool(operation.get("midpoint", False))
+        point = source.PointAt(parameter)
+        command = "_InsertControlPoint _Midpoint=_%s %s _Enter" % (
+            "Yes" if midpoint else "No",
+            _command_point(_xyz(point)),
+        )
+
+        def insert_curve_control_point():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add InsertControlPoint source curve")
+                document.Objects.Select(object_id, True)
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve control-point insertion failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("InsertControlPoint removed the curve")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("InsertControlPoint returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, insert_curve_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_insert_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface control-point insertion axis must be u or v")
+        parameters = operation["parameter"]
+        if len(parameters) != 2:
+            raise ValueError("surface control-point insertion requires a u,v parameter")
+        parameter_u = _finite(parameters[0], "surface U insertion parameter")
+        parameter_v = _finite(parameters[1], "surface V insertion parameter")
+        midpoint = bool(operation.get("midpoint", False))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate InsertControlPoint source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("InsertControlPoint source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+        point = source.PointAt(parameter_u, parameter_v)
+        # Rhino's option names the orientation of the inserted row. A U row
+        # therefore adds one control in the V parameter direction, and vice
+        # versa; the protocol names the parameter axis whose count increases.
+        command_direction = "V" if direction == "u" else "U"
+        command = "_InsertControlPoint _Direction=_%s _Midpoint=_%s %s _Enter" % (
+            command_direction,
+            "Yes" if midpoint else "No",
+            _command_point(_xyz(point)),
+        )
+
+        def insert_surface_control_point():
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add InsertControlPoint source surface")
+                document.Objects.Select(object_id, True)
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface control-point insertion failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("InsertControlPoint removed the surface")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError(
+                            "surface control-point insertion returned a polysurface"
+                        )
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("InsertControlPoint returned no NURBS surface")
+                expected_u = count_u + (1 if direction == "u" else 0)
+                expected_v = count_v + (1 if direction == "v" else 0)
+                if result.Points.CountU != expected_u or result.Points.CountV != expected_v:
+                    raise ValueError(
+                        "InsertControlPoint returned an unexpected surface control count"
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, insert_surface_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_remove_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        control_point_index = int(operation["control_point_index"])
+
+        def remove_control_point():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveControlPoint source curve")
+                curve_object = document.Objects.FindId(object_id)
+                curve_object.GripsOn = True
+                grips = curve_object.GetGrips()
+                if (
+                    grips is None
+                    or control_point_index < 0
+                    or control_point_index >= len(grips)
+                ):
+                    raise ValueError("RemoveControlPoint control index is invalid")
+                if int(grips[control_point_index].Select(True)) == 0:
+                    raise ValueError("could not select RemoveControlPoint curve grip")
+                if not Rhino.RhinoApp.RunScript("_Delete", False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve control-point removal failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveControlPoint removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("RemoveControlPoint returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    existing.GripsOn = False
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, remove_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_remove_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface control-point direction must be u or v")
+        control_point_index = int(operation["control_point_index"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate RemoveControlPoint source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("RemoveControlPoint source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def remove_surface_control_point():
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveControlPoint source surface")
+                surface_object = document.Objects.FindId(object_id)
+                surface_object.GripsOn = True
+                grips = surface_object.GetGrips()
+                if grips is None:
+                    raise ValueError("could not enable surface grips")
+                grip_count_u = count_u - degree_u if source.IsPeriodic(0) else count_u
+                grip_count_v = count_v - degree_v if source.IsPeriodic(1) else count_v
+                if direction == "u":
+                    if control_point_index < 0 or control_point_index >= grip_count_u:
+                        raise ValueError("surface U control-point index is invalid")
+                    grip_indices = [
+                        control_point_index * grip_count_v + v_index
+                        for v_index in range(grip_count_v)
+                    ]
+                else:
+                    if control_point_index < 0 or control_point_index >= grip_count_v:
+                        raise ValueError("surface V control-point index is invalid")
+                    grip_indices = [
+                        u_index * grip_count_v + control_point_index
+                        for u_index in range(grip_count_u)
+                    ]
+                if any(int(grips[index].Select(True)) == 0 for index in grip_indices):
+                    raise ValueError("could not select RemoveControlPoint surface grips")
+                if not Rhino.RhinoApp.RunScript("_Delete", False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface control-point removal failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveControlPoint removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("surface grip deletion returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("RemoveControlPoint returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    existing.GripsOn = False
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, remove_surface_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_make_uniform_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction_name = str(operation.get("direction", "both")).lower()
+        directions = {"u": 0, "v": 1, "both": 2}
+        if direction_name not in directions:
+            raise ValueError("surface uniform direction must be u, v, or both")
+        direction = directions[direction_name]
+        command_name = operation.get("rhino_command")
+        if command_name not in (None, "make_uniform", "make_uniform_uv"):
+            raise ValueError(
+                "surface uniform Rhino command must be make_uniform or make_uniform_uv"
+            )
+        if command_name == "make_uniform" and direction_name != "both":
+            raise ValueError("Rhino MakeUniform always changes both surface directions")
+        if command_name == "make_uniform_uv" and direction_name == "both":
+            raise ValueError("Rhino MakeUniformUV command direction must be u or v")
+
+        def make_uniform_surface():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                if command_name is None:
+                    if not surface.MakeUniform(direction):
+                        raise ValueError("Rhino surface uniformization failed")
+                    definition = _nurbs_surface_definition(surface)
+                    definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                    definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                    return definition
+
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = System.Guid.Empty
+                result = None
+                try:
+                    document.Objects.UnselectAll()
+                    object_id = document.Objects.AddSurface(surface)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add surface to Rhino")
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select surface")
+                    if command_name == "make_uniform":
+                        command = "_-MakeUniform _All _Enter"
+                    else:
+                        command = "_-MakeUniformUV _Direction=_%s _All _Enter" % (
+                            direction_name.capitalize()
+                        )
+                    Rhino.RhinoApp.RunScript(command, False)
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("surface uniform command removed the object")
+                    geometry = rhino_object.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep):
+                        if geometry.Faces.Count != 1:
+                            history = Rhino.RhinoApp.CommandHistoryWindowText
+                            raise ValueError(
+                                "surface uniform command made a %d-face polysurface; "
+                                "history tail: %s"
+                                % (geometry.Faces.Count, history[-3000:])
+                            )
+                        result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                    else:
+                        result = geometry.ToNurbsSurface()
+                    if result is None:
+                        raise ValueError("surface uniform command returned no NURBS surface")
+                    definition = _nurbs_surface_definition(result)
+                    definition["periodic_u"] = bool(result.IsPeriodic(0))
+                    definition["periodic_v"] = bool(result.IsPeriodic(1))
+                    return definition
+                finally:
+                    if result is not None:
+                        result.Dispose()
+                    if object_id != System.Guid.Empty:
+                        document.Objects.Delete(object_id, True)
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, make_uniform_surface)
+
+    if kind == "surface_insert_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface knot direction must be u or v")
+        parameter = _finite(operation["parameter"], "surface knot parameter")
+        multiplicity = int(operation["multiplicity"])
+
+        def insert_surface_knot():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                knots = surface.KnotsU if direction == "u" else surface.KnotsV
+                if not knots.InsertKnot(parameter, multiplicity):
+                    raise ValueError("Rhino surface knot insertion failed")
+                definition = _nurbs_surface_definition(surface)
+                definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                return definition
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, insert_surface_knot)
+
+    if kind == "surface_remove_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface knot direction must be u or v")
+        parameter = _finite(operation["parameter"], "surface knot parameter")
+
+        def remove_surface_knot():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                knots = surface.KnotsU if direction == "u" else surface.KnotsV
+                degree = degree_u if direction == "u" else degree_v
+                point_count = count_u if direction == "u" else count_v
+                knot_index = min(
+                    range(degree - 1, point_count),
+                    key=lambda index: (
+                        abs(float(knots[index]) - parameter),
+                        -float(knots[index]),
+                    ),
+                )
+                if not knots.RemoveKnots(knot_index, knot_index + 1):
+                    raise ValueError("Rhino surface knot removal failed")
+                definition = _nurbs_surface_definition(surface)
+                definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                return definition
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, remove_surface_knot)
+
+    if kind == "surface_remove_multi_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        remove_fully = bool(operation.get("remove_fully_multiple_knots", False))
+        max_kink_angle = _finite(
+            operation.get("maximum_kink_angle_degrees", 1.0),
+            "maximum kink angle",
+        )
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate RemoveMultiKnot source surface")
+        try:
+            _set_surface_controls(source, operation["control_points"], count_u, count_v)
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("RemoveMultiKnot source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def remove_surface_multi_knots():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveMultiKnot source surface")
+                command = "_-RemoveMultiKnot _RemoveFullyMultipleKnots=_%s" % (
+                    "Yes" if remove_fully else "No"
+                )
+                if remove_fully:
+                    command += " _MaxKinkAngle=%.17g" % max_kink_angle
+                command += " _SelID %s _Enter" % str(object_id)
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveMultiKnot removed the source surface")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("RemoveMultiKnot returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("RemoveMultiKnot returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, remove_surface_multi_knots)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_change_degree_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        deformable = bool(operation.get("deformable", False))
+
+        def change_curve_degree():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add ChangeDegree source curve")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select ChangeDegree source curve")
+                command = "_-ChangeDegree _Deformable=_%s %d _Enter" % (
+                    "Yes" if deformable else "No",
+                    degree,
+                )
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve ChangeDegree failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("ChangeDegree removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("ChangeDegree returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, change_curve_degree)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_make_periodic_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        smooth = bool(operation.get("smooth", True))
+
+        def make_curve_periodic():
+            result = Rhino.Geometry.Curve.CreatePeriodicCurve(source, smooth)
+            if result is None:
+                raise ValueError("Rhino curve periodic conversion returned no result")
+            try:
+                nurbs = result.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino periodic curve has no NURBS representation")
+                try:
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, make_curve_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "curve_make_non_periodic_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+
+        def make_curve_non_periodic():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("could not duplicate periodic curve")
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(duplicate)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add periodic curve to Rhino")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select periodic curve")
+                Rhino.RhinoApp.RunScript("_-MakeNonPeriodic _Enter", False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakeNonPeriodic removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None or result.IsPeriodic:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakeNonPeriodic did not produce a non-periodic curve; "
+                        "history tail: %s" % history[-3000:]
+                    )
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_curve_non_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_change_degree_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        desired_u = int(operation["desired_degree_u"])
+        desired_v = int(operation["desired_degree_v"])
+        deformable = bool(operation.get("deformable", False))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate ChangeDegree source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("ChangeDegree source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def change_surface_degree():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add ChangeDegree source surface")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select ChangeDegree source surface")
+                command = "_-ChangeDegree _Deformable=_%s %d %d _Enter" % (
+                    "Yes" if deformable else "No",
+                    desired_u,
+                    desired_v,
+                )
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface ChangeDegree failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("ChangeDegree removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("ChangeDegree returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("ChangeDegree returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, change_surface_degree)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_make_periodic_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction_name = str(operation["direction"]).lower()
+        directions = {"u": 0, "v": 1}
+        command_name = operation.get("rhino_command")
+        if command_name not in (None, "make_periodic"):
+            raise ValueError("surface periodic Rhino command must be make_periodic")
+        if command_name is None and direction_name not in directions:
+            raise ValueError("surface periodic API direction must be u or v")
+        if command_name is not None and direction_name not in ("u", "v", "both"):
+            raise ValueError("surface periodic command direction must be u, v, or both")
+        smooth = bool(operation.get("smooth", True))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate closed NURBS surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("closed NURBS surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def make_surface_periodic():
+            if command_name is None:
+                result = Rhino.Geometry.Surface.CreatePeriodicSurface(
+                    source, directions[direction_name], smooth
+                )
+                if result is None:
+                    raise ValueError(
+                        "Rhino surface periodic conversion returned no result"
+                    )
+                try:
+                    nurbs = result.ToNurbsSurface()
+                    if nurbs is None:
+                        raise ValueError(
+                            "Rhino periodic surface has no NURBS representation"
+                        )
+                    try:
+                        definition = _nurbs_surface_definition(nurbs)
+                        definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                        definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                        return definition
+                    finally:
+                        nurbs.Dispose()
+                finally:
+                    result.Dispose()
+
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add closed surface to Rhino")
+                command = (
+                    "_-MakePeriodic _Smooth=_%s '_-SelID %s _Enter "
+                    "_DeleteInput=_Yes _Enter"
+                ) % (
+                    "Yes" if smooth else "No",
+                    object_id,
+                )
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakePeriodic removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        history = Rhino.RhinoApp.CommandHistoryWindowText
+                        raise ValueError(
+                            "MakePeriodic made a %d-face polysurface; history tail: %s"
+                            % (geometry.Faces.Count, history[-3000:])
+                        )
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakePeriodic returned no NURBS surface; history tail: %s"
+                        % history[-3000:]
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, make_surface_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_make_non_periodic_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate periodic NURBS surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("periodic NURBS surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def make_surface_non_periodic():
+            duplicate = source.Duplicate()
+            if duplicate is None:
+                raise ValueError("could not duplicate periodic surface")
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(duplicate)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add periodic surface to Rhino")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select periodic surface")
+                Rhino.RhinoApp.RunScript("_-MakeNonPeriodic _Enter", False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakeNonPeriodic removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("MakeNonPeriodic surface became a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None or result.IsPeriodic(0) or result.IsPeriodic(1):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakeNonPeriodic left a periodic surface direction; "
+                        "history tail: %s" % history[-3000:]
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_surface_non_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "conic":
+        document = Rhino.RhinoDoc.ActiveDoc
+        start = _point(operation["start"])
+        apex = _point(operation["apex"])
+        end = _point(operation["end"])
+        if bool(operation.get("apex_first", False)):
+            command = "_-Conic %s _Apex %s %s" % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(apex)),
+                _command_point(_xyz(end)),
+            )
+        else:
+            command = "_-Conic %s %s %s" % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(apex)),
+            )
+        definition = operation["definition"]
+        mode = str(definition["mode"])
+        if mode == "rho":
+            rho = _finite(definition["value"], "conic rho")
+            if not 0.0 < rho < 1.0:
+                raise ValueError("conic rho must be between zero and one")
+            command += " %.17g" % rho
+        elif mode == "through_point":
+            command += " " + _command_point(
+                _xyz(_point(definition["point"]))
+            )
+        else:
+            raise ValueError("unknown conic definition mode: %s" % mode)
+
+        def create_conic():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "conic macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError("conic did not create curve geometry")
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_conic)
+
+    if kind == "hyperbola":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        semi_transverse_axis = _finite(
+            operation["semi_transverse_axis"], "hyperbola A coefficient"
+        )
+        semi_conjugate_axis = _finite(
+            operation["semi_conjugate_axis"], "hyperbola B coefficient"
+        )
+        axial_extent = _finite(
+            operation["axial_extent"], "hyperbola axial extent"
+        )
+        if (
+            not semi_transverse_axis > 0.0
+            or not semi_conjugate_axis > 0.0
+            or not axial_extent > semi_transverse_axis
+        ):
+            raise ValueError("hyperbola dimensions are degenerate")
+        both_branches = bool(operation["both_branches"])
+        command = (
+            "_-Hyperbola _FromCoefficient 0,0,0 1,0,0 "
+            "_A=%.17g _B=%.17g _BothBranches=_%s _MarkFoci=_No "
+            "_ShowAsymptotes=_No %.17g,-1,0"
+            % (
+                semi_transverse_axis,
+                semi_conjugate_axis,
+                "Yes" if both_branches else "No",
+                axial_extent,
+            )
+        )
+
+        def create_hyperbola():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curves = []
+            try:
+                expected_count = 2 if both_branches else 1
+                if len(created) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "hyperbola macro %r returned %r and created %d objects; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(created),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                for rhino_object in created:
+                    geometry = rhino_object.Geometry
+                    curve = None
+                    if isinstance(geometry, Rhino.Geometry.Curve):
+                        curve = geometry.DuplicateCurve()
+                    if curve is None:
+                        raise ValueError("hyperbola did not create curve geometry")
+                    if not curve.Reverse():
+                        curve.Dispose()
+                        raise ValueError("could not normalize hyperbola direction")
+                    curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                    if not curve.Transform(transform):
+                        curve.Dispose()
+                        raise ValueError("could not orient hyperbola")
+                    curves.append(curve)
+                return {
+                    "curves": [
+                        _nurbs_curve_definition(curve) for curve in curves
+                    ]
+                }
+            finally:
+                for curve in curves:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_hyperbola)
+
+    if kind == "paraboloid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        radius = _finite(operation["radius"], "paraboloid radius")
+        height = _finite(operation["height"], "paraboloid height")
+        if not radius > 0.0 or not height > 0.0:
+            raise ValueError("paraboloid dimensions must be positive")
+        focal_distance = 0.25 * radius * (radius / height)
+        if math.isnan(focal_distance) or math.isinf(focal_distance):
+            raise ValueError("paraboloid focal distance must be finite")
+        solid = bool(operation["solid"])
+        command = (
+            "_-Paraboloid _Vertex _MarkFocus=_No _Solid=_%s "
+            "0,0,0 0,0,%.17g %.17g,0,0"
+            % ("Yes" if solid else "No", focal_distance, radius)
+        )
+
+        def create_paraboloid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "paraboloid macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError(
+                        "paraboloid did not create B-rep-compatible geometry"
+                    )
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient paraboloid")
+                expected_faces = 2 if solid else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "paraboloid macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_paraboloid)
+
+    if kind == "pyramid" or kind == "truncated_pyramid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        command_name = "Pyramid" if kind == "pyramid" else "TruncatedPyramid"
+        side_count = int(operation["side_count"])
+        base_radius = _finite(
+            operation["radius"] if kind == "pyramid" else operation["base_radius"],
+            "pyramid base radius",
+        )
+        height = _finite(operation["height"], "pyramid height")
+        solid = bool(operation["solid"])
+        if kind == "pyramid":
+            command = (
+                "_-%s _NumSides=%d _DirectionConstraint=_Vertical _Solid=_%s "
+                "0,0,0 %.17g,0,0 0,0,%.17g"
+                % (
+                    command_name,
+                    side_count,
+                    "Yes" if solid else "No",
+                    base_radius,
+                    height,
+                )
+            )
+        else:
+            top_radius = _finite(operation["top_radius"], "pyramid top radius")
+            command = (
+                "_-%s _NumSides=%d _DirectionConstraint=_Vertical _Solid=_%s "
+                "0,0,0 %.17g,0,0 0,0,%.17g %.17g"
+                % (
+                    command_name,
+                    side_count,
+                    "Yes" if solid else "No",
+                    base_radius,
+                    height,
+                    top_radius,
+                )
+            )
+
+        def create_pyramid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "pyramid macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("pyramid did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient pyramid")
+                expected_faces = side_count
+                if solid:
+                    expected_faces += 2 if kind == "truncated_pyramid" else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "pyramid macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_pyramid)
+
+    if kind == "truncated_cone":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        base_radius = _finite(
+            operation["base_radius"], "truncated-cone base radius"
+        )
+        end_radius = _finite(
+            operation["end_radius"], "truncated-cone end radius"
+        )
+        height = _finite(operation["height"], "truncated-cone height")
+        solid = bool(operation["solid"])
+        command = (
+            "_-TruncatedCone _DirectionConstraint=_Vertical _Solid=_%s "
+            "0,0,0 %.17g %.17g %.17g"
+            % ("Yes" if solid else "No", base_radius, height, end_radius)
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_truncated_cone():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "TruncatedCone macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-2000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("truncated cone did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient truncated cone")
+                expected_faces = 3 if solid else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "TruncatedCone macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep) if solid else None,
+                    "wall": _nurbs_surface_definition(
+                        brep.Faces[0].UnderlyingSurface()
+                    ),
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_truncated_cone)
+
+    if kind == "tube":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        inner_radius = _finite(operation["inner_radius"], "tube inner radius")
+        outer_radius = _finite(operation["outer_radius"], "tube outer radius")
+        height = _finite(operation["height"], "tube height")
+        command = (
+            "_-Tube _DirectionConstraint=_Vertical 0,0,0 %.17g %.17g "
+            "_BothSides=_No %.17g"
+            % (outer_radius, inner_radius, height)
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_tube():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Tube macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-2000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("tube did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient tube")
+                if brep.Faces.Count != 4:
+                    raise ValueError(
+                        "Tube macro %r created %d faces, expected 4"
+                        % (command, brep.Faces.Count)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_tube)
+
+    if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        sphere = Rhino.Geometry.Sphere(
+            plane,
+            _finite(operation["radius"], "subdivision mesh-sphere radius"),
+        )
+        subdivisions = int(operation["subdivisions"])
+
+        def create_subdivision_mesh_sphere():
+            if kind == "mesh_quad_sphere":
+                mesh = Rhino.Geometry.Mesh.CreateQuadSphere(sphere, subdivisions)
+            else:
+                mesh = Rhino.Geometry.Mesh.CreateIcoSphere(sphere, subdivisions)
+            if mesh is None:
+                raise ValueError("could not create subdivision mesh sphere")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_subdivision_mesh_sphere)
+
+    if kind == "mesh_torus":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        major_radius = _finite(
+            operation["major_radius"], "mesh-torus major radius"
+        )
+        minor_radius = _finite(
+            operation["minor_radius"], "mesh-torus minor radius"
+        )
+        torus = Rhino.Geometry.Torus(plane, major_radius, minor_radius)
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+
+        def create_mesh_torus():
+            mesh = Rhino.Geometry.Mesh.CreateFromTorus(
+                torus,
+                vertical,
+                around,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh torus")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_torus)
+
+    if kind == "nurbs_surface_mesh":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        surface = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if surface is None:
+            raise ValueError("could not allocate NURBS surface")
+        _set_surface_controls(
+            surface, operation["control_points"], count_u, count_v
+        )
+        _set_knots(surface.KnotsU, operation["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, operation["knots_v"], "surface V knot")
+        if not surface.IsValid:
+            surface.Dispose()
+            raise ValueError("NURBS surface is invalid")
+        density = _finite(operation.get("density", 0.5), "mesh density")
+        if density < 0.0 or density > 1.0:
+            surface.Dispose()
+            raise ValueError("mesh density must lie in [0, 1]")
+        parameters = Rhino.Geometry.MeshingParameters(density)
+        parameters.JaggedSeams = bool(operation.get("jagged_seams", False))
+        parameters.SimplePlanes = bool(operation.get("simple_planes", False))
+
+        def mesh_surface():
+            mesh = Rhino.Geometry.Mesh.CreateFromSurface(surface, parameters)
+            if mesh is None:
+                raise ValueError("could not mesh NURBS surface")
+            try:
+                return _canonical_polygon_mesh_face_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, mesh_surface)
+        finally:
+            parameters.Dispose()
+            surface.Dispose()
+
+    if kind == "nurbs_surface_extract_points":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        surface = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if surface is None:
+            raise ValueError("could not allocate NURBS surface")
+        _set_surface_controls(
+            surface, operation["control_points"], count_u, count_v
+        )
+        _set_knots(surface.KnotsU, operation["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, operation["knots_v"], "surface V knot")
+        if not surface.IsValid:
+            surface.Dispose()
+            raise ValueError("NURBS surface is invalid")
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_id = document.Objects.AddSurface(surface)
+        if object_id == System.Guid.Empty:
+            surface.Dispose()
+            raise ValueError("could not add NURBS surface grip probe")
+        surface_object = document.Objects.FindId(object_id)
+        try:
+            surface_object.GripsOn = True
+            grips = surface_object.GetGrips()
+            if grips is None:
+                raise ValueError("could not enable NURBS surface grips")
+            return _measure(
+                iterations,
+                lambda: [_xyz(grip.CurrentLocation) for grip in grips],
+            )
+        finally:
+            surface_object.GripsOn = False
+            document.Objects.Delete(object_id, True)
+            surface.Dispose()
+
+    if kind == "nurbs_surface_evaluate":
+        return _nurbs_surface_evaluate(operation, iterations)
+    if kind == "offset_surface_face_geometry":
+        return _offset_surface_face_geometry(operation, iterations, tolerance)
+
+    raise ValueError("unsupported oracle operation: %s" % kind)
+
+
+def _validate_request(request):
+    if request.get("protocol_version") != PROTOCOL_VERSION:
+        raise ValueError(
+            "unsupported oracle protocol version %r" % request.get("protocol_version")
+        )
+    iterations = request.get("iterations", 1)
+    if isinstance(iterations, bool) or int(iterations) != iterations:
+        raise ValueError("oracle iterations must be an integer")
+    iterations = int(iterations)
+    if iterations < 1 or iterations > MAX_ITERATIONS:
+        raise ValueError("oracle iterations must be from 1 through %d" % MAX_ITERATIONS)
+    operations = request.get("operations")
+    if not isinstance(operations, list):
+        raise ValueError("oracle operations must be an array")
+    ids = set()
+    for operation in operations:
+        operation_id = operation.get("id")
+        if not isinstance(operation_id, string_types) or not operation_id.strip():
+            raise ValueError("oracle operation id must be a non-empty string")
+        if operation_id in ids:
+            raise ValueError("duplicated oracle operation id: %s" % operation_id)
+        ids.add(operation_id)
+        if operation.get('op') == 'block_workflow':
+            import block_workflow_probe
+            if iterations != 1:
+                raise ValueError('block workflows require one iteration')
+            block_workflow_probe.validate(operation)
+    tolerance = dict(DEFAULT_TOLERANCE)
+    tolerance.update(request.get("tolerance") or {})
+    for name in ("absolute", "relative", "angular"):
+        tolerance[name] = _finite(tolerance[name], "%s tolerance" % name)
+        if not tolerance[name] > 0.0:
+            raise ValueError("%s tolerance must be positive" % name)
+    return iterations, operations, tolerance
+
+
+@contextmanager
+def _document_tolerance(document, tolerance):
+    """Run command macros with the same tolerance as the native document."""
+    if document is None:
+        raise ValueError("oracle requires an active Rhino document")
+    properties = (
+        ("ModelAbsoluteTolerance", "absolute"),
+        ("ModelRelativeTolerance", "relative"),
+        ("ModelAngleToleranceRadians", "angular"),
+    )
+    previous = [(name, getattr(document, name)) for name, _key in properties]
+    try:
+        for name, key in properties:
+            setattr(document, name, tolerance[key])
+            if getattr(document, name) != tolerance[key]:
+                raise ValueError("Rhino did not accept the requested %s" % name)
+        yield
+    finally:
+        for name, value in previous:
+            setattr(document, name, value)
+
+
+def _response(request):
+    iterations = request.get("iterations", 1) if isinstance(request, dict) else 1
+    response = {
+        "protocol_version": PROTOCOL_VERSION,
+        "engine": "rhino",
+        "engine_version": str(Rhino.RhinoApp.Version),
+        "iterations": iterations,
+        "results": [],
+    }
+    try:
+        iterations, operations, tolerance = _validate_request(request)
+        response["iterations"] = iterations
+        with _document_tolerance(Rhino.RhinoDoc.ActiveDoc, tolerance):
+            for operation in operations:
+                _record_progress(
+                    "operation %s: start"
+                    % operation.get("id", operation.get("op", "unknown"))
+                )
+                value, elapsed = _execute(operation, iterations, tolerance)
+                response["results"].append(
+                    {
+                        "id": operation["id"],
+                        "value": value,
+                        "elapsed_ns": elapsed,
+                    }
+                )
+    except Exception as error:
+        response["results"] = []
+        response["error"] = "%s at %s: %s" % (
+            type(error).__name__,
+            LAST_PROGRESS_STAGE,
+            error,
+        )
+    return response
+
+
+def _main(at_idle=False):
+    _record_progress("worker: started")
+    job_directory = os.path.dirname(os.path.abspath(__file__))
+    request_path = os.path.join(job_directory, "request.json")
+    response_path = os.path.join(job_directory, "response.json")
+    temporary_path = response_path + ".tmp"
+    request = {}
+    try:
+        with open(request_path, "r") as stream:
+            request = json.load(stream)
+        if not at_idle and any(op.get('op') in ('apply_uv_curves_command','create_uv_curves_command','uv_face_reference_command','uv_subcurve_input_command','subcurve_numeric_followup','standalone_subcurve','subcurve_mark_ends','subcurve_midpoint','subcurve_preferences','subcurve_direction','subcurve_direction_grid','subcurve_edge') for op in request.get('operations', [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        if not at_idle and any(op.get("op") in ("transform_copy_command", "twist_command", "twist_options_command", "bend_command_points", "bend_geometry_command", "bend_options_command", "taper_command_points", "taper_geometry_command", "taper_options_command", "maelstrom_command_points", "maelstrom_geometry_command", "maelstrom_options_command", "maelstrom_input_command", "maelstrom_circle_command", "maelstrom_fit_points_command", "circle_fit_points", "circle_fit_selection", "circle_fit_grips", "circle_fit_grips_commands", "grip_transform", "scale_nu", "scale_nu_reference", "scale_nu_options", "scale_positions", "scale_positions_cursor", "point_input_precision", "scale_by_plane", "scale_by_plane_object", "scale_by_plane_curve", "smooth_command", "smooth_frames", "smooth_uvn", "smooth_workflow", "grip_alias", "convex_boolean", "polyhedral_boolean", "polyhedral_boolean_command", "compound_intersection", "compound_pairs", "common_participation", "surface_curve_image", "surface_pullback_endpoints", "surface_pullback_linear", "surface_pullback_interpolation", "boolean_union_command", "boolean_intersection_command", "boolean_difference_command", "boolean_difference_order_command", "boolean_split_command", "boolean_split_plane", "boolean_split_open", "boolean_split_mixed_open", "boolean_split_topology", "boolean_two_command", "boolean_two_open", "boolean_two_coplanar", "planar_boolean_command", "planar_boolean_topology", "planar_boolean_circular", "planar_boolean_mixed", "planar_boolean_scale", "planar_circle_scale", "tween_surfaces_command", "tween_surfaces_sampling", "tween_surfaces_refit", "tween_surfaces_interaction", "tween_surfaces_options", "tween_surfaces_sample_memory", "tween_surfaces_corners", "tween_surfaces_corner_sequences", "tween_surfaces_control", "tween_surfaces_control_rows", "tween_surfaces_control_followup", "surface_rebuild", "surface_rebuild_options", "surface_rebuild_option_followup", "surface_rebuild_retrim", "surface_rebuild_retrim_followup", "surface_rebuild_natural", "surface_rebuild_closed", "surface_rebuild_closed_degrees", "surface_rebuild_seam_trim", "surface_rebuild_crossing_hole", "surface_rebuild_singular_trim", "surface_retrim_profile") for op in request.get("operations", [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        if not at_idle and any(op.get("op") in ("merge_edges_command", "merge_edge_command", "split_edge_command", "untrim_holes_command", "unjoin_edge_command", "untrim_command", "shrink_trimmed_srf_command", "shrink_trimmed_srf_to_edge_command", "extract_srf_command") and
+                op.get("undo_redo", False) for op in request.get("operations", [])):
+            import merge_edges_probe
+            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
+            return
+        _record_progress("worker: request loaded")
+        response = _response(request)
+        _record_progress("worker: response computed")
+    except Exception as error:
+        response = {
+            "protocol_version": PROTOCOL_VERSION,
+            "engine": "rhino",
+            "engine_version": str(Rhino.RhinoApp.Version),
+            "iterations": 1,
+            "results": [],
+            "error": "%s: %s" % (type(error).__name__, error),
+        }
+    with open(temporary_path, "w") as stream:
+        json.dump(response, stream, indent=2, allow_nan=False)
+        stream.write("\n")
+    if os.path.exists(response_path):
+        os.remove(response_path)
+    os.rename(temporary_path, response_path)
+    _record_progress("worker: response published")
+    host_options = {}
+    if isinstance(request, dict):
+        host_options = request.get("_host") or {}
+    if host_options.get("exit_rhino_when_complete"):
+        Rhino.RhinoApp.Exit(False)
+
+
+if __name__ == "__main__":
+    _main()

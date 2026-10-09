@@ -100,9 +100,13 @@ pub(super) fn run(f: &Fixture, tolerance: Tolerance) -> Result<(Value, u64), Pro
             let points = (0..=16)
                 .map(|i| {
                     curve
-                        .evaluate(
-                            *domain.start() + (*domain.end() - *domain.start()) * i as f64 / 16.,
-                        )
+                        .evaluate(if i == 0 {
+                            *domain.start()
+                        } else if i == 16 {
+                            *domain.end()
+                        } else {
+                            *domain.start() + (*domain.end() - *domain.start()) * i as f64 / 16.
+                        })
                         .map(Point3::to_array)
                 })
                 .collect::<Result<Vec<_>, _>>()?;

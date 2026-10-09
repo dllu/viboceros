@@ -1,0 +1,395 @@
+//! Command-owned object filters and typed options for selection prompts.
+use super::*;
+
+mod choice;
+pub use choice::{ChoiceSelectionOption, SelectionToggle};
+
+#[cfg(test)]
+mod tests;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum ObjectSelectionFilter {
+    #[default]
+    Any,
+    Section,
+    BlockEditSources,
+    Blocks,
+    Grouped,
+    Mesh,
+    Smooth,
+    PolygonCount,
+    Curves,
+    ApplyCurves,
+    Join,
+    ToNurbs,
+    Beziers,
+    Parametric,
+    Cap,
+    SurfaceComponents,
+    Surfaces,
+    Points,
+    ControlPoints,
+    PointCloudSources,
+    PointCloudAddSources,
+    PointCloudRemoveTarget,
+    PointCloud,
+    HiddenObjects,
+    LockedObjects,
+    Area,
+    Volume,
+}
+
+impl ObjectSelectionFilter {
+    /// Apply both geometry and attribute restrictions to a document object.
+    /// Visibility and locking remain the caller's selection-policy decision.
+    pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
+        let geometry = object.geometry();
+        match self {
+            Self::Volume => matches!(
+                geometry,
+                Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+            ),
+            Self::Area => {
+                matches!(
+                    geometry,
+                    Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                ) || geometry
+                    .curve_ref()
+                    .is_some_and(|curve| curve.is_closed().unwrap_or(false))
+            }
+            Self::Any | Self::BlockEditSources => true,
+            Self::Section => {
+                geometry.curve_ref().is_some()
+                    || matches!(
+                        geometry,
+                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    )
+            }
+            Self::Blocks => matches!(geometry, Geometry::BlockInstance(_)),
+            Self::Smooth => geometry.supports_smoothing(),
+            Self::Grouped => !object.group_ids().is_empty(),
+            Self::PointCloudSources => matches!(geometry, Geometry::Point(_) | Geometry::Mesh(_)),
+            Self::Points => matches!(geometry, Geometry::Point(_)),
+            Self::ControlPoints => geometry.supports_control_points(),
+            Self::PointCloudAddSources => {
+                matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
+            }
+            Self::PointCloudRemoveTarget | Self::PointCloud => {
+                matches!(geometry, Geometry::PointCloud(_))
+            }
+            Self::HiddenObjects => !object.attributes().is_visible(),
+            Self::LockedObjects => object.attributes().is_locked(),
+            Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::PolygonCount => matches!(
+                geometry,
+                Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+            ),
+            Self::Curves => geometry.curve_ref().is_some(),
+            Self::ApplyCurves => {
+                matches!(geometry, Geometry::Point(_)) || geometry.curve_ref().is_some()
+            }
+            Self::Join => {
+                geometry.curve_ref().is_some()
+                    || matches!(
+                        geometry,
+                        Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                    )
+            }
+            Self::ToNurbs => !matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_)),
+            Self::Cap => matches!(
+                geometry,
+                Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
+            ),
+            Self::Parametric => {
+                geometry.curve_ref().is_some()
+                    || matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))
+            }
+            Self::Beziers => {
+                geometry.curve_ref().is_some() || Self::Surfaces.accepts_object(object)
+            }
+            Self::Surfaces => {
+                matches!(geometry, Geometry::NurbsSurface(_))
+                    || matches!(geometry, Geometry::Brep(brep) if brep.faces().len() == 1)
+            }
+            Self::SurfaceComponents => {
+                matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))
+            }
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct BooleanSelectionOption {
+    pub name: &'static str,
+    pub value: bool,
+    pub aliases: &'static [&'static str],
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct BooleanSelectionMenu {
+    pub name: &'static str,
+    pub options: Vec<BooleanSelectionOption>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ObjectSelectionWorkflow {
+    OptionsDuringSelection,
+    /// Accepts source objects before handing control to a point prompt.
+    PointInputAfterSelection,
+    ConfirmAfterSelection,
+    /// A single Yes/No answer executes immediately; Enter uses its current value.
+    ChooseBooleanAfterSelection,
+    /// Offers options while picking, but asks a single immediate question when
+    /// started with eligible objects already selected (for example UntrimAll).
+    QuestionOnPreselection {
+        message: &'static str,
+    },
+    /// A command-owned Yes/No question, asked only when the selected geometry
+    /// requires it. Keyboard Escape may have a distinct, observed answer;
+    /// replacing/cancelling the command never implicitly accepts the question.
+    QuestionAfterSelection {
+        message: &'static str,
+        escape_answer: Option<bool>,
+    },
+}
+
+impl ObjectSelectionWorkflow {
+    pub fn answers_immediately(self) -> bool {
+        matches!(
+            self,
+            Self::ChooseBooleanAfterSelection
+                | Self::QuestionAfterSelection { .. }
+                | Self::QuestionOnPreselection { .. }
+        )
+    }
+
+    pub fn options_during_selection(self) -> bool {
+        matches!(
+            self,
+            Self::OptionsDuringSelection | Self::QuestionOnPreselection { .. }
+        )
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ObjectSelectionPrompt {
+    pub command: &'static str,
+    pub filter: ObjectSelectionFilter,
+    pub options: Vec<BooleanSelectionOption>,
+    pub menus: Vec<BooleanSelectionMenu>,
+    pub choices: Vec<ChoiceSelectionOption>,
+    pub workflow: ObjectSelectionWorkflow,
+}
+
+impl ObjectSelectionPrompt {
+    /// A conditional question may follow ordinary picking-time choices. Its
+    /// confirmation descriptor then removes those choices and keeps the answer.
+    pub fn allows_selection_options(&self) -> bool {
+        self.workflow.options_during_selection()
+            || (matches!(
+                self.workflow,
+                ObjectSelectionWorkflow::QuestionAfterSelection { .. }
+            ) && !self.choices.is_empty())
+    }
+
+    /// Stage an entire input before accepting any option, including duplicates.
+    pub fn update_options(&mut self, input: &str) -> Result<(), CommandError> {
+        if self.workflow.answers_immediately()
+            && let [option] = self.options.as_mut_slice()
+            && let Some(value) = parse_yes_no(input.trim())
+        {
+            option.value = value;
+            return Ok(());
+        }
+        const USAGE: &str = "known-option=value [known-option=value ...] or an available action";
+        let arguments = input.split_whitespace().collect::<Vec<_>>();
+        if arguments.is_empty() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let mut staged = self.clone();
+        let mut seen = BTreeSet::new();
+        let mut menus_seen = BTreeSet::new();
+        let mut changed = false;
+        let mut i = 0;
+        while i < arguments.len() {
+            if let Some(choice) = staged.choices.iter_mut().find(|c| {
+                c.toggle
+                    .as_ref()
+                    .is_some_and(|t| option_name_eq(arguments[i], t.name))
+            }) {
+                choice.toggle()?;
+                changed = true;
+                i += 1;
+                continue;
+            }
+            if let Some(menu) = staged
+                .menus
+                .iter()
+                .find(|m| option_name_eq(arguments[i], m.name))
+            {
+                if !menus_seen.insert(menu.name) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                i += 1;
+                continue;
+            }
+            let (name, value, consumed) = orient_option(&arguments, i, USAGE)?;
+            if let Some(choice) = staged
+                .choices
+                .iter_mut()
+                .find(|c| option_name_eq(name, c.name))
+            {
+                if !seen.insert(choice.name) {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                choice.set(value)?;
+                changed = true;
+                i += consumed;
+                continue;
+            }
+            let option = staged
+                .options
+                .iter_mut()
+                .chain(staged.menus.iter_mut().flat_map(|m| &mut m.options))
+                .find(|o| {
+                    option_name_eq(name, o.name)
+                        || o.aliases.iter().any(|alias| option_name_eq(name, alias))
+                })
+                .ok_or(CommandError::Usage(USAGE))?;
+            if !seen.insert(option.name) {
+                return Err(CommandError::Usage(USAGE));
+            }
+            option.value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+            changed = true;
+            i += consumed;
+        }
+        if !changed {
+            return Err(CommandError::Usage(USAGE));
+        }
+        *self = staged;
+        Ok(())
+    }
+
+    pub fn update_menu_options(&mut self, menu: usize, input: &str) -> Result<(), CommandError> {
+        let options = self
+            .menus
+            .get(menu)
+            .ok_or(CommandError::Usage("known option submenu"))?
+            .options
+            .clone();
+        let mut scoped = Self {
+            options,
+            menus: vec![],
+            choices: vec![],
+            ..self.clone()
+        };
+        scoped.update_options(input)?;
+        self.menus[menu].options = scoped.options;
+        Ok(())
+    }
+
+    pub fn command_line(&self) -> String {
+        let mut input = self.command.to_owned();
+        for option in &self.options {
+            input.push_str(&format!(
+                " {}={}",
+                option.name,
+                if option.value { "Yes" } else { "No" }
+            ));
+        }
+        for choice in &self.choices {
+            input.push_str(&format!(" {}={}", choice.name, choice.value));
+        }
+        for menu in &self.menus {
+            input.push_str(&format!(" {}", menu.name));
+            for option in &menu.options {
+                input.push_str(&format!(
+                    " {}={}",
+                    option.name,
+                    if option.value { "Yes" } else { "No" }
+                ));
+            }
+        }
+        input
+    }
+}
+
+impl CommandRegistry {
+    /// Whether Enter without any eligible pick ends this query.
+    pub fn cancel_empty_object_selection(&self, prompt: &ObjectSelectionPrompt) -> bool {
+        self.lookup
+            .get(&normalize_command_name(prompt.command))
+            .is_some_and(|index| self.commands[*index].cancel_empty_object_selection())
+    }
+
+    pub fn object_selection_complete(
+        &self,
+        document: &Document,
+        prompt: &ObjectSelectionPrompt,
+    ) -> Result<bool, CommandError> {
+        let input = prompt.command_line();
+        let mut tokens = input.split_whitespace();
+        let name = normalize_command_name(tokens.next().ok_or(CommandError::EmptyInput)?);
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].object_selection_complete(document, &tokens.collect::<Vec<_>>())
+    }
+
+    pub fn object_selection_confirmation(
+        &self,
+        document: &Document,
+        prompt: &ObjectSelectionPrompt,
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let input = prompt.command_line();
+        let mut tokens = input.split_whitespace();
+        let name = normalize_command_name(tokens.next().ok_or(CommandError::EmptyInput)?);
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].object_selection_confirmation(document, &tokens.collect::<Vec<_>>())
+    }
+    pub fn accept_object_selection_options(
+        &self,
+        prompt: &ObjectSelectionPrompt,
+    ) -> Result<(), CommandError> {
+        let input = prompt.command_line();
+        self.accept_object_selection_input(&input)
+    }
+
+    /// Accepts a prompt's explicit choices without requiring a UI descriptor.
+    /// Commands with confirmation-time memory may intentionally do nothing.
+    pub fn accept_object_selection_input(&self, input: &str) -> Result<(), CommandError> {
+        let mut tokens = input.split_whitespace();
+        let name = normalize_command_name(tokens.next().ok_or(CommandError::EmptyInput)?);
+        let index = self
+            .lookup
+            .get(&name)
+            .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
+        self.commands[*index].accept_object_selection_options(&tokens.collect::<Vec<_>>())
+    }
+
+    /// Reads a command's current choices without editing the document or memory.
+    pub fn object_selection_prompt(
+        &self,
+        input: &str,
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let mut arguments = input.split_whitespace();
+        let Some(name) = arguments.next() else {
+            return Ok(None);
+        };
+        let Some(index) = self.lookup.get(&normalize_command_name(name)) else {
+            return Ok(None);
+        };
+        let command = &self.commands[*index];
+        let arguments = arguments.collect::<Vec<_>>();
+        let arguments = if let Some(default) = self.copy_default(name) {
+            copy_options::arguments(&arguments, default).0
+        } else {
+            arguments
+        };
+        command.object_selection_prompt(&arguments)
+    }
+}

@@ -75,5 +75,5 @@ fn contour_command_first_selection_hands_off_options_and_point_input() {
         app.command_log
     );
     assert_eq!(app.document.objects().len(), 3);
-    assert_eq!(app.document.groups().len(), 2);
+    assert_eq!(app.document.groups().len(), 0);
 }
