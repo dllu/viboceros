@@ -51,6 +51,7 @@ layers are black. Insert steps may supply their own attributes.
 | `replace_block` | `objects`, `name` | Replace roots of one definition; `all_instances: true` includes all model peers. Optional `replacement_instance` identifies a live target root using that named definition; Rhino receives it through its object getter. |
 | `object_state` | `objects`, `mode` | Set owned model objects to `normal`, `hidden` or `locked` for protected-state probes. |
 | `add_objects` | `target`, `objects` | Append live sources in a target instance's local frame, refresh its definition and consume the sources. The target and explicit sources must be editable; graph cycles reject before native host access. |
+| `reset_scale` | `objects`, `mode` | Reset editable root placements with `one` or `automatic`. Optional `preselected: true` runs the native immediate path using its remembered mode; `cancel: true` changes the native getter mode and cancels without editing geometry. Those flags are mutually exclusive. |
 
 Group captures use `record_groups: true` to include ordered object/prototype/leaf
 memberships and the group table's model-handle membership. Create steps may choose

@@ -183,13 +183,6 @@ def validate(operation):
             old,new=_name(step['name']),_name(step['new_name'])
             if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
             definitions[new]=definitions[old][:];outputs=[]
-        elif action=='reset_scale':
-            picks=step.get('objects')
-            if (set(step)-set(('action','objects','mode','preselected','cancel')) or not isinstance(picks,list) or not picks
-                    or any(type(i)is not int or i not in alive or i in protected or handles[i]is None for i in picks)
-                    or len(set(picks))!=len(picks) or step['mode']not in ('one','automatic') or type(step.get('preselected',False))is not bool
-                    or type(step.get('cancel',False))is not bool or step.get('preselected',False)and step.get('cancel',False)):raise ValueError('invalid block scale reset')
-            outputs=[]
         elif action=='add_objects':
             target=step.get('target');picks=step.get('objects')
             if (set(step)!=set(('action','target','objects')) or type(target)is not int or target not in alive or target in protected or handles[target]is None
@@ -523,14 +516,6 @@ def run(operation, tolerance, host):
                     obj=document.Objects.FindId(handles[j]);a=obj.Attributes.Duplicate();owned_attributes.append(a)
                     a.Mode={'normal':Rhino.DocObjects.ObjectMode.Normal,'hidden':Rhino.DocObjects.ObjectMode.Hidden,'locked':Rhino.DocObjects.ObjectMode.Locked}[step['mode']]
                     if not document.Objects.ModifyAttributes(obj.Id,a,True):raise ValueError('native root state failed')
-            elif action=='reset_scale':
-                document.Objects.UnselectAll()
-                if step.get('cancel',False):script='_BlockResetScale _Mode='+('_One' if step['mode']=='one' else '_Automatic')+' _Cancel'
-                elif step.get('preselected',False):
-                    for j in step['objects']:document.Objects.Select(handles[j])
-                    script='_BlockResetScale'
-                else:script='_BlockResetScale _Mode='+('_One' if step['mode']=='one' else '_Automatic')+' '+' '.join('_SelID '+str(handles[j]) for j in sorted(step['objects']))+' _Enter'
-                if not rs.Command(script,False) and not step.get('cancel',False):raise ValueError('native BlockResetScale failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
             elif action=='add_objects':
                 document.Objects.UnselectAll();document.Objects.Select(handles[step['target']])
                 script='_AddObjectsToBlock '+' '.join('_SelID '+str(handles[j]) for j in sorted(step['objects']))+' _Enter'

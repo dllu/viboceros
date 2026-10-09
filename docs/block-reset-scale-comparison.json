@@ -1,0 +1,125 @@
+{
+  "absolute_epsilon": 1e-09,
+  "cases": 8,
+  "matched": 8,
+  "mismatched": 0,
+  "native_failed": 0,
+  "operations": [
+    {
+      "comparison": {
+        "differences": [],
+        "id": "nonuniform-one",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "nonuniform-one",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "nonuniform-automatic",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "nonuniform-automatic",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "repeated-one",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "repeated-one",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "repeated-automatic",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "repeated-automatic",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "reflection-one",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "reflection-one",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "reflection-automatic",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "reflection-automatic",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "shear-one",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "shear-one",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "shear-automatic",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "shear-automatic",
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

@@ -1,0 +1,5258 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "inside-1.2e-8",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              2.000000012,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              5,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "exact-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              2.000000014901161,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              5,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "below-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              2.0000000149011607,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              5,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "above-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              2.0000000149011616,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              5,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "zero-origin-inside-1.2e-8",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000012,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "zero-origin-exact-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000014901161,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "zero-origin-below-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000149011607,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "zero-origin-above-sqrt-epsilon",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000149011616,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "large-insertion-one",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2.00002,
+              0,
+              0,
+              100000000.0
+            ],
+            [
+              0,
+              3.00004,
+              0,
+              100000000.0
+            ],
+            [
+              0,
+              0,
+              4.00007,
+              100000000.0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "one"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "large-insertion-automatic",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2.00002,
+              0,
+              0,
+              100000000.0
+            ],
+            [
+              0,
+              3.00004,
+              0,
+              100000000.0
+            ],
+            [
+              0,
+              0,
+              4.00007,
+              100000000.0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "delta-1.49e-8",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000149,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "delta-1.5e-8",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000015,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "delta-1.51e-8",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000151,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "sqrt-epsilon-plus-1e-12",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000149021613,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-0.2-1.6e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000016,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-0.2-1.7e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000017,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-0.2-1.8e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000018,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-0.2-1.9e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000019,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-2-1.6e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000016,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-2-1.7e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000017,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-2-1.8e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000018,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-2-1.9e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000019,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-20-1.6e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000016,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-20-1.7e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000017,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-20-1.8e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000018,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "threshold-20-1.9e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000019,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-0.2-1.49e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.20000001490000002,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-0.2-1.5e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000015,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-0.2-1.51e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.2000000151,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-2-1.52e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000152,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-2-1.53e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000153,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-2-1.54e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000154,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-2-1.55e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000155,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-20-1.94e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.0000000194,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-20-1.95e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.0000000195,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-20-1.96e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.0000000196,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-20-2e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.00000002,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "fine-20-3e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.00000003,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-0.2-1.499e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.20000001499,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-0.2-1.4998e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.20000001499800002,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-2-1.58e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000158,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-2-1.59e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.0000000159,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-20-2.42e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.0000000242,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "band-20-2.43e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.0000000243,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-20-2.1e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000021,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-20-2.2e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000022,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-20-2.3e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000023,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-20-2.4e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              20,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              20.000000024,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              50.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-2-1.583e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.00000001583,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-2-1.5835e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              2.000000015835,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              5.0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-0.2-1.4993e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.20000001499300002,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "cutoff-0.2-1.4995e-08",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        }
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0.2,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0.200000014995,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0.5,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Root",
+            "user_text": {
+              "Part": "root"
+            },
+            "geometry_user_text": {
+              "Shape": "root"
+            }
+          }
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "reset_scale",
+          "objects": [
+            2
+          ],
+          "mode": "automatic"
+        }
+      ]
+    }
+  ]
+}

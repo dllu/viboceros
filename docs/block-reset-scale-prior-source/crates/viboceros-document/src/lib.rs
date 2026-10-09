@@ -6,9 +6,7 @@ mod block_explosion;
 pub use block_explosion::PreparedBlockExplosion;
 mod block_instances;
 mod block_management;
-mod block_scale;
 pub use block_management::BlockDefinitionInfo;
-pub use block_scale::BlockScaleResetMode;
 mod blocks;
 pub use block_instances::{BlockInsertionPoint, BlockInstance, BlockMemberDisplay};
 pub use blocks::{

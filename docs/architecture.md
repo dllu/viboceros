@@ -26,6 +26,8 @@ retaining root placement, metadata and history with native replacement policies.
 [AddObjectsToBlock](commands/add-objects-to-block.md) appends model objects in a
 selected instance's local frame, refreshes all uses, retains nested references
 and consumes sources in one transaction.
+[BlockResetScale](commands/block-reset-scale.md) adjusts placements in the
+instance frame, retains reflected/sheared behavior and preserves shared catalogs.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

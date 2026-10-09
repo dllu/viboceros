@@ -103,14 +103,6 @@ pub enum BlockStep {
         target: usize,
         objects: Vec<usize>,
     },
-    ResetScale {
-        objects: Vec<usize>,
-        mode: String,
-        #[serde(default)]
-        preselected: bool,
-        #[serde(default)]
-        cancel: bool,
-    },
     DeleteDefinition {
         name: String,
         #[serde(default)]
@@ -298,41 +290,6 @@ pub(super) fn run(
                     .ok_or_else(invalid)?
                     .id();
                 document.duplicate_block_definition(id, new_name)?;
-                Vec::new()
-            }
-            BlockStep::ResetScale {
-                objects,
-                mode,
-                preselected,
-                cancel,
-            } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                    || *preselected && *cancel
-                {
-                    return Err(invalid());
-                }
-                let mode = match mode.as_str() {
-                    "one" => viboceros_document::BlockScaleResetMode::One,
-                    "automatic" => viboceros_document::BlockScaleResetMode::Automatic,
-                    _ => return Err(invalid()),
-                };
-                let ids = objects
-                    .iter()
-                    .map(|i| live(&document, &handles, *i))
-                    .collect::<Result<Vec<_>, _>>()?;
-                if ids.iter().any(|id| {
-                    !document.is_object_selectable(*id)
-                        || !matches!(
-                            document.object(*id).unwrap().geometry(),
-                            Geometry::BlockInstance(_)
-                        )
-                }) {
-                    return Err(invalid());
-                }
-                if !*cancel {
-                    document.reset_block_scale(ids, mode)?;
-                }
                 Vec::new()
             }
             BlockStep::AddObjects { target, objects } => {

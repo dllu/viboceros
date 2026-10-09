@@ -587,15 +587,6 @@ impl VibocerosApp {
         if self.try_continue_transform_source_prompt(input) {
             return true;
         }
-        if self.object_prompt.is_some()
-            && input
-                .trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("Cancel")
-        {
-            self.cancel_object_prompt(true);
-            self.command_input.clear();
-            return true;
-        }
         let Some(mut pending) = self.object_prompt.clone() else {
             return false;
         };

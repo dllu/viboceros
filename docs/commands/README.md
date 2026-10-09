@@ -8,6 +8,7 @@ Rhino's complete command set is still a work in progress.
 - [CreateUniqueBlock and definition duplication](create-unique-block.md)
 - [ReplaceBlock](replace-block.md)
 - [AddObjectsToBlock](add-objects-to-block.md)
+- [BlockResetScale](block-reset-scale.md)
 
 - [Curve creation and editing](curves.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)

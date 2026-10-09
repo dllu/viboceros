@@ -1,0 +1,139 @@
+{
+  "absolute_epsilon": 1e-09,
+  "cases": 9,
+  "matched": 9,
+  "mismatched": 0,
+  "native_failed": 0,
+  "operations": [
+    {
+      "comparison": {
+        "differences": [],
+        "id": "delta-2e-8",
+        "max_absolute_error": 4.440892098500626e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "delta-2e-8",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "delta-4e-8",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "delta-4e-8",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "delta-2e-7",
+        "max_absolute_error": 4.440892098500626e-16,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "delta-2e-7",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "delta-1e-6",
+        "max_absolute_error": 1.7763568394002505e-15,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "delta-1e-6",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "large-near-pair",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "large-near-pair",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "small-near-pair",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "small-near-pair",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "equal-y-z",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "equal-y-z",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "equal-x-z",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "equal-x-z",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "cancelled-choice-memory",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "cancelled-choice-memory",
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

@@ -218,53 +218,6 @@ fn native_block_addition_local_frames_consumption_groups_and_nested_references_m
 }
 
 #[test]
-fn native_scale_reset_modes_frames_precision_metadata_and_preselection_match() {
-    let datasets = [
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_reset_scale.json"),
-            include_str!("../../../tools/rhino_oracle/observations/block_reset_scale.json"),
-        ),
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_reset_scale_followup.json"),
-            include_str!(
-                "../../../tools/rhino_oracle/observations/block_reset_scale_followup.json"
-            ),
-        ),
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_reset_scale_precision.json"),
-            include_str!(
-                "../../../tools/rhino_oracle/observations/block_reset_scale_precision.json"
-            ),
-        ),
-        (
-            include_str!("../../../tools/rhino_oracle/fixtures/block_reset_scale_boundary.json"),
-            include_str!(
-                "../../../tools/rhino_oracle/observations/block_reset_scale_boundary.json"
-            ),
-        ),
-    ];
-    let mut cases = 0;
-    let mut states = 0;
-    let mut numbers = 0;
-    for (request, native) in datasets {
-        let request: ProbeRequest = serde_json::from_str(request).unwrap();
-        let native: Value = serde_json::from_str(native).unwrap();
-        let actual = run_request(&request).unwrap();
-        let references = native["results"].as_array().unwrap();
-        assert_eq!(actual.results.len(), references.len());
-        for result in actual.results {
-            let reference = references.iter().find(|r| r["id"] == result.id).unwrap();
-            compare(&result.value, &reference["value"], &result.id, &mut numbers);
-            cases += 1;
-            states += result.value["states"].as_array().unwrap().len();
-        }
-    }
-    assert_eq!(cases, 77);
-    assert_eq!(states, 388);
-    assert!(numbers > 5000);
-}
-
-#[test]
 fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/block_workflow_metadata.json"

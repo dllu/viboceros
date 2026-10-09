@@ -8,15 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_scale_reset_modes_and_handles_reject_before_host_access(self):
-        for step in [dict(action='reset_scale',objects=[],mode='one'),dict(action='reset_scale',objects=[0],mode='one'),dict(action='reset_scale',objects=[1,1],mode='one'),dict(action='reset_scale',objects=[1],mode='invalid'),dict(action='reset_scale',objects=[1],mode='one',preselected=1),dict(action='reset_scale',objects=[1],mode='one',preselected=True,cancel=True)]:
-            f=self.fixture();f['steps'].append(step)
-            with self.subTest(step=step),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_scale_reset_preserves_handle_lifetimes_and_cancelled_targets(self):
-        f=self.fixture();f['steps'].extend([dict(action='reset_scale',objects=[1],mode='automatic',cancel=True),dict(action='reset_scale',objects=[1],mode='one'),dict(action='group',objects=[1])]);probe.validate(f)
-        f=self.fixture();f['steps'].extend([dict(action='object_state',objects=[1],mode='locked'),dict(action='reset_scale',objects=[1],mode='one')])
-        with self.assertRaises(ValueError):probe.run(f,None,{})
     def test_addition_sources_and_target_are_validated_before_host_access(self):
         for target,objects in [(0,[1]),(True,[1]),(2,[]),(2,[2]),(2,[1,1]),(2,[0]),(2,[True]),(2,[99])]:
             f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))

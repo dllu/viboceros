@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "ed496a1ed3c09f6b2b2b8970594333c0efcacd0b",
+  "scope": "BlockResetScale instance-frame normalization, remembered mode and numeric boundary calibration",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockResetScale"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5528,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1042,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_replay": {
+      "cases": 77,
+      "states": 388,
+      "matched": 77,
+      "mismatched": 0,
+      "native_failures": 0,
+      "max_absolute_error": 7.105427357601002e-15,
+      "exit_code": 0
+    },
+    "new_document_tests": 6,
+    "new_command_tests": 2,
+    "new_gui_tests": 2,
+    "new_replay_test": 1,
+    "new_python_tests": 2
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_reset_scale.json",
+      "response": "tools/rhino_oracle/observations/block_reset_scale.json",
+      "scheme": "VibocerosOracleBlockResetScale20261009",
+      "cases": 8,
+      "states": 40
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_reset_scale_followup.json",
+      "response": "tools/rhino_oracle/observations/block_reset_scale_followup.json",
+      "scheme": "VibocerosOracleBlockResetFollowup20261009",
+      "cases": 8,
+      "states": 42
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_reset_scale_precision.json",
+      "response": "tools/rhino_oracle/observations/block_reset_scale_precision.json",
+      "scheme": "VibocerosOracleBlockResetPrecisionFinal20261009",
+      "cases": 9,
+      "states": 46
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_reset_scale_boundary.json",
+      "response": "tools/rhino_oracle/observations/block_reset_scale_boundary.json",
+      "scheme": "VibocerosOracleBlockResetCutoff20261009",
+      "cases": 52,
+      "states": 260
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "scale_contract": "One targets unit scale. Automatic selects the first near-equal pair scale or the arithmetic mean. The placement is rescaled in its orthonormal instance frame, preserving translation and reflection signs; shear follows native frame scaling, rather than direct column normalization. Definitions, root IDs, raw attributes/text and model groups survive.",
+  "calibration": {
+    "predicate": "abs(a-b) <= sqrt(machine epsilon) + 2.25e-10*abs(a) + 2.25e-10*abs(b)",
+    "basis": "Empirical native boundary decisions, including three scale magnitudes, adjacent doubles, zero/translated insertion and rotated/sheared placements",
+    "limit": "Matches recorded decisions; does not claim the proprietary algorithm or establish all-input equality."
+  },
+  "mode_memory": "Fresh default is One. Preselected roots execute immediately, and accepted getter choices persist after Cancel and Undo within one registry. Independent registries keep separate defaults.",
+  "numerical_limits": "Finite normalization has a rational fallback if a ratio overflows or underflows. Local tests constrain subnormal/extreme inputs; native extreme-coordinate qualification remains limited. A separate native trial at insertion coordinates 1e16 failed instance admission before reset and is not counted as a successful reset comparison.",
+  "native_helper_note": "The main and first follow-up captures predate the cancellation branch. Precision and boundary captures use the corrected branch, which avoids leaking management-result status into reset snapshots.",
+  "comparison_limits": "Recorded metadata and sampled geometry at absolute 1e-9 plus relative 1e-12. Native macros use SelID, not pixel picking. Local history tests do not establish native selection/history parity. No new GPU/performance measurements.",
+  "sha256": {
+    "crates/viboceros-command/src/block_reset_scale.rs": "7b177f4516a122683f9af8ba29331d3082cb496a0ebe478760690592cc1bf524",
+    "crates/viboceros-command/src/block_reset_scale/tests.rs": "f9925c4ec08692fb0177e4916a92a992b011fde638e067eae227f866996875ce",
+    "crates/viboceros-command/src/lib.rs": "6ee8f716a976ede1fb3425cd65fa795a37eed581f13228206ef86072d90bab60",
+    "crates/viboceros-document/src/block_scale.rs": "858dd7efb011342c6233c8608442b6a17a201091e379a5ec102c7adbc614eb0e",
+    "crates/viboceros-document/src/block_scale/tests.rs": "19455c86fecdcc26daef77f5180c7df3d8f7b5c0a6db99ca85a40d7130113321",
+    "crates/viboceros-document/src/lib.rs": "d2de22ef31b296f1e17580045c21d796049917fd37d534e5e0f89d4a966a6ea3",
+    "crates/viboceros-oracle/src/block_workflow.rs": "cf703cee9007b96cc13a521d3db4e86e6409c64310eae60040f90d5d4b8e9a17",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "6e65686bda773bca8c3d40db2afea3c2598c84f15da7198646a5f3ee543c3c6d",
+    "docs/block-reset-scale-boundary-comparison.json": "a51095ac76c96daa3279812e8a563176cc64333804fd148cc65ebc62f77384d0",
+    "docs/block-reset-scale-comparison.json": "19b3c1a632b5c76a25a1d02f8a51d0bb4d5a3eaf5ee451130314c28743ab6cc3",
+    "docs/block-reset-scale-followup-comparison.json": "4ed0b5af4a38ba4c41bf2e9d1e3887612dc71f55d5bee3dda9410d6af29b451e",
+    "docs/block-reset-scale-precision-comparison.json": "635427fd34cb01b8c63ad83d6975c7924be6b1656e4babcc9365246663f05def",
+    "docs/block-reset-scale-prior-source/crates/viboceros-command/src/lib.rs": "14e1a426ddaca10af1d0069fdec1a7b371a7c2ce83aa6b9c3b1a2ae395594c5f",
+    "docs/block-reset-scale-prior-source/crates/viboceros-document/src/lib.rs": "8d2268b566629bc96a5de243bad435ae5df7176202fd64abde8e655ebc060ab9",
+    "docs/block-reset-scale-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "f1bdde52680258a501d564d82f33789099a1fbfca191cd28a0629143d2f0a37d",
+    "docs/block-reset-scale-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "430f24a159aa8fa192825c1aaa4b9987e70b502b3f6cdf01001e315025fe0aa2",
+    "docs/block-reset-scale-prior-source/src/app/object_selection.rs": "9326992c601ab8b749892ef63413f4a010c0dd5e137f6607fcf94f801163aa82",
+    "docs/block-reset-scale-prior-source/src/app/tests/blocks.rs": "8866879d384bb846e4fdcb9b011a28ce6b1e0927c68517f3d71a2d44bac0a29c",
+    "docs/block-reset-scale-prior-source/tools/rhino_oracle/block_workflow_probe.py": "7e7dbd9727038f9b9d7657e53f1bf31e9054a0ce87d00d762440e0290f7d1fb8",
+    "docs/block-reset-scale-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "c3c3b0059a94bed37753b8d5b4f8683403c82e3b3d440b76d68b26f3c2c5bcd7",
+    "src/app/object_selection.rs": "b325f21886b4a87352a0546a1934fe21cebbde61b7680cdf7549bbb1619cae85",
+    "src/app/tests/blocks.rs": "efa19963c0a2e0b30b6321c92869eca0072c5895cd1e214f3d84391fa81ee38f",
+    "tools/rhino_oracle/block_workflow_probe.py": "6032452c24ba1172f857c2d8a1ee7fef540ce2d07034b65d3518c28939ccebac",
+    "tools/rhino_oracle/fixtures/block_reset_scale.json": "35988f4bdd422b8713d4004f1d08e300c1431ff367929a035ccde5a258938be2",
+    "tools/rhino_oracle/fixtures/block_reset_scale_boundary.json": "d867bb39cac73c11d65ac202afb51cbdab5efaeffd831a3f8efc841084efb939",
+    "tools/rhino_oracle/fixtures/block_reset_scale_followup.json": "1378846959bc0554cbc3f6fb8581a9ba63ac8c0d0819ac0b3fb857a2b13e7d17",
+    "tools/rhino_oracle/fixtures/block_reset_scale_precision.json": "fd215b0b01958147d7d874359949d1d1a40176b008d03dcfb9e59fe02d6aff7e",
+    "tools/rhino_oracle/observations/block_reset_scale.json": "1c8a575454a5437f90a0ee1fc89cf15c13f4e78376faf00ef62fb1649d3a2578",
+    "tools/rhino_oracle/observations/block_reset_scale_boundary.json": "cda75415a0a63706ca6d0bbb46a8cb762d749d71d195149ea14ab2df84e83913",
+    "tools/rhino_oracle/observations/block_reset_scale_followup.json": "d9e3eeda4fe62607fea7de24770e6314a03bf895e537462b15e8b8734903e2df",
+    "tools/rhino_oracle/observations/block_reset_scale_precision.json": "2277b47aec70afee62fa095c79697e00c8959b3fa08c5f66b7a7ee6a49d2df04",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "a0b5c70d14c34ecd7baec41b874df65296bbc25396e9df930075ba6df1298cd8"
+  },
+  "remaining_scope": [
+    "Wider numerical qualification of the calibrated near-equality band",
+    "Native pixel/group picking and selection/history fidelity",
+    "Linked definitions and broader block editing",
+    "GPU rendering and performance"
+  ]
+}
