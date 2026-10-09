@@ -1,0 +1,2184 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "root-text-sdk-false",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      11.0,
+                      22.0,
+                      33.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "RootShape": "instance"
+                  },
+                  "layer": "Current",
+                  "name": "Container",
+                  "user_text": {
+                    "Part": "root",
+                    "RootOnly": "container"
+                  }
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            8.0,
+                            26.0,
+                            42.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      -2.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      4.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      8.0,
+                      26.0,
+                      42.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "root-text-sdk-true",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      11.0,
+                      22.0,
+                      33.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "RootShape": "instance"
+                  },
+                  "layer": "Current",
+                  "name": "Container",
+                  "user_text": {
+                    "Part": "root",
+                    "RootOnly": "container"
+                  }
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            8.0,
+                            26.0,
+                            42.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      -2.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      4.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      8.0,
+                      26.0,
+                      42.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "root-text-command-false",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      11.0,
+                      22.0,
+                      33.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "RootShape": "instance"
+                  },
+                  "layer": "Current",
+                  "name": "Container",
+                  "user_text": {
+                    "Part": "root",
+                    "RootOnly": "container"
+                  }
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            8.0,
+                            26.0,
+                            42.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      -2.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      4.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      8.0,
+                      26.0,
+                      42.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "root-text-command-true",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      11.0,
+                      22.0,
+                      33.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    200,
+                    100,
+                    50
+                  ],
+                  "color_source": "object",
+                  "geometry_user_text": {
+                    "RootShape": "instance"
+                  },
+                  "layer": "Current",
+                  "name": "Container",
+                  "user_text": {
+                    "Part": "root",
+                    "RootOnly": "container"
+                  }
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            8.0,
+                            26.0,
+                            42.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      -2.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      3.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      4.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        31,
+                        83,
+                        137
+                      ],
+                      "color_source": "parent",
+                      "geometry_user_text": {
+                        "Shape": "local"
+                      },
+                      "layer": "Source",
+                      "name": "Member",
+                      "user_text": {
+                        "MemberOnly": "leaf",
+                        "Part": "member"
+                      }
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          2.0,
+                          3.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Metadata"
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Metadata",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          31,
+                          83,
+                          137
+                        ],
+                        "color_source": "parent",
+                        "geometry_user_text": {
+                          "Shape": "local"
+                        },
+                        "layer": "Source",
+                        "name": "Member",
+                        "user_text": {
+                          "MemberOnly": "leaf",
+                          "Part": "member"
+                        }
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            11.0,
+                            22.0,
+                            33.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Metadata",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      10.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      20.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      30.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    31,
+                    83,
+                    137
+                  ],
+                  "color_source": "parent",
+                  "geometry_user_text": {
+                    "Shape": "local"
+                  },
+                  "layer": "Source",
+                  "name": "Member",
+                  "user_text": {
+                    "MemberOnly": "leaf",
+                    "Part": "member"
+                  }
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      8.0,
+                      26.0,
+                      42.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

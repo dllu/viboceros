@@ -5,8 +5,9 @@ objects and nested references remain editable instances. `ExplodeBlock` recursiv
 expands nested references into placed geometric members. This follows the
 [documented component behavior](https://docs.mcneel.com/rhino/8/help/en-us/commands/explode.htm).
 Annotations/text fields and linked blocks remain outside the current model.
-The [source provenance](../block-explode-provenance.json) records the implemented
-contract, local policies and verification evidence.
+The [original provenance](../block-explode-provenance.json) records the initial
+contract and local policies. The [block workflow oracle](../block-workflow-oracle.md)
+adds fresh native command evidence and the resulting metadata corrections.
 
 ```text
 Point 1,2,3
@@ -47,11 +48,14 @@ Geometry uses checked placement or validated immutable placed snapshots. Recursi
 expansion retains member curve/surface/mesh representations; one-level child
 references remain instances. Source definitions are unchanged.
 
-Members retain names, raw attribute/geometry user text, layers and wire density.
+Members retain names, raw attribute user text, layers and wire density.
+Geometry text is retained except when an analytic circle/arc becomes a NURBS
+curve under a nonsimilarity placement; Rhino commands create that converted
+geometry without its original geometry strings. Existing NURBS members keep theirs.
 Visibility and object-lock flags follow current hierarchical display state.
-ByParent colors become resolved explicit object colors when the container is
-removed; other supported color sources remain unchanged. Root-only user text is
-not merged into member text.
+Raw ByParent colors remain ByParent, following the native commands; the SDK
+explosion API instead resolves explicit object colors. Root-only user text and
+geometry text are not merged into member text.
 
 Prototype groups receive fresh definitions per root and nested placement scope.
 Repeated uses of one definition cannot merge unrelated outputs into a shared
@@ -81,4 +85,6 @@ cargo test --release --workspace block
 
 Regressions cover expansion depth, placed geometry, metadata, scoped groups,
 restricted states, stale preparation, budgets, mixed history, grouping and GUI
-picking/cancellation/AllBlocks. No fresh Rhino command, GPU or timing evidence is claimed.
+picking/cancellation/AllBlocks. Twenty-two fresh native command workflows constrain
+placed geometry, definitions and supported metadata. Native grouping, protected-root
+selection, option memory, GPU behavior and performance remain unverified here.

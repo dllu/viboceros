@@ -1,130 +1,5 @@
 use super::*;
 use viboceros_geometry::{Point3, Vector3};
-
-#[test]
-fn conic_conversion_drops_geometry_text_but_keeps_attribute_text_and_nurbs_text() {
-    use viboceros_geometry::{Circle3, UnitVector3};
-    for recursive in [false, true] {
-        let mut doc = Document::default();
-        let circle = Circle3::try_new(
-            p(1., 2., 3.),
-            2.,
-            UnitVector3::try_new(0., 0., 1., doc.tolerance()).unwrap(),
-            doc.tolerance(),
-        )
-        .unwrap();
-        let attributes = ObjectAttributes::on_layer(doc.current_layer_id())
-            .try_with_user_text("Part", "member")
-            .unwrap();
-        let members = [
-            Geometry::Circle(circle),
-            Geometry::NurbsCurve(circle.to_nurbs().unwrap()),
-        ]
-        .into_iter()
-        .map(|geometry| {
-            BlockMember::new(BlockContent::Geometry(geometry.into()), attributes.clone())
-                .try_with_geometry_user_text("Shape", "local")
-                .unwrap()
-        })
-        .collect();
-        let child = doc.add_block_definition("child", members).unwrap();
-        let definition = if recursive {
-            doc.add_block_definition(
-                "parent",
-                vec![BlockMember::new(
-                    BlockContent::Reference(reference(child, 10.)),
-                    attributes.clone(),
-                )],
-            )
-            .unwrap()
-        } else {
-            child
-        };
-        let transform = AffineTransform3::try_new(
-            [[2., 0., 0.], [0., 3., 0.], [0., 0., 4.]],
-            Vector3::try_new(5., 6., 7.).unwrap(),
-        )
-        .unwrap();
-        let root = doc
-            .add_block_instance(BlockReference::try_new(definition, transform).unwrap())
-            .unwrap();
-        let original = doc.object(root).unwrap().geometry_snapshot().clone();
-        let plan = doc.prepare_block_explosion(root, recursive, 2).unwrap();
-        let outputs = doc.commit_block_explosions(vec![plan], false).unwrap();
-        assert!(
-            doc.object(outputs[0])
-                .unwrap()
-                .geometry_user_text()
-                .is_empty()
-        );
-        assert_eq!(
-            doc.object(outputs[1]).unwrap().geometry_user_text()["Shape"],
-            "local"
-        );
-        for id in &outputs {
-            assert_eq!(
-                doc.object(*id).unwrap().attributes().user_text()["Part"],
-                "member"
-            );
-        }
-        assert_eq!(
-            doc.block_definition(child).unwrap().members()[0].geometry_user_text()["Shape"],
-            "local"
-        );
-        doc.undo().unwrap();
-        assert!(
-            doc.object(root)
-                .unwrap()
-                .geometry_snapshot()
-                .shares_storage_with(&original)
-        );
-        doc.redo().unwrap();
-        assert!(
-            doc.object(outputs[0])
-                .unwrap()
-                .geometry_user_text()
-                .is_empty()
-        );
-    }
-}
-
-#[test]
-fn similarity_placed_conics_keep_geometry_text() {
-    use viboceros_geometry::{Circle3, UnitVector3};
-    let mut doc = Document::default();
-    let circle = Circle3::try_new(
-        p(0., 0., 0.),
-        2.,
-        UnitVector3::try_new(0., 0., 1., doc.tolerance()).unwrap(),
-        doc.tolerance(),
-    )
-    .unwrap();
-    let member = BlockMember::new(
-        BlockContent::Geometry(Geometry::Circle(circle).into()),
-        ObjectAttributes::on_layer(doc.current_layer_id()),
-    )
-    .try_with_geometry_user_text("Shape", "local")
-    .unwrap();
-    let definition = doc.add_block_definition("circle", vec![member]).unwrap();
-    let transform = AffineTransform3::try_new(
-        [[2., 0., 0.], [0., 2., 0.], [0., 0., 2.]],
-        Vector3::try_new(5., 6., 7.).unwrap(),
-    )
-    .unwrap();
-    let root = doc
-        .add_block_instance(BlockReference::try_new(definition, transform).unwrap())
-        .unwrap();
-    let plan = doc.prepare_block_explosion(root, true, 1).unwrap();
-    let outputs = doc.commit_block_explosions(vec![plan], false).unwrap();
-    assert!(matches!(
-        doc.object(outputs[0]).unwrap().geometry(),
-        Geometry::Circle(_)
-    ));
-    assert_eq!(
-        doc.object(outputs[0]).unwrap().geometry_user_text()["Shape"],
-        "local"
-    );
-}
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
@@ -219,10 +94,13 @@ fn member_attributes_text_and_scoped_groups_survive_recursive_expansion() {
         assert_eq!(object.attributes().name(), Some("leaf"));
         assert_eq!(object.attributes().user_text()["kind"], "part");
         assert_eq!(object.geometry_user_text()["source"], "original");
-        assert_eq!(object.attributes().object_color(), ColorRgb::BLACK);
+        assert_eq!(
+            object.attributes().object_color(),
+            ColorRgb::new(30, 60, 90)
+        );
         assert_eq!(
             object.attributes().color_source(),
-            ObjectColorSource::Parent
+            ObjectColorSource::Object
         );
         assert_eq!(object.top_group(), Some(root_group));
         groups.push(object.group_ids()[0]);

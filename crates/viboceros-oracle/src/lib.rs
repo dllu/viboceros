@@ -146,6 +146,7 @@ mod edge_surface;
 pub use edge_surface::EdgeSurfaceFixture;
 mod loft;
 pub use loft::LoftFixture;
+mod block_workflow;
 mod point_cloud_command;
 mod point_grid;
 mod point_matrix;
@@ -586,6 +587,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: point_cloud_command::PointCloudFixture,
+    },
+    BlockWorkflow {
+        id: String,
+        #[serde(flatten)]
+        fixture: block_workflow::BlockWorkflowFixture,
     },
     PointsCommand {
         id: String,
@@ -2206,6 +2212,7 @@ impl Operation {
             | Self::EdgeSurface { id, .. }
             | Self::PointGridCommand { id, .. }
             | Self::PointCloudCommand { id, .. }
+            | Self::BlockWorkflow { id, .. }
             | Self::PointsCommand { id, .. }
             | Self::PointGridDiagonalPrompt { id, .. }
             | Self::SurfaceGrid { id, .. }
@@ -2561,6 +2568,11 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         if id.trim().is_empty() || !ids.insert(id) {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
         }
+        if matches!(operation, Operation::BlockWorkflow { .. }) && request.iterations != 1 {
+            return Err(ProbeError::FixtureInvariant(
+                "block workflows require one iteration",
+            ));
+        }
         if matches!(
             operation,
             Operation::ProjectedObjectSnap { .. }
@@ -2796,6 +2808,7 @@ fn execute(
         Operation::PointCloudCommand { fixture, .. } => {
             point_cloud_command::run(fixture, tolerance)?
         }
+        Operation::BlockWorkflow { fixture, .. } => block_workflow::run(fixture, tolerance)?,
         Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,
         Operation::PointGridDiagonalPrompt { fixture, .. } => {
             point_matrix::run_diagonal(fixture, tolerance)?

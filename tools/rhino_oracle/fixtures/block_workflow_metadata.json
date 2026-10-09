@@ -1,0 +1,398 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "root-text-sdk-false",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member",
+            "MemberOnly": "leaf"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Metadata",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Metadata",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Container",
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object",
+            "user_text": {
+              "Part": "root",
+              "RootOnly": "container"
+            },
+            "geometry_user_text": {
+              "RootShape": "instance"
+            }
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": false,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "root-text-sdk-true",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member",
+            "MemberOnly": "leaf"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Metadata",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Metadata",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Container",
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object",
+            "user_text": {
+              "Part": "root",
+              "RootOnly": "container"
+            },
+            "geometry_user_text": {
+              "RootShape": "instance"
+            }
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "root-text-command-false",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member",
+            "MemberOnly": "leaf"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Metadata",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Metadata",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Container",
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object",
+            "user_text": {
+              "Part": "root",
+              "RootOnly": "container"
+            },
+            "geometry_user_text": {
+              "RootShape": "instance"
+            }
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "root-text-command-true",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Member",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member",
+            "MemberOnly": "leaf"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Metadata",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Metadata",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "name": "Container",
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object",
+            "user_text": {
+              "Part": "root",
+              "RootOnly": "container"
+            },
+            "geometry_user_text": {
+              "RootShape": "instance"
+            }
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "command"
+        }
+      ]
+    }
+  ]
+}

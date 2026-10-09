@@ -1,0 +1,1979 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "point-reflection",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "point-shear",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "line-reflection",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            11,
+            22,
+            33
+          ],
+          "end": [
+            14,
+            20,
+            35
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "line-shear",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            11,
+            22,
+            33
+          ],
+          "end": [
+            14,
+            20,
+            35
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "point_cloud-reflection",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              11,
+              22,
+              33
+            ],
+            [
+              13,
+              21,
+              32
+            ],
+            [
+              10,
+              20,
+              30
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "point_cloud-shear",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              11,
+              22,
+              33
+            ],
+            [
+              13,
+              21,
+              32
+            ],
+            [
+              10,
+              20,
+              30
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "mesh-reflection",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10,
+              20,
+              30
+            ],
+            [
+              13,
+              20,
+              30
+            ],
+            [
+              10,
+              24,
+              31
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "mesh-shear",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              10,
+              20,
+              30
+            ],
+            [
+              13,
+              20,
+              30
+            ],
+            [
+              10,
+              24,
+              31
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "polyline-reflection",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              11,
+              22,
+              33
+            ],
+            [
+              14,
+              20,
+              35
+            ],
+            [
+              15,
+              25,
+              37
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "polyline-shear",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              11,
+              22,
+              33
+            ],
+            [
+              14,
+              20,
+              35
+            ],
+            [
+              15,
+              25,
+              37
+            ]
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nurbs-reflection",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                11,
+                22,
+                33
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                27,
+                35
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                17,
+                21,
+                36
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "domain": [
+            -3,
+            7
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nurbs-shear",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                11,
+                22,
+                33
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                27,
+                35
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                17,
+                21,
+                36
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "domain": [
+            -3,
+            7
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "surface-reflection",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                20,
+                30
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                20,
+                31
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                10,
+                25,
+                32
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                25,
+                34
+              ],
+              "weight": 3
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "surface-shear",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                20,
+                30
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                20,
+                31
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                10,
+                25,
+                32
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                14,
+                25,
+                34
+              ],
+              "weight": 3
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "circle-reflection",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            11,
+            22,
+            33
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              -2,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              3,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "circle-shear",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            11,
+            22,
+            33
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Part A",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part a",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nested-noncommuting",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            2,
+            1
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Leaf",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Leaf",
+          "transform": [
+            [
+              0,
+              -3,
+              0,
+              10
+            ],
+            [
+              2,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "Outer",
+          "base": [
+            5,
+            7,
+            9
+          ],
+          "sources": [
+            3,
+            2,
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Outer",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 5,
+          "recursive": false,
+          "api": "sdk"
+        },
+        {
+          "action": "explode",
+          "object": 7,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "shared-redefinition",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              0,
+              -3,
+              0,
+              10
+            ],
+            [
+              2,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "wrapper",
+          "base": [
+            1,
+            2,
+            3
+          ],
+          "sources": [
+            3
+          ]
+        },
+        {
+          "action": "create",
+          "name": "LEAF",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 4,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "parent-color-false",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Parent=part",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Parent=part",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object"
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": false,
+          "api": "sdk"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "parent-color-true",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            11,
+            22,
+            33
+          ]
+        }
+      ],
+      "attributes": [
+        {
+          "name": "Part geometry",
+          "color": [
+            31,
+            83,
+            137
+          ],
+          "color_source": "parent",
+          "user_text": {
+            "Part": "member"
+          },
+          "geometry_user_text": {
+            "Shape": "local"
+          }
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "Parent=part",
+          "base": [
+            10,
+            20,
+            30
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "Parent=part",
+          "transform": [
+            [
+              1,
+              2,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              3,
+              -7
+            ],
+            [
+              0,
+              0,
+              1,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "attributes": {
+            "color": [
+              200,
+              100,
+              50
+            ],
+            "color_source": "object"
+          }
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "sdk"
+        }
+      ]
+    }
+  ]
+}

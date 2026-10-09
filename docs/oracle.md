@@ -2,6 +2,10 @@
 
 [Project overview](../README.md)
 
+The [block workflow protocol](block-workflow-oracle.md) records definition-local
+members, nested placements, shared redefinition and both explosion depths using
+stable numeric handles through the Python and Rust oracle APIs.
+
 The [polyhedral Boolean commands](polyhedral-boolean-commands.md) retain 65
 native command recipes from private Xvfb. Rust command tests replay all 65 physical
 and document outcomes, including history and the non-solid two-hole intersection;

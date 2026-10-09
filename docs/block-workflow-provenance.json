@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "368f1d1aee49704dcee3c8d585a17cd681480053",
+  "scope": "Typed block graph/placement/redefinition/explosion oracle and native command metadata corrections",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/explode.htm",
+    "https://developer.rhino3d.com/en/api/RhinoScriptSyntax/#block",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.tables.instancedefinitiontable"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5468,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1022,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_command_replay": {
+      "cases": 20,
+      "matched": 20,
+      "states": 85,
+      "geometric_stations": 3477,
+      "max_absolute_error": 1.4210854715202004e-14,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "exit_code": 0
+    },
+    "native_metadata_replay": {
+      "cases": 4,
+      "command_matched": 2,
+      "sdk_color_diagnostics": 2,
+      "native_failures": 0,
+      "exit_code": 1
+    },
+    "native_sdk_replay": {
+      "cases": 20,
+      "matched": 2,
+      "diagnostics": 18,
+      "native_failures": 0,
+      "exit_code": 1
+    }
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_workflow_commands.json",
+      "response": "tools/rhino_oracle/observations/block_workflow_commands.json",
+      "scheme": "VibocerosOracleBlockCommands20261008",
+      "cases": 20
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_workflow_metadata.json",
+      "response": "tools/rhino_oracle/observations/block_workflow_metadata.json",
+      "scheme": "VibocerosOracleBlockMetadata20261008",
+      "cases": 4
+    },
+    {
+      "fixture": "docs/block-workflow-native-source/tools/rhino_oracle/fixtures/block_workflow.json",
+      "response": "tools/rhino_oracle/observations/block_workflow.json",
+      "scheme": "VibocerosOracleBlockSdkFinal20261008",
+      "cases": 20
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "native_helper_snapshot": "docs/block-workflow-native-source/tools/rhino_oracle/block_workflow_probe.py",
+  "native_snapshot_note": "Native helper predates the command-default change; command/metadata fixtures specify their API explicitly. Final SDK capture used the archived fixture with the then-default SDK entrypoint; current SDK fixture specifies it explicitly.",
+  "initial_diagnostic": {
+    "fixture": "docs/block-workflow-sdk-source/tools/rhino_oracle/fixtures/block_workflow.json",
+    "response": "tools/rhino_oracle/observations/block_workflow_sdk.json",
+    "helper": "docs/block-workflow-sdk-source/tools/rhino_oracle/block_workflow_probe.py",
+    "scheme": "VibocerosOracleBlocks20261008",
+    "note": "Preliminary SDK records precede surface-kind/text wrapping and placed-conic witness corrections; not counted as compatibility evidence."
+  },
+  "before_change_note": "Retained command comparison uses the already-generated local values before the document metadata correction, with corresponding command recipe IDs. The earlier document source is archived; no before-change binary or kernel timing claim is made.",
+  "sha256": {
+    "crates/viboceros-document/src/block_explosion.rs": "7cd502f6723636239288fbd34985b774f1c3db9782dc8520c6ed71d61526af5d",
+    "crates/viboceros-document/src/block_explosion/tests.rs": "1aa085c173b9f89efad2a7b0f251375eeedb1807b91c1409142503c948515af0",
+    "crates/viboceros-oracle/src/block_workflow.rs": "6b67374343bfc9f5f98649725d9e35336d8437c742873d9f0dcad880f546a957",
+    "crates/viboceros-oracle/src/block_workflow/tests.rs": "0abc17ee96693d032779190e4b38bc26faf81d8c7c9c6b6cd3f6ac04e79aee91",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "54dd2df19d7b101f070b4d6b4ed860e4a1ef61d0c17dfa530c8782d2b608ae6c",
+    "crates/viboceros-oracle/src/lib.rs": "168b7c3a158e2f4d953374804ac4d0f67dee2e7988b789bb3b111de3abf8bb3d",
+    "tools/rhino_oracle/client.py": "ba0241e1cbdad911c842f9893f5c7e909a9a59c745a91dda15df32f09f2a1dda",
+    "tools/rhino_oracle/rhino_worker.py": "41a5c36797dcb043d45052742dc12709a731cef6752f7b953abd042e9c0e61e4",
+    "tools/rhino_oracle/block_workflow_probe.py": "9c2cd63b00df2a529d9ecb71caa7820310c308930ab46d821e80b06bd85c316d",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "6f539f402684bc3bcb457cb27396ef95275f23ab5e6a4b89fd2efe52e02cdcb4",
+    "tools/rhino_oracle/fixtures/block_workflow.json": "a758691e371edb3fc51d5ffaf4f20f71f12438ddf6b87d09415eb658688ac09e",
+    "tools/rhino_oracle/fixtures/block_workflow_commands.json": "8a53f585f01ef7fa05ae066a9c4a4e2f92cfd55c98343f3b8d912846829d4563",
+    "tools/rhino_oracle/fixtures/block_workflow_metadata.json": "18c8ca7c03ff894d0e39ef2266061017fb584d0a0be1b0311d7392c1c806fe2d",
+    "tools/rhino_oracle/observations/block_workflow.json": "0a7f04273bf5e1f413218b0d61ffad7fd67ee2e5eb7eb584790dc6d2acfb6f3a",
+    "tools/rhino_oracle/observations/block_workflow_commands.json": "04ca27cbc14874fa8897bbd284725664384cddf4ffd50e82520886c87c97ac8d",
+    "tools/rhino_oracle/observations/block_workflow_metadata.json": "9c4371b004b83cddfed99a372c200e04f6376402b5cf9fc652a90461bf0de057",
+    "tools/rhino_oracle/observations/block_workflow_sdk.json": "e626ef27f52eb884eef7053f83f19a02df33eb275617d7661d3e92fe3b64ef62",
+    "docs/block-workflow-command-comparison.json": "c53a814119643025ac96ef9249b77167263f56f22ac5b157896f9135b82bfbcd",
+    "docs/block-workflow-metadata-comparison.json": "75a29be90359b657e0400da2cb3b3bb65c3869a1d6c0369e806d914aa736da28",
+    "docs/block-workflow-sdk-comparison.json": "417cad4e0227620669771e32da1270cb5de87b4bbf21b4765311d6cd3b3cf22b",
+    "docs/block-workflow-command-before-comparison.json": "b5cf9ac82a4d95095cba22287939b38d2139d12804aa7ded5145f27677553462",
+    "docs/block-workflow-native-source/tools/rhino_oracle/block_workflow_probe.py": "499034c13d64f4357169cb4cfd808d29d309746144824094059eec824432f245",
+    "docs/block-workflow-native-source/tools/rhino_oracle/fixtures/block_workflow.json": "f46899b4ceff4f33139b88efc6a2579cad1e14d96c10419d336e71ef0607defa",
+    "docs/block-workflow-sdk-source/tools/rhino_oracle/block_workflow_probe.py": "47967312d6052434f34a5f5180c794a6f4a42884231f380d0c01f1d07fe18421",
+    "docs/block-workflow-sdk-source/tools/rhino_oracle/fixtures/block_workflow.json": "f46899b4ceff4f33139b88efc6a2579cad1e14d96c10419d336e71ef0607defa",
+    "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs": "b46b052fb0c25afcd75a464b76f1104a098fb8bc22d3ace947b2a88e009044d0",
+    "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "c0781d3437f49c0b9406a84ac7c544f507cc60427a1649ddbf731b903809523e"
+  },
+  "remaining_scope": [
+    "Native grouping, protected-root selection, option memory and history fidelity",
+    "Exact SDK metadata/representation semantics beyond command behavior",
+    "Linked definitions, block/subobject editing and broad B-rep source normalization",
+    "Continuous geometry certificates, GPU behavior and performance comparisons"
+  ]
+}

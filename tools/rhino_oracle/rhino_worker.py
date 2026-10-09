@@ -6461,6 +6461,9 @@ def _execute(operation, iterations, tolerance):
         return _points_command(operation)
     if operation.get("op") == "point_cloud_command":
         return _point_cloud_conversion(operation, tolerance)
+    if operation.get("op") == "block_workflow":
+        import block_workflow_probe
+        return block_workflow_probe.run(operation, tolerance, globals())
     if operation.get("op") == "document_units":
         from generate_document_units_reference import generate_case
         return generate_case(operation["source"], operation["target"], operation["rescale"]), 0
@@ -16800,6 +16803,11 @@ def _validate_request(request):
         if operation_id in ids:
             raise ValueError("duplicated oracle operation id: %s" % operation_id)
         ids.add(operation_id)
+        if operation.get('op') == 'block_workflow':
+            import block_workflow_probe
+            if iterations != 1:
+                raise ValueError('block workflows require one iteration')
+            block_workflow_probe.validate(operation)
     tolerance = dict(DEFAULT_TOLERANCE)
     tolerance.update(request.get("tolerance") or {})
     for name in ("absolute", "relative", "angular"):

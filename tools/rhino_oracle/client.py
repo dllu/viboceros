@@ -215,6 +215,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
+            from .block_workflow_probe import validate
+            if type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
+                raise ValueError('block workflows require one iteration')
+            for operation in request['operations']:
+                if operation.get('op') == 'block_workflow':
+                    validate(operation)
         if any(op.get('op') == 'scale_nu' for op in request.get('operations', [])):
             from .scale_nu_probe import validate
             if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
@@ -990,6 +997,8 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('block_workflow_probe.py'), job_path / 'block_workflow_probe.py')
             if any(op.get('op') == 'mesh_edit_records' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('mesh_edit_records_probe.py'), job_path / 'mesh_edit_records_probe.py')
             if any(op.get('op') == 'grip_transform' for op in request.get('operations', [])):

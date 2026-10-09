@@ -1,0 +1,79 @@
+{
+  "absolute_epsilon": 1e-09,
+  "cases": 4,
+  "matched": 2,
+  "mismatched": 2,
+  "native_failed": 0,
+  "operations": [
+    {
+      "comparison": {
+        "differences": [
+          "root-text-sdk-false.value.states[3].objects[1].attributes.color[0]: 31 != 200 (error 169, limit 1e-09)",
+          "root-text-sdk-false.value.states[3].objects[1].attributes.color[1]: 83 != 100 (error 17, limit 1e-09)",
+          "root-text-sdk-false.value.states[3].objects[1].attributes.color[2]: 137 != 50 (error 87, limit 1e-09)",
+          "root-text-sdk-false.value.states[3].objects[1].attributes.color_source: 'parent' != 'object'"
+        ],
+        "id": "root-text-sdk-false",
+        "max_absolute_error": 169.0,
+        "passed": false,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "root-text-sdk-false",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [
+          "root-text-sdk-true.value.states[3].objects[1].attributes.color[0]: 31 != 200 (error 169, limit 1e-09)",
+          "root-text-sdk-true.value.states[3].objects[1].attributes.color[1]: 83 != 100 (error 17, limit 1e-09)",
+          "root-text-sdk-true.value.states[3].objects[1].attributes.color[2]: 137 != 50 (error 87, limit 1e-09)",
+          "root-text-sdk-true.value.states[3].objects[1].attributes.color_source: 'parent' != 'object'"
+        ],
+        "id": "root-text-sdk-true",
+        "max_absolute_error": 169.0,
+        "passed": false,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "root-text-sdk-true",
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "root-text-command-false",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "root-text-command-false",
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "comparison": {
+        "differences": [],
+        "id": "root-text-command-true",
+        "max_absolute_error": 0.0,
+        "passed": true,
+        "rhino_ns_per_iteration": 0.0,
+        "rhino_to_viboceros_ratio": null,
+        "viboceros_ns_per_iteration": 0.0
+      },
+      "id": "root-text-command-true",
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "protocol_version": 1,
+  "relative_epsilon": 1e-12,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+}

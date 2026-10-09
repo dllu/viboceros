@@ -85,17 +85,10 @@ impl Document {
                     }
                 }
                 let state = self.block_member_display(source.attributes(), &member.path)?;
-                let leaf = member.path.last().unwrap();
-                let original =
-                    &self.block_definition(leaf.definition).unwrap().members()[leaf.member_index];
                 pieces.push(Piece {
                     geometry: member.geometry.clone(),
                     attributes: exploded_attributes(&member.attributes, state),
-                    geometry_user_text: exploded_geometry_text(
-                        original.content(),
-                        &member.geometry,
-                        &member.geometry_user_text,
-                    ),
+                    geometry_user_text: member.geometry_user_text.clone(),
                     prototype_groups: groups,
                 });
             }
@@ -133,13 +126,9 @@ impl Document {
                     }
                 };
                 pieces.push(Piece {
-                    geometry_user_text: exploded_geometry_text(
-                        member.content(),
-                        &geometry,
-                        member.geometry_user_text(),
-                    ),
                     geometry,
                     attributes: exploded_attributes(member.attributes(), state),
+                    geometry_user_text: member.geometry_user_text().clone(),
                     prototype_groups: member
                         .group_ids()
                         .iter()
@@ -323,26 +312,13 @@ fn exploded_attributes(
     attributes: &ObjectAttributes,
     state: BlockMemberDisplay,
 ) -> ObjectAttributes {
-    attributes
+    let mut result = attributes
         .clone()
-        .with_file_state(state.visible, state.locked)
-}
-
-fn exploded_geometry_text(
-    content: &BlockContent,
-    placed: &Geometry,
-    text: &BTreeMap<String, String>,
-) -> BTreeMap<String, String> {
-    // Rhino commands retain raw ByParent attributes and member attribute text.
-    // Converting an ArcCurve to an affine NURBS image creates fresh geometry
-    // without its geometry user strings; existing NURBS members retain theirs.
-    if matches!(content, BlockContent::Geometry(g) if matches!(&**g, Geometry::Circle(_) | Geometry::Arc(_)))
-        && matches!(placed, Geometry::NurbsCurve(_))
-    {
-        BTreeMap::new()
-    } else {
-        text.clone()
+        .with_file_state(state.visible, state.locked);
+    if attributes.color_source() == ObjectColorSource::Parent {
+        result = result.with_object_color(state.color);
     }
+    result
 }
 
 #[cfg(test)]

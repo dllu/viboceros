@@ -3,10 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
+The October 8, 2026 audit tested native block workflow replay and metadata corrections,
+block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`35f2b035`, with Rust 1.95.0. Code and measurement hashes are retained in
+`368f1d1a` (earlier milestones used `35f2b035`), with Rust 1.95.0.
+Code and measurement hashes are retained in
+[workflow provenance](block-workflow-provenance.json),
 [expansion provenance](block-explode-provenance.json),
 [structural provenance](three-dm-structural-provenance.json),
 [snap provenance](block-snap-provenance.json),
@@ -33,28 +36,42 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,461 Rust tests:
+5,468 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
 | App | 1,058 | 17 |
 | Command | 1,221 | 2 |
-| Document | 218 | 5 |
+| Document | 220 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,099 | 8 |
 | I/O | 212 | 0 |
-| Oracle | 489 | 0 |
+| Oracle (unit and integration) | 494 | 0 |
 
-The Python suite passed 1,017 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,022 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [block expansion](commands/explode-blocks.md) adds five document tests,
+The newest [block workflow oracle](block-workflow-oracle.md) adds three oracle unit
+tests, two native replay integration tests, two document tests and five Python
+validation tests. Fresh Rhino 8.32.26160.13001 captures ran on private Xvfb:
+20 command workflows, 20 SDK workflows and four root-text follow-ups. All 22
+command workflows agree on definition graphs, transforms, geometry and supported
+metadata at absolute `1e-9` plus relative `1e-12`; the main 20-case batch records
+85 states and 3,477 geometric stations. The largest command numeric difference
+is `1.43e-14`. Native evidence corrects raw ByParent preservation and geometry-text
+loss when a conic converts to NURBS. SDK color/text/representation differences
+remain explicit diagnostics. These are sampled checks, not continuous geometry
+certificates or performance measurements. Native grouping, selection history,
+option memory and protected-root behavior remain unverified.
+
+The preceding [block expansion](commands/explode-blocks.md) adds five document tests,
 three command tests and two GUI tests. One-level Explode retains nested instance
 relationships; recursive ExplodeBlock returns geometric members. Metadata and
-ByParent appearance are preserved, prototype groups are copied per placement
+the initial ByParent appearance policy are preserved at that checkpoint;
+prototype groups are copied per placement
 scope, and root groups remain attached to outputs. Preparation/commit checks
 source/layer/tolerance freshness and output budgets. Tests cover geometry storage
 on Undo, mixed ordinary/block history, protected member states, independent groups,
@@ -1209,7 +1226,9 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest native capture covers 32 closed numeric recipes, 16 retained pending
+The newest block capture covers 44 API/command workflows, including 22 matching
+command cases and retained SDK diagnostics. The earlier curve capture covers
+32 closed numeric recipes, 16 retained pending
 point getters, and six cancellations. The preceding direction capture covers 18
 recipes with four retained failures and four cancellations. The preceding capture covers a 37-step
 preference sequence with raw cancelled queries and option edits. The preceding
