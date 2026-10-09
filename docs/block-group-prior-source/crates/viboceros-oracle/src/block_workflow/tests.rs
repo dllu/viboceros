@@ -58,25 +58,3 @@ fn bounded_workflow_rejects_too_many_steps_and_handles() {
     assert_eq!(left, 2);
     assert_eq!(BlockExplosionApi::default(), BlockExplosionApi::Command);
 }
-
-#[test]
-fn group_and_batch_inputs_enforce_lifetimes_uniqueness_and_option_contracts() {
-    let create = json!({"action":"create","name":"part","base":[0,0,0],"sources":[0]});
-    for bad in [
-        json!({"action":"group","objects":[]}),
-        json!({"action":"group","objects":[2,2]}),
-        json!({"action":"group","objects":[0]}),
-        json!({"action":"explode_batch","objects":[2,2]}),
-        json!({"action":"explode_batch","objects":[1]}),
-        json!({"action":"explode","object":2,"group_output":true}),
-        json!({"action":"explode","object":2,"recursive":true,"api":"sdk","group_output":true}),
-    ] {
-        assert!(run_request(&request(json!([create.clone(), bad]))).is_err());
-    }
-    let r = request(json!([
-        create,
-        json!({"action":"group","objects":[1,2]}),
-        json!({"action":"explode_batch","objects":[2],"group_output":true})
-    ]));
-    assert!(run_request(&r).is_ok());
-}

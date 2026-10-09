@@ -77,16 +77,9 @@
   },
   "before_change_note": "Retained command comparison uses the already-generated local values before the document metadata correction, with corresponding command recipe IDs. The earlier document source is archived; no before-change binary or kernel timing claim is made.",
   "sha256": {
-    "crates/viboceros-document/src/block_explosion.rs": "7cd502f6723636239288fbd34985b774f1c3db9782dc8520c6ed71d61526af5d",
-    "crates/viboceros-document/src/block_explosion/tests.rs": "1aa085c173b9f89efad2a7b0f251375eeedb1807b91c1409142503c948515af0",
-    "crates/viboceros-oracle/src/block_workflow.rs": "6b67374343bfc9f5f98649725d9e35336d8437c742873d9f0dcad880f546a957",
-    "crates/viboceros-oracle/src/block_workflow/tests.rs": "0abc17ee96693d032779190e4b38bc26faf81d8c7c9c6b6cd3f6ac04e79aee91",
-    "crates/viboceros-oracle/tests/block_workflow.rs": "54dd2df19d7b101f070b4d6b4ed860e4a1ef61d0c17dfa530c8782d2b608ae6c",
     "crates/viboceros-oracle/src/lib.rs": "168b7c3a158e2f4d953374804ac4d0f67dee2e7988b789bb3b111de3abf8bb3d",
     "tools/rhino_oracle/client.py": "ba0241e1cbdad911c842f9893f5c7e909a9a59c745a91dda15df32f09f2a1dda",
     "tools/rhino_oracle/rhino_worker.py": "41a5c36797dcb043d45052742dc12709a731cef6752f7b953abd042e9c0e61e4",
-    "tools/rhino_oracle/block_workflow_probe.py": "9c2cd63b00df2a529d9ecb71caa7820310c308930ab46d821e80b06bd85c316d",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "6f539f402684bc3bcb457cb27396ef95275f23ab5e6a4b89fd2efe52e02cdcb4",
     "tools/rhino_oracle/fixtures/block_workflow.json": "a758691e371edb3fc51d5ffaf4f20f71f12438ddf6b87d09415eb658688ac09e",
     "tools/rhino_oracle/fixtures/block_workflow_commands.json": "8a53f585f01ef7fa05ae066a9c4a4e2f92cfd55c98343f3b8d912846829d4563",
     "tools/rhino_oracle/fixtures/block_workflow_metadata.json": "18c8ca7c03ff894d0e39ef2266061017fb584d0a0be1b0311d7392c1c806fe2d",
@@ -103,12 +96,28 @@
     "docs/block-workflow-sdk-source/tools/rhino_oracle/block_workflow_probe.py": "47967312d6052434f34a5f5180c794a6f4a42884231f380d0c01f1d07fe18421",
     "docs/block-workflow-sdk-source/tools/rhino_oracle/fixtures/block_workflow.json": "f46899b4ceff4f33139b88efc6a2579cad1e14d96c10419d336e71ef0607defa",
     "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs": "b46b052fb0c25afcd75a464b76f1104a098fb8bc22d3ace947b2a88e009044d0",
-    "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "c0781d3437f49c0b9406a84ac7c544f507cc60427a1649ddbf731b903809523e"
+    "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "c0781d3437f49c0b9406a84ac7c544f507cc60427a1649ddbf731b903809523e",
+    "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow/tests.rs": "0abc17ee96693d032779190e4b38bc26faf81d8c7c9c6b6cd3f6ac04e79aee91",
+    "docs/block-group-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "6f539f402684bc3bcb457cb27396ef95275f23ab5e6a4b89fd2efe52e02cdcb4",
+    "docs/block-group-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "54dd2df19d7b101f070b4d6b4ed860e4a1ef61d0c17dfa530c8782d2b608ae6c",
+    "docs/block-group-prior-source/tools/rhino_oracle/block_workflow_probe.py": "9c2cd63b00df2a529d9ecb71caa7820310c308930ab46d821e80b06bd85c316d",
+    "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "6b67374343bfc9f5f98649725d9e35336d8437c742873d9f0dcad880f546a957",
+    "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion.rs": "7cd502f6723636239288fbd34985b774f1c3db9782dc8520c6ed71d61526af5d",
+    "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "1aa085c173b9f89efad2a7b0f251375eeedb1807b91c1409142503c948515af0"
   },
   "remaining_scope": [
     "Native grouping, protected-root selection, option memory and history fidelity",
     "Exact SDK metadata/representation semantics beyond command behavior",
     "Linked definitions, block/subobject editing and broad B-rep source normalization",
     "Continuous geometry certificates, GPU behavior and performance comparisons"
-  ]
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-oracle/src/block_workflow/tests.rs": "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow/tests.rs",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-group-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-group-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-group-prior-source/tools/rhino_oracle/block_workflow_probe.py",
+    "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
+    "crates/viboceros-document/src/block_explosion.rs": "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion.rs",
+    "crates/viboceros-document/src/block_explosion/tests.rs": "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion/tests.rs"
+  }
 }

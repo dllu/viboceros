@@ -38,9 +38,9 @@ group peers follow the existing Explode policy: outputs are created and the orig
 is retained unselected. Other permission failures abort the batch. This is a local
 policy without a fresh native AllBlocks capture.
 
-GroupOutput defaults to No. Yes adds a separate group per root after prototype/root
-memberships. Native option memory and exact multi-root grouping/selection remain
-unverified.
+GroupOutput defaults to No. Yes adds a separate group per root after retained
+leaf memberships. A two-root native capture confirms separate output groups.
+Native option memory and broader multi-root selection remain unverified.
 
 ## Geometry, metadata and groups
 
@@ -57,9 +57,12 @@ Raw ByParent colors remain ByParent, following the native commands; the SDK
 explosion API instead resolves explicit object colors. Root-only user text and
 geometry text are not merged into member text.
 
-Prototype groups receive fresh definitions per root and nested placement scope.
-Repeated uses of one definition cannot merge unrelated outputs into a shared
-group. Member group order is retained, followed by the root's existing groups.
+One-level `Explode` copies each direct member's top prototype group into a fresh
+model group. Recursive `ExplodeBlock` keeps the geometric leaf's prototype groups
+and ignores groups on nested reference containers. Repeated or sequentially
+exploded instances can therefore join the same leaf group. Both commands discard
+the root's own memberships; untouched group peers remain in their original group.
+See the [native capture and replay](../block-groups.md).
 
 ## Preparation, history and limits
 
@@ -85,6 +88,7 @@ cargo test --release --workspace block
 
 Regressions cover expansion depth, placed geometry, metadata, scoped groups,
 restricted states, stale preparation, budgets, mixed history, grouping and GUI
-picking/cancellation/AllBlocks. Twenty-two fresh native command workflows constrain
-placed geometry, definitions and supported metadata. Native grouping, protected-root
-selection, option memory, GPU behavior and performance remain unverified here.
+picking/cancellation/AllBlocks. Twenty-two earlier native command workflows constrain
+placed geometry, definitions and supported metadata. Sixteen additional workflows
+constrain construction and explosion group behavior. Protected-root selection,
+option memory, GPU behavior and performance remain unverified here.

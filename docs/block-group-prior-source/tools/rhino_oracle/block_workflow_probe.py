@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Owned public-SDK block workflows with UUID-independent graph records."""
 import math
-import re
 from fractions import Fraction
 
 MAX_HANDLES = 4096
@@ -47,14 +46,6 @@ def _attributes(value):
             raise ValueError('invalid block user text')
 
 
-def _user_text_record(pairs, owned_ids):
-    result=dict(pairs)
-    marker='$block-instance-original-object-id$'
-    if marker in result and result[marker].lower() in owned_ids:
-        del result[marker]
-    return result
-
-
 def validate(operation):
     """Resolve handle lifetimes, nested graphs and output budgets before host access."""
     sources, steps = operation.get('sources'), operation.get('steps')
@@ -68,8 +59,6 @@ def validate(operation):
         raise ValueError('invalid block source attributes')
     for spec in specs:
         _attributes(spec)
-    if type(operation.get('record_groups', False)) is not bool:
-        raise ValueError('invalid block group recording')
     handles = [None] * len(sources)  # None means ordinary geometry; absent means deleted.
     alive = set(range(len(sources)))
     definitions = {}
@@ -95,11 +84,9 @@ def validate(operation):
             raise ValueError('invalid block workflow step')
         action = step.get('action')
         if action == 'create':
-            if set(step) - set(('action', 'name', 'base', 'sources','api')) or not set(('name','base','sources')).issubset(step) or step.get('api','sdk') not in ('sdk','command'):
+            if set(step) != set(('action', 'name', 'base', 'sources')):
                 raise ValueError('invalid block create fields')
             name = _name(step['name'])
-            if step.get('api','sdk')=='command' and (name in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['name'])):
-                raise ValueError('command block creation needs a new plain-token name')
             _numbers(step['base'], 3)
             picks = step['sources']
             if (not isinstance(picks, list) or not picks or any(type(i) is not int or i not in alive for i in picks)
@@ -131,33 +118,15 @@ def validate(operation):
             _attributes(step.get('attributes', {}))
             outputs = [name]
         elif action == 'explode':
-            if (set(step) - set(('action', 'object', 'recursive', 'api', 'group_output')) or 'object' not in step
+            if (set(step) - set(('action', 'object', 'recursive', 'api')) or 'object' not in step
                     or type(step.get('recursive', False)) is not bool or step.get('api', 'command') not in ('sdk', 'command')):
                 raise ValueError('invalid block explode fields')
-            if (type(step.get('group_output', False)) is not bool or
-                    step.get('group_output', False) and (not step.get('recursive', False) or step.get('api', 'command') != 'command')):
-                raise ValueError('GroupOutput requires recursive command explosion')
             index = step['object']
             if type(index) is not int or index not in alive or handles[index] is None:
                 raise ValueError('invalid live block handle')
             name = handles[index]
             outputs = leaves(name, []) if step.get('recursive', False) else definitions[name][:]
             alive.remove(index)
-        elif action == 'group':
-            picks = step.get('objects')
-            if (set(step) != set(('action','objects')) or not isinstance(picks,list) or not picks or
-                    any(type(i) is not int or i not in alive for i in picks) or len(set(picks)) != len(picks)):
-                raise ValueError('invalid live group handles')
-            outputs = []
-        elif action == 'explode_batch':
-            picks=step.get('objects')
-            if (set(step)-set(('action','objects','group_output')) or not isinstance(picks,list) or not picks or
-                    any(type(i) is not int or i not in alive or handles[i] is None for i in picks) or
-                    len(set(picks))!=len(picks) or type(step.get('group_output',False)) is not bool):
-                raise ValueError('invalid live batch block handles')
-            outputs=[]
-            for index in sorted(picks): outputs.extend(leaves(handles[index],[]))
-            alive.difference_update(picks)
         else:
             raise ValueError('unknown block workflow action')
         alive.update(range(len(handles), len(handles) + len(outputs)))
@@ -180,13 +149,6 @@ def run(operation, tolerance, host):
     current_before = document.Layers.CurrentLayerIndex
     selected_before = [o.Id for o in document.Objects.GetSelectedObjects(False, False)]
     records_left = [MAX_RECORDS]
-    group_start = document.Groups.Count
-    record_groups = operation.get('record_groups', False)
-    marker_ids=set()
-    marker_handle_count=[0]
-
-    def group_record(attributes):
-        return [int(i) - group_start for i in (attributes.GetGroupList() or [])]
 
     def spend():
         records_left[0] -= 1
@@ -213,17 +175,9 @@ def run(operation, tolerance, host):
 
     def attribute_record(a, geometry):
         color = a.ObjectColor
-        # Native Block inserts this hidden bookkeeping UUID. Only suppress a
-        # marker referencing one of this probe's source handles; arbitrary
-        # caller text (including other dollar-prefixed keys) stays visible.
-        user_text=strings(a)
-        if '$block-instance-original-object-id$' in user_text:
-            marker_ids.update(str(key).lower() for key in handles[marker_handle_count[0]:])
-            marker_handle_count[0]=len(handles)
-            user_text=_user_text_record(user_text,marker_ids)
         return dict(name=str(a.Name) if a.Name else None, layer='Source' if a.LayerIndex == layers[0] else 'Current',
                     color=[int(color.R), int(color.G), int(color.B)], color_source={'ColorFromLayer': 'layer', 'ColorFromObject': 'object', 'ColorFromParent': 'parent', 'ColorFromMaterial': 'material'}[str(a.ColorSource)],
-                    user_text=user_text, geometry_user_text=strings(geometry))
+                    user_text=strings(a), geometry_user_text=strings(geometry))
 
     def transform_record(t):
         return [[float(t[r, c]) for c in range(4)] for r in range(4)]
@@ -276,9 +230,7 @@ def run(operation, tolerance, host):
                 try:
                     if not placed.Transform(transform):
                         raise ValueError('native block member transform failed')
-                    value = dict(path=member_path, attributes=attribute_record(member.Attributes, geometry), geometry=geometry_record(placed))
-                    if record_groups: value['groups'] = group_record(member.Attributes)
-                    result.append(value)
+                    result.append(dict(path=member_path, attributes=attribute_record(member.Attributes, geometry), geometry=geometry_record(placed)))
                 finally:
                     placed.Dispose()
         return result
@@ -288,23 +240,13 @@ def run(operation, tolerance, host):
         for index, identifier in enumerate(handles):
             obj = document.Objects.FindId(identifier)
             if obj is not None and not obj.IsDeleted:
-                value = dict(handle=index, attributes=attribute_record(obj.Attributes, obj.Geometry), geometry=geometry_record(obj.Geometry))
-                if record_groups: value['groups'] = group_record(obj.Attributes)
-                objects.append(value)
+                objects.append(dict(handle=index, attributes=attribute_record(obj.Attributes, obj.Geometry), geometry=geometry_record(obj.Geometry)))
         catalog = []
         for index in definitions:
             definition = document.InstanceDefinitions[index]
-            members=[]
-            for m in definition.GetObjects():
-                value=dict(attributes=attribute_record(m.Attributes,m.Geometry),geometry=geometry_record(m.Geometry,False))
-                if record_groups: value['groups']=group_record(m.Attributes)
-                members.append(value)
-            catalog.append(dict(name=definition_names[definition.Id],members=members))
+            catalog.append(dict(name=definition_names[definition.Id], members=[dict(attributes=attribute_record(m.Attributes, m.Geometry), geometry=geometry_record(m.Geometry, False)) for m in definition.GetObjects()]))
         catalog.sort(key=lambda d: d['name'])
-        value=dict(objects=objects, definitions=catalog)
-        if record_groups:
-            value['groups']=[dict(index=i-group_start,objects=[j for j,key in enumerate(handles) if document.Objects.FindId(key) is not None and not document.Objects.FindId(key).IsDeleted and i in (document.Objects.FindId(key).Attributes.GetGroupList() or [])]) for i in range(group_start,document.Groups.Count) if not document.Groups.IsDeleted(i)]
-        return value
+        return dict(objects=objects, definitions=catalog)
 
     def add_instance(index, transform, spec):
         a = attributes(spec, layers[1])
@@ -355,23 +297,6 @@ def run(operation, tolerance, host):
             action = step['action']
             start = len(handles)
             if action == 'create':
-                if step.get('api','sdk')=='command':
-                    settings=Rhino.DocObjects.ObjectEnumeratorSettings()
-                    settings.NormalObjects=settings.LockedObjects=settings.HiddenObjects=True
-                    before=set(o.Id for o in document.Objects.GetObjectList(settings))
-                    document.Objects.UnselectAll()
-                    for j in sorted(step['sources']): document.Objects.Select(handles[j])
-                    # The scripted Block command asks for description, URL
-                    # description and URL after its name, even when all are empty.
-                    script='_-Block %s %s _Enter _Enter _Enter' % (','.join(str(v) for v in step['base']),prefix+step['name'])
-                    if not rs.Command(script,False): raise ValueError('native Block command failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1000:])
-                    roots=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and isinstance(o.Geometry,Rhino.Geometry.InstanceReferenceGeometry)]
-                    if len(roots)!=1: raise ValueError('native Block command did not return exactly one root')
-                    definition=document.InstanceDefinitions.FindId(roots[0].Geometry.ParentIdefId)
-                    definitions.append(definition.Index);by_name[_fold(step['name'])]=definition.Index
-                    definition_names[definition.Id]=step['name'];handles.append(roots[0].Id)
-                    value=snapshot();value['outputs']=[start];states.append(value)
-                    continue
                 picks = [document.Objects.FindId(handles[i]) for i in sorted(step['sources'])]
                 geometry, attrs = [], []
                 translation = Rhino.Geometry.Transform.Translation(-step['base'][0], -step['base'][1], -step['base'][2])
@@ -407,32 +332,16 @@ def run(operation, tolerance, host):
                     for c in range(4):
                         transform[r, c] = step['transform'][r][c]
                 add_instance(by_name[_fold(step['name'])], transform, step.get('attributes', {}))
-            elif action == 'group':
-                if document.Groups.Add(prefix+'Group_'+str(document.Groups.Count),System.Array[System.Guid]([handles[i] for i in step['objects']])) < 0:
-                    raise ValueError('native block grouping failed')
-            elif action == 'explode_batch':
-                settings=Rhino.DocObjects.ObjectEnumeratorSettings()
-                settings.NormalObjects=settings.LockedObjects=settings.HiddenObjects=True
-                before=set(o.Id for o in document.Objects.GetObjectList(settings))
-                document.Objects.UnselectAll()
-                script='_ExplodeBlock _GroupOutput=%s %s _Enter' % ('Yes' if step.get('group_output',False) else 'No',' '.join('_SelID %s' % handles[j] for j in sorted(step['objects'])))
-                if not rs.Command(script,False): raise ValueError('native batch explosion failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1000:])
-                outputs=[o.Id for o in sorted(document.Objects.GetObjectList(settings),key=lambda o:o.RuntimeSerialNumber) if o.Id not in before]
-                if not outputs: raise ValueError('native batch explosion returned no objects')
-                handles.extend(outputs)
             else:
                 if step.get('api', 'command') == 'command':
                     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
                     settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
                     before = set(o.Id for o in document.Objects.GetObjectList(settings))
                     document.Objects.UnselectAll()
+                    document.Objects.Select(handles[step['object']])
                     # With preselection both commands execute immediately;
                     # trailing option/Enter tokens would start another command.
-                    if step.get('recursive',False) and ('group_output' in step):
-                        script = '_ExplodeBlock _GroupOutput=%s _SelID %s _Enter' % ('Yes' if step['group_output'] else 'No',handles[step['object']])
-                    else:
-                        document.Objects.Select(handles[step['object']])
-                        script = '_ExplodeBlock' if step.get('recursive', False) else '_Explode'
+                    script = '_ExplodeBlock' if step.get('recursive', False) else '_Explode'
                     if not rs.Command(script, False):
                         raise ValueError('native block explosion command failed: ' + str(Rhino.RhinoApp.CommandHistoryWindowText)[-800:])
                     outputs = [o.Id for o in sorted(document.Objects.GetObjectList(settings), key=lambda o: o.RuntimeSerialNumber) if o.Id not in before]
@@ -453,8 +362,6 @@ def run(operation, tolerance, host):
                 document.Objects.Delete(identifier, True)
         for index in reversed(definitions):
             document.InstanceDefinitions.Delete(index, True, True)
-        for index in range(group_start,document.Groups.Count):
-            if not document.Groups.IsDeleted(index): document.Groups.Delete(index)
         document.Layers.SetCurrentLayerIndex(current_before, True)
         for index in reversed(layers):
             document.Layers.Delete(index, True)

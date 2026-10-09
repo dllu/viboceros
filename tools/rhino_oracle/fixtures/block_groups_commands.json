@@ -1,0 +1,1232 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "prototype-onelevel-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "overlap-onelevel-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            3,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1,
+            2
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "root-peer-onelevel-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "group",
+          "objects": [
+            3,
+            2
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "prototype-root-onelevel-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "group",
+          "objects": [
+            3,
+            2
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nested-repeat-onelevel-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            2,
+            3
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "parent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              100
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 5,
+          "recursive": false,
+          "api": "command"
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "prototype-recursive-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "overlap-recursive-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            3,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1,
+            2
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "root-peer-recursive-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "group",
+          "objects": [
+            3,
+            2
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "prototype-root-recursive-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "group",
+          "objects": [
+            3,
+            2
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nested-repeat-recursive-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            2,
+            3
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "parent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              100
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 5,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "sequential-roots-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true,
+          "api": "command",
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "group-output-plain-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "command",
+          "group_output": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "group-output-prototype-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 2,
+          "recursive": true,
+          "api": "command",
+          "group_output": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "group-output-nested-block-command",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "group",
+          "objects": [
+            2,
+            3
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            2,
+            3
+          ],
+          "api": "command"
+        },
+        {
+          "action": "explode",
+          "object": 4,
+          "recursive": true,
+          "api": "command",
+          "group_output": true
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "batch-ungrouped",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode_batch",
+          "objects": [
+            3,
+            2
+          ],
+          "group_output": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "batch-grouped",
+      "record_groups": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0,
+            1
+          ],
+          "api": "command"
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              10
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "explode_batch",
+          "objects": [
+            3,
+            2
+          ],
+          "group_output": true
+        }
+      ]
+    }
+  ]
+}

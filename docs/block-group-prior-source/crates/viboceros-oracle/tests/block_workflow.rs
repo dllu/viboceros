@@ -59,28 +59,6 @@ fn replay_native_block_commands_graphs_geometry_and_metadata() {
 }
 
 #[test]
-fn native_block_creation_and_both_explosion_group_policies_match_full_graphs() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/block_groups_commands.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/block_groups_commands.json"
-    ))
-    .unwrap();
-    let result = run_request(&request).unwrap();
-    assert_eq!(result.results.len(), 16);
-    let references = native["results"].as_array().unwrap();
-    assert_eq!(references.len(), 16);
-    let mut numbers = 0;
-    for actual in result.results {
-        let expected = references.iter().find(|r| r["id"] == actual.id).unwrap();
-        compare(&actual.value, &expected["value"], &actual.id, &mut numbers);
-    }
-    assert!(numbers > 1000);
-}
-
-#[test]
 fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/block_workflow_metadata.json"

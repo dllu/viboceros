@@ -47,14 +47,6 @@ def _attributes(value):
             raise ValueError('invalid block user text')
 
 
-def _user_text_record(pairs, owned_ids):
-    result=dict(pairs)
-    marker='$block-instance-original-object-id$'
-    if marker in result and result[marker].lower() in owned_ids:
-        del result[marker]
-    return result
-
-
 def validate(operation):
     """Resolve handle lifetimes, nested graphs and output budgets before host access."""
     sources, steps = operation.get('sources'), operation.get('steps')
@@ -182,8 +174,6 @@ def run(operation, tolerance, host):
     records_left = [MAX_RECORDS]
     group_start = document.Groups.Count
     record_groups = operation.get('record_groups', False)
-    marker_ids=set()
-    marker_handle_count=[0]
 
     def group_record(attributes):
         return [int(i) - group_start for i in (attributes.GetGroupList() or [])]
@@ -213,14 +203,13 @@ def run(operation, tolerance, host):
 
     def attribute_record(a, geometry):
         color = a.ObjectColor
+        user_text=strings(a)
         # Native Block inserts this hidden bookkeeping UUID. Only suppress a
         # marker referencing one of this probe's source handles; arbitrary
         # caller text (including other dollar-prefixed keys) stays visible.
-        user_text=strings(a)
-        if '$block-instance-original-object-id$' in user_text:
-            marker_ids.update(str(key).lower() for key in handles[marker_handle_count[0]:])
-            marker_handle_count[0]=len(handles)
-            user_text=_user_text_record(user_text,marker_ids)
+        marker='$block-instance-original-object-id$'
+        if marker in user_text and any(user_text[marker].lower()==str(key).lower() for key in handles):
+            del user_text[marker]
         return dict(name=str(a.Name) if a.Name else None, layer='Source' if a.LayerIndex == layers[0] else 'Current',
                     color=[int(color.R), int(color.G), int(color.B)], color_source={'ColorFromLayer': 'layer', 'ColorFromObject': 'object', 'ColorFromParent': 'parent', 'ColorFromMaterial': 'material'}[str(a.ColorSource)],
                     user_text=user_text, geometry_user_text=strings(geometry))

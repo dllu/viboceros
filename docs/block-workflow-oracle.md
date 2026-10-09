@@ -42,6 +42,14 @@ layers are black. Insert steps may supply their own attributes.
 | `create` | `name`, `base`, `sources` | Capture live object handles in document order, normalize to the base, replace the sources with one instance; reuse of a name updates the shared definition. |
 | `insert` | `name`, `transform` | Add an instance with an explicit row-major affine 4×4 matrix; reflections and shear are allowed. |
 | `explode` | `object` | Expand one live instance; optional `recursive: true` expands nested instances to geometric leaves. `api` selects the native reference entrypoint: `command` (default) or `sdk`. |
+| `group` | `objects` | Group live handles without creating a new object handle. |
+| `explode_batch` | `objects` | Explode multiple roots recursively in one command; optional `group_output: true` creates one output group per root. |
+
+Group captures use `record_groups: true` to include ordered object/prototype/leaf
+memberships and the group table's model-handle membership. Create steps may choose
+`api: command` for a new plain-token name; otherwise they use SDK construction.
+Recursive command explosions support explicit `group_output: true` or `false`.
+See the [group oracle](block-groups.md) for those construction/API differences.
 
 Handles start at zero in source order. Every output receives the next handle;
 deleted handles are never reused. Each state lists the live objects, the whole
@@ -82,7 +90,8 @@ layers and definitions use a private namespace and are removed after each case.
 An unrelated document's selection and current layer are restored.
 
 These cases cover embedded definitions and supported geometry/metadata only.
-Group membership, hidden/locked source policies, command getters, option memory,
+The earlier capture excludes group membership; the follow-up linked above covers
+that scope. Hidden/locked source policies, general command getters, option memory,
 linked definitions, subobject editing, broad B-rep source normalization and
 performance remain outside this capture. No kernel timing is collected.
 

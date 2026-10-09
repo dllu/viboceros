@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "c0a405a3bf969d2f5596867c6e76b90ba7ddef22",
+  "scope": "Native Block/Explode/ExplodeBlock group contracts and typed group/batch oracle records",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#Groups",
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/explode.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.docobjects.objectattributes/getgrouplist"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5473,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1026,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_command_replay": {
+      "cases": 16,
+      "states": 82,
+      "matched": 16,
+      "mismatched": 0,
+      "native_failures": 0,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "exit_code": 0
+    },
+    "sdk_construction_replay": {
+      "cases": 14,
+      "matched": 3,
+      "diagnostics": 11,
+      "native_failures": 0,
+      "exit_code": 1
+    },
+    "before_correction_command_matches": 0,
+    "new_document_tests": 3,
+    "new_oracle_unit_tests": 1,
+    "new_replay_integration_tests": 1,
+    "new_python_tests": 4
+  },
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_groups_commands.json",
+      "response": "tools/rhino_oracle/observations/block_groups_commands.json",
+      "scheme": "VibocerosOracleBlockGroupCommandsFinal20261008",
+      "cases": 16
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_groups.json",
+      "response": "tools/rhino_oracle/observations/block_groups_sdk.json",
+      "scheme": "VibocerosOracleBlockGroupSdkFinal20261008",
+      "cases": 14
+    }
+  ],
+  "native_helper_snapshot": "docs/block-group-native-source/tools/rhino_oracle/block_workflow_probe.py",
+  "native_helper_note": "Captured helper precedes factoring/caching owned-UUID marker filtering; behavior and recorded values are unchanged. The final live helper checks membership using an incrementally cached lowercase ID set.",
+  "normalization": "Only the hidden $block-instance-original-object-id$ field referencing a probe-owned source handle is excluded. Other user text, ordered memberships, unused groups and geometry are retained.",
+  "raw_initial_capture": {
+    "response": "tools/rhino_oracle/observations/block_groups_commands_raw.json",
+    "helper": "docs/block-group-native-initial-source/tools/rhino_oracle/block_workflow_probe.py",
+    "scheme": "VibocerosOracleBlockGroupCommands20261008",
+    "cases": 16,
+    "note": "Includes engine-specific source UUID markers; not the normalized compatibility replay."
+  },
+  "before_comparison_note": "Control report uses the retained already-generated pre-correction local values; it is not a binary/timing comparison. Prior source is archived rather than re-pinned.",
+  "sha256": {
+    "crates/viboceros-document/src/block_creation.rs": "b97c6478ed2f9f3e837e91c6ea8580e5fff08b74b08cf7ea6f65dd8190e56780",
+    "crates/viboceros-document/src/block_creation/tests.rs": "6928cff162a5a71b78d3227bcc392c8642a94e84a360ff159ee726466b7ee29d",
+    "crates/viboceros-document/src/block_explosion.rs": "eea0e6a36c7637e2fc19dd62668331517a32c1986367eb60663511f6c85807f0",
+    "crates/viboceros-document/src/block_explosion/tests.rs": "08f664f1a335253be59af22245b381f531a30d92bcec64be56e9411b6523733a",
+    "crates/viboceros-oracle/src/block_workflow.rs": "6b22c6fa8b4709162ae4621bdd4109810a77976a0b50b70204902b2024070513",
+    "crates/viboceros-oracle/src/block_workflow/tests.rs": "e442485c97502cda85c4071d9aedf64185e444ddb9ca22ba71eb23f4ff4f8c2d",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "d3e1d5b31ccbec68099bef1e7c6c862dd30548b54d1c701ad78a65160cd8ed61",
+    "tools/rhino_oracle/block_workflow_probe.py": "77b0724baa84eb8ff781f14796fcb8978ad70861b356311beb337d41bdea411a",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "79f6c8b651188494875e12a229cbf8270131a772c79132e615f165d7b5943db4",
+    "tools/rhino_oracle/fixtures/block_groups.json": "acd41c11e9bee107ee330a519fd323297b5b3d56fb4f40b62c54334111f1e882",
+    "tools/rhino_oracle/fixtures/block_groups_commands.json": "f44017f6a89d288917f9f87cf21c4f2204456c7ff3b4eac60bdfe212b0b93a4e",
+    "tools/rhino_oracle/observations/block_groups_commands.json": "3ebf17a204351ca8e751813d44843e0b37c788ef3f4f3170bcba96a993475ea4",
+    "tools/rhino_oracle/observations/block_groups_commands_raw.json": "3f16b7d6c4ca2eb40d4d145209090a03fb5a9d5cd6a747a60df9f0305001351c",
+    "tools/rhino_oracle/observations/block_groups_sdk.json": "ff83c2eaee9df5f6562bd939d2de8db87b337e84671e6a9092673896601b397d",
+    "docs/block-groups-before-comparison.json": "c884ad3a163a1a078ef1ecf9033a2c184ec1a7132999e591afdd3c7f5b5a92a1",
+    "docs/block-groups-command-comparison.json": "df2a806e19b8a234ebc6b68c9cb1675aff748a77473c8c90dd5842f95eda2a26",
+    "docs/block-groups-sdk-comparison.json": "4aa312b0cddaea6cb7a688d6c364b226865c4c1bd24e7110d36cc657b3208904",
+    "docs/block-group-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "6f539f402684bc3bcb457cb27396ef95275f23ab5e6a4b89fd2efe52e02cdcb4",
+    "docs/block-group-prior-source/tools/rhino_oracle/block_workflow_probe.py": "9c2cd63b00df2a529d9ecb71caa7820310c308930ab46d821e80b06bd85c316d",
+    "docs/block-group-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "54dd2df19d7b101f070b4d6b4ed860e4a1ef61d0c17dfa530c8782d2b608ae6c",
+    "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "6b67374343bfc9f5f98649725d9e35336d8437c742873d9f0dcad880f546a957",
+    "docs/block-group-prior-source/crates/viboceros-oracle/src/block_workflow/tests.rs": "0abc17ee96693d032779190e4b38bc26faf81d8c7c9c6b6cd3f6ac04e79aee91",
+    "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs": "170c40630428970f930f855b80b939ce0623588a306b561e67612a6ac72730ba",
+    "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion.rs": "7cd502f6723636239288fbd34985b774f1c3db9782dc8520c6ed71d61526af5d",
+    "docs/block-group-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "1aa085c173b9f89efad2a7b0f251375eeedb1807b91c1409142503c948515af0",
+    "docs/block-group-native-source/tools/rhino_oracle/block_workflow_probe.py": "e5cd26d25aae4e26f6c48f52517e92ced822e18d322981a64de25b2789ed17a1",
+    "docs/block-group-native-initial-source/tools/rhino_oracle/block_workflow_probe.py": "ddb17431b114b02a87cb4e95ce3f9816aae6d71289c5dd54b63b3f83edb06526"
+  },
+  "remaining_scope": [
+    "Native option memory, protected-root selection and Undo/Redo behavior",
+    "Arbitrary imported multi-membership definitions and broader source normalization",
+    "Linked blocks and block/subobject editing",
+    "GPU behavior and performance comparisons"
+  ]
+}

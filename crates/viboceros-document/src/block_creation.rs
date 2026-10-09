@@ -5,7 +5,8 @@ use viboceros_geometry::{Point3, Vector3};
 impl Document {
     /// Replaces source objects with one instance at the picked base point.
     /// Reusing a name keeps the definition ID and updates existing instances.
-    /// Members retain raw attributes, geometry text and ordered group metadata.
+    /// Members retain raw attributes/geometry text. Each source's top group is
+    /// cloned into the definition, matching the native Block command.
     /// The new root uses the current layer's default attributes and is unselected.
     pub fn create_block_from_objects(
         &mut self,
@@ -42,7 +43,8 @@ impl Document {
                     )?;
                     BlockContent::Geometry(object.geometry.transformed(local, tolerance)?.into())
                 };
-                Ok(BlockMember::captured(content, object))
+                BlockMember::captured(content, object)
+                    .try_with_group_ids(object.top_group().into_iter().collect())
             })
             .collect::<Result<Vec<_>, DocumentError>>()?;
         let name = name.into();
@@ -81,6 +83,27 @@ impl Document {
             self.begin_transaction("Block")?;
         }
         let result = (|| {
+            let index = catalog
+                .iter()
+                .position(|definition| definition.id() == definition_id)
+                .unwrap();
+            let mut members = catalog[index].members().to_vec();
+            let mut mapped = BTreeMap::new();
+            let mut names = groups::GroupNames::default();
+            for member in &mut members {
+                if let Some(original) = member.group_ids().last().copied() {
+                    let copied = if let Some(copied) = mapped.get(&original) {
+                        *copied
+                    } else {
+                        let name = names.next(self);
+                        let copied = self.add_empty_group(Some(name))?;
+                        mapped.insert(original, copied);
+                        copied
+                    };
+                    *member = member.clone().try_with_group_ids(vec![copied])?;
+                }
+            }
+            catalog[index] = catalog[index].clone().with_members(members);
             self.set_block_definitions(catalog)?;
             let instance = self.add_geometry(geometry)?;
             self.delete_objects(sources)?;

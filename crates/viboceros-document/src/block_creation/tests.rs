@@ -33,6 +33,63 @@ fn capture_retains_raw_geometry_text_from_piece_copy_inputs() {
 }
 
 #[test]
+fn creation_clones_top_groups_and_keeps_unselected_peers_outside_the_definition() {
+    let mut doc = Document::default();
+    let ids = (0..4)
+        .map(|i| {
+            doc.add_geometry(Geometry::Point(p(f64::from(i), 0., 0.)))
+                .unwrap()
+        })
+        .collect::<Vec<_>>();
+    let lower = doc.add_group(None, [ids[0], ids[1], ids[3]]).unwrap();
+    let upper = doc.add_group(None, [ids[1], ids[2]]).unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    let (definition, root) = doc
+        .create_block_from_objects("groups", p(0., 0., 0.), ids[..3].iter().copied())
+        .unwrap();
+    let members = doc.block_definition(definition).unwrap().members();
+    let a = members[0].group_ids()[0];
+    let b = members[1].group_ids()[0];
+    assert_ne!(a, b);
+    assert!(![lower, upper].contains(&a));
+    assert!(![lower, upper].contains(&b));
+    assert_eq!(members[1].group_ids(), [b]);
+    assert_eq!(members[2].group_ids(), [b]);
+    assert_eq!(doc.object(ids[3]).unwrap().group_ids(), [lower]);
+    assert_eq!(doc.group(a).unwrap().members().len(), 0);
+    assert_eq!(doc.group(b).unwrap().members().len(), 0);
+    assert!(doc.object(root).unwrap().group_ids().is_empty());
+    doc.undo().unwrap();
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(doc.group(a).is_none());
+    assert!(doc.group(b).is_none());
+    doc.redo().unwrap();
+    assert_eq!(
+        doc.block_definition(definition).unwrap().members()[0].group_ids(),
+        [a]
+    );
+}
+
+#[test]
+fn grouped_source_cycle_failure_preserves_groups_objects_and_redo() {
+    let mut doc = Document::default();
+    let point = doc.add_geometry(Geometry::Point(p(1., 0., 0.))).unwrap();
+    let (_, root) = doc
+        .create_block_from_objects("part", p(0., 0., 0.), [point])
+        .unwrap();
+    doc.add_group(None, [root]).unwrap();
+    doc.add_geometry(Geometry::Point(p(2., 0., 0.))).unwrap();
+    doc.undo().unwrap();
+    let before = format!("{doc:?}");
+    assert!(
+        doc.create_block_from_objects("part", p(0., 0., 0.), [root])
+            .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    assert!(doc.can_redo());
+}
+
+#[test]
 fn creation_normalizes_and_replays_source_metadata_groups_and_storage() {
     let mut doc = Document::default();
     let a = doc.add_geometry(Geometry::Point(p(11., 22., 33.))).unwrap();
@@ -54,7 +111,9 @@ fn creation_normalizes_and_replays_source_metadata_groups_and_storage() {
         panic!()
     };
     assert_eq!(**geometry, Geometry::Point(p(1., 2., 3.)));
-    assert_eq!(stored.members()[0].group_ids(), [group]);
+    let copied_group = stored.members()[0].group_ids()[0];
+    assert_ne!(copied_group, group);
+    assert_eq!(stored.members()[1].group_ids(), [copied_group]);
     assert_eq!(
         stored.members()[0].geometry_user_text()["code"],
         "point data"
@@ -64,8 +123,8 @@ fn creation_normalizes_and_replays_source_metadata_groups_and_storage() {
         "steel"
     );
     assert_eq!(
-        doc.remove_group(group),
-        Err(DocumentError::GroupUsedByBlocks(group))
+        doc.remove_group(copied_group),
+        Err(DocumentError::GroupUsedByBlocks(copied_group))
     );
     let Geometry::BlockInstance(instance) = doc.object(object).unwrap().geometry() else {
         panic!()
@@ -79,6 +138,7 @@ fn creation_normalizes_and_replays_source_metadata_groups_and_storage() {
     doc.undo().unwrap();
     assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(doc.block_definitions().len(), 0);
+    assert!(doc.group(copied_group).is_none());
     doc.redo().unwrap();
     assert!(
         doc.object(object)

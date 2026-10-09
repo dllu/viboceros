@@ -69,7 +69,8 @@ insertion points while retaining root ownership. Definition-editing tools, subob
 broader file metadata remain unfinished. Supported embedded definitions and
 references now have [structural 3DM interchange](three-dm-structural-blocks.md).
 [Explode/ExplodeBlock](commands/explode-blocks.md) return editable members one
-level or recursively, retaining metadata and isolated prototype groups.
+level or recursively, retaining supported metadata and following the
+[native group policies](block-groups.md) for each expansion command.
 Morphing, defining-point extraction, shape-duplicate comparison and command
 adapters that require ordinary curves/surfaces/meshes explicitly reject unsupported
 instance inputs. Empty block instance geometry is currently unsupported, although

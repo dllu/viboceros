@@ -1,7 +1,7 @@
 //! UUID-independent block graph, placement and expansion records.
 use super::*;
 use crate::object_source::ObjectSource;
-use viboceros_document::{BlockContent, BlockReference, GroupId};
+use viboceros_document::{BlockContent, BlockReference};
 
 const MAX_HANDLES: usize = 4096;
 const MAX_RECORDS: usize = 65_536;
@@ -11,8 +11,6 @@ pub struct BlockWorkflowFixture {
     pub sources: Vec<ObjectSource>,
     #[serde(default)]
     pub attributes: Vec<BlockAttributes>,
-    #[serde(default)]
-    pub record_groups: bool,
     pub steps: Vec<BlockStep>,
 }
 
@@ -45,8 +43,6 @@ pub enum BlockStep {
         name: String,
         base: [f64; 3],
         sources: Vec<usize>,
-        #[serde(default = "sdk_creation_api")]
-        api: BlockExplosionApi,
     },
     Insert {
         name: String,
@@ -60,21 +56,7 @@ pub enum BlockStep {
         recursive: bool,
         #[serde(default)]
         api: BlockExplosionApi,
-        #[serde(default)]
-        group_output: bool,
     },
-    Group {
-        objects: Vec<usize>,
-    },
-    ExplodeBatch {
-        objects: Vec<usize>,
-        #[serde(default)]
-        group_output: bool,
-    },
-}
-
-fn sdk_creation_api() -> BlockExplosionApi {
-    BlockExplosionApi::Sdk
 }
 
 /// Selects the native reference entrypoint. Local records use the document kernel.
@@ -113,29 +95,15 @@ pub(super) fn run(
         handles.push(id);
     }
     let mut records_left = MAX_RECORDS;
-    let mut snapshots = vec![snapshot(
-        &document,
-        &handles,
-        &mut records_left,
-        f.record_groups,
-    )?];
+    let mut snapshots = vec![snapshot(&document, &handles, &mut records_left)?];
     for step in &f.steps {
         let outputs = match step {
             BlockStep::Create {
                 name,
                 base,
                 sources,
-                api,
             } => {
                 valid_name(name)?;
-                if *api == BlockExplosionApi::Command
-                    && (document.block_definition_by_name(name).is_some()
-                        || !name
-                            .bytes()
-                            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'-')))
-                {
-                    return Err(invalid());
-                }
                 if sources.is_empty()
                     || sources.iter().collect::<BTreeSet<_>>().len() != sources.len()
                 {
@@ -169,56 +137,15 @@ pub(super) fn run(
             BlockStep::Explode {
                 object,
                 recursive,
-                api,
-                group_output,
+                api: _,
             } => {
-                if *group_output && (!recursive || *api == BlockExplosionApi::Sdk) {
-                    return Err(invalid());
-                }
                 let id = live(&document, &handles, *object)?;
                 let plan = document.prepare_block_explosion(
                     id,
                     *recursive,
                     MAX_HANDLES - handles.len(),
                 )?;
-                document.commit_block_explosions(vec![plan], *group_output)?
-            }
-            BlockStep::Group { objects } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let ids = objects
-                    .iter()
-                    .map(|i| live(&document, &handles, *i))
-                    .collect::<Result<Vec<_>, _>>()?;
-                document.add_group(None, ids)?;
-                Vec::new()
-            }
-            BlockStep::ExplodeBatch {
-                objects,
-                group_output,
-            } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let mut indices = objects.clone();
-                indices.sort_unstable();
-                let mut budget = MAX_HANDLES - handles.len();
-                let mut plans = Vec::new();
-                for index in indices {
-                    let plan = document.prepare_block_explosion(
-                        live(&document, &handles, index)?,
-                        true,
-                        budget,
-                    )?;
-                    budget -= plan.output_count();
-                    plans.push(plan);
-                }
-                document.commit_block_explosions(plans, *group_output)?
+                document.commit_block_explosions(vec![plan], false)?
             }
         };
         if handles.len() + outputs.len() > MAX_HANDLES {
@@ -226,7 +153,7 @@ pub(super) fn run(
         }
         let output_handles = (handles.len()..handles.len() + outputs.len()).collect::<Vec<_>>();
         handles.extend(outputs);
-        let mut value = snapshot(&document, &handles, &mut records_left, f.record_groups)?;
+        let mut value = snapshot(&document, &handles, &mut records_left)?;
         value["outputs"] = json!(output_handles);
         snapshots.push(value);
     }
@@ -326,27 +253,16 @@ fn geometry_record(
     document: &Document,
     geometry: &Geometry,
     left: &mut usize,
-    groups: Option<&BTreeMap<GroupId, usize>>,
 ) -> Result<Value, ProbeError> {
     spend(left, 1)?;
     if let Geometry::BlockInstance(instance) = geometry {
         let mut value = reference_record(document, instance.reference());
         let mut leaves = Vec::new();
         for member in instance.members() {
-            let mut record = json!({"path": member.path.iter().map(|p| json!([
+            leaves.push(json!({"path": member.path.iter().map(|p| json!([
                 document.block_definition(p.definition).unwrap().name(), p.member_index])).collect::<Vec<_>>(),
                 "attributes": attribute_record(document, &member.attributes, &member.geometry_user_text),
-                "geometry": geometry_record(document, &member.geometry, left, groups)?});
-            if let Some(groups) = groups {
-                record["groups"] = json!(
-                    member
-                        .group_ids
-                        .iter()
-                        .map(|id| groups[id])
-                        .collect::<Vec<_>>()
-                );
-            }
-            leaves.push(record);
+                "geometry": geometry_record(document, &member.geometry, left)?}));
         }
         value["leaves"] = json!(leaves);
         return Ok(value);
@@ -367,31 +283,15 @@ fn snapshot(
     document: &Document,
     handles: &[ObjectId],
     left: &mut usize,
-    record_groups: bool,
 ) -> Result<Value, ProbeError> {
-    let group_index = document
-        .groups()
-        .enumerate()
-        .map(|(i, g)| (g.id(), i))
-        .collect::<BTreeMap<_, _>>();
-    let groups = record_groups.then_some(&group_index);
     let objects = handles
         .iter()
         .enumerate()
         .filter_map(|(index, id)| document.object(*id).map(|o| (index, o)))
         .map(|(index, o)| {
-            let mut value = json!({"handle": index,
+            Ok(json!({"handle": index,
             "attributes": attribute_record(document, o.attributes(), o.geometry_user_text()),
-            "geometry": geometry_record(document, o.geometry(), left, groups)?});
-            if record_groups {
-                value["groups"] = json!(
-                    o.group_ids()
-                        .iter()
-                        .map(|id| group_index[id])
-                        .collect::<Vec<_>>()
-                );
-            }
-            Ok(value)
+            "geometry": geometry_record(document, o.geometry(), left)?}))
         })
         .collect::<Result<Vec<_>, ProbeError>>()?;
     let mut definitions = Vec::new();
@@ -399,32 +299,18 @@ fn snapshot(
         let mut members = Vec::new();
         for member in definition.members() {
             let geometry = match member.content() {
-                BlockContent::Geometry(g) => geometry_record(document, g, left, groups)?,
+                BlockContent::Geometry(g) => geometry_record(document, g, left)?,
                 BlockContent::Reference(r) => {
                     spend(left, 1)?;
                     reference_record(document, *r)
                 }
             };
-            let mut value = json!({"attributes": attribute_record(document, member.attributes(), member.geometry_user_text()), "geometry": geometry});
-            if record_groups {
-                value["groups"] = json!(
-                    member
-                        .group_ids()
-                        .iter()
-                        .map(|id| group_index[id])
-                        .collect::<Vec<_>>()
-                );
-            }
-            members.push(value);
+            members.push(json!({"attributes": attribute_record(document, member.attributes(), member.geometry_user_text()), "geometry": geometry}));
         }
         definitions.push(json!({"name": definition.name(), "members": members}));
     }
     definitions.sort_by(|a, b| a["name"].as_str().cmp(&b["name"].as_str()));
-    let mut value = json!({"objects": objects, "definitions": definitions});
-    if record_groups {
-        value["groups"] = json!(document.groups().enumerate().map(|(i,g)| json!({"index":i,"objects": handles.iter().enumerate().filter_map(|(j,id)| g.members().any(|member| member==*id).then_some(j)).collect::<Vec<_>>()})).collect::<Vec<_>>());
-    }
-    Ok(value)
+    Ok(json!({"objects": objects, "definitions": definitions}))
 }
 
 #[cfg(test)]

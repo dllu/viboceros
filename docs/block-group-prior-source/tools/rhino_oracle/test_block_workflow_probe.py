@@ -8,41 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_hidden_source_id_marker_is_normalized_only_for_owned_objects(self):
-        key='$block-instance-original-object-id$'
-        pairs={key:'01234567-89AB-CDEF-0123-456789abcdef','$custom$':'keep','Part':'member'}
-        cleaned=probe._user_text_record(pairs,['01234567-89ab-cdef-0123-456789abcdef'])
-        self.assertEqual(cleaned,{'$custom$':'keep','Part':'member'})
-        self.assertIn(key,pairs)
-        self.assertEqual(probe._user_text_record(pairs,['unrelated']),pairs)
-
-    def test_group_members_and_output_options_are_typed_before_host_access(self):
-        for bad in (dict(action='group',objects=[]),dict(action='group',objects=[True]),
-                    dict(action='group',objects=[0,0]),dict(action='group',objects=[100]),
-                    dict(action='explode',object=1,recursive=False,group_output=True),
-                    dict(action='explode',object=1,recursive=True,api='sdk',group_output=True),
-                    dict(action='explode',object=1,recursive=True,group_output=1)):
-            f=self.fixture()
-            f['steps'].append(bad)
-            with self.subTest(bad=bad),self.assertRaises(ValueError): probe.run(f,None,{})
-        f=self.fixture()
-        f['record_groups']=1
-        with self.assertRaises(ValueError): probe.run(f,None,{})
-
-    def test_group_step_does_not_allocate_a_new_object_handle(self):
-        f=self.fixture()
-        f['steps'].insert(0,dict(action='group',objects=[0]))
-        f['steps'].append(dict(action='explode',object=1,recursive=True,group_output=True))
-        probe.validate(f)
-
-    def test_command_creation_and_batch_selection_are_validated_before_host(self):
-        for update in ({'api':'command','name':'part name'}, {'api':'unknown'}, {'api':'command','name':'name\nDelete'}):
-            f=self.fixture();f['steps'][0].update(update)
-            with self.subTest(update=update),self.assertRaises(ValueError): probe.run(f,None,{})
-        for objects in ([True],[0],[1,1],[],[100]):
-            f=self.fixture();f['steps'].append(dict(action='explode_batch',objects=objects))
-            with self.subTest(objects=objects),self.assertRaises(ValueError): probe.run(f,None,{})
-
     def fixture(self):
         return dict(op='block_workflow', id='case', sources=[dict(type='point', point=[1, 2, 3])],
                     steps=[dict(action='create', name='leaf', base=[0, 0, 0], sources=[0])])

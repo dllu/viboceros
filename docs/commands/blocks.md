@@ -32,7 +32,10 @@ the command starts at the base-point getter. `Block x,y,z` also starts the name
 getter when sources are already selected. Escape cancels without changing the
 model or its history.
 
-Members retain raw object attributes, geometry user text and ordered group IDs.
+Members retain raw object attributes and geometry user text. The command copies
+each source object's top group into a fresh definition group; overlapping source
+memberships are reduced to that top group. Sources outside the block stay in
+their original model groups. See the [native group capture](../block-groups.md).
 Capturing at the origin shares the immutable source geometry. Geometry text is
 copied directly, preserving existing raw keys/values without setter normalization.
 Grouped members retain their metadata inside the definition; the new root is

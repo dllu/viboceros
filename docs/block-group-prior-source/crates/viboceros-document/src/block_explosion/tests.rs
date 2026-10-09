@@ -128,58 +128,6 @@ fn similarity_placed_conics_keep_geometry_text() {
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
-
-#[test]
-fn batch_group_policies_and_output_groups_replay_without_reconnecting_root_peers() {
-    for recursive in [false, true] {
-        let mut doc = Document::default();
-        let prototype = doc.add_empty_group(None).unwrap();
-        let member = BlockMember::new(
-            BlockContent::Geometry(Geometry::Point(p(1., 0., 0.)).into()),
-            ObjectAttributes::on_layer(doc.current_layer_id()),
-        )
-        .try_with_group_ids(vec![prototype])
-        .unwrap();
-        let definition = doc.add_block_definition("part", vec![member]).unwrap();
-        let a = doc.add_block_instance(reference(definition, 10.)).unwrap();
-        let b = doc.add_block_instance(reference(definition, 20.)).unwrap();
-        let peer = doc.add_geometry(Geometry::Point(p(9., 0., 0.))).unwrap();
-        let root_group = doc.add_group(None, [a, b, peer]).unwrap();
-        let before = doc.objects().cloned().collect::<Vec<_>>();
-        let plans = [a, b]
-            .into_iter()
-            .map(|id| doc.prepare_block_explosion(id, recursive, 1).unwrap())
-            .collect();
-        let outputs = doc.commit_block_explosions(plans, recursive).unwrap();
-        let groups = outputs
-            .iter()
-            .map(|id| doc.object(*id).unwrap().group_ids().to_vec())
-            .collect::<Vec<_>>();
-        if recursive {
-            assert_eq!(groups[0][0], prototype);
-            assert_eq!(groups[1][0], prototype);
-            assert_ne!(groups[0][1], groups[1][1]);
-            assert_eq!(doc.group(prototype).unwrap().members().len(), 2);
-        } else {
-            assert_ne!(groups[0], groups[1]);
-            assert_eq!(doc.group(prototype).unwrap().members().len(), 0);
-        }
-        for ids in &groups {
-            assert!(!ids.contains(&root_group));
-        }
-        assert_eq!(
-            doc.group(root_group).unwrap().members().collect::<Vec<_>>(),
-            [peer]
-        );
-        doc.undo().unwrap();
-        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
-        assert_eq!(doc.group(prototype).unwrap().members().len(), 0);
-        doc.redo().unwrap();
-        for (id, expected) in outputs.iter().zip(groups) {
-            assert_eq!(doc.object(*id).unwrap().group_ids(), expected);
-        }
-    }
-}
 fn reference(id: BlockDefinitionId, x: f64) -> BlockReference {
     BlockReference::try_new(
         id,
@@ -226,7 +174,7 @@ fn one_level_expansion_keeps_child_instances_and_replays_geometry_storage() {
 }
 
 #[test]
-fn recursive_expansion_keeps_leaf_groups_and_discards_root_memberships() {
+fn member_attributes_text_and_scoped_groups_survive_recursive_expansion() {
     let mut doc = Document::default();
     let group = doc.add_empty_group(Some("prototype".into())).unwrap();
     let attrs = ObjectAttributes::on_layer(doc.current_layer_id())
@@ -276,16 +224,17 @@ fn recursive_expansion_keeps_leaf_groups_and_discards_root_memberships() {
             object.attributes().color_source(),
             ObjectColorSource::Parent
         );
-        assert_eq!(object.top_group(), Some(group));
+        assert_eq!(object.top_group(), Some(root_group));
         groups.push(object.group_ids()[0]);
     }
-    assert_eq!(groups, [group, group]);
-    assert_eq!(doc.group(group).unwrap().members().len(), 2);
-    assert_eq!(doc.group(root_group).unwrap().members().len(), 0);
+    assert_ne!(groups[0], groups[1]);
+    assert!(!groups.contains(&group));
+    assert_eq!(doc.group(group).unwrap().members().len(), 0);
     doc.undo().unwrap();
     assert!(doc.object(root).is_some());
-    assert_eq!(doc.group(group).unwrap().members().len(), 0);
-    assert_eq!(doc.object(root).unwrap().top_group(), Some(root_group));
+    for group in groups {
+        assert!(doc.group(group).is_none());
+    }
 }
 
 #[test]

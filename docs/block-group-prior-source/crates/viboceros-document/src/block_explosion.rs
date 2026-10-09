@@ -1,4 +1,4 @@
-//! One-level/recursive expansion with native group policies and transactional history.
+//! One-level/recursive expansion with source metadata, group isolation and history.
 use super::*;
 
 #[derive(Clone, Debug)]
@@ -8,7 +8,6 @@ pub struct PreparedBlockExplosion {
     pieces: Vec<Piece>,
     delete_source: bool,
     layers: Vec<Layer>,
-    copy_groups: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -16,7 +15,13 @@ struct Piece {
     geometry: GeometrySnapshot,
     attributes: ObjectAttributes,
     geometry_user_text: BTreeMap<String, String>,
-    prototype_groups: Vec<GroupId>,
+    prototype_groups: Vec<ScopedGroup>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+struct ScopedGroup {
+    path: Vec<(BlockDefinitionId, usize)>,
+    id: GroupId,
 }
 
 impl PreparedBlockExplosion {
@@ -58,6 +63,27 @@ impl Document {
         let mut pieces = Vec::with_capacity(count);
         if recursive {
             for member in instance.members() {
+                let mut groups = Vec::new();
+                // Inner prototype groups precede outer containers' groups.
+                for (depth, location) in member.path.iter().enumerate().rev() {
+                    let prototype = &self
+                        .block_definition(location.definition)
+                        .unwrap()
+                        .members()[location.member_index];
+                    let path = member.path[..depth]
+                        .iter()
+                        .map(|location| (location.definition, location.member_index))
+                        .collect::<Vec<_>>();
+                    for group in prototype.group_ids() {
+                        let group = ScopedGroup {
+                            path: path.clone(),
+                            id: *group,
+                        };
+                        if !groups.contains(&group) {
+                            groups.push(group);
+                        }
+                    }
+                }
                 let state = self.block_member_display(source.attributes(), &member.path)?;
                 let leaf = member.path.last().unwrap();
                 let original =
@@ -70,7 +96,7 @@ impl Document {
                         &member.geometry,
                         &member.geometry_user_text,
                     ),
-                    prototype_groups: member.group_ids.clone(),
+                    prototype_groups: groups,
                 });
             }
         } else {
@@ -114,7 +140,14 @@ impl Document {
                     ),
                     geometry,
                     attributes: exploded_attributes(member.attributes(), state),
-                    prototype_groups: member.group_ids().last().copied().into_iter().collect(),
+                    prototype_groups: member
+                        .group_ids()
+                        .iter()
+                        .map(|id| ScopedGroup {
+                            path: Vec::new(),
+                            id: *id,
+                        })
+                        .collect(),
                 });
             }
         }
@@ -122,8 +155,8 @@ impl Document {
             self.layer(piece.attributes.layer_id())
                 .ok_or(DocumentError::LayerNotFound(piece.attributes.layer_id()))?;
             for group in &piece.prototype_groups {
-                self.group(*group)
-                    .ok_or(DocumentError::GroupNotFound(*group))?;
+                self.group(group.id)
+                    .ok_or(DocumentError::GroupNotFound(group.id))?;
             }
         }
         let mut layer_ids = BTreeSet::from([source.attributes.layer_id]);
@@ -158,12 +191,11 @@ impl Document {
             pieces,
             delete_source,
             layers,
-            copy_groups: !recursive,
         })
     }
 
-    /// Commit one Undo step. Explode clones direct prototype groups;
-    /// ExplodeBlock retains leaf groups. Both discard root memberships.
+    /// Commit prepared records as one undoable operation. Each root's prototype
+    /// groups receive independent definitions; root group memberships are retained.
     /// Restricted selected group peers follow the existing Explode copy policy.
     pub fn commit_block_explosions(
         &mut self,
@@ -191,8 +223,8 @@ impl Document {
             self.ensure_object_editable(current)?;
             for piece in &plan.pieces {
                 for group in &piece.prototype_groups {
-                    self.group(*group)
-                        .ok_or(DocumentError::GroupNotFound(*group))?;
+                    self.group(group.id)
+                        .ok_or(DocumentError::GroupNotFound(group.id))?;
                 }
                 for group in &plan.source.group_ids {
                     self.group(*group)
@@ -221,14 +253,12 @@ impl Document {
             let mut names = groups::GroupNames::default();
             for plan in prepared {
                 let mut mapped = BTreeMap::new();
-                if plan.copy_groups {
-                    for piece in &plan.pieces {
-                        for group in &piece.prototype_groups {
-                            if !mapped.contains_key(group) {
-                                let name = names.next(self);
-                                let copied = self.add_empty_group(Some(name))?;
-                                mapped.insert(*group, copied);
-                            }
+                for piece in &plan.pieces {
+                    for group in &piece.prototype_groups {
+                        if !mapped.contains_key(group) {
+                            let name = names.next(self);
+                            let copied = self.add_empty_group(Some(name))?;
+                            mapped.insert(group.clone(), copied);
                         }
                     }
                 }
@@ -261,13 +291,8 @@ impl Document {
                     let memberships = piece
                         .prototype_groups
                         .iter()
-                        .map(|group| {
-                            if plan.copy_groups {
-                                mapped[group]
-                            } else {
-                                *group
-                            }
-                        })
+                        .map(|group| mapped[group])
+                        .chain(plan.source.group_ids.iter().copied())
                         .chain(output_group)
                         .collect::<Vec<_>>();
                     self.set_object_group_memberships_at(index, memberships)?;
