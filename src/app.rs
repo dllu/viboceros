@@ -140,6 +140,7 @@ mod circle;
 use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
+mod block_manager;
 mod blocks;
 mod boolean_solids;
 mod boolean_two;
@@ -1976,6 +1977,7 @@ pub struct VibocerosApp {
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     block_session: Option<blocks::PendingBlock>,
+    block_manager: block_manager::BlockManager,
     last_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     point_filter: Option<viboceros_drafting::PointFilterSession>,
@@ -2077,6 +2079,7 @@ impl VibocerosApp {
             command_focus_requested: false,
             active_command: None,
             block_session: None,
+            block_manager: Default::default(),
             last_point: None,
             drafting_plane: None,
             point_filter: None,
@@ -8794,6 +8797,7 @@ impl eframe::App for VibocerosApp {
         self.show_toolbar(ui);
         self.show_grid_settings(ui);
         self.show_layers(ui);
+        self.show_block_manager(ui.ctx());
         self.show_command_line(ui);
         let _ = self.show_viewport_tabs(ui);
         let model_input_active = self.set_view_prompt.is_none() && !self.remember_copy_prompt;
@@ -9539,6 +9543,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod block_manager;
     mod blocks;
     mod boolean_difference;
     mod boolean_intersection;
@@ -9663,6 +9668,7 @@ mod tests {
             active_command: None,
             last_point: None,
             block_session: None,
+            block_manager: Default::default(),
             drafting_plane: None,
             point_filter: None,
             point_constraint: None,

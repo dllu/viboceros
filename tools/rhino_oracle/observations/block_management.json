@@ -1,0 +1,6487 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "top-level-rename-delete",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "part",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "part",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "part",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "part",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "part",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "part",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "part",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "part",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Part A",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Part A",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Part A",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "Part A",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "Part A",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "definitions": [],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "repeated-nested-counts",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 2,
+                  "top_level": 0,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              }
+            ],
+            "outputs": [
+              4
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Renamed leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "Renamed leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "Renamed leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              }
+            ],
+            "outputs": []
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Renamed leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "Renamed leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "Renamed leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "Renamed leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              }
+            ],
+            "outputs": [],
+            "succeeded": false
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "Renamed leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          },
+          {
+            "definitions": [],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "deep-repeated-counts",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 2,
+                  "top_level": 0,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              }
+            ],
+            "outputs": [
+              4
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "grandparent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 2,
+                  "top_level": 0,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "grandparent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              }
+            ],
+            "outputs": [
+              5
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "grandparent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 8,
+                  "top_level": 0,
+                  "total": 8
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "grandparent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "grandparent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 6
+              }
+            ],
+            "outputs": [
+              6
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "parent",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "grandparent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 8,
+                  "top_level": 0,
+                  "total": 8
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 4,
+                  "top_level": 0,
+                  "total": 4
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "grandparent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "grandparent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          0
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "grandparent",
+                          1
+                        ],
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 6
+              }
+            ],
+            "outputs": [],
+            "succeeded": false
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          },
+          {
+            "definitions": [],
+            "objects": [],
+            "outputs": [],
+            "succeeded": true
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "unused-container-guard",
+      "value": {
+        "states": [
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 0
+              }
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              }
+            ],
+            "outputs": [
+              1
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 2,
+                  "total": 2
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 1
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "leaf",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 2
+              }
+            ],
+            "outputs": [
+              2
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 2,
+                  "top_level": 0,
+                  "total": 2
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 1,
+                  "total": 1
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Current",
+                  "name": null,
+                  "user_text": {}
+                },
+                "geometry": {
+                  "definition": "parent",
+                  "kind": "block",
+                  "leaves": [
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          0
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    },
+                    {
+                      "attributes": {
+                        "color": [
+                          0,
+                          0,
+                          0
+                        ],
+                        "color_source": "layer",
+                        "geometry_user_text": {},
+                        "layer": "Source",
+                        "name": "source-0",
+                        "user_text": {}
+                      },
+                      "geometry": {
+                        "domain": null,
+                        "kind": "point",
+                        "points": [
+                          [
+                            1.0,
+                            0.0,
+                            0.0
+                          ]
+                        ]
+                      },
+                      "path": [
+                        [
+                          "parent",
+                          1
+                        ],
+                        [
+                          "leaf",
+                          0
+                        ]
+                      ]
+                    }
+                  ],
+                  "transform": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ]
+                },
+                "handle": 3
+              }
+            ],
+            "outputs": [
+              3
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              }
+            ],
+            "outputs": [
+              4,
+              5
+            ]
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 2,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              },
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Current",
+                      "name": null,
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "definition": "leaf",
+                      "kind": "block",
+                      "transform": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          1.0,
+                          0.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          1.0,
+                          0.0
+                        ],
+                        [
+                          0.0,
+                          0.0,
+                          0.0,
+                          1.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "parent",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              }
+            ],
+            "outputs": [],
+            "succeeded": false
+          },
+          {
+            "definitions": [
+              {
+                "members": [
+                  {
+                    "attributes": {
+                      "color": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "color_source": "layer",
+                      "geometry_user_text": {},
+                      "layer": "Source",
+                      "name": "source-0",
+                      "user_text": {}
+                    },
+                    "geometry": {
+                      "domain": null,
+                      "kind": "point",
+                      "points": [
+                        [
+                          1.0,
+                          0.0,
+                          0.0
+                        ]
+                      ]
+                    }
+                  }
+                ],
+                "name": "leaf",
+                "usage": {
+                  "definition_references": 0,
+                  "nested": 0,
+                  "top_level": 0,
+                  "total": 0
+                }
+              }
+            ],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              }
+            ],
+            "outputs": [],
+            "succeeded": true
+          },
+          {
+            "definitions": [],
+            "objects": [
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 4
+              },
+              {
+                "attributes": {
+                  "color": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color_source": "layer",
+                  "geometry_user_text": {},
+                  "layer": "Source",
+                  "name": "source-0",
+                  "user_text": {}
+                },
+                "geometry": {
+                  "domain": null,
+                  "kind": "point",
+                  "points": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ]
+                  ]
+                },
+                "handle": 5
+              }
+            ],
+            "outputs": [],
+            "succeeded": true
+          }
+        ]
+      }
+    }
+  ]
+}

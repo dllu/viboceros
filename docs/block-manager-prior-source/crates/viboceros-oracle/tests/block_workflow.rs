@@ -81,28 +81,6 @@ fn native_block_creation_and_both_explosion_group_policies_match_full_graphs() {
 }
 
 #[test]
-fn native_management_usage_rename_and_manager_deletion_policy_match() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/block_management.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/block_management.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 4);
-    let references = native["results"].as_array().unwrap();
-    assert_eq!(references.len(), 4);
-    let mut numbers = 0;
-    for result in actual.results {
-        let reference = references.iter().find(|r| r["id"] == result.id).unwrap();
-        compare(&result.value, &reference["value"], &result.id, &mut numbers);
-    }
-    assert!(numbers > 500);
-}
-
-#[test]
 fn root_text_stays_separate_and_sdk_color_policy_remains_a_diagnostic() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/block_workflow_metadata.json"

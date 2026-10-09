@@ -24,7 +24,6 @@
     "existing_source_fixture_pins": 1068
   },
   "sha256": {
-    "crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f",
     "crates/viboceros-command/src/explode.rs": "3e20a02f018bb9840d484b4ca306e3476eb4b6be92d347a5c660dbbbd4ba4e73",
     "crates/viboceros-command/src/explode/summary.rs": "c0a25992f9b5080f6a7f5c78e0246af5e3799bd708eb35f3591676e6a5c2e64c",
     "crates/viboceros-command/src/explode_block.rs": "a9b124fc581906c6464ef23025317b77d069e8b1282646b5db32060ebcacdf34",
@@ -34,7 +33,8 @@
     "src/app/tests/blocks.rs": "50ae3cf034576c9988194b5dc6506f3e554ee3f15017e79e3d05b12dc3d7abf6",
     "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs": "c0781d3437f49c0b9406a84ac7c544f507cc60427a1649ddbf731b903809523e",
     "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs": "b46b052fb0c25afcd75a464b76f1104a098fb8bc22d3ace947b2a88e009044d0",
-    "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs": "170c40630428970f930f855b80b939ce0623588a306b561e67612a6ac72730ba"
+    "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs": "170c40630428970f930f855b80b939ce0623588a306b561e67612a6ac72730ba",
+    "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs": "022e7679296c8214e42a90a79ee3e2f71c9de3d543d7b87b53f3528a188ed26f"
   },
   "remaining_scope": [
     "Fresh native selection, option memory, protected-root and multi-root grouping parity",
@@ -43,6 +43,7 @@
   "source_snapshot_paths": {
     "crates/viboceros-document/src/block_explosion/tests.rs": "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion/tests.rs",
     "crates/viboceros-document/src/block_explosion.rs": "docs/block-workflow-prior-source/crates/viboceros-document/src/block_explosion.rs",
-    "crates/viboceros-command/src/explode_block/tests.rs": "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs"
+    "crates/viboceros-command/src/explode_block/tests.rs": "docs/block-group-prior-source/crates/viboceros-command/src/explode_block/tests.rs",
+    "crates/viboceros-document/src/lib.rs": "docs/block-manager-prior-source/crates/viboceros-document/src/lib.rs"
   }
 }

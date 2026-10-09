@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested native block group replay, workflow metadata corrections,
+The October 8, 2026 audit tested BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`c0a405a3` (earlier milestones used `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`a4add84b` (earlier milestones used `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[management provenance](block-manager-provenance.json),
 [group provenance](block-group-provenance.json),
 [workflow provenance](block-workflow-provenance.json),
 [expansion provenance](block-explode-provenance.json),
@@ -37,25 +38,37 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,473 Rust tests:
+5,481 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,058 | 17 |
-| Command | 1,221 | 2 |
-| Document | 223 | 5 |
+| App | 1,061 | 17 |
+| Command | 1,222 | 2 |
+| Document | 226 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,099 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 496 | 0 |
+| Oracle (unit and integration) | 497 | 0 |
 
-The Python suite passed 1,026 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,028 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [block group follow-up](block-groups.md) adds three document tests,
+The newest [BlockManager](commands/block-manager.md) adds three document tests,
+three GUI/action/rendering tests, one interface parser test, one replay test and
+two Python validation tests. Four private-Xvfb Rhino workflows match all 33
+states for nested use counts, rename, allowed deletion and the declared manager
+guard. UseCount measures placed occurrences; active prototype reference counts
+remain separate. SDK Delete(True) can remove nested references, so the reference
+adapter explicitly applies the published manager restriction. Local history
+tests preserve IDs, geometry storage, groups, hidden/locked states and redo.
+The pane uses natural name order and protects conflicting rename drafts.
+Native panel input, protected-root deletion, GPU rendering, linked definitions,
+duplicate/export actions and block editing remain unverified or unfinished.
+
+The preceding [block group follow-up](block-groups.md) adds three document tests,
 one oracle unit test, one replay integration test and four Python tests. All 16
 native command workflows, including 82 whole-model states, match their geometry,
 catalogs, ordered group memberships and group tables. Block clones top memberships
@@ -1238,7 +1251,8 @@ stations. Geometry regressions preserve adjacent-float and subnormal domains,
 singular endpoints, signed weight gauges, fixed constraints, and exact rational
 linear crossings in both parameter directions.
 
-The newest group capture covers 30 workflows, including 16 matching command
+The newest management capture covers four workflows and 33 states. The preceding
+group capture covers 30 workflows, including 16 matching command
 cases and 14 SDK-construction cases with eleven diagnostics. The preceding block
 capture covers 44 API/command workflows, including 22 matching
 command cases and retained SDK diagnostics. The earlier curve capture covers

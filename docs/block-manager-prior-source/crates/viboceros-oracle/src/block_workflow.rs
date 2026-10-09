@@ -13,8 +13,6 @@ pub struct BlockWorkflowFixture {
     pub attributes: Vec<BlockAttributes>,
     #[serde(default)]
     pub record_groups: bool,
-    #[serde(default)]
-    pub record_management: bool,
     pub steps: Vec<BlockStep>,
 }
 
@@ -73,15 +71,6 @@ pub enum BlockStep {
         #[serde(default)]
         group_output: bool,
     },
-    RenameDefinition {
-        name: String,
-        new_name: String,
-    },
-    DeleteDefinition {
-        name: String,
-        #[serde(default)]
-        expect_failure: bool,
-    },
 }
 
 fn sdk_creation_api() -> BlockExplosionApi {
@@ -129,10 +118,8 @@ pub(super) fn run(
         &handles,
         &mut records_left,
         f.record_groups,
-        f.record_management,
     )?];
     for step in &f.steps {
-        let mut succeeded = None;
         let outputs = match step {
             BlockStep::Create {
                 name,
@@ -233,51 +220,14 @@ pub(super) fn run(
                 }
                 document.commit_block_explosions(plans, *group_output)?
             }
-            BlockStep::RenameDefinition { name, new_name } => {
-                valid_name(new_name)?;
-                let id = document
-                    .block_definition_by_name(name)
-                    .ok_or_else(invalid)?
-                    .id();
-                document.rename_block_definition(id, new_name)?;
-                Vec::new()
-            }
-            BlockStep::DeleteDefinition {
-                name,
-                expect_failure,
-            } => {
-                let id = document
-                    .block_definition_by_name(name)
-                    .ok_or_else(invalid)?
-                    .id();
-                let result = document.delete_block_definition_and_instances(id);
-                succeeded = Some(result.is_ok());
-                if *expect_failure {
-                    if result.is_ok() {
-                        return Err(invalid());
-                    }
-                } else {
-                    result?;
-                }
-                Vec::new()
-            }
         };
         if handles.len() + outputs.len() > MAX_HANDLES {
             return Err(invalid());
         }
         let output_handles = (handles.len()..handles.len() + outputs.len()).collect::<Vec<_>>();
         handles.extend(outputs);
-        let mut value = snapshot(
-            &document,
-            &handles,
-            &mut records_left,
-            f.record_groups,
-            f.record_management,
-        )?;
+        let mut value = snapshot(&document, &handles, &mut records_left, f.record_groups)?;
         value["outputs"] = json!(output_handles);
-        if let Some(succeeded) = succeeded {
-            value["succeeded"] = json!(succeeded);
-        }
         snapshots.push(value);
     }
     Ok((json!({"states": snapshots}), 0))
@@ -418,7 +368,6 @@ fn snapshot(
     handles: &[ObjectId],
     left: &mut usize,
     record_groups: bool,
-    record_management: bool,
 ) -> Result<Value, ProbeError> {
     let group_index = document
         .groups()
@@ -446,15 +395,6 @@ fn snapshot(
         })
         .collect::<Result<Vec<_>, ProbeError>>()?;
     let mut definitions = Vec::new();
-    let management = if record_management {
-        document
-            .block_definition_info()?
-            .into_iter()
-            .map(|i| (i.id, i))
-            .collect::<BTreeMap<_, _>>()
-    } else {
-        BTreeMap::new()
-    };
     for definition in document.block_definitions() {
         let mut members = Vec::new();
         for member in definition.members() {
@@ -477,12 +417,7 @@ fn snapshot(
             }
             members.push(value);
         }
-        let mut record = json!({"name": definition.name(), "members": members});
-        if record_management {
-            let i = &management[&definition.id()];
-            record["usage"] = json!({"top_level":i.top_level_instances,"nested":i.nested_instances,"total":i.total_instances(),"definition_references":i.definition_references});
-        }
-        definitions.push(record);
+        definitions.push(json!({"name": definition.name(), "members": members}));
     }
     definitions.sort_by(|a, b| a["name"].as_str().cmp(&b["name"].as_str()));
     let mut value = json!({"objects": objects, "definitions": definitions});

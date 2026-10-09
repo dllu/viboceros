@@ -4,6 +4,8 @@ Commands are case-insensitive. Enter `Help` in the application to list registere
 commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
+- [Block definition management](block-manager.md)
+
 - [Curve creation and editing](curves.md)
 - [Standalone subcurves and numeric confirmation](subcurve.md)
 - [Analytic curve offsets](offset.md)

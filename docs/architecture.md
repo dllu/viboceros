@@ -16,7 +16,9 @@ selection, base/name getters and scaled/rotated placement to that model.
 definitions and references. Linked/external files, broader metadata and block
 editing remain subsequent work.
 [Block expansion](commands/explode-blocks.md) supplies one-level Explode and
-recursive ExplodeBlock, with freshness checks, scoped groups and one-step history.
+recursive ExplodeBlock, with freshness checks, native group policies and one-step history.
+[BlockManager](commands/block-manager.md) adds definition inspection, linear graph
+use counts, direct root selection, rename and transactional definition deletion.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

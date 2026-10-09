@@ -44,12 +44,17 @@ layers are black. Insert steps may supply their own attributes.
 | `explode` | `object` | Expand one live instance; optional `recursive: true` expands nested instances to geometric leaves. `api` selects the native reference entrypoint: `command` (default) or `sdk`. |
 | `group` | `objects` | Group live handles without creating a new object handle. |
 | `explode_batch` | `objects` | Explode multiple roots recursively in one command; optional `group_output: true` creates one output group per root. |
+| `rename_definition` | `name`, `new_name` | Rename a definition without replacing its ID or instances. |
+| `delete_definition` | `name` | Delete a definition and all model roots; `expect_failure: true` records the manager's nested-definition restriction. |
 
 Group captures use `record_groups: true` to include ordered object/prototype/leaf
 memberships and the group table's model-handle membership. Create steps may choose
 `api: command` for a new plain-token name; otherwise they use SDK construction.
 Recursive command explosions support explicit `group_output: true` or `false`.
 See the [group oracle](block-groups.md) for those construction/API differences.
+`record_management: true` adds top-level/nested/total model-use counts and active
+catalog-reference counts. The [BlockManager guide](commands/block-manager.md)
+describes the management contract and native reference policy.
 
 Handles start at zero in source order. Every output receives the next handle;
 deleted handles are never reused. Each state lists the live objects, the whole

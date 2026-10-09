@@ -8,28 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_management_names_and_deletion_expectations_precede_host_access(self):
-        for step in (dict(action='rename_definition',name='missing',new_name='new'),
-                     dict(action='rename_definition',name='leaf',new_name=''),
-                     dict(action='delete_definition',name='missing'),
-                     dict(action='delete_definition',name='leaf',expect_failure=True),
-                     dict(action='delete_definition',name='leaf',expect_failure=1)):
-            f=self.fixture();f['steps'].append(step)
-            with self.subTest(step=step),self.assertRaises(ValueError):probe.run(f,None,{})
-        f=self.fixture();f['record_management']=1
-        with self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_renaming_updates_nested_symbolic_references_and_deleted_handles_stay_dead(self):
-        f=self.fixture();f['steps'].extend([
-            dict(action='rename_definition',name='leaf',new_name='New leaf'),
-            dict(action='create',name='parent',base=[0,0,0],sources=[1]),
-            dict(action='delete_definition',name='New leaf',expect_failure=True),
-            dict(action='delete_definition',name='parent'),
-            dict(action='delete_definition',name='New leaf')])
-        probe.validate(f)
-        f['steps'].append(dict(action='group',objects=[2]))
-        with self.assertRaises(ValueError):probe.run(f,None,{})
-
     def test_hidden_source_id_marker_is_normalized_only_for_owned_objects(self):
         key='$block-instance-original-object-id$'
         pairs={key:'01234567-89AB-CDEF-0123-456789abcdef','$custom$':'keep','Part':'member'}

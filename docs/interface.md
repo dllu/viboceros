@@ -2,6 +2,10 @@
 
 [Project overview](../README.md) · [Command reference](commands/README.md)
 
+`BlockManager` opens the [Block definitions window](commands/block-manager.md)
+for counts, direct instance selection, rename and definition/instance deletion.
+It remains available alongside pending modeling commands; model edits use Undo.
+
 The application opens with Top, Perspective, Front, and Right viewports.
 Construction-plane grid lines clip against the perspective camera plane and then
 against the viewport rectangle before stroke tessellation. A line with one endpoint

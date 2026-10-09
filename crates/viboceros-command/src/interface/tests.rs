@@ -1,6 +1,24 @@
 use super::*;
 
 #[test]
+fn block_manager_is_a_document_independent_interface_action() {
+    for input in ["BlockManager", "'_BlockManager", "-BlockManager"] {
+        assert_eq!(parse(input), Some(Ok(InterfaceCommand::BlockManager)));
+        let mut current = state();
+        let before = current.clone();
+        assert_eq!(
+            current.apply(InterfaceCommand::BlockManager).unwrap(),
+            "Block definitions opened"
+        );
+        assert_eq!(current, before);
+    }
+    assert!(matches!(
+        parse("BlockManager Delete"),
+        Some(Err(InterfaceError::Usage(_)))
+    ));
+}
+
+#[test]
 fn mesh_snap_switch_uses_enable_disable_toggle_and_preserves_other_state() {
     let mut current = state();
     let initial = current.clone();

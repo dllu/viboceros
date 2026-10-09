@@ -1,0 +1,454 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "top-level-rename-delete",
+      "record_management": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "rename_definition",
+          "name": "part",
+          "new_name": "Part A"
+        },
+        {
+          "action": "delete_definition",
+          "name": "Part A",
+          "expect_failure": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "repeated-nested-counts",
+      "record_management": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "parent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "rename_definition",
+          "name": "leaf",
+          "new_name": "Renamed leaf"
+        },
+        {
+          "action": "delete_definition",
+          "name": "Renamed leaf",
+          "expect_failure": true
+        },
+        {
+          "action": "delete_definition",
+          "name": "parent",
+          "expect_failure": false
+        },
+        {
+          "action": "delete_definition",
+          "name": "Renamed leaf",
+          "expect_failure": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "deep-repeated-counts",
+      "record_management": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "parent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "grandparent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            3,
+            4
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "grandparent",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "delete_definition",
+          "name": "parent",
+          "expect_failure": true
+        },
+        {
+          "action": "delete_definition",
+          "name": "grandparent",
+          "expect_failure": false
+        },
+        {
+          "action": "delete_definition",
+          "name": "parent",
+          "expect_failure": false
+        },
+        {
+          "action": "delete_definition",
+          "name": "leaf",
+          "expect_failure": false
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "unused-container-guard",
+      "record_management": true,
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "action": "create",
+          "name": "leaf",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "leaf",
+          "transform": [
+            [
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "create",
+          "name": "parent",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1,
+            2
+          ]
+        },
+        {
+          "action": "explode",
+          "object": 3,
+          "recursive": true
+        },
+        {
+          "action": "delete_definition",
+          "name": "leaf",
+          "expect_failure": true
+        },
+        {
+          "action": "delete_definition",
+          "name": "parent",
+          "expect_failure": false
+        },
+        {
+          "action": "delete_definition",
+          "name": "leaf",
+          "expect_failure": false
+        }
+      ]
+    }
+  ]
+}

@@ -277,6 +277,7 @@ impl RectSelectionMode {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum InterfaceCommand {
+    BlockManager,
     SetZoomScale(ZoomScale),
     SetZoomExtentsBorder {
         parallel: Option<ZoomScale>,
@@ -350,7 +351,8 @@ pub enum InterfaceCommand {
     },
 }
 
-pub const COMMAND_NAMES: [&str; 50] = [
+pub const COMMAND_NAMES: [&str; 51] = [
+    "BlockManager",
     "Options",
     "SetZoomExtentsBorder",
     "SnapToMeshes",
@@ -445,6 +447,13 @@ pub fn parse(input: &str) -> Option<Result<InterfaceCommand, InterfaceError>> {
         [value] => SwitchAction::parse(value).ok_or(InterfaceError::Usage(usage)),
         _ => Err(InterfaceError::Usage(usage)),
     };
+    if name.eq_ignore_ascii_case("BlockManager") {
+        return Some(if args.is_empty() {
+            Ok(InterfaceCommand::BlockManager)
+        } else {
+            Err(InterfaceError::Usage("BlockManager"))
+        });
+    }
     Some(
         if name.eq_ignore_ascii_case("Zoom")
             || name.eq_ignore_ascii_case("ZE")
@@ -1026,6 +1035,7 @@ impl InterfaceState {
         }
         let on_off = |value| if value { "On" } else { "Off" };
         Ok(match command {
+            InterfaceCommand::BlockManager => "Block definitions opened".into(),
             InterfaceCommand::SetZoomScale(scale) => {
                 format!("View zoom scale factor {} requested", scale.value())
             }

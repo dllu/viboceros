@@ -389,6 +389,11 @@ impl VibocerosApp {
         let mut state = self.interface_state();
         match state.apply(command) {
             Ok(message) => {
+                if command == InterfaceCommand::BlockManager {
+                    self.block_manager.open = true;
+                    self.push_log(message);
+                    return;
+                }
                 if matches!(
                     command,
                     InterfaceCommand::SplitViewportHorizontal

@@ -4,8 +4,6 @@ mod block_creation;
 mod block_explosion;
 pub use block_explosion::PreparedBlockExplosion;
 mod block_instances;
-mod block_management;
-pub use block_management::BlockDefinitionInfo;
 mod blocks;
 pub use block_instances::{BlockInsertionPoint, BlockInstance, BlockMemberDisplay};
 pub use blocks::{

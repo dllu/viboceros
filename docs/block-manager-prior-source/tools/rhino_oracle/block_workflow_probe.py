@@ -70,8 +70,6 @@ def validate(operation):
         _attributes(spec)
     if type(operation.get('record_groups', False)) is not bool:
         raise ValueError('invalid block group recording')
-    if type(operation.get('record_management', False)) is not bool:
-        raise ValueError('invalid block management recording')
     handles = [None] * len(sources)  # None means ordinary geometry; absent means deleted.
     alive = set(range(len(sources)))
     definitions = {}
@@ -160,23 +158,6 @@ def validate(operation):
             outputs=[]
             for index in sorted(picks): outputs.extend(leaves(handles[index],[]))
             alive.difference_update(picks)
-        elif action=='rename_definition':
-            if set(step)!=set(('action','name','new_name')): raise ValueError('invalid block rename fields')
-            old,new=_name(step['name']),_name(step['new_name'])
-            if old not in definitions or new in definitions and new!=old: raise ValueError('invalid block rename names')
-            members=definitions.pop(old);definitions[new]=members
-            for key in definitions: definitions[key]=[new if v==old else v for v in definitions[key]]
-            handles=[new if v==old else v for v in handles];outputs=[]
-        elif action=='delete_definition':
-            if set(step)-set(('action','name','expect_failure')) or 'name' not in step or type(step.get('expect_failure',False)) is not bool: raise ValueError('invalid block delete fields')
-            name=_name(step['name'])
-            if name not in definitions: raise ValueError('undefined block deletion')
-            referenced=any(name in members for members in definitions.values())
-            if referenced!=step.get('expect_failure',False): raise ValueError('block deletion expectation does not match graph')
-            if not referenced:
-                del definitions[name]
-                alive=set(i for i in alive if handles[i]!=name)
-            outputs=[]
         else:
             raise ValueError('unknown block workflow action')
         alive.update(range(len(handles), len(handles) + len(outputs)))
@@ -313,29 +294,17 @@ def run(operation, tolerance, host):
         catalog = []
         for index in definitions:
             definition = document.InstanceDefinitions[index]
-            if definition.IsDeleted: continue
             members=[]
             for m in definition.GetObjects():
                 value=dict(attributes=attribute_record(m.Attributes,m.Geometry),geometry=geometry_record(m.Geometry,False))
                 if record_groups: value['groups']=group_record(m.Attributes)
                 members.append(value)
-            value=dict(name=definition_names[definition.Id],members=members)
-            if operation.get('record_management',False):
-                top=len(definition.GetReferences(0));total=int(definition.UseCount())
-                value['usage']=dict(top_level=top,nested=total-top,total=total,definition_references=live_definition_references(definition.Id))
-            catalog.append(value)
+            catalog.append(dict(name=definition_names[definition.Id],members=members))
         catalog.sort(key=lambda d: d['name'])
         value=dict(objects=objects, definitions=catalog)
         if record_groups:
             value['groups']=[dict(index=i-group_start,objects=[j for j,key in enumerate(handles) if document.Objects.FindId(key) is not None and not document.Objects.FindId(key).IsDeleted and i in (document.Objects.FindId(key).Attributes.GetGroupList() or [])]) for i in range(group_start,document.Groups.Count) if not document.Groups.IsDeleted(i)]
         return value
-
-    def live_definition_references(identifier):
-        # GetReferences(2) can retain objects from deleted parent definitions.
-        # The manager's guard concerns the active catalog, inspected directly.
-        return sum(1 for index in definitions if not document.InstanceDefinitions[index].IsDeleted
-                   for obj in document.InstanceDefinitions[index].GetObjects()
-                   if isinstance(obj.Geometry,Rhino.Geometry.InstanceReferenceGeometry) and obj.Geometry.ParentIdefId==identifier)
 
     def add_instance(index, transform, spec):
         a = attributes(spec, layers[1])
@@ -385,7 +354,6 @@ def run(operation, tolerance, host):
         for step in operation['steps']:
             action = step['action']
             start = len(handles)
-            succeeded=None
             if action == 'create':
                 if step.get('api','sdk')=='command':
                     settings=Rhino.DocObjects.ObjectEnumeratorSettings()
@@ -442,19 +410,6 @@ def run(operation, tolerance, host):
             elif action == 'group':
                 if document.Groups.Add(prefix+'Group_'+str(document.Groups.Count),System.Array[System.Guid]([handles[i] for i in step['objects']])) < 0:
                     raise ValueError('native block grouping failed')
-            elif action=='rename_definition':
-                index=by_name[_fold(step['name'])];definition=document.InstanceDefinitions[index]
-                if not document.InstanceDefinitions.Modify(index,prefix+step['new_name'],'',True): raise ValueError('native block rename failed')
-                del by_name[_fold(step['name'])];by_name[_fold(step['new_name'])]=index;definition_names[definition.Id]=step['new_name']
-            elif action=='delete_definition':
-                index=by_name[_fold(step['name'])]
-                # BlockManager prohibits deleting a definition nested in any
-                # other catalog entry. SDK Delete(True) can instead remove
-                # nested references; keep this declared manager policy explicit.
-                nested=live_definition_references(document.InstanceDefinitions[index].Id)>0
-                succeeded=False if nested else bool(document.InstanceDefinitions.Delete(index,True,True))
-                if succeeded==step.get('expect_failure',False): raise ValueError('native deletion expectation mismatch for '+step['name']+': nested='+str(nested)+', succeeded='+str(succeeded))
-                if succeeded: del by_name[_fold(step['name'])]
             elif action == 'explode_batch':
                 settings=Rhino.DocObjects.ObjectEnumeratorSettings()
                 settings.NormalObjects=settings.LockedObjects=settings.HiddenObjects=True
@@ -488,7 +443,6 @@ def run(operation, tolerance, host):
                 handles.extend(outputs)
             value = snapshot()
             value['outputs'] = list(range(start, len(handles)))
-            if succeeded is not None: value['succeeded']=succeeded
             states.append(value)
         return dict(states=states), 0
     finally:
@@ -498,7 +452,7 @@ def run(operation, tolerance, host):
             if obj is not None and not obj.IsDeleted:
                 document.Objects.Delete(identifier, True)
         for index in reversed(definitions):
-            if not document.InstanceDefinitions[index].IsDeleted: document.InstanceDefinitions.Delete(index, True, True)
+            document.InstanceDefinitions.Delete(index, True, True)
         for index in range(group_start,document.Groups.Count):
             if not document.Groups.IsDeleted(index): document.Groups.Delete(index)
         document.Layers.SetCurrentLayerIndex(current_before, True)
