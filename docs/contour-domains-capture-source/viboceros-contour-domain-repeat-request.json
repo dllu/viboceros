@@ -1,0 +1,846 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "contour_command",
+      "id": "repeat-0-plane-base-z-small",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.0001
+      ],
+      "end": [
+        1,
+        0,
+        0.0001
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-0-plane-base-z001",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.01
+      ],
+      "end": [
+        1,
+        0,
+        0.01
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-0-plane-base-z01",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-0-plane-base-z05",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-1-plane-base-z-small",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.0001
+      ],
+      "end": [
+        1,
+        0,
+        0.0001
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-1-plane-base-z001",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.01
+      ],
+      "end": [
+        1,
+        0,
+        0.01
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-1-plane-base-z01",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-1-plane-base-z05",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-2-plane-base-z-small",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.0001
+      ],
+      "end": [
+        1,
+        0,
+        0.0001
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-2-plane-base-z001",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.01
+      ],
+      "end": [
+        1,
+        0,
+        0.01
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-2-plane-base-z01",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "repeat-2-plane-base-z05",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    }
+  ]
+}

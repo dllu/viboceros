@@ -4,7 +4,6 @@ use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::{ToPrimitive, Zero};
 use viboceros_geometry::Frame3;
-mod geometry;
 #[cfg(test)]
 mod tests;
 
@@ -207,7 +206,9 @@ impl Command for ContourCommand {
             let frame = Frame3::try_from_normal(origin, delta, doc.tolerance())?;
             let mut plane = Vec::new();
             for source in inputs.iter().rev() {
-                for geometry in geometry::cut(source.geometry(), frame, doc.tolerance())? {
+                for geometry in
+                    section::section_geometry(source.geometry(), frame, 1., true, doc.tolerance())?
+                {
                     let attributes = if options.input_properties {
                         source.attributes().clone()
                     } else {

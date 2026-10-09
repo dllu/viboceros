@@ -91,11 +91,8 @@
     "crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3",
     "Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
     "crates/viboceros-command/src/lib.rs": "3e4bc50ed58257aab550a51e750b1b1079918598f604dd7f428ca8364d8e3066",
-    "crates/viboceros-command/src/contour.rs": "859f160458c2cf5aea5b008f038ae5c6a521ca9d86ce3bb857926867a2245ec7",
-    "crates/viboceros-command/src/contour/tests.rs": "6aee3d8c6bb19ab2576764bad5be3b78ec3e01c58d37f9839806b3cca8cc983f",
     "crates/viboceros-oracle/src/lib.rs": "1a37ce2ffa046b1cbe4a1f14f329f0590c8505f2a33046af62b18a8b82089ce1",
     "crates/viboceros-oracle/src/contour_command.rs": "7ca7fa09adf11bcd1f3a503468073ced4aea0bc770dc659db8f0080e8c8ae7fe",
-    "crates/viboceros-oracle/tests/contour_command.rs": "b302f91332efd450e449dd47e4edddf59d44812ba21675b416a9fe5e8088ea5f",
     "src/app.rs": "41a0b5afcdceb72dc3fbdd57a447a75e7a785eef5f381378b0310edf0ea64b11",
     "src/app/contour.rs": "709c21e48e6479c032588dded0c393bb23dc39244be1bc7262e3ff9a4a587de1",
     "src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710",
@@ -107,14 +104,17 @@
     "tools/rhino_oracle/test_contour_probe.py": "f821ae8cf6dc03e80518d3fd3b4446823051ceddd3595b66763c82f7e5a9feec",
     "tools/rhino_oracle/fixtures/contour_command.json": "d1bb87c988f957b3512c7a2c94e075185b0fa1b066d418a556765e14a9536d0a",
     "tools/rhino_oracle/observations/contour_command.json": "45bda2808b79f3a5bc112b757ab598b4e4666f6c18e66ef2dab79c1a5dce00ee",
-    "docs/contour-command-comparison.json": "4c17d5e998adc0621460ae2836f2f33d91d63e4b3987e37c777cf51f9887efcb",
     "docs/contour-ineligible-native-diagnostic.json": "db65b364f7e2187bf480bf3ad95975971144a90ef07b8ed4116d39440dfa2f52",
     "docs/contour-raw-main-capture.json": "b40d9e5a57062a8b4e6d7a348d7b3dfab1ab0d1d25e1837cfb2187253c93bd51",
     "docs/contour-raw-range-capture.json": "23dc80e0b8889433c66a3eb2b2e7ffd198b75bc1fdf0173dec9467f505d15ed8",
     "docs/contour-raw-additional-capture.json": "233b8969d278907c76caa11efe98f778e3effc72560b6d9968cc3531da772a93",
     "docs/contour-capture-source/tools/rhino_oracle/contour_probe.py": "af207bb6eb6d5d68f65a289baaf70dc4330d62ea21e06aacac3e758b6af5131f",
     "docs/contour-capture-source/tools/rhino_oracle/contour_probe_additional.py": "3384d84c9c8590577e2c6d4fb2a03f44cf613a8a6e89de52bd014ef2ace08219",
-    "docs/commands/contour.md": "eeaf41ac68551982401a2e1824b996e5484a7bd8c93106769d998c0835db1b35",
-    "docs/contour-validation.json": "0726ad26a520df557d4a39c3d79b21990a459297fa1b7a4e1777f67cbe7cd449"
+    "docs/contour-validation.json": "0726ad26a520df557d4a39c3d79b21990a459297fa1b7a4e1777f67cbe7cd449",
+    "docs/contour-domains-prior-source/crates/viboceros-command/src/contour.rs": "859f160458c2cf5aea5b008f038ae5c6a521ca9d86ce3bb857926867a2245ec7",
+    "docs/contour-domains-prior-source/crates/viboceros-oracle/tests/contour_command.rs": "b302f91332efd450e449dd47e4edddf59d44812ba21675b416a9fe5e8088ea5f",
+    "docs/contour-domains-prior-source/crates/viboceros-command/src/contour/tests.rs": "6aee3d8c6bb19ab2576764bad5be3b78ec3e01c58d37f9839806b3cca8cc983f",
+    "docs/contour-domains-prior-source/docs/contour-command-comparison.json": "4c17d5e998adc0621460ae2836f2f33d91d63e4b3987e37c777cf51f9887efcb",
+    "docs/contour-domains-prior-source/docs/commands/contour.md": "eeaf41ac68551982401a2e1824b996e5484a7bd8c93106769d998c0835db1b35"
   }
 }

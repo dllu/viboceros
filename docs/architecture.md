@@ -51,7 +51,9 @@ topology tracing. Coplanar mesh parameterization retains a native diagnostic.
 [Contour](commands/contour.md) adds a 3D normal, equally spaced planes, picked
 ranges, per-plane groups and unit-aware viewport input. Exact rational grid
 indices and origins avoid repeated spacing addition and support remote base
-points. Surface parameter-domain compatibility retains five native diagnostics.
+points. Surface domain selection preserves edge/isocurve lineage and signed plane-line
+parameters; all 52 recorded Contour captures now match strict replay. Broader
+curved/B-rep, seam and performance qualification remains open.
 
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)

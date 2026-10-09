@@ -1,0 +1,776 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "contour_command",
+      "id": "surface-x",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "saddle-cuts",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "translated-plane",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                8,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                8,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        10,
+        3
+      ],
+      "end": [
+        1,
+        10,
+        3
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "surface-y",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        0,
+        1,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z1",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        1
+      ],
+      "end": [
+        1,
+        0,
+        1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-y6",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        6,
+        0
+      ],
+      "end": [
+        1,
+        6,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z-small",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.0001
+      ],
+      "end": [
+        1,
+        0,
+        0.0001
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z001",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.01
+      ],
+      "end": [
+        1,
+        0,
+        0.01
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z01",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z05",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "plane-base-z-negative",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        -1
+      ],
+      "end": [
+        1,
+        0,
+        -1
+      ],
+      "spacing": 1
+    }
+  ]
+}

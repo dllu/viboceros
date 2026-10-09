@@ -1,0 +1,28 @@
+{
+  "rust": {
+    "passed": 5594,
+    "failed": 0,
+    "ignored": 38
+  },
+  "clippy": "passed: --workspace --all-targets -- -D warnings",
+  "python": {
+    "targeted_preflight_tests": 4,
+    "validated_recipes": 52,
+    "implementation_unchanged": true,
+    "preceding_full_suite_passed": 1070
+  },
+  "native": {
+    "captures": 52,
+    "distinct_recipes": 40,
+    "repeats": 12,
+    "matched": 52,
+    "passed": true,
+    "max_absolute_field_error": 2.842170943040401e-14
+  },
+  "logs_sha256": {
+    "/tmp/viboceros-contour-domains-workspace-complete.log": "9140ae34bc3607e16224033261c3eac2e80cc795bd75b88d4cf7432ddd5e8c8b",
+    "/tmp/viboceros-contour-domains-clippy-complete.log": "79321450b5c3d4a618e42ff5e0868d8842c58b6c78d899eb8079091949df9605",
+    "/tmp/viboceros-contour-domains-python.log": "4a160235c0add54f7a5997815d0e01a072210439de4899c702c94dd3cd814662",
+    "/tmp/viboceros-contour-domains-complete-audit.log": "b0593fe82adb3825aa37429379bf2a92eb41ede4f48320eaeea73b7bcedbb3d6"
+  }
+}

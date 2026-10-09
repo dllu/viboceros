@@ -36,25 +36,20 @@ admission. Standalone points and point clouds are ineligible sources. All cuts
 stage before document mutation; the existing Section intersection-family limits
 apply. Mesh cuts reuse exact dyadic plane/edge slicing and topology tracing.
 
-The original 21 native recipes now match strict geometry, parameter-domain and
-metadata checks. The expanded suite matches all 52 captures (40 distinct recipes
-and 12 repeats) at 1e-9 absolute + 1e-12 relative epsilon. It covers shifted and
-negative UV ranges, weighted surfaces, 3D cutting planes and off-axis origins.
-No domain fields are excluded from comparison.
-
-Straight contours retain natural edge/isocurve domains or use signed distances
-from the cutting-plane origin. Competing isocurves use the smaller-magnitude
-fixed parameter; this is a rule inferred from independent native captures.
-Positive-weight control-hull validation bounds the whole locus before converting
-a higher-degree straight curve to an affine degree-one curve. Source geometry
-is unchanged. See [parameterization](../contour-domain-parameterization.md).
+Twenty-one native recipes cover both directions, off-grid and remote base
+points, 3D normals, rotated CPlanes, whole/picked ranges, properties, groups,
+meshes and surfaces. Sixteen match strict geometry, native parameter domain and
+metadata checks at 1e-9 absolute + 1e-12 relative epsilon. Five surface recipes
+match normalized samples and metadata but differ in parameter domains; they
+remain strict compatibility failures. The report deliberately has `passed:false`.
+Do not treat normalized samples as proof of parameterization equivalence.
 
 An ineligible-source macro produced an invalid native curve with unset values.
 Its raw result is retained separately, excluded from geometry evidence, and the
 native helper now rejects all-ineligible inputs before launching a command.
-Further surface/B-rep qualification, broader native domain/seam qualification, hatches, remembered
-options and performance remain open. See [expanded comparison](../contour-domains-comparison.json),
-[current provenance](../contour-domains-provenance.json), and the
+Further surface/B-rep qualification, native domains/seams, hatches, remembered
+options and performance remain open. See [comparison](../contour-command-comparison.json),
+[provenance](../contour-command-provenance.json), and the
 [ineligible-source diagnostic](../contour-ineligible-native-diagnostic.json).
 
 Reference: [McNeel Contour](https://docs.mcneel.com/rhino/8/help/en-us/commands/contour.htm).

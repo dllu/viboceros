@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "54883c4b691767c55394f1ede5170de444a1c125",
+  "scope": "Contour edge/isocurve domain lineage, magnitude-ranked plane/source parameterization and exact finite-segment control-hull admission",
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 via ARM64 Wine/FEX",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=n,b"
+  },
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/contour.htm",
+    "https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_Brep_CreateContourCurves.htm"
+  ],
+  "native_captures": [
+    {
+      "scheme": "VibocerosOracleContourDomainMatrix20261009",
+      "operations": 11,
+      "unique_new_recipes": 7,
+      "role": "Public SDK type/control/knot metadata and off-axis domain choices"
+    },
+    {
+      "scheme": "VibocerosOracleContourBoundaryFrames20261009",
+      "operations": 4,
+      "unique_new_recipes": 4,
+      "role": "Weighted shifted-UV boundaries and 3D/non-isoparametric planar cuts"
+    },
+    {
+      "scheme": "VibocerosOracleContourIsoRanking20261009",
+      "operations": 8,
+      "unique_new_recipes": 8,
+      "role": "Independent causal UV-domain perturbations for inferred fixed-parameter ranking"
+    },
+    {
+      "scheme": "VibocerosOracleContourDomainRepeats20261009",
+      "operations": 12,
+      "unique_new_recipes": 0,
+      "role": "Three repeats of four off-axis cases"
+    }
+  ],
+  "fixture_assembly": "Original 21 valid Contour records plus 7 new matrix recipes, 4 boundary/frame recipes, 8 UV-ranking experiments and 12 repeated records. Duplicate original matrix recipes remain in raw evidence.",
+  "removed_instrumentation_fields": [
+    "native_type",
+    "native_linear",
+    "native_degree",
+    "native_controls",
+    "native_knots"
+  ],
+  "compared_fields": "Every model record field including actual domain, 17 ordered samples, closed flag, kind, name, layer, color/source, group indices and preserved input count; no domain exclusions.",
+  "comparison": {
+    "cases": 52,
+    "distinct_recipes": 40,
+    "repeats": 12,
+    "matched": 52,
+    "failed": 0,
+    "passed": true,
+    "original_suite_cases": 21,
+    "original_suite_matched": 21,
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 1e-12,
+    "max_absolute_field_error": 2.842170943040401e-14
+  },
+  "parameter_policy": "Natural straight boundaries preserve original UV domains and reversal. Exact weighted bilinear edge equations certify source isocurves. Competing source and plane isocurves choose the smaller absolute fixed parameter, ties preferring the plane; plane/general planar line intervals are signed traversal distances from the cutting-plane origin.",
+  "policy_status": "Inference from independent black-box public-API/command observations; the proprietary implementation was not inspected. Eight UV-domain perturbations and repeated captures qualify the recorded families.",
+  "line_simplification": "Same-sign rational weights and exact dyadic finite-segment capsule distances bound the whole control hull. This prevents discarded overshoots/lobes before constructing an affine degree-one curve over the chosen interval.",
+  "atomicity": "Domain and geometry processing stages before document admission; source geometry and existing command-level history/group behavior are preserved.",
+  "verified": {
+    "rust": {
+      "passed": 5594,
+      "failed": 0,
+      "ignored": 38
+    },
+    "clippy": "passed: --workspace --all-targets -- -D warnings",
+    "python": {
+      "targeted_preflight_tests": 4,
+      "validated_recipes": 52,
+      "implementation_unchanged": true,
+      "preceding_full_suite_passed": 1070
+    },
+    "native": {
+      "captures": 52,
+      "distinct_recipes": 40,
+      "repeats": 12,
+      "matched": 52,
+      "passed": true,
+      "max_absolute_field_error": 2.842170943040401e-14
+    },
+    "logs_sha256": {
+      "/tmp/viboceros-contour-domains-workspace-complete.log": "9140ae34bc3607e16224033261c3eac2e80cc795bd75b88d4cf7432ddd5e8c8b",
+      "/tmp/viboceros-contour-domains-clippy-complete.log": "79321450b5c3d4a618e42ff5e0868d8842c58b6c78d899eb8079091949df9605",
+      "/tmp/viboceros-contour-domains-python.log": "4a160235c0add54f7a5997815d0e01a072210439de4899c702c94dd3cd814662",
+      "/tmp/viboceros-contour-domains-complete-audit.log": "b0593fe82adb3825aa37429379bf2a92eb41ede4f48320eaeea73b7bcedbb3d6"
+    }
+  },
+  "new_command_regressions": 4,
+  "integration_policy": "One strict 52-capture test replaces the prior diagnostic domain exclusions.",
+  "historical_evidence": "Prior failing report/command/test/document bytes stay pinned in contour-domains-prior-source through the preceding provenance record.",
+  "remaining_scope": [
+    "Arbitrary curved/trimmed surface and Brep families beyond validated Section intersections",
+    "Native parameter selection near ties and extreme UV origins/ranges",
+    "Closed seams and topology qualification",
+    "Hatches/section styles and remembered preferences",
+    "Performance parity and full Rhino command coverage"
+  ],
+  "sha256": {
+    "crates/viboceros-command/src/contour.rs": "76bdb88419fd68b7b37e06323b2428873a6e25d0a8abfa013d8138b625736ab7",
+    "crates/viboceros-command/src/contour/geometry.rs": "5bf48e5ccfc281be4016a989379f368f585605d3aacf9368048e299396f8e204",
+    "crates/viboceros-command/src/contour/tests.rs": "bb491620f9a368395de017d669aa2556558ee0e8cbd52efaa2cef51a80f78f3a",
+    "crates/viboceros-oracle/tests/contour_command.rs": "10e3ced6205c5bfa62bdaec016eedea37f4e76660af2594cb7fd4b25c7db92ad",
+    "tools/rhino_oracle/fixtures/contour_domains.json": "a1cbfe07b4030cca2842bc49edc0ed7772a89de1d4e4c8a9c51a5138e4843435",
+    "tools/rhino_oracle/observations/contour_domains.json": "d8672555a7d535208c4491d6d06f05212bd7ff50cf15d3125cb4417366c55290",
+    "docs/contour-domains-comparison.json": "db43bc5b278991a0ba5c15596eb2dc0f349afaff5b53f9a91b90baaa3c6b06ec",
+    "docs/contour-command-comparison.json": "193d10dc868596d5da91691e130e5fabc268e049c9bdec9eb5036e005ecbc36b",
+    "docs/commands/contour.md": "17b53204ef06cc78310f051380943ae7c16a34d2231483cc8b531ecaca1ab100",
+    "docs/contour-domain-parameterization.md": "dcb855e12f2e3d9b6117761391611768b18d343488a539eb4aa5d08984baad09",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-detail-request.json": "f25973aa8039963a268d9a64a84031c31ecb6b80e6395cc904718861331f51a5",
+    "docs/contour-domains-capture-source/viboceros-contour-boundary-correct-native.json": "b040e19224ca9922af6ae45cb0a77db403d130ff98f56952ba349a5ea001d3f6",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-detail-helper.py": "355389302b250919c9bb8a25145b73013c9415fa82cbc31f58f3d0859a33cd09",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-repeat-request.json": "4ab8692df1131f3a07db572e7afdd577f5316f3543b80fa919464c57fada5b32",
+    "docs/contour-domains-capture-source/viboceros-contour-iso-ranking-native.json": "f9b2fe88e5e1e36815878d3683798e81f4739b770012f9f67e968fe47f86da34",
+    "docs/contour-domains-capture-source/viboceros-contour-boundary-correct-request.json": "572c9881b19f179492ca5e7b0cefba15feb80ff52a60cb68b1a030642f52e78b",
+    "docs/contour-domains-capture-source/viboceros-contour-iso-ranking-request.json": "785de386f3e25dbd190478fda09511d97cc891992229a9760a6223f5b77021ea",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-detail-native.json": "d398425dc08f11d672f0e767c2b3fa35c2aa2720fcbf7e940334de03792a5492",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-detail-probe.py": "10773eb07faedf6a27470edcac8d78b274d9e0a7bfebedf4b6a9725cc4e0bf18",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-repeat-probe.py": "4b1d6951c5969297ac5d20b1a6d7500cd97efc1590f4f9d1e98b0315d180fbc4",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-repeat-native.json": "0c56d09cc26e12df83022e58be7f5e62899af3213fb3539dc32d9941c9010478",
+    "docs/contour-domains-capture-source/viboceros-contour-domain-repeat-helper.py": "355389302b250919c9bb8a25145b73013c9415fa82cbc31f58f3d0859a33cd09",
+    "docs/contour-domains-validation.json": "213397f63d2dc8c15779573a64f0c29534f24b2b53d077f0ff7c81b68d81263a"
+  }
+}

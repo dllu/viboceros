@@ -1,0 +1,566 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "contour_command",
+      "id": "fixed-negative",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            -1,
+            -1,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "fixed-large",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            100,
+            100,
+            101,
+            101
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "fixed-centered",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "fixed-shift-zero",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            -0.25,
+            -0.25,
+            0.75,
+            0.75
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        1,
+        0,
+        0.1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "fixed-negative-far",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            -3,
+            -3,
+            -2,
+            -2
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "varying-shifted",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            2,
+            2,
+            8,
+            8
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        1,
+        0,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "y-fixed-negative",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -1,
+            -1,
+            0,
+            0
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.5
+      ],
+      "end": [
+        0,
+        1,
+        0.5
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "y-fixed-centered",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0.1
+      ],
+      "end": [
+        0,
+        1,
+        0.1
+      ],
+      "spacing": 1
+    }
+  ]
+}

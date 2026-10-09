@@ -48,7 +48,7 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-The final workspace release run passed 5,590 Rust tests. A preliminary run
+The final workspace release run passed 5,594 Rust tests. A preliminary run
 caught a command-first source-selection handoff bug; the corrected getter and
 Section regression are included in this final run. Clippy, format and diff
 checks also passed.
@@ -56,7 +56,7 @@ checks also passed.
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
 | App | 1,094 | 17 |
-| Command | 1,241 | 2 |
+| Command | 1,245 | 2 |
 | Document | 265 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,106 | 8 |
@@ -1449,21 +1449,29 @@ the [architecture](architecture.md), [file-format](file-formats.md), and
 
 ## Contour checkpoint
 
-[Contour provenance](contour-command-provenance.json) binds the 21 owned native
-recipes, their three raw captures and the strict replay report. Sixteen recipes
-match at 1e-9 absolute plus 1e-12 relative epsilon. Five surface recipes match
-normalized samples and metadata while retaining parameter-domain differences;
-`passed:false` remains in the report. No parameterization compatibility or
-performance parity is inferred from these samples.
+[Contour domain provenance](contour-domains-provenance.json) binds 52 captures
+(40 distinct recipes and 12 repeat observations). All fields match at 1e-9
+absolute + 1e-12 relative epsilon, including actual domains. The original five
+surface-domain diagnostics are resolved; the original 21-case report also
+passes. Historical failing reports and source bytes remain archived.
 
-Native probes used private Xvfb and private Rhino settings. Two follow-up
-launches stopped at licensing refresh; a native-first Wine security override
-completed the translated-surface follow-up. The failed launches produced no
-geometry evidence. The all-ineligible native macro returned invalid unset
-geometry and is retained as a separate diagnostic; the helper now rejects such
-inputs before launch. The command itself rejects all-ineligible source selection.
+The parameter policy preserves natural edge and exact bilinear isocurve domains,
+uses signed cutting-plane distances and ranks competing isocurves by the
+magnitude of their fixed parameters. Eight independent UV-range experiments
+and three repeats of four off-axis recipes support this inference. Source UV
+shifts and rational weights are included. A positive-weight control-hull check
+uses exact dyadic squared-distance bounds to reject overshoots and hidden lobes
+before affine line simplification. Source geometry and transaction behavior
+remain unchanged.
 
-New regressions cover remote exact grid indices, invalid/excessive jobs,
-unrepresentable spacing, Range counts, whole-job Undo/Redo, unit-aware spacing,
-snapped spacing points and accepted command-first picks. README remains concise;
-details live in [the command reference](commands/contour.md).
+Native probes used private Xvfb, private settings schemes and per-process
+native-first Wine security DLLs. Public SDK type/control/knot observations are
+retained with exact helper bytes. No domain exclusions or geometric
+normalization are used in the strict replay. The Python implementation is
+unchanged since the preceding 1,070-test run; its four Contour preflight tests
+and all 52 recipes were revalidated at this checkpoint.
+
+Broader curved/trimmed B-rep families, extreme and near-tie UV values, closed
+seams, hatches and performance parity remain open. README stays concise;
+details are in [Contour](commands/contour.md) and
+[parameterization](contour-domain-parameterization.md).
