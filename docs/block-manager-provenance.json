@@ -44,7 +44,6 @@
   "native_diagnostics": "SDK Delete(True) can remove nested references, and GetReferences(2) can include references from deleted parent definitions. Raw SDK index counts are not substituted for active catalog references.",
   "graphics_contract": "GUI tests exercise direct actions and egui text/shape output; no production GPU capture or native panel interaction replay.",
   "sha256": {
-    "crates/viboceros-document/src/lib.rs": "a8183d55f670580b61e479d499054eb6e3f451365467701bfddf4aeb02695c4f",
     "crates/viboceros-command/src/interface.rs": "6b9cfd8699f350e03869cbd3cab34f855e5f984b3a5a5169577cf32f32684e51",
     "crates/viboceros-command/src/interface/tests.rs": "4ce743827f3a96fb497aba59f20a44ad0564896d8c11d5f22f17ede743156c30",
     "src/app/interface.rs": "aec70e0ed056a6c62a6ca9e5579f52bdb16653b06caee30c70fb836a50d1ecf9",
@@ -65,7 +64,8 @@
     "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs": "dcb5f93dd600a6536b3b21faccd8573711c64db2741ef90bd35e9b580603b686",
     "docs/block-unique-prior-source/src/app/tests/block_manager.rs": "b5f4dc136406b145807e884cde3d69eae785d89d8b100c8a791bc1b49df662bd",
     "docs/block-unique-prior-source/src/app/block_manager.rs": "601db62395112572d2a09235164e8a0a5d724424d30b27aa96c07be4c3d3efe9",
-    "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py": "8bcc17454abfee3b2e07ec7914a1f2abcad9c94317579860f8ca6f6658eedc52"
+    "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py": "8bcc17454abfee3b2e07ec7914a1f2abcad9c94317579860f8ca6f6658eedc52",
+    "docs/block-add-prior-source/crates/viboceros-document/src/lib.rs": "a8183d55f670580b61e479d499054eb6e3f451365467701bfddf4aeb02695c4f"
   },
   "remaining_scope": [
     "Native panel interaction/selection/history and protected-root deletion parity",
@@ -82,6 +82,7 @@
     "crates/viboceros-document/src/block_management.rs": "docs/block-unique-prior-source/crates/viboceros-document/src/block_management.rs",
     "src/app/tests/block_manager.rs": "docs/block-unique-prior-source/src/app/tests/block_manager.rs",
     "src/app/block_manager.rs": "docs/block-unique-prior-source/src/app/block_manager.rs",
-    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py"
+    "tools/rhino_oracle/block_workflow_probe.py": "docs/block-unique-prior-source/tools/rhino_oracle/block_workflow_probe.py",
+    "crates/viboceros-document/src/lib.rs": "docs/block-add-prior-source/crates/viboceros-document/src/lib.rs"
   }
 }

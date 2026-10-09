@@ -140,7 +140,6 @@ mod circle;
 use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
-mod block_add;
 mod block_manager;
 mod blocks;
 mod boolean_solids;
@@ -300,7 +299,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    AddObjectsToBlock,
     ReplaceBlock,
     CreateUniqueBlock,
     Block {
@@ -704,7 +702,6 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::AddObjectsToBlock => "AddObjectsToBlock",
             Self::CreateUniqueBlock => "CreateUniqueBlock",
             Self::ReplaceBlock => "ReplaceBlock",
             Self::Block { .. } => "Block",
@@ -823,9 +820,6 @@ impl InteractiveCommand {
             }
             Self::ReplaceBlock => {
                 "ReplaceBlock: pick a replacement instance (SelectFromBlockDefinitionList, BlockDefinitionName, All, None; Esc cancels)"
-            }
-            Self::AddObjectsToBlock => {
-                "AddObjectsToBlock: pick a target instance, then objects to add; Enter accepts, Esc cancels"
             }
             Self::Block { base: Some(_) } => "Block: enter the definition name (Esc cancels)",
             Self::Insert { has_name: false } => {
@@ -1582,7 +1576,6 @@ impl InteractiveCommand {
                 [point, _, _] => point,
             },
             Self::Point
-            | Self::AddObjectsToBlock
             | Self::CreateUniqueBlock
             | Self::ReplaceBlock
             | Self::Block { .. }
@@ -5138,7 +5131,6 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
-        self.cancel_block_add_input();
         self.block_session = None;
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
@@ -5225,7 +5217,6 @@ impl VibocerosApp {
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
             InteractiveCommand::Block { .. }
-            | InteractiveCommand::AddObjectsToBlock
             | InteractiveCommand::Insert { .. }
             | InteractiveCommand::CreateUniqueBlock
             | InteractiveCommand::ReplaceBlock => return false,
@@ -7830,9 +7821,6 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.pick_block_add(click.object_id, click.mode) {
-            return;
-        }
         if self.pick_replace_block(click.object_id) {
             return;
         }
@@ -8367,9 +8355,6 @@ impl VibocerosApp {
     }
 
     fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
-        if self.select_block_add_region(&selection) {
-            return;
-        }
         if self.tween_surfaces_prompt.is_some() {
             return;
         }
@@ -8840,7 +8825,6 @@ impl eframe::App for VibocerosApp {
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
         let drafting = DraftingInput {
             active: !end_analysis_picking
-                && !self.adding_to_block()
                 && !self.replacing_block()
                 && !self.picking_scale_by_plane_object()
                 && !self.picking_scale_by_plane_view()

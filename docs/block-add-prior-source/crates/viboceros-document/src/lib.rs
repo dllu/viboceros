@@ -1,6 +1,5 @@
 //! In-memory CAD document model.
 
-mod block_addition;
 mod block_creation;
 mod block_explosion;
 pub use block_explosion::PreparedBlockExplosion;

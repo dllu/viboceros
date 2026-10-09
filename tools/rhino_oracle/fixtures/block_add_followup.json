@@ -1,0 +1,464 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "block_workflow",
+      "id": "nested-reference-addition",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            12,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            14,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {},
+        {
+          "name": "added",
+          "color": [
+            21,
+            43,
+            65
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "source"
+          },
+          "geometry_user_text": {
+            "Shape": "source"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "create",
+          "name": "child",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            1
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              10
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "child",
+          "transform": [
+            [
+              2,
+              0,
+              0,
+              5
+            ],
+            [
+              0,
+              1,
+              0,
+              -2
+            ],
+            [
+              0,
+              0,
+              1,
+              1
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "add_objects",
+          "target": 5,
+          "objects": [
+            6
+          ]
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "existing-prototype-groups",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            12,
+            3,
+            4
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            14,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {},
+        {
+          "name": "added",
+          "color": [
+            21,
+            43,
+            65
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "source"
+          },
+          "geometry_user_text": {
+            "Shape": "source"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "group",
+          "objects": [
+            0,
+            2
+          ]
+        },
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ],
+          "api": "command"
+        },
+        {
+          "action": "add_objects",
+          "target": 3,
+          "objects": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nonuniform-conic-addition",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            11,
+            22,
+            33
+          ],
+          "radius": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            14,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {},
+        {
+          "name": "added",
+          "color": [
+            21,
+            43,
+            65
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "source"
+          },
+          "geometry_user_text": {
+            "Shape": "source"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              10
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "add_objects",
+          "target": 4,
+          "objects": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "op": "block_workflow",
+      "id": "nonuniform-arc-addition",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              13,
+              22,
+              33
+            ],
+            [
+              11,
+              24,
+              33
+            ],
+            [
+              9,
+              22,
+              33
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            14,
+            5,
+            6
+          ]
+        }
+      ],
+      "attributes": [
+        {},
+        {
+          "name": "added",
+          "color": [
+            21,
+            43,
+            65
+          ],
+          "color_source": "object",
+          "user_text": {
+            "Part": "source"
+          },
+          "geometry_user_text": {
+            "Shape": "source"
+          }
+        },
+        {}
+      ],
+      "record_groups": true,
+      "record_management": true,
+      "record_states": true,
+      "steps": [
+        {
+          "action": "create",
+          "name": "part",
+          "base": [
+            0,
+            0,
+            0
+          ],
+          "sources": [
+            0
+          ]
+        },
+        {
+          "action": "insert",
+          "name": "part",
+          "transform": [
+            [
+              0,
+              -2,
+              0,
+              10
+            ],
+            [
+              3,
+              0,
+              0,
+              20
+            ],
+            [
+              0,
+              0,
+              -4,
+              30
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        {
+          "action": "add_objects",
+          "target": 4,
+          "objects": [
+            1,
+            2
+          ]
+        }
+      ]
+    }
+  ]
+}

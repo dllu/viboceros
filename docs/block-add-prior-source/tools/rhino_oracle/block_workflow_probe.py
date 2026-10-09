@@ -183,14 +183,6 @@ def validate(operation):
             old,new=_name(step['name']),_name(step['new_name'])
             if old not in definitions or new in definitions or not re.match(r'^[A-Za-z0-9_-]+$',step['new_name']):raise ValueError('invalid duplicate block names')
             definitions[new]=definitions[old][:];outputs=[]
-        elif action=='add_objects':
-            target=step.get('target');picks=step.get('objects')
-            if (set(step)!=set(('action','target','objects')) or type(target)is not int or target not in alive or target in protected or handles[target]is None
-                    or not isinstance(picks,list)or not picks or any(type(i)is not int or i not in alive or i in protected or i==target for i in picks)
-                    or len(set(picks))!=len(picks)):raise ValueError('invalid block addition sources or target')
-            name=handles[target];definitions[name].extend(handles[i] for i in sorted(picks))
-            for key in definitions:leaves(key,[])
-            alive.difference_update(picks);outputs=[]
         elif action=='replace_block':
             picks=step.get('objects');target=_name(step.get('name'));replacement=step.get('replacement_instance')
             if (set(step)-set(('action','objects','name','all_instances','replacement_instance')) or not isinstance(picks,list) or not picks
@@ -516,10 +508,6 @@ def run(operation, tolerance, host):
                     obj=document.Objects.FindId(handles[j]);a=obj.Attributes.Duplicate();owned_attributes.append(a)
                     a.Mode={'normal':Rhino.DocObjects.ObjectMode.Normal,'hidden':Rhino.DocObjects.ObjectMode.Hidden,'locked':Rhino.DocObjects.ObjectMode.Locked}[step['mode']]
                     if not document.Objects.ModifyAttributes(obj.Id,a,True):raise ValueError('native root state failed')
-            elif action=='add_objects':
-                document.Objects.UnselectAll();document.Objects.Select(handles[step['target']])
-                script='_AddObjectsToBlock '+' '.join('_SelID '+str(handles[j]) for j in sorted(step['objects']))+' _Enter'
-                if not rs.Command(script,False):raise ValueError('native AddObjectsToBlock failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
             elif action=='replace_block':
                 picks=sorted(step['objects']);original=document.Objects.FindId(handles[picks[0]]).InstanceDefinition
                 extra=len(original.GetReferences(0))>len(picks)

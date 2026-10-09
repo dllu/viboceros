@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "9e3cbf53b3f6c218e350818bc070a8aacb853130",
+  "scope": "AddObjectsToBlock instance-local definition addition, exact affine inversion, circular compatibility and two-stage UI",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#AddObjectsToBlock",
+    "https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_circle.cpp",
+    "https://github.com/mcneel/opennurbs/blob/8.x/opennurbs_plane.cpp"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5517,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1040,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "native_replay": {
+      "cases": 8,
+      "states": 34,
+      "matched": 8,
+      "mismatched": 0,
+      "native_failures": 0,
+      "max_absolute_error": 1.0658141036401503e-14,
+      "exit_code": 0
+    },
+    "new_geometry_tests": 4,
+    "new_document_tests": 5,
+    "new_command_tests": 2,
+    "new_gui_tests": 3,
+    "new_replay_test": 1,
+    "new_python_tests": 4
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_add.json",
+      "response": "tools/rhino_oracle/observations/block_add.json",
+      "scheme": "VibocerosOracleBlockAddRoots20261009",
+      "cases": 4,
+      "states": 16
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_add_followup.json",
+      "response": "tools/rhino_oracle/observations/block_add_followup.json",
+      "scheme": "VibocerosOracleBlockAddArc20261009",
+      "cases": 4,
+      "states": 18
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 via Wine/FEX on private Xvfb",
+  "addition_contract": "Editable sources are converted into the selected instance frame, appended in document order and consumed. Definition/root IDs, placements, root/member attributes, attribute text, geometry text and model groups survive; all target prototype memberships are cleared. Nested sources stay references, and catalog refresh updates all uses and ancestors atomically.",
+  "affine_inverse_contract": "Determinant, inverse coefficients and inverse translation are computed from exact rational input doubles and rounded once per output coefficient. Exact singularity, overflow and loss/reversal of rounded inverse orientation reject. Ill-conditioned round-trip accuracy is not certified.",
+  "conic_contract": "AddObjectsToBlock applies the public ON_Circle::Transform fitting policy to Circle/Arc sources, retains curve parameter domains and geometry text, and scopes the altered Rust adaptation to this command under third_party/opennurbs-rust. General affine geometry conversion remains exact. Original OpenNURBS notices are retained.",
+  "ui_contract": "A single preselected root skips the target getter. Source clicks/windows exclude the target; Enter commits. Empty/invalid source edits keep the getter active. Esc/Cancel restores available original selection without changing geometry or the redo branch. Starting the command again cancels the prior getter before deriving new preselection.",
+  "comparison_limits": "Recorded metadata and sampled geometry at absolute 1e-9 plus relative 1e-12. Native captures use command macros and SelID, not pixel mouse/group picking. Local history and UI tests do not establish native selection/history parity. Timings are not kernel performance measurements.",
+  "sha256": {
+    "crates/viboceros-command/src/add_objects_to_block.rs": "1720ef8240733623e74eb842ac01b53cd22ad3d56f81af7aa648c1bae4c9642a",
+    "crates/viboceros-command/src/add_objects_to_block/tests.rs": "73f7f5ac763a65fd3341379e6435f20cf187ddb0f6f99df67cc46ed3d19e0a5e",
+    "crates/viboceros-command/src/lib.rs": "14e1a426ddaca10af1d0069fdec1a7b371a7c2ce83aa6b9c3b1a2ae395594c5f",
+    "crates/viboceros-document/src/block_addition.rs": "2857a181420593d0dcb0848b4a35e5030a74bc3f77473b565b4b3735797a3fef",
+    "crates/viboceros-document/src/block_addition/tests.rs": "27eedd96676933404116a12294236baecb0b5a73d1ea286b362c9731c360c12d",
+    "crates/viboceros-document/src/lib.rs": "8d2268b566629bc96a5de243bad435ae5df7176202fd64abde8e655ebc060ab9",
+    "crates/viboceros-geometry/src/transform.rs": "64f59dc88d5d189bcee48b5c53ae22f300779544d72e839d90c4d35fc7f16f66",
+    "crates/viboceros-geometry/src/transform/inverse.rs": "85939efa00e472c74177da721e44f961d45aee802d6a39e3c58b0e7c2e7b0322",
+    "crates/viboceros-oracle/src/block_workflow.rs": "f1bdde52680258a501d564d82f33789099a1fbfca191cd28a0629143d2f0a37d",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "430f24a159aa8fa192825c1aaa4b9987e70b502b3f6cdf01001e315025fe0aa2",
+    "docs/block-add-comparison.json": "ed510611801a9e0e8e4ea96b0450f9094ce26d463e600ea26169b8b61f5b0834",
+    "docs/block-add-followup-comparison.json": "dc84cd68d09bd2243784240aee906fb655f2b245edd727dd5ca3139ea975e694",
+    "docs/block-add-prior-source/crates/viboceros-command/src/lib.rs": "71fe0e9c36225dc3eb2dc472b60980f01b9b01e5f8f5ee7b77f0517136314fb6",
+    "docs/block-add-prior-source/crates/viboceros-document/src/lib.rs": "a8183d55f670580b61e479d499054eb6e3f451365467701bfddf4aeb02695c4f",
+    "docs/block-add-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "feab7f8f774d8e877e0a90a90b7fe796f7a20d64fc6dcdee78be95a6b1303c7b",
+    "docs/block-add-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "2a44a5acbd012b8e092ade4b6fd50f9a2fad170ad82d1402c3b7aa0583072a1d",
+    "docs/block-add-prior-source/src/app.rs": "5696a3d96a66c800fa49fbd3b09a8aa04e882145370f7878769fc1439c0a67ea",
+    "docs/block-add-prior-source/src/app/blocks.rs": "1ce5491f47bdf8bd0bccd102f911e881fbc42b53d2ee97ead84a5c5f8b8f8f86",
+    "docs/block-add-prior-source/src/app/object_selection.rs": "daa7c33283d429ad1fc37ec844204bd1c542835a785197a1f7db3a5b49876101",
+    "docs/block-add-prior-source/src/app/tests/blocks.rs": "ef5ce4b69196e1ec40c1921b806e686dcbd85e17622f8596419233196eb9770e",
+    "docs/block-add-prior-source/tools/rhino_oracle/block_workflow_probe.py": "943df00e75d08933121077a58a12e321244d0481b3b03e088f3370d01140b47b",
+    "docs/block-add-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "774bc5dbf757375ad9fd8960ac4e5ba1ad7d0e47cdd468f37cdb6de5a060d718",
+    "src/app.rs": "23ef3b8f5d44c733868fcff610ab3213a35278dbbf876cfbab28eb9ac460e700",
+    "src/app/block_add.rs": "05971599ae9afa427b430a1be38c9c86e4f7930b80b87b84ae550107c12280f3",
+    "src/app/blocks.rs": "b30fedd087de9f316f892e894e176dcf30cfc39c01222b0ff71e885361f4d501",
+    "src/app/object_selection.rs": "9326992c601ab8b749892ef63413f4a010c0dd5e137f6607fcf94f801163aa82",
+    "src/app/tests/blocks.rs": "8866879d384bb846e4fdcb9b011a28ce6b1e0927c68517f3d71a2d44bac0a29c",
+    "third_party/opennurbs-rust/LICENSE": "36cc876b03e43c1cb8f3c2018786d5ef6093ba761d3ab229dc1c39b81b4d4307",
+    "third_party/opennurbs-rust/README.md": "c5217d87278aa3c2d4e2cbf2f3423afdb71512761f57bf7cd3a6276e3ce15f24",
+    "third_party/opennurbs-rust/circle_transform.rs": "5fd85e4b5de60d7d771b5b967e31a7aba3eabf698162cc5c0d1baf8be88e0213",
+    "third_party/opennurbs/opennurbs_arccurve.cpp": "9c0e0bf2514b6f68fa04ea6e91beb6be60709ab0824fc90f97237377477361a2",
+    "third_party/opennurbs/opennurbs_circle.cpp": "1c60c3f8763d3f2f761fb0f6223e48c8e4dc19d6dd6868a501928e011d336c70",
+    "third_party/opennurbs/opennurbs_plane.cpp": "eda53fa4c6513e83090e4131a2446443259c5afe5f07c5287c36fcd314b11615",
+    "tools/rhino_oracle/block_workflow_probe.py": "7e7dbd9727038f9b9d7657e53f1bf31e9054a0ce87d00d762440e0290f7d1fb8",
+    "tools/rhino_oracle/fixtures/block_add.json": "718d90e848c1d00f3ba6d703f7927182e65fa6da6fe565fd29843e456f38efca",
+    "tools/rhino_oracle/fixtures/block_add_followup.json": "e4bf37050bea26bf5716b7bac78cbf334b2c106abfe5423ee7a244236b3b98d8",
+    "tools/rhino_oracle/observations/block_add.json": "7491144d5805eed16521d2b27c9952de62f8e4f11d0563e10bd831134ef32135",
+    "tools/rhino_oracle/observations/block_add_followup.json": "d5d06cebdd321d9a50cef0058d390e765e30c4faa695007e2826bdd6c9c4800d",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "c3c3b0059a94bed37753b8d5b4f8683403c82e3b3d440b76d68b26f3c2c5bcd7"
+  },
+  "remaining_scope": [
+    "Linked definitions and broader block editing",
+    "Native pixel/group picking, option memory and selection/history fidelity",
+    "Layer-level protection and general curved B-rep comparison",
+    "GPU rendering and performance"
+  ]
+}

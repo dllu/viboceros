@@ -52,7 +52,6 @@
   "replacement_contract": "Selected roots share one original definition. All rebinds every model root of that definition, including hidden and locked peers; catalog references remain unchanged. IDs, placements, root attributes, attribute text and groups survive; geometry-attached root text is cleared.",
   "comparison_limits": "Sampled geometry and recorded metadata at absolute 1e-9 plus relative 1e-12. Zero comparison timings are not performance measurements. Local history tests are not native Undo/Redo or UI interaction captures.",
   "sha256": {
-    "crates/viboceros-command/src/lib.rs": "71fe0e9c36225dc3eb2dc472b60980f01b9b01e5f8f5ee7b77f0517136314fb6",
     "crates/viboceros-command/src/replace_block.rs": "351ac63395239454f343b69903f355a714097cae4dfdafefd9653b974cd8677d",
     "crates/viboceros-command/src/replace_block/tests.rs": "e3eacb754768faf37114514e28d96e6044b16e2ce59af2373a60be90181c5c41",
     "crates/viboceros-document/src/block_management.rs": "dd14bc791f4641192cf7cc23231ad3dc4dd2133d2f77096d11ae92c2c741fbc4",
@@ -79,7 +78,8 @@
     "docs/block-replace-input-prior-source/crates/viboceros-oracle/src/block_workflow.rs": "475b6f516019c568f2491c4f9dbc2143e87411c8c14edf060b16b6bbe7ef79f5",
     "docs/block-replace-input-prior-source/crates/viboceros-oracle/tests/block_workflow.rs": "d2f136faf53f248067275002ef56ac10a0a783ea57328f686d75565cfd24293f",
     "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py": "3948ebbc07a80eaa2416f02c1f1fde85a560dec59640e05e7806860fe93d0f60",
-    "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277"
+    "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277",
+    "docs/block-add-prior-source/crates/viboceros-command/src/lib.rs": "71fe0e9c36225dc3eb2dc472b60980f01b9b01e5f8f5ee7b77f0517136314fb6"
   },
   "remaining_scope": [
     "Replacement instance picking and definition-list chooser UI",
@@ -94,6 +94,7 @@
     "crates/viboceros-oracle/src/block_workflow.rs": "docs/block-replace-input-prior-source/crates/viboceros-oracle/src/block_workflow.rs",
     "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-replace-input-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
     "tools/rhino_oracle/block_workflow_probe.py": "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py",
-    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py"
+    "tools/rhino_oracle/test_block_workflow_probe.py": "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py",
+    "crates/viboceros-command/src/lib.rs": "docs/block-add-prior-source/crates/viboceros-command/src/lib.rs"
   }
 }

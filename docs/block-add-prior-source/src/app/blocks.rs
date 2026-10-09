@@ -4,10 +4,6 @@ use viboceros_command::blocks::{InsertOptions, base_point, tokenize};
 
 #[derive(Clone, Debug)]
 pub(super) enum PendingBlock {
-    Add {
-        target: Option<ObjectId>,
-        selection_before: Vec<ObjectId>,
-    },
     Replace(replace_block::ReplaceBlockInput),
     Unique {
         sources: Vec<ObjectId>,
@@ -29,9 +25,6 @@ impl VibocerosApp {
     ) -> bool {
         let end = input.find(char::is_whitespace).unwrap_or(input.len());
         let name = input[..end].trim_start_matches(['_', '-']);
-        if name.eq_ignore_ascii_case("AddObjectsToBlock") {
-            return self.start_block_add_input(input[end..].trim());
-        }
         if name.eq_ignore_ascii_case("ReplaceBlock") {
             let words = match tokenize(&input[end..]) {
                 Ok(w) => w,
@@ -165,9 +158,6 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_block_input(&mut self, input: &str) -> bool {
-        if self.continue_block_add_input(input) {
-            return true;
-        }
         if self.continue_replace_block(input) {
             return true;
         }
@@ -340,7 +330,6 @@ impl VibocerosApp {
             (
                 Some(
                     InteractiveCommand::Block { .. }
-                    | InteractiveCommand::AddObjectsToBlock
                     | InteractiveCommand::Insert { .. }
                     | InteractiveCommand::CreateUniqueBlock
                     | InteractiveCommand::ReplaceBlock,

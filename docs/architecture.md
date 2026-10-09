@@ -23,6 +23,9 @@ use counts, direct root selection, rename and transactional definition deletion.
 and rebinds roots transactionally. [ReplaceBlock](commands/replace-block.md) changes
 definitions through typed names, target-instance picking or a searchable chooser,
 retaining root placement, metadata and history with native replacement policies.
+[AddObjectsToBlock](commands/add-objects-to-block.md) appends model objects in a
+selected instance's local frame, refreshes all uses, retains nested references
+and consumes sources in one transaction.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

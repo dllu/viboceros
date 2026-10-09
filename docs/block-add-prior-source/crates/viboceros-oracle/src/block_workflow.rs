@@ -99,10 +99,6 @@ pub enum BlockStep {
         objects: Vec<usize>,
         mode: String,
     },
-    AddObjects {
-        target: usize,
-        objects: Vec<usize>,
-    },
     DeleteDefinition {
         name: String,
         #[serde(default)]
@@ -290,20 +286,6 @@ pub(super) fn run(
                     .ok_or_else(invalid)?
                     .id();
                 document.duplicate_block_definition(id, new_name)?;
-                Vec::new()
-            }
-            BlockStep::AddObjects { target, objects } => {
-                if objects.is_empty()
-                    || objects.iter().collect::<BTreeSet<_>>().len() != objects.len()
-                {
-                    return Err(invalid());
-                }
-                let target = live(&document, &handles, *target)?;
-                let ids = objects
-                    .iter()
-                    .map(|i| live(&document, &handles, *i))
-                    .collect::<Result<Vec<_>, _>>()?;
-                document.add_objects_to_block(target, ids)?;
                 Vec::new()
             }
             BlockStep::ReplaceBlock {

@@ -8,30 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_addition_sources_and_target_are_validated_before_host_access(self):
-        for target,objects in [(0,[1]),(True,[1]),(2,[]),(2,[2]),(2,[1,1]),(2,[0]),(2,[True]),(2,[99])]:
-            f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-            f['steps'].append(dict(action='add_objects',target=target,objects=objects))
-            with self.subTest(target=target,objects=objects),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_addition_consumes_sources_without_allocating_root_handles(self):
-        f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-        f['steps'].extend([dict(action='add_objects',target=2,objects=[1]),dict(action='group',objects=[2])]);probe.validate(f)
-        f['steps'].append(dict(action='group',objects=[1]))
-        with self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_addition_rejects_protected_sources_and_targets(self):
-        for handle in (1,2):
-            f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))
-            f['steps'].extend([dict(action='object_state',objects=[handle],mode='locked'),dict(action='add_objects',target=2,objects=[1])])
-            with self.subTest(handle=handle),self.assertRaises(ValueError):probe.run(f,None,{})
-
-    def test_addition_rejects_indirect_definition_cycles(self):
-        f=self.fixture();f['steps'].extend([dict(action='create',name='parent',base=[0,0,0],sources=[1]),
-            dict(action='insert',name='leaf',transform=[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]),
-            dict(action='add_objects',target=3,objects=[2])])
-        with self.assertRaises(ValueError):probe.run(f,None,{})
-
     def test_replacement_instance_handle_must_be_live_and_use_the_expected_definition(self):
         for replacement in (True, 0, 2, 99, 3.0):
             f=self.fixture();f['sources'].append(dict(type='point',point=[7,0,0]))

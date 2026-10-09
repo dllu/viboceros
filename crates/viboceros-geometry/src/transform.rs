@@ -1,4 +1,5 @@
 use nalgebra::Matrix3;
+mod inverse;
 mod normal;
 mod orientation;
 mod rotation_cleanup;

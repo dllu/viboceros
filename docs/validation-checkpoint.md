@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`0cf4b460` (earlier milestones used `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`9e3cbf53` (earlier milestones used `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[block addition provenance](block-add-provenance.json),
 [replacement input provenance](block-replace-input-provenance.json),
 [replacement provenance](block-replace-provenance.json),
 [unique-definition provenance](block-unique-provenance.json),
@@ -41,25 +42,40 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,502 Rust tests:
+5,517 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,070 | 17 |
-| Command | 1,226 | 2 |
-| Document | 231 | 5 |
+| App | 1,073 | 17 |
+| Command | 1,228 | 2 |
+| Document | 236 | 5 |
 | Drafting | 164 | 6 |
-| Geometry | 2,099 | 8 |
+| Geometry | 2,103 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 500 | 0 |
+| Oracle (unit and integration) | 501 | 0 |
 
-The Python suite passed 1,036 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,040 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [ReplaceBlock input](commands/replace-block.md) adds six GUI tests,
+The newest [AddObjectsToBlock](commands/add-objects-to-block.md) adds four kernel
+tests, five document tests, two command tests, three GUI tests, one native replay
+test and four Python validation tests. Eight private-Xvfb native workflows match
+all 34 states for source consumption, inverse placement, nested references,
+root/member metadata, model/prototype groups and circle/arc fitting. Addition
+clears all target prototype memberships while retaining model group records.
+The exact affine inverse handles cancellation, extreme scales and overflowing
+intermediate translation terms without accepting exact singularity. A scoped
+OpenNURBS Rust adaptation reproduces circular fitting under nonuniform placement;
+general affine editing keeps its exact-conic behavior. Local history tests verify
+catalog refresh, group/object restoration and atomic graph rejection. Linked
+definitions, native mouse/group picking and selection/history parity, layer-level
+protection, general curved B-rep comparison, GPU rendering and performance remain
+open.
+
+The preceding [ReplaceBlock input](commands/replace-block.md) adds six GUI tests,
 one native replay test and four Python validation tests. Three private-Xvfb native
 workflows select the target through Rhino's object getter and match all 23 states
 for selected-only and All replacement, protected peers, and target state
