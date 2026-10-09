@@ -58,9 +58,6 @@ pub(super) enum Edit {
     BlockEditModel {
         stored: Box<super::Document>,
     },
-    BlockEditNavigation {
-        stored: Box<super::Document>,
-    },
     BlockEditSettings {
         stored: super::block_edit::BlockEditSettings,
         selected: Vec<ObjectId>,
@@ -173,10 +170,6 @@ impl Edit {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
             Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
-            Self::BlockEditNavigation { stored } => {
-                document.swap_block_edit_model(stored);
-                std::mem::swap(&mut document.block_edit, &mut stored.block_edit);
-            }
             Self::BlockEditSettings { stored, selected } => {
                 document.swap_block_edit_settings(stored, selected)?
             }
@@ -309,10 +302,6 @@ impl Edit {
         match self {
             Self::CommandAcceptedWithoutChanges => {}
             Self::BlockEditModel { stored } => document.swap_block_edit_model(stored),
-            Self::BlockEditNavigation { stored } => {
-                document.swap_block_edit_model(stored);
-                std::mem::swap(&mut document.block_edit, &mut stored.block_edit);
-            }
             Self::BlockEditSettings { stored, selected } => {
                 document.swap_block_edit_settings(stored, selected)?
             }

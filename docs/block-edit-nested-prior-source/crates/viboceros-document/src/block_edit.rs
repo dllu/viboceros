@@ -1,21 +1,13 @@
 //! Isolated in-place editing of embedded block prototypes.
 use super::*;
-use std::sync::Arc;
 use viboceros_geometry::{Point3, Vector3};
-pub(super) mod navigation;
 
 #[derive(Clone, Debug)]
 pub(super) struct BlockEditSession {
-    baseline: Arc<Document>,
-    cancel_checkpoint: Arc<Document>,
+    baseline: Box<Document>,
     pub(super) original_ids: BTreeSet<ObjectId>,
     source_candidates: BTreeSet<ObjectId>,
     definition: BlockDefinitionId,
-    root_definition: BlockDefinitionId,
-    root_placement: AffineTransform3,
-    path: Vec<usize>,
-    background_ids: BTreeSet<ObjectId>,
-    initial_objects: BTreeMap<ObjectId, Object>,
     target: ObjectId,
     placement: AffineTransform3,
     exposed_layers: Vec<Layer>,
@@ -31,9 +23,7 @@ pub(super) struct BlockEditSettings {
 
 impl BlockEditSession {
     pub(super) fn protects(&self, id: ObjectId) -> bool {
-        self.original_ids.contains(&id)
-            || self.settings.released.contains(&id)
-            || self.background_ids.contains(&id)
+        self.original_ids.contains(&id) || self.settings.released.contains(&id)
     }
 }
 
@@ -114,14 +104,36 @@ impl Document {
             return Err(DocumentError::NotBlockInstance(target));
         };
         let placement = instance.reference().transform();
-        check_edit_placement(placement)?;
+        let rows = placement.linear_rows();
+        let columns =
+            std::array::from_fn::<_, 3, _>(|j| Vector3::try_from(rows.map(|r| r[j])).unwrap());
+        let lengths = [
+            columns[0].length()?,
+            columns[1].length()?,
+            columns[2].length()?,
+        ];
+        let unit = columns
+            .map(|v| v.normalized_nonzero().map(|u| u.as_vector()))
+            .into_iter()
+            .collect::<Result<Vec<_>, _>>()?;
+        let epsilon = f64::EPSILON.sqrt();
+        if (lengths[0] - lengths[1]).abs() > epsilon * lengths[0].max(lengths[1])
+            || (lengths[0] - lengths[2]).abs() > epsilon * lengths[0].max(lengths[2])
+            || unit[0].dot(unit[1])?.abs() > epsilon
+            || unit[0].dot(unit[2])?.abs() > epsilon
+            || unit[1].dot(unit[2])?.abs() > epsilon
+        {
+            return Err(DocumentError::InvalidBlockCatalog(
+                "in-place editing requires a uniformly scaled instance",
+            ));
+        }
         let definition = instance.reference().definition();
         let members = self
             .block_definition(definition)
             .unwrap()
             .members()
             .to_vec();
-        let baseline = Arc::new(self.clone());
+        let baseline = Box::new(self.clone());
         let original_ids = self.objects.iter().map(|o| o.id).collect::<BTreeSet<_>>();
         let source_candidates = self
             .selectable_objects()
@@ -137,42 +149,9 @@ impl Document {
                 object.attributes.visible = false;
             }
         }
-        let exposed = working.expose_block_members(&members, placement)?;
-        working.history = History::default();
-        working.block_edit = Some(Box::new(BlockEditSession {
-            cancel_checkpoint: baseline.clone(),
-            baseline,
-            original_ids,
-            source_candidates,
-            definition,
-            root_definition: definition,
-            root_placement: placement,
-            path: Vec::new(),
-            background_ids: BTreeSet::new(),
-            initial_objects: exposed
-                .iter()
-                .map(|id| (*id, working.object(*id).unwrap().clone()))
-                .collect(),
-            target,
-            placement,
-            exposed_layers: working.layers.clone(),
-            settings: BlockEditSettings {
-                released: BTreeSet::new(),
-                base_point: placement.transform_point(Point3::try_new(0., 0., 0.)?)?,
-                local_base: Point3::try_new(0., 0., 0.)?,
-            },
-        }));
-        *self = working;
-        Ok(exposed)
-    }
-    fn expose_block_members(
-        &mut self,
-        members: &[BlockMember],
-        placement: AffineTransform3,
-    ) -> Result<Vec<ObjectId>, DocumentError> {
         let mut exposed = Vec::new();
         for member in members {
-            let layer = self
+            let layer = working
                 .layers
                 .iter_mut()
                 .find(|l| l.id == member.attributes().layer_id())
@@ -190,24 +169,40 @@ impl Document {
                         )?
                     }
                 }
-                BlockContent::Reference(r) => self.block_instance_geometry(
+                BlockContent::Reference(r) => working.block_instance_geometry(
                     BlockReference::try_new(r.definition(), r.transform().then(placement)?)?,
                 )?,
             };
-            let id = self.add_geometry_with_metadata(
+            let id = working.add_geometry_with_metadata(
                 geometry,
                 member.attributes().clone().with_file_state(true, false),
                 member.geometry_user_text().clone(),
             )?;
-            let index = self.objects.iter().position(|o| o.id == id).unwrap();
-            self.objects[index].group_ids = member.group_ids().to_vec();
-            for group in &mut self.groups {
+            let index = working.objects.iter().position(|o| o.id == id).unwrap();
+            working.objects[index].group_ids = member.group_ids().to_vec();
+            for group in &mut working.groups {
                 if member.group_ids().contains(&group.id) {
                     group.members.insert(id);
                 }
             }
             exposed.push(id);
         }
+        working.history = History::default();
+        working.block_edit = Some(Box::new(BlockEditSession {
+            baseline,
+            original_ids,
+            source_candidates,
+            definition,
+            target,
+            placement,
+            exposed_layers: working.layers.clone(),
+            settings: BlockEditSettings {
+                released: BTreeSet::new(),
+                base_point: placement.transform_point(Point3::try_new(0., 0., 0.)?)?,
+                local_base: Point3::try_new(0., 0., 0.)?,
+            },
+        }));
+        *self = working;
         Ok(exposed)
     }
     pub fn discard_block_edit(&mut self) -> Result<(), DocumentError> {
@@ -216,19 +211,7 @@ impl Document {
             .block_edit
             .take()
             .ok_or(DocumentError::InvalidBlockCatalog("no block edit is open"))?;
-        let mut accepted = (*edit.cancel_checkpoint).clone();
-        if !Arc::ptr_eq(&edit.baseline, &edit.cancel_checkpoint) {
-            accepted.history = edit.baseline.history.clone();
-            accepted.begin_transaction("BlockEdit")?;
-            accepted.record_edit(
-                "BlockEdit",
-                Edit::BlockEditModel {
-                    stored: Box::new(edit.baseline.clone_block_edit_model()),
-                },
-            );
-            accepted.commit_transaction()?;
-        }
-        *self = accepted;
+        *self = *edit.baseline;
         Ok(())
     }
     /// Copies external model objects into the active edit; originals survive.
@@ -392,17 +375,24 @@ impl Document {
         *selected = current;
         Ok(())
     }
-    fn capture_block_edit_members(&self) -> Result<Vec<BlockMember>, DocumentError> {
+    pub fn save_block_edit(&mut self) -> Result<usize, DocumentError> {
+        self.ensure_no_transaction()?;
         let edit = self
             .block_edit
             .as_ref()
             .ok_or(DocumentError::InvalidBlockCatalog("no block edit is open"))?;
+        if self.units != edit.baseline.units {
+            return Err(DocumentError::InvalidBlockCatalog(
+                "finish the block edit before changing document units",
+            ));
+        }
         let placement_inverse = edit.placement.try_inverse()?;
         let local_base = edit.settings.local_base;
         let inverse = placement_inverse.then(AffineTransform3::from_translation(
             Vector3::try_new(-local_base.x(), -local_base.y(), -local_base.z())?,
         ))?;
-        self.objects
+        let members = self
+            .objects
             .iter()
             .rev()
             .filter(|object| !edit.protects(object.id))
@@ -424,10 +414,10 @@ impl Document {
                 };
                 BlockMember::captured(content, object).try_with_group_ids(Vec::new())
             })
-            .collect::<Result<Vec<_>, DocumentError>>()
-    }
-    pub(super) fn restore_block_edit_layer_flags(&self, accepted: &mut Document) {
-        let edit = self.block_edit.as_ref().unwrap();
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        let count = members.len();
+        let mut accepted = (*edit.baseline).clone();
+        accepted.layers = self.layers.clone();
         for layer in &mut accepted.layers {
             if let (Some(original), Some(exposed)) = (
                 edit.baseline.layer(layer.id),
@@ -441,23 +431,6 @@ impl Document {
                 }
             }
         }
-    }
-    pub fn save_block_edit(&mut self) -> Result<usize, DocumentError> {
-        self.ensure_no_transaction()?;
-        let edit = self
-            .block_edit
-            .as_ref()
-            .ok_or(DocumentError::InvalidBlockCatalog("no block edit is open"))?;
-        if self.units != edit.baseline.units {
-            return Err(DocumentError::InvalidBlockCatalog(
-                "finish the block edit before changing document units",
-            ));
-        }
-        let members = self.capture_block_edit_members()?;
-        let count = members.len();
-        let mut accepted = (*edit.baseline).clone();
-        accepted.layers = self.layers.clone();
-        self.restore_block_edit_layer_flags(&mut accepted);
         accepted.current_layer = self.current_layer;
         accepted.next_layer_number = self.next_layer_number;
         for object in &self.objects {
@@ -467,9 +440,7 @@ impl Document {
         }
         accepted.groups = self.groups.clone();
         for group in &mut accepted.groups {
-            group
-                .members
-                .retain(|id| edit.original_ids.contains(id) || edit.settings.released.contains(id));
+            group.members.retain(|id| edit.protects(*id));
         }
         accepted.block_definitions = self.block_definitions.clone();
         let index = accepted
@@ -519,33 +490,6 @@ impl Document {
             last_changed_objects
         );
     }
-}
-
-fn check_edit_placement(placement: AffineTransform3) -> Result<(), DocumentError> {
-    let rows = placement.linear_rows();
-    let columns =
-        std::array::from_fn::<_, 3, _>(|j| Vector3::try_from(rows.map(|r| r[j])).unwrap());
-    let lengths = [
-        columns[0].length()?,
-        columns[1].length()?,
-        columns[2].length()?,
-    ];
-    let unit = columns
-        .map(|v| v.normalized_nonzero().map(|u| u.as_vector()))
-        .into_iter()
-        .collect::<Result<Vec<_>, _>>()?;
-    let epsilon = f64::EPSILON.sqrt();
-    if (lengths[0] - lengths[1]).abs() > epsilon * lengths[0].max(lengths[1])
-        || (lengths[0] - lengths[2]).abs() > epsilon * lengths[0].max(lengths[2])
-        || unit[0].dot(unit[1])?.abs() > epsilon
-        || unit[0].dot(unit[2])?.abs() > epsilon
-        || unit[1].dot(unit[2])?.abs() > epsilon
-    {
-        return Err(DocumentError::InvalidBlockCatalog(
-            "in-place editing requires a uniformly scaled instance",
-        ));
-    }
-    Ok(())
 }
 
 #[cfg(test)]

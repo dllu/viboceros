@@ -33,7 +33,9 @@ world-space workspace with copying, member release and base-point controls.
 Save refreshes every root in one history entry; discard restores the original
 document and history. External-source viewport picking keeps a separate highlight
 set, base-point input uses the shared drafting pipeline, and idle block double
-clicks open the editor. Nested navigation and broader input qualification remain open.
+clicks open the editor. Nested contexts use composed frames, atomic scene
+replacement and accepted context checkpoints; broader input/history qualification
+remains open.
 [Block object snapping](block-snapping.md) reuses the existing feature/intersection
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.

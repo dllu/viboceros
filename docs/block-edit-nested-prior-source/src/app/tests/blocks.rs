@@ -1001,26 +1001,3 @@ fn block_edit_base_point_getter_resolves_construction_plane_coordinates() {
         Some(plane.point_at([1., 2., 3.]).unwrap())
     );
 }
-
-#[test]
-fn block_edit_tree_buttons_switch_to_child_and_return_without_closing_the_editor() {
-    let mut app = test_app();
-    enter(&mut app, "Point 1,2,3");
-    enter(&mut app, "SelAll");
-    enter(&mut app, "Block 0,0,0 child");
-    enter(&mut app, "Point 4,5,6");
-    enter(&mut app, "SelAll");
-    enter(&mut app, "Block 0,0,0 parent");
-    let root = app.document.objects().next().unwrap().id();
-    enter(&mut app, &format!("BlockEdit Open {root}"));
-    let child = app.document.block_definition_by_name("child").unwrap().id();
-    let context = egui::Context::default();
-    block_edit_controls_frame(&mut app, &context, vec![]).drop_without_applying_deltas();
-    let output = block_edit_controls_frame(&mut app, &context, vec![]);
-    block_edit_controls_click(&mut app, &context, &output, "child");
-    assert_eq!(app.document.block_edit_definition(), Some(child));
-    assert!(app.document.is_block_editing());
-    let output = block_edit_controls_frame(&mut app, &context, vec![]);
-    block_edit_controls_click(&mut app, &context, &output, "parent");
-    assert_eq!(app.document.block_edit_path(), Some([].as_slice()));
-}

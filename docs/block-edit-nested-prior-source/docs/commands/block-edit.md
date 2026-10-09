@@ -9,20 +9,6 @@ can be changed with ordinary selection, geometry and transform commands. Newly
 created geometry becomes part of the edited definition. Nested instances remain
 references to their child definitions.
 
-The editor's indented definition tree selects a nested editing context. Its
-members appear in their composed instance frame; ancestor geometry stays locked
-around them. `BlockEdit EditPath Root` returns to the root. Scripts can use
-`BlockEdit EditPath 0/1/...` with the current tree's member indices. Invalid,
-cyclic, missing or nonuniform context paths fail before replacing the scene.
-Repeated definitions remain shared; editing one placement updates every use.
-
-Switching accepts the definition being left. Save accepts the current context
-and closes; Discard cancels the current context while preserving earlier context
-acceptances. With no context switch, Discard restores the original document and
-redo branch. The local model history folds accepted context changes into one
-BlockEdit step; workspace Undo/Redo can also reverse a context switch. Native
-history parity remains unverified.
-
 Use `BlockEdit SaveAndClose` to accept or `BlockEdit DiscardAndCancel` to discard.
 The persistent **Block edit** window provides the same actions; closing the
 window discards. Esc cancels the current modelling getter. Finish or discard the
@@ -64,8 +50,7 @@ Redo
 The original model objects remain protected, even if Unlock is issued. Clear
 removes the editable members while preserving the original model. Undo and Redo
 operate on the temporary workspace while the editor is open. Discard restores
-the complete original document, including its prior redo branch, when no context
-has been accepted by navigation. Saving captures
+the complete original document, including its prior redo branch. Saving captures
 the members back into definition-local coordinates, validates the catalog and
 refreshes every original root before accepting one `BlockEdit` history entry.
 Save failures leave the workspace open for correction or cancellation.
@@ -105,16 +90,7 @@ input tests and owned native double-click capture. This gesture capture verifies
 opening and discard on one line instance; it does not establish all picking,
 ambiguity, snapping or native selection/history behavior.
 
-See [nested context evidence](../block-edit-nested-provenance.json) for parent,
-child, repeated-reference and deeper navigation. Identical native captures can
-reconstruct ancestor member arrays in different orders. The context comparison
-permutes member records and consistently remaps leaf paths while retaining their
-geometry, metadata, groups, placements and sample order. Raw captures remain
-available. Moving a nested reference can remove its row from Rhino's current
-dialog tree; that is retained as a separate native diagnostic. The local tree
-continues to follow the validated definition graph.
-
-Linked definitions remain unimplemented. Saving an
+Nested-definition navigation and linked definitions remain unimplemented. Saving an
 empty definition with existing placements is rejected by the current instance
 admission rules. This milestone adds no GPU or performance measurements and does
 not establish full Rhino BlockEdit compatibility.

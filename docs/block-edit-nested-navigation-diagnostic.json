@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-09",
+  "engine_version": "8.32.26160.13001",
+  "scheme": "VibocerosOracleNestedContextsActive20261009",
+  "request": "tools/rhino_oracle/fixtures/block_edit_nested_navigation_diagnostic.json",
+  "status": "native_navigation_unavailable",
+  "reported_error": "oracle failed: rhino probe failed: ValueError at operation parent-child-return-save: start: nested definition row is not visible: VibocerosOracleBlock_a325d9b5-34fa-4c9a-92b8-ca0b302e238f_child; visible labels: ['Help', 'OK', 'VibocerosOracleBlock_a325d9b5-34fa-4c9a-92b8-ca0b302e238f_part', 'Set Base Point...', 'Remove Object...', 'Add Object...']",
+  "limit": "The editor tree no longer exposed the child row after moving the parent editable set including its nested reference. This is a native UI diagnostic, not a passing model comparison."
+}

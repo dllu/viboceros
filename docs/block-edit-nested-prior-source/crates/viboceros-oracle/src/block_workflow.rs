@@ -125,8 +125,6 @@ pub enum BlockStep {
         base_point: Option<[f64; 3]>,
         #[serde(default = "sdk_translation_api")]
         translation_api: String,
-        #[serde(default)]
-        contexts: Vec<BlockEditContext>,
     },
     DeleteDefinition {
         name: String,
@@ -137,22 +135,6 @@ pub enum BlockStep {
 
 fn sdk_translation_api() -> String {
     "sdk".to_owned()
-}
-
-#[derive(Debug, Clone, Deserialize, PartialEq)]
-#[serde(deny_unknown_fields)]
-pub struct BlockEditContext {
-    pub definition: String,
-    pub translation: [f64; 3],
-    #[serde(default)]
-    pub selection: BlockEditContextSelection,
-}
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum BlockEditContextSelection {
-    #[default]
-    All,
-    Points,
 }
 
 fn sdk_creation_api() -> BlockExplosionApi {
@@ -346,7 +328,6 @@ pub(super) fn run(
                 remove_members,
                 base_point,
                 translation_api,
-                contexts,
             } => {
                 let target = live(&document, &handles, *object)?;
                 if *expect_failure {
@@ -357,45 +338,6 @@ pub(super) fn run(
                     Vec::new()
                 } else {
                     let mut members = document.open_block_edit(target)?;
-                    for context in contexts {
-                        let definition = document
-                            .block_definition_by_name(&context.definition)
-                            .ok_or_else(invalid)?
-                            .id();
-                        let path = document
-                            .block_edit_tree()?
-                            .into_iter()
-                            .find(|node| node.definition == definition)
-                            .ok_or_else(invalid)?
-                            .path;
-                        document.switch_block_edit_context(&path)?;
-                        if context.translation.iter().any(|v| *v != 0.) {
-                            let objects = document
-                                .block_edit_objects()
-                                .into_iter()
-                                .filter(|id| {
-                                    context.selection == BlockEditContextSelection::All
-                                        || matches!(
-                                            document.object(*id).unwrap().geometry(),
-                                            Geometry::Point(_)
-                                        )
-                                })
-                                .collect::<Vec<_>>();
-                            document.select_objects_direct(objects, SelectionMode::Replace)?;
-                            viboceros_command::CommandRegistry::with_builtins().execute(
-                                &mut document,
-                                &format!(
-                                    "Move 0,0,0 {},{},{}",
-                                    context.translation[0],
-                                    context.translation[1],
-                                    context.translation[2]
-                                ),
-                            )?;
-                        }
-                    }
-                    if !contexts.is_empty() {
-                        members = document.block_edit_objects();
-                    }
                     let additions = add_objects
                         .iter()
                         .map(|i| live(&document, &handles, *i))
@@ -591,14 +533,7 @@ pub(super) fn run(
         }
         snapshots.push(value);
     }
-    let mut value = json!({"states":snapshots});
-    if f.steps
-        .iter()
-        .any(|step| matches!(step,BlockStep::EditRoundtrip{contexts,..} if !contexts.is_empty()))
-    {
-        value["comparison_policy"] = json!("block_context_member_permutation");
-    }
-    Ok((value, 0))
+    Ok((json!({"states": snapshots}), 0))
 }
 
 fn valid_name(name: &str) -> Result<(), ProbeError> {

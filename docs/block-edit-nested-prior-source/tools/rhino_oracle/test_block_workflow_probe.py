@@ -8,21 +8,6 @@ from .client import OracleClient
 
 
 class BlockWorkflowTests(unittest.TestCase):
-    def test_nested_context_sequence_is_validated_before_native_access(self):
-        f=self.fixture()
-        f['steps'].append(dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True,contexts=[dict(definition='leaf',translation=[1,2,3])]))
-        probe.validate(f)
-        for context in [dict(definition='missing',translation=[1,2,3]),dict(definition='leaf',translation=[1,2]),dict(definition='leaf',translation=[True,2,3]),dict(definition='leaf',translation=[1,2,3],extra=1)]:
-            invalid=copy.deepcopy(f);invalid['steps'][-1]['contexts']=[context]
-            with self.subTest(context=context),self.assertRaises(ValueError):probe.run(invalid,None,{})
-
-    def test_nested_contexts_reject_unreachable_definitions_and_mixed_controls(self):
-        f=self.fixture();f['sources'].append(dict(type='point',point=[4,5,6]));f['steps'].append(dict(action='create',name='other',base=[0,0,0],sources=[1]))
-        f['steps'].append(dict(action='edit_roundtrip',object=2,translation=[0,0,0],save=True,contexts=[dict(definition='other',translation=[1,2,3])]))
-        with self.assertRaises(ValueError):probe.validate(f)
-        f=self.fixture();f['steps'].append(dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True,base_point=[0,0,0],contexts=[dict(definition='leaf',translation=[1,2,3])]))
-        with self.assertRaises(ValueError):probe.validate(f)
-
     def test_member_control_inputs_reject_before_native_host_access(self):
         for fields in [dict(add_objects=[0]),dict(add_objects=[1]),dict(remove_members=[-1]),dict(remove_members=[1]),dict(remove_members=[True]),dict(base_point=[1,2]),dict(base_point=[float('inf'),0,0]),dict(translation_api='invalid'),dict(base_point=[0,0,0],expect_failure=True)]:
             f=self.fixture();step=dict(action='edit_roundtrip',object=1,translation=[0,0,0],save=True);step.update(fields);f['steps'].append(step)

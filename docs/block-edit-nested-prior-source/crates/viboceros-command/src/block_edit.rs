@@ -39,30 +39,6 @@ impl Command for BlockEditCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         if let Some(operation) = args.first().map(|s| s.trim_start_matches('_')) {
-            if operation.eq_ignore_ascii_case("EditPath") {
-                if args.len() != 2 {
-                    return Err(CommandError::Usage(
-                        "BlockEdit EditPath Root|member/member/...",
-                    ));
-                }
-                let path = if args[1].eq_ignore_ascii_case("Root") {
-                    Vec::new()
-                } else {
-                    args[1]
-                        .split('/')
-                        .map(|part| {
-                            part.parse::<usize>().map_err(|_| {
-                                CommandError::Usage("BlockEdit EditPath Root|member/member/...")
-                            })
-                        })
-                        .collect::<Result<Vec<_>, _>>()?
-                };
-                let ids = doc.switch_block_edit_context(&path)?;
-                return Ok(format!(
-                    "Editing nested definition: {} member(s)",
-                    ids.len()
-                ));
-            }
             if operation.eq_ignore_ascii_case("AddObject")
                 || operation.eq_ignore_ascii_case("RemoveObject")
             {

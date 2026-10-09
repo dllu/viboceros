@@ -16,36 +16,11 @@ class BlockEditController:
                 for action in ('add_objects', 'remove_members', 'base_point'):
                     if step.get(action) is not None and step.get(action) != []:
                         self.expected[op['id'] + '-' + str(index) + '-' + action] = (action, step[action])
-        self.contexts = {}
-        self.context_seen = set()
-        for op in request['operations']:
-            for index,step in enumerate(op.get('steps',[])):
-                for number,context in enumerate(step.get('contexts',[])):
-                    self.contexts[op['id']+'-'+str(index)+'-context-'+str(number)] = context['definition']
         self.seen = set()
         self.clicked = {}
         self.submitted = {}
 
     def __call__(self, job, owned_pids):
-        context_path=job/'block-edit-context.json'
-        if context_path.exists():
-            context=json.loads(context_path.read_text());token=context.get('token')
-            if token not in self.context_seen:
-                if set(context)!={'token','definition','point','skip'} or type(context.get('skip')) is not bool or self.contexts.get(token)!=context['definition']:
-                    raise OracleProtocolError('foreign nested edit context')
-                point=context['point']
-                if not isinstance(point,list) or len(point)!=2 or any(type(v) not in (int,float) or not 0<=v<2160 for v in point):
-                    raise OracleProtocolError('invalid nested context coordinates')
-                window=_rhino_window_for_pids(owned_pids)
-                if window is None:return
-                if not context['skip']:
-                    subprocess.run(['xdotool','windowactivate','--sync',window,'mousemove',str(round(point[0])),str(round(point[1])),'click','1'],check=True,timeout=10)
-                    time.sleep(.15)
-                acknowledgement=job/'block-edit-context.json.ack'
-                temporary=job/'block-edit-context.json.ack.tmp'
-                temporary.write_text(json.dumps(token));temporary.rename(acknowledgement)
-                self.context_seen.add(token)
-            return
         path = job / 'block-edit-control.json'
         if not path.exists():
             return
@@ -121,7 +96,5 @@ class BlockEditController:
         self.submitted[token] = time.monotonic()
 
     def record_diagnostics(self, response):
-        if self.context_seen != set(self.contexts):
-            raise OracleProtocolError('incomplete nested context inputs')
         if self.seen != set(self.expected):
             raise OracleProtocolError('incomplete prescribed Block Edit inputs')

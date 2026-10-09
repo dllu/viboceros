@@ -3,7 +3,6 @@
 mod block_addition;
 mod block_creation;
 mod block_edit;
-pub use block_edit::navigation::{BlockEditTreeNode, BlockEditTreeRevision};
 mod block_explosion;
 pub use block_explosion::PreparedBlockExplosion;
 mod block_instances;
@@ -1818,7 +1817,7 @@ impl Document {
             Edit::BlockDefinitionsChanged { instances, .. } => {
                 instances.iter().map(|(id, _)| *id).collect()
             }
-            Edit::BlockEditModel { stored } | Edit::BlockEditNavigation { stored } => self
+            Edit::BlockEditModel { stored } => self
                 .objects
                 .iter()
                 .chain(stored.objects.iter())

@@ -237,67 +237,10 @@ impl VibocerosApp {
         }
         let mut open = true;
         let mut action = None;
-        type TreeCache = (
-            viboceros_document::BlockEditTreeRevision,
-            Result<Vec<viboceros_document::BlockEditTreeNode>, String>,
-        );
-        let tree_key = egui::Id::new("block-edit-tree-cache");
-        let revision = self.document.block_edit_tree_revision();
-        let cached = context.data_mut(|data| data.get_temp::<TreeCache>(tree_key));
-        let tree = match cached {
-            Some((key, tree)) if key == revision => tree,
-            _ => {
-                let tree = self.document.block_edit_tree().map_err(|e| e.to_string());
-                context.data_mut(|data| data.insert_temp(tree_key, (revision, tree.clone())));
-                tree
-            }
-        };
-        let path = self.document.block_edit_path().unwrap().to_vec();
         egui::Window::new("Block edit")
             .open(&mut open)
             .collapsible(false)
             .show(context, |ui| {
-                match &tree {
-                    Ok(nodes) => {
-                        egui::ScrollArea::vertical()
-                            .id_salt("block-edit-tree")
-                            .max_height(180.)
-                            .show(ui, |ui| {
-                                for node in nodes {
-                                    ui.horizontal(|ui| {
-                                        ui.add_space(node.path.len() as f32 * 14.);
-                                        if ui
-                                            .add_enabled(
-                                                node.editable,
-                                                egui::Button::selectable(
-                                                    node.path == path,
-                                                    &node.name,
-                                                ),
-                                            )
-                                            .clicked()
-                                            && node.path != path
-                                        {
-                                            let token = if node.path.is_empty() {
-                                                "Root".to_owned()
-                                            } else {
-                                                node.path
-                                                    .iter()
-                                                    .map(usize::to_string)
-                                                    .collect::<Vec<_>>()
-                                                    .join("/")
-                                            };
-                                            action = Some(format!("BlockEdit EditPath {token}"));
-                                        }
-                                    });
-                                }
-                            })
-                            .inner
-                    }
-                    Err(error) => {
-                        ui.label(format!("Context unavailable: {error}"));
-                    }
-                }
-                ui.separator();
                 ui.label("Edit the exposed members with ordinary commands.");
                 ui.label(format!(
                     "{} editable object(s)",

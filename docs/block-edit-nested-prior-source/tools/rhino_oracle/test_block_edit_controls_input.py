@@ -68,23 +68,3 @@ class BlockEditControlInputTests(unittest.TestCase):
                 with self.assertRaises(OracleProtocolError):
                     controller(job, {123})
                 run.assert_not_called()
-
-class BlockEditContextInputTests(unittest.TestCase):
-    def test_active_context_acknowledgement_does_not_click_and_counts_toward_completion(self):
-        controller=BlockEditController({'operations':[{'id':'case','steps':[{'action':'edit_roundtrip','contexts':[{'definition':'part','translation':[0,0,0]}]}]}]})
-        with tempfile.TemporaryDirectory() as directory:
-            job=Path(directory);token='case-0-context-0'
-            (job/'block-edit-context.json').write_text(json.dumps(dict(token=token,definition='part',point=[0,0],skip=True)))
-            with patch('tools.rhino_oracle.block_edit_controls_input._rhino_window_for_pids',return_value='owned'),patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
-                controller(job,{123});run.assert_not_called()
-            self.assertEqual(json.loads((job/'block-edit-context.json.ack').read_text()),token)
-            controller.record_diagnostics({})
-
-    def test_foreign_context_token_is_rejected_before_any_pointer_input(self):
-        controller=BlockEditController({'operations':[{'id':'case','steps':[{'action':'edit_roundtrip','contexts':[{'definition':'child','translation':[1,2,3]}]}]}]})
-        with tempfile.TemporaryDirectory() as directory:
-            job=Path(directory)
-            (job/'block-edit-context.json').write_text(json.dumps(dict(token='foreign',definition='child',point=[100,200],skip=False)))
-            with patch('tools.rhino_oracle.block_edit_controls_input.subprocess.run') as run:
-                with self.assertRaises(OracleProtocolError):controller(job,{123})
-                run.assert_not_called()

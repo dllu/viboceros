@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "75fc0291775d17990bc2b652aa53a1d745ad6b64",
+  "scope": "Nested BlockEdit definition contexts, composed-frame scene reconstruction and accepted cancellation checkpoints",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm#BlockEdit"
+  ],
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5565,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "python_regressions": {
+      "passed": 1060,
+      "exit_code": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "new_document_tests": 6,
+    "new_command_tests": 1,
+    "new_gui_tree_tests": 1,
+    "new_native_replay_tests": 1,
+    "new_python_tests": 8,
+    "semantic_native_replay": {
+      "cases": 9,
+      "states": 48,
+      "matched": 9,
+      "mismatched": 0,
+      "max_absolute_error": 0.0,
+      "exit_code": 0
+    }
+  },
+  "native_captures": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_edit_nested.json",
+      "response": "tools/rhino_oracle/observations/block_edit_nested.json",
+      "scheme": "VibocerosOracleNestedContextsFinal20261009",
+      "cases": 9,
+      "states": 48
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_edit_nested_frames.json",
+      "response": "tools/rhino_oracle/observations/block_edit_nested_frames.json",
+      "scheme": "VibocerosOracleNestedFrames20261009",
+      "cases": 4,
+      "states": 23
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/block_edit_nested_order_repeats.json",
+      "response": "tools/rhino_oracle/observations/block_edit_nested_order_repeats.json",
+      "scheme": "VibocerosOracleNestedOrderRepeat20261009",
+      "cases": 9,
+      "states": 48
+    }
+  ],
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 through ARM64 Wine/FEX on private Xvfb",
+  "launcher_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "native_input": "Owned WPF text rows identified through public Win32/WPF interfaces, expanded through public toggle state/commands and selected with real pointer clicks. Active context requests are acknowledged without a redundant click. Context geometry edits use ordinary Move on the requested editable selection.",
+  "context_contract": "Tree paths follow reference member indices in the current effective catalog. Selecting a child composes its placement, protects ancestor geometry and reconstructs the temporary scene only after catalog/geometry checks. Changed contexts are retained for final save. Shared definitions update all placements.",
+  "cancellation_contract": "Native context switching accepts the definition being left. Discard cancels the active context and retains earlier accepted definition changes. No-navigation discard still restores the original model and redo branch. Local accepted context edits fold into one model BlockEdit history entry; workspace navigation has separate reversible snapshots. Native Undo/Redo parity is not established.",
+  "ordering_evidence": "Three identical repetitions of each of three recipes reconstructed ancestor members in both point/reference and reference/point order. The four frame captures confirm that a simple placement heuristic does not determine this order. Raw snapshots are preserved.",
+  "comparison_policy": "The explicit block_context_member_permutation policy sorts complete member records and remaps every corresponding leaf-path member index, then compares all geometry samples, metadata, groups, names, placements and graph content. Curve sample order and model handles remain significant. Ordinary workflows retain strict ordered comparison. Tests reject numeric/metadata changes and inconsistent paths.",
+  "diagnostic": "Moving a nested reference can remove its child row from Rhino's current editor dialog. The failed request and exact error are retained in block-edit-nested-navigation-diagnostic.json and are not counted as a matched workflow. The local validated graph tree continues to provide that context.",
+  "performance_scope": "Immutable baseline and checkpoint documents are shared through Arc; navigation snapshots exclude workspace history to avoid recursive history cloning. Tree presentation is cached by history revision. No native performance or GPU measurements were made.",
+  "comparison_limits": "Nine semantic model workflows, four frame observations and nine ordering repetitions. The compared point/reference fixtures are sampled evidence; broader curves, B-reps, hidden/locked warning choices, empty definitions, nonuniform native navigation and full panel/selection/history parity remain open.",
+  "sha256": {
+    "crates/viboceros-command/src/block_edit.rs": "a8579e1ac8ba92442dc041e3591e387dc193847bbcb231d10d9823654e220410",
+    "crates/viboceros-command/src/block_edit/tests.rs": "0e37a0e3c1c6227fe0eb82532e6c98e2480b263be0f4a683c775f71a83660922",
+    "crates/viboceros-document/src/block_edit.rs": "f3227ddad0ba825f50c9a5575033c13b17a7826057d36d050731faba8eba3c56",
+    "crates/viboceros-document/src/block_edit/navigation.rs": "97d30389833e6b23edf7c88a54ded090b2c10de4d2f332ce1b023865095e41d8",
+    "crates/viboceros-document/src/block_edit/navigation/tests.rs": "2d6af75fd3e9f79dbab2c14e6448b529a59b726e37a7281a54b4657f5062b387",
+    "crates/viboceros-document/src/history.rs": "aa80d8c2ce603c2f4852e2c4ebfb3361c3121c0fffc0c20847e3f0bc80c099d5",
+    "crates/viboceros-document/src/lib.rs": "dc0728029969f5b372e3995d42f7bdbbac48556eab2b5c355f3e950e87460eea",
+    "crates/viboceros-oracle/src/block_workflow.rs": "a640da6775ba35cab063a73ce4b6d4b4f67e6fed92630554ef04ce4d1815f4e2",
+    "crates/viboceros-oracle/tests/block_workflow.rs": "9742b244d012922850fe6e0ecd9dc897608fa4ed4345caf6b1dfbb4a404a5cfa",
+    "docs/block-edit-nested-comparison.json": "396c4daf1e262fad86c86876ae2b0f609c5adc44f870c0864da3570ba7608b4f",
+    "docs/block-edit-nested-navigation-diagnostic.json": "be7ff4955cd1dc649f68b89925d980bcb34df02f963f97b99699499632e925b3",
+    "docs/commands/block-edit.md": "6cfb1b7038498b354e5d26b27974891b0d8b547a6d45a5bd778e177aaa35aaed",
+    "src/app/block_edit.rs": "26c27b10bb6a1803ce6f01cd9c9b7ddb44f09eaa016184bcdb4cc8d8931d13cd",
+    "src/app/tests/blocks.rs": "c4a59b6b600b2d64ba3c926879879b9f2183675b2be5afa6ed47b30ee88bd8b7",
+    "tools/rhino_oracle/block_context_comparison.py": "7177025e43476f0f97bf9e5e31fa186c5d0bf7db62c8298176bf51bbdc8520f6",
+    "tools/rhino_oracle/block_edit_context_probe.py": "0e87447152db213bfa523fae3f75346fb3cd2c063ea45dfe93e3ba26edd16326",
+    "tools/rhino_oracle/block_edit_controls_input.py": "41439156cbd8344216e1579fa56bc8e302d71813b4ee71d26f44f46d4970c846",
+    "tools/rhino_oracle/block_workflow_probe.py": "eb1f25831742dfce72d57d0a7b01f3da35522d585a0c87904667c6f39800e29c",
+    "tools/rhino_oracle/client.py": "be80e4b7e84fba5c9f9298083d11a6a367d4dc70c505e655ccc24650d31fd61f",
+    "tools/rhino_oracle/fixtures/block_edit_nested.json": "852d6585676f1eee3a9fc65310cc53675b0d413aa1ae3def013ed878fc132992",
+    "tools/rhino_oracle/fixtures/block_edit_nested_frames.json": "5cd9ac5c8546b93a2c0b5e2ce58f53b796419f5767cde04a48b05691bfd6f4a6",
+    "tools/rhino_oracle/fixtures/block_edit_nested_navigation_diagnostic.json": "ca6be3a06858d43482ffc43e6d912bd42d26bf83d37c542286fa3129f6f20f67",
+    "tools/rhino_oracle/fixtures/block_edit_nested_order_repeats.json": "1c619c4f5cbf1fe0505eb90ca88d1bbe8e974627fef5b16a6bccaca7db3f799c",
+    "tools/rhino_oracle/observations/block_edit_nested.json": "36d876fa15a3f99557d798f45bad08175579a350e68fa66877e271224c7b1ee5",
+    "tools/rhino_oracle/observations/block_edit_nested_frames.json": "2bc266dc7f05dc1860c5c0e29cd7559b8dda996c057ad7bbd4e402f259f7a4a7",
+    "tools/rhino_oracle/observations/block_edit_nested_order_repeats.json": "b036773c92c5bb5f87a585de537d0ccf089c01837cc1b95d1cc2b0ca7d46c1f9",
+    "tools/rhino_oracle/test_block_context_comparison.py": "15b112d9522cf5d3d9370b7302db72c7d1de348c8267f57966add1d1fbb29c30",
+    "tools/rhino_oracle/test_block_edit_controls_input.py": "a905adb2e964564e1e4f3070144c6ea45fd600a831f972cf170435f6d46a25ce",
+    "tools/rhino_oracle/test_block_workflow_probe.py": "ee428abe9ca2848e43d4e2ebefda546660894e11bb4efab87e077b73bcd94c57"
+  },
+  "remaining_scope": [
+    "Hidden/locked-member choices and empty placements",
+    "Linked definitions and persistence of active editors",
+    "Broader geometry, nonuniform frames and native context history/selection qualification",
+    "Large hierarchy presentation and performance/GPU measurements"
+  ]
+}

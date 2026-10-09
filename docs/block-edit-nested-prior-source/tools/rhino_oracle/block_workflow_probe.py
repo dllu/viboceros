@@ -186,27 +186,12 @@ def validate(operation):
         elif action=='edit_roundtrip':
             target=step.get('object')
             required=set(('action','object','translation','save'))
-            allowed=required|set(('expect_failure','add_objects','remove_members','base_point','translation_api','contexts'))
+            allowed=required|set(('expect_failure','add_objects','remove_members','base_point','translation_api'))
             if (not required.issubset(step) or set(step)-allowed or type(target)is not int or target not in alive
                     or target in protected or handles[target]is None or type(step['save'])is not bool
                     or type(step.get('expect_failure',False))is not bool):raise ValueError('invalid block edit roundtrip')
             _numbers(step['translation'],3)
             if step.get('translation_api','sdk')not in ('sdk','command'):raise ValueError('invalid block edit translation API')
-            contexts=step.get('contexts',[])
-            if not isinstance(contexts,list) or len(contexts)>64:raise ValueError('invalid block edit contexts')
-            root_name=handles[target]
-            reachable=set()
-            def visit_context(name):
-                if name in reachable:return
-                reachable.add(name)
-                for child in definitions[name]:
-                    if child is not None:visit_context(child)
-            visit_context(root_name)
-            for context in contexts:
-                if (not isinstance(context,dict) or set(context)-set(('definition','translation','selection')) or not set(('definition','translation')).issubset(context) or _name(context['definition'])not in reachable):raise ValueError('invalid nested edit context')
-                _numbers(context['translation'],3)
-                if context.get('selection','all')not in ('all','points'):raise ValueError('invalid context selection')
-            if contexts and (step.get('add_objects') or step.get('remove_members') or 'base_point'in step or step.get('expect_failure',False)):raise ValueError('context sequences cannot combine root controls')
             additions=step.get('add_objects',[]);removals=step.get('remove_members',[])
             if (not isinstance(additions,list) or any(type(i)is not int or i not in alive or i in protected or i==target for i in additions)
                     or len(set(additions))!=len(additions)):raise ValueError('invalid block-edit additions')
@@ -571,26 +556,10 @@ def run(operation, tolerance, host):
                 if not opened:raise ValueError('native BlockEdit open failed: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
                 editable=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry]
                 if not editable:raise ValueError('native BlockEdit did not expose model members: '+str(Rhino.RhinoApp.CommandHistoryWindowText)[-1400:])
-                contexts=step.get('contexts',[])
                 edit_transform=Rhino.Geometry.Transform.Translation(*[float(v) for v in step['translation']])
                 closed=False
                 released=[]
                 try:
-                    current_name=definition_names[document.Objects.FindId(handles[step['object']]).Geometry.ParentIdefId]
-                    if contexts:
-                        from block_edit_context_probe import navigate
-                        for context_index,context in enumerate(contexts):
-                            navigate(prefix+context['definition'],dict(token=operation['id']+'-'+str(len(states)-1)+'-context-'+str(context_index),definition=context['definition']),skip=_fold(current_name)==_fold(context['definition']))
-                            current_name=context['definition']
-                            editable=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry and not o.IsLocked and o.Attributes.Visible]
-                            if not editable:raise ValueError('nested edit did not expose editable members')
-                            transform=Rhino.Geometry.Transform.Translation(*context['translation'])
-                            if any(context['translation']):
-                                document.Objects.UnselectAll()
-                                for obj in editable:
-                                    if context.get('selection','all')=='all' or isinstance(obj.Geometry,Rhino.Geometry.Point):document.Objects.Select(obj.Id)
-                                if not rs.Command('_Move w0,0,0 w'+','.join('%.17g'%v for v in context['translation']),False):raise ValueError('nested Move failed')
-                            editable=[o for o in document.Objects.GetObjectList(settings) if o.Id not in before and not o.IsDeleted and not o.IsInstanceDefinitionGeometry and not o.IsLocked and o.Attributes.Visible]
                     from_controls=any(step.get(k) is not None and step.get(k)!=[] for k in ('add_objects','remove_members','base_point'))
                     if from_controls:
                         from block_edit_controls_probe import invoke
@@ -696,9 +665,7 @@ def run(operation, tolerance, host):
             value['outputs'] = list(range(start, len(handles)))
             if succeeded is not None: value['succeeded']=succeeded
             states.append(value)
-        value=dict(states=states)
-        if any(step.get('contexts') for step in operation['steps']):value['comparison_policy']='block_context_member_permutation'
-        return value, 0
+        return dict(states=states), 0
     finally:
         # Only this probe's private layers/definitions can be changed here.
         for identifier in handles:

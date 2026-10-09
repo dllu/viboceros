@@ -3,12 +3,13 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
-`a71ee68b` (earlier milestones used `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
+`75fc0291` (earlier milestones used `a71ee68b`, `4f513b99`, `6e60921e`, `ed496a1e`, `9e3cbf53`, `0cf4b460`, `7f9f07b6`, `dd130d9e`, `a4add84b`, `c0a405a3`, `368f1d1a` and `35f2b035`), with Rust 1.95.0.
 Code and measurement hashes are retained in
+[nested block editor provenance](block-edit-nested-provenance.json),
 [block editor input provenance](block-edit-input-provenance.json),
 [block editor control provenance](block-edit-controls-provenance.json),
 [in-place block editing provenance](block-edit-provenance.json),
@@ -46,25 +47,46 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,556 Rust tests:
+5,565 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,086 | 17 |
-| Command | 1,232 | 2 |
-| Document | 255 | 5 |
+| App | 1,087 | 17 |
+| Command | 1,233 | 2 |
+| Document | 261 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,103 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 504 | 0 |
+| Oracle (unit and integration) | 505 | 0 |
 
-The Python suite passed 1,052 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,060 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [BlockEdit input](commands/block-edit.md) adds five application
+The newest [nested BlockEdit](commands/block-edit.md) adds six document tests,
+one command test, one egui tree test, one native replay test and eight Python
+tests. The tree follows validated member paths in composed instance frames;
+ancestor geometry remains protected. Context changes stage geometry/catalog
+checks atomically and have workspace Undo/Redo. Leaving a context accepts it;
+Discard restores the latest accepted context checkpoint, while no-navigation
+Discard retains the original full-document/redo behavior. Local model Undo can
+restore the original pre-editor document after checkpoint acceptance.
+All nine semantic native workflows match 48 model states with zero sampled
+numeric difference for child editing, parent/child
+returns, save/discard, translated/reflected placements, repeated references and
+deeper nesting. Nine repeated captures show unstable ancestor member order for
+identical inputs. The explicit context comparison consistently permutes member
+records and leaf-path indices while keeping geometry samples, attributes, groups
+and placements intact; raw records remain unchanged. Four additional frame
+captures qualify the ordering observation. Moving a nested reference can remove
+its row from Rhino's live dialog; that UI limitation is retained as a diagnostic.
+The local validated tree still follows its reference placement. Native context
+history, wider member types, nonuniform navigation behavior and performance
+remain unqualified. The UI tree is cached by document history revision.
+
+The preceding [BlockEdit input](commands/block-edit.md) adds five application
 state/getter tests, two viewport pointer/permission tests, one scene-visibility
 test and two Python capture-adapter tests. External-source picking maintains a
 separate highlight set and protects editable selection, supports selection

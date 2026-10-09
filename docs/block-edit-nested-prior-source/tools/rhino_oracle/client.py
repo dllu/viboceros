@@ -992,7 +992,7 @@ class OracleClient:
         if not worker_source.is_file():
             raise OracleError(f"Rhino worker not found: {worker_source}")
 
-        block_controls = any(op.get('op') == 'block_workflow' and step.get('action') == 'edit_roundtrip' and any(step.get(k) is not None and step.get(k) != [] for k in ('add_objects','remove_members','base_point','contexts')) for op in request['operations'] for step in op.get('steps',[]))
+        block_controls = any(op.get('op') == 'block_workflow' and step.get('action') == 'edit_roundtrip' and any(step.get(k) is not None and step.get(k) != [] for k in ('add_objects','remove_members','base_point')) for op in request['operations'] for step in op.get('steps',[]))
         with tempfile.TemporaryDirectory(prefix="viboceros-rhino-oracle-") as job:
             job_path = Path(job)
             request_path = job_path / "request.json"
@@ -1004,7 +1004,6 @@ class OracleClient:
                     from .block_edit_controls_input import BlockEditController
                     interaction = BlockEditController(request)
                     shutil.copyfile(worker_source.with_name('block_edit_controls_probe.py'),job_path / 'block_edit_controls_probe.py')
-                    shutil.copyfile(worker_source.with_name('block_edit_context_probe.py'),job_path / 'block_edit_context_probe.py')
             if any(op.get('op') == 'mesh_edit_records' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('mesh_edit_records_probe.py'), job_path / 'mesh_edit_records_probe.py')
             if any(op.get('op') == 'grip_transform' for op in request.get('operations', [])):
@@ -1687,17 +1686,10 @@ def compare_responses(
         operation_id = result["id"]
         rhino_result = r_results[operation_id]
         differences: list[str] = []
-        local_value=result['value']
-        native_value=rhino_result['value']
-        if isinstance(local_value,dict) and local_value.get('comparison_policy')=='block_context_member_permutation':
-            if not isinstance(native_value,dict) or native_value.get('comparison_policy')!=local_value['comparison_policy']:
-                raise OracleProtocolError('native context comparison policy mismatch')
-            from .block_context_comparison import canonical
-            local_value=canonical(local_value);native_value=canonical(native_value)
         max_error = _compare_value(
             f"{operation_id}.value",
-            local_value,
-            native_value,
+            result["value"],
+            rhino_result["value"],
             absolute_epsilon,
             relative_epsilon,
             differences,
