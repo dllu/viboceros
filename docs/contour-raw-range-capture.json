@@ -1,0 +1,100 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "range-length-0.75",
+      "value": {
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "range-length-1.9",
+      "value": {
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [],
+            "kind": "point",
+            "layer": "Current",
+            "name": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "range-length-2.25",
+      "value": {
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [],
+            "kind": "point",
+            "layer": "Current",
+            "name": null,
+            "points": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color": [
+              0,
+              0,
+              0
+            ],
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [],
+            "kind": "point",
+            "layer": "Current",
+            "name": null,
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

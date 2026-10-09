@@ -778,15 +778,6 @@ impl VibocerosApp {
                 self.try_start_interactive_command(&command);
                 return true;
             }
-            if matches!(pending.description.command, "Section" | "Contour") {
-                // Accept the picked sources before starting a point getter;
-                // cancellation otherwise restores the pre-prompt selection.
-                self.object_prompt = None;
-                if self.try_start_interactive_command(&command) {
-                    return true;
-                }
-                self.object_prompt = Some(pending.clone());
-            }
             if pending.description.command == "Align" {
                 self.object_prompt = None;
                 if self.try_start_interactive_command(&command) {

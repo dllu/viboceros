@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "512e54004e5d884884f895792f9ae29e5e2916e1",
+  "scope": "Contour 3D plane grid, picked Range, properties/groups, viewport input and command-first source acceptance",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/contour.htm"
+  ],
+  "private_xvfb": true,
+  "full_native_parity": false,
+  "native_engine": "Rhino 8.32.26160.13001 x86-64 via ARM64 Wine/FEX",
+  "native_captures": [
+    {
+      "scheme": "VibocerosOracleContourComplete20261009",
+      "recipes": 16,
+      "validated": 15,
+      "raw": "docs/contour-raw-main-capture.json",
+      "security_override": "sspicli,secur32,schannel=b"
+    },
+    {
+      "scheme": "VibocerosOracleContourRangeExtra20261009",
+      "recipes": 3,
+      "validated": 3,
+      "raw": "docs/contour-raw-range-capture.json",
+      "security_override": "sspicli,secur32,schannel=b"
+    },
+    {
+      "scheme": "VibocerosOracleContourDomainsNativeSecurity20261009",
+      "recipes": 3,
+      "validated": 3,
+      "raw": "docs/contour-raw-additional-capture.json",
+      "security_override": "sspicli,secur32,schannel=n,b"
+    }
+  ],
+  "native_fixture": "tools/rhino_oracle/fixtures/contour_command.json",
+  "native_observation": "tools/rhino_oracle/observations/contour_command.json",
+  "comparison": {
+    "cases": 21,
+    "strict_matches": 16,
+    "diagnostics": 5,
+    "native_failures": 0,
+    "passed": false,
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 1e-12,
+    "diagnostic_ids": [
+      "surface-x",
+      "surface-properties-group",
+      "saddle-cuts",
+      "translated-plane",
+      "surface-y"
+    ],
+    "diagnostic_scope": "Normalized samples and metadata match; native parameter domains differ. The integration test explicitly removes only domain fields for these diagnostic checks and asserts a domain discrepancy. This is not parameterization equivalence."
+  },
+  "grid_contract": "Exact dyadic bounds and BigInt indices; independent rational origin construction and single binary64 rounding. Positive finite spacing, 100000-plane maximum and duplicate/nonfinite rounded-origin rejection before mutation.",
+  "range_contract": "Native captured indices 0 through floor(picked_length/spacing)-1. Full 3D normal is independent of the current CPlane; typed picks still resolve through the shared CPlane pipeline.",
+  "output_contract": "All geometry and copied/fresh attributes stage before document admission. Ascending-plane group definitions; descending-plane output records and reversed source selection records. One command transaction for accepted output and groups.",
+  "verified": {
+    "workspace_release_tests": {
+      "passed": 5590,
+      "ignored": 38,
+      "failed": 0
+    },
+    "python_regressions": {
+      "passed": 1070,
+      "failed": 0
+    },
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff": "passed",
+    "new_command_tests": 5,
+    "new_app_tests": 4,
+    "new_oracle_integration_tests": 1,
+    "new_python_tests": 4,
+    "active_prior_source_pins": 1451
+  },
+  "verification_notes": [
+    "The preliminary workspace run caught loss of command-first source picks during getter startup. Accepting and clearing the object prompt before getter initialization fixes it; both Contour and Section have regression coverage.",
+    "Two follow-up native probes timed out at legitimate licensing refresh and contributed no geometry evidence. A native-first security DLL override completed the follow-up without changing the launcher or Wine configuration.",
+    "The native all-ineligible recipe emitted an invalid unset curve after failing intended selection. The original output remains separately recorded; the native helper now rejects all-ineligible inputs and requires a private settings scheme and one iteration.",
+    "Merged observations preserve values/order from three successful owned captures; one invalid main-capture recipe is explicitly excluded. Captured helper snapshots precede additional pure validation guards.",
+    "README is unchanged and concise; detailed command and validation documentation is in docs."
+  ],
+  "remaining_scope": [
+    "Native surface parameter domains and closed seams",
+    "Arbitrary curved/trimmed surface and Brep intersections beyond existing Section kernel families",
+    "Section styles and hatch output",
+    "Remembered Contour preferences",
+    "Broader ordering/topology and near-grid/tolerance qualification",
+    "Performance parity and full Rhino command coverage"
+  ],
+  "sha256": {
+    "crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3",
+    "Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
+    "crates/viboceros-command/src/lib.rs": "3e4bc50ed58257aab550a51e750b1b1079918598f604dd7f428ca8364d8e3066",
+    "crates/viboceros-command/src/contour.rs": "859f160458c2cf5aea5b008f038ae5c6a521ca9d86ce3bb857926867a2245ec7",
+    "crates/viboceros-command/src/contour/tests.rs": "6aee3d8c6bb19ab2576764bad5be3b78ec3e01c58d37f9839806b3cca8cc983f",
+    "crates/viboceros-oracle/src/lib.rs": "1a37ce2ffa046b1cbe4a1f14f329f0590c8505f2a33046af62b18a8b82089ce1",
+    "crates/viboceros-oracle/src/contour_command.rs": "7ca7fa09adf11bcd1f3a503468073ced4aea0bc770dc659db8f0080e8c8ae7fe",
+    "crates/viboceros-oracle/tests/contour_command.rs": "b302f91332efd450e449dd47e4edddf59d44812ba21675b416a9fe5e8088ea5f",
+    "src/app.rs": "41a0b5afcdceb72dc3fbdd57a447a75e7a785eef5f381378b0310edf0ea64b11",
+    "src/app/contour.rs": "709c21e48e6479c032588dded0c393bb23dc39244be1bc7262e3ff9a4a587de1",
+    "src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710",
+    "src/app/tests/contour.rs": "b84fd1a6bdb90b35bb5c68e46747f76eef50e54baa19883c8b80b66c7492f550",
+    "src/app/tests/section.rs": "ed377dda8819f4c3c997391f82c8e69c2f46685ea918850a8857b05fd3a07959",
+    "tools/rhino_oracle/client.py": "1f19b6b80652397fd7bd3e7b57df831e35afed36e6024f70d746e0b53691340f",
+    "tools/rhino_oracle/rhino_worker.py": "36f1ecad52ac5d899bfd1e0a2b988b9afd6f59a7c2a916b7aacc0d94ab736050",
+    "tools/rhino_oracle/contour_probe.py": "0435b1bed188dc7c0f35e322c74587563af0d1909a43538d9dd2d7a0b936138d",
+    "tools/rhino_oracle/test_contour_probe.py": "f821ae8cf6dc03e80518d3fd3b4446823051ceddd3595b66763c82f7e5a9feec",
+    "tools/rhino_oracle/fixtures/contour_command.json": "d1bb87c988f957b3512c7a2c94e075185b0fa1b066d418a556765e14a9536d0a",
+    "tools/rhino_oracle/observations/contour_command.json": "45bda2808b79f3a5bc112b757ab598b4e4666f6c18e66ef2dab79c1a5dce00ee",
+    "docs/contour-command-comparison.json": "4c17d5e998adc0621460ae2836f2f33d91d63e4b3987e37c777cf51f9887efcb",
+    "docs/contour-ineligible-native-diagnostic.json": "db65b364f7e2187bf480bf3ad95975971144a90ef07b8ed4116d39440dfa2f52",
+    "docs/contour-raw-main-capture.json": "b40d9e5a57062a8b4e6d7a348d7b3dfab1ab0d1d25e1837cfb2187253c93bd51",
+    "docs/contour-raw-range-capture.json": "23dc80e0b8889433c66a3eb2b2e7ffd198b75bc1fdf0173dec9467f505d15ed8",
+    "docs/contour-raw-additional-capture.json": "233b8969d278907c76caa11efe98f778e3effc72560b6d9968cc3531da772a93",
+    "docs/contour-capture-source/tools/rhino_oracle/contour_probe.py": "af207bb6eb6d5d68f65a289baaf70dc4330d62ea21e06aacac3e758b6af5131f",
+    "docs/contour-capture-source/tools/rhino_oracle/contour_probe_additional.py": "3384d84c9c8590577e2c6d4fb2a03f44cf613a8a6e89de52bd014ef2ace08219",
+    "docs/commands/contour.md": "eeaf41ac68551982401a2e1824b996e5484a7bd8c93106769d998c0835db1b35",
+    "docs/contour-validation.json": "0726ad26a520df557d4a39c3d79b21990a459297fa1b7a4e1777f67cbe7cd449"
+  }
+}

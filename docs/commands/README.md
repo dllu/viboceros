@@ -75,6 +75,7 @@ Rhino's complete command set is still a work in progress.
 - [Splitting curves and surfaces](split.md)
 - [Joining curves, meshes, and surfaces; JoinCopy](join.md)
 - [Plane sections](section.md)
+- [Equally spaced contours](contour.md)
 - [Extraction, measurement, and intersections](editing.md)
 - [Angle, distance, length, area, and volume queries](measurements.md)
 - [Cumulative area-centroid markers](area-centroid.md)

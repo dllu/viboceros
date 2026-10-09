@@ -3,7 +3,7 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 9, 2026 audit tested Section plane cuts and exact mesh tracing, BlockEdit restricted-member close choices and empty-workspace retention, nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
+The October 9, 2026 audit tested Contour 3D plane grids and ranges, Section plane cuts and exact mesh tracing, BlockEdit restricted-member close choices and empty-workspace retention, nested BlockEdit contexts and cancellation checkpoints, BlockEdit viewport input and double-click opening, BlockEdit controls and chronology, in-place BlockEdit, BlockResetScale, AddObjectsToBlock, exact affine inversion, ReplaceBlock input and replacement, unique/duplicate block definitions, BlockManager operations and UI, native block group replay, workflow metadata corrections,
 block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
 traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
 previews and prepared surface proof contexts in the worktree based on
@@ -48,28 +48,28 @@ cargo fmt --all -- --check
 git diff --check
 ```
 
-The final implementation checks completed successfully. The initial workspace run
-failed at one new integer/float JSON diagnostic assertion; its corrected native
-integration rerun and the required workspace doctests passed. The release checks passed
-5,580 Rust tests:
+The final workspace release run passed 5,590 Rust tests. A preliminary run
+caught a command-first source-selection handoff bug; the corrected getter and
+Section regression are included in this final run. Clippy, format and diff
+checks also passed.
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,090 | 17 |
-| Command | 1,236 | 2 |
+| App | 1,094 | 17 |
+| Command | 1,241 | 2 |
 | Document | 265 | 5 |
 | Drafting | 164 | 6 |
 | Geometry | 2,106 | 8 |
 | I/O | 212 | 0 |
-| Oracle (unit and integration) | 507 | 0 |
+| Oracle (unit and integration) | 508 | 0 |
 
-The Python suite passed 1,066 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,070 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest [Section](commands/section.md) adds three kernel mesh tests, two
+[Section](commands/section.md) adds three kernel mesh tests, two
 command tests, two application getter tests, one native integration test and two
 Python validation tests. Plane cuts use the CPlane trace, finite-span clipping,
 current/input properties, per-plane grouping and repeated point input. Surface
@@ -1446,3 +1446,24 @@ other graphics backends, or performance parity. Those remain subject to the
 implementation boundaries in
 the [architecture](architecture.md), [file-format](file-formats.md), and
 [oracle timing](oracle.md#timing-interpretation) documentation.
+
+## Contour checkpoint
+
+[Contour provenance](contour-command-provenance.json) binds the 21 owned native
+recipes, their three raw captures and the strict replay report. Sixteen recipes
+match at 1e-9 absolute plus 1e-12 relative epsilon. Five surface recipes match
+normalized samples and metadata while retaining parameter-domain differences;
+`passed:false` remains in the report. No parameterization compatibility or
+performance parity is inferred from these samples.
+
+Native probes used private Xvfb and private Rhino settings. Two follow-up
+launches stopped at licensing refresh; a native-first Wine security override
+completed the translated-surface follow-up. The failed launches produced no
+geometry evidence. The all-ineligible native macro returned invalid unset
+geometry and is retained as a separate diagnostic; the helper now rejects such
+inputs before launch. The command itself rejects all-ineligible source selection.
+
+New regressions cover remote exact grid indices, invalid/excessive jobs,
+unrepresentable spacing, Range counts, whole-job Undo/Redo, unit-aware spacing,
+snapped spacing points and accepted command-first picks. README remains concise;
+details live in [the command reference](commands/contour.md).

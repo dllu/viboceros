@@ -147,7 +147,6 @@ mod blocks;
 mod boolean_solids;
 mod boolean_two;
 mod construction_plane;
-mod contour;
 mod curve_preview;
 mod curve_prompt;
 mod distance;
@@ -303,12 +302,6 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
-    Contour {
-        base: Option<Point3>,
-        direction: Option<Point3>,
-        spacing_start: Option<Point3>,
-        options: viboceros_command::contour::ContourOptions,
-    },
     Section {
         start: Option<Point3>,
         options: viboceros_command::section::SectionOptions,
@@ -720,7 +713,6 @@ impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
             Self::Section { .. } => "Section",
-            Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
             Self::AddObjectsToBlock => "AddObjectsToBlock",
             Self::CreateUniqueBlock => "CreateUniqueBlock",
@@ -835,15 +827,6 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
-            Self::Contour { base: None, .. } => {
-                "Contour: pick the base point (Range sets the picked interval; Esc cancels)"
-            }
-            Self::Contour {
-                direction: None, ..
-            } => "Contour: pick a direction perpendicular to the planes (Esc cancels)",
-            Self::Contour { .. } => {
-                "Contour: enter spacing or pick two spacing points (Esc cancels)"
-            }
             Self::Section { start: None, .. } => {
                 "Section: pick the section plane start (Esc cancels)"
             }
@@ -1603,20 +1586,6 @@ impl InteractiveCommand {
     const fn anchor(self) -> Option<Point3> {
         match self {
             Self::Section { start, .. } => start,
-            Self::Contour {
-                base,
-                direction,
-                spacing_start,
-                ..
-            } => {
-                if spacing_start.is_some() {
-                    spacing_start
-                } else if direction.is_some() {
-                    direction
-                } else {
-                    base
-                }
-            }
             Self::ScaleByPlane(prompt) => match (prompt.origin, prompt.plane_points) {
                 (Some(p), _) | (_, [_, Some(p)]) | (_, [Some(p), _]) => Some(p),
                 _ => None,
@@ -2331,9 +2300,6 @@ impl VibocerosApp {
         if self.try_continue_object_prompt(&input) {
             return;
         }
-        if self.continue_contour_input(&input) {
-            return;
-        }
         if self.continue_section_input(&input) {
             return;
         }
@@ -2903,9 +2869,6 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.try_start_contour_input(input) {
-            return true;
-        }
         if self.try_start_section_input(input) {
             return true;
         }
@@ -5274,9 +5237,6 @@ impl VibocerosApp {
     }
 
     fn apply_drafting_point(&mut self, point: Point3) -> bool {
-        if let Some(accepted) = self.accept_contour_point(point) {
-            return accepted;
-        }
         if let Some(accepted) = self.accept_section_point(point) {
             return accepted;
         }
@@ -5296,9 +5256,7 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
-            InteractiveCommand::Section { .. } | InteractiveCommand::Contour { .. } => {
-                return false;
-            }
+            InteractiveCommand::Section { .. } => return false,
             InteractiveCommand::Block { .. }
             | InteractiveCommand::BlockEditAdd
             | InteractiveCommand::BlockEditBasePoint
@@ -9673,7 +9631,6 @@ mod tests {
     mod circle_fit_points;
     mod command_line;
     mod construction_plane;
-    mod contour;
     mod copy_options;
     mod create_uv_curves;
     mod curve_rebuild_preview;

@@ -43,19 +43,3 @@ fn section_cancels_a_pending_plane_without_geometry_or_history_changes() {
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(app.document.undo_label(), label.as_deref());
 }
-#[test]
-fn section_command_first_selection_accepts_picks_before_starting_the_getter() {
-    let mut app = test_app();
-    enter(&mut app, "Line 0,-2,0 0,2,0");
-    enter(&mut app, "SelNone");
-    enter(&mut app, "Section");
-    assert!(app.object_prompt.is_some());
-    enter(&mut app, "SelAll");
-    enter(&mut app, "");
-    assert!(app.object_prompt.is_none());
-    enter(&mut app, "-1,0,0");
-    enter(&mut app, "1,0,0");
-    assert_eq!(app.document.objects().len(), 2);
-    enter(&mut app, "");
-    assert!(app.active_command.is_none());
-}

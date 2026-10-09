@@ -79,7 +79,6 @@ mod bounding_box;
 mod brep_join;
 mod brep_source;
 mod cap_command;
-mod contour_command;
 mod conversion;
 mod conversion_session;
 mod copy_options;
@@ -419,11 +418,6 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: plane_arrays::PlaneArrayFixture,
-    },
-    ContourCommand {
-        id: String,
-        #[serde(flatten)]
-        fixture: contour_command::Fixture,
     },
     SectionCommand {
         id: String,
@@ -2184,7 +2178,6 @@ impl Operation {
             | Self::TrimmedBrepBounds { id, .. }
             | Self::PlaneArray { id, .. }
             | Self::SectionCommand { id, .. }
-            | Self::ContourCommand { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::Align { id, .. }
@@ -2823,7 +2816,6 @@ fn execute(
             point_cloud_command::run(fixture, tolerance)?
         }
         Operation::SectionCommand { fixture, .. } => section_command::run(fixture, tolerance)?,
-        Operation::ContourCommand { fixture, .. } => contour_command::run(fixture, tolerance)?,
         Operation::BlockWorkflow { fixture, .. } => block_workflow::run(fixture, tolerance)?,
         Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,
         Operation::PointGridDiagonalPrompt { fixture, .. } => {

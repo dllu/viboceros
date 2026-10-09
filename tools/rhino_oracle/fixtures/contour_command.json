@@ -1,0 +1,927 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "contour_command",
+      "id": "line-x",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "line-reverse",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        -1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "line-off-origin",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0.25,
+        0,
+        0
+      ],
+      "end": [
+        1.25,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "surface-x",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "surface-properties-group",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "properties": "input",
+      "group": true
+    },
+    {
+      "op": "contour_command",
+      "id": "tilted-normal",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "vertical-normal",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            -2
+          ],
+          "end": [
+            0,
+            0,
+            2
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        0,
+        0,
+        1
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "outside-base",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        10,
+        0,
+        0
+      ],
+      "end": [
+        11,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "range-line",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "range-reverse",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        1,
+        0,
+        0
+      ],
+      "end": [
+        -1,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "range-fraction",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1.1,
+        0,
+        0
+      ],
+      "spacing": 0.5,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "after-range-default",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "rotated-cplane",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "contour_command",
+      "id": "mesh-cuts",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              -2,
+              -2,
+              0
+            ],
+            [
+              2,
+              -2,
+              0
+            ],
+            [
+              2,
+              2,
+              0
+            ],
+            [
+              -2,
+              2,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "saddle-cuts",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "range-length-0.75",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        0.75,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "range-length-1.9",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1.9,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "range-length-2.25",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        2.25,
+        0,
+        0
+      ],
+      "spacing": 1,
+      "range": true
+    },
+    {
+      "op": "contour_command",
+      "id": "translated-plane",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                8,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                8,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        10,
+        3
+      ],
+      "end": [
+        1,
+        10,
+        3
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "surface-y",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        0,
+        1,
+        0
+      ],
+      "spacing": 1
+    },
+    {
+      "op": "contour_command",
+      "id": "line-contained",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            -2,
+            0
+          ],
+          "end": [
+            0,
+            2,
+            0
+          ]
+        }
+      ],
+      "start": [
+        0,
+        0,
+        0
+      ],
+      "end": [
+        1,
+        0,
+        0
+      ],
+      "spacing": 1
+    }
+  ]
+}

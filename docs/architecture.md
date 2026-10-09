@@ -48,6 +48,11 @@ property/group options and repeated two-point input. Surface/B-rep intersections
 reuse the kernel; mesh sections use exact dyadic edge intersections and shared
 topology tracing. Coplanar mesh parameterization retains a native diagnostic.
 
+[Contour](commands/contour.md) adds a 3D normal, equally spaced planes, picked
+ranges, per-plane groups and unit-aware viewport input. Exact rational grid
+indices and origins avoid repeated spacing addition and support remote base
+points. Surface parameter-domain compatibility retains five native diagnostics.
+
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.

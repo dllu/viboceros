@@ -1,0 +1,23 @@
+{
+  "rust": {
+    "passed": 5590,
+    "failed": 0,
+    "ignored": 38
+  },
+  "python": {
+    "passed": 1070,
+    "failed": 0
+  },
+  "clippy": "passed: --workspace --all-targets -- -D warnings",
+  "native": {
+    "cases": 21,
+    "strict_matched": 16,
+    "diagnostics": 5,
+    "passed": false
+  },
+  "logs_sha256": {
+    "/tmp/viboceros-contour-workspace-final.log": "b08020457ac5ea460ec9d548bf477676a2df4848c15c775a70c71edd058d8acc",
+    "/tmp/viboceros-contour-python-complete.log": "4bf3ff73afa35ba5b8c7efd883d1186437fb5add14d1d6a4bdb6fdcc272c668a",
+    "/tmp/viboceros-contour-clippy-final.log": "542e7f277a6a7718453faca10d9dc3dbddefe7fd724ef8b7374ce4c2a75e0898"
+  }
+}

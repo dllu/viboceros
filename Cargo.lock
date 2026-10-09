@@ -3689,6 +3689,9 @@ name = "viboceros-command"
 version = "0.1.0"
 dependencies = [
  "monstertruck",
+ "num-bigint",
+ "num-rational",
+ "num-traits",
  "rand",
  "serde_json",
  "tempfile",
