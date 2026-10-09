@@ -37,8 +37,13 @@ the tested circular-trim surface retain it. Object attributes remain intact.
 If an Object edit separates periodic aliases, displayed grips grow and their
 selection is cleared.
 
-Nonrectangular trim images are fitted and checked at document tolerance, with
-a ceiling of 4096 controls per spatial edge image.
+Nonrectangular trim images use the existing bounded fit as a proposal and
+require a continuous surface-image certificate at one quarter of document tolerance.
+Construction retains a ceiling of 4096 controls per spatial edge image.
+Shared spatial edges must certify every trim use. Singular edge removal requires
+an exact zero-error constant image; proximity alone cannot erase an edge.
+Unsupported or inconclusive certificates fail the complete edit before document
+geometry or history changes. See [edited boundary certificates](../surface-edit-certificates.md).
 Their spatial edge controls can differ from Rhino. SubD, edit-point and
 subobject workflows, general singular trim changes, and performance parity
 remain unverified.

@@ -6,6 +6,21 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
+The document's [native block catalog](block-definitions.md) retains shared geometry
+definitions and nested affine references, with atomic graph validation, history,
+bounded placement resolution and unit rescaling. [Instance objects](block-instances.md)
+retain references through affine editing, display and selection, with atomic
+catalog/cache replay. [Block and Insert](commands/blocks.md) now connect source
+selection, base/name getters and scaled/rotated placement to that model.
+[Structural 3DM interchange](three-dm-structural-blocks.md) retains supported embedded
+definitions and references. Linked/external files, broader metadata and block
+editing remain subsequent work.
+[Block expansion](commands/explode-blocks.md) supplies one-level Explode and
+recursive ExplodeBlock, with freshness checks, scoped groups and one-step history.
+[Block object snapping](block-snapping.md) reuses the existing feature/intersection
+queries through immutable member records, preserving root ownership and bounded
+insertion-point discovery.
+
 The kernel combines validated finite primitives with compensated arithmetic and
 exact fallbacks for difficult binary64 inputs. See [numerical robustness](numerical-robustness.md)
 for implementation boundaries, regression evidence, and focused test commands.
@@ -60,8 +75,11 @@ remain unimplemented.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational
 tensor composition and conservative bounds at knot crossings. Surface cutting
-requires these proofs for retained, fitted, and endpoint-adjusted cutting trims;
-the [fixed-endpoint fitter](constrained-surface-pullbacks.md) refines inconclusive
+requires these proofs for retained, fitted, and endpoint-adjusted cutting trims.
+single-face [control-net edits](surface-edit-certificates.md) also require them
+for every nonrectangular boundary image and shared edge use, with exact collapse
+proofs before singular edge removal.
+The [fixed-endpoint fitter](constrained-surface-pullbacks.md) refines inconclusive
 proposals while retaining shared topological endpoints. The separate [chained polyhedral Boolean API](polyhedral-booleans.md)
 uses exact plane arrangements and two-sided material classification for concave
 faces, holes, cavities, and multiple shells. Model-space certificates admit
@@ -704,6 +722,12 @@ surface, cache evaluated stations, or relax pole detection.
 Its [candidate module](surface-candidate-selection.md) ranks original-surface
 points with conservative distance bounds and exact tie/overlap predicates,
 including grid selection and rounded boundary-curve proposals.
+The [curve Rebuild command](commands/rebuild-curves.md) shares readonly output
+preparation between scripts, typed previews and acceptance. Curve and surface
+options use separate typed branches of the same preview scene and stale-source
+guards. Output-policy edits reuse prepared geometry; new geometric options rebuild
+it, and failed preparation blocks acceptance while permitting correction.
+
 The [curve closest-point module](curve-closest-point.md) shares immutable distance
 keys with surfaces. It separates bounded candidate selection from range-safe
 Newton/tangent refinement; translated curves only propose parameters, whose

@@ -113,6 +113,11 @@ Polylines retain their native object type and every vertex parameter;
 degree-one NURBS remain NURBS instead of being classified by a knot-vector heuristic.
 Unsupported object types and specialized B-rep trim forms are
 counted and reported during import.
+[Embedded block definitions/references](three-dm-structural-blocks.md) now round
+trip as editable shared definitions and native instance records. Prototype objects
+remain outside the model object table. Missing/cyclic definitions and invalid
+placements fail before document edits; linked/external definitions remain
+unsupported. The low-level [flattened reader](three-dm-blocks.md) is still available.
 Eight [morphed B-rep cross-reader cases](brep-3dm-interchange.md) check actual
 native exports in Rhino, including holes, seams, singular trims and usable meshes.
 

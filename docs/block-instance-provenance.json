@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "35f2b0355a08e2bf98cc6c1efe2c8dc88ac36796",
+  "status": "uncommitted worktree; Git metadata is mounted read-only",
+  "scope": "Native selectable document instance objects with shared definition references, atomic catalog/cache edits, unit scaling and CPU viewport display/selection",
+  "native_evidence": "No fresh Rhino block-command capture, GPU run or performance comparison",
+  "local_display_policy": "ByParent colors inherit the nearest resolved parent color; visibility intersects and locking accumulates along root/member/layer paths",
+  "verified": {
+    "initial_document_instance_tests": 8,
+    "focused_cpu_viewport_tests": 3,
+    "python_regressions": 1017,
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "existing_source_fixture_pins": 1030,
+    "document_release_tests": {
+      "passed": 208,
+      "ignored": 5,
+      "new_instance_tests": 9
+    },
+    "command_release_tests": {
+      "passed": 1212,
+      "ignored": 2,
+      "new_instance_tests": 2
+    },
+    "app_release_tests": {
+      "passed": 1049,
+      "ignored": 17,
+      "new_cpu_instance_tests": 3
+    },
+    "workspace_release_tests": {
+      "passed": 5422,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "format_and_diff_checks": "passed"
+  },
+  "sha256": {
+    "docs/block-instance-source/crates/viboceros-document/src/blocks.rs": "97fb8a4aa0917268169790e553259c1c982f4b98c698c394d9f42c46ec015175",
+    "docs/block-instance-source/crates/viboceros-document/src/block_instances.rs": "4615d321806601072beb5d7d5b521c819c3c38d32079aab4bd04c78b5b528f84",
+    "docs/block-instance-source/crates/viboceros-document/src/block_instances/tests.rs": "a9ac7153ea39999e16b234215fd0be25ff488a9a250ad284247d35104f2c18e8",
+    "docs/block-instance-source/crates/viboceros-document/src/lib.rs": "f2fa1d263f237149d00b78a6775de1a08d71f92435330423f3795aae86a94120",
+    "docs/block-instance-source/crates/viboceros-document/src/history.rs": "dabed4d8e031a4484819d21e73704c38b1b8889e0cdba528141ef5694ecf9afe",
+    "docs/block-instance-source/crates/viboceros-document/src/geometry.rs": "9e112a5747f425f50333ab4d026c59bf11f1d0f16fe8a3c1caec782c4aedb8ad",
+    "docs/block-instance-source/crates/viboceros-document/src/units.rs": "a847827cd52a875f813123692f9a81416b8092713f4f2394eb4a6efa3191057b",
+    "docs/block-instance-source/crates/viboceros-document/src/control_points.rs": "5e618bd3d54489d3b5845a80aed5d58b769400fda9f3a54e67b77ffb07f730f7",
+    "docs/block-instance-source/crates/viboceros-document/src/duplicate.rs": "405e8aa54b0f014b19e5af1d353883531d402877a3334b4d494372e9bde292c2",
+    "docs/block-instance-source/crates/viboceros-document/src/object_admission.rs": "d64f74fb7de914c73704193b5f114e676a22fc19f99a69cfb478171a590bb2cc",
+    "docs/block-instance-source/crates/viboceros-document/src/object_geometry.rs": "e3364a02f54a4f766a47bfbcc88003b2e883c1b19abd82f2dafe63cd36204822",
+    "docs/block-instance-source/crates/viboceros-document/src/object_copy.rs": "0fd6c5d245b5c0b2ab3c3e7e4c8e4754585d8f1dcac5ec10218e3f853051296f",
+    "docs/block-instance-source/crates/viboceros-geometry/src/error.rs": "e81c20950ba25e0cfb4da47381c54dd6d95dbc3e630bb46834cfe24293586ecd",
+    "docs/block-instance-source/crates/viboceros-command/src/lib.rs": "44f47c014d06c1d9e5a244b7dbf06d56e0e4d0b187cf30418146d3cdf306b006",
+    "docs/block-instance-source/crates/viboceros-command/src/block_instance_tests.rs": "36488c4a4d3f4c35104d654f531ddd545ee8f8a657209ef6a61032ebab9cffc6",
+    "docs/block-instance-source/crates/viboceros-command/src/interchange.rs": "786cb2e595e9ee66afbf073930d1e77836b8d6d6722ad9a4151547d4317e1c1b",
+    "docs/block-instance-source/crates/viboceros-command/src/border/mod.rs": "f7240a9bea5edaf25d6349fa0d39bfffd5011c124bf37a0b2df884ad75d1edce",
+    "docs/block-instance-source/crates/viboceros-command/src/selection_object.rs": "12caa7289e42fdb9bff722e7010881ecacd8d8815545de3afedb03f3173171e4",
+    "docs/block-instance-source/crates/viboceros-command/src/selection_pipe.rs": "9cfe12a998ae604fedcfdd9495f4a2f300a582f48627a727a25bad0d8686da8f",
+    "docs/block-instance-source/crates/viboceros-command/src/selection_volume.rs": "dbcfa07163b00bbdf98066466890d8be2d05ca8c151bb2a346862fab83ae79d5",
+    "docs/block-instance-source/crates/viboceros-drafting/src/object_snap.rs": "1faa4c9bfe89eab92d6c527d67f860a8d255261b0abb719753696c1334b9a3cb",
+    "docs/block-instance-source/crates/viboceros-drafting/src/object_snap/intersection.rs": "2ed57afd7619b0382b0df9e00b5842db805b98f0f81f67e1793758d9018a1bc7",
+    "docs/block-instance-source/src/app.rs": "48c70f74209ffdba282cc05955cc1c46afa86a6fbcd0f8f16c1f0678813f2d11",
+    "docs/block-instance-source/src/viewport/display_cache.rs": "e1fc301206c826690e22a57292781b7a2d6da186110835d59dd18a241fa17417",
+    "docs/block-instance-source/src/viewport/scene.rs": "fcc7fc2918f26ae94e580c856b25fcd53375993f63cdbbe16de44dcabcee801e",
+    "docs/block-instance-source/src/viewport/selection.rs": "8cbc452a69e26420ac6a9b15011cd45131c791d41c8b6b79cc90b4e1d1eb651d",
+    "docs/block-instance-source/src/viewport/scene/block_tests.rs": "bd1c22b79f9649e3bc154371c3e476ca361f648bc7b1717ec9d7ab5d2849dba1"
+  },
+  "limitations": [
+    "Interactive Block/Insert/definition-editing commands, block-aware Osnap and subobject editing remain unfinished",
+    "3DM import remains flattened; structural export of native instances rejects before overwriting the destination",
+    "Empty instance geometry, morphing and defining-point/shape-duplicate adapters are unsupported"
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-document/src/blocks.rs": "docs/block-instance-source/crates/viboceros-document/src/blocks.rs",
+    "crates/viboceros-document/src/block_instances.rs": "docs/block-instance-source/crates/viboceros-document/src/block_instances.rs",
+    "crates/viboceros-document/src/block_instances/tests.rs": "docs/block-instance-source/crates/viboceros-document/src/block_instances/tests.rs",
+    "crates/viboceros-document/src/lib.rs": "docs/block-instance-source/crates/viboceros-document/src/lib.rs",
+    "crates/viboceros-document/src/history.rs": "docs/block-instance-source/crates/viboceros-document/src/history.rs",
+    "crates/viboceros-document/src/geometry.rs": "docs/block-instance-source/crates/viboceros-document/src/geometry.rs",
+    "crates/viboceros-document/src/units.rs": "docs/block-instance-source/crates/viboceros-document/src/units.rs",
+    "crates/viboceros-document/src/control_points.rs": "docs/block-instance-source/crates/viboceros-document/src/control_points.rs",
+    "crates/viboceros-document/src/duplicate.rs": "docs/block-instance-source/crates/viboceros-document/src/duplicate.rs",
+    "crates/viboceros-document/src/object_admission.rs": "docs/block-instance-source/crates/viboceros-document/src/object_admission.rs",
+    "crates/viboceros-document/src/object_geometry.rs": "docs/block-instance-source/crates/viboceros-document/src/object_geometry.rs",
+    "crates/viboceros-document/src/object_copy.rs": "docs/block-instance-source/crates/viboceros-document/src/object_copy.rs",
+    "crates/viboceros-geometry/src/error.rs": "docs/block-instance-source/crates/viboceros-geometry/src/error.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-instance-source/crates/viboceros-command/src/lib.rs",
+    "crates/viboceros-command/src/block_instance_tests.rs": "docs/block-instance-source/crates/viboceros-command/src/block_instance_tests.rs",
+    "crates/viboceros-command/src/interchange.rs": "docs/block-instance-source/crates/viboceros-command/src/interchange.rs",
+    "crates/viboceros-command/src/border/mod.rs": "docs/block-instance-source/crates/viboceros-command/src/border/mod.rs",
+    "crates/viboceros-command/src/selection_object.rs": "docs/block-instance-source/crates/viboceros-command/src/selection_object.rs",
+    "crates/viboceros-command/src/selection_pipe.rs": "docs/block-instance-source/crates/viboceros-command/src/selection_pipe.rs",
+    "crates/viboceros-command/src/selection_volume.rs": "docs/block-instance-source/crates/viboceros-command/src/selection_volume.rs",
+    "crates/viboceros-drafting/src/object_snap.rs": "docs/block-instance-source/crates/viboceros-drafting/src/object_snap.rs",
+    "crates/viboceros-drafting/src/object_snap/intersection.rs": "docs/block-instance-source/crates/viboceros-drafting/src/object_snap/intersection.rs",
+    "src/app.rs": "docs/block-instance-source/src/app.rs",
+    "src/viewport/display_cache.rs": "docs/block-instance-source/src/viewport/display_cache.rs",
+    "src/viewport/scene.rs": "docs/block-instance-source/src/viewport/scene.rs",
+    "src/viewport/selection.rs": "docs/block-instance-source/src/viewport/selection.rs",
+    "src/viewport/scene/block_tests.rs": "docs/block-instance-source/src/viewport/scene/block_tests.rs"
+  }
+}

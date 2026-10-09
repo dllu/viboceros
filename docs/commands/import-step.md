@@ -32,7 +32,17 @@ remain distinct in the source p-curve domain. Rational degree-one straight UV
 p-curves with unequal endpoint weights retain their source parameterization
 through single-span and multi-span patches, including isocurves. Curved rational
 UV Bézier spans also compose when each span's control hull fits one surface knot
-rectangle; composition degree is capped at 64. Cylindrical and
+rectangle; composition degree is capped at 64.
+Every p-curve edge constructed on a B-spline/NURBS basis is continuously certified against the original
+UV curve and spline surface at the import's absolute tolerance, including straight
+and rational isocurves, affine patches, rounded
+split parameters, snapped knot-crossing endpoints and joined spans. Inconclusive
+or exhausted certificates reject native import before document insertion. A UV
+control hull wholly inside one component of a discontinuous surface selects that
+component by exact control/knot slicing; a path on the break uses its right-hand
+component. Crossing a discontinuity is rejected. See
+[STEP curve-image qualification](../step-pcurve-certificates.md).
+Cylindrical and
 nonsingular conical faces with straight UV iso-trims spanning up to one turn
 convert to exact rational NURBS patches, including a full-turn wall with a paired
 `SEAM_CURVE`
@@ -60,6 +70,15 @@ polygon. Other curved multi-loop regions remain unsupported. Periodic
 seam arrangements, missing trims, and invalid topology fail the import; there
 is no automatic mesh fallback. Assembly and representation warnings
 follow the existing STEP importer and are counted in the result message.
+
+Diagonal and curved rational p-curve-only edges on linear extrusions now use
+certified images of the native tensor patch. Supported directrices include lines,
+polylines, B-splines/NURBS, their surface/intersection-curve leaders, and
+parameter-preserving p-curves on planar or spline bases. Domains and UV trim
+definitions remain intact. Conic/angular directrices retain the existing
+isocurve-only policy, since their converted interior parameter speeds differ.
+The existing unbounded affine-line extrusion route remains available. See
+[extrusion p-curve images](../step-extrusion-pcurves.md).
 
 All shells belonging to one shape occurrence are combined into one object.
 Outer/cavity orientation is retained, and coincident topology is not welded.

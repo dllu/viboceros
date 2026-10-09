@@ -7,12 +7,13 @@ pub(super) enum PartKind {
     PointCloud,
     Polysurface,
     Mesh,
+    Block,
 }
 
 #[derive(Debug, Default, PartialEq)]
 pub(super) struct ExplodeSummary {
-    sources: [usize; 5],
-    outputs: [usize; 5],
+    sources: [usize; 6],
+    outputs: [usize; 6],
     total: usize,
 }
 
@@ -44,6 +45,7 @@ impl ExplodeSummary {
             ("point cloud(s)", "point(s)"),
             ("polysurface(s)", "surface(s)"),
             ("mesh(es)", "part(s)"),
+            ("block instance(s)", "object(s)"),
         ];
         let mut summaries = Vec::with_capacity(labels.len());
         for (index, (source, output)) in labels.into_iter().enumerate() {

@@ -1,0 +1,46 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted readonly curve Rebuild preview implementation.",
+  "full_rhino_parity": false,
+  "evidence": [
+    "Four command tests cover readonly preparation, source changes, partial options and mixed-selection/current-layer atomic behavior.",
+    "Eleven app tests cover exact acceptance/history, failures/redo, stale source categories, picking, viewport routing, no-op assignments and egui option-button clicks.",
+    "Curve and surface controls use the shared typed handlers; production drawing uses the same staged-document selector tested by app regressions."
+  ],
+  "limits": [
+    "Curve option memory, native dialog parity and global approximation bounds remain unverified.",
+    "Commit and push are unavailable while .git is mounted read-only.",
+    "No completed production pixel capture; Xvfb listening sockets are unavailable in this sandbox."
+  ],
+  "sha256": {
+    "docs/block-instance-prior-source/crates/viboceros-command/src/curve_rebuild.rs": "e517eac4789d3329b1e902807c984e9b117e3f16dfe45e9492ed1a64d2296764",
+    "docs/block-instance-prior-source/crates/viboceros-command/src/lib.rs": "444a83aaeef210a168929388b474768f6f42476889dd350c185404e60637723d",
+    "docs/block-instance-prior-source/src/app/surface_rebuild.rs": "43c5914e77a31172534c0fbce442039cf740cb00a63a09a3ef9899fd4ae5aba8",
+    "docs/block-instance-prior-source/src/app/object_selection.rs": "c99cbaf3ccef93d31202603fd2306a669644eecd47b2ef4672c6e30813dc18c4",
+    "docs/block-instance-prior-source/src/app/tests/curve_rebuild_preview.rs": "6b17940490ea5e07b96b33afaf531f702e730e541db23be0fe23e540ffd05608",
+    "docs/block-instance-prior-source/src/app/tests/rebuild_preview.rs": "afa6fbc488848c8ae2a2244e6e34a1a813c725a20e087dc91ac46ce0df9b92de",
+    "docs/block-instance-prior-source/src/app.rs": "97c2f0cfbeb6747726a65ebfafd4a272b62393d19646f2c293ebfdc7141d6d8b",
+    "docs/block-instance-prior-source/src/app/surface_rebuild/controls.rs": "69befc3d9f213e29849ebb05a7b0d22bdfcb789c0e975b01ea4049c4b64a5a67",
+    "docs/block-instance-prior-source/src/app/command_line.rs": "c3e024817560e2e4297a39766240522a648a476183ea02edd135d4c21befb950"
+  },
+  "ui_inspection": {
+    "attempted": true,
+    "private_xvfb": true,
+    "completed": false,
+    "app_error": "XOpenDisplayFailed",
+    "display_diagnostic": "Xvfb could not bind local/unix listening sockets under the current sandbox.",
+    "native_pixel_parity": false
+  },
+  "source_snapshot_paths": {
+    "crates/viboceros-command/src/curve_rebuild.rs": "docs/block-instance-prior-source/crates/viboceros-command/src/curve_rebuild.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-instance-prior-source/crates/viboceros-command/src/lib.rs",
+    "src/app/surface_rebuild.rs": "docs/block-instance-prior-source/src/app/surface_rebuild.rs",
+    "src/app/object_selection.rs": "docs/block-instance-prior-source/src/app/object_selection.rs",
+    "src/app/tests/curve_rebuild_preview.rs": "docs/block-instance-prior-source/src/app/tests/curve_rebuild_preview.rs",
+    "src/app/tests/rebuild_preview.rs": "docs/block-instance-prior-source/src/app/tests/rebuild_preview.rs",
+    "src/app.rs": "docs/block-instance-prior-source/src/app.rs",
+    "src/app/surface_rebuild/controls.rs": "docs/block-instance-prior-source/src/app/surface_rebuild/controls.rs",
+    "src/app/command_line.rs": "docs/block-instance-prior-source/src/app/command_line.rs"
+  }
+}

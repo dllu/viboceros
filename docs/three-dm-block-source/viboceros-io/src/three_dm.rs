@@ -1,0 +1,3991 @@
+use std::borrow::Cow;
+use std::collections::{BTreeMap, BTreeSet};
+use std::ffi::{CStr, CString, c_char, c_double, c_int};
+use std::path::Path;
+use std::ptr::NonNull;
+use std::slice;
+
+use thiserror::Error;
+use viboceros_geometry::{
+    Brep, CircularArc3, Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface,
+    Point3, PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, Vector3, WeightedPoint3,
+};
+
+use crate::LengthUnitSystem;
+use crate::three_dm_geometry::{self, GeometryCodecError};
+
+mod instances;
+mod mesh_ngon;
+mod point_cloud_data;
+
+const ERROR_CAPACITY: usize = 4096;
+const OBJECT_POINT: c_int = 1;
+const OBJECT_LINE: c_int = 2;
+const OBJECT_NURBS_CURVE: c_int = 3;
+const OBJECT_TRIANGLE_MESH: c_int = 4;
+const OBJECT_NURBS_SURFACE: c_int = 5;
+const OBJECT_POINT_CLOUD: c_int = 6;
+const OBJECT_BREP: c_int = 7;
+const OBJECT_POLYCURVE: c_int = 8;
+const OBJECT_POLYLINE: c_int = 9;
+const OBJECT_ARC: c_int = 10;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ThreeDmLayer {
+    pub name: String,
+    pub color: [u8; 3],
+    pub visible: bool,
+    pub locked: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ThreeDmGroup {
+    pub name: String,
+}
+
+/// Camera and construction plane saved in a 3DM named-view table.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ThreeDmProjection {
+    Parallel = 1,
+    Perspective = 2,
+    /// Perspective with locked camera up and left/right frustum symmetry.
+    TwoPointPerspective = 3,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmNamedView {
+    pub name: String,
+    pub projection: ThreeDmProjection,
+    pub camera_location: Point3,
+    pub camera_direction: Vector3,
+    pub camera_up: Vector3,
+    pub target: Option<Point3>,
+    pub construction_plane: Frame3,
+    /// Left, right, bottom, top, near, and far, in model units.
+    pub frustum: [f64; 6],
+    /// Left, right, bottom, and top device coordinates.
+    pub screen_port: [i32; 4],
+}
+
+/// Named construction plane and its OpenNURBS grid appearance settings.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmNamedCPlane {
+    pub name: String,
+    pub plane: Frame3,
+    pub grid_spacing: f64,
+    pub snap_spacing: f64,
+    pub grid_line_count: i32,
+    pub grid_thick_frequency: i32,
+    pub depth_buffer: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ThreeDmDisplayMode {
+    Other = 0,
+    Wireframe = 1,
+    Shaded = 2,
+    Ghosted = 3,
+}
+
+/// Construction grid and snap settings stored with a current model viewport.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ThreeDmGridSettings {
+    pub snap_spacing: f64,
+    pub minor_spacing: f64,
+    pub major_interval: u32,
+    pub line_count: u32,
+    pub show_grid: bool,
+    pub show_axes: bool,
+    pub show_world_axes: bool,
+}
+
+impl Default for ThreeDmGridSettings {
+    fn default() -> Self {
+        Self {
+            snap_spacing: 1.0,
+            minor_spacing: 1.0,
+            major_interval: 5,
+            line_count: 70,
+            show_grid: true,
+            show_axes: true,
+            show_world_axes: false,
+        }
+    }
+}
+
+/// A model-space viewport from the 3DM current-view table.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmViewport {
+    pub camera: ThreeDmNamedView,
+    pub display_mode: ThreeDmDisplayMode,
+    pub grid: ThreeDmGridSettings,
+    pub active: bool,
+    /// Relative left, right, top, and bottom window coordinates.
+    pub position: [f64; 4],
+    pub maximized: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ThreeDmColorSource {
+    Layer = 0,
+    Object = 1,
+    Material = 2,
+    Parent = 3,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum ThreeDmGeometry {
+    Point(Point3),
+    PointCloud(PointCloud3),
+    Line(LineSegment),
+    Arc(CircularArc3),
+    NurbsCurve(NurbsCurve),
+    PolyCurve(PolyCurve3),
+    Polyline(Polyline3),
+    NurbsSurface(NurbsSurface),
+    Brep(Brep),
+    Mesh(TriangleMesh),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmObject {
+    pub geometry: ThreeDmGeometry,
+    pub layer_index: usize,
+    pub name: Option<String>,
+    pub user_text: BTreeMap<String, String>,
+    pub geometry_user_text: BTreeMap<String, String>,
+    pub visible: bool,
+    pub locked: bool,
+    pub object_color: [u8; 3],
+    pub color_source: ThreeDmColorSource,
+    pub wire_density: i32,
+    /// Indices into [`ThreeDmModel::groups`] in source-attribute order.
+    pub group_indices: Vec<usize>,
+}
+
+impl ThreeDmObject {
+    pub fn new(geometry: ThreeDmGeometry, layer_index: usize) -> Self {
+        Self {
+            geometry,
+            layer_index,
+            name: None,
+            user_text: BTreeMap::new(),
+            geometry_user_text: BTreeMap::new(),
+            visible: true,
+            locked: false,
+            object_color: [0, 0, 0],
+            color_source: ThreeDmColorSource::Layer,
+            wire_density: 1,
+            group_indices: Vec::new(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmModel {
+    /// Stored model policy, distinct from the tolerance used to decode geometry.
+    pub tolerance: Tolerance,
+    /// File metadata only; assigning units does not rescale coordinates.
+    pub units: LengthUnitSystem,
+    pub layers: Vec<ThreeDmLayer>,
+    /// Index into `layers` for the active model layer, when available.
+    pub current_layer_index: Option<usize>,
+    pub groups: Vec<ThreeDmGroup>,
+    pub named_views: Vec<ThreeDmNamedView>,
+    pub named_cplanes: Vec<ThreeDmNamedCPlane>,
+    pub viewports: Vec<ThreeDmViewport>,
+    pub objects: Vec<ThreeDmObject>,
+    unsupported_object_count: usize,
+    expanded_instance_count: usize,
+}
+
+impl ThreeDmModel {
+    pub fn new(
+        layers: Vec<ThreeDmLayer>,
+        groups: Vec<ThreeDmGroup>,
+        objects: Vec<ThreeDmObject>,
+    ) -> Self {
+        let current_layer_index = (!layers.is_empty()).then_some(0);
+        Self {
+            units: LengthUnitSystem::default(),
+            tolerance: Tolerance::DEFAULT,
+            layers,
+            current_layer_index,
+            groups,
+            named_views: Vec::new(),
+            named_cplanes: Vec::new(),
+            viewports: Vec::new(),
+            objects,
+            unsupported_object_count: 0,
+            expanded_instance_count: 0,
+        }
+    }
+
+    pub const fn unsupported_object_count(&self) -> usize {
+        self.unsupported_object_count
+    }
+    /// Top-level block references expanded to independent placed geometry.
+    pub const fn expanded_instance_count(&self) -> usize {
+        self.expanded_instance_count
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum ThreeDmError {
+    #[error(
+        "the source-space B-rep matching tolerance is not representable for this unit conversion"
+    )]
+    UnrepresentableSourceTolerance,
+
+    #[error(transparent)]
+    Units(#[from] viboceros_geometry::UnitError),
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Geometry(#[from] GeometryError),
+
+    #[error("3DM path is not valid UTF-8 or contains a nul byte: {0}")]
+    InvalidPath(String),
+
+    #[error("3DM text contains an interior nul byte in {field}")]
+    InteriorNul { field: &'static str },
+
+    #[error("invalid 3DM model: {0}")]
+    InvalidModel(String),
+
+    #[error("malformed data returned by the OpenNURBS bridge: {0}")]
+    MalformedBridge(&'static str),
+
+    #[error("OpenNURBS error: {0}")]
+    Native(String),
+}
+
+/// Reads raw file coordinates and preserves model-unit/tolerance metadata.
+/// The argument controls geometry decoding, not the returned model policy.
+pub fn read_3dm_file(
+    path: impl AsRef<Path>,
+    tolerance: Tolerance,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let units = decode_units(&handle)?;
+    decode_model(&handle, tolerance, units, 1.0)
+}
+
+/// Reads a file using its stored model tolerance for B-rep topology matching.
+/// Use this when opening the file as a new document.
+pub fn read_3dm_file_with_model_tolerance(
+    path: impl AsRef<Path>,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let units = decode_units(&handle)?;
+    let tolerance = model_tolerance(&handle)?;
+    decode_model(&handle, tolerance, units, 1.0)
+}
+
+/// Reads saved model viewports without decoding objects, layers, or named views.
+pub fn read_3dm_viewports_file(
+    path: impl AsRef<Path>,
+) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    decode_viewports(&handle)
+}
+
+/// Reads saved viewports in the destination document's length units.
+pub fn read_3dm_viewports_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut viewports = decode_viewports(&handle)?;
+    for viewport in &mut viewports {
+        scale_view(&mut viewport.camera, scale)?;
+        scale_viewport_grid(viewport, scale)?;
+    }
+    Ok(viewports)
+}
+
+/// Reads named views in destination units without decoding document geometry.
+pub fn read_3dm_named_views_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut views = decode_named_views(&handle)?;
+    for view in &mut views {
+        scale_view(view, scale)?;
+    }
+    Ok(views)
+}
+
+/// Reads named construction planes in destination units without model geometry.
+pub fn read_3dm_named_cplanes_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+) -> Result<Vec<ThreeDmNamedCPlane>, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let scale = decode_units(&handle)?.scale_to(target_units)?;
+    let mut planes = decode_named_cplanes(&handle)?;
+    for plane in &mut planes {
+        scale_named_cplane(plane, scale)?;
+    }
+    Ok(planes)
+}
+
+/// Reads coordinates into target units. The supplied tolerance is expressed
+/// in target units; B-rep topology matching uses a converted source tolerance.
+/// Defined primitives use numerical validation, not a minimum feature size.
+/// The returned model's tolerance is the supplied destination policy, rather
+/// than a rescaled copy of the archive's stored tolerance metadata.
+/// Unitless files retain coordinates. Unset units and unrepresentable scales
+/// are errors. The source file is never modified.
+pub fn read_3dm_file_in_units(
+    path: impl AsRef<Path>,
+    target_units: &LengthUnitSystem,
+    tolerance: Tolerance,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle(path.as_ref())?;
+    let source_units = decode_units(&handle)?;
+    let scale = source_units.scale_to(target_units)?;
+    let mut model = decode_model(&handle, tolerance, source_units, scale)?;
+    if scale != 1.0 {
+        let transform = viboceros_geometry::AffineTransform3::try_uniform_scale(
+            Point3::try_new(0.0, 0.0, 0.0)?,
+            scale,
+        )?;
+        for object in &mut model.objects {
+            object.geometry =
+                crate::three_dm_units::transform_geometry(&object.geometry, transform, tolerance)?;
+        }
+        for view in model.named_views.iter_mut().chain(
+            model
+                .viewports
+                .iter_mut()
+                .map(|viewport| &mut viewport.camera),
+        ) {
+            scale_view(view, scale)?;
+        }
+        for plane in &mut model.named_cplanes {
+            scale_named_cplane(plane, scale)?;
+        }
+        for viewport in &mut model.viewports {
+            scale_viewport_grid(viewport, scale)?;
+        }
+    }
+    model.units = target_units.clone();
+    // Converted geometry joins a destination model with the caller's policy.
+    // Raw reads preserve the archive's numeric tolerance metadata instead.
+    model.tolerance = tolerance;
+    Ok(model)
+}
+
+fn scale_view(view: &mut ThreeDmNamedView, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    let scaled_point = |point: Point3| -> Result<Point3, GeometryError> {
+        Point3::try_from(point.to_array().map(|coordinate| coordinate * scale))
+    };
+    view.camera_location = scaled_point(view.camera_location)?;
+    view.target = view.target.map(scaled_point).transpose()?;
+    view.construction_plane = Frame3::try_from_directions(
+        scaled_point(view.construction_plane.origin())?,
+        view.construction_plane.x_axis().as_vector(),
+        view.construction_plane.y_axis().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )?;
+    view.frustum = view.frustum.map(|coordinate| coordinate * scale);
+    Ok(())
+}
+
+fn scale_named_cplane(plane: &mut ThreeDmNamedCPlane, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    plane.plane = Frame3::try_from_directions(
+        Point3::try_from(
+            plane
+                .plane
+                .origin()
+                .to_array()
+                .map(|coordinate| coordinate * scale),
+        )?,
+        plane.plane.x_axis().as_vector(),
+        plane.plane.y_axis().as_vector(),
+        Tolerance::NUMERICAL_VALIDATION,
+    )?;
+    plane.grid_spacing *= scale;
+    plane.snap_spacing *= scale;
+    if !plane.grid_spacing.is_finite()
+        || plane.grid_spacing <= 0.0
+        || !plane.snap_spacing.is_finite()
+        || plane.snap_spacing <= 0.0
+    {
+        return Err(ThreeDmError::InvalidModel(
+            "named construction plane spacing is not representable in target units".into(),
+        ));
+    }
+    Ok(())
+}
+
+fn scale_viewport_grid(viewport: &mut ThreeDmViewport, scale: f64) -> Result<(), ThreeDmError> {
+    if scale == 1.0 {
+        return Ok(());
+    }
+    let scale_spacing = |spacing: f64| {
+        if !spacing.is_finite() || spacing <= 0.0 {
+            return Ok(spacing);
+        }
+        let converted = spacing * scale;
+        if converted.is_finite() && converted > 0.0 {
+            Ok(converted)
+        } else {
+            Err(ThreeDmError::InvalidModel(
+                "viewport grid spacing is not representable in target units".into(),
+            ))
+        }
+    };
+    viewport.grid.snap_spacing = scale_spacing(viewport.grid.snap_spacing)?;
+    viewport.grid.minor_spacing = scale_spacing(viewport.grid.minor_spacing)?;
+    Ok(())
+}
+
+fn read_handle(path: &Path) -> Result<ModelHandle, ThreeDmError> {
+    let path = path_to_c_string(path)?;
+    let mut error = [0 as c_char; ERROR_CAPACITY];
+    let mut pointer = std::ptr::null_mut();
+    // SAFETY: `path` and `error` are valid terminated buffers and `pointer`
+    // points to writable storage. The bridge catches all C++ exceptions.
+    let success =
+        unsafe { ffi::vibo_3dm_read(path.as_ptr(), &mut pointer, error.as_mut_ptr(), error.len()) };
+    if success == 0 {
+        return Err(native_error(&error));
+    }
+    let handle = ModelHandle(
+        NonNull::new(pointer).ok_or(ThreeDmError::MalformedBridge("read returned a null model"))?,
+    );
+    Ok(handle)
+}
+
+/// Export can expand a discontinuous curve into multiple valid file objects.
+/// Geometry conversion never mutates the supplied model.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ThreeDmWriteReport {
+    /// Objects in the unmodified input model.
+    pub source_object_count: usize,
+    /// Objects actually written, including any decomposition expansion.
+    pub written_object_count: usize,
+    /// Source curves whose file representation required decomposition.
+    pub adapted_curve_count: usize,
+}
+
+/// Writes through a staging file, replacing the destination only on success.
+/// Full-order free-curve knots are decomposed without editing the input model.
+pub fn write_3dm_file(
+    path: impl AsRef<Path>,
+    model: &ThreeDmModel,
+) -> Result<ThreeDmWriteReport, ThreeDmError> {
+    validate_model(model)?;
+    let (unit_system, meters_per_unit, unit_name) = crate::three_dm_units::encode(&model.units)?;
+    let mut prepared = Vec::new();
+    let mut report = ThreeDmWriteReport {
+        source_object_count: model.objects.len(),
+        written_object_count: 0,
+        adapted_curve_count: 0,
+    };
+    for object in &model.objects {
+        let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+        report.adapted_curve_count +=
+            usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
+        prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
+    }
+    report.written_object_count = prepared.len();
+    let destination = path.as_ref();
+    let staged = crate::staged_file::StagedFile::new(destination, ".3dm.tmp")?;
+    let native_path = path_to_c_string(staged.path())?;
+    let layer_names = model
+        .layers
+        .iter()
+        .map(|layer| c_string(&layer.name, "layer name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let layers = model
+        .layers
+        .iter()
+        .zip(&layer_names)
+        .map(|(layer, name)| ffi::ViboWriteLayer {
+            name: name.as_ptr(),
+            red: layer.color[0],
+            green: layer.color[1],
+            blue: layer.color[2],
+            visible: u8::from(layer.visible),
+            locked: u8::from(layer.locked),
+        })
+        .collect::<Vec<_>>();
+
+    let group_names = model
+        .groups
+        .iter()
+        .map(|group| c_string(&group.name, "group name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let groups = group_names
+        .iter()
+        .map(|name| ffi::ViboWriteGroup {
+            name: name.as_ptr(),
+        })
+        .collect::<Vec<_>>();
+
+    let named_view_names = model
+        .named_views
+        .iter()
+        .map(|view| c_string(&view.name, "named view name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let named_views = model
+        .named_views
+        .iter()
+        .zip(&named_view_names)
+        .map(|(view, name)| ffi::ViboNamedView {
+            name: name.as_ptr(),
+            projection: view.projection as u8,
+            has_target: u8::from(view.target.is_some()),
+            camera_location: view.camera_location.to_array(),
+            camera_direction: view.camera_direction.to_array(),
+            camera_up: view.camera_up.to_array(),
+            target: view.target.map_or([0.0; 3], Point3::to_array),
+            cplane_origin: view.construction_plane.origin().to_array(),
+            cplane_x: view.construction_plane.x_axis().as_vector().to_array(),
+            cplane_y: view.construction_plane.y_axis().as_vector().to_array(),
+            frustum: view.frustum,
+            screen_port: view.screen_port,
+        })
+        .collect::<Vec<_>>();
+    let named_cplane_names = model
+        .named_cplanes
+        .iter()
+        .map(|plane| c_string(&plane.name, "named construction plane name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let named_cplanes = model
+        .named_cplanes
+        .iter()
+        .zip(&named_cplane_names)
+        .map(|(plane, name)| ffi::ViboNamedCPlane {
+            name: name.as_ptr(),
+            origin: plane.plane.origin().to_array(),
+            x_axis: plane.plane.x_axis().as_vector().to_array(),
+            y_axis: plane.plane.y_axis().as_vector().to_array(),
+            grid_spacing: plane.grid_spacing,
+            snap_spacing: plane.snap_spacing,
+            grid_line_count: plane.grid_line_count,
+            grid_thick_frequency: plane.grid_thick_frequency,
+            depth_buffer: u8::from(plane.depth_buffer),
+        })
+        .collect::<Vec<_>>();
+    let current_view_names = model
+        .viewports
+        .iter()
+        .map(|view| c_string(&view.camera.name, "viewport name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let current_views = model
+        .viewports
+        .iter()
+        .zip(&current_view_names)
+        .map(|(view, name)| ffi::ViboCurrentView {
+            camera: ffi::ViboNamedView {
+                name: name.as_ptr(),
+                projection: view.camera.projection as u8,
+                has_target: u8::from(view.camera.target.is_some()),
+                camera_location: view.camera.camera_location.to_array(),
+                camera_direction: view.camera.camera_direction.to_array(),
+                camera_up: view.camera.camera_up.to_array(),
+                target: view.camera.target.map_or([0.0; 3], Point3::to_array),
+                cplane_origin: view.camera.construction_plane.origin().to_array(),
+                cplane_x: view
+                    .camera
+                    .construction_plane
+                    .x_axis()
+                    .as_vector()
+                    .to_array(),
+                cplane_y: view
+                    .camera
+                    .construction_plane
+                    .y_axis()
+                    .as_vector()
+                    .to_array(),
+                frustum: view.camera.frustum,
+                screen_port: view.camera.screen_port,
+            },
+            display_mode: view.display_mode as u8,
+            maximized: u8::from(view.maximized),
+            active: u8::from(view.active),
+            show_grid: u8::from(view.grid.show_grid),
+            show_axes: u8::from(view.grid.show_axes),
+            show_world_axes: u8::from(view.grid.show_world_axes),
+            position: view.position,
+            snap_spacing: view.grid.snap_spacing,
+            minor_spacing: view.grid.minor_spacing,
+            major_interval: view.grid.major_interval as i32,
+            line_count: view.grid.line_count as i32,
+        })
+        .collect::<Vec<_>>();
+
+    let object_names = prepared
+        .iter()
+        .map(|(object, _)| {
+            object
+                .name
+                .as_deref()
+                .map(|name| c_string(name, "object name"))
+                .transpose()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let user_text_strings = prepared
+        .iter()
+        .map(|(object, _)| {
+            object
+                .user_text
+                .iter()
+                .map(|(key, value)| {
+                    Ok((
+                        c_string(key, "user text key")?,
+                        c_string(value, "user text value")?,
+                    ))
+                })
+                .collect::<Result<Vec<_>, ThreeDmError>>()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let user_text = user_text_strings
+        .iter()
+        .map(|pairs| {
+            pairs
+                .iter()
+                .map(|(key, value)| ffi::ViboUserText {
+                    key: key.as_ptr(),
+                    value: value.as_ptr(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let geometry_user_text_strings = prepared
+        .iter()
+        .map(|(object, _)| {
+            object
+                .geometry_user_text
+                .iter()
+                .map(|(key, value)| {
+                    Ok((
+                        c_string(key, "geometry user text key")?,
+                        c_string(value, "geometry user text value")?,
+                    ))
+                })
+                .collect::<Result<Vec<_>, ThreeDmError>>()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let geometry_user_text = geometry_user_text_strings
+        .iter()
+        .map(|pairs| {
+            pairs
+                .iter()
+                .map(|(key, value)| ffi::ViboUserText {
+                    key: key.as_ptr(),
+                    value: value.as_ptr(),
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let payloads = prepared
+        .iter()
+        .map(|(_, geometry)| ObjectPayload::from_geometry(geometry))
+        .collect::<Result<Vec<_>, _>>()?;
+    let objects = prepared
+        .iter()
+        .zip(&object_names)
+        .zip(&payloads)
+        .zip(&user_text)
+        .zip(&geometry_user_text)
+        .map(
+            |(((((object, _), name), payload), text), geometry_text)| ffi::ViboWriteObject {
+                object_type: payload.object_type,
+                layer_index: object.layer_index,
+                name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
+                visible: u8::from(object.visible),
+                locked: u8::from(object.locked),
+                color_source: object.color_source as u8,
+                color_red: object.object_color[0],
+                color_green: object.object_color[1],
+                color_blue: object.object_color[2],
+                wire_density: object.wire_density,
+                degree_u: payload.degree_u,
+                degree_v: payload.degree_v,
+                control_point_count_u: payload.control_point_count_u,
+                control_point_count_v: payload.control_point_count_v,
+                coordinates: pointer_or_null(&payload.coordinates),
+                coordinate_count: payload.coordinates.len(),
+                knots_u: pointer_or_null(&payload.knots_u),
+                knot_u_count: payload.knots_u.len(),
+                knots_v: pointer_or_null(&payload.knots_v),
+                knot_v_count: payload.knots_v.len(),
+                indices: pointer_or_null(&payload.indices),
+                index_count: payload.indices.len(),
+                geometry_data: pointer_or_null(&payload.geometry_data),
+                geometry_data_count: payload.geometry_data.len(),
+                group_indices: pointer_or_null(&object.group_indices),
+                group_index_count: object.group_indices.len(),
+                user_text: pointer_or_null(text),
+                user_text_count: text.len(),
+                geometry_user_text: pointer_or_null(geometry_text),
+                geometry_user_text_count: geometry_text.len(),
+            },
+        )
+        .collect::<Vec<_>>();
+
+    let current_layer_index = model.current_layer_index.map_or(Ok(-1), |index| {
+        i32::try_from(index)
+            .map_err(|_| ThreeDmError::InvalidModel("current layer index exceeds 3DM range".into()))
+    })?;
+    let mut error = [0 as c_char; ERROR_CAPACITY];
+    // SAFETY: all pointers reference immutable vectors and C strings retained
+    // for the duration of this synchronous call. The bridge catches exceptions.
+    let success = unsafe {
+        ffi::vibo_3dm_write(
+            native_path.as_ptr(),
+            unit_system,
+            meters_per_unit,
+            unit_name.as_ptr(),
+            model.tolerance.absolute(),
+            model.tolerance.relative(),
+            model.tolerance.angular(),
+            pointer_or_null(&layers),
+            layers.len(),
+            current_layer_index,
+            pointer_or_null(&groups),
+            groups.len(),
+            pointer_or_null(&named_views),
+            named_views.len(),
+            pointer_or_null(&named_cplanes),
+            named_cplanes.len(),
+            pointer_or_null(&current_views),
+            current_views.len(),
+            pointer_or_null(&objects),
+            objects.len(),
+            error.as_mut_ptr(),
+            error.len(),
+        )
+    };
+    if success == 0 {
+        Err(native_error(&error))
+    } else {
+        staged.commit()?;
+        Ok(report)
+    }
+}
+
+/// Saves a 3DM and retains the previous file as a `.3dmbak` backup.
+pub fn save_3dm_file(
+    path: impl AsRef<Path>,
+    model: &ThreeDmModel,
+) -> Result<ThreeDmWriteReport, ThreeDmError> {
+    let path = path.as_ref();
+    crate::staged_file::backup_3dm(path)?;
+    write_3dm_file(path, model)
+}
+
+fn decode_units(handle: &ModelHandle) -> Result<LengthUnitSystem, ThreeDmError> {
+    let mut unit_system = 0;
+    let mut meters_per_unit = 1.0;
+    let mut unit_name = std::ptr::null();
+    // SAFETY: handle is live and all output pointers reference writable storage.
+    let success = unsafe {
+        ffi::vibo_3dm_units(
+            handle.0.as_ptr(),
+            &mut unit_system,
+            &mut meters_per_unit,
+            &mut unit_name,
+        )
+    };
+    if success == 0 || unit_name.is_null() {
+        return Err(ThreeDmError::MalformedBridge(
+            "missing length unit metadata",
+        ));
+    }
+    // SAFETY: bridge owns a terminated string for the lifetime of the handle.
+    let name = unsafe { CStr::from_ptr(unit_name) }
+        .to_string_lossy()
+        .into_owned();
+    crate::three_dm_units::decode(unit_system, meters_per_unit, name)
+}
+
+fn model_tolerance(handle: &ModelHandle) -> Result<Tolerance, ThreeDmError> {
+    let mut absolute = 0.0;
+    let mut relative = 0.0;
+    let mut angle = 0.0;
+    // SAFETY: the handle is live and all three output pointers are writable.
+    if unsafe {
+        ffi::vibo_3dm_tolerances(handle.0.as_ptr(), &mut absolute, &mut relative, &mut angle)
+    } == 0
+    {
+        return Err(ThreeDmError::MalformedBridge("invalid tolerance metadata"));
+    }
+    Tolerance::try_new(absolute, relative, angle)
+        .map_err(|_| ThreeDmError::InvalidModel("invalid model tolerance metadata".into()))
+}
+
+fn decode_model(
+    handle: &ModelHandle,
+    tolerance: Tolerance,
+    units: LengthUnitSystem,
+    coordinate_scale: f64,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let stored_tolerance = model_tolerance(handle)?;
+    // SAFETY: the handle owns a live bridge model.
+    let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
+    let source_current_layer_index =
+        unsafe { ffi::vibo_3dm_current_layer_index(handle.0.as_ptr()) };
+    let mut layers = Vec::with_capacity(layer_count.max(1));
+    let mut layer_positions = BTreeMap::new();
+    for index in 0..layer_count {
+        let mut source_index = 0;
+        let mut name = std::ptr::null();
+        let (mut red, mut green, mut blue, mut visible, mut locked) = (0, 0, 0, 0, 0);
+        // SAFETY: all output pointers are valid and the index is in range.
+        let success = unsafe {
+            ffi::vibo_3dm_layer(
+                handle.0.as_ptr(),
+                index,
+                &mut source_index,
+                &mut name,
+                &mut red,
+                &mut green,
+                &mut blue,
+                &mut visible,
+                &mut locked,
+            )
+        };
+        if success == 0 || name.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid layer record"));
+        }
+        if layer_positions.insert(source_index, layers.len()).is_some() {
+            return Err(ThreeDmError::MalformedBridge("duplicate layer index"));
+        }
+        layers.push(ThreeDmLayer {
+            name: c_text(name)?,
+            color: [red, green, blue],
+            visible: visible != 0,
+            locked: locked != 0,
+        });
+    }
+    if layers.is_empty() {
+        layer_positions.insert(0, 0);
+        layers.push(ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        });
+    }
+    let current_layer_index = layer_positions.get(&source_current_layer_index).copied();
+
+    // SAFETY: the handle owns a live bridge model.
+    let group_count = unsafe { ffi::vibo_3dm_group_count(handle.0.as_ptr()) };
+    let mut groups = Vec::with_capacity(group_count);
+    let mut group_positions = BTreeMap::new();
+    for index in 0..group_count {
+        let mut source_index = 0;
+        let mut name = std::ptr::null();
+        // SAFETY: all output pointers are valid and the index is in range.
+        let success =
+            unsafe { ffi::vibo_3dm_group(handle.0.as_ptr(), index, &mut source_index, &mut name) };
+        if success == 0 || name.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid group record"));
+        }
+        if group_positions.insert(source_index, groups.len()).is_some() {
+            return Err(ThreeDmError::MalformedBridge("duplicate group index"));
+        }
+        groups.push(ThreeDmGroup {
+            name: c_text(name)?,
+        });
+    }
+
+    let named_views = decode_named_views(handle)?;
+    let named_cplanes = decode_named_cplanes(handle)?;
+    let viewports = decode_viewports(handle)?;
+
+    // SAFETY: the handle owns a live bridge model.
+    let object_count = unsafe { ffi::vibo_3dm_object_count(handle.0.as_ptr()) };
+    let mut objects = Vec::with_capacity(object_count);
+    // SAFETY: the handle owns a live bridge model.
+    let mut unsupported = unsafe { ffi::vibo_3dm_unsupported_object_count(handle.0.as_ptr()) };
+    for index in 0..object_count {
+        match decode_object(
+            handle,
+            index,
+            &layer_positions,
+            &group_positions,
+            tolerance,
+            coordinate_scale,
+        ) {
+            Ok(object) => objects.push(object),
+            Err(ThreeDmError::Geometry(error)) => {
+                // SAFETY: the decoded model and object index remain live.
+                if unsafe { ffi::vibo_3dm_object_placement_count(handle.0.as_ptr(), index) } > 0 {
+                    return Err(ThreeDmError::InvalidModel(format!(
+                        "block member geometry cannot be decoded: {error}"
+                    )));
+                }
+                unsupported += 1;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(ThreeDmModel {
+        tolerance: stored_tolerance,
+        units,
+        layers,
+        current_layer_index,
+        groups,
+        named_views,
+        named_cplanes,
+        viewports,
+        objects,
+        unsupported_object_count: unsupported,
+        // SAFETY: handle owns the live decoded model.
+        expanded_instance_count: unsafe {
+            ffi::vibo_3dm_expanded_instance_count(handle.0.as_ptr())
+        },
+    })
+}
+
+fn decode_named_views(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let count = unsafe { ffi::vibo_3dm_named_view_count(handle.0.as_ptr()) };
+    let mut views = Vec::with_capacity(count);
+    for index in 0..count {
+        let mut raw = ffi::ViboNamedView::default();
+        // SAFETY: the handle is live, the index is in range, and output is writable.
+        if unsafe { ffi::vibo_3dm_named_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid named view record"));
+        }
+        views.push(decode_view(&raw)?);
+    }
+    Ok(views)
+}
+
+fn decode_named_cplanes(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedCPlane>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let count = unsafe { ffi::vibo_3dm_named_cplane_count(handle.0.as_ptr()) };
+    let mut planes = Vec::with_capacity(count);
+    for index in 0..count {
+        let mut raw = ffi::ViboNamedCPlane::default();
+        // SAFETY: the handle is live, the index is in range, and output is writable.
+        if unsafe { ffi::vibo_3dm_named_cplane(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge(
+                "invalid named construction plane record",
+            ));
+        }
+        planes.push(ThreeDmNamedCPlane {
+            name: c_text(raw.name)?,
+            plane: Frame3::try_from_directions(
+                Point3::try_from(raw.origin)?,
+                Vector3::try_from(raw.x_axis)?,
+                Vector3::try_from(raw.y_axis)?,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?,
+            grid_spacing: raw.grid_spacing,
+            snap_spacing: raw.snap_spacing,
+            grid_line_count: raw.grid_line_count,
+            grid_thick_frequency: raw.grid_thick_frequency,
+            depth_buffer: raw.depth_buffer != 0,
+        });
+    }
+    Ok(planes)
+}
+
+fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let current_view_count = unsafe { ffi::vibo_3dm_current_view_count(handle.0.as_ptr()) };
+    let mut viewports = Vec::with_capacity(current_view_count);
+    for index in 0..current_view_count {
+        let mut raw = ffi::ViboCurrentView::default();
+        if unsafe { ffi::vibo_3dm_current_view(handle.0.as_ptr(), index, &mut raw) } == 0 {
+            return Err(ThreeDmError::MalformedBridge("invalid current view record"));
+        }
+        let display_mode = match raw.display_mode {
+            1 => ThreeDmDisplayMode::Wireframe,
+            2 => ThreeDmDisplayMode::Shaded,
+            3 => ThreeDmDisplayMode::Ghosted,
+            _ => ThreeDmDisplayMode::Other,
+        };
+        viewports.push(ThreeDmViewport {
+            camera: decode_view(&raw.camera)?,
+            display_mode,
+            grid: ThreeDmGridSettings {
+                snap_spacing: raw.snap_spacing,
+                minor_spacing: raw.minor_spacing,
+                major_interval: u32::try_from(raw.major_interval).unwrap_or(0),
+                line_count: u32::try_from(raw.line_count).unwrap_or(0),
+                show_grid: raw.show_grid != 0,
+                show_axes: raw.show_axes != 0,
+                show_world_axes: raw.show_world_axes != 0,
+            },
+            active: raw.active != 0,
+            position: raw.position,
+            maximized: raw.maximized != 0,
+        });
+    }
+
+    Ok(viewports)
+}
+
+fn decode_view(raw: &ffi::ViboNamedView) -> Result<ThreeDmNamedView, ThreeDmError> {
+    let projection = match raw.projection {
+        1 => ThreeDmProjection::Parallel,
+        2 => ThreeDmProjection::Perspective,
+        3 => ThreeDmProjection::TwoPointPerspective,
+        _ => return Err(ThreeDmError::MalformedBridge("invalid view projection")),
+    };
+    Ok(ThreeDmNamedView {
+        name: c_text(raw.name)?,
+        projection,
+        camera_location: Point3::try_from(raw.camera_location)?,
+        camera_direction: Vector3::try_from(raw.camera_direction)?,
+        camera_up: Vector3::try_from(raw.camera_up)?,
+        target: (raw.has_target != 0)
+            .then(|| Point3::try_from(raw.target))
+            .transpose()?,
+        construction_plane: Frame3::try_from_directions(
+            Point3::try_from(raw.cplane_origin)?,
+            Vector3::try_from(raw.cplane_x)?,
+            Vector3::try_from(raw.cplane_y)?,
+            Tolerance::NUMERICAL_VALIDATION,
+        )?,
+        frustum: raw.frustum,
+        screen_port: raw.screen_port,
+    })
+}
+
+fn decode_object(
+    handle: &ModelHandle,
+    index: usize,
+    layer_positions: &BTreeMap<i32, usize>,
+    group_positions: &BTreeMap<i32, usize>,
+    tolerance: Tolerance,
+    coordinate_scale: f64,
+) -> Result<ThreeDmObject, ThreeDmError> {
+    let mut info = ffi::ViboObjectInfo::default();
+    let mut coordinates = std::ptr::null();
+    let mut knots_u = std::ptr::null();
+    let mut knots_v = std::ptr::null();
+    let mut indices = std::ptr::null();
+    let mut geometry_data = std::ptr::null();
+    let mut group_indices = std::ptr::null();
+    // SAFETY: output pointers are valid, the model is live, and index is in range.
+    let success = unsafe {
+        ffi::vibo_3dm_object(
+            handle.0.as_ptr(),
+            index,
+            &mut info,
+            &mut coordinates,
+            &mut knots_u,
+            &mut knots_v,
+            &mut indices,
+            &mut geometry_data,
+            &mut group_indices,
+        )
+    };
+    if success == 0 {
+        return Err(ThreeDmError::MalformedBridge("invalid object record"));
+    }
+    let coordinates = ffi_slice(handle, coordinates, info.coordinate_count)?;
+    let knots_u = ffi_slice(handle, knots_u, info.knot_u_count)?;
+    let knots_v = ffi_slice(handle, knots_v, info.knot_v_count)?;
+    let indices = ffi_slice(handle, indices, info.index_count)?;
+    let geometry_data = ffi_slice(handle, geometry_data, info.geometry_data_count)?;
+    let group_indices = ffi_slice(handle, group_indices, info.group_index_count)?
+        .iter()
+        .map(|source_index| {
+            group_positions.get(source_index).copied().ok_or_else(|| {
+                ThreeDmError::InvalidModel(format!(
+                    "object {index} references unknown group index {source_index}"
+                ))
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    // SAFETY: the handle owns the bridge model and the index is in range.
+    let user_text_count = unsafe { ffi::vibo_3dm_object_user_text_count(handle.0.as_ptr(), index) };
+    let mut user_text = BTreeMap::new();
+    for text_index in 0..user_text_count {
+        let mut key = std::ptr::null();
+        let mut value = std::ptr::null();
+        // SAFETY: output pointers are valid and the model remains live.
+        let success = unsafe {
+            ffi::vibo_3dm_object_user_text(
+                handle.0.as_ptr(),
+                index,
+                text_index,
+                &mut key,
+                &mut value,
+            )
+        };
+        if success == 0 || key.is_null() || value.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid object user text"));
+        }
+        user_text.insert(c_text(key)?, c_text(value)?);
+    }
+    // SAFETY: the handle owns the bridge model and the index is in range.
+    let geometry_user_text_count =
+        unsafe { ffi::vibo_3dm_object_geometry_user_text_count(handle.0.as_ptr(), index) };
+    let mut geometry_user_text = BTreeMap::new();
+    for text_index in 0..geometry_user_text_count {
+        let mut key = std::ptr::null();
+        let mut value = std::ptr::null();
+        // SAFETY: output pointers are valid and the model remains live.
+        let success = unsafe {
+            ffi::vibo_3dm_object_geometry_user_text(
+                handle.0.as_ptr(),
+                index,
+                text_index,
+                &mut key,
+                &mut value,
+            )
+        };
+        if success == 0 || key.is_null() || value.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid geometry user text"));
+        }
+        geometry_user_text.insert(c_text(key)?, c_text(value)?);
+    }
+    let layer_index = layer_positions
+        .get(&info.source_layer_index)
+        .copied()
+        // Legacy OpenNURBS archives use a negative unset index for geometry
+        // that belongs on the first/default layer.
+        .or_else(|| (info.source_layer_index < 0).then_some(0))
+        .ok_or_else(|| {
+            ThreeDmError::InvalidModel(format!(
+                "object {index} references unknown layer index {}",
+                info.source_layer_index
+            ))
+        })?;
+    let name = if info.name.is_null() {
+        None
+    } else {
+        let name = c_text(info.name)?;
+        (!name.is_empty()).then_some(name)
+    };
+    let color_source = match info.color_source {
+        0 => ThreeDmColorSource::Layer,
+        1 => ThreeDmColorSource::Object,
+        2 => ThreeDmColorSource::Material,
+        3 => ThreeDmColorSource::Parent,
+        _ => return Err(ThreeDmError::MalformedBridge("invalid object color source")),
+    };
+
+    let geometry = match info.object_type {
+        OBJECT_POINT
+            if coordinates.len() == 3
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            ThreeDmGeometry::Point(point(coordinates)?)
+        }
+        OBJECT_LINE
+            if coordinates.len() == 6
+                && (knots_u.is_empty() || knots_u.len() == 2)
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            let line = LineSegment::try_new(
+                point(&coordinates[..3])?,
+                point(&coordinates[3..])?,
+                Tolerance::NUMERICAL_VALIDATION,
+            )?;
+            ThreeDmGeometry::Line(if knots_u.is_empty() {
+                line
+            } else {
+                line.try_reparameterized(knots_u[0]..=knots_u[1])?
+            })
+        }
+        OBJECT_POINT_CLOUD
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && !coordinates.is_empty()
+                && coordinates.len() % 3 == 0
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty() =>
+        {
+            let channels = point_cloud_data::decode(geometry_data, coordinates.len() / 3)?;
+            ThreeDmGeometry::PointCloud(PointCloud3::try_with_channels(
+                coordinates
+                    .chunks_exact(3)
+                    .map(point)
+                    .collect::<Result<Vec<_>, _>>()?,
+                channels,
+            )?)
+        }
+        OBJECT_POLYLINE
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && coordinates.len() >= 6
+                && coordinates.len() % 3 == 0
+                && knots_u.len() == coordinates.len() / 3
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            ThreeDmGeometry::Polyline(Polyline3::try_with_parameters(
+                coordinates
+                    .chunks_exact(3)
+                    .map(point)
+                    .collect::<Result<Vec<_>, _>>()?,
+                knots_u.to_vec(),
+                Tolerance::NUMERICAL_VALIDATION,
+            )?)
+        }
+        OBJECT_NURBS_CURVE
+            if info.degree_u > 0
+                && info.degree_v == 0
+                && info.control_point_count_v == 0
+                && info.control_point_count_u
+                    > usize::try_from(info.degree_u).unwrap_or(usize::MAX)
+                && coordinates.len() == info.control_point_count_u.saturating_mul(4)
+                && knots_u.len()
+                    == info
+                        .control_point_count_u
+                        .saturating_add(info.degree_u as usize)
+                        .saturating_add(1)
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            let control_points = coordinates
+                .chunks_exact(4)
+                .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            ThreeDmGeometry::NurbsCurve(NurbsCurve::try_new_rational(
+                info.degree_u as usize,
+                control_points,
+                knots_u.to_vec(),
+            )?)
+        }
+        OBJECT_NURBS_SURFACE
+            if info.degree_u > 0
+                && info.degree_v > 0
+                && info.control_point_count_u
+                    > usize::try_from(info.degree_u).unwrap_or(usize::MAX)
+                && info.control_point_count_v
+                    > usize::try_from(info.degree_v).unwrap_or(usize::MAX)
+                && coordinates.len()
+                    == info
+                        .control_point_count_u
+                        .saturating_mul(info.control_point_count_v)
+                        .saturating_mul(4)
+                && knots_u.len()
+                    == info
+                        .control_point_count_u
+                        .saturating_add(info.degree_u as usize)
+                        .saturating_add(1)
+                && knots_v.len()
+                    == info
+                        .control_point_count_v
+                        .saturating_add(info.degree_v as usize)
+                        .saturating_add(1)
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            let control_points = coordinates
+                .chunks_exact(4)
+                .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            ThreeDmGeometry::NurbsSurface(NurbsSurface::try_new_rational(
+                info.degree_u as usize,
+                info.degree_v as usize,
+                info.control_point_count_u,
+                info.control_point_count_v,
+                control_points,
+                knots_u.to_vec(),
+                knots_v.to_vec(),
+            )?)
+        }
+        OBJECT_TRIANGLE_MESH
+            if !coordinates.is_empty()
+                && coordinates.len() % 3 == 0
+                && !indices.is_empty()
+                && indices.len() % 4 == 0
+                && knots_u.is_empty()
+                && knots_v.is_empty() =>
+        {
+            let vertices = coordinates
+                .chunks_exact(3)
+                .map(point)
+                .collect::<Result<Vec<_>, _>>()?;
+            let faces = indices
+                .chunks_exact(4)
+                .map(|face| {
+                    if face[2] == face[3] {
+                        MeshFace::Triangle([face[0], face[1], face[2]])
+                    } else {
+                        MeshFace::Quad([face[0], face[1], face[2], face[3]])
+                    }
+                })
+                .collect();
+            let mesh_payload = mesh_ngon::decode(geometry_data, vertices.len())?;
+            ThreeDmGeometry::Mesh(
+                TriangleMesh::try_from_face_records(vertices, faces)?
+                    .try_with_ngons(mesh_payload.ngons)?
+                    .try_with_vertex_colors(mesh_payload.vertex_colors)?,
+            )
+        }
+        OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && coordinates.is_empty()
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && !geometry_data.is_empty() =>
+        {
+            let decoded = if info.object_type == OBJECT_BREP {
+                // Only B-rep topology matching uses model tolerance. Computing
+                // this before inspecting the object can reject exact primitives
+                // because an entirely unused source tolerance over/underflows.
+                let source_tolerance = Tolerance::try_new(
+                    tolerance.absolute() / coordinate_scale,
+                    tolerance.relative(),
+                    tolerance.angular(),
+                )
+                .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?;
+                three_dm_geometry::decode_brep(geometry_data, source_tolerance)
+                    .map(ThreeDmGeometry::Brep)
+            } else if info.object_type == OBJECT_ARC {
+                three_dm_geometry::decode_arc(geometry_data).map(ThreeDmGeometry::Arc)
+            } else {
+                three_dm_geometry::decode_polycurve(geometry_data).map(ThreeDmGeometry::PolyCurve)
+            };
+            match decoded {
+                Ok(geometry) => geometry,
+                Err(GeometryCodecError::Geometry(error)) => return Err(error.into()),
+                Err(GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow) => {
+                    return Err(ThreeDmError::MalformedBridge(
+                        "invalid structured geometry payload",
+                    ));
+                }
+            }
+        }
+        _ => return Err(ThreeDmError::MalformedBridge("inconsistent object payload")),
+    };
+    let geometry = instances::apply(handle, index, geometry, tolerance, coordinate_scale)?;
+    Ok(ThreeDmObject {
+        geometry,
+        layer_index,
+        name,
+        user_text,
+        geometry_user_text,
+        visible: info.visible != 0,
+        locked: info.locked != 0,
+        object_color: [info.color_red, info.color_green, info.color_blue],
+        color_source,
+        wire_density: info.wire_density,
+        group_indices,
+    })
+}
+
+fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+    // Tolerance already guarantees finite positive components. These extra
+    // OpenNURBS bounds must be checked before preparing geometry or opening a
+    // staging file; the native boundary repeats validation defensively.
+    if model.tolerance.relative() >= 1.0 || model.tolerance.angular() > std::f64::consts::PI {
+        return Err(ThreeDmError::InvalidModel(
+            "3DM requires relative tolerance below 1 and angular tolerance at most pi radians"
+                .into(),
+        ));
+    }
+    if model.layers.is_empty() && !model.objects.is_empty() {
+        return Err(ThreeDmError::InvalidModel(
+            "objects require at least one layer".to_owned(),
+        ));
+    }
+    if model
+        .current_layer_index
+        .is_some_and(|index| index >= model.layers.len())
+    {
+        return Err(ThreeDmError::InvalidModel(
+            "current layer references a missing layer".into(),
+        ));
+    }
+    for (index, layer) in model.layers.iter().enumerate() {
+        if layer.name.trim().is_empty() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "layer {index} has an empty name"
+            )));
+        }
+    }
+    let mut group_names = BTreeSet::new();
+    for (index, group) in model.groups.iter().enumerate() {
+        let name = group.name.trim();
+        if name.is_empty() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "group {index} has an empty name"
+            )));
+        }
+        if !group_names.insert(name) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "group {index} duplicates the name '{name}'"
+            )));
+        }
+    }
+    let mut named_view_names = BTreeSet::new();
+    for (index, view) in model.named_views.iter().enumerate() {
+        let name = view.name.trim();
+        if name.is_empty() || !named_view_names.insert(name.to_lowercase()) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named view {index} has an empty or duplicate name"
+            )));
+        }
+        validate_view_camera(view, &format!("named view {index}"))?;
+    }
+    let mut named_cplane_names = BTreeSet::new();
+    for (index, plane) in model.named_cplanes.iter().enumerate() {
+        let name = plane.name.trim();
+        if name.is_empty()
+            || !named_cplane_names.insert(name.to_lowercase())
+            || !plane.grid_spacing.is_finite()
+            || plane.grid_spacing <= 0.0
+            || !plane.snap_spacing.is_finite()
+            || plane.snap_spacing <= 0.0
+            || plane.grid_line_count < 0
+            || plane.grid_thick_frequency < 0
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "named construction plane {index} has invalid metadata"
+            )));
+        }
+    }
+    let mut active_count = 0;
+    for (index, viewport) in model.viewports.iter().enumerate() {
+        validate_view_camera(&viewport.camera, &format!("viewport {index}"))?;
+        active_count += usize::from(viewport.active);
+        let grid = viewport.grid;
+        if !grid.snap_spacing.is_finite()
+            || grid.snap_spacing <= 0.0
+            || !grid.minor_spacing.is_finite()
+            || grid.minor_spacing <= 0.0
+            || grid.major_interval > i32::MAX as u32
+            || grid.line_count > i32::MAX as u32
+            || !(f64::from(grid.line_count) * grid.minor_spacing).is_finite()
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "viewport {index} has invalid grid settings"
+            )));
+        }
+        let [left, right, top, bottom] = viewport.position;
+        if !viewport.position.iter().all(|value| value.is_finite())
+            || left >= right
+            || top >= bottom
+        {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "viewport {index} has an invalid position"
+            )));
+        }
+    }
+    if active_count > 1 {
+        return Err(ThreeDmError::InvalidModel(
+            "more than one viewport is active".into(),
+        ));
+    }
+    for (index, object) in model.objects.iter().enumerate() {
+        let mut user_text_keys = BTreeSet::new();
+        for (location, text) in [
+            ("attribute", &object.user_text),
+            ("geometry", &object.geometry_user_text),
+        ] {
+            user_text_keys.clear();
+            for (key, value) in text {
+                if key.is_empty() || value.is_empty() || !user_text_keys.insert(key.to_lowercase())
+                {
+                    return Err(ThreeDmError::InvalidModel(format!(
+                        "object {index} has an empty or duplicate {location} user text entry"
+                    )));
+                }
+            }
+        }
+        if object.layer_index >= model.layers.len() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "object {index} references missing layer {}",
+                object.layer_index
+            )));
+        }
+        let mut memberships = BTreeSet::new();
+        for group_index in &object.group_indices {
+            if *group_index >= model.groups.len() {
+                return Err(ThreeDmError::InvalidModel(format!(
+                    "object {index} references missing group {group_index}"
+                )));
+            }
+            if !memberships.insert(*group_index) {
+                return Err(ThreeDmError::InvalidModel(format!(
+                    "object {index} repeats group {group_index}"
+                )));
+            }
+        }
+        if !(-1..=99).contains(&object.wire_density) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "object {index} has wire density {} outside -1 through 99",
+                object.wire_density
+            )));
+        }
+    }
+    Ok(())
+}
+
+fn validate_view_camera(view: &ThreeDmNamedView, description: &str) -> Result<(), ThreeDmError> {
+    if view
+        .camera_direction
+        .cross(view.camera_up)?
+        .normalized_nonzero()
+        .is_err()
+    {
+        return Err(ThreeDmError::InvalidModel(format!(
+            "{description} has a degenerate camera orientation"
+        )));
+    }
+    let [left, right, bottom, top, near, far] = view.frustum;
+    if !view.frustum.iter().all(|value| value.is_finite())
+        || left >= right
+        || bottom >= top
+        || near <= 0.0
+        || near >= far
+        || view.screen_port[0] == view.screen_port[1]
+        || view.screen_port[2] == view.screen_port[3]
+    {
+        return Err(ThreeDmError::InvalidModel(format!(
+            "{description} has an invalid frustum"
+        )));
+    }
+    Ok(())
+}
+
+struct ObjectPayload {
+    object_type: c_int,
+    degree_u: u32,
+    degree_v: u32,
+    control_point_count_u: usize,
+    control_point_count_v: usize,
+    coordinates: Vec<c_double>,
+    knots_u: Vec<c_double>,
+    knots_v: Vec<c_double>,
+    indices: Vec<u32>,
+    geometry_data: Vec<u8>,
+}
+
+impl ObjectPayload {
+    fn from_geometry(geometry: &ThreeDmGeometry) -> Result<Self, ThreeDmError> {
+        Ok(match geometry {
+            ThreeDmGeometry::Point(point) => Self {
+                object_type: OBJECT_POINT,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: point.to_array().to_vec(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::Line(line) => Self {
+                object_type: OBJECT_LINE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: line
+                    .start()
+                    .to_array()
+                    .into_iter()
+                    .chain(line.end().to_array())
+                    .collect(),
+                knots_u: vec![*line.domain().start(), *line.domain().end()],
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::PointCloud(cloud) => Self {
+                object_type: OBJECT_POINT_CLOUD,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: cloud
+                    .points()
+                    .iter()
+                    .flat_map(|point| point.to_array())
+                    .collect(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: point_cloud_data::encode(cloud),
+            },
+            ThreeDmGeometry::Polyline(curve) => Self {
+                object_type: OBJECT_POLYLINE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: curve
+                    .vertices()
+                    .iter()
+                    .flat_map(|point| point.to_array())
+                    .collect(),
+                knots_u: curve.parameters().to_vec(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::NurbsCurve(curve) => Self {
+                object_type: OBJECT_NURBS_CURVE,
+                degree_u: curve.degree() as u32,
+                degree_v: 0,
+                control_point_count_u: curve.control_points().len(),
+                control_point_count_v: 0,
+                coordinates: curve
+                    .control_points()
+                    .iter()
+                    .flat_map(|control| {
+                        control
+                            .point()
+                            .to_array()
+                            .into_iter()
+                            .chain([control.weight()])
+                    })
+                    .collect(),
+                knots_u: curve.knots().to_vec(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::NurbsSurface(surface) => Self {
+                object_type: OBJECT_NURBS_SURFACE,
+                degree_u: surface.degree_u() as u32,
+                degree_v: surface.degree_v() as u32,
+                control_point_count_u: surface.control_point_count_u(),
+                control_point_count_v: surface.control_point_count_v(),
+                coordinates: surface
+                    .control_points()
+                    .iter()
+                    .flat_map(|control| {
+                        control
+                            .point()
+                            .to_array()
+                            .into_iter()
+                            .chain([control.weight()])
+                    })
+                    .collect(),
+                knots_u: surface.knots_u().to_vec(),
+                knots_v: surface.knots_v().to_vec(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::Brep(brep) => Self {
+                object_type: OBJECT_BREP,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: three_dm_geometry::encode_brep(brep).map_err(
+                    |error| match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow => {
+                            ThreeDmError::InvalidModel(
+                                "B-rep payload exceeds 64-bit limits".to_owned(),
+                            )
+                        }
+                    },
+                )?,
+            },
+            ThreeDmGeometry::PolyCurve(curve) => Self {
+                object_type: OBJECT_POLYCURVE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: three_dm_geometry::encode_polycurve(curve).map_err(|error| {
+                    match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow => {
+                            ThreeDmError::InvalidModel(
+                                "polycurve payload exceeds 64-bit limits".to_owned(),
+                            )
+                        }
+                    }
+                })?,
+            },
+            ThreeDmGeometry::Arc(arc) => Self {
+                object_type: OBJECT_ARC,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: three_dm_geometry::encode_arc(*arc).map_err(
+                    |error| match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        _ => ThreeDmError::InvalidModel("invalid native arc payload".into()),
+                    },
+                )?,
+            },
+            ThreeDmGeometry::Mesh(mesh) => Self {
+                object_type: OBJECT_TRIANGLE_MESH,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: mesh
+                    .vertices()
+                    .iter()
+                    .flat_map(|point| point.to_array())
+                    .collect(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: mesh
+                    .faces()
+                    .iter()
+                    .flat_map(|face| match *face {
+                        MeshFace::Triangle([a, b, c]) => [a, b, c, c],
+                        MeshFace::Quad(indices) => indices,
+                    })
+                    .collect(),
+                geometry_data: mesh_ngon::encode(mesh.ngons(), mesh.vertex_colors())?,
+            },
+        })
+    }
+}
+
+struct ModelHandle(NonNull<ffi::ViboThreeDmModel>);
+
+impl Drop for ModelHandle {
+    fn drop(&mut self) {
+        // SAFETY: this handle was returned by `vibo_3dm_read` and has not been freed.
+        unsafe { ffi::vibo_3dm_free(self.0.as_ptr()) };
+    }
+}
+
+fn path_to_c_string(path: &Path) -> Result<CString, ThreeDmError> {
+    let text = path
+        .to_str()
+        .ok_or_else(|| ThreeDmError::InvalidPath(path.display().to_string()))?;
+    CString::new(text).map_err(|_| ThreeDmError::InvalidPath(path.display().to_string()))
+}
+
+fn c_string(value: &str, field: &'static str) -> Result<CString, ThreeDmError> {
+    CString::new(value).map_err(|_| ThreeDmError::InteriorNul { field })
+}
+
+fn c_text(pointer: *const c_char) -> Result<String, ThreeDmError> {
+    // SAFETY: bridge string pointers are nul terminated and valid for the model lifetime.
+    unsafe { CStr::from_ptr(pointer) }
+        .to_str()
+        .map(str::to_owned)
+        .map_err(|_| ThreeDmError::MalformedBridge("text is not UTF-8"))
+}
+
+fn native_error(buffer: &[c_char]) -> ThreeDmError {
+    // SAFETY: the bridge always nul terminates a nonempty error buffer.
+    let message = unsafe { CStr::from_ptr(buffer.as_ptr()) }
+        .to_string_lossy()
+        .into_owned();
+    ThreeDmError::Native(if message.is_empty() {
+        "operation failed without a diagnostic".to_owned()
+    } else {
+        message
+    })
+}
+
+fn point(values: &[c_double]) -> Result<Point3, GeometryError> {
+    Point3::try_new(values[0], values[1], values[2])
+}
+
+fn pointer_or_null<T>(values: &[T]) -> *const T {
+    if values.is_empty() {
+        std::ptr::null()
+    } else {
+        values.as_ptr()
+    }
+}
+
+fn ffi_slice<T>(
+    _owner: &ModelHandle,
+    pointer: *const T,
+    length: usize,
+) -> Result<&[T], ThreeDmError> {
+    if length == 0 {
+        return Ok(&[]);
+    }
+    if pointer.is_null() || length > isize::MAX as usize / size_of::<T>() {
+        return Err(ThreeDmError::MalformedBridge("invalid array pointer"));
+    }
+    // SAFETY: the bridge guarantees arrays have `length` initialized elements
+    // and remain valid while the owning model handle is alive.
+    Ok(unsafe { slice::from_raw_parts(pointer, length) })
+}
+
+mod ffi {
+    use super::{c_char, c_double, c_int};
+
+    #[repr(C)]
+    pub struct ViboThreeDmModel {
+        _private: [u8; 0],
+    }
+
+    #[repr(C)]
+    #[derive(Default)]
+    pub struct ViboObjectInfo {
+        pub object_type: c_int,
+        pub source_layer_index: i32,
+        pub name: *const c_char,
+        pub visible: u8,
+        pub locked: u8,
+        pub color_source: u8,
+        pub color_red: u8,
+        pub color_green: u8,
+        pub color_blue: u8,
+        pub wire_density: i32,
+        pub degree_u: u32,
+        pub degree_v: u32,
+        pub control_point_count_u: usize,
+        pub control_point_count_v: usize,
+        pub coordinate_count: usize,
+        pub knot_u_count: usize,
+        pub knot_v_count: usize,
+        pub index_count: usize,
+        pub geometry_data_count: usize,
+        pub group_index_count: usize,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteLayer {
+        pub name: *const c_char,
+        pub red: u8,
+        pub green: u8,
+        pub blue: u8,
+        pub visible: u8,
+        pub locked: u8,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteGroup {
+        pub name: *const c_char,
+    }
+
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct ViboNamedView {
+        pub name: *const c_char,
+        pub projection: u8,
+        pub has_target: u8,
+        pub camera_location: [f64; 3],
+        pub camera_direction: [f64; 3],
+        pub camera_up: [f64; 3],
+        pub target: [f64; 3],
+        pub cplane_origin: [f64; 3],
+        pub cplane_x: [f64; 3],
+        pub cplane_y: [f64; 3],
+        pub frustum: [f64; 6],
+        pub screen_port: [i32; 4],
+    }
+
+    impl Default for ViboNamedView {
+        fn default() -> Self {
+            Self {
+                name: std::ptr::null(),
+                projection: 0,
+                has_target: 0,
+                camera_location: [0.0; 3],
+                camera_direction: [0.0; 3],
+                camera_up: [0.0; 3],
+                target: [0.0; 3],
+                cplane_origin: [0.0; 3],
+                cplane_x: [0.0; 3],
+                cplane_y: [0.0; 3],
+                frustum: [0.0; 6],
+                screen_port: [0; 4],
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    pub struct ViboNamedCPlane {
+        pub name: *const c_char,
+        pub origin: [f64; 3],
+        pub x_axis: [f64; 3],
+        pub y_axis: [f64; 3],
+        pub grid_spacing: f64,
+        pub snap_spacing: f64,
+        pub grid_line_count: i32,
+        pub grid_thick_frequency: i32,
+        pub depth_buffer: u8,
+    }
+
+    impl Default for ViboNamedCPlane {
+        fn default() -> Self {
+            Self {
+                name: std::ptr::null(),
+                origin: [0.0; 3],
+                x_axis: [0.0; 3],
+                y_axis: [0.0; 3],
+                grid_spacing: 0.0,
+                snap_spacing: 0.0,
+                grid_line_count: 0,
+                grid_thick_frequency: 0,
+                depth_buffer: 0,
+            }
+        }
+    }
+
+    #[repr(C)]
+    #[derive(Clone, Copy, Default)]
+    pub struct ViboCurrentView {
+        pub camera: ViboNamedView,
+        pub display_mode: u8,
+        pub maximized: u8,
+        pub active: u8,
+        pub show_grid: u8,
+        pub show_axes: u8,
+        pub show_world_axes: u8,
+        pub position: [f64; 4],
+        pub snap_spacing: f64,
+        pub minor_spacing: f64,
+        pub major_interval: i32,
+        pub line_count: i32,
+    }
+
+    #[repr(C)]
+    pub struct ViboUserText {
+        pub key: *const c_char,
+        pub value: *const c_char,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteObject {
+        pub object_type: c_int,
+        pub layer_index: usize,
+        pub name: *const c_char,
+        pub visible: u8,
+        pub locked: u8,
+        pub color_source: u8,
+        pub color_red: u8,
+        pub color_green: u8,
+        pub color_blue: u8,
+        pub wire_density: i32,
+        pub degree_u: u32,
+        pub degree_v: u32,
+        pub control_point_count_u: usize,
+        pub control_point_count_v: usize,
+        pub coordinates: *const c_double,
+        pub coordinate_count: usize,
+        pub knots_u: *const c_double,
+        pub knot_u_count: usize,
+        pub knots_v: *const c_double,
+        pub knot_v_count: usize,
+        pub indices: *const u32,
+        pub index_count: usize,
+        pub geometry_data: *const u8,
+        pub geometry_data_count: usize,
+        pub group_indices: *const usize,
+        pub group_index_count: usize,
+        pub user_text: *const ViboUserText,
+        pub user_text_count: usize,
+        pub geometry_user_text: *const ViboUserText,
+        pub geometry_user_text_count: usize,
+    }
+
+    unsafe extern "C" {
+        pub fn vibo_3dm_read(
+            path: *const c_char,
+            output: *mut *mut ViboThreeDmModel,
+            error: *mut c_char,
+            error_capacity: usize,
+        ) -> c_int;
+        pub fn vibo_3dm_free(model: *mut ViboThreeDmModel);
+        pub fn vibo_3dm_units(
+            model: *const ViboThreeDmModel,
+            unit_system: *mut u32,
+            meters_per_unit: *mut f64,
+            name: *mut *const c_char,
+        ) -> c_int;
+        pub fn vibo_3dm_layer_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_current_layer_index(model: *const ViboThreeDmModel) -> i32;
+        pub fn vibo_3dm_layer(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            source_index: *mut i32,
+            name: *mut *const c_char,
+            red: *mut u8,
+            green: *mut u8,
+            blue: *mut u8,
+            visible: *mut u8,
+            locked: *mut u8,
+        ) -> c_int;
+        pub fn vibo_3dm_group_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_expanded_instance_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_group(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            source_index: *mut i32,
+            name: *mut *const c_char,
+        ) -> c_int;
+        pub fn vibo_3dm_named_view_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_named_view(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            view: *mut ViboNamedView,
+        ) -> c_int;
+        pub fn vibo_3dm_named_cplane_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_named_cplane(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            plane: *mut ViboNamedCPlane,
+        ) -> c_int;
+        pub fn vibo_3dm_current_view_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_current_view(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            view: *mut ViboCurrentView,
+        ) -> c_int;
+        pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_object_placement_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_placement(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            placement: usize,
+            matrix: *mut c_double,
+        ) -> c_int;
+        pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_object(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            info: *mut ViboObjectInfo,
+            coordinates: *mut *const c_double,
+            knots_u: *mut *const c_double,
+            knots_v: *mut *const c_double,
+            indices: *mut *const u32,
+            geometry_data: *mut *const u8,
+            group_indices: *mut *const i32,
+        ) -> c_int;
+        pub fn vibo_3dm_object_user_text_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_user_text(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            text_index: usize,
+            key: *mut *const c_char,
+            value: *mut *const c_char,
+        ) -> c_int;
+        pub fn vibo_3dm_object_geometry_user_text_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_geometry_user_text(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            text_index: usize,
+            key: *mut *const c_char,
+            value: *mut *const c_char,
+        ) -> c_int;
+        pub fn vibo_3dm_write(
+            path: *const c_char,
+            unit_system: u32,
+            meters_per_unit: f64,
+            unit_name: *const c_char,
+            absolute_tolerance: f64,
+            relative_tolerance: f64,
+            angle_tolerance: f64,
+            layers: *const ViboWriteLayer,
+            layer_count: usize,
+            current_layer_index: i32,
+            groups: *const ViboWriteGroup,
+            group_count: usize,
+            named_views: *const ViboNamedView,
+            named_view_count: usize,
+            named_cplanes: *const ViboNamedCPlane,
+            named_cplane_count: usize,
+            current_views: *const ViboCurrentView,
+            current_view_count: usize,
+            objects: *const ViboWriteObject,
+            object_count: usize,
+            error: *mut c_char,
+            error_capacity: usize,
+        ) -> c_int;
+        pub fn vibo_3dm_tolerances(
+            model: *const ViboThreeDmModel,
+            absolute: *mut f64,
+            relative: *mut f64,
+            angle: *mut f64,
+        ) -> c_int;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    use super::*;
+    use viboceros_geometry::{Frame3, MeshNgon, Polyline3, Vector3};
+
+    fn sample_model() -> ThreeDmModel {
+        let point = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(-2.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(5.0, 4.0, -1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.0, 3.0, 0.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let middle_weight = 0.5_f64.sqrt();
+        let mut surface_controls = Vec::new();
+        for z in [0.0, 3.0] {
+            surface_controls.extend([
+                WeightedPoint3::try_new(Point3::try_new(1.0, 0.0, z).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(1.0, 1.0, z).unwrap(), middle_weight)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(0.0, 1.0, z).unwrap(), 1.0).unwrap(),
+            ]);
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            surface_controls,
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cloud = PointCloud3::try_new(vec![
+            Point3::try_new(-4.0, 2.0, 7.0).unwrap(),
+            Point3::try_new(8.0, -1.0, 3.0).unwrap(),
+            Point3::try_new(-4.0, 2.0, 7.0).unwrap(),
+        ])
+        .unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[-1.0, 2.0], [-2.0, 3.0], [-3.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder_brep = Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap();
+        let cone_brep = Brep::try_cone(frame, 1.75, 5.0, Tolerance::DEFAULT).unwrap();
+        let extrusion_profile = Polyline3::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let extrusion_brep = Brep::try_extruded_curve(
+            &extrusion_profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 2.0, 5.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let apex_extrusion_brep = Brep::try_extruded_curve_to_point(
+            &extrusion_profile,
+            Point3::try_new(11.0, 2.0, 5.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let extrusion_path = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(30.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(31.0, 4.0, 2.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(32.0, 3.0, 5.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let path_extrusion_brep = Brep::try_extruded_curve_along_curve(
+            &extrusion_profile,
+            &extrusion_path,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let planar_hole = Polyline3::try_new(
+            vec![
+                Point3::try_new(10.5, 1.0, 0.0).unwrap(),
+                Point3::try_new(11.5, 1.0, 0.0).unwrap(),
+                Point3::try_new(11.5, 2.0, 0.0).unwrap(),
+                Point3::try_new(10.5, 2.0, 0.0).unwrap(),
+                Point3::try_new(10.5, 1.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let planar_face_brep = Brep::try_planar_face_with_holes(
+            &extrusion_profile,
+            &[planar_hole],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let rectangular_trim_brep = Brep::try_rectangular_surface_face(
+            NurbsSurface::try_bilinear([
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+                Point3::try_new(10.0, 10.0, 3.0).unwrap(),
+                Point3::try_new(0.0, 10.0, -1.0).unwrap(),
+            ])
+            .unwrap(),
+            0.0..=0.4,
+            0.0..=0.6,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        ThreeDmModel::new(
+            vec![
+                ThreeDmLayer {
+                    name: "Default".to_owned(),
+                    color: [0, 0, 0],
+                    visible: true,
+                    locked: false,
+                },
+                ThreeDmLayer {
+                    name: "Reference 三".to_owned(),
+                    color: [12, 34, 56],
+                    visible: false,
+                    locked: true,
+                },
+            ],
+            vec![
+                ThreeDmGroup {
+                    name: "Assembly α".to_owned(),
+                },
+                ThreeDmGroup {
+                    name: "Inspection".to_owned(),
+                },
+            ],
+            vec![
+                ThreeDmObject {
+                    group_indices: vec![0],
+                    object_color: [12, 34, 56],
+                    color_source: ThreeDmColorSource::Object,
+                    ..ThreeDmObject::new(ThreeDmGeometry::Point(point), 0)
+                },
+                ThreeDmObject {
+                    group_indices: vec![0, 1],
+                    object_color: [7, 8, 9],
+                    ..ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0)
+                },
+                ThreeDmObject {
+                    geometry: ThreeDmGeometry::Line(line),
+                    layer_index: 1,
+                    name: Some("guide".to_owned()),
+                    user_text: BTreeMap::new(),
+                    geometry_user_text: BTreeMap::new(),
+                    visible: true,
+                    locked: true,
+                    object_color: [90, 80, 70],
+                    color_source: ThreeDmColorSource::Parent,
+                    wire_density: 7,
+                    group_indices: vec![1],
+                },
+                ThreeDmObject {
+                    object_color: [4, 5, 6],
+                    color_source: ThreeDmColorSource::Material,
+                    ..ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0)
+                },
+                ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(box_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(cylinder_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(cone_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(apex_extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(path_extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(planar_face_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(rectangular_trim_brep), 0),
+            ],
+        )
+    }
+
+    #[test]
+    fn imports_rhino_nested_analytic_polycurve_without_fitting() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/rhino8_nested_polycurve.3dm");
+        let model = read_3dm_file(path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(model.unsupported_object_count(), 0);
+        assert_eq!(model.objects.len(), 1);
+        assert_eq!(
+            model.objects[0].name.as_deref(),
+            Some("nested line-arc-line")
+        );
+        assert_eq!(model.layers[model.objects[0].layer_index].name, "Reference");
+        let ThreeDmGeometry::PolyCurve(curve) = &model.objects[0].geometry else {
+            panic!("nested source lost its composite type")
+        };
+        assert_eq!(curve.segments().len(), 3);
+        assert_eq!(curve.domain(), -7.0..=13.0);
+        assert!(
+            (curve.length(Tolerance::DEFAULT).unwrap() - 4.0 - std::f64::consts::FRAC_PI_2).abs()
+                < 2e-12
+        );
+        let expected_ends = [
+            [[-2.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
+            [[1.0, 1.0, 0.0], [1.0, 3.0, 0.0]],
+        ];
+        for (segment, expected) in curve.segments().iter().zip(expected_ends) {
+            for (t, expected) in [*segment.domain().start(), *segment.domain().end()]
+                .into_iter()
+                .zip(expected)
+            {
+                assert!(
+                    segment
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(Point3::try_from(expected).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+        let arc = &curve.segments()[1];
+        assert_eq!(arc.degree(), 2);
+        assert!(matches!(arc, viboceros_geometry::CurveSegment3::Arc(_)));
+        let nurbs = arc.to_nurbs().unwrap();
+        assert_eq!(nurbs.control_points().len(), 3);
+        assert!(
+            (nurbs.control_points()[1].weight() / nurbs.control_points()[0].weight()
+                - 0.5_f64.sqrt())
+            .abs()
+                < 2e-12
+        );
+        let center = Point3::try_new(0.0, 1.0, 0.0).unwrap();
+        for i in 0..=100 {
+            let point = arc
+                .evaluate(arc.parameter_at(i as f64 / 100.0).unwrap())
+                .unwrap();
+            assert!((point.distance_to(center).unwrap() - 1.0).abs() < 2e-12);
+            assert!(point.x() >= -2e-12 && point.y() <= 1.0 + 2e-12);
+        }
+        let output = temporary_path("rhino-polycurve-roundtrip.3dm");
+        write_3dm_file(&output, &model).unwrap();
+        let round_trip = read_3dm_file(&output, Tolerance::DEFAULT).unwrap();
+        let ThreeDmGeometry::PolyCurve(decoded) = &round_trip.objects[0].geometry else {
+            panic!("round-trip lost polycurve")
+        };
+        assert_eq!(curve.parameters(), decoded.parameters());
+        for (expected, actual) in curve.segments().iter().zip(decoded.segments()) {
+            assert_eq!(
+                std::mem::discriminant(actual),
+                std::mem::discriminant(expected)
+            );
+            assert_curve_near(
+                &actual.to_nurbs().unwrap(),
+                &expected.to_nurbs().unwrap(),
+                2e-12,
+            );
+        }
+        fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn attribute_and_geometry_user_text_round_trip_independently() {
+        let path = temporary_path("user-text.3dm");
+        let layer = ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        };
+        let mut object = ThreeDmObject::new(
+            ThreeDmGeometry::Point(Point3::try_new(0., 0., 0.).unwrap()),
+            0,
+        );
+        object
+            .user_text
+            .insert("Part Number".to_owned(), "α 12".to_owned());
+        object
+            .user_text
+            .insert(".hidden".to_owned(), "kept".to_owned());
+        object
+            .geometry_user_text
+            .insert("Part Number".to_owned(), "geometry value".to_owned());
+        let model = ThreeDmModel::new(vec![layer], vec![], vec![object.clone()]);
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.objects[0].user_text, object.user_text);
+        assert_eq!(
+            decoded.objects[0].geometry_user_text,
+            object.geometry_user_text
+        );
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn polycurve_round_trip_preserves_segments_domains_and_attributes() {
+        let path = temporary_path("polycurve.3dm");
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let first = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 0.0), 2.0_f64.sqrt()).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), 2.0).unwrap(),
+            ],
+            vec![-5.0, -5.0, -5.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let last = NurbsCurve::try_new_rational(
+            1,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 1.0), -3.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 3.0), -4.0).unwrap(),
+            ],
+            vec![11.0, 11.0, 12.0, 12.0],
+        )
+        .unwrap();
+        let curve =
+            PolyCurve3::try_with_segment_domains(vec![first, last], vec![-10.0, -9.0, 30.0])
+                .unwrap();
+        let mut model = sample_model();
+        let source = ThreeDmObject {
+            geometry: ThreeDmGeometry::PolyCurve(curve.clone()),
+            ..model.objects[2].clone()
+        };
+        model.objects = vec![source.clone()];
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.objects.len(), 1);
+        let mut decoded_object = decoded.objects[0].clone();
+        let ThreeDmGeometry::PolyCurve(actual) = &decoded_object.geometry else {
+            panic!("polycurve type was lost")
+        };
+        assert_eq!(actual.parameters(), curve.parameters());
+        assert_eq!(actual.segments().len(), 2);
+        for (actual, expected) in actual.segments().iter().zip(curve.segments()) {
+            assert_eq!(
+                std::mem::discriminant(actual),
+                std::mem::discriminant(expected)
+            );
+            assert_curve_near(
+                &actual.to_nurbs().unwrap(),
+                &expected.to_nurbs().unwrap(),
+                2e-12,
+            );
+        }
+        for i in 0..=100 {
+            let t = curve.parameter_at(i as f64 / 100.0).unwrap();
+            assert!(
+                actual
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(curve.evaluate(t).unwrap())
+                    .unwrap()
+                    < 2e-12
+            );
+        }
+        decoded_object.geometry = source.geometry.clone();
+        assert_eq!(decoded_object, source);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn collapsed_native_mesh_records_round_trip_with_colors_and_ngons() {
+        let path = temporary_path("collapsed-mesh-records.3dm");
+        let captured: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/mesh_edit_records.json"
+        ))
+        .unwrap();
+        let mut objects = Vec::new();
+        for row in captured["results"].as_array().unwrap() {
+            let value = &row["value"]["edited"];
+            let vertices = value["mesh"]["vertices"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|p| {
+                    Point3::try_from(serde_json::from_value::<[f64; 3]>(p.clone()).unwrap())
+                        .unwrap()
+                })
+                .collect();
+            let faces = value["mesh"]["faces"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|f| {
+                    let indices: Vec<u32> = serde_json::from_value(f.clone()).unwrap();
+                    match *indices.as_slice() {
+                        [a, b, c] => MeshFace::Triangle([a, b, c]),
+                        [a, b, c, d] => MeshFace::Quad([a, b, c, d]),
+                        _ => panic!("unsupported native face"),
+                    }
+                })
+                .collect();
+            let mesh = TriangleMesh::try_from_face_records(vertices, faces)
+                .unwrap()
+                .try_with_vertex_colors(Some(
+                    serde_json::from_value(value["colors"].clone()).unwrap(),
+                ))
+                .unwrap();
+            let mut object = ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0);
+            object.name = Some(row["id"].as_str().unwrap().to_owned());
+            objects.push(object);
+        }
+        // N-gon membership is stored over raw face indices, even after all
+        // four corners coincide. The bridge must preserve this overlay too.
+        let mesh = TriangleMesh::try_from_face_records(
+            vec![Point3::try_new(0., 0., 0.).unwrap(); 4],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0])])
+        .unwrap();
+        objects.push(ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0));
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Collapsed records".into(),
+                color: [12, 34, 56],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            objects,
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(loaded.objects, model.objects);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn open_nurbs_round_trip_preserves_mesh_ngon_face_groups() {
+        let path = temporary_path("mesh-ngon.3dm");
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(2., 0., 0.).unwrap(),
+                Point3::try_new(2., 2., 0.).unwrap(),
+                Point3::try_new(0., 2., 0.).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_ngons(vec![MeshNgon::from_parts(vec![0, 1, 2, 3], vec![0, 1])])
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![
+            [255, 0, 0, 0],
+            [0, 255, 0, 0],
+            [0, 0, 255, 64],
+            [255, 255, 0, 128],
+        ]))
+        .unwrap();
+        let triangle = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0., 0., 1.).unwrap(),
+                Point3::try_new(1., 0., 1.).unwrap(),
+                Point3::try_new(0., 1., 1.).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_with_vertex_colors(Some(vec![[4, 5, 6, 0], [7, 8, 9, 128], [10, 11, 12, 255]]))
+        .unwrap();
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".to_owned(),
+                color: [255, 255, 255],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(triangle.clone()), 0),
+            ],
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(loaded.objects.len(), 2);
+        assert_eq!(loaded.objects[0].geometry, ThreeDmGeometry::Mesh(mesh));
+        assert_eq!(loaded.objects[1].geometry, ThreeDmGeometry::Mesh(triangle));
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn open_nurbs_round_trip_preserves_geometry_layers_and_groups() {
+        let path = temporary_path("roundtrip.3dm");
+        let original = sample_model();
+        fs::write(&path, b"previous valid file remains until replacement").unwrap();
+        write_3dm_file(&path, &original).unwrap();
+        let bytes = fs::read(&path).unwrap();
+        assert!(bytes.starts_with(b"3D Geometry File Format"));
+
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.layers, original.layers);
+        assert_eq!(decoded.groups, original.groups);
+        assert_eq!(decoded.objects.len(), original.objects.len());
+        for (decoded, original) in decoded.objects.iter().zip(&original.objects) {
+            assert_eq!(decoded.layer_index, original.layer_index);
+            assert_eq!(decoded.name, original.name);
+            assert_eq!(decoded.visible, original.visible);
+            assert_eq!(decoded.locked, original.locked);
+            assert_eq!(decoded.object_color, original.object_color);
+            assert_eq!(decoded.color_source, original.color_source);
+            assert_eq!(decoded.wire_density, original.wire_density);
+            assert_eq!(decoded.group_indices, original.group_indices);
+            match (&decoded.geometry, &original.geometry) {
+                (ThreeDmGeometry::Brep(decoded), ThreeDmGeometry::Brep(original)) => {
+                    assert_brep_near(decoded, original)
+                }
+                (decoded, original) => assert_eq!(decoded, original),
+            }
+        }
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn point_cloud_channels_round_trip_through_opennurbs() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("colored-cloud.3dm");
+        let cloud = PointCloud3::try_with_channels(
+            vec![
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Point3::try_new(4.0, 5.0, 6.0).unwrap(),
+            ],
+            viboceros_geometry::PointCloudChannels {
+                colors: Some(vec![[12, 34, 56, 0], [78, 90, 123, 128]]),
+                normals: Some(vec![
+                    viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                    viboceros_geometry::Vector3::try_new(1.0, 2.0, 3.0).unwrap(),
+                ]),
+                values: Some(vec![0.5, -20.0]),
+                ordered: true,
+                hidden: None,
+                plane: Some(
+                    viboceros_geometry::PointCloudPlane::try_new(
+                        Point3::try_new(0.0, 0.0, 5.0).unwrap(),
+                        [
+                            viboceros_geometry::Vector3::try_new(1.0, 1.0e-10, 0.0).unwrap(),
+                            viboceros_geometry::Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                            viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                        ],
+                    )
+                    .unwrap(),
+                ),
+            },
+        )
+        .unwrap();
+        let ordered_only = PointCloud3::try_with_channels(
+            vec![Point3::try_new(-1.0, 0.0, 0.0).unwrap()],
+            viboceros_geometry::PointCloudChannels {
+                ordered: true,
+                ..viboceros_geometry::PointCloudChannels::default()
+            },
+        )
+        .unwrap();
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".into(),
+                color: [0, 0, 0],
+                visible: true,
+                locked: false,
+            }],
+            vec![],
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::PointCloud(ordered_only.clone()), 0),
+                ThreeDmObject::new(
+                    ThreeDmGeometry::PointCloud(cloud.with_hidden(vec![true, false]).unwrap()),
+                    0,
+                ),
+            ],
+        );
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.unsupported_object_count(), 0);
+        assert_eq!(
+            loaded.objects[0].geometry,
+            ThreeDmGeometry::PointCloud(cloud.clone())
+        );
+        assert_eq!(
+            loaded.objects[1].geometry,
+            ThreeDmGeometry::PointCloud(ordered_only)
+        );
+        assert_eq!(
+            loaded.objects[2].geometry,
+            ThreeDmGeometry::PointCloud(cloud)
+        );
+    }
+
+    #[test]
+    fn model_tolerance_boundary_values_round_trip_without_normalization() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("tolerance boundaries.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        let tiny = f64::from_bits(1);
+        let below_one = f64::from_bits(1.0_f64.to_bits() - 1);
+        for tolerance in [
+            Tolerance::try_new(tiny, tiny, tiny).unwrap(),
+            Tolerance::try_new(f64::MAX, below_one, std::f64::consts::PI).unwrap(),
+            Tolerance::try_new(0.0125, 0.00025, 0.5_f64.to_radians()).unwrap(),
+        ] {
+            model.tolerance = tolerance;
+            let before = model.clone();
+            write_3dm_file(&path, &model).unwrap();
+            assert_eq!(model, before);
+            let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+            assert_eq!(decoded.tolerance, tolerance);
+            assert_eq!(decoded.objects, model.objects);
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(converted.tolerance, Tolerance::DEFAULT);
+        }
+    }
+
+    #[test]
+    fn invalid_tolerance_is_rejected_before_any_destination_access() {
+        let directory = tempfile::tempdir().unwrap();
+        let missing_parent = directory
+            .path()
+            .join("must not be created")
+            .join("model.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        for (relative, angle) in [
+            (1.0, 0.01),
+            (f64::from_bits(1.0_f64.to_bits() + 1), 0.01),
+            (0.01, f64::from_bits(std::f64::consts::PI.to_bits() + 1)),
+        ] {
+            model.tolerance = Tolerance::try_new(0.001, relative, angle).unwrap();
+            assert!(matches!(
+                write_3dm_file(&missing_parent, &model),
+                Err(ThreeDmError::InvalidModel(_))
+            ));
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 0);
+        }
+    }
+
+    #[test]
+    fn model_length_units_round_trip_without_rescaling_coordinates() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        let mut model = sample_model();
+        write_3dm_file(&path, &model).unwrap();
+        let baseline = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        // General B-rep round-trip fidelity is checked separately; compare
+        // against the same serialization here to isolate unit-driven scaling.
+        assert_eq!(baseline.objects[0], model.objects[0]);
+        // Every OpenNURBS standard identifier, unitless, unset, and custom.
+        for code in (0..=25).chain(std::iter::once(255)) {
+            model.units =
+                crate::three_dm_units::decode(code, 0.125, "custom µ-unit".into()).unwrap();
+            write_3dm_file(&path, &model).unwrap();
+            let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+            assert_eq!(decoded.units, model.units, "unit identifier {code}");
+            assert_eq!(
+                decoded.objects, baseline.objects,
+                "coordinates or attributes changed for {code}"
+            );
+        }
+    }
+
+    #[test]
+    fn invalid_custom_units_do_not_replace_an_existing_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        fs::write(&path, b"original").unwrap();
+        let mut model = sample_model();
+        for scale in [0.0, -1.0, f64::NAN, f64::INFINITY, f64::NEG_INFINITY] {
+            model.units = LengthUnitSystem::Custom {
+                name: "bad scale".into(),
+                meters_per_unit: scale,
+            };
+            assert!(matches!(
+                write_3dm_file(&path, &model),
+                Err(ThreeDmError::InvalidModel(_))
+            ));
+            assert_eq!(fs::read(&path).unwrap(), b"original");
+        }
+        model.units = LengthUnitSystem::Custom {
+            name: "bad\0name".into(),
+            meters_per_unit: 1.0,
+        };
+        assert!(matches!(
+            write_3dm_file(&path, &model),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+        assert_eq!(fs::read(&path).unwrap(), b"original");
+    }
+
+    #[test]
+    fn imports_preserve_geometry_below_the_document_modelling_tolerance() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("tiny-metres.3dm");
+        let source_tolerance = Tolerance::try_new(1e-13, 1e-12, 1e-10).unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-5, 0.0, 0.0).unwrap(),
+            source_tolerance,
+        )
+        .unwrap();
+        let mut model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".into(),
+                color: [0, 0, 0],
+                visible: true,
+                locked: false,
+            }],
+            vec![],
+            vec![ThreeDmObject::new(ThreeDmGeometry::Line(line), 0)],
+        );
+        model.units = LengthUnitSystem::Meters;
+        let points = vec![
+            line.start(),
+            line.end(),
+            Point3::try_new(0.0, 1e-5, 0.0).unwrap(),
+        ];
+        model.objects.push(ThreeDmObject::new(
+            ThreeDmGeometry::Polyline(
+                Polyline3::try_new(points.clone(), source_tolerance).unwrap(),
+            ),
+            0,
+        ));
+        model.objects.push(ThreeDmObject::new(
+            ThreeDmGeometry::Mesh(
+                TriangleMesh::try_new(points, vec![[0, 1, 2]], source_tolerance).unwrap(),
+            ),
+            0,
+        ));
+        write_3dm_file(&path, &model).unwrap();
+        let target_tolerance = Tolerance::try_new(1e-4, 1e-12, 1e-10).unwrap();
+        let raw = read_3dm_file(&path, target_tolerance).unwrap();
+        assert_eq!(raw.unsupported_object_count(), 0);
+        assert_eq!(raw.objects.len(), 3);
+        let converted =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, target_tolerance)
+                .unwrap();
+        assert_eq!(converted.units, LengthUnitSystem::Millimeters);
+        assert_eq!(converted.unsupported_object_count(), 0);
+        assert_eq!(converted.objects.len(), 3);
+        let ThreeDmGeometry::Line(line) = &converted.objects[0].geometry else {
+            panic!("lost line");
+        };
+        assert!((line.end().x() - 0.01).abs() < 1e-16);
+        // Converted coordinates remain valid even below the target tolerance.
+        let smaller =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Kilometers, target_tolerance).unwrap();
+        assert_eq!(smaller.unsupported_object_count(), 0);
+        assert_eq!(smaller.objects.len(), 3);
+        let ThreeDmGeometry::Line(line) = &smaller.objects[0].geometry else {
+            panic!("lost small line")
+        };
+        assert!((line.end().x() - 1e-8).abs() < 1e-22);
+        let ThreeDmGeometry::Polyline(polyline) = &smaller.objects[1].geometry else {
+            panic!("lost small polyline")
+        };
+        assert_eq!(polyline.vertices().len(), 3);
+        assert!((polyline.vertices()[1].x() - 1e-8).abs() < 1e-22);
+        let ThreeDmGeometry::Mesh(mesh) = &smaller.objects[2].geometry else {
+            panic!("lost small mesh")
+        };
+        assert_eq!(mesh.faces().len(), 1);
+        assert!((mesh.vertices()[1].x() - 1e-8).abs() < 1e-22);
+    }
+
+    #[test]
+    fn exports_small_lines_as_exact_parameterized_nurbs_when_native_lines_are_invalid() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("small-lines.3dm");
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1e-12, -2e-12, 3e-12).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap()
+        .try_reparameterized(-7.0..=11.0)
+        .unwrap();
+        let mut model = sample_model();
+        model.objects = vec![ThreeDmObject::new(ThreeDmGeometry::Line(line), 0)];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read.unsupported_object_count(), 0);
+        assert_eq!(read.objects.len(), 1);
+        let ThreeDmGeometry::NurbsCurve(curve) = &read.objects[0].geometry else {
+            panic!("expected exact NURBS fallback")
+        };
+        assert_eq!(curve.degree(), 1);
+        assert_eq!(curve.domain(), line.domain());
+        assert_eq!(curve.evaluate(-7.0).unwrap(), line.start());
+        assert_eq!(curve.evaluate(11.0).unwrap(), line.end());
+        for t in [-3.0, 0.0, 4.0, 9.0] {
+            assert!(
+                curve
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(line.evaluate(t).unwrap())
+                    .unwrap()
+                    < 1e-26
+            );
+        }
+        let second = LineSegment::try_new(
+            line.end(),
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .unwrap();
+        let polycurve = PolyCurve3::try_new(vec![line, second]).unwrap();
+        model.objects = vec![ThreeDmObject::new(
+            ThreeDmGeometry::PolyCurve(polycurve.clone()),
+            0,
+        )];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read.unsupported_object_count(), 0);
+        assert_eq!(read.objects.len(), 1);
+        let ThreeDmGeometry::PolyCurve(result) = &read.objects[0].geometry else {
+            panic!("lost polycurve")
+        };
+        assert_eq!(result.domain(), polycurve.domain());
+        assert_eq!(result.segments().len(), 2);
+        assert!(matches!(
+            result.segments()[0],
+            viboceros_geometry::CurveSegment3::NurbsCurve(_)
+        ));
+        assert!(matches!(
+            result.segments()[1],
+            viboceros_geometry::CurveSegment3::Line(_)
+        ));
+        for fraction in [0.0, 0.125, 0.5, 0.875, 1.0] {
+            let domain = polycurve.domain();
+            let parameter = domain.start() + fraction * (domain.end() - domain.start());
+            assert!(
+                result
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(polycurve.evaluate(parameter).unwrap())
+                    .unwrap()
+                    < 1e-14
+            );
+        }
+    }
+
+    #[test]
+    fn point_import_does_not_require_a_representable_brep_matching_tolerance() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("extreme point units.3dm");
+        for (meters_per_unit, coordinate, absolute) in
+            [(1e-320, 1.0, 1e-9), (1e300, 1e-300, 1e-100)]
+        {
+            let mut source = sample_model();
+            source.objects.truncate(1);
+            source.units = LengthUnitSystem::Custom {
+                name: "extreme".into(),
+                meters_per_unit,
+            };
+            source.objects[0].geometry =
+                ThreeDmGeometry::Point(Point3::try_new(coordinate, 0.0, 0.0).unwrap());
+            write_3dm_file(&path, &source).unwrap();
+            let tolerance = Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap();
+            assert!(Tolerance::try_new(absolute / meters_per_unit, 1e-12, 1e-10).is_err());
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, tolerance).unwrap();
+            assert_eq!(converted.units, LengthUnitSystem::Meters);
+            assert_eq!(converted.unsupported_object_count(), 0);
+            assert_eq!(converted.layers, source.layers);
+            assert_eq!(converted.groups, source.groups);
+            let mut expected = source.objects[0].clone();
+            expected.geometry = ThreeDmGeometry::Point(
+                Point3::try_new(coordinate * meters_per_unit, 0.0, 0.0).unwrap(),
+            );
+            assert_eq!(converted.objects, vec![expected]);
+        }
+    }
+
+    #[test]
+    fn brep_import_rejects_unrepresentable_matching_tolerance_without_silent_skipping() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("extreme brep units.3dm");
+        let mut source = sample_model();
+        let brep = source
+            .objects
+            .iter()
+            .find(|object| matches!(object.geometry, ThreeDmGeometry::Brep(_)))
+            .unwrap()
+            .clone();
+        source.objects.truncate(1);
+        source.objects.push(brep);
+        for (meters_per_unit, absolute) in [(1e-320, 1e-9), (1e300, 1e-100)] {
+            source.units = LengthUnitSystem::Custom {
+                name: "extreme".into(),
+                meters_per_unit,
+            };
+            write_3dm_file(&path, &source).unwrap();
+            let original_bytes = fs::read(&path).unwrap();
+            assert!(matches!(
+                read_3dm_file_in_units(
+                    &path,
+                    &LengthUnitSystem::Meters,
+                    Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap()
+                ),
+                Err(ThreeDmError::UnrepresentableSourceTolerance)
+            ));
+            assert_eq!(fs::read(&path).unwrap(), original_bytes);
+        }
+    }
+
+    #[test]
+    fn import_units_scale_coordinates_and_preserve_attributes() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("units.3dm");
+        let mut model = sample_model();
+        model.objects.truncate(1);
+        for (units, factor) in [
+            (LengthUnitSystem::Inches, 25.4),
+            (
+                LengthUnitSystem::Custom {
+                    name: "eighth-metre".into(),
+                    meters_per_unit: 0.125,
+                },
+                125.0,
+            ),
+            (LengthUnitSystem::None, 1.0),
+        ] {
+            model.units = units;
+            write_3dm_file(&path, &model).unwrap();
+            let converted =
+                read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, Tolerance::DEFAULT)
+                    .unwrap();
+            assert_eq!(converted.layers, model.layers);
+            assert_eq!(converted.groups, model.groups);
+            let mut expected = model.objects[0].clone();
+            expected.geometry = ThreeDmGeometry::Point(
+                Point3::try_new(factor, 2.0 * factor, 3.0 * factor).unwrap(),
+            );
+            assert_eq!(converted.objects, vec![expected]);
+        }
+        model.units = LengthUnitSystem::Unset;
+        write_3dm_file(&path, &model).unwrap();
+        assert!(matches!(
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Millimeters, Tolerance::DEFAULT),
+            Err(ThreeDmError::Units(viboceros_geometry::UnitError::Unset))
+        ));
+    }
+
+    #[test]
+    fn import_units_scale_mixed_geometry_without_losing_objects() {
+        let directory = tempfile::tempdir().unwrap();
+        let input = directory.path().join("source.3dm");
+        let output = directory.path().join("converted.3dm");
+        let mut source = sample_model();
+        source.units = LengthUnitSystem::Meters;
+        write_3dm_file(&input, &source).unwrap();
+        let converted = read_3dm_file_in_units(
+            &input,
+            &LengthUnitSystem::Custom {
+                name: "two-metres".into(),
+                meters_per_unit: 2.0,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(converted.objects.len(), source.objects.len());
+        assert_eq!(converted.unsupported_object_count(), 0);
+        let ThreeDmGeometry::Point(point) = converted.objects[0].geometry else {
+            panic!("lost point");
+        };
+        assert_eq!(point, Point3::try_new(0.5, 1.0, 1.5).unwrap());
+        let source_tolerance = Tolerance::try_new(2e-9, 1e-12, 1e-10).unwrap();
+        let baseline = read_3dm_file(&input, source_tolerance).unwrap();
+        for (scaled, original) in converted.objects.iter().zip(&baseline.objects) {
+            if let (ThreeDmGeometry::Mesh(scaled), ThreeDmGeometry::Mesh(original)) =
+                (&scaled.geometry, &original.geometry)
+            {
+                assert_eq!(scaled.faces(), original.faces());
+                for (point, source) in scaled.vertices().iter().zip(original.vertices()) {
+                    assert_eq!(
+                        *point,
+                        Point3::try_new(source.x() / 2.0, source.y() / 2.0, source.z() / 2.0)
+                            .unwrap()
+                    );
+                }
+            }
+        }
+        write_3dm_file(&output, &converted).unwrap();
+        let restored =
+            read_3dm_file_in_units(&output, &LengthUnitSystem::Meters, Tolerance::DEFAULT).unwrap();
+        assert_eq!(restored.objects.len(), baseline.objects.len());
+        for (restored, original) in restored.objects.iter().zip(&baseline.objects) {
+            match (&restored.geometry, &original.geometry) {
+                (ThreeDmGeometry::Brep(a), ThreeDmGeometry::Brep(b)) => assert_brep_near(a, b),
+                (a, b) => assert_eq!(a, b),
+            }
+        }
+    }
+
+    #[test]
+    fn recorded_rhino_arc_planes_and_angles_survive_native_3dm_round_trip() {
+        use serde_json::Value;
+        use viboceros_geometry::{Circle3, CurveSegment3};
+        let observations: Value = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/observations/scale_by_plane_curve.json"
+        ))
+        .unwrap();
+        let point = |v: &Value| {
+            Point3::try_from(serde_json::from_value::<[f64; 3]>(v.clone()).unwrap()).unwrap()
+        };
+        let leaf = |v: &Value| {
+            let a = &v["arc"];
+            let plane = &a["plane"];
+            let frame = Frame3::try_from_directions(
+                point(&plane["origin"]),
+                Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(plane["x_axis"].clone()).unwrap(),
+                )
+                .unwrap(),
+                Vector3::try_from(
+                    serde_json::from_value::<[f64; 3]>(plane["y_axis"].clone()).unwrap(),
+                )
+                .unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            CircularArc3::try_from_circle_angles(
+                Circle3::try_from_frame(
+                    frame.origin(),
+                    a["radius"].as_f64().unwrap(),
+                    frame.x_axis(),
+                    frame.z_axis(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+                a["angles"][0].as_f64().unwrap()..=a["angles"][1].as_f64().unwrap(),
+            )
+            .unwrap()
+            .try_reparameterized(
+                v["curve"]["domain"][0].as_f64().unwrap()
+                    ..=v["curve"]["domain"][1].as_f64().unwrap(),
+            )
+            .unwrap()
+        };
+        let mut model = sample_model();
+        model.objects.clear();
+        for row in observations["results"].as_array().unwrap() {
+            let target = &row["value"]["target"];
+            let geometry = if target.get("arc").is_some() {
+                ThreeDmGeometry::Arc(leaf(target))
+            } else if let Some(segments) = target["segments"].as_array()
+                && segments.len() == 1
+                && segments[0].get("arc").is_some()
+            {
+                ThreeDmGeometry::PolyCurve(
+                    PolyCurve3::try_with_segment_domains(
+                        vec![CurveSegment3::Arc(leaf(&segments[0]))],
+                        serde_json::from_value(target["parameters"].clone()).unwrap(),
+                    )
+                    .unwrap(),
+                )
+            } else {
+                continue;
+            };
+            model.objects.push(ThreeDmObject::new(geometry, 0));
+        }
+        assert_eq!(model.objects.len(), 24);
+        let path = temporary_path("recorded-arc-planes.3dm");
+        let report = write_3dm_file(&path, &model).unwrap();
+        assert_eq!(report.written_object_count, 24);
+        let restored = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        fs::remove_file(path).unwrap();
+        assert_eq!(restored.unsupported_object_count(), 0);
+        assert_eq!(restored.objects.len(), 24);
+        for (source, result) in model.objects.iter().zip(&restored.objects) {
+            let (a, b) = match (&source.geometry, &result.geometry) {
+                (ThreeDmGeometry::Arc(a), ThreeDmGeometry::Arc(b)) => (*a, *b),
+                (ThreeDmGeometry::PolyCurve(a), ThreeDmGeometry::PolyCurve(b)) => {
+                    assert_eq!(a.parameters(), b.parameters());
+                    let (CurveSegment3::Arc(a), CurveSegment3::Arc(b)) =
+                        (&a.segments()[0], &b.segments()[0])
+                    else {
+                        panic!("lost analytic arc leaf")
+                    };
+                    (*a, *b)
+                }
+                _ => panic!("lost native curve class"),
+            };
+            assert_eq!(a.angle_domain(), b.angle_domain());
+            assert_eq!(a.domain(), b.domain());
+            for (x, y) in a
+                .plane_x_axis()
+                .as_vector()
+                .to_array()
+                .into_iter()
+                .zip(b.plane_x_axis().as_vector().to_array())
+            {
+                assert!((x - y).abs() < 1e-12);
+            }
+            for (x, y) in a
+                .plane_y_axis()
+                .unwrap()
+                .as_vector()
+                .to_array()
+                .into_iter()
+                .zip(b.plane_y_axis().unwrap().as_vector().to_array())
+            {
+                assert!((x - y).abs() < 1e-12);
+            }
+            for i in 0..=32 {
+                assert!(
+                    a.point_at(i as f64 / 32.0)
+                        .unwrap()
+                        .distance_to(b.point_at(i as f64 / 32.0).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn native_polycurve_and_exploded_leaf_types_survive_3dm_round_trip() {
+        use viboceros_geometry::CurveSegment3;
+        let p = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let line = LineSegment::try_new(p(3.0, 0.0), p(1.0, 0.0), Tolerance::DEFAULT)
+            .unwrap()
+            .try_reparameterized(7.0..=11.0)
+            .unwrap();
+        let arc = CircularArc3::try_from_three_points(
+            p(1.0, 0.0),
+            p(
+                std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+            p(0.0, 1.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_reparameterized(-5.0..=2.0)
+        .unwrap();
+        let polyline = Polyline3::try_with_parameters(
+            vec![arc.end().unwrap(), p(0.0, 3.0), p(1.0, 3.0)],
+            vec![-2.0, 0.0, 9.0],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let nurbs = NurbsCurve::try_new(
+            1,
+            vec![p(1.0, 3.0), p(4.0, 3.0)],
+            vec![5.0, 5.0, 11.0, 11.0],
+        )
+        .unwrap();
+        let composite = PolyCurve3::try_with_segment_domains(
+            vec![
+                CurveSegment3::Line(line),
+                CurveSegment3::Arc(arc),
+                CurveSegment3::Polyline(polyline.clone()),
+                CurveSegment3::NurbsCurve(nurbs.clone()),
+            ],
+            vec![-7.0, -4.0, 0.0, 3.0, 8.0],
+        )
+        .unwrap();
+        let geometries = vec![
+            ThreeDmGeometry::PolyCurve(composite),
+            ThreeDmGeometry::Line(line.reversed()),
+            ThreeDmGeometry::Arc(arc.reversed(Tolerance::DEFAULT).unwrap()),
+            ThreeDmGeometry::Polyline(polyline),
+            ThreeDmGeometry::NurbsCurve(nurbs),
+            ThreeDmGeometry::Arc(arc.closed()),
+        ];
+        let mut model = sample_model();
+        model.objects = geometries
+            .into_iter()
+            .map(|g| ThreeDmObject::new(g, 0))
+            .collect();
+        let path = temporary_path("native-leaf-classes.3dm");
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.objects.len(), model.objects.len());
+        let segments = |geometry: &ThreeDmGeometry| match geometry {
+            ThreeDmGeometry::PolyCurve(c) => c.segments().to_vec(),
+            ThreeDmGeometry::Line(c) => vec![CurveSegment3::Line(*c)],
+            ThreeDmGeometry::Arc(c) => vec![CurveSegment3::Arc(*c)],
+            ThreeDmGeometry::Polyline(c) => vec![CurveSegment3::Polyline(c.clone())],
+            ThreeDmGeometry::NurbsCurve(c) => vec![CurveSegment3::NurbsCurve(c.clone())],
+            _ => panic!("unexpected native curve type"),
+        };
+        for (expected, actual) in model.objects.iter().zip(&decoded.objects) {
+            assert_eq!(
+                std::mem::discriminant(&expected.geometry),
+                std::mem::discriminant(&actual.geometry)
+            );
+            if let (ThreeDmGeometry::PolyCurve(a), ThreeDmGeometry::PolyCurve(b)) =
+                (&expected.geometry, &actual.geometry)
+            {
+                assert_eq!(a.parameters(), b.parameters());
+            }
+            for (expected, actual) in segments(&expected.geometry)
+                .iter()
+                .zip(segments(&actual.geometry))
+            {
+                assert_eq!(
+                    std::mem::discriminant(expected),
+                    std::mem::discriminant(&actual)
+                );
+                assert_eq!(expected.domain(), actual.domain());
+                for i in 0..=32 {
+                    let t = expected.parameter_at(i as f64 / 32.0).unwrap();
+                    assert!(
+                        expected
+                            .evaluate(t)
+                            .unwrap()
+                            .distance_to(actual.evaluate(t).unwrap())
+                            .unwrap()
+                            < 2e-12
+                    );
+                }
+            }
+        }
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn polyline_round_trip_retains_parameters_and_distinguishes_nurbs_geometry() {
+        let path = temporary_path("parameterized-polyline.3dm");
+        let curve = Polyline3::try_with_parameters(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 0.0).unwrap(),
+            ],
+            vec![-7.0, -2.0, 12.0],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut model = sample_model();
+        model.objects = vec![
+            ThreeDmObject::new(ThreeDmGeometry::Polyline(curve.clone()), 0),
+            ThreeDmObject::new(
+                ThreeDmGeometry::NurbsCurve(curve.to_native_nurbs().unwrap()),
+                0,
+            ),
+        ];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read, model);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn open_nurbs_round_trip_preserves_negative_projective_weights() {
+        let path = temporary_path("signed-weights.3dm");
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.0, 3.0, 0.0).unwrap(), -0.2).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(5.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let row = [
+            ([-1.0, 0.0, 0.0], 0.75),
+            ([2.0, -2.0, 0.0], 1.5),
+            ([4.0, 2.0, 1.0], 0.6),
+            ([0.0, 4.0, 0.0], 1.8),
+            ([-1.0, 0.0, 0.0], 0.75),
+        ];
+        let surface_controls = row
+            .into_iter()
+            .chain(row.into_iter().map(|(mut point, weight)| {
+                point[2] += 4.0;
+                (point, weight * 1.2)
+            }))
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            5,
+            2,
+            surface_controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-3.0, -3.0, 2.0, 2.0],
+        )
+        .unwrap()
+        .try_change_degree(4, 3, true)
+        .unwrap();
+        assert!(
+            surface
+                .control_points()
+                .iter()
+                .any(|control| control.weight() < 0.0)
+        );
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Signed weights".to_owned(),
+                color: [40, 80, 120],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface.clone()), 0),
+            ],
+        );
+
+        write_3dm_file(&path, &model).unwrap();
+        let decoded_model = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        let ThreeDmGeometry::NurbsCurve(decoded_curve) = &decoded_model.objects[0].geometry else {
+            panic!("signed rational curve must round-trip as NURBS")
+        };
+        assert_curve_near(decoded_curve, &curve, 2.0e-12);
+        let ThreeDmGeometry::NurbsSurface(decoded_surface) = &decoded_model.objects[1].geometry
+        else {
+            panic!("signed rational surface must round-trip as NURBS")
+        };
+        assert_surface_near(decoded_surface, &surface, 2.0e-12);
+        fs::remove_file(path).unwrap();
+    }
+
+    fn assert_brep_near(actual: &Brep, expected: &Brep) {
+        const EPSILON: f64 = 2.0e-12;
+        // Outward rounding preserves a positive subnormal tolerance when a
+        // unit scale would underflow it; reversing the scale may add one ulp.
+        let tolerance_matches = |actual: f64, expected: f64| {
+            actual == expected
+                || (expected.is_subnormal() && expected > 0.0 && actual == expected.next_up())
+        };
+        assert_eq!(actual.vertices().len(), expected.vertices().len());
+        assert_eq!(actual.edges().len(), expected.edges().len());
+        assert_eq!(actual.faces().len(), expected.faces().len());
+        assert_eq!(actual.is_solid(), expected.is_solid());
+        for (actual, expected) in actual.vertices().iter().zip(expected.vertices()) {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= EPSILON);
+            assert!(
+                tolerance_matches(actual.tolerance(), expected.tolerance()),
+                "vertex tolerance: actual={}, expected={}",
+                actual.tolerance(),
+                expected.tolerance()
+            );
+        }
+        for (actual, expected) in actual.edges().iter().zip(expected.edges()) {
+            assert_eq!(actual.vertices(), expected.vertices());
+            assert!(
+                tolerance_matches(actual.tolerance(), expected.tolerance()),
+                "edge tolerance: actual={}, expected={}",
+                actual.tolerance(),
+                expected.tolerance()
+            );
+            assert_curve_near(actual.curve(), expected.curve(), EPSILON);
+        }
+        for (actual, expected) in actual.faces().iter().zip(expected.faces()) {
+            assert_eq!(actual.is_reversed(), expected.is_reversed());
+            assert_surface_near(actual.surface(), expected.surface(), EPSILON);
+            assert_eq!(actual.loops().len(), expected.loops().len());
+            for (actual, expected) in actual.loops().iter().zip(expected.loops()) {
+                assert_eq!(actual.loop_type(), expected.loop_type());
+                assert_eq!(actual.trims().len(), expected.trims().len());
+                for (actual, expected) in actual.trims().iter().zip(expected.trims()) {
+                    assert_eq!(actual.vertices(), expected.vertices());
+                    assert_eq!(actual.edge(), expected.edge());
+                    assert_eq!(actual.is_reversed_3d(), expected.is_reversed_3d());
+                    assert_eq!(actual.trim_type(), expected.trim_type());
+                    assert_eq!(actual.iso(), expected.iso());
+                    assert_eq!(actual.tolerance(), expected.tolerance());
+                    assert_eq!(actual.curve().degree(), expected.curve().degree());
+                    assert_eq!(actual.curve().knots(), expected.curve().knots());
+                    assert_eq!(
+                        actual.curve().control_points().len(),
+                        expected.curve().control_points().len()
+                    );
+                    for (actual, expected) in actual
+                        .curve()
+                        .control_points()
+                        .iter()
+                        .zip(expected.curve().control_points())
+                    {
+                        assert!((actual.point().x() - expected.point().x()).abs() <= EPSILON);
+                        assert!((actual.point().y() - expected.point().y()).abs() <= EPSILON);
+                        assert_eq!(actual.weight(), expected.weight());
+                    }
+                }
+            }
+        }
+    }
+
+    fn assert_curve_near(actual: &NurbsCurve, expected: &NurbsCurve, epsilon: f64) {
+        assert_eq!(actual.degree(), expected.degree());
+        assert_eq!(actual.knots(), expected.knots());
+        assert_eq!(
+            actual.control_points().len(),
+            expected.control_points().len()
+        );
+        for (actual, expected) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= epsilon);
+            assert_eq!(actual.weight(), expected.weight());
+        }
+    }
+
+    fn assert_surface_near(actual: &NurbsSurface, expected: &NurbsSurface, epsilon: f64) {
+        assert_eq!(actual.degree_u(), expected.degree_u());
+        assert_eq!(actual.degree_v(), expected.degree_v());
+        assert_eq!(
+            actual.control_point_count_u(),
+            expected.control_point_count_u()
+        );
+        assert_eq!(
+            actual.control_point_count_v(),
+            expected.control_point_count_v()
+        );
+        assert_eq!(actual.knots_u(), expected.knots_u());
+        assert_eq!(actual.knots_v(), expected.knots_v());
+        for (actual, expected) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= epsilon);
+            assert_eq!(actual.weight(), expected.weight());
+        }
+    }
+
+    #[test]
+    fn rejects_invalid_layer_and_group_references_before_calling_native_code() {
+        let model = ThreeDmModel::new(
+            Vec::new(),
+            Vec::new(),
+            vec![ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )],
+        );
+        assert!(matches!(
+            write_3dm_file(temporary_path("invalid.3dm"), &model),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let layer = ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        };
+        let group = ThreeDmGroup {
+            name: "Assembly".to_owned(),
+        };
+        let invalid_membership = ThreeDmObject {
+            group_indices: vec![1],
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("invalid-group.3dm"),
+                &ThreeDmModel::new(
+                    vec![layer.clone()],
+                    vec![group.clone()],
+                    vec![invalid_membership],
+                ),
+            ),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let repeated_membership = ThreeDmObject {
+            group_indices: vec![0, 0],
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("repeated-group.3dm"),
+                &ThreeDmModel::new(vec![layer.clone()], vec![group], vec![repeated_membership],),
+            ),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let invalid_density = ThreeDmObject {
+            wire_density: 100,
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("invalid-wire-density.3dm"),
+                &ThreeDmModel::new(vec![layer], Vec::new(), vec![invalid_density]),
+            ),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+    }
+
+    #[test]
+    fn reports_non_3dm_input_as_a_native_error() {
+        let path = temporary_path("not-a-model.3dm");
+        fs::write(&path, b"not a 3dm file").unwrap();
+        assert!(matches!(
+            read_3dm_file(&path, Tolerance::DEFAULT),
+            Err(ThreeDmError::Native(_))
+        ));
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn reads_official_old_archive_curve_surface_and_group_fixtures() {
+        let root =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
+        let curves = read_3dm_file(root.join("V2/v2_my_curves.3dm"), Tolerance::DEFAULT).unwrap();
+        assert!(!curves.objects.is_empty());
+        assert!(curves.objects.iter().all(|object| matches!(
+            object.geometry,
+            ThreeDmGeometry::Line(_) | ThreeDmGeometry::NurbsCurve(_)
+        )));
+
+        let surfaces =
+            read_3dm_file(root.join("V7/v7_my_surfaces.3dm"), Tolerance::DEFAULT).unwrap();
+        assert!(
+            surfaces
+                .objects
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::NurbsSurface(_)))
+        );
+
+        let points = read_3dm_file(root.join("V7/v7_my_points.3dm"), Tolerance::DEFAULT).unwrap();
+        let group_index = points
+            .groups
+            .iter()
+            .position(|group| group.name == "group of points")
+            .unwrap();
+        let grouped = points
+            .objects
+            .iter()
+            .filter(|object| object.group_indices.contains(&group_index))
+            .collect::<Vec<_>>();
+        assert_eq!(grouped.len(), 2);
+        assert!(
+            grouped
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::Point(_)))
+        );
+        assert!(
+            grouped
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::PointCloud(_)))
+        );
+    }
+
+    #[test]
+    fn reads_official_opennurbs_brep_and_trimmed_surface_fixtures() {
+        let root =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
+        for fixture in ["V7/v7_my_brep.3dm", "V7/v7_my_trimmed_surface.3dm"] {
+            let model = read_3dm_file(root.join(fixture), Tolerance::DEFAULT).unwrap();
+            let breps = model
+                .objects
+                .iter()
+                .filter_map(|object| match &object.geometry {
+                    ThreeDmGeometry::Brep(brep) => Some(brep),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            assert!(!breps.is_empty(), "{fixture} contained no supported B-rep");
+            assert!(
+                breps
+                    .iter()
+                    .all(|brep| brep.is_manifold() && !brep.faces().is_empty()),
+                "{fixture} produced invalid topology"
+            );
+        }
+    }
+
+    #[test]
+    fn two_point_camera_locks_survive_named_and_working_view_records() {
+        let path = temporary_path("two-point-views.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        let camera = ThreeDmNamedView {
+            name: "Two point".into(),
+            projection: ThreeDmProjection::TwoPointPerspective,
+            camera_location: Point3::try_new(20., -80., 30.).unwrap(),
+            camera_direction: Vector3::try_new(0., 1., 0.).unwrap(),
+            camera_up: Vector3::try_new(0., 0., 1.).unwrap(),
+            target: Some(Point3::try_new(20., 20., 30.).unwrap()),
+            construction_plane: Frame3::try_from_directions(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Vector3::try_new(1., 0., 0.).unwrap(),
+                Vector3::try_new(0., 1., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            frustum: [-1., 1., -0.25, 1.25, 1., 1000.],
+            screen_port: [0, 640, 480, 0],
+        };
+        model.named_views.push(camera.clone());
+        let mut unlocked = camera.clone();
+        unlocked.name = "Ordinary perspective with the same axes".into();
+        unlocked.projection = ThreeDmProjection::Perspective;
+        model.named_views.push(unlocked);
+        model.viewports.push(ThreeDmViewport {
+            camera,
+            display_mode: ThreeDmDisplayMode::Ghosted,
+            grid: ThreeDmGridSettings::default(),
+            active: true,
+            position: [0., 1., 0., 1.],
+            maximized: false,
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.named_views, model.named_views);
+        assert_eq!(loaded.viewports, model.viewports);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn named_views_round_trip_through_3dm_and_scale_with_units() {
+        let path = temporary_path("named-views.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        model.units = LengthUnitSystem::Millimeters;
+        let plane = Frame3::try_from_directions(
+            Point3::try_new(2.0, 3.0, 4.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        model.named_views.push(ThreeDmNamedView {
+            name: "Camera A".into(),
+            projection: ThreeDmProjection::Perspective,
+            camera_location: Point3::try_new(0.0, 0.0, 10.0).unwrap(),
+            camera_direction: Vector3::try_new(0.0, 0.0, -1.0).unwrap(),
+            camera_up: Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            target: Some(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+            construction_plane: plane,
+            frustum: [-1.0, 1.0, -0.75, 0.75, 1.0, 100.0],
+            screen_port: [0, 1280, 800, 0],
+        });
+        model.named_views.push(ThreeDmNamedView {
+            name: "Ortho B".into(),
+            projection: ThreeDmProjection::Parallel,
+            camera_location: Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            camera_direction: Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            camera_up: Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            target: None,
+            construction_plane: plane,
+            frustum: [-4.0, 4.0, -3.0, 3.0, 0.1, 1000.0],
+            screen_port: [0, 1024, 768, 0],
+        });
+        model.viewports.push(ThreeDmViewport {
+            camera: model.named_views[0].clone(),
+            display_mode: ThreeDmDisplayMode::Shaded,
+            grid: ThreeDmGridSettings {
+                snap_spacing: 2.5,
+                minor_spacing: 4.0,
+                major_interval: 3,
+                line_count: 41,
+                show_grid: false,
+                show_axes: true,
+                show_world_axes: true,
+            },
+            active: true,
+            position: [0.0, 0.5, 0.0, 1.0],
+            maximized: false,
+        });
+        model.viewports.push(ThreeDmViewport {
+            camera: model.named_views[1].clone(),
+            display_mode: ThreeDmDisplayMode::Ghosted,
+            grid: ThreeDmGridSettings::default(),
+            active: false,
+            position: [0.5, 1.0, 0.0, 1.0],
+            maximized: true,
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.viewports.len(), 2);
+        assert_eq!(loaded.viewports[0].display_mode, ThreeDmDisplayMode::Shaded);
+        assert_eq!(loaded.viewports[0].grid, model.viewports[0].grid);
+        assert!(loaded.viewports[0].active);
+        assert!(!loaded.viewports[1].active);
+        assert_eq!(loaded.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
+        assert_eq!(
+            loaded.viewports[1].display_mode,
+            ThreeDmDisplayMode::Ghosted
+        );
+        assert!(loaded.viewports[1].maximized);
+        assert_eq!(loaded.named_views.len(), 2);
+        let view = &loaded.named_views[0];
+        assert_eq!(view.name, "Camera A");
+        assert_eq!(view.projection, ThreeDmProjection::Perspective);
+        assert_eq!(view.camera_location, model.named_views[0].camera_location);
+        assert_eq!(view.target, model.named_views[0].target);
+        assert_eq!(view.construction_plane, plane);
+        assert_eq!(view.frustum, model.named_views[0].frustum);
+        assert_eq!(view.screen_port, model.named_views[0].screen_port);
+        assert_eq!(loaded.named_views[1].name, "Ortho B");
+        assert_eq!(
+            loaded.named_views[1].projection,
+            ThreeDmProjection::Parallel
+        );
+        assert_eq!(loaded.named_views[1].target, None);
+        assert_eq!(loaded.named_views[1].frustum, model.named_views[1].frustum);
+        assert_eq!(
+            loaded.named_views[1].screen_port,
+            model.named_views[1].screen_port
+        );
+        let meters =
+            read_3dm_file_in_units(&path, &LengthUnitSystem::Meters, Tolerance::DEFAULT).unwrap();
+        let scaled = &meters.named_views[0];
+        assert_eq!(scaled.camera_location.z(), 0.01);
+        assert_eq!(
+            scaled.construction_plane.origin().to_array(),
+            [0.002, 0.003, 0.004]
+        );
+        assert_eq!(scaled.frustum[4], 0.001);
+        assert_eq!(meters.viewports[0].camera.camera_location.z(), 0.01);
+        assert_eq!(
+            meters.viewports[0]
+                .camera
+                .construction_plane
+                .origin()
+                .to_array(),
+            [0.002, 0.003, 0.004]
+        );
+        assert_eq!(meters.viewports[0].camera.frustum[4], 0.001);
+        assert_eq!(meters.viewports[0].grid.snap_spacing, 0.0025);
+        assert_eq!(meters.viewports[0].grid.minor_spacing, 0.004);
+        assert_eq!(meters.viewports[0].position, [0.0, 0.5, 0.0, 1.0]);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn named_construction_planes_round_trip_and_scale_without_model_geometry() {
+        let path = temporary_path("named-cplanes.3dm");
+        let mut model = ThreeDmModel::new(vec![], vec![], vec![]);
+        model.units = LengthUnitSystem::Millimeters;
+        let plane = Frame3::try_from_directions(
+            Point3::try_new(2000.0, 3000.0, 4000.0).unwrap(),
+            Vector3::try_new(1.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 1.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        model.named_cplanes.push(ThreeDmNamedCPlane {
+            name: "Fixture plane".into(),
+            plane,
+            grid_spacing: 250.0,
+            snap_spacing: 50.0,
+            grid_line_count: 31,
+            grid_thick_frequency: 0,
+            depth_buffer: true,
+        });
+        write_3dm_file(&path, &model).unwrap();
+        let loaded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(loaded.named_cplanes, model.named_cplanes);
+        let converted =
+            read_3dm_named_cplanes_file_in_units(&path, &LengthUnitSystem::Meters).unwrap();
+        assert_eq!(converted.len(), 1);
+        assert_eq!(converted[0].name, "Fixture plane");
+        assert_eq!(converted[0].grid_spacing, 0.25);
+        assert_eq!(converted[0].snap_spacing, 0.05);
+        assert_eq!(converted[0].grid_line_count, 31);
+        assert_eq!(converted[0].grid_thick_frequency, 0);
+        assert!(converted[0].depth_buffer);
+        assert_eq!(
+            converted[0].plane.origin(),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        fs::remove_file(path).unwrap();
+    }
+
+    fn temporary_path(suffix: &str) -> std::path::PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-{suffix}",
+            std::process::id()
+        ))
+    }
+}

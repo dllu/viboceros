@@ -1,0 +1,56 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "cases": {
+    "sphere": {
+      "previous_median_seconds": 1.607728713,
+      "cached_median_seconds": 1.390543128,
+      "geometry_sha256": [
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+      ]
+    },
+    "swapped": {
+      "previous_median_seconds": 1.343600171,
+      "cached_median_seconds": 1.338479017,
+      "geometry_sha256": [
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e"
+      ]
+    },
+    "cylinder": {
+      "previous_median_seconds": 0.520004378,
+      "cached_median_seconds": 0.520195135,
+      "geometry_sha256": [
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734"
+      ]
+    }
+  },
+  "full_performance_parity": false,
+  "limits": [
+    "Three repetitions on one host are retained; no general timing threshold is asserted.",
+    "All three cases retain their preceding recorded geometry fingerprints.",
+    "The preceding SDK timing remains historical evidence; no new Rhino timing is claimed.",
+    "Native performance parity remains unresolved."
+  ],
+  "sha256": {
+    "docs/retrim-cache-sphere.json": "cd073b7096bd5165429eb0a28e4c653cb4e4be0fc596dc068480016afe26f5fe",
+    "docs/retrim-cache-swapped.json": "13a648f4a92026e4aa41f2ff78b88d1e01057acc51d76d43b8528377619d0265",
+    "docs/retrim-cache-cylinder.json": "e37ce6ba4ffc97438237bed716cccc1c3938b9304ee22243b77f94cd11515fe0",
+    "docs/retrim-cache-source/brep/retrim.rs": "a7a459f4ea50f2c3afcc509a583d3cceb0d8f5a0018a7bbdb31d8e7830bce530",
+    "docs/retrim-cache-source/surface_pullback/certificate/interval.rs": "acbd459735fa484a52f868122b1804036c0750b6420665170d6df72eda8d44c9",
+    "docs/retrim-cache-source/surface_pullback/certificate/interval/crossing.rs": "01fcb7072c9811002684c9250affb68ba6b7940e67764a13aaddc423da09a466",
+    "docs/retrim-cache-source/surface_pullback/certificate/surface.rs": "a42c0758dbb09903602b58be248ccc9df78f7717da05aff9e320cde105e365d7"
+  },
+  "source_snapshot_paths": {
+    "docs/retrim-cache-source/brep/retrim.rs": "crates/viboceros-geometry/src/brep/retrim.rs",
+    "docs/retrim-cache-source/surface_pullback/certificate/interval.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs",
+    "docs/retrim-cache-source/surface_pullback/certificate/interval/crossing.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs",
+    "docs/retrim-cache-source/surface_pullback/certificate/surface.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs"
+  },
+  "source_snapshot_state": "Uncommitted cache milestone based on 35f2b035; source digests verified against the saved review patch."
+}

@@ -1,0 +1,64 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted prepared-surface proof reuse based on 35f2b035.",
+  "cases": {
+    "sphere": {
+      "previous_median_seconds": 1.390543128,
+      "prepared_median_seconds": 0.876423176,
+      "geometry_sha256": [
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+      ]
+    },
+    "swapped": {
+      "previous_median_seconds": 1.338479017,
+      "prepared_median_seconds": 1.341723031,
+      "geometry_sha256": [
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e"
+      ]
+    },
+    "cylinder": {
+      "previous_median_seconds": 0.520195135,
+      "prepared_median_seconds": 0.521993011,
+      "geometry_sha256": [
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734"
+      ]
+    }
+  },
+  "full_performance_parity": false,
+  "limits": [
+    "Three repetitions on one host; no general timing threshold is asserted.",
+    "Source geometry and complete recorded output definitions equal the preceding cache profiles.",
+    "Each candidate gets a fresh 2000000-unit rational work budget; immutable cached patches can reduce the charged work.",
+    "No new Rhino timing is claimed; the preceding SDK timing remains historical evidence.",
+    "Native performance parity and general resource-admission equivalence remain unresolved."
+  ],
+  "sha256": {
+    "docs/retrim-prepared-sphere.json": "93dbe116245c0f37e06ad5aef08eee27e9a844011c103d2818acd214053dffea",
+    "docs/retrim-prepared-swapped.json": "5caff8e321d0e48d0120c4190935dfef07cfcbd1b4644dc4b883d5b519cdbf14",
+    "docs/retrim-prepared-cylinder.json": "3fb5b2bcba5913c103b2fae358b7a7eb15edc59a460d624aba3e6ea54442a5e0",
+    "docs/retrim-prepared-source/brep/retrim.rs": "1e5a161be27c741d8267165f8138e6b988a69c438f746f1b3860f6ea65812d57",
+    "docs/retrim-prepared-source/surface_pullback.rs": "5ef9f86ce7f859fa43c90e4ed304999e7db5453d87a96d43c3834911b3cb395f",
+    "docs/retrim-prepared-source/surface_pullback/certificate.rs": "4950d638f2c640cdbf5cf308dd672b8ac1e836e27bcf7daa7fb511a5a928c357",
+    "docs/retrim-prepared-source/surface_pullback/certificate/surface.rs": "a42c0758dbb09903602b58be248ccc9df78f7717da05aff9e320cde105e365d7",
+    "docs/retrim-prepared-source/surface_pullback/certificate/interval.rs": "acbd459735fa484a52f868122b1804036c0750b6420665170d6df72eda8d44c9",
+    "docs/retrim-prepared-source/surface_pullback/certificate/interval/crossing.rs": "01fcb7072c9811002684c9250affb68ba6b7940e67764a13aaddc423da09a466",
+    "docs/retrim-prepared-source/surface_pullback/certificate/tests.rs": "a2beaa50d2a9c30e3d6225a2296c95c985d3836174df4d59441e2470bacd3a8f"
+  },
+  "source_snapshot_paths": {
+    "docs/retrim-prepared-source/brep/retrim.rs": "crates/viboceros-geometry/src/brep/retrim.rs",
+    "docs/retrim-prepared-source/surface_pullback.rs": "crates/viboceros-geometry/src/surface_pullback.rs",
+    "docs/retrim-prepared-source/surface_pullback/certificate.rs": "crates/viboceros-geometry/src/surface_pullback/certificate.rs",
+    "docs/retrim-prepared-source/surface_pullback/certificate/surface.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs",
+    "docs/retrim-prepared-source/surface_pullback/certificate/interval.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs",
+    "docs/retrim-prepared-source/surface_pullback/certificate/interval/crossing.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs",
+    "docs/retrim-prepared-source/surface_pullback/certificate/tests.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs"
+  },
+  "source_snapshot_state": "Verified prepared-context worktree sources before subsequent projection edits."
+}

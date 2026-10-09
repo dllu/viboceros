@@ -44,7 +44,14 @@ impl Command for ExplodeCommand {
         let mut summary = ExplodeSummary::default();
         let mut unchanged_ids = Vec::new();
         let mut deleted_sources = Vec::new();
+        let mut blocks = Vec::new();
         for (id, geometry, delete_source) in &selected {
+            if matches!(geometry, Geometry::BlockInstance(_)) {
+                let prepared = document.prepare_block_explosion(*id, false, summary.remaining())?;
+                summary.record(PartKind::Block, prepared.output_count())?;
+                blocks.push(prepared);
+                continue;
+            }
             if let Some(count) = parts::known_output_count(geometry)? {
                 summary.check_add(count)?;
             }
@@ -60,7 +67,7 @@ impl Command for ExplodeCommand {
             }
             exploded.push((*id, parts));
         }
-        if exploded.is_empty() {
+        if exploded.is_empty() && blocks.is_empty() {
             return Err(CommandError::NoExplodableObjects);
         }
         let unchanged_count = unchanged_ids.len();
@@ -73,7 +80,8 @@ impl Command for ExplodeCommand {
         // Copy while restricted sources remain selected/editable, then consume
         // source selection before recording their deletion (Rhino's Explode
         // history policy). Fresh pieces inherit attributes and ordered groups.
-        let selected_result_ids = document.copy_object_pieces_into_source_groups(pieces)?;
+        let mut selected_result_ids = document.copy_object_pieces_into_source_groups(pieces)?;
+        selected_result_ids.extend(document.commit_block_explosions(blocks, false)?);
         document.select_command_results(unchanged_ids.iter().copied())?;
         document.delete_objects(deleted_sources)?;
         // Retained restricted sources stay unselected, and overlapping groups

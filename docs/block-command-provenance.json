@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "35f2b0355a08e2bf98cc6c1efe2c8dc88ac36796",
+  "status": "uncommitted worktree; Git metadata is mounted read-only",
+  "scope": "Block creation/redefinition and existing-definition Insert commands with GUI getters; group/text capture and member-layer lock correction",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/block.htm",
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/insert.htm",
+    "https://developer.rhino3d.com/en/guides/cpp/creating-blocks/",
+    "https://developer.rhino3d.com/api/rhinoscript/block_methods/insertblock.htm"
+  ],
+  "native_evidence": "Documented behavior and existing open-source cardinal cleanup; no fresh Rhino block-command capture or timing comparison",
+  "verified": {
+    "initial_focused_workspace_block_tests": 47,
+    "cardinal_insertion_command_tests": 4,
+    "python_regressions": 1017,
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "workspace_release_tests": {
+      "passed": 5436,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "new_tests": {
+      "document_creation": 5,
+      "commands": 4,
+      "gui_getters": 5
+    },
+    "format_and_diff_checks": "passed",
+    "existing_source_fixture_pins": 1043
+  },
+  "sha256": {
+    "docs/block-command-source/crates/viboceros-command/src/blocks.rs": "b29421114364ab76d2e1ae4507aec99851114f9ffe08737148fe1918490f9450",
+    "docs/block-command-source/crates/viboceros-command/src/blocks/tests.rs": "a250016a3b77ff6c56e1b681f794042550e83afc1d3d1f5d5caee379122b1a6a",
+    "docs/block-command-source/crates/viboceros-command/src/lib.rs": "e5b025d2058fa2d65140225db77c2f0d6a68fd83837ff30df4d245b9eaefa663",
+    "docs/block-command-source/crates/viboceros-document/src/block_creation.rs": "4b4a5367d2bf2399b75d00033704099d42153647b4ff1ab75cf64a8268b6e202",
+    "docs/block-command-source/crates/viboceros-document/src/block_creation/tests.rs": "5c49551c4f7e373cde525c88cfd793720ecfc1cf8536c8ff825d27ecd1041642",
+    "docs/block-command-source/crates/viboceros-document/src/blocks.rs": "a93b7303bf7750fd272052015ec01c18d9b0e44c1082ac5213e29148263258e5",
+    "docs/block-command-source/crates/viboceros-document/src/block_instances.rs": "cdf7d37832aa1748305e2744c25474add21cc1dbb46cec3e66cbca88d0ce6d63",
+    "docs/block-command-source/crates/viboceros-document/src/block_instances/tests.rs": "cdf250059c2684c852537b5d90b9eae88bd4beafcbc14111635223916280b529",
+    "docs/block-command-source/crates/viboceros-document/src/groups.rs": "b29e53356217e8db1c8457d52ad932c0c79246928fbf6aa11472f9e4ddfe5940",
+    "docs/block-command-source/crates/viboceros-document/src/lib.rs": "48ff629e7fd751988dd620b84445f249f1bc8810c9dd0b74fc0ffea7d4568a54",
+    "docs/block-command-source/src/app.rs": "e19bcf00d8483b3481d81e671f65f3f08ba1b80b8da76aaa27b8b239af388138",
+    "docs/block-command-source/src/app/blocks.rs": "5e36d39d126e4307b8a9177ab554baa96ac168f6bd84b4173206cb4a00aa9f23",
+    "docs/block-command-source/src/app/tests/blocks.rs": "69974010cf8a94b22c2ae7e36b4bdbde62dec9d8417895a3219f6d390a487018"
+  },
+  "remaining_scope": [
+    "External/linked file insertion, definition editing tools, block snapping, subobject editing and structural 3DM interchange",
+    "Native command selection and option-memory parity, GPU-backend and performance comparisons"
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-command/src/blocks.rs": "docs/block-command-source/crates/viboceros-command/src/blocks.rs",
+    "crates/viboceros-command/src/blocks/tests.rs": "docs/block-command-source/crates/viboceros-command/src/blocks/tests.rs",
+    "crates/viboceros-command/src/lib.rs": "docs/block-command-source/crates/viboceros-command/src/lib.rs",
+    "crates/viboceros-document/src/block_creation.rs": "docs/block-command-source/crates/viboceros-document/src/block_creation.rs",
+    "crates/viboceros-document/src/block_creation/tests.rs": "docs/block-command-source/crates/viboceros-document/src/block_creation/tests.rs",
+    "crates/viboceros-document/src/blocks.rs": "docs/block-command-source/crates/viboceros-document/src/blocks.rs",
+    "crates/viboceros-document/src/block_instances.rs": "docs/block-command-source/crates/viboceros-document/src/block_instances.rs",
+    "crates/viboceros-document/src/block_instances/tests.rs": "docs/block-command-source/crates/viboceros-document/src/block_instances/tests.rs",
+    "crates/viboceros-document/src/groups.rs": "docs/block-command-source/crates/viboceros-document/src/groups.rs",
+    "crates/viboceros-document/src/lib.rs": "docs/block-command-source/crates/viboceros-document/src/lib.rs",
+    "src/app.rs": "docs/block-command-source/src/app.rs",
+    "src/app/blocks.rs": "docs/block-command-source/src/app/blocks.rs",
+    "src/app/tests/blocks.rs": "docs/block-command-source/src/app/tests/blocks.rs"
+  }
+}

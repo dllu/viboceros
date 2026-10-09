@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "35f2b0355a08e2bf98cc6c1efe2c8dc88ac36796",
+  "status": "uncommitted worktree; Git metadata is mounted read-only",
+  "scope": "Native document block definition catalog and bounded placement resolver; local API policies, not Rhino command emulation",
+  "native_evidence": "No fresh Rhino capture or timing comparison for block definition editing",
+  "verified": {
+    "focused_release_block_tests": 12,
+    "python_regressions": 1017,
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "format_and_diff_checks": "passed",
+    "document_release_tests_after_lint_fix": {
+      "passed": 199,
+      "ignored": 5
+    },
+    "workspace_release_tests": {
+      "passed": 5408,
+      "ignored": 38
+    }
+  },
+  "sha256": {
+    "docs/block-definition-source/crates/viboceros-document/src/blocks.rs": "f2ae3e2b6d8dbd313269deb200ca1bd1f24b5d162e853766848409354f95386e",
+    "docs/block-definition-source/crates/viboceros-document/src/blocks/tests.rs": "8f4c90e5f94eac2e81d4cadcc5929ac2a488419f7fc493adf45aeb8ad0a3c9be",
+    "docs/block-definition-source/crates/viboceros-document/src/lib.rs": "f87127757d0b824cede55ec3396a0ab97fefcc9e7d81558ce64d02c9369af4ef",
+    "docs/block-definition-source/crates/viboceros-document/src/history.rs": "c06738e83b3eec6c691a3e99c56caf961ade0aefb48793effc99dda10850cff4",
+    "docs/block-definition-source/crates/viboceros-document/src/units.rs": "9f9445c678aaf2b999c0a0d1bc5fd152e8b5650ac917c6b73e628144229fd6f6"
+  },
+  "limitations": [
+    "No document instance objects or interactive Block/Insert command integration",
+    "3DM import remains flattened; structural round trips are unfinished",
+    "Resolver retains raw leaf attributes; parent inheritance is not applied"
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-document/src/blocks.rs": "docs/block-definition-source/crates/viboceros-document/src/blocks.rs",
+    "crates/viboceros-document/src/blocks/tests.rs": "docs/block-definition-source/crates/viboceros-document/src/blocks/tests.rs",
+    "crates/viboceros-document/src/lib.rs": "docs/block-definition-source/crates/viboceros-document/src/lib.rs",
+    "crates/viboceros-document/src/history.rs": "docs/block-definition-source/crates/viboceros-document/src/history.rs",
+    "crates/viboceros-document/src/units.rs": "docs/block-definition-source/crates/viboceros-document/src/units.rs"
+  }
+}

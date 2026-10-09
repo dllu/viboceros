@@ -1,9 +1,8 @@
 //! Rebuild model-space boundaries after an underlying control-net edit.
 use super::*;
 use crate::PointMorph;
-
 const MAX_TRIM_IMAGE_CONTROLS: usize = 4096;
-
+const MAX_EDIT_CERTIFICATE_WORK: usize = 16_000_000;
 struct SurfaceImage<'a>(&'a NurbsSurface);
 impl PointMorph for SurfaceImage<'_> {
     fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
@@ -14,8 +13,8 @@ impl PointMorph for SurfaceImage<'_> {
 impl Brep {
     /// Replace a single face's underlying surface, retaining UV trims and face
     /// orientation. Rectangular boundaries use exact isocurves. Other trim
-    /// images use the bounded native-parameter curve fitter; its accuracy checks
-    /// are sampled. The assembled result must pass ordinary B-rep validation.
+    /// images use bounded adaptive proposals qualified by continuous
+    /// normalized-parameter certificates. The assembled result must pass ordinary B-rep validation.
     /// No component tolerance is enlarged to accept an inconsistent boundary.
     pub fn try_with_edited_single_surface(
         &self,
@@ -47,10 +46,13 @@ impl Brep {
             tolerance.relative(),
             tolerance.angular(),
         )?;
+        let mut certificate = surface
+            .prepare_surface_curve_bounds()?
+            .ok_or(GeometryError::SurfaceCurveCertificateWorkLimit)?;
         let mut vertices = Vec::<BrepVertex>::new();
         let mut vertex_sources = Vec::<usize>::new();
         let mut edges = Vec::<BrepEdge>::new();
-        let mut edge_sources = BTreeMap::new();
+        let mut edge_sources = BTreeMap::<(Option<usize>, [usize; 2]), usize>::new();
         let mut loops = face.loops.clone();
         for trim in loops.iter_mut().flat_map(|l| &mut l.trims) {
             let old_vertices = trim.vertices;
@@ -82,12 +84,33 @@ impl Brep {
                 fitting,
                 MAX_TRIM_IMAGE_CONTROLS,
             )?;
+            if certificate
+                .bound_with_work_limit(
+                    &trim.curve,
+                    &spatial,
+                    fitting.absolute(),
+                    MAX_EDIT_CERTIFICATE_WORK,
+                )?
+                .is_none()
+            {
+                return Err(GeometryError::SurfacePushupDidNotConverge {
+                    tolerance: fitting.absolute(),
+                });
+            }
             trim.vertices = mapped;
             if spatial
                 .control_points()
                 .iter()
                 .all(|p| p.point() == spatial.control_points()[0].point())
             {
+                if certificate
+                    .bound_with_work_limit(&trim.curve, &spatial, 0., MAX_EDIT_CERTIFICATE_WORK)?
+                    .is_none()
+                {
+                    return invalid(
+                        "an edited singular trim must have an exactly constant surface image",
+                    );
+                }
                 if mapped[0] != mapped[1] {
                     return invalid("a collapsed edited trim has distinct endpoint vertices");
                 }
@@ -107,6 +130,22 @@ impl Brep {
             };
             let key = (trim.edge, edge_vertices);
             let index = if let Some(&i) = edge_sources.get(&key) {
+                let shared = if reversed {
+                    edges[i].curve.reversed()?
+                } else {
+                    edges[i].curve.clone()
+                };
+                if certificate
+                    .bound_with_work_limit(
+                        &trim.curve,
+                        &shared,
+                        fitting.absolute(),
+                        MAX_EDIT_CERTIFICATE_WORK,
+                    )?
+                    .is_none()
+                {
+                    return invalid("an edited shared edge does not certify every trim use");
+                }
                 i
             } else {
                 let i = edges.len();
@@ -146,6 +185,7 @@ impl Brep {
                 }
             }
         }
+        drop(certificate);
         Self::try_new(
             vertices,
             edges,
@@ -154,3 +194,6 @@ impl Brep {
         )
     }
 }
+
+#[cfg(test)]
+mod tests;

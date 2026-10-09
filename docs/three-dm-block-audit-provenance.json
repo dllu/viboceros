@@ -1,0 +1,43 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted traversal bound and reflected/invalid 3DM placement audit.",
+  "full_native_parity": false,
+  "contract": [
+    "A one-million-visit limit per root bounds branching graphs without leaf geometry, supplementing depth/leaf limits.",
+    "Reflected solids retain material sense and continuously matching boundaries; stored point-cloud normals follow the unchanged OpenNURBS channel policy.",
+    "Malformed/projective/singular placements and exhausted traversal fail before document mutation."
+  ],
+  "evidence": [
+    "Two added I/O tests check reflection, original channel policy, projective/singular errors and an acyclic empty-definition DAG.",
+    "Expanded command failure replay preserves full document/redo across every new malformed/stress case.",
+    "Earlier block checkpoint sources/fixtures preserved in docs/three-dm-block-source/."
+  ],
+  "limits": [
+    "Imported block structure remains flattened.",
+    "No fresh Rhino cross-reader or performance evidence.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/native/viboceros_opennurbs.cpp": "51dd983bfe47ad6f8677429904361cc28ba5f77f336dd846f6454aba72af0408",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/native/instance_read.h": "3ed51ad31eb99dba15b7a6141815610b8ac4ab6b8c642a6d4855fc5121049246",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/src/three_dm/instances.rs": "4385c1a3b2190010e1197426486b2a01613a109a7236119235014623c04cefe2",
+    "docs/three-dm-structural-prior-source/crates/viboceros-command/src/interchange/block_tests.rs": "612faa93580d4de6a2e095062528127d07cace696ef3b66f06de74c1e0397966",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/audit.cpp": "f5509cdefb426da34e6966f0ca132520ed30730298c34cfa82ba8bcfa3accf75",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/reflected_blocks.3dm": "1fc5c916efa2a01de17f7b60a0fac75c0f9cc872ebfc593aab56f24acc39ba09",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/projective_block.3dm": "b08cf48df3b7e322804556b283c2a9eade2f52a692c4fd78804d25f64f37d1ca",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/singular_block.3dm": "09854b569c51b2afb0a43a244a96b0bc57d6813e143aed237e652ccfca1a690a",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/branching_empty_blocks.3dm": "38094b3b78a94b8725ed30c9b89580f3a353b20f07eb2e2239a3f2e4dff20a19"
+  },
+  "source_snapshot_paths": {
+    "crates/viboceros-io/native/viboceros_opennurbs.cpp": "docs/three-dm-structural-prior-source/crates/viboceros-io/native/viboceros_opennurbs.cpp",
+    "crates/viboceros-io/native/instance_read.h": "docs/three-dm-structural-prior-source/crates/viboceros-io/native/instance_read.h",
+    "crates/viboceros-io/src/three_dm/instances.rs": "docs/three-dm-structural-prior-source/crates/viboceros-io/src/three_dm/instances.rs",
+    "crates/viboceros-command/src/interchange/block_tests.rs": "docs/three-dm-structural-prior-source/crates/viboceros-command/src/interchange/block_tests.rs",
+    "crates/viboceros-io/tests/fixtures/instances/audit.cpp": "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/audit.cpp",
+    "crates/viboceros-io/tests/fixtures/instances/reflected_blocks.3dm": "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/reflected_blocks.3dm",
+    "crates/viboceros-io/tests/fixtures/instances/projective_block.3dm": "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/projective_block.3dm",
+    "crates/viboceros-io/tests/fixtures/instances/singular_block.3dm": "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/singular_block.3dm",
+    "crates/viboceros-io/tests/fixtures/instances/branching_empty_blocks.3dm": "docs/three-dm-structural-prior-source/crates/viboceros-io/tests/fixtures/instances/branching_empty_blocks.3dm"
+  }
+}

@@ -17,6 +17,13 @@ pub(crate) fn transform_geometry(
         viboceros_geometry::Tolerance::NUMERICAL_VALIDATION
     };
     Ok(match geometry {
+        G::InstanceReference {
+            definition_index,
+            transform: placement,
+        } => G::InstanceReference {
+            definition_index: *definition_index,
+            transform: placement.then(transform)?,
+        },
         G::Point(point) => G::Point(transform.transform_point(*point)?),
         G::PointCloud(cloud) => G::PointCloud(cloud.transformed(transform)?),
         G::Line(line) => G::Line(line.transformed(transform, tolerance)?),

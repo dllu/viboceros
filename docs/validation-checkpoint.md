@@ -3,8 +3,24 @@
 [Architecture and status](architecture.md) · [Rhino oracle](oracle.md)
 
 This is a reproducible regression checkpoint, not a compatibility certificate.
-The October 8, 2026 audit tested code at `73553044` with Rust 1.95.0 after
-[Interval-certified trim-transfer performance](retrim-performance.md).
+The October 8, 2026 audit tested block expansion, structural 3DM blocks, object snapping, Block/Insert commands, native instances, the catalog and bounded 3DM
+traversal/reflections, STEP extrusion images, certified surface edits, curve Rebuild
+previews and prepared surface proof contexts in the worktree based on
+`35f2b035`, with Rust 1.95.0. Code and measurement hashes are retained in
+[expansion provenance](block-explode-provenance.json),
+[structural provenance](three-dm-structural-provenance.json),
+[snap provenance](block-snap-provenance.json),
+[command provenance](block-command-provenance.json),
+[instance provenance](block-instance-provenance.json),
+[block catalog provenance](block-definition-provenance.json),
+[block audit provenance](three-dm-block-audit-provenance.json),
+[extrusion provenance](step-extrusion-pcurve-provenance.json),
+[STEP qualification provenance](step-spline-pcurve-provenance.json),
+[surface-edit provenance](surface-edit-certificate-provenance.json),
+[preview provenance](curve-rebuild-preview-provenance.json) and
+[cross-target provenance](retrim-target-cache-provenance.json). Git metadata was
+mounted read-only during those captures. Git writes were enabled later on
+October 8, allowing these previously validated changes to be committed.
 
 ## Commands and results
 
@@ -17,25 +33,242 @@ git diff --check
 ```
 
 All commands completed successfully. The complete release workspace run passed
-5,355 Rust tests:
+5,461 Rust tests:
 
 | Package | Passed | Ignored |
 | --- | ---: | ---: |
-| App | 1,035 | 17 |
-| Command | 1,204 | 2 |
-| Document | 186 | 5 |
-| Drafting | 159 | 6 |
-| Geometry | 2,087 | 8 |
-| I/O | 195 | 0 |
+| App | 1,058 | 17 |
+| Command | 1,221 | 2 |
+| Document | 218 | 5 |
+| Drafting | 164 | 6 |
+| Geometry | 2,099 | 8 |
+| I/O | 212 | 0 |
 | Oracle | 489 | 0 |
 
-The Python suite passed 1,013 tests. The 38 ordinarily ignored Rust tests were
+The Python suite passed 1,017 tests. The 38 ordinarily ignored Rust tests were
 not run in this checkpoint. The September 12 audit of `bd299074` separately
 passed six opt-in GPU tests covering 182 renders on NVIDIA GB10 / Vulkan /
 driver 610.43.02; that is historical evidence, not a new graphics check.
 See [GPU tests](gpu-tests.md) for their pixel assertions and limits.
 
-The newest trim-transfer profile retains three baseline and three optimized
+The newest [block expansion](commands/explode-blocks.md) adds five document tests,
+three command tests and two GUI tests. One-level Explode retains nested instance
+relationships; recursive ExplodeBlock returns geometric members. Metadata and
+ByParent appearance are preserved, prototype groups are copied per placement
+scope, and root groups remain attached to outputs. Preparation/commit checks
+source/layer/tolerance freshness and output budgets. Tests cover geometry storage
+on Undo, mixed ordinary/block history, protected member states, independent groups,
+AllBlocks, grouping, cancellation and stale-plan failure. Existing ordinary
+Explode cases passed. Native selection/option-memory/protected-root and multi-root
+grouping parity remain unverified; no fresh Rhino capture was made.
+
+The preceding [structural 3DM path](three-dm-structural-blocks.md) adds six I/O tests
+and two command tests. Native definitions, member UUID lists and instance records
+retain supported embedded graphs across export and editable import. The legacy
+flattened reader independently agrees on placed point/line/cloud/B-rep geometry;
+unit conversion preserves each linear map and scales every translation once.
+Tests cover hidden members, hidden/locked roots, malformed graph rollback,
+existing-destination preservation, shared redefinition and isolated import name
+conflicts. Structural reading rejects linked definitions and unsupported members;
+prototype object-lock modes reject export. Broader definition/model metadata and
+fresh Rhino cross-reader/performance evidence remain unverified.
+
+The preceding [block object snapping](block-snapping.md) adds five drafting tests
+and two CPU viewport tests. Existing feature and intersection queries now use
+immutable member records with independent cache IDs and root result ownership.
+Point mode also includes root/nested insertion points, including empty nested
+references. Tests cover all existing modes, visibility/locking, repeated
+placements, lazy-cache reuse, definition edit/Undo/removal and mesh intersections
+inside one instance. Four-view cursor checks confirm Point/End ownership and
+mesh-wire admission. Ordinary documents avoid an expanded-source vector;
+suspended queries remain cold. The full legacy snap suite passed alongside these
+checks. No fresh native block-snap capture, GPU run or timing comparison was made.
+
+The preceding [Block/Insert commands](commands/blocks.md) add five document creation
+tests, four command tests and five GUI getter tests. They check base normalization,
+source replacement, nested references, redefinition, group/raw-text retention,
+immutable geometry sharing, cancellation and atomic failures with redo. Extreme
+insertion scale uses the existing OpenNURBS cardinal-angle cleanup; a 90-degree
+rotation at scale `1e308` retains zero off-axis coordinates. Quoted names containing
+`=` work in interactive starters and complete scripts. The command help list was
+updated for both registrations. The member-layer lock policy now follows the
+published Rhino rule; member object-mode locking remains a local display rule.
+These are documented-rule/local regression checks, not fresh native command
+captures. External/linked insertion, block editing tools, snapping, subobject
+editing, structural 3DM interchange and broader selection/option-memory parity
+remained unfinished at that preceding checkpoint.
+
+The preceding [instance objects](block-instances.md) retain definition relationships
+through root selection, affine editing, transformed copies, history and unit
+rescaling. Nine document tests check stale/foreign values, atomic live-instance
+refresh, group/metadata retention and original geometry storage on replay. A
+reflected box retains physical volume and continuously certified face boundaries
+after unit rescaling. Two command tests check Move and a 3DM export rejection
+that preserves the existing destination. Three CPU viewport tests check root click/
+window selection, cache invalidation and exact scene-buffer equality across
+four views, three display modes and selected/unselected states. They do not
+execute the GPU backend. At that preceding checkpoint, Block/Insert commands, block snapping, subobject
+editing and structural 3DM round trips remained unfinished; no fresh Rhino block-command
+capture or timing comparison was made.
+
+The preceding [native block catalog](block-definitions.md) adds 12 regressions for
+shared immutable definitions, noncommuting nested placement, paths/raw metadata,
+atomic graph validation, Undo/Redo, live-layer constraints and resource bounds.
+Unit rescaling stages definition geometry/reference translations and ordinary
+objects before mutation; failures in either table preserve both tables and redo.
+The final document-only release run after lint fixes passed 199 tests with five
+ignored. At that preceding checkpoint, instance objects, interactive Block/Insert commands,
+parent-attribute inheritance and structural 3DM round trips remained unfinished. No fresh Rhino
+block editing or timing evidence was captured.
+
+The preceding block traversal adds a one-million-visit ceiling per top-level object,
+bounding empty-definition branching graphs independently of leaf geometry count.
+An acyclic 20-level fixture proves this failure path. Additional placements check
+reflected B-rep boundary correspondence/volume, stored cloud normals and invalid
+projective/singular maps. Command replay checks each failure preserves the document
+and redo history. The normal expectation follows the public OpenNURBS transform
+implementation, retaining its stored channel. Earlier source/fixture hashes are
+preserved. Fresh Rhino cross-reader, definition editing and performance evidence
+remain unverified. See [scope](three-dm-blocks.md).
+
+The preceding 3DM reader expands supported nested/repeated block references as
+independent placed geometry, suppressing unplaced definition prototypes and
+reporting top-level expansion counts. The bridge resolves members and inherited
+attributes; the Rust kernel applies checked affine placement before unit scaling.
+Three I/O regressions verify noncommuting transforms, source/placed coordinates,
+colors/groups, hidden locks, channels, box topology/volume and malformed graphs.
+Two command regressions cover import/export, independent Undo/Redo and atomic
+failure preserving redo. Original public OpenNURBS fixtures include both valid
+models and intentionally missing/cyclic references. Native block-definition
+editing/structural round trips, external linked-file resolution, fresh Rhino
+cross-reader and performance evidence remain unfinished/unverified.
+See [scope](three-dm-blocks.md).
+
+The preceding linear-extrusion adapter constructs certified spatial edge images
+for diagonal and curved rational p-curves on parameter-preserving directrices.
+Face and edge paths share tensor construction. Direct spline/parameter-curve
+tests cover reversed/signed UV gauges, crossed directrix knots, constant axial
+coordinates and invalid charts. Serialized polynomial/rational extrusion triangles
+retain editable surfaces, original p-curve domains and continuously certified
+oriented trim/edge correspondence. The existing globally affine line route stays
+first, preserving its unbounded parameter map; conic/angular directrices retain
+their preceding isocurve policy. No fresh Rhino cross-reader or timing is claimed.
+See [scope](step-extrusion-pcurves.md).
+
+The preceding STEP qualification layer covers every p-curve edge on a B-spline/NURBS
+basis, including affine, straight, extracted isocurve and rational reparameterized
+paths. Proposal construction remains separate in its existing adapters; the final
+edge must receive a continuous original-UV/surface proof at actual import tolerance.
+A rational straight-path regression accepts model tolerance and rejects the same
+rounded edge at a stricter tolerance. The preceding curved-only sources are retained
+with their original hashes, and analytic/explicit 3D-edge adapters retain their
+existing contracts. See [scope](step-pcurve-certificates.md).
+
+The preceding native STEP curved spline p-curve composition independently certifies
+its final joined spatial edge against the original stored UV curve and spline
+surface at absolute import tolerance. Rounded splits/snapped crossing endpoints
+remain proposals. Full-order surface-knot components are selected by exact
+control/knot slices when the sign-coherent UV hull fits one component; paths
+on a break keep the following-side convention, and discontinuity crossings fail.
+Tolerance propagates through nested curve leaders and sweep directrices. Two
+regressions reject a between-station excursion and check exact two-axis component
+slices. The retained crossing matrix and serialized oriented trim/edge checks pass.
+This proof applies to the curved spline p-curve path; other native adapters keep
+their preceding contracts. No fresh Rhino cross-reader or timing is claimed.
+See [scope](step-pcurve-certificates.md).
+
+The preceding single-face control-net edit replaces sampled-only boundary images
+with continuously qualified fitted images at one quarter of absolute model tolerance.
+The existing proposal fitter retains its 4,096-control ceiling; dense edited
+trims receive an explicit 16-million-unit continuous proof budget per image/use.
+Shared edge reuse certifies
+every UV use, and singular edge removal requires a zero-error constant-image
+proof. Five geometry regressions cover diagonal/reversed boundaries, circular holes,
+mixed-weight rejection, shared sphere seams/poles and an excursion hidden at old
+fit stations. A certificate regression checks explicit budget exhaustion and unchanged tolerance. A document regression
+checks certified Smooth hole images with metadata and independent history.
+Retained native Smooth comparisons remain sampled nearest-locus witnesses;
+the local continuous proof does not establish identical native edge controls or
+parameter speed. General singular edits, global embedding and performance parity
+remain unverified. See [contract](surface-edit-certificates.md).
+
+The preceding preview audit shares the staged-document selector with production
+drawing and checks replacement/copy/failure/cancel routing across display modes.
+Compact curve/surface option buttons use typed handlers, return command-field
+focus and disable Accept after preparation failure. Egui click tests check
+toggles, value prompts, exact prepared-output acceptance, U/V independence and
+stale-source rejection before buttons render. Expanded tests cover all guarded
+source categories and retain previews after equal-geometry no-op assignments.
+Mixed-selection preparation and current-layer identity/history policies remain
+atomic. Production Xvfb inspection was attempted; X11 launch failed because the
+sandbox prevents listening-socket binding. No completed production screenshot
+or new native comparison is claimed. See [guide](commands/rebuild-curves.md).
+
+The preceding curve Rebuild workflow prepares readonly typed previews after
+preselection or picking and accepts the exact prepared geometry in one history
+step. Deletion/layer changes reuse output storage; geometric options rebuild it.
+Failed preparation blocks acceptance, invalid syntax retains the preceding
+preview, and cancellation retains document history/redo. Source guards cover
+geometry, attributes, group/root text, selection, tolerance and current layer.
+Three command tests and five app tests cover preparation, partial options,
+closed curves, output reuse, background refresh, stale inputs, failure recovery,
+inline/postselected routes and independent Undo/Redo. The existing curve kernel
+and output policy remain in use. Curve option-memory/native UI parity and new
+production pixel comparisons remain unverified. See [guide](commands/rebuild-curves.md).
+
+The preceding fixed-curve search reuses bounded coefficient state across independent
+targets. Original, translated and failed-translation refinement frames stay separate;
+each retains at most 64 spans. Exact net state owns coefficients while every query
+supplies the unchanged curve and validates its denominator anew. Two new regressions
+check transferred sided jets after eviction/invalid stations and alternating target
+translation fallback. Sphere/swapped/cylinder medians are 0.8524/1.2066/0.5171 seconds,
+with all source and complete output definitions identical to preceding profiles.
+These small timing changes do not establish a general speedup. The preceding
+projection source hashes remain verified in `retrim-projection-source/`.
+See [measurements](retrim-target-cache-provenance.json). No new native timing is claimed.
+
+The preceding projection preparation retains three repetitions of the same cases.
+Swapped-cap median retrim time falls from 1.3417 to 1.2219 seconds; sphere/cylinder
+medians of 0.8644/0.5143 seconds remain near their preceding values. All source and
+complete output definitions remain identical. Fixed isocurve searches reuse seed
+images and translated controls while preserving every start, refinement limit,
+original-coordinate comparison and failed-translation fallback. Opt-in evaluation
+queries retain at most 64 coefficient spans. Chart projection reuse keys exact UV
+bits, including periodic lifts, and caps entries at 131,072. Tests compare prepared
+searches and public jets under extreme inputs, eviction, invalid queries and repeated
+chart hits. The prepared-context sources are archived with verified hashes.
+See [measurements](retrim-projection-provenance.json). No new native timing or
+global nearest-point certification is claimed; performance parity remains unresolved.
+
+The preceding prepared surface context retains three separate repetitions for the
+same sphere cap, swapped cap and cylinder band. Independent image proposals reuse
+exact surface extraction, interval patches and coefficient tables, with a fresh
+2,000,000-unit rational work budget for each candidate. Cache hits reduce charged
+work without changing the proof arithmetic, tolerance or subdivision limits.
+Sphere-cap median retrim time falls from 1.3905 to 0.8764 seconds; the other cases
+remain near their preceding values. All source and complete recorded output
+definitions remain identical. A regression compares repeated prepared and
+standalone proofs across weight gauges, domains, offsets and invalid limits,
+including success after rejection. General resource-admission equivalence is
+not established. The preceding cache sources and hashes are preserved in
+`retrim-cache-source/`. See [measurements](retrim-prepared-provenance.json).
+No new native timing is claimed; substantial performance work remains.
+
+The preceding preparation cache retains three separate repetitions for the sphere
+cap, swapped cap and cylinder band. Sphere-cap median retrim time falls from
+1.6077 to 1.3905 seconds; the other two cases remain near their previous values.
+All three retain their preceding source geometry and complete recorded output
+definitions. Fixed target isocurves are extracted once per projection fit.
+Certified interval patch controls are converted once per immutable tensor patch,
+including remembered inconclusive conversions that continue through exact fallback.
+The same proof arithmetic, work charges and tolerances remain. Earlier proof
+sources are archived from `73553044` so historical hashes remain verifiable after
+new source edits. Full release workspace tests, Python tests, Clippy, formatting
+and diff checks pass. See [measurements](retrim-cache-provenance.json) and
+[performance guide](retrim-performance.md). No new native timing is claimed;
+the preceding Rhino timing gap and broader performance limits remain unresolved.
+
+The preceding trim-transfer profile retains three baseline and three optimized
 radius-two sphere-cap runs on this DGX Spark. Median release retrim cost falls
 from 64.7758 to 1.6077 seconds, about 40× for this case. Each emitted geometry
 definition has the same canonical fingerprint across the runs, including its

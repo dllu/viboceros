@@ -89,6 +89,7 @@ struct SurfaceCurves {
 /// aperture. Accepted targets retain Euclidean distance scoring.
 #[derive(Debug, Default)]
 pub struct ObjectSnapCache {
+    pub(super) blocks: super::block_sources::BlockSources,
     curves: BTreeMap<ObjectId, CachedCurves>,
     surfaces: BTreeMap<ObjectId, SurfaceCurves>,
     pub(super) polygons: super::polygon_centers::Cache,
@@ -100,6 +101,14 @@ pub struct ObjectSnapCache {
 }
 
 impl ObjectSnapCache {
+    #[cfg(test)]
+    pub(super) fn curve_feature_builds(&self) -> usize {
+        self.builds
+    }
+    #[cfg(test)]
+    pub(super) fn curve_feature_entries(&self) -> usize {
+        self.curves.len()
+    }
     /// Same precision, visibility and tie rules as `nearest_object_snap_axis_aligned`.
     pub fn nearest_axis_aligned(
         &mut self,
@@ -321,7 +330,7 @@ impl ObjectSnapCache {
         )
     }
 
-    pub(super) fn retain_objects(&mut self, document: &Document) {
+    pub(super) fn retain_objects(&mut self, sources: &super::block_sources::QuerySources<'_>) {
         if self.curves.is_empty()
             && self.surfaces.is_empty()
             && self.polygons.is_empty()
@@ -332,8 +341,9 @@ impl ObjectSnapCache {
         // One temporary index instead of a linear document search per cache
         // entry. Unsupported objects need no index storage. Traversal and snap
         // ties still use document order, never hash-table iteration order.
-        let live: HashMap<_, _> = document
-            .objects()
+        let live: HashMap<_, _> = sources
+            .iter()
+            .map(|source| source.object)
             .filter(|o| {
                 super::polygon_centers::supported(o.geometry())
                     || matches!(o.geometry(), Geometry::Mesh(_))

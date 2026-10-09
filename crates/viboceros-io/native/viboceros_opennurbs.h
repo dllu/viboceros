@@ -19,6 +19,7 @@ enum ViboObjectType {
   VIBO_OBJECT_POLYCURVE = 8,
   VIBO_OBJECT_POLYLINE = 9,
   VIBO_OBJECT_ARC = 10,
+  VIBO_OBJECT_INSTANCE = 11,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;
@@ -58,6 +59,13 @@ typedef struct ViboWriteLayer {
 typedef struct ViboWriteGroup {
   const char* name;
 } ViboWriteGroup;
+
+typedef struct ViboWriteDefinition {
+  const char* name;
+  size_t first_object;
+  size_t object_count;
+  double bounds[6];
+} ViboWriteDefinition;
 
 typedef struct ViboNamedView {
   const char* name;
@@ -142,6 +150,11 @@ typedef struct ViboWriteObject {
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);
 void vibo_3dm_free(ViboThreeDmModel* model);
+int32_t vibo_3dm_read_mode(const char* path, uint8_t structural, ViboThreeDmModel** model, char* error, size_t capacity);
+uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model);
+size_t vibo_3dm_definition_count(const ViboThreeDmModel* model);
+size_t vibo_3dm_top_level_start(const ViboThreeDmModel* model);
+int32_t vibo_3dm_definition(const ViboThreeDmModel* model, size_t index, const char** name, size_t* first, size_t* count);
 int32_t vibo_3dm_units(const ViboThreeDmModel* model, uint32_t* unit_system,
                       double* meters_per_unit, const char** name);
 
@@ -153,6 +166,9 @@ int32_t vibo_3dm_layer(const ViboThreeDmModel* model, size_t index,
                        uint8_t* locked);
 
 size_t vibo_3dm_group_count(const ViboThreeDmModel* model);
+size_t vibo_3dm_expanded_instance_count(const ViboThreeDmModel* model);
+size_t vibo_3dm_object_placement_count(const ViboThreeDmModel* model,size_t index);
+int32_t vibo_3dm_object_placement(const ViboThreeDmModel* model,size_t index,size_t placement,double* matrix);
 int32_t vibo_3dm_group(const ViboThreeDmModel* model, size_t index,
                        int32_t* source_index, const char** name);
 size_t vibo_3dm_named_view_count(const ViboThreeDmModel* model);
@@ -195,7 +211,7 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        size_t named_view_count, const ViboNamedCPlane* named_cplanes,
                        size_t named_cplane_count, const ViboCurrentView* current_views,
                        size_t current_view_count, const ViboWriteObject* objects,
-                       size_t object_count, char* error,
+                       size_t object_count, const ViboWriteDefinition* definitions, size_t definition_count, size_t top_level_start, char* error,
                        size_t error_capacity);
 
 int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,

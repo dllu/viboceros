@@ -37,11 +37,20 @@
     "docs/retrim-performance-sphere.json": "ba8987cfa88673aa62d82c59064a3cdc450687697f244666448515295404febf",
     "docs/retrim-performance-swapped.json": "f0c59e3beb8ba8b43309bf6511c5b3a9f90294861c10bb265c739bb00fa93d20",
     "docs/retrim-performance-cylinder.json": "002cc2f76cbc0187cde00559d90a30bf57da67d844684de82d3ee3c2667f310d",
-    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "00a66d609573e804c5e8e13be41cd0542c6f4d29c343e2f7d765a7cec4048dc0",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs": "15a7de14dcd0a96de5eb1bafef6cb65164643b824d12adaf5acd76cfa3268c95",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "c53653dc0ff734d162bbf41688204a92dee9f803bca9de6c68f73c310470aaa2",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/number.rs": "336501254b7cd6c1c3662827ec38f4e8d2b461ec6a79bd29d65b6e01310a51c1",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs": "6d20ee9eba93a2c6586448bac2df8b5f018c856274c5f301adb16448b2c24228",
-    "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs": "2a8a74001d5f8e5b0b4de89188582587926436bdba53bd68fb04d2430e6d7a84"
+    "docs/retrim-performance-source-73553044/certificate.rs": "00a66d609573e804c5e8e13be41cd0542c6f4d29c343e2f7d765a7cec4048dc0",
+    "docs/retrim-performance-source-73553044/certificate/surface.rs": "15a7de14dcd0a96de5eb1bafef6cb65164643b824d12adaf5acd76cfa3268c95",
+    "docs/retrim-performance-source-73553044/certificate/interval.rs": "c53653dc0ff734d162bbf41688204a92dee9f803bca9de6c68f73c310470aaa2",
+    "docs/retrim-performance-source-73553044/certificate/interval/number.rs": "336501254b7cd6c1c3662827ec38f4e8d2b461ec6a79bd29d65b6e01310a51c1",
+    "docs/retrim-performance-source-73553044/certificate/interval/crossing.rs": "6d20ee9eba93a2c6586448bac2df8b5f018c856274c5f301adb16448b2c24228",
+    "docs/retrim-performance-source-73553044/certificate/interval/tests.rs": "2a8a74001d5f8e5b0b4de89188582587926436bdba53bd68fb04d2430e6d7a84"
+  },
+  "source_snapshot_commit": "73553044",
+  "source_snapshot_paths": {
+    "docs/retrim-performance-source-73553044/certificate.rs": "crates/viboceros-geometry/src/surface_pullback/certificate.rs",
+    "docs/retrim-performance-source-73553044/certificate/surface.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/surface.rs",
+    "docs/retrim-performance-source-73553044/certificate/interval.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs",
+    "docs/retrim-performance-source-73553044/certificate/interval/number.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval/number.rs",
+    "docs/retrim-performance-source-73553044/certificate/interval/crossing.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval/crossing.rs",
+    "docs/retrim-performance-source-73553044/certificate/interval/tests.rs": "crates/viboceros-geometry/src/surface_pullback/certificate/interval/tests.rs"
   }
 }

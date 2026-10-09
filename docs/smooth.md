@@ -132,14 +132,19 @@ survive Undo.
 
 Single-face B-reps edit the underlying control net. Rectangular boundaries use
 exact isocurves and rebuild seam/pole topology. Other boundaries retain UV trims
-and fit new spatial images with the existing bounded, sampled curve fitter,
-allowing up to 4096 controls per image.
+and qualify bounded fitted spatial images with a continuous certificate,
+allowing up to 4096 controls per image. Every returned boundary has
+a continuous normalized-parameter correspondence bound at one quarter of model
+tolerance; shared edges receive independent proofs for each trim use.
+Exactly constant images require a zero-error certificate before edge removal.
 Assembled B-reps must pass ordinary boundary validation; component tolerances
 are not enlarged to hide disagreement. The circular-trim capture compares
 underlying control definitions and UV curves at `2e-12`, and 33 samples per
 spatial edge, using bidirectional nearest-point witnesses at the document
-tolerance `1e-7`. Native refitting can change parameterization. Spatial edge control equality or
-a continuous fitting error certificate is not claimed.
+tolerance `1e-7`. Native refitting can change parameterization. Those native
+witnesses remain sampled comparisons; the new continuous certificate concerns
+the local edited surface and its retained UV trim, not agreement with the native
+refit. Spatial edge control equality is not claimed.
 
 The application replays all 26 cases, including metadata, admission, getters,
 cancellation, remembered settings, followup invocations, and retained history.

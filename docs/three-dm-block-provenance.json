@@ -1,0 +1,53 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted native 3DM block-reference expansion.",
+  "full_native_parity": false,
+  "contract": [
+    "Supported block references expand to independent placed objects; unplaced definitions are not emitted.",
+    "Nested child-to-parent affine composition uses checked Rust kernel arithmetic before unit scaling.",
+    "ByParent colors, parent visibility/locking and group inheritance use archive attributes and public OpenNURBS APIs."
+  ],
+  "evidence": [
+    "Three I/O tests cover placements, repeated/nested fixtures, primitive/channel/B-rep data, unit conversion and malformed graphs.",
+    "Two command tests verify import reporting, independent export/reimport, Undo/Redo and atomic malformed-graph failure.",
+    "Independent fixture producer checks model components/geometry for ordinary files; missing/cyclic files are intentional invalid cases."
+  ],
+  "limits": [
+    "Block structure and definition-editing identity are flattened; export writes independent objects.",
+    "No external linked files opened; expansion has depth/leaf ceilings.",
+    "No fresh Rhino cross-reader or performance evidence.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "docs/three-dm-block-source/viboceros-io/native/viboceros_opennurbs.cpp": "fbc9cc9a4bcc85136336ee97929c7f2eee53baf22d653271b6f721594da76484",
+    "docs/three-dm-block-source/viboceros-io/native/viboceros_opennurbs.h": "39696bd8470860c0916ea525a58ded904b9380b0698c2b0c0050624aff172092",
+    "docs/three-dm-block-source/viboceros-io/native/instance_read.h": "9e78f9155428a74fe11fe98c19665f7a7c56858b4c43865a906578ba7d48a9d6",
+    "docs/three-dm-block-source/viboceros-io/build.rs": "817a2d9dd703b5c7f030807d5038f7d503787cce68bf313b359d34a03f69d475",
+    "docs/three-dm-block-source/viboceros-io/src/three_dm.rs": "67f4dd8170a675cba1559c904d1e175557cc0008b20435b36726eae50bf40e9d",
+    "docs/three-dm-block-source/viboceros-io/src/three_dm/instances.rs": "3b7496564d3e711f5454716d7f3a212d7f22dde61c648714e96792b656a3e1fd",
+    "docs/three-dm-block-source/viboceros-command/src/interchange.rs": "f9cbb92d7db4ebe34376060cb012abf4718eb25c635783e73e42b02bbc655bc8",
+    "docs/three-dm-block-source/viboceros-command/src/interchange/block_tests.rs": "d416b518088470b1ddc2dfde31d30da263b8a7b757efacdbae5b27cb3cb77d26",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/generate.cpp": "315f0a682671c3ebec53715bf0f61b93e32085518f287b43140b49a6956dfbc9",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/nested_blocks.3dm": "4f18cd461bf7a3b3f647e6635febb1f5721a6f019e51b3a940607099437033f6",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/hidden_blocks.3dm": "67247f180efacd949728a1b28904c44e2bb719c9a1a01015127b088646f2088c",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/missing_block.3dm": "4cc799ebf9040818b0560090e17cd23ef041370e9ebba59e43572df70369e66c",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/cyclic_block.3dm": "ac816136944a669add1e51cae6cc310210e4c8891254065236aa183f0dec7526"
+  },
+  "source_snapshot_paths": {
+    "docs/three-dm-block-source/viboceros-io/native/viboceros_opennurbs.cpp": "crates/viboceros-io/native/viboceros_opennurbs.cpp",
+    "docs/three-dm-block-source/viboceros-io/native/viboceros_opennurbs.h": "crates/viboceros-io/native/viboceros_opennurbs.h",
+    "docs/three-dm-block-source/viboceros-io/native/instance_read.h": "crates/viboceros-io/native/instance_read.h",
+    "docs/three-dm-block-source/viboceros-io/build.rs": "crates/viboceros-io/build.rs",
+    "docs/three-dm-block-source/viboceros-io/src/three_dm.rs": "crates/viboceros-io/src/three_dm.rs",
+    "docs/three-dm-block-source/viboceros-io/src/three_dm/instances.rs": "crates/viboceros-io/src/three_dm/instances.rs",
+    "docs/three-dm-block-source/viboceros-command/src/interchange.rs": "crates/viboceros-command/src/interchange.rs",
+    "docs/three-dm-block-source/viboceros-command/src/interchange/block_tests.rs": "crates/viboceros-command/src/interchange/block_tests.rs",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/generate.cpp": "crates/viboceros-io/tests/fixtures/instances/generate.cpp",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/nested_blocks.3dm": "crates/viboceros-io/tests/fixtures/instances/nested_blocks.3dm",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/hidden_blocks.3dm": "crates/viboceros-io/tests/fixtures/instances/hidden_blocks.3dm",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/missing_block.3dm": "crates/viboceros-io/tests/fixtures/instances/missing_block.3dm",
+    "docs/three-dm-block-source/viboceros-io/tests/fixtures/instances/cyclic_block.3dm": "crates/viboceros-io/tests/fixtures/instances/cyclic_block.3dm"
+  },
+  "source_snapshot_state": "Verified block expansion checkpoint before traversal/resource audit."
+}

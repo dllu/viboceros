@@ -1,0 +1,2594 @@
+#include "viboceros_opennurbs.h"
+
+#include "opennurbs_public.h"
+#include "rational_coordinates.h"
+
+#include <algorithm>
+#include <array>
+#include <functional>
+#include <iterator>
+#include <cmath>
+#include <cstring>
+#include <exception>
+#include <limits>
+#include <memory>
+#include <mutex>
+#include <new>
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace {
+
+struct BridgeLayer {
+  int32_t source_index = 0;
+  std::string name;
+  uint8_t red = 0;
+  uint8_t green = 0;
+  uint8_t blue = 0;
+  uint8_t visible = 1;
+  uint8_t locked = 0;
+};
+
+struct BridgeGroup {
+  int32_t source_index = 0;
+  std::string name;
+};
+
+struct BridgeNamedView {
+  std::string name;
+  ViboNamedView data{};
+};
+
+struct BridgeNamedCPlane {
+  std::string name;
+  ViboNamedCPlane data{};
+};
+
+struct BridgeCurrentView {
+  std::string name;
+  ViboCurrentView data{};
+};
+
+struct BridgeObject {
+  std::vector<std::array<double,16>> placements;
+  int32_t object_type = 0;
+  int32_t source_layer_index = 0;
+  std::string name;
+  uint8_t visible = 1;
+  uint8_t locked = 0;
+  uint8_t color_source = 0;
+  uint8_t color_red = 0;
+  uint8_t color_green = 0;
+  uint8_t color_blue = 0;
+  int32_t wire_density = 1;
+  uint32_t degree_u = 0;
+  uint32_t degree_v = 0;
+  size_t control_point_count_u = 0;
+  size_t control_point_count_v = 0;
+  std::vector<double> coordinates;
+  std::vector<double> knots_u;
+  std::vector<double> knots_v;
+  std::vector<uint32_t> indices;
+  std::vector<uint8_t> geometry_data;
+  std::vector<int32_t> group_indices;
+  std::vector<std::pair<std::string, std::string>> user_text;
+  std::vector<std::pair<std::string, std::string>> geometry_user_text;
+};
+
+std::once_flag g_open_nurbs_once;
+
+void begin_open_nurbs() {
+  std::call_once(g_open_nurbs_once, [] { ON::Begin(); });
+}
+
+std::string utf8(const ON_wString& value) {
+  const ON_String converted(value);
+  const char* text = static_cast<const char*>(converted);
+  return text == nullptr ? std::string() : std::string(text);
+}
+
+bool read_view_camera(const ON_3dmView& source_view, ViboNamedView& record) {
+  if (!source_view.m_vp.IsValid() || !source_view.m_cplane.m_plane.IsValid()) {
+    return false;
+  }
+  record.projection = source_view.m_vp.IsTwoPointPerspectiveProjection()
+                          ? 3
+                          : static_cast<uint8_t>(source_view.m_vp.Projection());
+  if (record.projection < 1 || record.projection > 3) {
+    return false;
+  }
+  const auto fill3 = [](double (&destination)[3], const auto& value) {
+    destination[0] = value.x;
+    destination[1] = value.y;
+    destination[2] = value.z;
+  };
+  fill3(record.camera_location, source_view.m_vp.CameraLocation());
+  fill3(record.camera_direction, source_view.m_vp.CameraDirection());
+  fill3(record.camera_up, source_view.m_vp.CameraUp());
+  const ON_3dPoint target = source_view.TargetPoint();
+  record.has_target = static_cast<uint8_t>(target.IsValid());
+  if (record.has_target) {
+    fill3(record.target, target);
+  }
+  const ON_Plane& plane = source_view.m_cplane.m_plane;
+  fill3(record.cplane_origin, plane.origin);
+  fill3(record.cplane_x, plane.xaxis);
+  fill3(record.cplane_y, plane.yaxis);
+  return source_view.m_vp.GetFrustum(&record.frustum[0], &record.frustum[1],
+                                    &record.frustum[2], &record.frustum[3],
+                                    &record.frustum[4], &record.frustum[5]) &&
+         source_view.m_vp.GetScreenPort(&record.screen_port[0], &record.screen_port[1],
+                                        &record.screen_port[2], &record.screen_port[3]);
+}
+
+bool write_view_camera(ON_3dmView& view, const ViboNamedView& source) {
+  if (source.name == nullptr || source.name[0] == '\0' ||
+      (source.projection < 1 || source.projection > 3)) {
+    return false;
+  }
+  view.m_name = ON_wString(source.name);
+  ON_UUID viewport_id;
+  ON_CreateUuid(viewport_id);
+  if (!view.m_vp.SetViewportId(viewport_id) ||
+      !view.m_vp.SetProjection(source.projection == 1 ? ON::parallel_view : ON::perspective_view) ||
+      !view.m_vp.SetCameraLocation(ON_3dPoint(source.camera_location))) {
+    return false;
+  }
+  // A valid final frame can pass through an invalid intermediate frame when
+  // changing from the default camera orientation (for example, Front view).
+  view.m_vp.SetCameraDirection(ON_3dVector(source.camera_direction));
+  view.m_vp.SetCameraUp(ON_3dVector(source.camera_up));
+  if (source.projection == 3) {
+    view.m_vp.SetCameraUpLock(true);
+    view.m_vp.SetFrustumLeftRightSymmetry(true);
+    view.m_vp.SetFrustumTopBottomSymmetry(false);
+  }
+  if (!view.m_vp.IsValidCamera() ||
+      !view.m_vp.SetScreenPort(source.screen_port[0], source.screen_port[1],
+                               source.screen_port[2], source.screen_port[3]) ||
+      !view.m_vp.SetFrustum(source.frustum[0], source.frustum[1],
+                            source.frustum[2], source.frustum[3],
+                            source.frustum[4], source.frustum[5]) ||
+      (source.has_target && !view.SetTargetPoint(ON_3dPoint(source.target)))) {
+    return false;
+  }
+  view.m_cplane.m_plane = ON_Plane(ON_3dPoint(source.cplane_origin),
+                                  ON_3dVector(source.cplane_x),
+                                  ON_3dVector(source.cplane_y));
+  return view.m_cplane.m_plane.IsValid();
+}
+
+void read_user_text(const ON_Object& source,
+                    std::vector<std::pair<std::string, std::string>>& output) {
+  ON_ClassArray<ON_wString> keys;
+  source.GetUserStringKeys(keys);
+  for (int index = 0; index < keys.Count(); ++index) {
+    ON_wString value;
+    if (source.GetUserString(keys[index], value)) {
+      output.emplace_back(utf8(keys[index]), utf8(value));
+    }
+  }
+}
+
+bool write_user_text(ON_Object& target, const ViboUserText* text, size_t count) {
+  if (count != 0 && text == nullptr) {
+    return false;
+  }
+  for (size_t index = 0; index < count; ++index) {
+    if (text[index].key == nullptr || text[index].key[0] == '\0' ||
+        text[index].value == nullptr ||
+        !target.SetUserString(ON_wString(text[index].key),
+                              ON_wString(text[index].value))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void set_error(char* destination, size_t capacity, const std::string& message) {
+  if (destination == nullptr || capacity == 0) {
+    return;
+  }
+  const size_t count = std::min(capacity - 1, message.size());
+  std::memcpy(destination, message.data(), count);
+  destination[count] = '\0';
+}
+
+bool finite_coordinates(const double* values, size_t count) {
+  if (count != 0 && values == nullptr) {
+    return false;
+  }
+  for (size_t index = 0; index < count; ++index) {
+    if (!std::isfinite(values[index])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
+constexpr uint32_t kBrepVersion = 1;
+constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
+constexpr uint32_t kPolyCurveVersion = 2;
+constexpr uint8_t kNgonMagic[8] = {'V', 'I', 'B', 'O', 'N', 'G', 'O', 'N'};
+constexpr uint32_t kNgonVersion = 2;
+constexpr uint8_t kPointCloudMagic[8] = {'V', 'I', 'B', 'O', 'P', 'C', 'L', 'D'};
+constexpr uint32_t kPointCloudVersion = 2;
+constexpr uint32_t kPointCloudColors = 1;
+constexpr uint32_t kPointCloudNormals = 2;
+constexpr uint32_t kPointCloudValues = 4;
+constexpr uint32_t kPointCloudOrdered = 8;
+constexpr uint32_t kPointCloudPlane = 16;
+constexpr size_t kMaxPolyCurveSegments = 65536;
+constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
+
+class ByteWriter {
+ public:
+  explicit ByteWriter(std::vector<uint8_t>& bytes) : bytes_(bytes) {}
+
+  void U8(uint8_t value) { bytes_.push_back(value); }
+
+  void U32(uint32_t value) {
+    for (unsigned int shift = 0; shift < 32; shift += 8) {
+      U8(static_cast<uint8_t>(value >> shift));
+    }
+  }
+
+  void U64(uint64_t value) {
+    for (unsigned int shift = 0; shift < 64; shift += 8) {
+      U8(static_cast<uint8_t>(value >> shift));
+    }
+  }
+
+  void Double(double value) {
+    uint64_t bits = 0;
+    static_assert(sizeof(bits) == sizeof(value), "double must be 64 bits");
+    std::memcpy(&bits, &value, sizeof(bits));
+    U64(bits);
+  }
+
+  void Bytes(const uint8_t* values, size_t count) {
+    bytes_.insert(bytes_.end(), values, values + count);
+  }
+
+ private:
+  std::vector<uint8_t>& bytes_;
+};
+
+class ByteReader {
+ public:
+  ByteReader(const uint8_t* bytes, size_t count)
+      : bytes_(bytes), count_(count) {}
+
+  bool U8(uint8_t& value) {
+    if (position_ >= count_) {
+      return false;
+    }
+    value = bytes_[position_++];
+    return true;
+  }
+
+  bool Bool(bool& value) {
+    uint8_t encoded = 0;
+    if (!U8(encoded) || encoded > 1) {
+      return false;
+    }
+    value = encoded != 0;
+    return true;
+  }
+
+  bool U32(uint32_t& value) {
+    value = 0;
+    for (unsigned int shift = 0; shift < 32; shift += 8) {
+      uint8_t byte = 0;
+      if (!U8(byte)) {
+        return false;
+      }
+      value |= static_cast<uint32_t>(byte) << shift;
+    }
+    return true;
+  }
+
+  bool U64(uint64_t& value) {
+    value = 0;
+    for (unsigned int shift = 0; shift < 64; shift += 8) {
+      uint8_t byte = 0;
+      if (!U8(byte)) {
+        return false;
+      }
+      value |= static_cast<uint64_t>(byte) << shift;
+    }
+    return true;
+  }
+
+  bool Count(size_t& value) {
+    uint64_t encoded = 0;
+    if (!U64(encoded) || encoded > std::numeric_limits<size_t>::max()) {
+      return false;
+    }
+    value = static_cast<size_t>(encoded);
+    return value <= Remaining();
+  }
+
+  bool Double(double& value) {
+    uint64_t bits = 0;
+    if (!U64(bits)) {
+      return false;
+    }
+    std::memcpy(&value, &bits, sizeof(value));
+    return true;
+  }
+
+  bool Bytes(const uint8_t* expected, size_t count) {
+    if (count > Remaining() ||
+        std::memcmp(bytes_ + position_, expected, count) != 0) {
+      return false;
+    }
+    position_ += count;
+    return true;
+  }
+
+  size_t Remaining() const { return count_ - position_; }
+  bool Finished() const { return position_ == count_; }
+
+ private:
+  const uint8_t* bytes_;
+  size_t count_;
+  size_t position_ = 0;
+};
+
+bool append_point(const ON_Point& point, BridgeObject& output) {
+  const ON_3dPoint value = point.point;
+  if (!value.IsValid()) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POINT;
+  output.coordinates = {value.x, value.y, value.z};
+  return true;
+}
+
+bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
+  if (!cloud.IsValid() || cloud.PointCount() <= 0) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POINT_CLOUD;
+  output.coordinates.reserve(static_cast<size_t>(cloud.PointCount()) * 3);
+  for (int index = 0; index < cloud.PointCount(); ++index) {
+    const ON_3dPoint point = cloud[index];
+    if (!point.IsValid()) {
+      return false;
+    }
+    output.coordinates.insert(output.coordinates.end(),
+                              {point.x, point.y, point.z});
+  }
+  const bool has_colors = cloud.HasPointColors();
+  const bool has_normals = cloud.HasPointNormals();
+  const bool has_values = cloud.HasPointValues();
+  const bool ordered = cloud.IsOrdered();
+  const bool has_plane = cloud.HasPlane();
+  if (has_plane && !cloud.m_plane.IsValid()) {
+    return false;
+  }
+  if (has_colors || has_normals || has_values || ordered || has_plane) {
+    ByteWriter writer(output.geometry_data);
+    writer.Bytes(kPointCloudMagic, sizeof(kPointCloudMagic));
+    writer.U32(kPointCloudVersion);
+    writer.U32((has_colors ? kPointCloudColors : 0U) |
+               (has_normals ? kPointCloudNormals : 0U) |
+               (has_values ? kPointCloudValues : 0U) |
+               (ordered ? kPointCloudOrdered : 0U) |
+               (has_plane ? kPointCloudPlane : 0U));
+  }
+  if (has_colors) {
+    ByteWriter writer(output.geometry_data);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const ON_Color color = cloud.m_C[index];
+      writer.U8(static_cast<uint8_t>(color.Red()));
+      writer.U8(static_cast<uint8_t>(color.Green()));
+      writer.U8(static_cast<uint8_t>(color.Blue()));
+      writer.U8(static_cast<uint8_t>(color.Alpha()));
+    }
+  }
+  if (has_normals) {
+    ByteWriter writer(output.geometry_data);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const ON_3dVector normal = cloud.m_N[index];
+      if (!normal.IsValid()) {
+        return false;
+      }
+      writer.Double(normal.x);
+      writer.Double(normal.y);
+      writer.Double(normal.z);
+    }
+  }
+  if (has_values) {
+    ByteWriter writer(output.geometry_data);
+    for (int index = 0; index < cloud.PointCount(); ++index) {
+      const double value = cloud.m_V[index];
+      if (!std::isfinite(value)) {
+        return false;
+      }
+      writer.Double(value);
+    }
+  }
+  if (has_plane) {
+    ByteWriter writer(output.geometry_data);
+    const ON_Plane& plane = cloud.m_plane;
+    for (double coordinate : {plane.origin.x, plane.origin.y, plane.origin.z,
+                              plane.xaxis.x, plane.xaxis.y, plane.xaxis.z,
+                              plane.yaxis.x, plane.yaxis.y, plane.yaxis.z,
+                              plane.zaxis.x, plane.zaxis.y, plane.zaxis.z}) {
+      writer.Double(coordinate);
+    }
+  }
+  return true;
+}
+
+bool append_line(const ON_LineCurve& line, BridgeObject& output) {
+  const ON_3dPoint start = line.PointAtStart();
+  const ON_3dPoint end = line.PointAtEnd();
+  if (!start.IsValid() || !end.IsValid() || start == end) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_LINE;
+  output.coordinates = {start.x, start.y, start.z, end.x, end.y, end.z};
+  output.knots_u = {line.Domain()[0], line.Domain()[1]};
+  return true;
+}
+
+bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
+  ON_NurbsCurve curve;
+  if (source.GetNurbForm(curve) <= 0 || !curve.IsValid() || curve.Order() < 2 ||
+      curve.CVCount() < curve.Order()) {
+    return false;
+  }
+
+  output.object_type = VIBO_OBJECT_NURBS_CURVE;
+  output.degree_u = static_cast<uint32_t>(curve.Order() - 1);
+  output.control_point_count_u = static_cast<size_t>(curve.CVCount());
+  output.coordinates.reserve(output.control_point_count_u * 4);
+  for (int index = 0; index < curve.CVCount(); ++index) {
+    ON_4dPoint homogeneous;
+    ON_3dPoint point;
+    if (!curve.GetCV(index, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
+      return false;
+    }
+    const double weight = homogeneous.w;
+    output.coordinates.insert(output.coordinates.end(),
+                              {point.x, point.y, point.z, weight});
+  }
+
+  output.knots_u.reserve(static_cast<size_t>(curve.KnotCount()) + 2);
+  output.knots_u.push_back(curve.SuperfluousKnot(0));
+  for (int index = 0; index < curve.KnotCount(); ++index) {
+    output.knots_u.push_back(curve.Knot(index));
+  }
+  output.knots_u.push_back(curve.SuperfluousKnot(1));
+  return std::all_of(output.knots_u.begin(), output.knots_u.end(),
+                     [](double knot) { return std::isfinite(knot); });
+}
+
+bool append_nurbs_surface(const ON_Surface& source, BridgeObject& output) {
+  ON_NurbsSurface surface;
+  if (source.GetNurbForm(surface) <= 0 || !surface.IsValid() ||
+      surface.Order(0) < 2 || surface.Order(1) < 2 ||
+      surface.CVCount(0) < surface.Order(0) ||
+      surface.CVCount(1) < surface.Order(1)) {
+    return false;
+  }
+
+  output.object_type = VIBO_OBJECT_NURBS_SURFACE;
+  output.degree_u = static_cast<uint32_t>(surface.Order(0) - 1);
+  output.degree_v = static_cast<uint32_t>(surface.Order(1) - 1);
+  output.control_point_count_u = static_cast<size_t>(surface.CVCount(0));
+  output.control_point_count_v = static_cast<size_t>(surface.CVCount(1));
+  if (output.control_point_count_u >
+      std::numeric_limits<size_t>::max() / output.control_point_count_v / 4) {
+    return false;
+  }
+  output.coordinates.reserve(output.control_point_count_u *
+                             output.control_point_count_v * 4);
+  for (int v = 0; v < surface.CVCount(1); ++v) {
+    for (int u = 0; u < surface.CVCount(0); ++u) {
+      ON_4dPoint homogeneous;
+      ON_3dPoint point;
+      if (!surface.GetCV(u, v, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
+        return false;
+      }
+      const double weight = homogeneous.w;
+      output.coordinates.insert(output.coordinates.end(),
+                                {point.x, point.y, point.z, weight});
+    }
+  }
+
+  for (int direction = 0; direction < 2; ++direction) {
+    std::vector<double>& knots =
+        direction == 0 ? output.knots_u : output.knots_v;
+    knots.reserve(static_cast<size_t>(surface.KnotCount(direction)) + 2);
+    knots.push_back(surface.SuperfluousKnot(direction, 0));
+    for (int index = 0; index < surface.KnotCount(direction); ++index) {
+      knots.push_back(surface.Knot(direction, index));
+    }
+    knots.push_back(surface.SuperfluousKnot(direction, 1));
+    if (!std::all_of(knots.begin(), knots.end(),
+                     [](double knot) { return std::isfinite(knot); })) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool write_nurbs_curve(const ON_Curve& source, int dimension,
+                       ByteWriter& writer) {
+  ON_NurbsCurve curve;
+  if (source.GetNurbForm(curve) <= 0 || !curve.IsValid() ||
+      curve.Dimension() != dimension || curve.Order() < 2 ||
+      curve.CVCount() < curve.Order()) {
+    return false;
+  }
+  writer.U32(static_cast<uint32_t>(curve.Order() - 1));
+  writer.U64(static_cast<uint64_t>(curve.CVCount()));
+  writer.U64(static_cast<uint64_t>(curve.KnotCount()) + 2);
+  for (int index = 0; index < curve.CVCount(); ++index) {
+    ON_4dPoint homogeneous;
+    ON_3dPoint point;
+    if (!curve.GetCV(index, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
+      return false;
+    }
+    const double weight = homogeneous.w;
+    writer.Double(point.x);
+    writer.Double(point.y);
+    if (dimension == 3) {
+      writer.Double(point.z);
+    }
+    writer.Double(weight);
+  }
+  writer.Double(curve.SuperfluousKnot(0));
+  for (int index = 0; index < curve.KnotCount(); ++index) {
+    writer.Double(curve.Knot(index));
+  }
+  writer.Double(curve.SuperfluousKnot(1));
+  return true;
+}
+
+bool append_polyline(const ON_PolylineCurve& curve, BridgeObject& output) {
+  if (!curve.IsValid() || curve.m_pline.Count() != curve.m_t.Count()) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POLYLINE;
+  for (int index = 0; index < curve.m_pline.Count(); ++index) {
+    const ON_3dPoint& point = curve.m_pline[index];
+    output.coordinates.insert(output.coordinates.end(), {point.x, point.y, point.z});
+    output.knots_u.push_back(curve.m_t[index]);
+  }
+  return true;
+}
+
+bool write_curve_segment(const ON_Curve& source, ByteWriter& writer) {
+  auto point = [&writer](const ON_3dPoint& p) {
+    writer.Double(p.x); writer.Double(p.y); writer.Double(p.z);
+  };
+  if (const auto* line = ON_LineCurve::Cast(&source)) {
+    writer.U8(1);
+    point(line->PointAtStart()); point(line->PointAtEnd());
+    writer.Double(line->Domain()[0]); writer.Double(line->Domain()[1]);
+  } else if (const auto* curve = ON_ArcCurve::Cast(&source)) {
+    writer.U8(5);
+    const ON_Arc& arc = curve->m_arc;
+    point(arc.Center()); point(ON_3dPoint(arc.plane.xaxis)); point(ON_3dPoint(arc.plane.zaxis));
+    writer.Double(arc.Radius()); writer.Double(arc.Domain()[0]); writer.Double(arc.Domain()[1]);
+    writer.Double(curve->Domain()[0]); writer.Double(curve->Domain()[1]);
+  } else if (const auto* polyline = ON_PolylineCurve::Cast(&source)) {
+    writer.U8(3); writer.U64(static_cast<uint64_t>(polyline->m_pline.Count()));
+    for (int i = 0; i < polyline->m_pline.Count(); ++i) point(polyline->m_pline[i]);
+    for (int i = 0; i < polyline->m_t.Count(); ++i) writer.Double(polyline->m_t[i]);
+  } else {
+    writer.U8(4);
+    return write_nurbs_curve(source, 3, writer);
+  }
+  return true;
+}
+
+bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
+  // Flatten a private copy: never alter geometry owned by the source model.
+  ON_PolyCurve curve(source);
+  curve.RemoveNesting();
+  if (!curve.IsValid() || curve.Count() <= 0 ||
+      static_cast<size_t>(curve.Count()) > kMaxPolyCurveSegments) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POLYCURVE;
+  ByteWriter writer(output.geometry_data);
+  writer.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic));
+  writer.U32(kPolyCurveVersion);
+  writer.U64(static_cast<uint64_t>(curve.Count()));
+  writer.Double(curve.Domain()[0]);
+  for (int index = 0; index < curve.Count(); ++index) {
+    writer.Double(curve.SegmentDomain(index)[1]);
+  }
+  for (int index = 0; index < curve.Count(); ++index) {
+    const ON_Curve* segment = curve.SegmentCurve(index);
+    if (segment == nullptr || ON_PolyCurve::Cast(segment) != nullptr ||
+        !write_curve_segment(*segment, writer)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
+  ON_NurbsSurface surface;
+  if (source.GetNurbForm(surface) <= 0 || !surface.IsValid() ||
+      surface.Order(0) < 2 || surface.Order(1) < 2 ||
+      surface.CVCount(0) < surface.Order(0) ||
+      surface.CVCount(1) < surface.Order(1)) {
+    return false;
+  }
+  writer.U32(static_cast<uint32_t>(surface.Order(0) - 1));
+  writer.U32(static_cast<uint32_t>(surface.Order(1) - 1));
+  writer.U64(static_cast<uint64_t>(surface.CVCount(0)));
+  writer.U64(static_cast<uint64_t>(surface.CVCount(1)));
+  writer.U64(static_cast<uint64_t>(surface.KnotCount(0)) + 2);
+  writer.U64(static_cast<uint64_t>(surface.KnotCount(1)) + 2);
+  for (int v = 0; v < surface.CVCount(1); ++v) {
+    for (int u = 0; u < surface.CVCount(0); ++u) {
+      ON_4dPoint homogeneous;
+      ON_3dPoint point;
+      if (!surface.GetCV(u, v, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
+        return false;
+      }
+      const double weight = homogeneous.w;
+      writer.Double(point.x);
+      writer.Double(point.y);
+      writer.Double(point.z);
+      writer.Double(weight);
+    }
+  }
+  for (int direction = 0; direction < 2; ++direction) {
+    writer.Double(surface.SuperfluousKnot(direction, 0));
+    for (int index = 0; index < surface.KnotCount(direction); ++index) {
+      writer.Double(surface.Knot(direction, index));
+    }
+    writer.Double(surface.SuperfluousKnot(direction, 1));
+  }
+  return true;
+}
+
+bool append_brep(const ON_Brep& source, BridgeObject& output) {
+  ON_Brep normalized(source);
+  normalized.SetTolerancesBoxesAndFlags(true, true, true, true, false, false,
+                                        false, false);
+  const ON_Brep& brep = normalized;
+  ON_wString diagnostics;
+  ON_TextLog log(diagnostics);
+  if (!brep.IsValid(&log) || brep.m_V.Count() <= 0 ||
+      brep.m_E.Count() <= 0 || brep.m_F.Count() <= 0) {
+    return false;
+  }
+
+  output.object_type = VIBO_OBJECT_BREP;
+  ByteWriter writer(output.geometry_data);
+  writer.Bytes(kBrepMagic, sizeof(kBrepMagic));
+  writer.U32(kBrepVersion);
+  writer.U64(static_cast<uint64_t>(brep.m_V.Count()));
+  writer.U64(static_cast<uint64_t>(brep.m_E.Count()));
+  writer.U64(static_cast<uint64_t>(brep.m_F.Count()));
+  for (int vertex_index = 0; vertex_index < brep.m_V.Count();
+       ++vertex_index) {
+    const ON_BrepVertex& vertex = brep.m_V[vertex_index];
+    if (!vertex.point.IsValid() || !std::isfinite(vertex.m_tolerance) ||
+        vertex.m_tolerance < 0.0) {
+      return false;
+    }
+    writer.Double(vertex.point.x);
+    writer.Double(vertex.point.y);
+    writer.Double(vertex.point.z);
+    writer.Double(vertex.m_tolerance);
+  }
+  for (int edge_index = 0; edge_index < brep.m_E.Count(); ++edge_index) {
+    const ON_BrepEdge& edge = brep.m_E[edge_index];
+    if (edge.m_vi[0] < 0 || edge.m_vi[1] < 0 ||
+        edge.m_vi[0] >= brep.m_V.Count() ||
+        edge.m_vi[1] >= brep.m_V.Count() ||
+        !std::isfinite(edge.m_tolerance) || edge.m_tolerance < 0.0) {
+      return false;
+    }
+    writer.U64(static_cast<uint64_t>(edge.m_vi[0]));
+    writer.U64(static_cast<uint64_t>(edge.m_vi[1]));
+    writer.Double(edge.m_tolerance);
+    if (!write_nurbs_curve(edge, 3, writer)) {
+      return false;
+    }
+  }
+  for (int face_index = 0; face_index < brep.m_F.Count(); ++face_index) {
+    const ON_BrepFace& face = brep.m_F[face_index];
+    writer.U8(face.m_bRev ? 1 : 0);
+    if (!write_nurbs_surface(face, writer)) {
+      return false;
+    }
+    writer.U64(static_cast<uint64_t>(face.m_li.Count()));
+    for (int loop_position = 0; loop_position < face.m_li.Count();
+         ++loop_position) {
+      const int loop_index = face.m_li[loop_position];
+      if (loop_index < 0 || loop_index >= brep.m_L.Count()) {
+        return false;
+      }
+      const ON_BrepLoop& loop = brep.m_L[loop_index];
+      if (loop.m_type != ON_BrepLoop::outer &&
+          loop.m_type != ON_BrepLoop::inner) {
+        return false;
+      }
+      writer.U8(loop.m_type == ON_BrepLoop::outer ? 1 : 2);
+      writer.U64(static_cast<uint64_t>(loop.m_ti.Count()));
+      for (int trim_position = 0; trim_position < loop.m_ti.Count();
+           ++trim_position) {
+        const int trim_index = loop.m_ti[trim_position];
+        if (trim_index < 0 || trim_index >= brep.m_T.Count()) {
+          return false;
+        }
+        const ON_BrepTrim& trim = brep.m_T[trim_index];
+        const ON_BrepVertex* start = trim.Vertex(0);
+        const ON_BrepVertex* end_vertex = trim.Vertex(1);
+        if (start == nullptr || end_vertex == nullptr ||
+            start->m_vertex_index < 0 || end_vertex->m_vertex_index < 0 ||
+            start->m_vertex_index >= brep.m_V.Count() ||
+            end_vertex->m_vertex_index >= brep.m_V.Count()) {
+          return false;
+        }
+        writer.U64(static_cast<uint64_t>(start->m_vertex_index));
+        writer.U64(static_cast<uint64_t>(end_vertex->m_vertex_index));
+        if (trim.m_ei < 0) {
+          writer.U64(kNoEdge);
+        } else if (trim.m_ei < brep.m_E.Count()) {
+          writer.U64(static_cast<uint64_t>(trim.m_ei));
+        } else {
+          return false;
+        }
+        writer.U8(trim.m_bRev3d ? 1 : 0);
+        if (trim.m_type < ON_BrepTrim::boundary ||
+            trim.m_type > ON_BrepTrim::singular ||
+            (trim.m_ei < 0) != (trim.m_type == ON_BrepTrim::singular)) {
+          return false;
+        }
+        writer.U8(static_cast<uint8_t>(trim.m_type));
+        if (trim.m_iso != ON_Surface::not_iso &&
+            trim.m_iso != ON_Surface::x_iso &&
+            trim.m_iso != ON_Surface::y_iso &&
+            trim.m_iso != ON_Surface::W_iso &&
+            trim.m_iso != ON_Surface::S_iso &&
+            trim.m_iso != ON_Surface::E_iso &&
+            trim.m_iso != ON_Surface::N_iso) {
+          return false;
+        }
+        writer.U8(static_cast<uint8_t>(trim.m_iso));
+        for (double tolerance : trim.m_tolerance) {
+          if (!std::isfinite(tolerance) || tolerance < 0.0) {
+            return false;
+          }
+          writer.Double(tolerance);
+        }
+        if (!write_nurbs_curve(trim, 2, writer)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
+  // Grip edits can retain coincident vertices and collapsed polygon records.
+  // Validate finite coordinates and face bounds below, without discarding the
+  // object solely because its geometric validity check fails.
+  if (mesh.VertexCount() <= 0 || mesh.FaceCount() <= 0) {
+    return false;
+  }
+  if (static_cast<uint64_t>(mesh.VertexCount()) >
+      std::numeric_limits<uint32_t>::max()) {
+    return false;
+  }
+
+  output.object_type = VIBO_OBJECT_TRIANGLE_MESH;
+  output.coordinates.reserve(static_cast<size_t>(mesh.VertexCount()) * 3);
+  for (int index = 0; index < mesh.VertexCount(); ++index) {
+    const ON_3dPoint point = mesh.Vertex(index);
+    if (!point.IsValid()) {
+      return false;
+    }
+    output.coordinates.insert(output.coordinates.end(),
+                              {point.x, point.y, point.z});
+  }
+
+  // OpenNURBS stores both triangles and quads in four slots, with a triangle
+  // repeating its third index in the fourth slot. Preserve that distinction
+  // across the bridge instead of triangulating quads and inventing diagonals.
+  output.indices.reserve(static_cast<size_t>(mesh.FaceCount()) * 4);
+  for (int index = 0; index < mesh.FaceCount(); ++index) {
+    const ON_MeshFace& face = mesh.m_F[index];
+    const int vertex_count = face.IsTriangle() ? 3 : 4;
+    for (int vertex = 0; vertex < vertex_count; ++vertex) {
+      if (face.vi[vertex] < 0 || face.vi[vertex] >= mesh.VertexCount()) {
+        return false;
+      }
+    }
+    output.indices.insert(output.indices.end(),
+                          {static_cast<uint32_t>(face.vi[0]),
+                           static_cast<uint32_t>(face.vi[1]),
+                           static_cast<uint32_t>(face.vi[2]),
+                           static_cast<uint32_t>(face.vi[3])});
+  }
+  uint32_t ngon_count = 0;
+  for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
+    ngon_count += mesh.Ngon(index) != nullptr ? 1U : 0U;
+  }
+  const bool has_colors = mesh.HasVertexColors();
+  if (ngon_count != 0 || has_colors) {
+    ByteWriter writer(output.geometry_data);
+    writer.Bytes(kNgonMagic, sizeof(kNgonMagic));
+    writer.U32(kNgonVersion);
+    writer.U32(ngon_count);
+    for (uint32_t index = 0; index < mesh.NgonUnsignedCount(); ++index) {
+      const ON_MeshNgon* ngon = mesh.Ngon(index);
+      if (ngon == nullptr) {
+        continue;
+      }
+      if (ngon->m_Vcount < 3 || ngon->m_Fcount == 0 ||
+          ngon->m_vi == nullptr || ngon->m_fi == nullptr) {
+        return false;
+      }
+      writer.U32(ngon->m_Vcount);
+      writer.U32(ngon->m_Fcount);
+      for (uint32_t corner = 0; corner < ngon->m_Vcount; ++corner) {
+        if (ngon->m_vi[corner] >= static_cast<uint32_t>(mesh.VertexCount())) {
+          return false;
+        }
+        writer.U32(ngon->m_vi[corner]);
+      }
+      for (uint32_t face = 0; face < ngon->m_Fcount; ++face) {
+        if (ngon->m_fi[face] >= static_cast<uint32_t>(mesh.FaceCount())) {
+          return false;
+        }
+        writer.U32(ngon->m_fi[face]);
+      }
+    }
+    writer.U32(has_colors ? static_cast<uint32_t>(mesh.VertexCount()) : 0U);
+    if (has_colors) {
+      for (int index = 0; index < mesh.VertexCount(); ++index) {
+        const ON_Color color = mesh.m_C[index];
+        const uint8_t rgba[4] = {static_cast<uint8_t>(color.Red()),
+                                 static_cast<uint8_t>(color.Green()),
+                                 static_cast<uint8_t>(color.Blue()),
+                                 static_cast<uint8_t>(color.Alpha())};
+        writer.Bytes(rgba, sizeof(rgba));
+      }
+    }
+  }
+  return true;
+}
+
+ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
+                                       int layer_index) {
+  auto* attributes = new ON_3dmObjectAttributes();
+  attributes->m_layer_index = layer_index;
+  if (source.name != nullptr && source.name[0] != '\0') {
+    const ON_wString name(source.name);
+    if (!attributes->SetName(name, true)) {
+      delete attributes;
+      return nullptr;
+    }
+  }
+  if (source.locked != 0) {
+    attributes->SetMode(ON::locked_object);
+    if (source.visible == 0) {
+      // Mode and visibility are independent serialized properties, but
+      // SetVisible(false) changes the mode to hidden and discards locking.
+      // The public visibility-only inheritance operation leaves mode intact.
+      ON_3dmObjectAttributes hidden;
+      hidden.SetVisible(false);
+      ON_Layer unused_parent_layer;
+      attributes->ApplyParentalControl(hidden, unused_parent_layer, 0x01U);
+    }
+  } else if (source.visible == 0) {
+    attributes->SetMode(ON::hidden_object);
+  } else {
+    attributes->SetMode(ON::normal_object);
+  }
+  attributes->m_color =
+      ON_Color(source.color_red, source.color_green, source.color_blue);
+  attributes->SetColorSource(
+      static_cast<ON::object_color_source>(source.color_source));
+  attributes->m_wire_density = source.wire_density;
+  if (!write_user_text(*attributes, source.user_text, source.user_text_count)) {
+    delete attributes;
+    return nullptr;
+  }
+  return attributes;
+}
+
+std::unique_ptr<ON_NurbsCurve> read_nurbs_curve(ByteReader& reader,
+                                                int dimension,
+                                                std::string& error) {
+  uint32_t degree = 0;
+  size_t control_count = 0;
+  size_t knot_count = 0;
+  if (!reader.U32(degree) || !reader.Count(control_count) ||
+      !reader.Count(knot_count) || degree == 0 || control_count <= degree ||
+      control_count > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+      knot_count != control_count + static_cast<size_t>(degree) + 1) {
+    error = "B-rep NURBS curve dimensions are inconsistent";
+    return nullptr;
+  }
+  const size_t coordinate_count =
+      control_count * static_cast<size_t>(dimension + 1);
+  if (coordinate_count > std::numeric_limits<size_t>::max() / sizeof(double) ||
+      knot_count > std::numeric_limits<size_t>::max() / sizeof(double) ||
+      coordinate_count * sizeof(double) > reader.Remaining() ||
+      knot_count * sizeof(double) >
+          reader.Remaining() - coordinate_count * sizeof(double)) {
+    error = "B-rep NURBS curve payload is truncated";
+    return nullptr;
+  }
+
+  std::vector<double> controls(coordinate_count);
+  for (double& value : controls) {
+    if (!reader.Double(value) || !std::isfinite(value)) {
+      error = "NURBS curve has invalid control data";
+      return nullptr;
+    }
+  }
+  const auto control = [&](size_t index) {
+    return controls.data() + index * static_cast<size_t>(dimension + 1);
+  };
+  int shift = 0;
+  if (!vibo::RationalScale(control_count, dimension, control, shift, error))
+    return nullptr;
+  auto curve = std::make_unique<ON_NurbsCurve>(
+      dimension, true, static_cast<int>(degree) + 1,
+      static_cast<int>(control_count));
+  for (size_t index = 0; index < control_count; ++index) {
+    double values[4] = {};
+    if (!vibo::HomogeneousControl(control(index), dimension, shift, values) ||
+        !curve->SetCV(static_cast<int>(index), ON::homogeneous_rational, values)) {
+      error = "B-rep NURBS curve has an invalid control point";
+      return nullptr;
+    }
+  }
+  for (size_t index = 0; index < knot_count; ++index) {
+    double knot = 0.0;
+    if (!reader.Double(knot) || !std::isfinite(knot) ||
+        (index > 0 && index + 1 < knot_count &&
+         !curve->SetKnot(static_cast<int>(index - 1), knot))) {
+      error = "B-rep NURBS curve has an invalid knot vector";
+      return nullptr;
+    }
+  }
+  if (!curve->IsValid()) {
+    error = "B-rep NURBS curve is invalid in OpenNURBS";
+    return nullptr;
+  }
+  return curve;
+}
+
+std::unique_ptr<ON_NurbsSurface> read_nurbs_surface(ByteReader& reader,
+                                                    std::string& error) {
+  uint32_t degree_u = 0;
+  uint32_t degree_v = 0;
+  size_t count_u = 0;
+  size_t count_v = 0;
+  size_t knot_count_u = 0;
+  size_t knot_count_v = 0;
+  if (!reader.U32(degree_u) || !reader.U32(degree_v) ||
+      !reader.Count(count_u) || !reader.Count(count_v) ||
+      !reader.Count(knot_count_u) || !reader.Count(knot_count_v) ||
+      degree_u == 0 || degree_v == 0 || count_u <= degree_u ||
+      count_v <= degree_v ||
+      count_u > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+      count_v > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+      knot_count_u != count_u + static_cast<size_t>(degree_u) + 1 ||
+      knot_count_v != count_v + static_cast<size_t>(degree_v) + 1 ||
+      count_u > std::numeric_limits<size_t>::max() / count_v / 4) {
+    error = "B-rep NURBS surface dimensions are inconsistent";
+    return nullptr;
+  }
+  const size_t coordinate_count = count_u * count_v * 4;
+  const size_t knot_count = knot_count_u + knot_count_v;
+  if (knot_count < knot_count_u ||
+      coordinate_count > std::numeric_limits<size_t>::max() / sizeof(double) ||
+      knot_count > std::numeric_limits<size_t>::max() / sizeof(double) ||
+      coordinate_count * sizeof(double) > reader.Remaining() ||
+      knot_count * sizeof(double) >
+          reader.Remaining() - coordinate_count * sizeof(double)) {
+    error = "B-rep NURBS surface payload is truncated";
+    return nullptr;
+  }
+
+  std::vector<double> controls(coordinate_count);
+  for (double& value : controls) {
+    if (!reader.Double(value) || !std::isfinite(value)) {
+      error = "NURBS surface has invalid control data";
+      return nullptr;
+    }
+  }
+  const auto control = [&](size_t index) { return controls.data() + index * 4; };
+  int shift = 0;
+  if (!vibo::RationalScale(count_u * count_v, 3, control, shift, error))
+    return nullptr;
+  auto surface = std::make_unique<ON_NurbsSurface>(
+      3, true, static_cast<int>(degree_u) + 1,
+      static_cast<int>(degree_v) + 1, static_cast<int>(count_u),
+      static_cast<int>(count_v));
+  for (size_t v = 0; v < count_v; ++v) {
+    for (size_t u = 0; u < count_u; ++u) {
+      double values[4] = {};
+      if (!vibo::HomogeneousControl(control(v * count_u + u), 3, shift, values) ||
+          !surface->SetCV(
+              static_cast<int>(u), static_cast<int>(v),
+              ON_4dPoint(values[0], values[1], values[2], values[3]))) {
+        error = "B-rep NURBS surface has an invalid control point";
+        return nullptr;
+      }
+    }
+  }
+  for (int direction = 0; direction < 2; ++direction) {
+    const size_t direction_knot_count =
+        direction == 0 ? knot_count_u : knot_count_v;
+    for (size_t index = 0; index < direction_knot_count; ++index) {
+      double knot = 0.0;
+      if (!reader.Double(knot) || !std::isfinite(knot) ||
+          (index > 0 && index + 1 < direction_knot_count &&
+           !surface->SetKnot(direction, static_cast<int>(index - 1), knot))) {
+        error = "B-rep NURBS surface has an invalid knot vector";
+        return nullptr;
+      }
+    }
+  }
+  if (!surface->IsValid()) {
+    error = "B-rep NURBS surface is invalid in OpenNURBS";
+    return nullptr;
+  }
+  return surface;
+}
+
+ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
+  if (bytes == nullptr || count == 0) {
+    error = "B-rep payload is empty";
+    return nullptr;
+  }
+  ByteReader reader(bytes, count);
+  uint32_t version = 0;
+  size_t vertex_count = 0;
+  size_t edge_count = 0;
+  size_t face_count = 0;
+  if (!reader.Bytes(kBrepMagic, sizeof(kBrepMagic)) ||
+      !reader.U32(version) || version != kBrepVersion ||
+      !reader.Count(vertex_count) || !reader.Count(edge_count) ||
+      !reader.Count(face_count) || vertex_count == 0 || edge_count == 0 ||
+      face_count == 0 ||
+      vertex_count > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+      edge_count > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+      face_count > static_cast<size_t>(std::numeric_limits<int>::max())) {
+    error = "B-rep header is malformed";
+    return nullptr;
+  }
+
+  auto brep = std::make_unique<ON_Brep>();
+  brep->m_V.Reserve(static_cast<int>(vertex_count));
+  brep->m_E.Reserve(static_cast<int>(edge_count));
+  brep->m_F.Reserve(static_cast<int>(face_count));
+  for (size_t index = 0; index < vertex_count; ++index) {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    double tolerance = 0.0;
+    if (!reader.Double(x) || !reader.Double(y) || !reader.Double(z) ||
+        !reader.Double(tolerance) || !std::isfinite(x) ||
+        !std::isfinite(y) || !std::isfinite(z) ||
+        !std::isfinite(tolerance) || tolerance < 0.0) {
+      error = "B-rep vertex record is malformed";
+      return nullptr;
+    }
+    brep->NewVertex(ON_3dPoint(x, y, z), tolerance);
+  }
+  for (size_t index = 0; index < edge_count; ++index) {
+    uint64_t first = 0;
+    uint64_t second = 0;
+    double tolerance = 0.0;
+    if (!reader.U64(first) || !reader.U64(second) ||
+        !reader.Double(tolerance) || first >= vertex_count ||
+        second >= vertex_count || !std::isfinite(tolerance) ||
+        tolerance < 0.0) {
+      error = "B-rep edge record is malformed";
+      return nullptr;
+    }
+    std::unique_ptr<ON_NurbsCurve> curve =
+        read_nurbs_curve(reader, 3, error);
+    if (!curve) {
+      return nullptr;
+    }
+    const int curve_index = brep->AddEdgeCurve(curve.release());
+    if (curve_index < 0) {
+      error = "OpenNURBS rejected a B-rep edge curve";
+      return nullptr;
+    }
+    brep->NewEdge(brep->m_V[static_cast<int>(first)],
+                  brep->m_V[static_cast<int>(second)], curve_index, nullptr,
+                  tolerance);
+  }
+  for (size_t face_position = 0; face_position < face_count;
+       ++face_position) {
+    bool reversed = false;
+    if (!reader.Bool(reversed)) {
+      error = "B-rep face orientation is malformed";
+      return nullptr;
+    }
+    std::unique_ptr<ON_NurbsSurface> surface =
+        read_nurbs_surface(reader, error);
+    if (!surface) {
+      return nullptr;
+    }
+    const int surface_index = brep->AddSurface(surface.release());
+    if (surface_index < 0) {
+      error = "OpenNURBS rejected a B-rep face surface";
+      return nullptr;
+    }
+    ON_BrepFace& face = brep->NewFace(surface_index);
+    face.m_bRev = reversed;
+    size_t loop_count = 0;
+    if (!reader.Count(loop_count) || loop_count == 0 ||
+        loop_count > static_cast<size_t>(std::numeric_limits<int>::max())) {
+      error = "B-rep face loop count is malformed";
+      return nullptr;
+    }
+    for (size_t loop_position = 0; loop_position < loop_count;
+         ++loop_position) {
+      uint8_t encoded_loop_type = 0;
+      size_t trim_count = 0;
+      if (!reader.U8(encoded_loop_type) || encoded_loop_type < 1 ||
+          encoded_loop_type > 2 || !reader.Count(trim_count) ||
+          trim_count == 0 ||
+          trim_count > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        error = "B-rep loop record is malformed";
+        return nullptr;
+      }
+      const ON_BrepLoop::TYPE loop_type =
+          encoded_loop_type == 1 ? ON_BrepLoop::outer : ON_BrepLoop::inner;
+      ON_BrepLoop& loop = brep->NewLoop(loop_type, face);
+      for (size_t trim_position = 0; trim_position < trim_count;
+           ++trim_position) {
+        uint64_t start_vertex = 0;
+        uint64_t end_vertex = 0;
+        uint64_t edge_index = 0;
+        bool reversed_3d = false;
+        uint8_t encoded_trim_type = 0;
+        uint8_t encoded_iso = 0;
+        double tolerance[2] = {};
+        if (!reader.U64(start_vertex) || !reader.U64(end_vertex) ||
+            !reader.U64(edge_index) || !reader.Bool(reversed_3d) ||
+            !reader.U8(encoded_trim_type) || !reader.U8(encoded_iso) ||
+            !reader.Double(tolerance[0]) || !reader.Double(tolerance[1]) ||
+            start_vertex >= vertex_count || end_vertex >= vertex_count ||
+            encoded_trim_type < 1 || encoded_trim_type > 4 ||
+            (encoded_iso != ON_Surface::not_iso &&
+             encoded_iso != ON_Surface::x_iso &&
+             encoded_iso != ON_Surface::y_iso &&
+             encoded_iso != ON_Surface::W_iso &&
+             encoded_iso != ON_Surface::S_iso &&
+             encoded_iso != ON_Surface::E_iso &&
+             encoded_iso != ON_Surface::N_iso) ||
+            !std::isfinite(tolerance[0]) || !std::isfinite(tolerance[1]) ||
+            tolerance[0] < 0.0 || tolerance[1] < 0.0) {
+          error = "B-rep trim record is malformed";
+          return nullptr;
+        }
+        const bool singular = encoded_trim_type == ON_BrepTrim::singular;
+        if ((edge_index == kNoEdge) != singular ||
+            (!singular && edge_index >= edge_count) ||
+            (singular && (reversed_3d || start_vertex != end_vertex ||
+                          encoded_iso == ON_Surface::not_iso))) {
+          error = "B-rep trim topology is inconsistent";
+          return nullptr;
+        }
+        std::unique_ptr<ON_NurbsCurve> curve =
+            read_nurbs_curve(reader, 2, error);
+        if (!curve) {
+          return nullptr;
+        }
+        const int curve_index = brep->AddTrimCurve(curve.release());
+        if (curve_index < 0) {
+          error = "OpenNURBS rejected a B-rep trim curve";
+          return nullptr;
+        }
+        ON_BrepTrim* trim = nullptr;
+        if (singular) {
+          trim = &brep->NewSingularTrim(
+              brep->m_V[static_cast<int>(start_vertex)], loop,
+              static_cast<ON_Surface::ISO>(encoded_iso), curve_index);
+        } else {
+          trim = &brep->NewTrim(brep->m_E[static_cast<int>(edge_index)],
+                                reversed_3d, loop, curve_index);
+        }
+        trim->m_type = static_cast<ON_BrepTrim::TYPE>(encoded_trim_type);
+        trim->m_iso = static_cast<ON_Surface::ISO>(encoded_iso);
+        trim->m_tolerance[0] = tolerance[0];
+        trim->m_tolerance[1] = tolerance[1];
+        // Native trims may carry not_iso even when their exact parameter curve
+        // follows an isocurve (for example imported planar STEP boundaries).
+        // Resolve this derived archive flag from the curve and surface using
+        // OpenNURBS' own classification, without changing geometry or topology.
+        if (trim->m_iso == ON_Surface::not_iso &&
+            !brep->SetTrimIsoFlags(*trim)) {
+          error = "OpenNURBS could not classify a B-rep trim isocurve";
+          return nullptr;
+        }
+        const ON_BrepVertex* actual_start = trim->Vertex(0);
+        const ON_BrepVertex* actual_end = trim->Vertex(1);
+        if (actual_start == nullptr || actual_end == nullptr ||
+            actual_start->m_vertex_index != static_cast<int>(start_vertex) ||
+            actual_end->m_vertex_index != static_cast<int>(end_vertex)) {
+          error = "B-rep trim vertices disagree with its edge orientation";
+          return nullptr;
+        }
+      }
+    }
+  }
+  if (!reader.Finished()) {
+    error = "B-rep payload has trailing data";
+    return nullptr;
+  }
+  ON_wString diagnostics;
+  ON_TextLog log(diagnostics);
+  if (!brep->IsValid(&log)) {
+    error = "B-rep is invalid in OpenNURBS";
+    const std::string details = utf8(diagnostics);
+    if (!details.empty()) {
+      error += ": " + details;
+    }
+    return nullptr;
+  }
+  return brep.release();
+}
+
+// OpenNURBS LineCurve validity applies a coincidence threshold, while an exact
+// degree-one NURBS can retain distinct finite endpoints below that threshold.
+// Never bypass validity: the replacement must itself be a valid native curve.
+std::unique_ptr<ON_Curve> valid_curve_or_exact_line(std::unique_ptr<ON_Curve> curve) {
+  const auto* line = ON_LineCurve::Cast(curve.get());
+  if (line && (!line->Domain().IsIncreasing() ||
+      !line->m_line.from.IsValid() || !line->m_line.to.IsValid() ||
+      line->m_line.from == line->m_line.to)) return nullptr;
+  if (curve->IsValid()) return curve;
+  if (!line) return nullptr;
+  auto nurbs = std::make_unique<ON_NurbsCurve>();
+  if (line->GetNurbForm(*nurbs) <= 0 || !nurbs->IsValid()) return nullptr;
+  return nurbs;
+}
+
+std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& error) {
+  uint8_t kind = 0;
+  if (!reader.U8(kind)) { error = "missing curve segment type"; return nullptr; }
+  if (kind == 4) return read_nurbs_curve(reader, 3, error);
+  auto point = [&reader](ON_3dPoint& p) {
+    return reader.Double(p.x) && reader.Double(p.y) && reader.Double(p.z) && p.IsValid();
+  };
+  std::unique_ptr<ON_Curve> curve;
+  if (kind == 1) {
+    ON_3dPoint start, end;
+    if (!point(start) || !point(end)) { error = "invalid line segment"; return nullptr; }
+    curve = std::make_unique<ON_LineCurve>(start, end);
+  } else if (kind == 2 || kind == 5) {
+    ON_3dPoint center, x, normal;
+    double radius = 0, angle0 = 0, angle1 = 0;
+    if (!point(center) || !point(x) || !point(normal) || !reader.Double(radius) ||
+        (kind == 5 && !reader.Double(angle0)) || !reader.Double(angle1) ||
+        !std::isfinite(radius) || !std::isfinite(angle0) || !std::isfinite(angle1)) {
+      error = "invalid arc segment"; return nullptr;
+    }
+    const ON_3dVector xv(x), z(normal);
+    ON_Plane plane(center, xv, ON_CrossProduct(z, xv));
+    ON_Arc arc(ON_Circle(plane, radius), ON_Interval(angle0, angle1));
+    if (!arc.IsValid()) { error = "invalid arc frame"; return nullptr; }
+    curve = std::make_unique<ON_ArcCurve>(arc);
+  } else if (kind == 3) {
+    size_t count = 0;
+    if (!reader.Count(count) || count < 2 || count > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+        count > reader.Remaining() / (4 * sizeof(double))) {
+      error = "invalid polyline segment size"; return nullptr;
+    }
+    auto polyline = std::make_unique<ON_PolylineCurve>();
+    for (size_t i = 0; i < count; ++i) {
+      ON_3dPoint p;
+      if (!point(p)) { error = "invalid polyline vertex"; return nullptr; }
+      polyline->m_pline.Append(p);
+    }
+    for (size_t i = 0; i < count; ++i) {
+      double t = 0;
+      if (!reader.Double(t)) { error = "missing polyline parameter"; return nullptr; }
+      polyline->m_t.Append(t);
+    }
+    if (!polyline->IsValid()) { error = "invalid polyline segment"; return nullptr; }
+    return polyline;
+  } else { error = "unknown curve segment type"; return nullptr; }
+  double start = 0, end = 0;
+  if (!reader.Double(start) || !reader.Double(end) || !curve->SetDomain(start, end)) {
+    error = "invalid curve segment domain"; return nullptr;
+  }
+  curve = valid_curve_or_exact_line(std::move(curve));
+  if (!curve) error = "invalid curve segment";
+  return curve;
+}
+
+ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
+                           std::string& error) {
+  if (bytes == nullptr || count == 0) {
+    error = "polycurve payload is empty";
+    return nullptr;
+  }
+  ByteReader reader(bytes, count);
+  uint32_t version = 0;
+  size_t segment_count = 0;
+  if (!reader.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic)) ||
+      !reader.U32(version) || (version != 1 && version != kPolyCurveVersion) ||
+      !reader.Count(segment_count) || segment_count == 0 ||
+      segment_count > kMaxPolyCurveSegments ||
+      segment_count + 1 > reader.Remaining() / sizeof(double)) {
+    error = "polycurve header is malformed";
+    return nullptr;
+  }
+  std::vector<double> parameters(segment_count + 1);
+  for (size_t index = 0; index <= segment_count; ++index) {
+    if (!reader.Double(parameters[index]) || !std::isfinite(parameters[index]) ||
+        (index > 0 && !(parameters[index - 1] < parameters[index]))) {
+      error = "polycurve parameters are invalid";
+      return nullptr;
+    }
+  }
+  auto curve = std::make_unique<ON_PolyCurve>();
+  for (size_t index = 0; index < segment_count; ++index) {
+    std::unique_ptr<ON_Curve> segment = version == 1
+        ? read_nurbs_curve(reader, 3, error) : read_curve_segment(reader, error);
+    if (!segment) {
+      return nullptr;
+    }
+    if (!curve->Append(segment.get())) {
+      error = "cannot append polycurve segment";
+      return nullptr;
+    }
+    segment.release();  // Ownership transfers only after a successful append.
+  }
+  if (!reader.Finished() || !curve->SetParameterization(parameters.data()) ||
+      !curve->IsValid()) {
+    error = "polycurve is invalid in OpenNURBS";
+    return nullptr;
+  }
+  return curve.release();
+}
+
+ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
+  if (!finite_coordinates(source.coordinates, source.coordinate_count) ||
+      !finite_coordinates(source.knots_u, source.knot_u_count) ||
+      !finite_coordinates(source.knots_v, source.knot_v_count)) {
+    error = "geometry contains a null array or non-finite number";
+    return nullptr;
+  }
+
+  switch (source.object_type) {
+    case VIBO_OBJECT_POINT: {
+      if (source.coordinate_count != 3) {
+        error = "a point must contain three coordinates";
+        return nullptr;
+      }
+      return new ON_Point(source.coordinates[0], source.coordinates[1],
+                          source.coordinates[2]);
+    }
+    case VIBO_OBJECT_LINE: {
+      if (source.coordinate_count != 6 || (source.knot_u_count != 0 && source.knot_u_count != 2)) {
+        error = "a line must contain six coordinates";
+        return nullptr;
+      }
+      const ON_3dPoint start(source.coordinates[0], source.coordinates[1],
+                            source.coordinates[2]);
+      const ON_3dPoint end(source.coordinates[3], source.coordinates[4],
+                          source.coordinates[5]);
+      auto line = std::make_unique<ON_LineCurve>(start, end);
+      if (source.knot_u_count == 2 && !line->SetDomain(source.knots_u[0], source.knots_u[1])) {
+        error = "line parameter domain is invalid";
+        return nullptr;
+      }
+      auto curve = valid_curve_or_exact_line(std::move(line));
+      if (!curve) {
+        error = "line endpoints are degenerate";
+        return nullptr;
+      }
+      return curve.release();
+    }
+    case VIBO_OBJECT_POINT_CLOUD: {
+      if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
+          source.coordinate_count / 3 >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          (source.geometry_data_count != 0 && source.geometry_data == nullptr)) {
+        error = "point cloud dimensions are inconsistent";
+        return nullptr;
+      }
+      const size_t point_count = source.coordinate_count / 3;
+      auto* cloud = new ON_PointCloud(static_cast<int>(point_count));
+      for (size_t index = 0; index < point_count; ++index) {
+        const double* point = source.coordinates + index * 3;
+        cloud->AppendPoint(ON_3dPoint(point[0], point[1], point[2]));
+      }
+      if (source.geometry_data_count != 0) {
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        uint32_t flags = 0;
+        if (!reader.Bytes(kPointCloudMagic, sizeof(kPointCloudMagic)) ||
+            !reader.U32(version) || version != kPointCloudVersion ||
+            !reader.U32(flags) || flags == 0 ||
+            (flags & ~(kPointCloudColors | kPointCloudNormals |
+                       kPointCloudValues | kPointCloudOrdered |
+                       kPointCloudPlane)) != 0) {
+          delete cloud;
+          error = "point cloud channel payload is invalid";
+          return nullptr;
+        }
+        if (flags & kPointCloudColors) {
+          if (point_count > reader.Remaining() / 4) {
+            delete cloud;
+            error = "point cloud colors are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            uint8_t rgba[4];
+            for (uint8_t& component : rgba) {
+              reader.U8(component);
+            }
+            cloud->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+          }
+        }
+        if (flags & kPointCloudNormals) {
+          if (point_count > reader.Remaining() / (3 * sizeof(double))) {
+            delete cloud;
+            error = "point cloud normals are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            double coordinates[3];
+            for (double& coordinate : coordinates) {
+              reader.Double(coordinate);
+            }
+            ON_3dVector normal(coordinates[0], coordinates[1], coordinates[2]);
+            if (!normal.IsValid()) {
+              delete cloud;
+              error = "point cloud normal is invalid";
+              return nullptr;
+            }
+            cloud->m_N.Append(normal);
+          }
+        }
+        if (flags & kPointCloudValues) {
+          if (point_count > reader.Remaining() / sizeof(double)) {
+            delete cloud;
+            error = "point cloud values are truncated";
+            return nullptr;
+          }
+          for (size_t index = 0; index < point_count; ++index) {
+            double value = 0.0;
+            reader.Double(value);
+            if (!std::isfinite(value)) {
+              delete cloud;
+              error = "point cloud value is invalid";
+              return nullptr;
+            }
+            cloud->m_V.Append(value);
+          }
+        }
+        if (flags & kPointCloudPlane) {
+          if (reader.Remaining() < 12 * sizeof(double)) {
+            delete cloud;
+            error = "point cloud plane is truncated";
+            return nullptr;
+          }
+          double coordinates[12];
+          for (double& coordinate : coordinates) {
+            reader.Double(coordinate);
+          }
+          ON_Plane plane;
+          plane.origin = ON_3dPoint(coordinates[0], coordinates[1], coordinates[2]);
+          plane.xaxis = ON_3dVector(coordinates[3], coordinates[4], coordinates[5]);
+          plane.yaxis = ON_3dVector(coordinates[6], coordinates[7], coordinates[8]);
+          plane.zaxis = ON_3dVector(coordinates[9], coordinates[10], coordinates[11]);
+          if (!plane.UpdateEquation() || !plane.IsValid()) {
+            delete cloud;
+            error = "point cloud plane is invalid";
+            return nullptr;
+          }
+          cloud->SetPlane(plane);
+        }
+        if (!reader.Finished()) {
+          delete cloud;
+          error = "point cloud channel payload has trailing bytes";
+          return nullptr;
+        }
+        cloud->SetOrdered((flags & kPointCloudOrdered) != 0);
+      }
+      if (!cloud->IsValid()) {
+        delete cloud;
+        error = "point cloud is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return cloud;
+    }
+    case VIBO_OBJECT_POLYLINE: {
+      if (source.coordinate_count < 6 || source.coordinate_count % 3 != 0 ||
+          source.coordinate_count / 3 > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.knot_u_count != source.coordinate_count / 3 ||
+          source.knot_v_count != 0 || source.degree_u != 0 || source.degree_v != 0 ||
+          source.control_point_count_u != 0 || source.control_point_count_v != 0 ||
+          source.geometry_data_count != 0 || source.index_count != 0) {
+        error = "polyline dimensions are inconsistent";
+        return nullptr;
+      }
+      auto curve = std::make_unique<ON_PolylineCurve>();
+      curve->m_pline.Reserve(static_cast<int>(source.knot_u_count));
+      curve->m_t.Reserve(static_cast<int>(source.knot_u_count));
+      for (size_t index = 0; index < source.knot_u_count; ++index) {
+        const double* point = source.coordinates + index * 3;
+        curve->m_pline.Append(ON_3dPoint(point[0], point[1], point[2]));
+        curve->m_t.Append(source.knots_u[index]);
+      }
+      if (!curve->IsValid()) {
+        error = "polyline is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return curve.release();
+    }
+    case VIBO_OBJECT_NURBS_CURVE: {
+      if (source.degree_u == 0 ||
+          source.degree_u >= source.control_point_count_u ||
+          source.degree_v != 0 || source.control_point_count_v != 0 ||
+          source.knot_v_count != 0 || source.control_point_count_u >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.coordinate_count != source.control_point_count_u * 4 ||
+          source.knot_u_count != source.control_point_count_u +
+                                     static_cast<size_t>(source.degree_u) + 1) {
+        error = "NURBS curve dimensions are inconsistent";
+        return nullptr;
+      }
+      const auto control = [&](size_t index) { return source.coordinates + index * 4; };
+      int shift = 0;
+      if (!vibo::RationalScale(source.control_point_count_u, 3, control, shift, error))
+        return nullptr;
+      auto* curve = new ON_NurbsCurve(
+          3, true, static_cast<int>(source.degree_u) + 1,
+          static_cast<int>(source.control_point_count_u));
+      for (size_t index = 0; index < source.control_point_count_u; ++index) {
+        double values[4] = {};
+        if (!vibo::HomogeneousControl(control(index), 3, shift, values) ||
+            !curve->SetCV(static_cast<int>(index), ON::homogeneous_rational, values)) {
+          delete curve;
+          error = "NURBS curve has an invalid control point weight";
+          return nullptr;
+        }
+      }
+      for (int index = 0; index < curve->KnotCount(); ++index) {
+        if (!curve->SetKnot(
+                index, source.knots_u[static_cast<size_t>(index) + 1])) {
+          delete curve;
+          error = "NURBS curve has an invalid knot vector";
+          return nullptr;
+        }
+      }
+      if (!curve->IsValid()) {
+        delete curve;
+        error = "NURBS curve is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return curve;
+    }
+    case VIBO_OBJECT_NURBS_SURFACE: {
+      if (source.degree_u == 0 || source.degree_v == 0 ||
+          source.degree_u >= source.control_point_count_u ||
+          source.degree_v >= source.control_point_count_v ||
+          source.control_point_count_u >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.control_point_count_v >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.control_point_count_u >
+              std::numeric_limits<size_t>::max() /
+                  source.control_point_count_v / 4 ||
+          source.coordinate_count != source.control_point_count_u *
+                                         source.control_point_count_v * 4 ||
+          source.knot_u_count != source.control_point_count_u +
+                                     static_cast<size_t>(source.degree_u) + 1 ||
+          source.knot_v_count != source.control_point_count_v +
+                                     static_cast<size_t>(source.degree_v) + 1) {
+        error = "NURBS surface dimensions are inconsistent";
+        return nullptr;
+      }
+      const auto control = [&](size_t index) { return source.coordinates + index * 4; };
+      int shift = 0;
+      if (!vibo::RationalScale(source.control_point_count_u * source.control_point_count_v,
+                              3, control, shift, error))
+        return nullptr;
+      auto* surface = new ON_NurbsSurface(
+          3, true, static_cast<int>(source.degree_u) + 1,
+          static_cast<int>(source.degree_v) + 1,
+          static_cast<int>(source.control_point_count_u),
+          static_cast<int>(source.control_point_count_v));
+      for (size_t v = 0; v < source.control_point_count_v; ++v) {
+        for (size_t u = 0; u < source.control_point_count_u; ++u) {
+          const size_t index = v * source.control_point_count_u + u;
+          double values[4] = {};
+          if (!vibo::HomogeneousControl(control(index), 3, shift, values) ||
+              !surface->SetCV(
+                  static_cast<int>(u), static_cast<int>(v),
+                  ON_4dPoint(values[0], values[1], values[2], values[3]))) {
+            delete surface;
+            error = "NURBS surface has an invalid control point weight";
+            return nullptr;
+          }
+        }
+      }
+      for (int direction = 0; direction < 2; ++direction) {
+        const double* knots =
+            direction == 0 ? source.knots_u : source.knots_v;
+        for (int index = 0; index < surface->KnotCount(direction); ++index) {
+          if (!surface->SetKnot(
+                  direction, index, knots[static_cast<size_t>(index) + 1])) {
+            delete surface;
+            error = "NURBS surface has an invalid knot vector";
+            return nullptr;
+          }
+        }
+      }
+      if (!surface->IsValid()) {
+        delete surface;
+        error = "NURBS surface is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return surface;
+    }
+    case VIBO_OBJECT_BREP:
+    case VIBO_OBJECT_POLYCURVE:
+    case VIBO_OBJECT_ARC: {
+      if (source.degree_u != 0 || source.degree_v != 0 ||
+          source.control_point_count_u != 0 ||
+          source.control_point_count_v != 0 || source.coordinate_count != 0 ||
+          source.knot_u_count != 0 || source.knot_v_count != 0 ||
+          source.index_count != 0 || source.geometry_data_count == 0 ||
+          source.geometry_data == nullptr) {
+        error = "structured geometry payload is inconsistent";
+        return nullptr;
+      }
+      if (source.object_type == VIBO_OBJECT_POLYCURVE) {
+        return polycurve_for(source.geometry_data, source.geometry_data_count, error);
+      }
+      if (source.object_type == VIBO_OBJECT_ARC) {
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        if (!reader.U32(version) || version != 1) { error = "invalid arc header"; return nullptr; }
+        auto arc = read_curve_segment(reader, error);
+        if (!arc || ON_ArcCurve::Cast(arc.get()) == nullptr || !reader.Finished()) {
+          error = "invalid native arc payload"; return nullptr;
+        }
+        return arc.release();
+      }
+      return brep_for(source.geometry_data, source.geometry_data_count, error);
+    }
+    case VIBO_OBJECT_TRIANGLE_MESH: {
+      if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
+          source.index_count == 0 || source.index_count % 4 != 0 ||
+          source.indices == nullptr ||
+          source.coordinate_count / 3 >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.index_count / 4 >
+              static_cast<size_t>(std::numeric_limits<int>::max())) {
+        error = "polygon mesh dimensions are inconsistent";
+        return nullptr;
+      }
+      const size_t vertex_count = source.coordinate_count / 3;
+      const size_t face_count = source.index_count / 4;
+      auto* mesh = new ON_Mesh(static_cast<int>(face_count),
+                               static_cast<int>(vertex_count), false, false);
+      for (size_t index = 0; index < vertex_count; ++index) {
+        const double* point = source.coordinates + index * 3;
+        const ON_3dPoint vertex(point[0], point[1], point[2]);
+        if (!vertex.IsValid() ||
+            !mesh->SetVertex(static_cast<int>(index), vertex)) {
+          delete mesh;
+          error = "triangle mesh has an invalid vertex";
+          return nullptr;
+        }
+      }
+      for (size_t index = 0; index < face_count; ++index) {
+        const uint32_t* face = source.indices + index * 4;
+        if (face[0] >= vertex_count || face[1] >= vertex_count ||
+            face[2] >= vertex_count || face[3] >= vertex_count) {
+          delete mesh;
+          error = "polygon mesh has an invalid face";
+          return nullptr;
+        }
+        const bool face_set =
+            face[2] == face[3]
+                ? mesh->SetTriangle(static_cast<int>(index),
+                                    static_cast<int>(face[0]),
+                                    static_cast<int>(face[1]),
+                                    static_cast<int>(face[2]))
+                : mesh->SetQuad(static_cast<int>(index),
+                                static_cast<int>(face[0]),
+                                static_cast<int>(face[1]),
+                                static_cast<int>(face[2]),
+                                static_cast<int>(face[3]));
+        if (!face_set) {
+          delete mesh;
+          error = "polygon mesh has an invalid face";
+          return nullptr;
+        }
+      }
+      if (source.geometry_data_count != 0) {
+        if (source.geometry_data == nullptr) {
+          delete mesh;
+          error = "polygon mesh payload is missing";
+          return nullptr;
+        }
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        uint32_t ngon_count = 0;
+        if (!reader.Bytes(kNgonMagic, sizeof(kNgonMagic)) ||
+            !reader.U32(version) || version != kNgonVersion ||
+            !reader.U32(ngon_count) || ngon_count > reader.Remaining() / 8) {
+          delete mesh;
+          error = "polygon mesh payload is invalid";
+          return nullptr;
+        }
+        for (uint32_t index = 0; index < ngon_count; ++index) {
+          uint32_t corner_count = 0;
+          uint32_t member_count = 0;
+          if (!reader.U32(corner_count) || !reader.U32(member_count) ||
+              corner_count < 3 || member_count == 0 ||
+              corner_count > vertex_count || member_count > face_count ||
+              static_cast<uint64_t>(corner_count) + member_count >
+                  reader.Remaining() / 4) {
+            delete mesh;
+            error = "polygon mesh n-gon counts are invalid";
+            return nullptr;
+          }
+          std::vector<unsigned int> corners(corner_count);
+          std::vector<unsigned int> members(member_count);
+          for (uint32_t& corner : corners) {
+            if (!reader.U32(corner)) {
+              delete mesh;
+              error = "polygon mesh n-gon corners are truncated";
+              return nullptr;
+            }
+          }
+          for (uint32_t& member : members) {
+            if (!reader.U32(member)) {
+              delete mesh;
+              error = "polygon mesh n-gon members are truncated";
+              return nullptr;
+            }
+          }
+          if (mesh->AddNgon(corner_count, corners.data(), member_count,
+                            members.data()) < 0) {
+            delete mesh;
+            error = "polygon mesh n-gon is invalid in OpenNURBS";
+            return nullptr;
+          }
+        }
+        uint32_t color_count = 0;
+        if (!reader.U32(color_count) ||
+            (color_count != 0 && color_count != vertex_count) ||
+            color_count > reader.Remaining() / 4) {
+          delete mesh;
+          error = "polygon mesh vertex colors are invalid";
+          return nullptr;
+        }
+        for (uint32_t index = 0; index < color_count; ++index) {
+          uint8_t rgba[4];
+          if (!reader.U8(rgba[0]) || !reader.U8(rgba[1]) ||
+              !reader.U8(rgba[2]) || !reader.U8(rgba[3])) {
+            delete mesh;
+            error = "polygon mesh vertex colors are truncated";
+            return nullptr;
+          }
+          mesh->m_C.Append(ON_Color(rgba[0], rgba[1], rgba[2], rgba[3]));
+        }
+        if (!reader.Finished()) {
+          delete mesh;
+          error = "polygon mesh payload has trailing bytes";
+          return nullptr;
+        }
+      }
+      return mesh;
+    }
+    default:
+      error = "object type is not supported";
+      return nullptr;
+  }
+}
+
+bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
+      read_user_text(*geometry, object.geometry_user_text);
+      if (attributes != nullptr) {
+        object.source_layer_index = attributes->m_layer_index;
+        object.name = utf8(attributes->Name());
+        object.visible = static_cast<uint8_t>(attributes->IsVisible());
+        object.locked = static_cast<uint8_t>(attributes->Mode() ==
+                                             ON::locked_object);
+        object.color_source =
+            static_cast<uint8_t>(attributes->ColorSource());
+        object.color_red = static_cast<uint8_t>(attributes->m_color.Red());
+        object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
+        object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
+        object.wire_density = attributes->m_wire_density;
+        read_user_text(*attributes, object.user_text);
+        const int group_count = attributes->GroupCount();
+        const int* group_list = attributes->GroupList();
+        if (group_count > 0 && group_list == nullptr) {
+          return false;
+        }
+        object.group_indices.reserve(static_cast<size_t>(group_count));
+        for (int group_position = 0; group_position < group_count;
+             ++group_position) {
+          object.group_indices.push_back(
+              static_cast<int32_t>(group_list[group_position]));
+        }
+      }
+      bool supported = false;
+      if (const ON_Point* point = ON_Point::Cast(geometry)) {
+        supported = append_point(*point, object);
+      } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
+        supported = append_point_cloud(*cloud, object);
+      } else if (const ON_LineCurve* line = ON_LineCurve::Cast(geometry)) {
+        supported = append_line(*line, object);
+      } else if (const ON_Brep* brep = ON_Brep::Cast(geometry)) {
+        supported = append_brep(*brep, object);
+      } else if (const ON_Mesh* mesh = ON_Mesh::Cast(geometry)) {
+        supported = append_mesh(*mesh, object);
+      } else if (const ON_PolyCurve* curve = ON_PolyCurve::Cast(geometry)) {
+        supported = append_polycurve(*curve, object);
+      } else if (const ON_PolylineCurve* curve = ON_PolylineCurve::Cast(geometry)) {
+        supported = append_polyline(*curve, object);
+      } else if (const ON_ArcCurve* curve = ON_ArcCurve::Cast(geometry)) {
+        object.object_type = VIBO_OBJECT_ARC;
+        ByteWriter writer(object.geometry_data);
+        writer.U32(1);
+        supported = curve->IsValid() && write_curve_segment(*curve, writer);
+      } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
+        supported = append_nurbs(*curve, object);
+      } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {
+        supported = append_nurbs_surface(*surface, object);
+      }
+
+      return supported;
+}
+
+#include "instance_read.h"
+
+}  // namespace
+
+struct ViboThreeDmModel {
+  double absolute_tolerance = 0.001;
+  double relative_tolerance = 0.01;
+  double angle_tolerance = ON_PI / 180.0;
+  uint32_t unit_system = 0;
+  double meters_per_unit = 1.0;
+  std::string unit_name;
+  std::vector<BridgeLayer> layers;
+  int32_t current_layer_index = -1;
+  std::vector<BridgeGroup> groups;
+  std::vector<BridgeNamedView> named_views;
+  std::vector<BridgeNamedCPlane> named_cplanes;
+  std::vector<BridgeCurrentView> current_views;
+  std::vector<BridgeObject> objects;
+  size_t unsupported_object_count = 0;
+  size_t expanded_instance_count = 0;
+};
+
+extern "C" int32_t vibo_3dm_read(const char* path,
+                                  ViboThreeDmModel** output, char* error,
+                                  size_t error_capacity) {
+  if (output != nullptr) {
+    *output = nullptr;
+  }
+  if (path == nullptr || path[0] == '\0' || output == nullptr) {
+    set_error(error, error_capacity, "path and output pointer are required");
+    return 0;
+  }
+
+  try {
+    begin_open_nurbs();
+    ON_wString diagnostics;
+    ON_TextLog log(diagnostics);
+    ONX_Model source;
+    if (!source.Read(path, &log)) {
+      std::string message = "OpenNURBS could not read the 3DM file";
+      const std::string details = utf8(diagnostics);
+      if (!details.empty()) {
+        message += ": " + details;
+      }
+      set_error(error, error_capacity, message);
+      return 0;
+    }
+
+    auto decoded = std::make_unique<ViboThreeDmModel>();
+    const auto& tolerances = source.m_settings.m_ModelUnitsAndTolerances;
+    decoded->absolute_tolerance = tolerances.m_absolute_tolerance;
+    decoded->relative_tolerance = tolerances.m_relative_tolerance;
+    decoded->angle_tolerance = tolerances.m_angle_tolerance;
+    const ON_UnitSystem& units = source.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
+    decoded->unit_system = static_cast<uint32_t>(units.UnitSystem());
+    if (units.UnitSystem() == ON::LengthUnitSystem::CustomUnits) {
+      decoded->meters_per_unit = units.MetersPerUnit(ON_DBL_QNAN);
+      decoded->unit_name = utf8(units.UnitSystemName());
+    }
+    ONX_ModelComponentIterator layer_iterator(
+        source, ON_ModelComponent::Type::Layer);
+    const ON_UUID current_layer_id = source.m_settings.CurrentLayerId();
+    const int current_v5_layer_index = source.m_settings.CurrentLayerIndex();
+    for (const ON_Layer* layer =
+             ON_Layer::Cast(layer_iterator.FirstComponent());
+         layer != nullptr;
+         layer = ON_Layer::Cast(layer_iterator.NextComponent())) {
+      const ON_Color color = layer->Color();
+      decoded->layers.push_back(
+          {layer->Index(), utf8(layer->Name()),
+           static_cast<uint8_t>(color.Red()),
+           static_cast<uint8_t>(color.Green()),
+           static_cast<uint8_t>(color.Blue()),
+           static_cast<uint8_t>(layer->IsVisible()),
+           static_cast<uint8_t>(layer->IsLocked())});
+      if ((current_layer_id != ON_nil_uuid && layer->Id() == current_layer_id) ||
+          (current_layer_id == ON_nil_uuid && layer->Index() == current_v5_layer_index)) {
+        decoded->current_layer_index = layer->Index();
+      }
+    }
+
+    ONX_ModelComponentIterator group_iterator(
+        source, ON_ModelComponent::Type::Group);
+    for (const ON_Group* group =
+             ON_Group::Cast(group_iterator.FirstComponent());
+         group != nullptr;
+         group = ON_Group::Cast(group_iterator.NextComponent())) {
+      decoded->groups.push_back({group->Index(), utf8(group->Name())});
+    }
+
+    for (int index = 0; index < source.m_settings.m_named_views.Count(); ++index) {
+      const ON_3dmView& source_view = source.m_settings.m_named_views[index];
+      if (source_view.m_name.IsEmpty()) {
+        continue;
+      }
+      BridgeNamedView view;
+      view.name = utf8(source_view.m_name);
+      if (!read_view_camera(source_view, view.data)) {
+        continue;
+      }
+      decoded->named_views.push_back(std::move(view));
+    }
+
+    for (int index = 0; index < source.m_settings.m_named_cplanes.Count(); ++index) {
+      const ON_3dmConstructionPlane& source_plane = source.m_settings.m_named_cplanes[index];
+      if (source_plane.m_name.IsEmpty() || !source_plane.m_plane.IsValid()) {
+        continue;
+      }
+      BridgeNamedCPlane plane;
+      plane.name = utf8(source_plane.m_name);
+      const auto fill3 = [](double (&destination)[3], const auto& value) {
+        destination[0] = value.x;
+        destination[1] = value.y;
+        destination[2] = value.z;
+      };
+      fill3(plane.data.origin, source_plane.m_plane.origin);
+      fill3(plane.data.x_axis, source_plane.m_plane.xaxis);
+      fill3(plane.data.y_axis, source_plane.m_plane.yaxis);
+      plane.data.grid_spacing = source_plane.m_grid_spacing;
+      plane.data.snap_spacing = source_plane.m_snap_spacing;
+      plane.data.grid_line_count = source_plane.m_grid_line_count;
+      plane.data.grid_thick_frequency = source_plane.m_grid_thick_frequency;
+      plane.data.depth_buffer = static_cast<uint8_t>(source_plane.m_bDepthBuffer);
+      decoded->named_cplanes.push_back(std::move(plane));
+    }
+
+    for (int index = 0; index < source.m_settings.m_views.Count(); ++index) {
+      const ON_3dmView& source_view = source.m_settings.m_views[index];
+      if (source_view.m_view_type != ON::model_view_type) {
+        continue;
+      }
+      BridgeCurrentView view;
+      view.name = source_view.m_name.IsEmpty() ? "Viewport" : utf8(source_view.m_name);
+      if (!read_view_camera(source_view, view.data.camera)) {
+        continue;
+      }
+      const ON_UUID mode = source_view.m_display_mode_id;
+      view.data.display_mode = mode == ON_StandardDisplayModeId::Wireframe ? 1 :
+                               mode == ON_StandardDisplayModeId::Shaded ? 2 :
+                               mode == ON_StandardDisplayModeId::Ghosted ? 3 : 0;
+      view.data.maximized = static_cast<uint8_t>(source_view.m_position.m_bMaximized);
+      view.data.active = static_cast<uint8_t>(
+          source.m_settings.m_active_view_id != ON_nil_uuid &&
+          source.m_settings.m_active_view_id == source_view.m_vp.ViewportId());
+      view.data.show_grid = static_cast<uint8_t>(source_view.m_bShowConstructionGrid);
+      view.data.show_axes = static_cast<uint8_t>(source_view.m_bShowConstructionAxes);
+      view.data.show_world_axes = static_cast<uint8_t>(source_view.m_bShowWorldAxes);
+      view.data.snap_spacing = source_view.m_cplane.m_snap_spacing;
+      view.data.minor_spacing = source_view.m_cplane.m_grid_spacing;
+      view.data.major_interval = source_view.m_cplane.m_grid_thick_frequency;
+      view.data.line_count = source_view.m_cplane.m_grid_line_count;
+      view.data.position[0] = source_view.m_position.m_wnd_left;
+      view.data.position[1] = source_view.m_position.m_wnd_right;
+      view.data.position[2] = source_view.m_position.m_wnd_top;
+      view.data.position[3] = source_view.m_position.m_wnd_bottom;
+      decoded->current_views.push_back(std::move(view));
+    }
+
+    ONX_ModelComponentIterator object_iterator(
+        source, ON_ModelComponent::Type::ModelGeometry);
+    for (const ON_ModelComponent* component = object_iterator.FirstComponent();
+         component != nullptr; component = object_iterator.NextComponent()) {
+      const ON_ModelGeometryComponent* model_geometry =
+          ON_ModelGeometryComponent::Cast(component);
+      if (model_geometry == nullptr) {
+        ++decoded->unsupported_object_count;
+        continue;
+      }
+      const ON_Geometry* geometry = model_geometry->Geometry(nullptr);
+      if (geometry == nullptr) {
+        ++decoded->unsupported_object_count;
+        continue;
+      }
+
+      const auto* attrs=model_geometry->Attributes(nullptr);
+      if(attrs!=nullptr && attrs->IsInstanceDefinitionObject()) continue;
+      std::vector<BridgeObject> staged;
+      std::vector<ON_UUID> active;
+      std::vector<std::array<double,16>> placements;
+      std::string instance_error;
+      size_t visits=0;
+      if(!read_instance_geometry(source,*model_geometry,nullptr,placements,active,staged,instance_error,visits)) {
+        if(!instance_error.empty()){set_error(error,error_capacity,instance_error);return 0;}
+        ++decoded->unsupported_object_count;
+      } else {
+        if(ON_InstanceRef::Cast(geometry)!=nullptr)++decoded->expanded_instance_count;
+        decoded->objects.insert(decoded->objects.end(),std::make_move_iterator(staged.begin()),std::make_move_iterator(staged.end()));
+      }
+    }
+
+    *output = decoded.release();
+    set_error(error, error_capacity, "");
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, error_capacity,
+              std::string("OpenNURBS exception: ") + exception.what());
+    return 0;
+  } catch (...) {
+    set_error(error, error_capacity, "unknown OpenNURBS exception");
+    return 0;
+  }
+}
+
+extern "C" void vibo_3dm_free(ViboThreeDmModel* model) { delete model; }
+
+extern "C" size_t vibo_3dm_layer_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->layers.size();
+}
+
+extern "C" int32_t vibo_3dm_current_layer_index(const ViboThreeDmModel* model) {
+  return model == nullptr ? -1 : model->current_layer_index;
+}
+
+extern "C" int32_t vibo_3dm_layer(
+    const ViboThreeDmModel* model, size_t index, int32_t* source_index,
+    const char** name, uint8_t* red, uint8_t* green, uint8_t* blue,
+    uint8_t* visible, uint8_t* locked) {
+  if (model == nullptr || index >= model->layers.size() ||
+      source_index == nullptr || name == nullptr || red == nullptr ||
+      green == nullptr || blue == nullptr || visible == nullptr ||
+      locked == nullptr) {
+    return 0;
+  }
+  const BridgeLayer& layer = model->layers[index];
+  *source_index = layer.source_index;
+  *name = layer.name.c_str();
+  *red = layer.red;
+  *green = layer.green;
+  *blue = layer.blue;
+  *visible = layer.visible;
+  *locked = layer.locked;
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_group_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->groups.size();
+}
+extern "C" size_t vibo_3dm_expanded_instance_count(const ViboThreeDmModel* model){
+  return model==nullptr?0:model->expanded_instance_count;
+}
+
+extern "C" int32_t vibo_3dm_group(const ViboThreeDmModel* model,
+                                    size_t index, int32_t* source_index,
+                                    const char** name) {
+  if (model == nullptr || index >= model->groups.size() ||
+      source_index == nullptr || name == nullptr) {
+    return 0;
+  }
+  const BridgeGroup& group = model->groups[index];
+  *source_index = group.source_index;
+  *name = group.name.c_str();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_named_view_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->named_views.size();
+}
+
+extern "C" int32_t vibo_3dm_named_view(const ViboThreeDmModel* model,
+                                        size_t index, ViboNamedView* view) {
+  if (model == nullptr || index >= model->named_views.size() || view == nullptr) {
+    return 0;
+  }
+  const BridgeNamedView& source = model->named_views[index];
+  *view = source.data;
+  view->name = source.name.c_str();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_named_cplane_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->named_cplanes.size();
+}
+
+extern "C" int32_t vibo_3dm_named_cplane(const ViboThreeDmModel* model,
+                                          size_t index, ViboNamedCPlane* plane) {
+  if (model == nullptr || index >= model->named_cplanes.size() || plane == nullptr) {
+    return 0;
+  }
+  const BridgeNamedCPlane& source = model->named_cplanes[index];
+  *plane = source.data;
+  plane->name = source.name.c_str();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_current_view_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->current_views.size();
+}
+
+extern "C" int32_t vibo_3dm_current_view(const ViboThreeDmModel* model,
+                                           size_t index, ViboCurrentView* view) {
+  if (model == nullptr || index >= model->current_views.size() || view == nullptr) {
+    return 0;
+  }
+  const BridgeCurrentView& source = model->current_views[index];
+  *view = source.data;
+  view->camera.name = source.name.c_str();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_object_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->objects.size();
+}
+
+extern "C" size_t vibo_3dm_unsupported_object_count(
+    const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->unsupported_object_count;
+}
+
+extern "C" int32_t vibo_3dm_object(
+    const ViboThreeDmModel* model, size_t index, ViboObjectInfo* info,
+    const double** coordinates, const double** knots_u, const double** knots_v,
+    const uint32_t** indices, const uint8_t** geometry_data,
+    const int32_t** group_indices) {
+  if (model == nullptr || index >= model->objects.size() || info == nullptr ||
+      coordinates == nullptr || knots_u == nullptr || knots_v == nullptr ||
+      indices == nullptr || geometry_data == nullptr || group_indices == nullptr) {
+    return 0;
+  }
+  const BridgeObject& object = model->objects[index];
+  *info = {object.object_type,
+           object.source_layer_index,
+           object.name.c_str(),
+           object.visible,
+           object.locked,
+           object.color_source,
+           object.color_red,
+           object.color_green,
+           object.color_blue,
+           object.wire_density,
+           object.degree_u,
+           object.degree_v,
+           object.control_point_count_u,
+           object.control_point_count_v,
+           object.coordinates.size(),
+           object.knots_u.size(),
+           object.knots_v.size(),
+           object.indices.size(),
+           object.geometry_data.size(),
+           object.group_indices.size()};
+  *coordinates = object.coordinates.empty() ? nullptr : object.coordinates.data();
+  *knots_u = object.knots_u.empty() ? nullptr : object.knots_u.data();
+  *knots_v = object.knots_v.empty() ? nullptr : object.knots_v.data();
+  *indices = object.indices.empty() ? nullptr : object.indices.data();
+  *geometry_data =
+      object.geometry_data.empty() ? nullptr : object.geometry_data.data();
+  *group_indices =
+      object.group_indices.empty() ? nullptr : object.group_indices.data();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_object_placement_count(const ViboThreeDmModel* model,size_t index){
+  return model==nullptr||index>=model->objects.size()?0:model->objects[index].placements.size();
+}
+extern "C" int32_t vibo_3dm_object_placement(const ViboThreeDmModel* model,size_t index,size_t placement,double* matrix){
+  if(model==nullptr||index>=model->objects.size()||matrix==nullptr||placement>=model->objects[index].placements.size())return 0;
+  std::copy(model->objects[index].placements[placement].begin(),model->objects[index].placements[placement].end(),matrix);return 1;
+}
+
+extern "C" size_t vibo_3dm_object_user_text_count(
+    const ViboThreeDmModel* model, size_t index) {
+  return model == nullptr || index >= model->objects.size()
+             ? 0 : model->objects[index].user_text.size();
+}
+
+extern "C" int32_t vibo_3dm_object_user_text(
+    const ViboThreeDmModel* model, size_t index, size_t text_index,
+    const char** key, const char** value) {
+  if (model == nullptr || index >= model->objects.size() ||
+      text_index >= model->objects[index].user_text.size() ||
+      key == nullptr || value == nullptr) {
+    return 0;
+  }
+  const auto& pair = model->objects[index].user_text[text_index];
+  *key = pair.first.c_str();
+  *value = pair.second.c_str();
+  return 1;
+}
+
+extern "C" size_t vibo_3dm_object_geometry_user_text_count(
+    const ViboThreeDmModel* model, size_t index) {
+  return model == nullptr || index >= model->objects.size()
+             ? 0 : model->objects[index].geometry_user_text.size();
+}
+
+extern "C" int32_t vibo_3dm_object_geometry_user_text(
+    const ViboThreeDmModel* model, size_t index, size_t text_index,
+    const char** key, const char** value) {
+  if (model == nullptr || index >= model->objects.size() ||
+      text_index >= model->objects[index].geometry_user_text.size() ||
+      key == nullptr || value == nullptr) {
+    return 0;
+  }
+  const auto& pair = model->objects[index].geometry_user_text[text_index];
+  *key = pair.first.c_str();
+  *value = pair.second.c_str();
+  return 1;
+}
+
+extern "C" int32_t vibo_3dm_units(const ViboThreeDmModel* model,
+    uint32_t* unit_system, double* meters_per_unit, const char** name) {
+  if (model == nullptr || unit_system == nullptr || meters_per_unit == nullptr || name == nullptr) {
+    return 0;
+  }
+  *unit_system = model->unit_system;
+  *meters_per_unit = model->meters_per_unit;
+  *name = model->unit_name.c_str();
+  return 1;
+}
+
+extern "C" int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
+    double* absolute, double* relative, double* angle) {
+  if (model == nullptr || absolute == nullptr || relative == nullptr || angle == nullptr) {
+    return 0;
+  }
+  *absolute = model->absolute_tolerance;
+  *relative = model->relative_tolerance;
+  *angle = model->angle_tolerance;
+  return 1;
+}
+
+extern "C" int32_t vibo_3dm_write(
+    const char* path, uint32_t unit_system, double meters_per_unit,
+    const char* unit_name, double absolute_tolerance, double relative_tolerance,
+    double angle_tolerance, const ViboWriteLayer* layers, size_t layer_count,
+    int32_t current_layer_index,
+    const ViboWriteGroup* groups, size_t group_count,
+    const ViboNamedView* named_views, size_t named_view_count,
+    const ViboNamedCPlane* named_cplanes, size_t named_cplane_count,
+    const ViboCurrentView* current_views, size_t current_view_count,
+    const ViboWriteObject* objects, size_t object_count, char* error,
+    size_t error_capacity) {
+  if (path == nullptr || path[0] == '\0' ||
+      (layer_count != 0 && layers == nullptr) ||
+      current_layer_index < -1 ||
+      (current_layer_index >= 0 &&
+       static_cast<size_t>(current_layer_index) >= layer_count) ||
+      (group_count != 0 && groups == nullptr) ||
+      (named_view_count != 0 && named_views == nullptr) ||
+      (named_cplane_count != 0 && named_cplanes == nullptr) ||
+      (current_view_count != 0 && current_views == nullptr) ||
+      (object_count != 0 && objects == nullptr)) {
+    set_error(error, error_capacity, "path and input arrays are required");
+    return 0;
+  }
+
+  try {
+    begin_open_nurbs();
+    ONX_Model model;
+    if (!std::isfinite(absolute_tolerance) || absolute_tolerance <= 0.0 ||
+        !std::isfinite(relative_tolerance) || relative_tolerance <= 0.0 || relative_tolerance >= 1.0 ||
+        !std::isfinite(angle_tolerance) || angle_tolerance <= 0.0 || angle_tolerance > ON_PI) {
+      set_error(error, error_capacity, "invalid model tolerances for 3DM");
+      return 0;
+    }
+    model.m_settings.m_ModelUnitsAndTolerances.m_absolute_tolerance = absolute_tolerance;
+    model.m_settings.m_ModelUnitsAndTolerances.m_relative_tolerance = relative_tolerance;
+    model.m_settings.m_ModelUnitsAndTolerances.m_angle_tolerance = angle_tolerance;
+    if ((unit_system > 25 && unit_system != 255) ||
+        (unit_system == 11 && (unit_name == nullptr ||
+          !std::isfinite(meters_per_unit) || meters_per_unit <= 0.0))) {
+      set_error(error, error_capacity, "invalid model length units");
+      return 0;
+    }
+    ON_UnitSystem& units = model.m_settings.m_ModelUnitsAndTolerances.m_unit_system;
+    if (unit_system == 11) {
+      units.SetCustomUnitSystem(ON_wString(unit_name), meters_per_unit);
+    } else {
+      units.SetUnitSystem(static_cast<ON::LengthUnitSystem>(unit_system));
+    }
+    model.m_sStartSectionComments =
+        "Created by Viboceros using the OpenNURBS toolkit.";
+    model.m_properties.m_Application.m_application_name = L"Viboceros";
+    model.m_properties.m_Application.m_application_URL =
+        L"https://github.com/dllu/viboceros";
+    model.m_properties.m_RevisionHistory.NewRevision();
+
+    for (size_t index = 0; index < named_view_count; ++index) {
+      const ViboNamedView& source = named_views[index];
+      ON_3dmView view;
+      if (!write_view_camera(view, source)) {
+        set_error(error, error_capacity, "invalid named view camera or frustum");
+        return 0;
+      }
+      view.m_named_view_id = view.m_vp.ViewportId();
+      ON_wString view_diagnostics;
+      ON_TextLog view_log(view_diagnostics);
+      if (!view.IsValid(&view_log)) {
+        set_error(error, error_capacity,
+                  "invalid named view: " + utf8(view_diagnostics));
+        return 0;
+      }
+      model.m_settings.m_named_views.Append(view);
+    }
+
+    for (size_t index = 0; index < named_cplane_count; ++index) {
+      const ViboNamedCPlane& source = named_cplanes[index];
+      if (source.name == nullptr || source.name[0] == '\0' ||
+          !std::isfinite(source.grid_spacing) || source.grid_spacing <= 0.0 ||
+          !std::isfinite(source.snap_spacing) || source.snap_spacing <= 0.0 ||
+          source.grid_line_count < 0 || source.grid_thick_frequency < 0) {
+        set_error(error, error_capacity, "invalid named construction plane");
+        return 0;
+      }
+      ON_3dmConstructionPlane plane;
+      plane.m_name = ON_wString(source.name);
+      plane.m_plane = ON_Plane(ON_3dPoint(source.origin),
+                               ON_3dVector(source.x_axis),
+                               ON_3dVector(source.y_axis));
+      if (!plane.m_plane.IsValid()) {
+        set_error(error, error_capacity, "invalid named construction plane frame");
+        return 0;
+      }
+      plane.m_grid_spacing = source.grid_spacing;
+      plane.m_snap_spacing = source.snap_spacing;
+      plane.m_grid_line_count = source.grid_line_count;
+      plane.m_grid_thick_frequency = source.grid_thick_frequency;
+      plane.m_bDepthBuffer = source.depth_buffer != 0;
+      model.m_settings.m_named_cplanes.Append(plane);
+    }
+
+    for (size_t index = 0; index < current_view_count; ++index) {
+      const ViboCurrentView& source = current_views[index];
+      ON_3dmView view;
+      if (!write_view_camera(view, source.camera)) {
+        set_error(error, error_capacity, "invalid current viewport camera " + std::to_string(index));
+        return 0;
+      }
+      view.m_view_type = ON::model_view_type;
+      view.m_display_mode_id = source.display_mode == 2 ? ON_StandardDisplayModeId::Shaded :
+                               source.display_mode == 3 ? ON_StandardDisplayModeId::Ghosted :
+                               ON_StandardDisplayModeId::Wireframe;
+      view.m_position.m_wnd_left = source.position[0];
+      view.m_position.m_wnd_right = source.position[1];
+      view.m_position.m_wnd_top = source.position[2];
+      view.m_position.m_wnd_bottom = source.position[3];
+      view.m_position.m_bMaximized = source.maximized != 0;
+      view.m_cplane.m_snap_spacing = source.snap_spacing;
+      view.m_cplane.m_grid_spacing = source.minor_spacing;
+      view.m_cplane.m_grid_thick_frequency = source.major_interval;
+      view.m_cplane.m_grid_line_count = source.line_count;
+      view.m_bShowConstructionGrid = source.show_grid != 0;
+      view.m_bShowConstructionAxes = source.show_axes != 0;
+      view.m_bShowWorldAxes = source.show_world_axes != 0;
+      ON_wString view_diagnostics;
+      ON_TextLog view_log(view_diagnostics);
+      if (!view.IsValid(&view_log)) {
+        set_error(error, error_capacity,
+                  "invalid current viewport: " + utf8(view_diagnostics));
+        return 0;
+      }
+      model.m_settings.m_views.Append(view);
+      if (source.active != 0) {
+        model.m_settings.m_active_view_id = view.m_vp.ViewportId();
+      }
+    }
+
+    std::vector<int> layer_indices;
+    layer_indices.reserve(std::max<size_t>(layer_count, 1));
+    if (layer_count == 0) {
+      const int index = model.AddDefaultLayer(L"Default", ON_Color::Black);
+      if (index < 0) {
+        set_error(error, error_capacity,
+                  "OpenNURBS could not create a default layer");
+        return 0;
+      }
+      layer_indices.push_back(index);
+    } else {
+      for (size_t index = 0; index < layer_count; ++index) {
+        const ViboWriteLayer& source = layers[index];
+        if (source.name == nullptr || source.name[0] == '\0') {
+          set_error(error, error_capacity, "3DM layer names cannot be empty");
+          return 0;
+        }
+        ON_Layer layer;
+        const ON_wString name(source.name);
+        if (!layer.SetName(name)) {
+          set_error(error, error_capacity, "3DM layer name is invalid");
+          return 0;
+        }
+        layer.SetColor(ON_Color(source.red, source.green, source.blue));
+        layer.SetVisible(source.visible != 0);
+        layer.SetLocked(source.locked != 0);
+        const ON_ModelComponentReference reference =
+            model.AddModelComponent(layer, true);
+        const ON_Layer* added = ON_Layer::FromModelComponentRef(reference, nullptr);
+        if (added == nullptr || added->Index() < 0) {
+          set_error(error, error_capacity,
+                    "OpenNURBS could not add a layer to the model");
+          return 0;
+        }
+        layer_indices.push_back(added->Index());
+      }
+    }
+
+    if (current_layer_index >= 0) {
+      const ON_Layer* current_layer = ON_Layer::FromModelComponentRef(
+          model.LayerFromIndex(layer_indices[current_layer_index]), nullptr);
+      if (current_layer == nullptr) {
+        set_error(error, error_capacity, "3DM current layer is missing");
+        return 0;
+      }
+      model.m_settings.SetCurrentLayerId(current_layer->Id());
+    }
+
+    std::vector<int> group_indices;
+    group_indices.reserve(group_count);
+    for (size_t index = 0; index < group_count; ++index) {
+      const ViboWriteGroup& source = groups[index];
+      if (source.name == nullptr || source.name[0] == '\0') {
+        set_error(error, error_capacity, "3DM group names cannot be empty");
+        return 0;
+      }
+      ON_Group group;
+      if (!group.SetName(ON_wString(source.name))) {
+        set_error(error, error_capacity, "3DM group name is invalid");
+        return 0;
+      }
+      const ON_ModelComponentReference reference =
+          model.AddModelComponent(group, true);
+      const ON_Group* added = ON_Group::FromModelComponentRef(reference, nullptr);
+      if (added == nullptr || added->Index() < 0) {
+        set_error(error, error_capacity,
+                  "OpenNURBS could not add a group to the model");
+        return 0;
+      }
+      group_indices.push_back(added->Index());
+    }
+
+    for (size_t index = 0; index < object_count; ++index) {
+      const ViboWriteObject& source = objects[index];
+      if (source.layer_index >= layer_indices.size()) {
+        set_error(error, error_capacity,
+                  "3DM object references a missing layer");
+        return 0;
+      }
+      if (source.color_source >
+          static_cast<uint8_t>(ON::color_from_parent)) {
+        set_error(error, error_capacity,
+                  "3DM object has an invalid color source");
+        return 0;
+      }
+      if (source.group_index_count != 0 && source.group_indices == nullptr) {
+        set_error(error, error_capacity,
+                  "3DM object has a null group index array");
+        return 0;
+      }
+      if (source.user_text_count != 0 && source.user_text == nullptr) {
+        set_error(error, error_capacity, "3DM object has a null user text array");
+        return 0;
+      }
+      if (source.geometry_user_text_count != 0 &&
+          source.geometry_user_text == nullptr) {
+        set_error(error, error_capacity,
+                  "3DM object has a null geometry user text array");
+        return 0;
+      }
+      bool valid_groups = true;
+      for (size_t group_position = 0;
+           group_position < source.group_index_count; ++group_position) {
+        if (source.group_indices[group_position] >= group_indices.size()) {
+          valid_groups = false;
+          break;
+        }
+      }
+      if (!valid_groups) {
+        set_error(error, error_capacity,
+                  "3DM object references a missing group");
+        return 0;
+      }
+      std::string geometry_error;
+      ON_Object* geometry = geometry_for(source, geometry_error);
+      if (geometry == nullptr) {
+        set_error(error, error_capacity,
+                  "object " + std::to_string(index) + ": " + geometry_error);
+        return 0;
+      }
+      if (!write_user_text(*geometry, source.geometry_user_text,
+                           source.geometry_user_text_count)) {
+        delete geometry;
+        set_error(error, error_capacity,
+                  "object " + std::to_string(index) +
+                      ": geometry user text is invalid");
+        return 0;
+      }
+      ON_3dmObjectAttributes* attributes =
+          attributes_for(source, layer_indices[source.layer_index]);
+      if (attributes == nullptr) {
+        delete geometry;
+        set_error(error, error_capacity,
+                  "object " + std::to_string(index) +
+                      ": object name is invalid");
+        return 0;
+      }
+      for (size_t group_position = 0;
+           group_position < source.group_index_count; ++group_position) {
+        attributes->AddToGroup(
+            group_indices[source.group_indices[group_position]]);
+      }
+      const ON_ModelComponentReference reference =
+          model.AddManagedModelGeometryComponent(geometry, attributes, true);
+      if (reference.IsEmpty()) {
+        set_error(error, error_capacity,
+                  "OpenNURBS could not add object " + std::to_string(index));
+        return 0;
+      }
+    }
+
+    ON_wString diagnostics;
+    ON_TextLog log(diagnostics);
+    if (!model.Write(path, 0, &log)) {
+      std::string message = "OpenNURBS could not write the 3DM file";
+      const std::string details = utf8(diagnostics);
+      if (!details.empty()) {
+        message += ": " + details;
+      }
+      set_error(error, error_capacity, message);
+      return 0;
+    }
+    set_error(error, error_capacity, "");
+    return 1;
+  } catch (const std::exception& exception) {
+    set_error(error, error_capacity,
+              std::string("OpenNURBS exception: ") + exception.what());
+    return 0;
+  } catch (...) {
+    set_error(error, error_capacity, "unknown OpenNURBS exception");
+    return 0;
+  }
+}

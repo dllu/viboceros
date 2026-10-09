@@ -1,0 +1,32 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted native STEP curved spline p-curve qualification.",
+  "full_native_parity": false,
+  "contract": [
+    "Final curved spline p-curve composition certifies original UV/surface correspondence at absolute import tolerance.",
+    "Exact independent control/knot component slicing preserves right-sided paths on full-order surface breaks.",
+    "Tolerance propagates through nested leaders and sweep directrices; no mesh substitution on proof failure."
+  ],
+  "evidence": [
+    "Independent hidden-excursion and exact component-slice regressions.",
+    "Existing curved/rational crossing matrix and serialized oriented trim/edge checks."
+  ],
+  "limits": [
+    "Other STEP edge/surface adapters keep their preceding contracts.",
+    "Ordinary certificate degree, work, bit-size and subdivision limits remain; inconclusive proof rejects import.",
+    "No fresh Rhino cross-reader or timing evidence.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "docs/step-curved-pcurve-source/step/native_nurbs.rs": "f24904a191bb09d8eca130fdb2a7f389504ae5c488f0485c54a9bbf3d4a4a608",
+    "docs/step-curved-pcurve-source/step/native_nurbs/curved_pcurve.rs": "ffe67036a4006518a46aaea4384054f0a22b1998ea575dfc1c5bdf8ee6ef6c42",
+    "docs/step-curved-pcurve-source/step/tests.rs": "dea23d0ff8b1d1ca05e961b5a0af49d8ecd5334d2c302c0d71f3c038784c3438"
+  },
+  "source_snapshot_paths": {
+    "docs/step-curved-pcurve-source/step/native_nurbs.rs": "crates/viboceros-io/src/step/native_nurbs.rs",
+    "docs/step-curved-pcurve-source/step/native_nurbs/curved_pcurve.rs": "crates/viboceros-io/src/step/native_nurbs/curved_pcurve.rs",
+    "docs/step-curved-pcurve-source/step/tests.rs": "crates/viboceros-io/src/step/tests.rs"
+  },
+  "source_snapshot_state": "Verified curved-only qualification sources before expanding spline p-curve scope."
+}

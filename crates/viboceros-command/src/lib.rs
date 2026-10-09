@@ -2,6 +2,7 @@
 
 mod align;
 mod apply_curves;
+pub mod blocks;
 mod create_uv_curves;
 mod uv_inputs;
 mod uv_reference;
@@ -25,6 +26,8 @@ mod rotation_policy;
 pub mod taper;
 pub mod twist;
 use rotation_policy::command_rotation;
+#[cfg(test)]
+mod block_instance_tests;
 mod layout_units;
 #[cfg(test)]
 mod morph_test_support;
@@ -89,6 +92,7 @@ pub use object_selection::{
     ObjectSelectionPrompt, ObjectSelectionWorkflow, SelectionToggle,
 };
 mod explode;
+mod explode_block;
 mod extract_connected_mesh_faces;
 mod extract_isocurve;
 mod extract_mesh_faces_by_area;
@@ -105,6 +109,7 @@ use extract_mesh_faces_by_draft_angle::ExtractMeshFacesByDraftAngleCommand;
 use extract_mesh_faces_by_edge_length::ExtractMeshFacesByEdgeLengthCommand;
 use extract_mesh_part::ExtractMeshPartCommand;
 mod copy_options;
+pub mod curve_rebuild;
 #[cfg(test)]
 mod mesh_decomposition_tests;
 pub mod nonuniform_scale;
@@ -500,6 +505,15 @@ pub struct CommandRegistry {
 impl CommandRegistry {
     pub fn with_builtins() -> Self {
         let mut registry = Self::default();
+        registry
+            .register(explode_block::ExplodeBlockCommand)
+            .expect("unique built-in command");
+        registry
+            .register(blocks::BlockCommand)
+            .expect("unique built-in command");
+        registry
+            .register(blocks::InsertCommand)
+            .expect("unique built-in command");
         registry
             .register(smooth::SmoothCommand(registry.smooth_preferences.clone()))
             .expect("unique built-in command");
@@ -2913,15 +2927,6 @@ fn parse_fit_curve_options(arguments: &[&str]) -> Result<FitCurveOptions, Comman
 
 const REBUILD_CURVE_USAGE: &str = "Rebuild [PointCount=1..1000] [Degree=1..11] [PreserveTangents=Yes|No] [DeleteInput=Yes|No] [OutputLayer=CurrentLayer|InputObject]";
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct RebuildCurveOptions {
-    point_count: usize,
-    degree: usize,
-    preserve_end_tangents: bool,
-    delete_input: bool,
-    output_layer: FitCurveOutputLayer,
-}
-
 struct RebuildCurveCommand(std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>);
 
 impl Command for RebuildCurveCommand {
@@ -2954,7 +2959,7 @@ impl Command for RebuildCurveCommand {
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         if document
             .selected_objects()
-            .any(|o| ObjectSelectionFilter::Surfaces.accepts_object(o))
+            .any(|o| ObjectSelectionFilter::Beziers.accepts_object(o))
         {
             self.object_selection_prompt(&[])
         } else {
@@ -2972,158 +2977,12 @@ impl Command for RebuildCurveCommand {
             return surface_rebuild::run(document, options);
         }
         let options = parse_rebuild_curve_options(arguments)?;
-        let tolerance = document.tolerance();
-        let sources = document
-            .selected_objects()
-            .filter_map(|object| {
-                geometry_curve_ref(object.geometry()).map(|_| {
-                    (
-                        object.id(),
-                        object.geometry().clone(),
-                        object.attributes().layer_id(),
-                    )
-                })
-            })
-            .collect::<Vec<_>>();
-        if sources.is_empty() {
-            return Err(CommandError::NoRebuildCurves);
-        }
-
-        let rebuilt = sources
-            .iter()
-            .map(|(id, geometry, layer)| {
-                let source = geometry_curve_ref(geometry).expect("rebuild source is a curve");
-                try_rebuild_curve(
-                    source,
-                    options.point_count,
-                    options.degree,
-                    options.preserve_end_tangents,
-                    tolerance,
-                )
-                .map(|curve| (*id, *layer, curve))
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let curve_count = rebuilt.len();
-
-        if options.delete_input && options.output_layer == FitCurveOutputLayer::Input {
-            document.replace_object_geometries(
-                rebuilt
-                    .into_iter()
-                    .map(|(id, _, curve)| (id, Geometry::NurbsCurve(curve))),
-            )?;
-        } else {
-            if options.delete_input {
-                for (id, _, _) in &rebuilt {
-                    document.delete_object(*id)?;
-                }
-            }
-            let current_layer = document.current_layer_id();
-            for (_, input_layer, curve) in rebuilt {
-                let layer = match options.output_layer {
-                    FitCurveOutputLayer::Current => current_layer,
-                    FitCurveOutputLayer::Input => input_layer,
-                };
-                document.add_geometry_with_attributes(
-                    Geometry::NurbsCurve(curve),
-                    ObjectAttributes::on_layer(layer),
-                )?;
-            }
-        }
-
-        Ok(format!(
-            "Rebuilt {curve_count} curve(s) as non-rational degree-{} NURBS with {} requested point(s), {} the input(s) on the {} layer{}",
-            options.degree,
-            options.point_count,
-            if options.delete_input {
-                "replacing"
-            } else {
-                "retaining"
-            },
-            match options.output_layer {
-                FitCurveOutputLayer::Current => "current",
-                FitCurveOutputLayer::Input => "input-object",
-            },
-            if options.preserve_end_tangents {
-                " and preserving eligible open-curve end tangents"
-            } else {
-                ""
-            }
-        ))
+        curve_rebuild::prepare(document, options)?.apply(document)
     }
 }
 
-fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<RebuildCurveOptions, CommandError> {
-    let mut point_count = 10;
-    let mut degree = 3;
-    let mut preserve_end_tangents = false;
-    let mut delete_input = true;
-    let mut output_layer = FitCurveOutputLayer::Input;
-    let mut point_count_seen = false;
-    let mut degree_seen = false;
-    let mut preserve_seen = false;
-    let mut delete_seen = false;
-    let mut output_seen = false;
-
-    for argument in arguments {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(REBUILD_CURVE_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if (option_name_eq(name, "PointCount") || option_name_eq(name, "Points"))
-            && !point_count_seen
-        {
-            point_count = value
-                .parse::<usize>()
-                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
-            point_count_seen = true;
-        } else if option_name_eq(name, "Degree") && !degree_seen {
-            degree = value
-                .parse::<usize>()
-                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
-            degree_seen = true;
-        } else if (option_name_eq(name, "PreserveTangents")
-            || option_name_eq(name, "PreserveEndTangents"))
-            && !preserve_seen
-        {
-            preserve_end_tangents =
-                parse_yes_no(value).ok_or(CommandError::Usage(REBUILD_CURVE_USAGE))?;
-            preserve_seen = true;
-        } else if option_name_eq(name, "DeleteInput") && !delete_seen {
-            delete_input = parse_yes_no(value).ok_or(CommandError::Usage(REBUILD_CURVE_USAGE))?;
-            delete_seen = true;
-        } else if option_name_eq(name, "OutputLayer") && !output_seen {
-            output_layer = if value.eq_ignore_ascii_case("Current")
-                || value.eq_ignore_ascii_case("CurrentLayer")
-            {
-                FitCurveOutputLayer::Current
-            } else if value.eq_ignore_ascii_case("Input")
-                || value.eq_ignore_ascii_case("InputObject")
-                || value.eq_ignore_ascii_case("InputObjects")
-            {
-                FitCurveOutputLayer::Input
-            } else {
-                return Err(CommandError::Usage(REBUILD_CURVE_USAGE));
-            };
-            output_seen = true;
-        } else {
-            return Err(CommandError::Usage(REBUILD_CURVE_USAGE));
-        }
-    }
-
-    if degree == 0 || degree > MAX_CURVE_REBUILD_DEGREE {
-        return Err(GeometryError::InvalidCurveRebuildDegree {
-            actual: degree,
-            maximum: MAX_CURVE_REBUILD_DEGREE,
-        }
-        .into());
-    }
-    Ok(RebuildCurveOptions {
-        point_count,
-        degree,
-        preserve_end_tangents,
-        delete_input,
-        output_layer,
-    })
+fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<curve_rebuild::Options, CommandError> {
+    curve_rebuild::parse(arguments, curve_rebuild::Options::default())
 }
 
 const MAKE_UNIFORM_USAGE: &str = "MakeUniform";
@@ -8680,6 +8539,7 @@ impl Command for ExtractControlPolygonCommand {
                     ))
                 }
                 Geometry::Point(_)
+                | Geometry::BlockInstance(_)
                 | Geometry::PointCloud(_)
                 | Geometry::Brep(_)
                 | Geometry::Mesh(_) => {
@@ -9119,6 +8979,9 @@ impl Command for DuplicateEdgeCommand {
             .selected_objects()
             .map(|object| {
                 let edges = match object.geometry() {
+                    Geometry::BlockInstance(_) => {
+                        return Err(CommandError::UnsupportedDuplicateEdgeGeometry);
+                    }
                     Geometry::NurbsSurface(surface) => surface
                         .natural_edge_curves()?
                         .into_iter()
@@ -9366,6 +9229,7 @@ impl Command for DuplicateMeshEdgeCommand {
                 | Geometry::NurbsCurve(_)
                 | Geometry::PolyCurve(_)
                 | Geometry::NurbsSurface(_)
+                | Geometry::BlockInstance(_)
                 | Geometry::Brep(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -9757,6 +9621,9 @@ impl Command for ExtractWireframeCommand {
                 }
             };
             let wires = match geometry {
+                Geometry::BlockInstance(_) => {
+                    return Err(CommandError::UnsupportedExtractWireframeGeometry);
+                }
                 Geometry::NurbsSurface(surface) => surface
                     .wireframe_curves(*wire_density)?
                     .into_iter()
@@ -17685,6 +17552,8 @@ fn format_point(point: Point3) -> String {
 
 #[derive(Debug, Error)]
 pub enum CommandError {
+    #[error("block definition '{0}' was not found")]
+    BlockNameNotFound(String),
     #[error("Boolean difference produced no changes")]
     NothingSubtracted,
 
@@ -17909,6 +17778,8 @@ pub enum CommandError {
 
     #[error("Rebuild sources or document settings changed; select the surfaces again")]
     StaleSurfaceRebuild,
+    #[error("Rebuild curve sources or settings changed; select the curves again")]
+    StaleCurveRebuild,
 
     #[error("ChangeDegree degree {actual} must be between 1 and {maximum}")]
     InvalidChangeDegree { actual: usize, maximum: usize },
@@ -18947,7 +18818,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, ApplyCrv, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Bend, Blend, Boolean2Objects, BooleanDifference, BooleanIntersection, BooleanSplit, BooleanUnion, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CreateUVCrv, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, Maelstrom, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarDifference, PlanarIntersection, PlanarSrf, PlanarUnion, Point, PointCloud, PointGrid, Points, PointsOff, PointsOn, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RememberCopyOptions, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleByPlane, ScaleNU, ScalePositions, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, ShrinkTrimmedSrf, ShrinkTrimmedSrfToEdge, Smooth, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Taper, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, TweenSurfaces, Twist, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, UnjoinEdge, Unlock, UnlockSelected, Untrim, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
+            "Commands: AddNgonsToMesh, AddToGroup, Align, AlignVertices, Angle, ApplyCrv, Arc, Area, AreaCentroid, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Bend, Blend, Block, Boolean2Objects, BooleanDifference, BooleanIntersection, BooleanSplit, BooleanUnion, BoundingBox, Box, Cap, Catenary, Chamfer, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, Connect, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CreateUVCrv, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curvature, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, DeleteMeshNgons, Diameter, Dir, Distance, Distribute, Divide, Domain, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, EdgeSrf, Ellipse, Ellipsoid, EvaluatePt, EvaluateUVPt, Explode, ExplodeBlock, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractConnectedMeshFaces, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractMeshFacesByArea, ExtractMeshFacesByAspectRatio, ExtractMeshFacesByDraftAngle, ExtractMeshFacesByEdgeLength, ExtractMeshPart, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractSubCrv, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, ExtrudeMesh, Fillet, FilletCorners, FillMeshHole, FillMeshHoles, FitCrv, Flip, GCon, GetUserText, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, Insert, InsertControlPoint, InsertKnot, InterpCrv, Intersect, IntersectSelf, IntersectTwoSets, Invert, Isolate, IsolateLock, Join, JoinCopy, Layer, Length, Line, Lock, LockSwap, Loft, Maelstrom, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Match, MatchCrvDir, MatchMeshEdge, MergeAllEdges, MergeEdge, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Offset, OffsetMesh, OffsetMultiple, OffsetSrf, Open3dm, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PatchSingleFace, Pipe, PlanarDifference, PlanarIntersection, PlanarSrf, PlanarUnion, Point, PointCloud, PointGrid, Points, PointsOff, PointsOn, Polygon, PolygonCount, Polyline, ProjectToCPlane, Pyramid, QuadrangulateMesh, Radius, Rebuild, Rectangle, Redo, ReducePointCloud, RememberCopyOptions, RemoveControlPoint, RemoveFromGroup, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, SaveAs, Scale, Scale1D, Scale2D, ScaleByPlane, ScaleNU, ScalePositions, SelAll, SelBox, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelClosedSrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelID, SelKey, SelKeyValue, SelLast, SelLayer, SelLayerNumber, SelLine, SelMesh, SelName, SelNone, SelNonManifold, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelOpenSrf, SelPlanarCrv, SelPlanarSrf, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelSelfIntersectingCrv, SelShortCrv, SelSmall, SelSrf, SelTrimmedSrf, SelUntrimmedSrf, SelValue, SelVolumeObject, SelVolumePipe, SelVolumeSphere, SetObjectColor, SetObjectName, SetPt, SetUserText, Shear, Show, ShowSelected, ShrinkTrimmedSrf, ShrinkTrimmedSrfToEdge, Smooth, Sphere, Spiral, Split, SplitDisjointMesh, SplitEdge, SplitMeshEdge, SrfControlPtGrid, SrfPt, SrfPtGrid, SrfSeam, SubCrv, SwapMeshEdge, Sweep1, Taper, Tolerance, ToNURBS, Torus, TriangulateMesh, TriangulateNonPlanarQuads, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, TweenSurfaces, Twist, Undo, Ungroup, UngroupAll, UnifyMeshNormals, Unisolate, UnisolateLock, Units, UnjoinEdge, Unlock, UnlockSelected, Untrim, UntrimAll, UntrimBorder, UntrimHoles, Unweld, UnweldEdge, UnweldVertex, Volume, VolumeCentroid, Weld, WeldEdge, WeldVertices"
         );
     }
 

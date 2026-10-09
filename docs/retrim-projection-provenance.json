@@ -1,0 +1,64 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted curve preparation and exact-coordinate chart projection reuse.",
+  "cases": {
+    "sphere": {
+      "previous_median_seconds": 0.876423176,
+      "projection_median_seconds": 0.864359419,
+      "geometry_sha256": [
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+      ]
+    },
+    "swapped": {
+      "previous_median_seconds": 1.341723031,
+      "projection_median_seconds": 1.221904106,
+      "geometry_sha256": [
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e"
+      ]
+    },
+    "cylinder": {
+      "previous_median_seconds": 0.521993011,
+      "projection_median_seconds": 0.514326013,
+      "geometry_sha256": [
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734"
+      ]
+    }
+  },
+  "full_performance_parity": false,
+  "limits": [
+    "Three repetitions on one host; no general timing threshold is asserted.",
+    "All source and complete recorded output definitions equal the preceding prepared-context profiles.",
+    "Search seeds, refinement limits, translation fallback and original-coordinate distance comparisons are retained.",
+    "Evaluation coefficient retention is opt-in and bounded to 64 spans; chart results are keyed by exact UV bits and bounded to 131072 entries.",
+    "No new Rhino timing is claimed; substantial performance and global closest-point certification work remains."
+  ],
+  "sha256": {
+    "docs/retrim-projection-sphere.json": "e945203dcf0d3cf137d29e94c68f8f740c2decde6614a15df341c4749fb572c9",
+    "docs/retrim-projection-swapped.json": "09938ddcf260a5270746ce6d29268439dbc1a7264fde787f994c0fbbf135d381",
+    "docs/retrim-projection-cylinder.json": "ba83f3efe48a70f84708232b4b87e9b5a3a63cd3c6bdec170d1d5bf266eaf003",
+    "docs/retrim-projection-source/brep/retrim.rs": "0edac64a57f25e9c531f82913a363fd106222cb697410b5212f8f978d5cd10b1",
+    "docs/retrim-projection-source/nurbs.rs": "7270bf461f8aa3a67d72d7c7739ddffe553de9a9fc0e5dba8d2efe4a5baf63c6",
+    "docs/retrim-projection-source/nurbs/closest_point.rs": "850055bc2d61df856fb2b691111f422d0951f00bebbc14fb5ada85603ca58136",
+    "docs/retrim-projection-source/nurbs/closest_point/prepared.rs": "c06a33043951a46ce79f1249827e8d94829e4e6accb4384641d3875f1e1e47c1",
+    "docs/retrim-projection-source/nurbs/closest_point/tests.rs": "25aa61970bfe2590810487496f8b82766ff9089abeea3011bb22172c52fb54d4",
+    "docs/retrim-projection-source/nurbs/evaluate/query.rs": "50ba2f39eb4627e751d0e9ef1a055de2bc3b200a8abf7754187e81eb7647f97f",
+    "docs/retrim-projection-source/nurbs/evaluate/query/tests.rs": "5b21e326dd1d299a5859ca64cdc18c13ecec9fb17fef5711c4daa95822da3a1f"
+  },
+  "source_snapshot_paths": {
+    "docs/retrim-projection-source/brep/retrim.rs": "crates/viboceros-geometry/src/brep/retrim.rs",
+    "docs/retrim-projection-source/nurbs.rs": "crates/viboceros-geometry/src/nurbs.rs",
+    "docs/retrim-projection-source/nurbs/closest_point.rs": "crates/viboceros-geometry/src/nurbs/closest_point.rs",
+    "docs/retrim-projection-source/nurbs/closest_point/prepared.rs": "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs",
+    "docs/retrim-projection-source/nurbs/closest_point/tests.rs": "crates/viboceros-geometry/src/nurbs/closest_point/tests.rs",
+    "docs/retrim-projection-source/nurbs/evaluate/query.rs": "crates/viboceros-geometry/src/nurbs/evaluate/query.rs",
+    "docs/retrim-projection-source/nurbs/evaluate/query/tests.rs": "crates/viboceros-geometry/src/nurbs/evaluate/query/tests.rs"
+  },
+  "source_snapshot_state": "Verified projection-cache worktree sources before cross-target coefficient reuse."
+}

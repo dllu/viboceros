@@ -49,18 +49,16 @@ impl<'a> Evaluation<'a> {
     }
 }
 
-pub(super) struct ExactJetNet<'a> {
-    curve: &'a NurbsCurve,
+pub(super) struct ExactJetNet {
     span: usize,
     controls: Vec<Homogeneous>,
     first: Option<Vec<Homogeneous>>,
     second: Option<Vec<Homogeneous>>,
 }
 
-impl<'a> ExactJetNet<'a> {
-    pub(super) fn new(curve: &'a NurbsCurve, span: usize) -> Self {
+impl ExactJetNet {
+    pub(super) fn new(curve: &NurbsCurve, span: usize) -> Self {
         Self {
-            curve,
             span,
             controls: curve_controls(curve, span),
             first: None,
@@ -70,12 +68,13 @@ impl<'a> ExactJetNet<'a> {
 
     pub(super) fn evaluate(
         &mut self,
+        curve: &NurbsCurve,
         parameter: Real,
         order: u8,
     ) -> Result<CurveJet, GeometryError> {
         // Re-evaluate the denominator before using any derivative net. These
         // caches contain coefficients, never a previous station's pole status.
-        let e = Evaluation::new(self.curve, self.span, parameter, &self.controls)?;
+        let e = Evaluation::new(curve, self.span, parameter, &self.controls)?;
         let zero = Vector3::try_new(0., 0., 0.)?;
         if order == 0 {
             return Ok((e.point, zero, zero));
@@ -96,7 +95,7 @@ impl<'a> ExactJetNet<'a> {
         if order == 1 {
             return Ok((e.point, first_vector, zero));
         }
-        let second = if self.curve.degree == 1 {
+        let second = if curve.degree == 1 {
             std::array::from_fn(|_| Rational::zero())
         } else {
             if self.second.is_none() {
@@ -131,7 +130,7 @@ impl NurbsCurve {
         parameter: Real,
         order: u8,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        ExactJetNet::new(self, span).evaluate(parameter, order)
+        ExactJetNet::new(self, span).evaluate(self, parameter, order)
     }
 
     pub(super) fn exact_tangent(

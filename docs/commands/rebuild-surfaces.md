@@ -3,7 +3,7 @@
 [Command reference](README.md) · [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/rebuild.htm)
 
 `Rebuild` reconstructs selected single-face surfaces with independent U/V degrees
-and control counts. Curves retain their existing Rebuild options. With selected
+and control counts. [Curves have separate options and previews](rebuild-curves.md). With selected
 surfaces, bare `Rebuild` opens an options prompt. Starting it without selection
 asks for surfaces first; Enter then opens options. A complete inline invocation
 accepts after picking, or runs directly on preselected surfaces.
@@ -30,6 +30,11 @@ layer and ReTrim, and survives cancellation and Undo/Redo. Invalid edits change
 neither preferences nor geometry. Preferences belong to the command registry,
 are shared by its documents and reset in a new registry. Application restart
 persistence and interaction with curve Rebuild preferences remain unverified.
+
+Compact command-line buttons show U/V counts and degrees, deletion, layer and
+ReTrim. Numeric buttons open typed value prompts; boolean/layer buttons toggle
+their current values. Accept uses the prepared preview and is disabled after a
+preparation failure. Cancel discards it. Buttons and typed input share validation.
 
 The options phase shows a readonly viewport preview in Wireframe, Shaded and
 Ghosted modes. Counts, degrees and ReTrim changes prepare new geometry; deletion

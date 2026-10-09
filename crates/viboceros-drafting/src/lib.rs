@@ -52,6 +52,8 @@ impl OrthogonalTrack {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum DraftingError {
+    #[error(transparent)]
+    Document(#[from] viboceros_document::DocumentError),
     #[error("drafting cursor coordinates must be finite")]
     InvalidCursorCoordinates,
 

@@ -1,0 +1,52 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted cross-target curve coefficient reuse.",
+  "cases": {
+    "sphere": {
+      "previous_median_seconds": 0.864359419,
+      "target_cache_median_seconds": 0.852437788,
+      "geometry_sha256": [
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986",
+        "69c4ad2bf9574951a44ed1de7af86cea02ab0ccd821464b83bf568faa06c4986"
+      ]
+    },
+    "swapped": {
+      "previous_median_seconds": 1.221904106,
+      "target_cache_median_seconds": 1.206616179,
+      "geometry_sha256": [
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e",
+        "0f40e344f259d382fed7f4a6c25e0afc2bd31210e196ec61d242f329da882f4e"
+      ]
+    },
+    "cylinder": {
+      "previous_median_seconds": 0.514326013,
+      "target_cache_median_seconds": 0.517098921,
+      "geometry_sha256": [
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734",
+        "35bb82a8ff38e18b44390e44e3fb32339f1f68fc10808af7c17cc3056df8a734"
+      ]
+    }
+  },
+  "full_performance_parity": false,
+  "limits": [
+    "Three repetitions on one host; small timing differences do not establish a general speedup.",
+    "All source and complete recorded output definitions equal the preceding projection profiles.",
+    "Separate original, translated and failed-translation refinement states retain at most 64 spans each.",
+    "Every target retains independent starts, refinement, distance comparisons and denominator validation.",
+    "No new native timing is claimed; global nearest-point certification and performance parity remain unresolved."
+  ],
+  "sha256": {
+    "docs/retrim-target-cache-sphere.json": "b69d70f392bb596f8b50f94935f48dc86e98b01bae5acb38b225077cc42f6318",
+    "docs/retrim-target-cache-swapped.json": "81da39c21b5e14d0785c46b2701ef0bb91554cce8db3c28999b6687e8a552a08",
+    "docs/retrim-target-cache-cylinder.json": "7c2fcebce6eda86ec1e71422ad247bd5eac51890cd1bfadb92848dfecb63b0d5",
+    "crates/viboceros-geometry/src/nurbs/closest_point/prepared.rs": "f12c9aa0f97de444b65f432dd929d8861d1cf4577a123c4f650f739648e73be3",
+    "crates/viboceros-geometry/src/nurbs/evaluate.rs": "26ab0bcb6960a47700ebc432a9b6748da55e87dd7a4a54a082d5fec36841d039",
+    "crates/viboceros-geometry/src/nurbs/evaluate/exact.rs": "6e1c28d5fc69c307f0f5121ee604ab22aaaf89b69b4b298f397aa60b690a54c9",
+    "crates/viboceros-geometry/src/nurbs/evaluate/query.rs": "491f1f059a4439fa5d34be70003d824cd2f3fde15bc47a3a77d3ac7d63ec4098",
+    "crates/viboceros-geometry/src/nurbs/evaluate/query/tests.rs": "fd5917290a2280ddb05bb41074ca216122348ec7422aeea815aae8091a77a0d2"
+  }
+}

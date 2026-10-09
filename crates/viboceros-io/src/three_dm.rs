@@ -14,6 +14,12 @@ use viboceros_geometry::{
 use crate::LengthUnitSystem;
 use crate::three_dm_geometry::{self, GeometryCodecError};
 
+mod blocks;
+mod instances;
+pub use blocks::{
+    read_3dm_file_with_blocks, read_3dm_file_with_blocks_in_units,
+    read_3dm_file_with_blocks_model_tolerance,
+};
 mod mesh_ngon;
 mod point_cloud_data;
 
@@ -28,6 +34,7 @@ const OBJECT_BREP: c_int = 7;
 const OBJECT_POLYCURVE: c_int = 8;
 const OBJECT_POLYLINE: c_int = 9;
 const OBJECT_ARC: c_int = 10;
+const OBJECT_INSTANCE: c_int = 11;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -137,6 +144,10 @@ pub enum ThreeDmColorSource {
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum ThreeDmGeometry {
+    InstanceReference {
+        definition_index: usize,
+        transform: viboceros_geometry::AffineTransform3,
+    },
     Point(Point3),
     PointCloud(PointCloud3),
     Line(LineSegment),
@@ -147,6 +158,12 @@ pub enum ThreeDmGeometry {
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmDefinition {
+    pub name: String,
+    pub members: Vec<ThreeDmObject>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -185,6 +202,7 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    pub definitions: Vec<ThreeDmDefinition>,
     /// Stored model policy, distinct from the tolerance used to decode geometry.
     pub tolerance: Tolerance,
     /// File metadata only; assigning units does not rescale coordinates.
@@ -198,6 +216,7 @@ pub struct ThreeDmModel {
     pub viewports: Vec<ThreeDmViewport>,
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
+    expanded_instance_count: usize,
 }
 
 impl ThreeDmModel {
@@ -208,6 +227,7 @@ impl ThreeDmModel {
     ) -> Self {
         let current_layer_index = (!layers.is_empty()).then_some(0);
         Self {
+            definitions: Vec::new(),
             units: LengthUnitSystem::default(),
             tolerance: Tolerance::DEFAULT,
             layers,
@@ -218,11 +238,16 @@ impl ThreeDmModel {
             viewports: Vec::new(),
             objects,
             unsupported_object_count: 0,
+            expanded_instance_count: 0,
         }
     }
 
     pub const fn unsupported_object_count(&self) -> usize {
         self.unsupported_object_count
+    }
+    /// Top-level block references expanded to independent placed geometry.
+    pub const fn expanded_instance_count(&self) -> usize {
+        self.expanded_instance_count
     }
 }
 
@@ -342,7 +367,16 @@ pub fn read_3dm_file_in_units(
     target_units: &LengthUnitSystem,
     tolerance: Tolerance,
 ) -> Result<ThreeDmModel, ThreeDmError> {
-    let handle = read_handle(path.as_ref())?;
+    read_in_units_mode(path.as_ref(), target_units, tolerance, false)
+}
+
+fn read_in_units_mode(
+    path: &Path,
+    target_units: &LengthUnitSystem,
+    tolerance: Tolerance,
+    structural: bool,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let handle = read_handle_mode(path, structural)?;
     let source_units = decode_units(&handle)?;
     let scale = source_units.scale_to(target_units)?;
     let mut model = decode_model(&handle, tolerance, source_units, scale)?;
@@ -351,9 +385,14 @@ pub fn read_3dm_file_in_units(
             Point3::try_new(0.0, 0.0, 0.0)?,
             scale,
         )?;
-        for object in &mut model.objects {
+        for object in model.objects.iter_mut().chain(
+            model
+                .definitions
+                .iter_mut()
+                .flat_map(|definition| &mut definition.members),
+        ) {
             object.geometry =
-                crate::three_dm_units::transform_geometry(&object.geometry, transform, tolerance)?;
+                blocks::rescale_geometry(&object.geometry, transform, scale, tolerance)?;
         }
         for view in model.named_views.iter_mut().chain(
             model
@@ -449,13 +488,24 @@ fn scale_viewport_grid(viewport: &mut ThreeDmViewport, scale: f64) -> Result<(),
 }
 
 fn read_handle(path: &Path) -> Result<ModelHandle, ThreeDmError> {
+    read_handle_mode(path, false)
+}
+
+fn read_handle_mode(path: &Path, structural: bool) -> Result<ModelHandle, ThreeDmError> {
     let path = path_to_c_string(path)?;
     let mut error = [0 as c_char; ERROR_CAPACITY];
     let mut pointer = std::ptr::null_mut();
     // SAFETY: `path` and `error` are valid terminated buffers and `pointer`
     // points to writable storage. The bridge catches all C++ exceptions.
-    let success =
-        unsafe { ffi::vibo_3dm_read(path.as_ptr(), &mut pointer, error.as_mut_ptr(), error.len()) };
+    let success = unsafe {
+        ffi::vibo_3dm_read_mode(
+            path.as_ptr(),
+            u8::from(structural),
+            &mut pointer,
+            error.as_mut_ptr(),
+            error.len(),
+        )
+    };
     if success == 0 {
         return Err(native_error(&error));
     }
@@ -491,13 +541,36 @@ pub fn write_3dm_file(
         written_object_count: 0,
         adapted_curve_count: 0,
     };
+    let definition_bounds = blocks::definition_bounds(model)?;
+    let definition_names = model
+        .definitions
+        .iter()
+        .map(|definition| c_string(&definition.name, "block definition name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut definitions = Vec::new();
+    for (index, definition) in model.definitions.iter().enumerate() {
+        let first_object = prepared.len();
+        for object in &definition.members {
+            let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+            report.adapted_curve_count +=
+                usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
+            prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
+        }
+        definitions.push(ffi::ViboWriteDefinition {
+            name: definition_names[index].as_ptr(),
+            first_object,
+            object_count: prepared.len() - first_object,
+            bounds: definition_bounds[index],
+        });
+    }
+    let top_level_start = prepared.len();
     for object in &model.objects {
         let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
         report.adapted_curve_count +=
             usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
         prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
     }
-    report.written_object_count = prepared.len();
+    report.written_object_count = prepared.len() - top_level_start;
     let destination = path.as_ref();
     let staged = crate::staged_file::StagedFile::new(destination, ".3dm.tmp")?;
     let native_path = path_to_c_string(staged.path())?;
@@ -764,6 +837,9 @@ pub fn write_3dm_file(
             current_views.len(),
             pointer_or_null(&objects),
             objects.len(),
+            pointer_or_null(&definitions),
+            definitions.len(),
+            top_level_start,
             error.as_mut_ptr(),
             error.len(),
         )
@@ -921,11 +997,22 @@ fn decode_model(
             coordinate_scale,
         ) {
             Ok(object) => objects.push(object),
-            Err(ThreeDmError::Geometry(_)) => unsupported += 1,
+            Err(ThreeDmError::Geometry(error)) => {
+                // SAFETY: the decoded model and object index remain live.
+                if unsafe { ffi::vibo_3dm_object_placement_count(handle.0.as_ptr(), index) } > 0
+                    || unsafe { ffi::vibo_3dm_is_structural(handle.0.as_ptr()) } != 0
+                {
+                    return Err(ThreeDmError::InvalidModel(format!(
+                        "block member geometry cannot be decoded: {error}"
+                    )));
+                }
+                unsupported += 1;
+            }
             Err(error) => return Err(error),
         }
     }
-    Ok(ThreeDmModel {
+    let model = ThreeDmModel {
+        definitions: Vec::new(),
         tolerance: stored_tolerance,
         units,
         layers,
@@ -936,7 +1023,12 @@ fn decode_model(
         viewports,
         objects,
         unsupported_object_count: unsupported,
-    })
+        // SAFETY: handle owns the live decoded model.
+        expanded_instance_count: unsafe {
+            ffi::vibo_3dm_expanded_instance_count(handle.0.as_ptr())
+        },
+    };
+    blocks::decode_definitions(handle, model)
 }
 
 fn decode_named_views(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
@@ -1164,6 +1256,17 @@ fn decode_object(
     };
 
     let geometry = match info.object_type {
+        OBJECT_INSTANCE => {
+            if indices.len() != 1 || coordinates.len() != 16 {
+                return Err(ThreeDmError::MalformedBridge(
+                    "invalid instance reference payload",
+                ));
+            }
+            ThreeDmGeometry::InstanceReference {
+                definition_index: indices[0] as usize,
+                transform: blocks::affine(coordinates)?,
+            }
+        }
         OBJECT_POINT
             if coordinates.len() == 3
                 && knots_u.is_empty()
@@ -1366,6 +1469,7 @@ fn decode_object(
         }
         _ => return Err(ThreeDmError::MalformedBridge("inconsistent object payload")),
     };
+    let geometry = instances::apply(handle, index, geometry, tolerance, coordinate_scale)?;
     Ok(ThreeDmObject {
         geometry,
         layer_index,
@@ -1382,6 +1486,7 @@ fn decode_object(
 }
 
 fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+    blocks::validate(model)?;
     // Tolerance already guarantees finite positive components. These extra
     // OpenNURBS bounds must be checked before preparing geometry or opening a
     // staging file; the native boundary repeats validation defensively.
@@ -1484,7 +1589,17 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
             "more than one viewport is active".into(),
         ));
     }
-    for (index, object) in model.objects.iter().enumerate() {
+    for (index, object) in model
+        .objects
+        .iter()
+        .chain(
+            model
+                .definitions
+                .iter()
+                .flat_map(|definition| &definition.members),
+        )
+        .enumerate()
+    {
         let mut user_text_keys = BTreeSet::new();
         for (location, text) in [
             ("attribute", &object.user_text),
@@ -1572,6 +1687,23 @@ struct ObjectPayload {
 impl ObjectPayload {
     fn from_geometry(geometry: &ThreeDmGeometry) -> Result<Self, ThreeDmError> {
         Ok(match geometry {
+            ThreeDmGeometry::InstanceReference {
+                definition_index,
+                transform,
+            } => Self {
+                object_type: OBJECT_INSTANCE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: blocks::matrix(*transform).to_vec(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: vec![u32::try_from(*definition_index).map_err(|_| {
+                    ThreeDmError::InvalidModel("block index exceeds native range".into())
+                })?],
+                geometry_data: Vec::new(),
+            },
             ThreeDmGeometry::Point(point) => Self {
                 object_type: OBJECT_POINT,
                 degree_u: 0,
@@ -1832,6 +1964,13 @@ fn ffi_slice<T>(
 }
 
 mod ffi {
+    #[repr(C)]
+    pub struct ViboWriteDefinition {
+        pub name: *const c_char,
+        pub first_object: usize,
+        pub object_count: usize,
+        pub bounds: [f64; 6],
+    }
     use super::{c_char, c_double, c_int};
 
     #[repr(C)]
@@ -2003,11 +2142,22 @@ mod ffi {
     }
 
     unsafe extern "C" {
-        pub fn vibo_3dm_read(
+        pub fn vibo_3dm_read_mode(
             path: *const c_char,
+            structural: u8,
             output: *mut *mut ViboThreeDmModel,
             error: *mut c_char,
-            error_capacity: usize,
+            capacity: usize,
+        ) -> c_int;
+        pub fn vibo_3dm_is_structural(model: *const ViboThreeDmModel) -> u8;
+        pub fn vibo_3dm_definition_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_top_level_start(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_definition(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            name: *mut *const c_char,
+            first: *mut usize,
+            count: *mut usize,
         ) -> c_int;
         pub fn vibo_3dm_free(model: *mut ViboThreeDmModel);
         pub fn vibo_3dm_units(
@@ -2030,6 +2180,7 @@ mod ffi {
             locked: *mut u8,
         ) -> c_int;
         pub fn vibo_3dm_group_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_expanded_instance_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_group(
             model: *const ViboThreeDmModel,
             index: usize,
@@ -2055,6 +2206,16 @@ mod ffi {
             view: *mut ViboCurrentView,
         ) -> c_int;
         pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_object_placement_count(
+            model: *const ViboThreeDmModel,
+            index: usize,
+        ) -> usize;
+        pub fn vibo_3dm_object_placement(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            placement: usize,
+            matrix: *mut c_double,
+        ) -> c_int;
         pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_object(
             model: *const ViboThreeDmModel,
@@ -2110,6 +2271,9 @@ mod ffi {
             current_view_count: usize,
             objects: *const ViboWriteObject,
             object_count: usize,
+            definitions: *const ViboWriteDefinition,
+            definition_count: usize,
+            top_level_start: usize,
             error: *mut c_char,
             error_capacity: usize,
         ) -> c_int;

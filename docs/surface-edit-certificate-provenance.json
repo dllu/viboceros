@@ -1,0 +1,27 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted continuous qualification after single-face control-net edits.",
+  "full_rhino_parity": false,
+  "contract": [
+    "Nonrectangular fitted spatial images must certify complete normalized-parameter correspondence at one quarter of document absolute tolerance.",
+    "Existing bounded proposal fitting retains 4096 controls per image; dense image/use proofs have a 16000000-unit ceiling without changing degree/bit/depth/tolerance limits.",
+    "Every shared spatial edge certifies each trim use; singular edge removal requires a zero-error constant-image certificate."
+  ],
+  "limits": [
+    "Ordinary topology validation remains; no injectivity or global embedding certificate.",
+    "Mixed-weight/unsupported degree/domain or exhausted resource cases may reject earlier sampled-only proposals.",
+    "Retained native Smooth spatial witnesses remain sampled; no fresh native capture or timing claimed.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "crates/viboceros-geometry/src/brep/surface_edit.rs": "b742d1ed291f2c7695ddc01980eca4b1f607dadbbd9e4bfd95cd29a910836c1c",
+    "crates/viboceros-geometry/src/brep/surface_edit/tests.rs": "0a6ad2e7e9156b223fc6f9df7d3b53b683112e43e824f5dd23215b338556aee1",
+    "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/tests.rs": "3579b0959183bfe18a734240259785e792ea1f7210fa3dd6b283218dac2efd15",
+    "docs/block-instance-prior-source/crates/viboceros-document/src/smoothing.rs": "e648576183c6f23fa2ed9a18211fdeff8500672af55b0e7a25ca81dee50ad69e"
+  },
+  "source_snapshot_paths": {
+    "crates/viboceros-document/src/smoothing.rs": "docs/block-instance-prior-source/crates/viboceros-document/src/smoothing.rs"
+  }
+}

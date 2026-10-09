@@ -73,3 +73,89 @@ class RetrimPerformanceTests(TestCase):
         self.assertGreater(p['sphere_baseline_median_seconds'],p['sphere_optimized_median_seconds'])
         self.assertGreater(p['sphere_optimized_median_seconds'],p['sphere_rhino_median_seconds'])
         for name,digest in p['sha256'].items():self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+
+    def test_cached_profiles_retain_the_preceding_geometry_and_archived_source_hashes(self):
+        p=json.loads((ROOT/'docs/retrim-cache-provenance.json').read_text())
+        self.assertFalse(p['full_performance_parity'])
+        for suffix,case in p['cases'].items():
+            previous=json.loads((ROOT/('docs/retrim-performance-'+suffix+'.json')).read_text())
+            current=json.loads((ROOT/('docs/retrim-cache-'+suffix+'.json')).read_text())
+            self.assertEqual(previous['source_geometry'],current['source_geometry'])
+            self.assertEqual([r['geometry']for r in previous['runs']],[r['geometry']for r in current['runs']])
+            self.assertEqual(len(case['geometry_sha256']),3)
+        for name,digest in p['sha256'].items():
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+        self.assertEqual(len(p['source_snapshot_paths']),4)
+        for path in p['source_snapshot_paths']:
+            self.assertTrue(path.startswith('docs/retrim-cache-source/'))
+            self.assertIn(path,p['sha256'])
+        historical=json.loads((ROOT/'docs/retrim-performance-provenance.json').read_text())
+        self.assertEqual(historical['source_snapshot_commit'],'73553044')
+        self.assertEqual(len(historical['source_snapshot_paths']),6)
+        for path in historical['source_snapshot_paths']:
+            self.assertTrue(path.startswith('docs/retrim-performance-source-73553044/'))
+            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),historical['sha256'][path])
+
+    def test_prepared_surface_profiles_retain_outputs_and_case_specific_timings(self):
+        p=json.loads((ROOT/'docs/retrim-prepared-provenance.json').read_text())
+        self.assertFalse(p['full_performance_parity'])
+        self.assertEqual(set(p['cases']),{'sphere','swapped','cylinder'})
+        for suffix,case in p['cases'].items():
+            previous=json.loads((ROOT/('docs/retrim-cache-'+suffix+'.json')).read_text())
+            current=json.loads((ROOT/('docs/retrim-prepared-'+suffix+'.json')).read_text())
+            self.assertEqual(previous['source_geometry'],current['source_geometry'])
+            self.assertEqual([r['geometry']for r in previous['runs']],[r['geometry']for r in current['runs']])
+            self.assertEqual(len(current['runs']),3)
+            times=sorted(r['retrim_seconds']for r in current['runs'])
+            self.assertTrue(all(math.isfinite(t)and t>0 for t in times))
+            self.assertEqual(case['prepared_median_seconds'],times[1])
+            hashes=[hashlib.sha256(json.dumps(r['geometry'],sort_keys=True,separators=(',',':')).encode()).hexdigest()for r in current['runs']]
+            self.assertEqual(hashes,case['geometry_sha256'])
+        for name,digest in p['sha256'].items():
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+
+    def test_projection_reuse_profiles_preserve_prepared_outputs_and_source_snapshots(self):
+        p=json.loads((ROOT/'docs/retrim-projection-provenance.json').read_text())
+        self.assertFalse(p['full_performance_parity'])
+        self.assertEqual(set(p['cases']),{'sphere','swapped','cylinder'})
+        for suffix,case in p['cases'].items():
+            previous=json.loads((ROOT/('docs/retrim-prepared-'+suffix+'.json')).read_text())
+            current=json.loads((ROOT/('docs/retrim-projection-'+suffix+'.json')).read_text())
+            self.assertEqual(previous['source_geometry'],current['source_geometry'])
+            self.assertEqual([r['geometry']for r in previous['runs']],[r['geometry']for r in current['runs']])
+            self.assertEqual(len(current['runs']),3)
+            times=sorted(r['retrim_seconds']for r in current['runs'])
+            self.assertTrue(all(math.isfinite(t)and t>0 for t in times))
+            self.assertEqual(case['projection_median_seconds'],times[1])
+            hashes=[hashlib.sha256(json.dumps(r['geometry'],sort_keys=True,separators=(',',':')).encode()).hexdigest()for r in current['runs']]
+            self.assertEqual(hashes,case['geometry_sha256'])
+        for name,digest in p['sha256'].items():
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+        prepared=json.loads((ROOT/'docs/retrim-prepared-provenance.json').read_text())
+        self.assertEqual(len(prepared['source_snapshot_paths']),7)
+        for path in prepared['source_snapshot_paths']:
+            self.assertTrue(path.startswith('docs/retrim-prepared-source/'))
+            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),prepared['sha256'][path])
+
+    def test_cross_target_coefficient_profiles_preserve_outputs_and_historical_sources(self):
+        p=json.loads((ROOT/'docs/retrim-target-cache-provenance.json').read_text())
+        self.assertFalse(p['full_performance_parity'])
+        self.assertEqual(set(p['cases']),{'sphere','swapped','cylinder'})
+        for suffix,case in p['cases'].items():
+            previous=json.loads((ROOT/('docs/retrim-projection-'+suffix+'.json')).read_text())
+            current=json.loads((ROOT/('docs/retrim-target-cache-'+suffix+'.json')).read_text())
+            self.assertEqual(previous['source_geometry'],current['source_geometry'])
+            self.assertEqual([r['geometry']for r in previous['runs']],[r['geometry']for r in current['runs']])
+            self.assertEqual(len(current['runs']),3)
+            times=sorted(r['retrim_seconds']for r in current['runs'])
+            self.assertTrue(all(math.isfinite(t)and t>0 for t in times))
+            self.assertEqual(case['target_cache_median_seconds'],times[1])
+            hashes=[hashlib.sha256(json.dumps(r['geometry'],sort_keys=True,separators=(',',':')).encode()).hexdigest()for r in current['runs']]
+            self.assertEqual(hashes,case['geometry_sha256'])
+        for name,digest in p['sha256'].items():
+            self.assertEqual(hashlib.sha256((ROOT/name).read_bytes()).hexdigest(),digest,name)
+        previous=json.loads((ROOT/'docs/retrim-projection-provenance.json').read_text())
+        self.assertEqual(len(previous['source_snapshot_paths']),7)
+        for path in previous['source_snapshot_paths']:
+            self.assertTrue(path.startswith('docs/retrim-projection-source/'))
+            self.assertEqual(hashlib.sha256((ROOT/path).read_bytes()).hexdigest(),previous['sha256'][path])

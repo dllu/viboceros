@@ -3,8 +3,9 @@
 //! source whose wire the cursor approached. Collinear overlaps have no single
 //! intersection target.
 use super::{ObjectSnapCache, SnapMetric, projected_line, proximity};
-use std::collections::HashSet;
-use viboceros_document::{Document, Geometry, LayerId, ObjectId};
+#[cfg(test)]
+use viboceros_document::Document;
+use viboceros_document::{Geometry, ObjectId};
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, NurbsCurve, Point3, Real, Vector3,
 };
@@ -165,8 +166,8 @@ struct SourceChoice {
 }
 
 pub(super) fn visit(
-    document: &Document,
-    visible_layers: &HashSet<LayerId>,
+    sources: &super::block_sources::QuerySources<'_>,
+    tolerance: viboceros_geometry::Tolerance,
     mesh_edges: bool,
     metric: &impl SnapMetric,
     cache: &mut ObjectSnapCache,
@@ -176,9 +177,9 @@ pub(super) fn visit(
     let mut conics = Vec::new();
     let mut curved_nurbs = Vec::new();
     let mut has_surface = false;
-    for (order, object) in document.objects().enumerate() {
-        let attributes = object.attributes();
-        if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+    for (order, source) in sources.iter().enumerate() {
+        let object = source.object;
+        if !source.visible {
             continue;
         }
         let owner = object.id();
@@ -261,11 +262,14 @@ pub(super) fn visit(
             }
             Geometry::NurbsSurface(_) => {
                 has_surface = true;
-                for boundary in cache.geometry_curves(object, document.tolerance()) {
+                for boundary in cache.geometry_curves(object, tolerance) {
                     add_linear_nurbs(&boundary.curve, &mut add);
                 }
             }
-            Geometry::Mesh(_) | Geometry::Point(_) | Geometry::PointCloud(_) => {}
+            Geometry::Mesh(_)
+            | Geometry::Point(_)
+            | Geometry::PointCloud(_)
+            | Geometry::BlockInstance(_) => {}
         }
     }
     straight_pairs::visit(&segments, metric, emit);
@@ -307,15 +311,15 @@ pub(super) fn visit(
     }
     if has_surface {
         let mut surface_curves = Vec::new();
-        for (order, object) in document.objects().enumerate() {
-            let attributes = object.attributes();
-            if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+        for (order, source) in sources.iter().enumerate() {
+            let object = source.object;
+            if !source.visible {
                 continue;
             }
             if !matches!(object.geometry(), Geometry::NurbsSurface(_)) {
                 continue;
             }
-            for boundary in cache.geometry_curves(object, document.tolerance()) {
+            for boundary in cache.geometry_curves(object, tolerance) {
                 if let Some(curve) =
                     captured_curved_nurbs(object.id(), order, &boundary.curve, metric)
                 {

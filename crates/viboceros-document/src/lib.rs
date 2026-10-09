@@ -1,5 +1,15 @@
 //! In-memory CAD document model.
 
+mod block_creation;
+mod block_explosion;
+pub use block_explosion::PreparedBlockExplosion;
+mod block_instances;
+mod blocks;
+pub use block_instances::{BlockInsertionPoint, BlockInstance, BlockMemberDisplay};
+pub use blocks::{
+    BlockContent, BlockDefinition, BlockMember, BlockMemberLocation, BlockReference,
+    ResolvedBlockMember,
+};
 mod control_points;
 mod duplicate;
 pub use control_points::ControlPointId;
@@ -71,6 +81,7 @@ macro_rules! id_type {
 id_type!(ObjectId);
 id_type!(LayerId);
 id_type!(GroupId);
+id_type!(BlockDefinitionId);
 
 impl std::str::FromStr for ObjectId {
     type Err = uuid::Error;
@@ -148,6 +159,13 @@ pub struct ObjectAttributes {
 }
 
 impl ObjectAttributes {
+    /// Lossless file-state admission. Unlike interactive mode setters, imported
+    /// visibility and locking can be independently set by native attributes.
+    pub const fn with_file_state(mut self, visible: bool, locked: bool) -> Self {
+        self.visible = visible;
+        self.locked = locked;
+        self
+    }
     pub fn on_layer(layer_id: LayerId) -> Self {
         Self {
             name: None,
@@ -310,6 +328,19 @@ enum ObjectIsolation {
 }
 
 impl Object {
+    /// Detached immutable record for read-only geometry query adapters.
+    /// It has a fresh transient identity and is never admitted to a document.
+    /// Geometry storage is shared without orientation normalization or history.
+    pub fn geometry_query_proxy(geometry: GeometrySnapshot, layer: LayerId) -> Self {
+        Self {
+            id: ObjectId::new(),
+            geometry,
+            geometry_user_text: BTreeMap::new(),
+            attributes: ObjectAttributes::on_layer(layer),
+            isolation: ObjectIsolation::None,
+            group_ids: Vec::new(),
+        }
+    }
     /// Membership insertion order; the last entry is Rhino's top group.
     pub fn group_ids(&self) -> &[GroupId] {
         &self.group_ids
@@ -408,6 +439,7 @@ pub struct Document {
     current_layer: LayerId,
     objects: Vec<Object>,
     groups: Vec<Group>,
+    block_definitions: Vec<BlockDefinition>,
     selection: BTreeSet<ObjectId>,
     selection_order: Vec<ObjectId>,
     control_points: BTreeMap<ObjectId, control_points::ControlPoints>,
@@ -436,6 +468,7 @@ impl Document {
             current_layer,
             objects: Vec::new(),
             groups: Vec::new(),
+            block_definitions: Vec::new(),
             selection: BTreeSet::new(),
             selection_order: Vec::new(),
             control_points: BTreeMap::new(),
@@ -866,6 +899,12 @@ impl Document {
             .objects
             .iter()
             .any(|object| object.attributes.layer_id == id)
+            || self.block_definitions.iter().any(|definition| {
+                definition
+                    .members()
+                    .iter()
+                    .any(|member| member.attributes().layer_id() == id)
+            })
         {
             return Err(DocumentError::LayerNotEmpty(id));
         }
@@ -1479,9 +1518,19 @@ impl Document {
         transform: AffineTransform3,
         history: ReplacementHistory,
     ) -> Result<usize, DocumentError> {
-        let staged = self.stage_object_geometries(ids, |geometry| {
-            geometry.transformed_for_edit(transform, self.tolerance)
-        })?;
+        let indices = self.resolve_object_indices(ids)?;
+        for &index in &indices {
+            self.ensure_object_editable(&self.objects[index])?;
+        }
+        let staged = indices
+            .into_iter()
+            .map(|index| {
+                Ok((
+                    index,
+                    self.transformed_geometry_for_edit(&self.objects[index].geometry, transform)?,
+                ))
+            })
+            .collect::<Result<Vec<_>, DocumentError>>()?;
         self.commit_object_geometries(
             staged,
             "Transform objects",
@@ -1731,6 +1780,9 @@ impl Document {
     fn affected_object_ids(&self, edit: &Edit) -> BTreeSet<ObjectId> {
         match edit {
             Edit::ObjectsRemoved(removed) => removed.ids.clone(),
+            Edit::BlockDefinitionsChanged { instances, .. } => {
+                instances.iter().map(|(id, _)| *id).collect()
+            }
             Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
             Edit::GroupInserted { id, .. } | Edit::GroupDefinitionRetained { id } => self
                 .group(*id)
@@ -1835,6 +1887,20 @@ impl Default for Document {
 
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum DocumentError {
+    #[error("block explosion source changed after preparation")]
+    StaleBlockExplosion,
+    #[error("block explosion exceeds its output limit")]
+    BlockExplosionLimit,
+    #[error("object {0} is not a block instance")]
+    NotBlockInstance(ObjectId),
+    #[error("a block must contain at least one object")]
+    EmptyBlock,
+    #[error("group {0} is used by block definitions")]
+    GroupUsedByBlocks(GroupId),
+    #[error("invalid block catalog: {0}")]
+    InvalidBlockCatalog(&'static str),
+    #[error("block definition {0} was not found")]
+    BlockDefinitionNotFound(BlockDefinitionId),
     #[error("the incremental command's history changed; finish it and start again")]
     HistoryGroupStale,
     #[error("invalid user text: {0}")]

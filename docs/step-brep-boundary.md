@@ -177,6 +177,13 @@ and reversed rational UV paths. For isocurves, each crossed source curve span
 retains its own degree; the same rational reparameterization applies to its
 homogeneous controls before joining.
 
+All spline p-curve images now receive a final [continuous qualification](step-pcurve-certificates.md)
+against the original UV curve and surface at import tolerance. Affine mapping,
+isocurve extraction, rational reparameterization, rounded composition,
+knot-crossing alignment and span joining are proposals; inconclusive certificates
+reject the native import. Discontinuous surface components can be selected by exact
+control/knot slicing when the complete UV hull fits one right-sided component.
+
 `native_nurbs/curved_pcurve` lifts a higher-degree UV NURBS p-curve into exact
 Bézier spans. When one span's same-sign control hull fits a single surface
 knot rectangle, it composes the UV and tensor-product surface Bernstein bases
@@ -350,6 +357,11 @@ surface curves, parameter curves, and intersection curves. Source surfaces
 include elementary surfaces, sweeps, B-splines, and NURBS. Merely converting a
 surface's geometric locus is insufficient: its UV parameterization must match
 every trim, or trims must undergo the same verified parameter mapping.
+
+The [extrusion p-curve extension](step-extrusion-pcurves.md) adds certified diagonal
+and curved rational edge images on parameter-preserving linear extrusion bases.
+Its shared tensor constructor is also used for face conversion. Conic/angular
+directrices retain their preceding isocurve parameter policy.
 
 The general native instance path reuses assembly placement, unit conversion,
 import diagnostics, and document transactions from the planar path. It maps

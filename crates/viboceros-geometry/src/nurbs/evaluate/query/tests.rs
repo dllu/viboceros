@@ -55,15 +55,104 @@ fn curve_query_switches_spans_and_sides_without_mutating_the_curve() {
     let before = curve.clone();
     let mut query = CurveQuery::new(&curve);
     check(&mut query, &[0., 0.1, 0.3]);
-    assert!(matches!(query.active, Some((2, Prepared::Float(_)))));
+    assert!(matches!(query.state.active, Some((2, Prepared::Float(_)))));
     check(&mut query, &[0.5, 0.7, 1.]);
-    assert!(matches!(query.active, Some((5, Prepared::Exact(_)))));
+    assert!(matches!(query.state.active, Some((5, Prepared::Exact(_)))));
     check(
         &mut query,
         &[0.1, 0.5, 0.5_f64.next_down(), 0.5_f64.next_up(), 0.2],
     );
-    assert!(matches!(query.active, Some((2, Prepared::Float(_)))));
+    assert!(matches!(query.state.active, Some((2, Prepared::Float(_)))));
     assert_eq!(curve, before);
+}
+
+#[test]
+fn retained_curve_spans_match_public_jets_after_eviction_and_invalid_queries() {
+    let curve = NurbsCurve::try_clamped_uniform(
+        2,
+        (0..100)
+            .map(|i| p(i as Real, (i % 7) as Real, 0.))
+            .collect(),
+    )
+    .unwrap();
+    let before = curve.clone();
+    let mut query = CurveQuery::retaining_spans(&curve);
+    let stations = curve
+        .spans()
+        .map(|(a, b)| a.midpoint(b))
+        .collect::<Vec<_>>();
+    check(&mut query, &stations);
+    check(
+        &mut query,
+        &stations.iter().rev().copied().collect::<Vec<_>>(),
+    );
+    check(&mut query, &[Real::NAN, -1., Real::INFINITY, stations[0]]);
+    assert!(query.state.retained.as_ref().unwrap().len() <= 63);
+    assert_eq!(curve, before);
+    let signed = line([p(0., 0., 0.), p(1., 0., 0.)], [1., -2.], 1.5);
+    let mut query = CurveQuery::retaining_spans(&signed);
+    check(
+        &mut query,
+        &[0.25, 0.5, 0.5_f64.next_down(), 0.5_f64.next_up(), 0.25],
+    );
+}
+
+#[test]
+fn coefficient_state_transfer_preserves_public_jets_and_error_recovery() {
+    let signed = NurbsCurve::try_new_rational(
+        2,
+        (0..6)
+            .map(|i| {
+                WeightedPoint3::try_new(
+                    p(i as Real, (i * i) as Real, 0.),
+                    if i == 4 { -0.25 } else { 1. },
+                )
+                .unwrap()
+            })
+            .collect(),
+        vec![0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1.],
+    )
+    .unwrap();
+    let many = NurbsCurve::try_clamped_uniform(
+        2,
+        (0..100)
+            .map(|i| p(i as Real, (i % 7) as Real, 0.))
+            .collect(),
+    )
+    .unwrap();
+    for curve in [signed, many] {
+        let before = curve.clone();
+        let mut state = CurveQueryState::retaining_spans();
+        let stations = curve
+            .spans()
+            .map(|(a, b)| a.midpoint(b))
+            .collect::<Vec<_>>();
+        for pass in 0..4 {
+            let mut query = CurveQuery::with_state(&curve, state);
+            if pass % 2 == 0 {
+                check(&mut query, &stations);
+            } else {
+                check(
+                    &mut query,
+                    &stations.iter().rev().copied().collect::<Vec<_>>(),
+                );
+            }
+            check(&mut query, &[Real::NAN, -1., Real::INFINITY, 0., 0.5, 1.]);
+            state = query.into_state();
+            assert!(state.retained.as_ref().unwrap().len() <= 63);
+        }
+        assert_eq!(curve, before);
+    }
+    let pole = line([p(0., 0., 0.), p(1., 0., 0.)], [1., -2.], 1.5);
+    let mut state = CurveQueryState::retaining_spans();
+    for _ in 0..3 {
+        let mut query = CurveQuery::with_state(&pole, state);
+        check(
+            &mut query,
+            &[0.25, 0.5, 0.5_f64.next_down(), 0.5_f64.next_up(), 0.25],
+        );
+        state = query.into_state();
+    }
 }
 
 fn line(points: [Point3; 2], weights: [Real; 2], end: Real) -> NurbsCurve {
@@ -118,7 +207,7 @@ fn curve_query_derivative_failures_do_not_poison_point_or_lower_order_queries() 
             );
             let mut query = CurveQuery::new(&curve);
             check(&mut query, &[0., end * 0.25, end, 0.]);
-            assert!(matches!(query.active, Some((_, Prepared::Float(_)))));
+            assert!(matches!(query.state.active, Some((_, Prepared::Float(_)))));
             assert!(query.evaluate(0.).is_ok());
             if !constant && end == Real::from_bits(1) {
                 assert!(matches!(

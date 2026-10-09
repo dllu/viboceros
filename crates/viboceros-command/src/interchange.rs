@@ -2,7 +2,10 @@
 use super::{Command, CommandError};
 mod names;
 mod paths;
+mod structural_blocks;
 use names::ImportNames;
+#[cfg(test)]
+mod block_tests;
 #[cfg(test)]
 mod tests;
 use std::collections::{BTreeMap, BTreeSet};
@@ -262,8 +265,11 @@ impl Command for ImportThreeDmCommand {
             return Err(CommandError::Usage("Import3dm path"));
         }
         let path = arguments.join(" ");
-        let model =
-            viboceros_io::read_3dm_file_in_units(&path, document.units(), document.tolerance())?;
+        let model = viboceros_io::read_3dm_file_with_blocks_in_units(
+            &path,
+            document.units(),
+            document.tolerance(),
+        )?;
         import_3dm_model(document, &path, model, false)
     }
 }
@@ -334,7 +340,7 @@ pub fn open_3dm_with_views(path: &str) -> Result<Opened3dmWithViews, CommandErro
 pub fn open_3dm_with_views_and_cplanes(
     path: &str,
 ) -> Result<Opened3dmWithViewsAndCplanes, CommandError> {
-    let mut model = viboceros_io::read_3dm_file_with_model_tolerance(path)?;
+    let mut model = viboceros_io::read_3dm_file_with_blocks_model_tolerance(path)?;
     let views = std::mem::take(&mut model.named_views);
     let viewports = std::mem::take(&mut model.viewports);
     let cplanes = std::mem::take(&mut model.named_cplanes);
@@ -363,8 +369,11 @@ pub fn import_3dm_with_views_and_cplanes(
     document: &mut Document,
     path: &str,
 ) -> Result<(String, Vec<ThreeDmNamedView>, Vec<ThreeDmNamedCPlane>), CommandError> {
-    let mut model =
-        viboceros_io::read_3dm_file_in_units(path, document.units(), document.tolerance())?;
+    let mut model = viboceros_io::read_3dm_file_with_blocks_in_units(
+        path,
+        document.units(),
+        document.tolerance(),
+    )?;
     let views = std::mem::take(&mut model.named_views);
     let cplanes = std::mem::take(&mut model.named_cplanes);
     let message = super::run_command_transaction(document, "Import3dm", |document| {
@@ -380,8 +389,10 @@ fn import_3dm_model(
     reuse_default_layer: bool,
 ) -> Result<String, CommandError> {
     let unsupported = model.unsupported_object_count();
+    let expanded = model.expanded_instance_count();
     let layer_count = model.layers.len();
     let object_count = model.objects.len();
+    let definition_count = model.definitions.len();
 
     let mut imported_layers = Vec::with_capacity(layer_count);
     let mut layer_names = ImportNames::new(
@@ -406,33 +417,6 @@ fn import_3dm_model(
         imported_layers.push(id);
     }
 
-    let mut imported_objects = Vec::with_capacity(object_count);
-    for object in model.objects {
-        let layer_id = imported_layers[object.layer_index];
-        let mut attributes = ObjectAttributes::on_layer(layer_id)
-            .with_object_color(ColorRgb::new(
-                object.object_color[0],
-                object.object_color[1],
-                object.object_color[2],
-            ))
-            .with_color_source(document_color_source_from_3dm(object.color_source))
-            .with_visibility(object.visible)
-            .with_locked(object.locked)
-            .try_with_wire_density(object.wire_density)?;
-        if let Some(name) = object.name {
-            attributes = attributes.with_name(name);
-        }
-        for (key, value) in object.user_text {
-            attributes = attributes.try_with_user_text(key, value)?;
-        }
-        let id = document.add_geometry_with_metadata(
-            document_geometry_from_3dm(object.geometry),
-            attributes,
-            object.geometry_user_text,
-        )?;
-        imported_objects.push((id, object.group_indices));
-    }
-
     let mut imported_groups = Vec::with_capacity(model.groups.len());
     let mut group_names = ImportNames::new(
         document.groups().filter_map(|group| group.name()),
@@ -443,6 +427,38 @@ fn import_3dm_model(
         let name = group_names.allocate(&group.name);
         imported_groups.push(document.add_empty_group(Some(name))?);
     }
+    let imported_definitions = structural_blocks::import_definitions(
+        document,
+        model.definitions,
+        &imported_layers,
+        &imported_groups,
+    )?;
+    let mut imported_objects = Vec::with_capacity(object_count);
+    for object in model.objects {
+        let layer_id = imported_layers[object.layer_index];
+        let mut attributes = ObjectAttributes::on_layer(layer_id)
+            .with_object_color(ColorRgb::new(
+                object.object_color[0],
+                object.object_color[1],
+                object.object_color[2],
+            ))
+            .with_color_source(document_color_source_from_3dm(object.color_source))
+            .with_file_state(object.visible, object.locked)
+            .try_with_wire_density(object.wire_density)?;
+        if let Some(name) = object.name {
+            attributes = attributes.with_name(name);
+        }
+        for (key, value) in object.user_text {
+            attributes = attributes.try_with_user_text(key, value)?;
+        }
+        let id = document.add_geometry_with_metadata(
+            structural_blocks::import_geometry(document, object.geometry, &imported_definitions)?,
+            attributes,
+            object.geometry_user_text,
+        )?;
+        imported_objects.push((id, object.group_indices));
+    }
+
     for (id, memberships) in imported_objects {
         document.set_object_group_memberships(
             id,
@@ -477,8 +493,15 @@ fn import_3dm_model(
         document.set_layer_locked(id, source.locked)?;
     }
 
+    let expanded = if definition_count != 0 {
+        format!("; preserved {definition_count} block definitions")
+    } else if expanded == 0 {
+        String::new()
+    } else {
+        format!("; expanded {expanded} block references as independent geometry")
+    };
     Ok(format!(
-        "Imported {object_count} objects in {imported_group_count} groups on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
+        "Imported {object_count} objects in {imported_group_count} groups on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped){expanded}"
     ))
 }
 
@@ -665,11 +688,19 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         .enumerate()
         .map(|(index, group)| (group.id(), index))
         .collect::<BTreeMap<_, _>>();
+    let definition_indices = document
+        .block_definitions()
+        .enumerate()
+        .map(|(index, definition)| (definition.id(), index))
+        .collect::<BTreeMap<_, _>>();
     let objects = document
         .objects()
         .map(|object| {
             Ok(ThreeDmObject {
-                geometry: geometry_to_3dm(object.geometry())?,
+                geometry: structural_blocks::export_geometry(
+                    object.geometry(),
+                    &definition_indices,
+                )?,
                 layer_index: layer_indices[&object.attributes().layer_id()],
                 name: object.attributes().name().map(str::to_owned),
                 user_text: object.attributes().user_text().clone(),
@@ -693,6 +724,12 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         })
         .collect::<Result<_, CommandError>>()?;
     let mut model = ThreeDmModel::new(layers, groups, objects);
+    model.definitions = structural_blocks::export_definitions(
+        document,
+        &definition_indices,
+        &layer_indices,
+        &group_indices,
+    )?;
     model.current_layer_index = Some(layer_indices[&document.current_layer_id()]);
     model.units = document.units().clone();
     model.tolerance = document.tolerance();
@@ -734,6 +771,14 @@ const fn three_dm_color_source_from_document(source: ObjectColorSource) -> Three
 
 pub(super) fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError> {
     Ok(match geometry {
+        Geometry::BlockInstance(_) => {
+            return Err(
+                viboceros_geometry::GeometryError::UnsupportedBlockInstanceOperation {
+                    operation: "3DM export",
+                }
+                .into(),
+            );
+        }
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
@@ -751,6 +796,9 @@ pub(super) fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, Co
 
 pub(super) fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry {
     match geometry {
+        ThreeDmGeometry::InstanceReference { .. } => {
+            unreachable!("reference conversion requires a document catalog")
+        }
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),

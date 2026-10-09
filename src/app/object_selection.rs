@@ -78,7 +78,7 @@ impl PendingObjectCommand {
             return if matches!(self.phase, ObjectPromptPhase::RebuildValue(_)) {
                 "Enter an option value; Enter keeps it, Esc cancels"
             } else {
-                "Edit U/V counts, degrees or output options; Enter rebuilds, Esc cancels"
+                "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
         if self.description.command == "Circle FitPoints" {
@@ -552,6 +552,20 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self
+            .object_prompt
+            .as_ref()
+            .is_some_and(|pending| pending.description.command == "ExplodeBlock")
+            && input
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("AllBlocks")
+        {
+            let pending = self.object_prompt.take().unwrap();
+            let command = format!("{} AllBlocks", pending.description.command_line());
+            self.command_input.clear();
+            self.execute_command(&command);
+            return true;
+        }
         if self.continue_rebuild_options(input) {
             return true;
         }

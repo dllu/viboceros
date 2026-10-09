@@ -37,6 +37,68 @@ fn quadratic(gauge: Real, domain: [Real; 2], offset: Real) -> NurbsCurve {
 }
 
 #[test]
+fn prepared_surface_bounds_match_independent_proofs_and_recover_after_rejection() {
+    let source = warped();
+    let before = source.clone();
+    let mut prepared = source.prepare_surface_curve_bounds().unwrap().unwrap();
+    for _ in 0..3 {
+        for gauge in [1., -2., 1e-280] {
+            let uv = diagonal(gauge, [1e9, 1e9 + 4.]);
+            for offset in [0., 1. / 1024., 1.] {
+                let spatial = quadratic(-gauge, [-1e300, 1e300], offset);
+                for limit in [0., 1e-6, 1. / 1024.] {
+                    assert_eq!(
+                        prepared.bound(&uv, &spatial, limit).unwrap(),
+                        source
+                            .parameter_curve_deviation_bound(&uv, &spatial, limit)
+                            .unwrap()
+                    );
+                }
+            }
+        }
+        let uv = diagonal(1., [0., 1.]);
+        let spatial = quadratic(1., [0., 1.], 0.);
+        assert!(matches!(
+            prepared.bound(&uv, &spatial, Real::NAN),
+            Err(GeometryError::InvalidTolerance)
+        ));
+        assert_eq!(prepared.bound(&uv, &spatial, 0.).unwrap(), Some(0.));
+    }
+    assert_eq!(source, before);
+}
+
+#[test]
+fn explicit_dense_proof_budget_remains_bounded_and_does_not_weaken_tolerance() {
+    let source = warped();
+    let uv = diagonal(1., [0., 1.]);
+    let exact = quadratic(1., [0., 1.], 0.);
+    let shifted = quadratic(1., [0., 1.], 1. / 1024.);
+    let mut prepared = source.prepare_surface_curve_bounds().unwrap().unwrap();
+    assert!(matches!(
+        prepared.bound_with_work_limit(&uv, &exact, 0., 0),
+        Err(GeometryError::SurfaceCurveCertificateWorkLimit)
+    ));
+    assert_eq!(
+        prepared
+            .bound_with_work_limit(&uv, &exact, 0., 16_000_000)
+            .unwrap(),
+        Some(0.)
+    );
+    assert_eq!(
+        prepared
+            .bound_with_work_limit(&uv, &shifted, 1e-6, 16_000_000)
+            .unwrap(),
+        None
+    );
+    assert_eq!(
+        prepared
+            .bound_with_work_limit(&uv, &shifted, 1. / 1024., 16_000_000)
+            .unwrap(),
+        Some(1. / 1024.)
+    );
+}
+
+#[test]
 fn exact_warped_images_ignore_weight_gauges_and_curve_domain_scales() {
     for gauge in [1., -2., 1e-280, -1e280] {
         let uv = diagonal(gauge, [1e9, 1e9 + 4.]);

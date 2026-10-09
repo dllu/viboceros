@@ -41,6 +41,19 @@ impl Budget {
 }
 
 impl NurbsSurface {
+    pub(crate) fn prepare_surface_curve_bounds(
+        &self,
+    ) -> Result<Option<PreparedSurfaceCurveBounds<'_>>, GeometryError> {
+        let mut budget = Budget(MAX_WORK);
+        let Some(surface) = surface::Surface::new(self, &mut budget)? else {
+            return Ok(None);
+        };
+        Ok(Some(PreparedSurfaceCurveBounds {
+            source: self,
+            surface,
+            initial_work: MAX_WORK - budget.0,
+        }))
+    }
     /// Certifies a continuous model-space error bound between `self(uv(t))`
     /// and `spatial(t)`, with both curve domains mapped affinely to [0,1].
     /// `Some(bound)` proves the entire correspondence is within `limit`.
@@ -145,6 +158,59 @@ impl NurbsSurface {
     }
 }
 
+/// Immutable surface extraction/patch caches are shared across independent proofs.
+/// Every proposal still owns a fresh, unchanged rational work limit.
+pub(crate) struct PreparedSurfaceCurveBounds<'a> {
+    source: &'a NurbsSurface,
+    surface: surface::Surface,
+    initial_work: usize,
+}
+impl PreparedSurfaceCurveBounds<'_> {
+    pub(crate) fn bound(
+        &mut self,
+        uv: &NurbsCurve2,
+        spatial: &NurbsCurve,
+        limit: Real,
+    ) -> Result<Option<Real>, GeometryError> {
+        self.bound_with_work_limit(uv, spatial, limit, MAX_WORK)
+    }
+    /// Internal dense-trim admission. Arithmetic/degree/depth limits stay fixed;
+    /// callers retain an explicit aggregate work ceiling.
+    pub(crate) fn bound_with_work_limit(
+        &mut self,
+        uv: &NurbsCurve2,
+        spatial: &NurbsCurve,
+        limit: Real,
+        work: usize,
+    ) -> Result<Option<Real>, GeometryError> {
+        if !limit.is_finite() || limit < 0. {
+            return Err(GeometryError::InvalidTolerance);
+        }
+        if let Some(bound) = affine::bound(self.source, uv, spatial, limit)? {
+            return Ok(Some(bound));
+        }
+        if !supported(self.source, uv.degree(), spatial.degree()) {
+            return Ok(None);
+        }
+        let mut budget = Budget(work);
+        budget.charge(self.initial_work)?;
+        let Some(reference) = curve::Spline::spatial(spatial, &mut budget)? else {
+            return Ok(None);
+        };
+        let Some(parameters) = curve::Spline::uv(uv, &mut budget)? else {
+            return Ok(None);
+        };
+        complete_curve_bound(
+            &mut self.surface,
+            &reference,
+            &parameters,
+            uv.degree(),
+            limit,
+            &mut budget,
+        )
+    }
+}
+
 fn supported(surface: &NurbsSurface, uv_degree: usize, spatial_degree: usize) -> bool {
     uv_degree <= MAX_DEGREE
         && spatial_degree <= MAX_IMAGE_DEGREE
@@ -213,37 +279,14 @@ impl PullbackCertificate {
         let Some(uv) = curve::Spline::uv(uv, &mut self.budget)? else {
             return Ok(None);
         };
-        let mut cuts = uv.cuts();
-        cuts.sort();
-        cuts.dedup();
-        if self.uv_degree == 1 {
-            let mut crossings = Vec::new();
-            for interval in cuts.windows(2) {
-                let controls = uv.extract(&interval[0], &interval[1], &mut self.budget)?;
-                for fraction in self.surface.linear_crossings(&controls, &mut self.budget)? {
-                    let t = &interval[0] + (&interval[1] - &interval[0]) * fraction;
-                    self.budget.check(&t)?;
-                    crossings.push(t);
-                }
-            }
-            cuts.extend(crossings);
-        }
-        cuts.extend(self.spatial.cuts());
-        cuts.sort();
-        cuts.dedup();
-        let mut bound = 0_f64;
-        for interval in cuts.windows(2) {
-            let uv = uv.extract(&interval[0], &interval[1], &mut self.budget)?;
-            let spatial = self
-                .spatial
-                .extract(&interval[0], &interval[1], &mut self.budget)?;
-            let Some(upper) = piece_bound(&mut self.surface, uv, spatial, limit, &mut self.budget)?
-            else {
-                return Ok(None);
-            };
-            bound = bound.max(upper);
-        }
-        Ok(Some(bound))
+        complete_curve_bound(
+            &mut self.surface,
+            &self.spatial,
+            &uv,
+            self.uv_degree,
+            limit,
+            &mut self.budget,
+        )
     }
 
     pub(super) fn segment(
@@ -373,6 +416,44 @@ fn piece_bound_with_interval(
         let (sa, sb) = algebra::split(&spatial, budget)?;
         pending.push((ub, sb, depth + 1));
         pending.push((ua, sa, depth + 1));
+    }
+    Ok(Some(bound))
+}
+
+fn complete_curve_bound(
+    surface: &mut surface::Surface,
+    spatial: &curve::Spline<4>,
+    uv: &curve::Spline<3>,
+    uv_degree: usize,
+    limit: Real,
+    budget: &mut Budget,
+) -> Result<Option<Real>, GeometryError> {
+    let mut cuts = uv.cuts();
+    cuts.sort();
+    cuts.dedup();
+    if uv_degree == 1 {
+        let mut crossings = Vec::new();
+        for interval in cuts.windows(2) {
+            let controls = uv.extract(&interval[0], &interval[1], budget)?;
+            for fraction in surface.linear_crossings(&controls, budget)? {
+                let t = &interval[0] + (&interval[1] - &interval[0]) * fraction;
+                budget.check(&t)?;
+                crossings.push(t);
+            }
+        }
+        cuts.extend(crossings);
+    }
+    cuts.extend(spatial.cuts());
+    cuts.sort();
+    cuts.dedup();
+    let mut bound = 0_f64;
+    for interval in cuts.windows(2) {
+        let uv = uv.extract(&interval[0], &interval[1], budget)?;
+        let spatial = spatial.extract(&interval[0], &interval[1], budget)?;
+        let Some(upper) = piece_bound(surface, uv, spatial, limit, budget)? else {
+            return Ok(None);
+        };
+        bound = bound.max(upper);
     }
     Ok(Some(bound))
 }

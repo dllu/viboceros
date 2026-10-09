@@ -1,9 +1,13 @@
 #include "viboceros_opennurbs.h"
+#include <map>
 
 #include "opennurbs_public.h"
 #include "rational_coordinates.h"
 
 #include <algorithm>
+#include <array>
+#include <functional>
+#include <iterator>
 #include <cmath>
 #include <cstring>
 #include <exception>
@@ -48,6 +52,7 @@ struct BridgeCurrentView {
 };
 
 struct BridgeObject {
+  std::vector<std::array<double,16>> placements;
   int32_t object_type = 0;
   int32_t source_layer_index = 0;
   std::string name;
@@ -71,6 +76,8 @@ struct BridgeObject {
   std::vector<std::pair<std::string, std::string>> user_text;
   std::vector<std::pair<std::string, std::string>> geometry_user_text;
 };
+
+struct BridgeDefinition { std::string name; size_t first_object=0; size_t object_count=0; };
 
 std::once_flag g_open_nurbs_once;
 
@@ -1803,9 +1810,77 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
   }
 }
 
+bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
+      read_user_text(*geometry, object.geometry_user_text);
+      if (attributes != nullptr) {
+        object.source_layer_index = attributes->m_layer_index;
+        object.name = utf8(attributes->Name());
+        object.visible = static_cast<uint8_t>(attributes->IsVisible());
+        object.locked = static_cast<uint8_t>(attributes->Mode() ==
+                                             ON::locked_object);
+        object.color_source =
+            static_cast<uint8_t>(attributes->ColorSource());
+        object.color_red = static_cast<uint8_t>(attributes->m_color.Red());
+        object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
+        object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
+        object.wire_density = attributes->m_wire_density;
+        read_user_text(*attributes, object.user_text);
+        const int group_count = attributes->GroupCount();
+        const int* group_list = attributes->GroupList();
+        if (group_count > 0 && group_list == nullptr) {
+          return false;
+        }
+        object.group_indices.reserve(static_cast<size_t>(group_count));
+        for (int group_position = 0; group_position < group_count;
+             ++group_position) {
+          object.group_indices.push_back(
+              static_cast<int32_t>(group_list[group_position]));
+        }
+      }
+      return true;
+}
+
+bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
+      if(!read_geometry_metadata(geometry,attributes,object)) return false;
+      bool supported = false;
+      if (const ON_Point* point = ON_Point::Cast(geometry)) {
+        supported = append_point(*point, object);
+      } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
+        supported = append_point_cloud(*cloud, object);
+      } else if (const ON_LineCurve* line = ON_LineCurve::Cast(geometry)) {
+        supported = append_line(*line, object);
+      } else if (const ON_Brep* brep = ON_Brep::Cast(geometry)) {
+        supported = append_brep(*brep, object);
+      } else if (const ON_Mesh* mesh = ON_Mesh::Cast(geometry)) {
+        supported = append_mesh(*mesh, object);
+      } else if (const ON_PolyCurve* curve = ON_PolyCurve::Cast(geometry)) {
+        supported = append_polycurve(*curve, object);
+      } else if (const ON_PolylineCurve* curve = ON_PolylineCurve::Cast(geometry)) {
+        supported = append_polyline(*curve, object);
+      } else if (const ON_ArcCurve* curve = ON_ArcCurve::Cast(geometry)) {
+        object.object_type = VIBO_OBJECT_ARC;
+        ByteWriter writer(object.geometry_data);
+        writer.U32(1);
+        supported = curve->IsValid() && write_curve_segment(*curve, writer);
+      } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
+        supported = append_nurbs(*curve, object);
+      } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {
+        supported = append_nurbs_surface(*surface, object);
+      }
+
+      return supported;
+}
+
+#include "instance_read.h"
+#include "structural_blocks.h"
+
 }  // namespace
 
 struct ViboThreeDmModel {
+  std::vector<BridgeDefinition> definitions;
+  DefinitionIndex definition_index;
+  size_t top_level_start=0;
+  bool structural=false;
   double absolute_tolerance = 0.001;
   double relative_tolerance = 0.01;
   double angle_tolerance = ON_PI / 180.0;
@@ -1820,9 +1895,10 @@ struct ViboThreeDmModel {
   std::vector<BridgeCurrentView> current_views;
   std::vector<BridgeObject> objects;
   size_t unsupported_object_count = 0;
+  size_t expanded_instance_count = 0;
 };
 
-extern "C" int32_t vibo_3dm_read(const char* path,
+extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
                                   ViboThreeDmModel** output, char* error,
                                   size_t error_capacity) {
   if (output != nullptr) {
@@ -1958,6 +2034,9 @@ extern "C" int32_t vibo_3dm_read(const char* path,
       decoded->current_views.push_back(std::move(view));
     }
 
+    decoded->structural=structural!=0;
+    if(structural && !read_structural_blocks(source, decoded->definitions, decoded->definition_index, decoded->objects, error, error_capacity)) return 0;
+    decoded->top_level_start=decoded->objects.size();
     ONX_ModelComponentIterator object_iterator(
         source, ON_ModelComponent::Type::ModelGeometry);
     for (const ON_ModelComponent* component = object_iterator.FirstComponent();
@@ -1974,66 +2053,27 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         continue;
       }
 
-      BridgeObject object;
-      read_user_text(*geometry, object.geometry_user_text);
-      if (const ON_3dmObjectAttributes* attributes =
-              model_geometry->Attributes(nullptr)) {
-        object.source_layer_index = attributes->m_layer_index;
-        object.name = utf8(attributes->Name());
-        object.visible = static_cast<uint8_t>(attributes->IsVisible());
-        object.locked = static_cast<uint8_t>(attributes->Mode() ==
-                                             ON::locked_object);
-        object.color_source =
-            static_cast<uint8_t>(attributes->ColorSource());
-        object.color_red = static_cast<uint8_t>(attributes->m_color.Red());
-        object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
-        object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
-        object.wire_density = attributes->m_wire_density;
-        read_user_text(*attributes, object.user_text);
-        const int group_count = attributes->GroupCount();
-        const int* group_list = attributes->GroupList();
-        if (group_count > 0 && group_list == nullptr) {
+      const auto* attrs=model_geometry->Attributes(nullptr);
+      if(attrs!=nullptr && attrs->IsInstanceDefinitionObject()) continue;
+      if(structural){
+        BridgeObject object;
+        if(!read_structural_object(decoded->definition_index, geometry, attrs, object, error, error_capacity)){
+          if(ON_InstanceRef::Cast(geometry)!=nullptr) return 0;
           ++decoded->unsupported_object_count;
-          continue;
-        }
-        object.group_indices.reserve(static_cast<size_t>(group_count));
-        for (int group_position = 0; group_position < group_count;
-             ++group_position) {
-          object.group_indices.push_back(
-              static_cast<int32_t>(group_list[group_position]));
-        }
+        }else decoded->objects.push_back(std::move(object));
+        continue;
       }
-
-      bool supported = false;
-      if (const ON_Point* point = ON_Point::Cast(geometry)) {
-        supported = append_point(*point, object);
-      } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
-        supported = append_point_cloud(*cloud, object);
-      } else if (const ON_LineCurve* line = ON_LineCurve::Cast(geometry)) {
-        supported = append_line(*line, object);
-      } else if (const ON_Brep* brep = ON_Brep::Cast(geometry)) {
-        supported = append_brep(*brep, object);
-      } else if (const ON_Mesh* mesh = ON_Mesh::Cast(geometry)) {
-        supported = append_mesh(*mesh, object);
-      } else if (const ON_PolyCurve* curve = ON_PolyCurve::Cast(geometry)) {
-        supported = append_polycurve(*curve, object);
-      } else if (const ON_PolylineCurve* curve = ON_PolylineCurve::Cast(geometry)) {
-        supported = append_polyline(*curve, object);
-      } else if (const ON_ArcCurve* curve = ON_ArcCurve::Cast(geometry)) {
-        object.object_type = VIBO_OBJECT_ARC;
-        ByteWriter writer(object.geometry_data);
-        writer.U32(1);
-        supported = curve->IsValid() && write_curve_segment(*curve, writer);
-      } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
-        supported = append_nurbs(*curve, object);
-      } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {
-        supported = append_nurbs_surface(*surface, object);
-      }
-
-      if (supported) {
-        decoded->objects.push_back(std::move(object));
-      } else {
+      std::vector<BridgeObject> staged;
+      std::vector<ON_UUID> active;
+      std::vector<std::array<double,16>> placements;
+      std::string instance_error;
+      size_t visits=0;
+      if(!read_instance_geometry(source,*model_geometry,nullptr,placements,active,staged,instance_error,visits)) {
+        if(!instance_error.empty()){set_error(error,error_capacity,instance_error);return 0;}
         ++decoded->unsupported_object_count;
+      } else {
+        if(ON_InstanceRef::Cast(geometry)!=nullptr)++decoded->expanded_instance_count;
+        decoded->objects.insert(decoded->objects.end(),std::make_move_iterator(staged.begin()),std::make_move_iterator(staged.end()));
       }
     }
 
@@ -2048,6 +2088,17 @@ extern "C" int32_t vibo_3dm_read(const char* path,
     set_error(error, error_capacity, "unknown OpenNURBS exception");
     return 0;
   }
+}
+
+extern "C" int32_t vibo_3dm_read(const char* path,ViboThreeDmModel** output,char* error,size_t capacity){
+  return vibo_3dm_read_mode(path,0,output,error,capacity);
+}
+extern "C" uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model){return model!=nullptr&&model->structural;}
+extern "C" size_t vibo_3dm_definition_count(const ViboThreeDmModel* model){return model==nullptr?0:model->definitions.size();}
+extern "C" size_t vibo_3dm_top_level_start(const ViboThreeDmModel* model){return model==nullptr?0:model->top_level_start;}
+extern "C" int32_t vibo_3dm_definition(const ViboThreeDmModel* model,size_t index,const char** name,size_t* first,size_t* count){
+  if(model==nullptr||index>=model->definitions.size()||name==nullptr||first==nullptr||count==nullptr)return 0;
+  const auto& definition=model->definitions[index];*name=definition.name.c_str();*first=definition.first_object;*count=definition.object_count;return 1;
 }
 
 extern "C" void vibo_3dm_free(ViboThreeDmModel* model) { delete model; }
@@ -2083,6 +2134,9 @@ extern "C" int32_t vibo_3dm_layer(
 
 extern "C" size_t vibo_3dm_group_count(const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->groups.size();
+}
+extern "C" size_t vibo_3dm_expanded_instance_count(const ViboThreeDmModel* model){
+  return model==nullptr?0:model->expanded_instance_count;
 }
 
 extern "C" int32_t vibo_3dm_group(const ViboThreeDmModel* model,
@@ -2194,6 +2248,14 @@ extern "C" int32_t vibo_3dm_object(
   return 1;
 }
 
+extern "C" size_t vibo_3dm_object_placement_count(const ViboThreeDmModel* model,size_t index){
+  return model==nullptr||index>=model->objects.size()?0:model->objects[index].placements.size();
+}
+extern "C" int32_t vibo_3dm_object_placement(const ViboThreeDmModel* model,size_t index,size_t placement,double* matrix){
+  if(model==nullptr||index>=model->objects.size()||matrix==nullptr||placement>=model->objects[index].placements.size())return 0;
+  std::copy(model->objects[index].placements[placement].begin(),model->objects[index].placements[placement].end(),matrix);return 1;
+}
+
 extern "C" size_t vibo_3dm_object_user_text_count(
     const ViboThreeDmModel* model, size_t index) {
   return model == nullptr || index >= model->objects.size()
@@ -2265,7 +2327,8 @@ extern "C" int32_t vibo_3dm_write(
     const ViboNamedView* named_views, size_t named_view_count,
     const ViboNamedCPlane* named_cplanes, size_t named_cplane_count,
     const ViboCurrentView* current_views, size_t current_view_count,
-    const ViboWriteObject* objects, size_t object_count, char* error,
+    const ViboWriteObject* objects, size_t object_count,
+    const ViboWriteDefinition* definitions, size_t definition_count, size_t top_level_start, char* error,
     size_t error_capacity) {
   if (path == nullptr || path[0] == '\0' ||
       (layer_count != 0 && layers == nullptr) ||
@@ -2276,7 +2339,7 @@ extern "C" int32_t vibo_3dm_write(
       (named_view_count != 0 && named_views == nullptr) ||
       (named_cplane_count != 0 && named_cplanes == nullptr) ||
       (current_view_count != 0 && current_views == nullptr) ||
-      (object_count != 0 && objects == nullptr)) {
+      (object_count != 0 && objects == nullptr) || (definition_count != 0 && definitions == nullptr) || top_level_start>object_count) {
     set_error(error, error_capacity, "path and input arrays are required");
     return 0;
   }
@@ -2464,6 +2527,10 @@ extern "C" int32_t vibo_3dm_write(
       group_indices.push_back(added->Index());
     }
 
+    std::vector<ON_UUID> definition_ids(definition_count);
+    for(auto& id:definition_ids) ON_CreateUuid(id);
+    std::vector<ON_UUID> geometry_ids;
+    geometry_ids.reserve(object_count);
     for (size_t index = 0; index < object_count; ++index) {
       const ViboWriteObject& source = objects[index];
       if (source.layer_index >= layer_indices.size()) {
@@ -2506,7 +2573,9 @@ extern "C" int32_t vibo_3dm_write(
         return 0;
       }
       std::string geometry_error;
-      ON_Object* geometry = geometry_for(source, geometry_error);
+      ON_Object* geometry = source.object_type==VIBO_OBJECT_INSTANCE
+          ? structural_instance_for(source, definition_ids, definitions, geometry_error)
+          : geometry_for(source, geometry_error);
       if (geometry == nullptr) {
         set_error(error, error_capacity,
                   "object " + std::to_string(index) + ": " + geometry_error);
@@ -2529,6 +2598,8 @@ extern "C" int32_t vibo_3dm_write(
                       ": object name is invalid");
         return 0;
       }
+      if(index<top_level_start) attributes->SetMode(ON::idef_object);
+      if(!source.visible){ON_3dmObjectAttributes hidden;hidden.SetMode(ON::hidden_object);attributes->ApplyParentalControl(hidden,ON_Layer::Default,0x01U);}
       for (size_t group_position = 0;
            group_position < source.group_index_count; ++group_position) {
         attributes->AddToGroup(
@@ -2541,7 +2612,10 @@ extern "C" int32_t vibo_3dm_write(
                   "OpenNURBS could not add object " + std::to_string(index));
         return 0;
       }
+      geometry_ids.push_back(reference.ModelComponent()->Id());
     }
+
+    if(!write_structural_definitions(model, definitions, definition_count, definition_ids, geometry_ids, top_level_start, error, error_capacity)) return 0;
 
     ON_wString diagnostics;
     ON_TextLog log(diagnostics);

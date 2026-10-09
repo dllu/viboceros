@@ -1,0 +1,34 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted non-isoparametric STEP extrusion p-curve edge support.",
+  "full_native_parity": false,
+  "contract": [
+    "Diagonal/curved UV paths on parameter-preserving linear extrusion bases construct native spatial images through certified pushup at import tolerance.",
+    "Faces and new edge images share native tensor patch construction, retaining directrix and p-curve domains.",
+    "Existing affine-line and conic/angular isocurve paths retain their preceding policy."
+  ],
+  "evidence": [
+    "Two direct tests cover spline/parameter-curve directrices, reversed/signed rational paths, knot crossings, constant V and invalid charts.",
+    "Serialized polynomial/rational extrusion triangles import editable surfaces, preserve trim domains and independently certify every returned oriented trim/edge.",
+    "Existing diagonal extrusion rejections now compare successful source-evaluation loci; affine regression remains."
+  ],
+  "limits": [
+    "UV hull admission and ordinary pushup resource/degree/weight limits apply.",
+    "Conic/angular non-isoparametric paths need a verified parameter mapping.",
+    "No fresh Rhino cross-reader or timing evidence.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/native_nurbs.rs": "2dcd6c1101c9f00d71bee2b7b5f604857238c70a96fe4aaa83b43c584ecea61c",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/native_nurbs/extrusion.rs": "6372b8bcd3022d5d671653b4b0262264d1fc36d4d0e08b447343fe8d2f484250",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/tests.rs": "b5ab6beb266ee8103fd0bbabb4449ebd02e35f48b4aed4be4b599d2d652c15d3",
+    "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/tests/extrusion_pcurves.rs": "9cd2d6694a871fc1d61b3c0cb224702b11bd8f668958a869581dde5b353ad1cf"
+  },
+  "source_snapshot_paths": {
+    "crates/viboceros-io/src/step/native_nurbs.rs": "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/native_nurbs.rs",
+    "crates/viboceros-io/src/step/native_nurbs/extrusion.rs": "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/native_nurbs/extrusion.rs",
+    "crates/viboceros-io/src/step/tests.rs": "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/tests.rs",
+    "crates/viboceros-io/src/step/tests/extrusion_pcurves.rs": "docs/three-dm-structural-prior-source/crates/viboceros-io/src/step/tests/extrusion_pcurves.rs"
+  }
+}

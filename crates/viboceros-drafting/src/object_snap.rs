@@ -1,4 +1,5 @@
 //! Visible-feature snap enumeration, projection metrics, and priority ordering.
+mod block_sources;
 mod cache;
 #[cfg(test)]
 mod capture_tests;
@@ -439,18 +440,12 @@ fn nearest_object_snap_with_metric(
     if modes == ObjectSnapModes::NONE {
         return Ok(None);
     }
-    cache.retain_objects(document);
-    // Visibility lookups must not scan every layer for every object. Locked
-    // geometry remains eligible for snapping, independently of selection rules.
-    let visible_layers: std::collections::HashSet<_> = document
-        .layers()
-        .filter(|layer| layer.is_visible())
-        .map(|layer| layer.id())
-        .collect();
+    let sources = cache.blocks.collect(document)?;
+    cache.retain_objects(&sources);
     let mut best = None;
-    for object in document.objects() {
-        let attributes = object.attributes();
-        if !attributes.is_visible() || !visible_layers.contains(&attributes.layer_id()) {
+    for source in sources.iter() {
+        let object = source.object;
+        if !source.visible {
             continue;
         }
         if matches!(object.geometry(), Geometry::Mesh(_)) {
@@ -461,7 +456,7 @@ fn nearest_object_snap_with_metric(
                     options.mesh_edges,
                     metric,
                     &mut |kind, point, distance| {
-                        consider_scored_candidate(&mut best, object.id(), kind, point, distance);
+                        consider_scored_candidate(&mut best, source.owner, kind, point, distance);
                     },
                 );
             }
@@ -477,7 +472,7 @@ fn nearest_object_snap_with_metric(
                 &mut |point, distance| {
                     consider_scored_candidate(
                         &mut best,
-                        object.id(),
+                        source.owner,
                         ObjectSnapKind::Mid,
                         point,
                         distance,
@@ -490,7 +485,7 @@ fn nearest_object_snap_with_metric(
             if !modes.contains(kind) {
                 return;
             }
-            consider_candidate(&mut object_best, metric, object.id(), kind, point);
+            consider_candidate(&mut object_best, metric, source.owner, kind, point);
         };
         match object.geometry() {
             Geometry::Point(point) => emit(ObjectSnapKind::Point, *point),
@@ -534,7 +529,10 @@ fn nearest_object_snap_with_metric(
                 }
             }
             // Mesh queries use the independently cached wire index above.
-            Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_) => {}
+            Geometry::Mesh(_)
+            | Geometry::NurbsSurface(_)
+            | Geometry::Brep(_)
+            | Geometry::BlockInstance(_) => {}
         }
         // Mid and Center share source discovery. Each expensive feature is
         // independently lazy; surface Mid belongs to boundaries, not UV center.
@@ -556,7 +554,7 @@ fn nearest_object_snap_with_metric(
                 &mut |point, distance| {
                     consider_scored_candidate(
                         &mut object_best,
-                        object.id(),
+                        source.owner,
                         ObjectSnapKind::Near,
                         point,
                         distance,
@@ -570,7 +568,7 @@ fn nearest_object_snap_with_metric(
             let mut center = |point, distance| {
                 consider_scored_candidate(
                     &mut object_best,
-                    object.id(),
+                    source.owner,
                     ObjectSnapKind::Center,
                     point,
                     distance,
@@ -595,14 +593,19 @@ fn nearest_object_snap_with_metric(
         }
     }
     if modes.contains(ObjectSnapKind::Intersection) {
+        let owners = sources
+            .iter()
+            .map(|source| (source.object.id(), source.owner))
+            .collect::<std::collections::HashMap<_, _>>();
         intersection::visit(
-            document,
-            &visible_layers,
+            &sources,
+            document.tolerance(),
             options.mesh_edges,
             metric,
             cache,
             &mut |id, point, distance| {
-                consider_intersection_candidate(&mut best, id, point, distance);
+                let owner = owners.get(&id).copied().unwrap_or(id);
+                consider_intersection_candidate(&mut best, owner, point, distance);
             },
         );
     }

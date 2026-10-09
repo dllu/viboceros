@@ -1,0 +1,34 @@
+{
+  "baseline_commit": "35f2b035",
+  "capture_date": "2026-10-08",
+  "source_state": "Uncommitted shared native STEP spline p-curve qualification.",
+  "full_native_parity": false,
+  "contract": [
+    "Every PCURVE edge on a B-spline/NURBS basis certifies original UV/surface correspondence at actual absolute import tolerance.",
+    "Affine mapping, isocurve extraction, rational reparameterization and curved composition supply proposals to the shared qualifier.",
+    "Analytic angular and explicit 3D-edge adapters keep their preceding contracts."
+  ],
+  "evidence": [
+    "Existing straight/rational/curved adapter matrix and serialized oriented trim/edge checks.",
+    "Strict-tolerance rational straight-path regression rejects a rounded proposal while model tolerance accepts it.",
+    "Preceding curved-only source hashes retained in docs/step-curved-pcurve-source/."
+  ],
+  "limits": [
+    "Ordinary certificate degree/work/bit/depth limits remain; inconclusive proofs reject native import.",
+    "No fresh Rhino cross-reader or timing evidence.",
+    "Commit/push unavailable while .git is read-only."
+  ],
+  "sha256": {
+    "docs/step-spline-pcurve-source/step/native_nurbs.rs": "a440b41bede3a77762f306aedcac6fd70ea6205847087aa72a09c10605a2ac8b",
+    "docs/step-spline-pcurve-source/step/native_nurbs/pcurve_certificate.rs": "90dd02e09532552e99d5800eaf90220a41b10613ca1c841580e2424b36b4e9da",
+    "docs/step-spline-pcurve-source/step/native_nurbs/curved_pcurve.rs": "4a4871152745ec55d794fe2cbcf2f89bda9b5cf01ad3da4014397ffce49f71cc",
+    "docs/step-spline-pcurve-source/step/tests.rs": "dea23d0ff8b1d1ca05e961b5a0af49d8ecd5334d2c302c0d71f3c038784c3438"
+  },
+  "source_snapshot_paths": {
+    "docs/step-spline-pcurve-source/step/native_nurbs.rs": "crates/viboceros-io/src/step/native_nurbs.rs",
+    "docs/step-spline-pcurve-source/step/native_nurbs/pcurve_certificate.rs": "crates/viboceros-io/src/step/native_nurbs/pcurve_certificate.rs",
+    "docs/step-spline-pcurve-source/step/native_nurbs/curved_pcurve.rs": "crates/viboceros-io/src/step/native_nurbs/curved_pcurve.rs",
+    "docs/step-spline-pcurve-source/step/tests.rs": "crates/viboceros-io/src/step/tests.rs"
+  },
+  "source_snapshot_state": "Verified spline qualification sources before extrusion p-curve extension."
+}

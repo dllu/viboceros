@@ -7,7 +7,7 @@ mod query;
 mod scaled_first;
 mod tangent;
 use jet::FloatJet;
-pub(super) use query::CurveQuery;
+pub(super) use query::{CurveQuery, CurveQueryState};
 type CurveJet = (Point3, Vector3, Vector3);
 
 struct EvaluationControls {

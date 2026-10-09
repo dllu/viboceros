@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "base_commit": "35f2b0355a08e2bf98cc6c1efe2c8dc88ac36796",
+  "status": "uncommitted worktree; Git metadata is mounted read-only",
+  "scope": "Visible block members and root/nested insertion points participate in existing object-snap queries with root ownership and distinct cache source IDs",
+  "primary_sources": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/user_interface/object_snaps.htm"
+  ],
+  "native_evidence": "Documented Point insertion behavior and prior primitive snap algorithms; no fresh native block-snap capture, GPU run or timing comparison",
+  "verified": {
+    "focused_workspace_block_tests": 57,
+    "new_drafting_tests": 5,
+    "new_cpu_viewport_tests": 2,
+    "python_regressions": 1017,
+    "existing_source_fixture_pins": 1043,
+    "clippy_workspace_all_targets": "passed with -D warnings",
+    "workspace_release_tests": {
+      "passed": 5443,
+      "ignored": 38,
+      "exit_code": 0
+    },
+    "format_and_diff_checks": "passed"
+  },
+  "sha256": {
+    "crates/viboceros-document/src/block_instances.rs": "20ea096738a499970fc96241a242590c0d61f39808adb7ba709b51ab3128044e",
+    "crates/viboceros-document/src/blocks.rs": "e57b434c49790a04f4fc321ad607c79aaf1414dc93396a64c6e85f730cf184bb",
+    "crates/viboceros-drafting/src/lib.rs": "53800468d55e0cab6567216dfcc44dbdc1fcd9381e34d79966b5e465f1066a60",
+    "crates/viboceros-drafting/src/object_snap.rs": "ee66552b3475190f7c8fa51171f17bb84be40461d80e255c276163642149be20",
+    "crates/viboceros-drafting/src/object_snap/cache.rs": "92608903b5c84ffe3818ae40c656166489badf6f9390decb4e61f1999da75352",
+    "crates/viboceros-drafting/src/object_snap/intersection.rs": "e8055576d8d439eb183b26e7db77cd1d12402c3634e3636315c0a812ded198bd",
+    "crates/viboceros-drafting/src/object_snap/block_sources.rs": "fdfac9789b0a65f94d7b1d5404c3f7849e1f0fbf0b571295a39d21955d67fdea",
+    "crates/viboceros-drafting/src/object_snap/block_sources/tests.rs": "e790911e49966b04ab30db135a590e294dfebf2e4e832f5fcf4b7085acd3564c",
+    "src/viewport/drafting.rs": "5e76108b4a66659f86d1f5ea4c0be7a4b11a5eee9ec4aacd4703af0193714a9f",
+    "src/viewport/drafting/block_tests.rs": "cb5117be22b436c9917b7d0b95745dd0d28fbf5161b68bdd00230404fd06c67d",
+    "docs/three-dm-structural-prior-source/crates/viboceros-document/src/lib.rs": "6a998aaa1a0209cc35ee661f27d54568449ea8b91261ff9d8ea540e8de82409b"
+  },
+  "remaining_scope": [
+    "General occlusion culling, additional snap modes and block subobject editing",
+    "Linked/external insertion, structural 3DM interchange and native block-snap/performance comparisons"
+  ],
+  "source_snapshot_paths": {
+    "crates/viboceros-document/src/lib.rs": "docs/three-dm-structural-prior-source/crates/viboceros-document/src/lib.rs"
+  }
+}
