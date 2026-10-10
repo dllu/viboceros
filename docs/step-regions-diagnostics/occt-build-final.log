@@ -1,0 +1,19 @@
+In file included from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/NCollection_Sequence.hxx:20,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/TColStd_SequenceOfTransient.hxx:19,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/XSControl_Reader.hxx:25,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/STEPControl_Reader.hxx:24,
+                 from tools/usd_brep/inspect_step_regions.cpp:2:
+/tmp/viboceros-occt-qualification/root/usr/include/opencascade/NCollection_StlIterator.hxx:30:15: warning: ‘template<class _Category, class _Tp, class _Distance, class _Pointer, class _Reference> struct std::iterator’ is deprecated [-Wdeprecated-declarations]
+   30 |   public std::iterator<Category, ItemType, ptrdiff_t,
+      |               ^~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:65,
+                 from /usr/include/c++/13/bits/specfun.h:43,
+                 from /usr/include/c++/13/cmath:3699,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/Standard_Real.hxx:18,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/Standard_PrimitiveTypes.hxx:25,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/Standard_Transient.hxx:20,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/Standard.hxx:113,
+                 from /tmp/viboceros-occt-qualification/root/usr/include/opencascade/STEPControl_Reader.hxx:20:
+/usr/include/c++/13/bits/stl_iterator_base_types.h:127:34: note: declared here
+  127 |     struct _GLIBCXX17_DEPRECATED iterator
+      |                                  ^~~~~~~~

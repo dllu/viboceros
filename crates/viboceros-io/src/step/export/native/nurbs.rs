@@ -20,6 +20,7 @@ use viboceros_geometry::{
 };
 
 use super::super::super::export_geometry::{ExportLine, ExportPoint};
+mod regions;
 use super::super::super::export_plane::ExportPlane;
 use super::super::super::{StepError, TruckPoint3};
 use std::fmt;
@@ -86,8 +87,10 @@ enum Model {
 }
 
 /// Writes native edges, surfaces, and UV trims as editable STEP shells.
-/// Singular trims use constant spline supports and exact UV curves. Convex planar solids retain their certified
-/// outer/void structure; other shells remain surface models.
+/// Singular trims use constant spline supports and exact UV curves. Convex
+/// planar solids retain their certified outer/void structure. With `native-smlib`,
+/// closed multi-shell inputs use kernel-classified material regions; unsupported
+/// shell configurations fail. Other shells remain surface models.
 pub fn write_step_nurbs_breps<'a, W: Write>(
     writer: W,
     breps: impl IntoIterator<Item = &'a Brep>,
@@ -131,22 +134,41 @@ fn write_with_scale<'a, W: Write>(
 ) -> Result<(), StepError> {
     let mut items = Vec::new();
     for (index, brep) in breps.into_iter().enumerate() {
-        let mut shells = brep
+        let shells = brep
             .edge_connected_face_components()
             .iter()
             .map(|faces| shell(brep, faces, index, scale, tolerance))
             .collect::<Result<Vec<_>, _>>()?;
-        if let Some(order) = brep.certified_convex_solid_shell_order()
-            && order.len() == shells.len()
-        {
+        if let Some(groups) = regions::material_groups(brep, tolerance, index, shells.len())? {
             let mut slots = shells.into_iter().map(Some).collect::<Vec<_>>();
-            let boundaries = order
-                .into_iter()
-                .map(|component| slots[component].take().expect("component permutation"))
-                .collect();
-            items.push(Model::Solid(Solid { boundaries }));
+            for group in groups {
+                let boundaries = group
+                    .into_iter()
+                    .map(|component| {
+                        slots.get_mut(component).and_then(Option::take).ok_or(
+                            StepError::UnsupportedNativeBrep {
+                                brep: index,
+                                reason: "material shell plan is not a component partition",
+                            },
+                        )
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                if boundaries.is_empty() {
+                    return Err(StepError::UnsupportedNativeBrep {
+                        brep: index,
+                        reason: "material region has no outer shell",
+                    });
+                }
+                items.push(Model::Solid(Solid { boundaries }));
+            }
+            if slots.iter().any(Option::is_some) {
+                return Err(StepError::UnsupportedNativeBrep {
+                    brep: index,
+                    reason: "material shell plan omitted a component",
+                });
+            }
         } else {
-            items.extend(shells.drain(..).map(Model::Shell));
+            items.extend(shells.into_iter().map(Model::Shell));
         }
     }
     if items.is_empty() {

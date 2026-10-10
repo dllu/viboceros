@@ -1,0 +1,77 @@
+[package]
+name = "viboceros"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[workspace]
+resolver = "3"
+members = [
+    "crates/viboceros-command",
+    "crates/viboceros-document",
+    "crates/viboceros-drafting",
+    "crates/viboceros-geometry",
+    "crates/viboceros-io",
+    "crates/viboceros-oracle",
+    "crates/viboceros-smlib",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.95"
+
+[workspace.dependencies]
+bytemuck = { version = "1.25.2", features = ["derive"] }
+faer = { version = "0.24.4", default-features = false, features = ["linalg", "std"] }
+nalgebra = "0.35.0"
+num-bigint = "0.4.8"
+num-rational = "0.4.2"
+num-traits = "0.2.19"
+rand = "0.10.2"
+monstertruck = { version = "0.4.0", default-features = false, features = ["assembly", "meshing", "step"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.143", features = ["float_roundtrip"] }
+spade = "2.15.1"
+thiserror = "2.0.16"
+uuid = { version = "1.18.1", features = ["v4"] }
+
+viboceros-command = { path = "crates/viboceros-command" }
+viboceros-document = { path = "crates/viboceros-document" }
+viboceros-drafting = { path = "crates/viboceros-drafting" }
+viboceros-geometry = { path = "crates/viboceros-geometry" }
+viboceros-io = { path = "crates/viboceros-io" }
+
+[patch.crates-io]
+monstertruck-io = { path = "third_party/monstertruck-io" }
+
+[dependencies]
+bytemuck.workspace = true
+eframe = { version = "0.36.1", default-features = false, features = [
+    "default_fonts",
+    "persistence",
+    "wayland",
+    "wgpu",
+    "x11",
+] }
+nalgebra.workspace = true
+serde_json.workspace = true
+viboceros-command.workspace = true
+viboceros-document.workspace = true
+viboceros-drafting.workspace = true
+viboceros-geometry.workspace = true
+viboceros-io.workspace = true
+
+[dev-dependencies]
+pollster = "1.0.1"
+viboceros-oracle = { path = "crates/viboceros-oracle" }
+
+[features]
+default = []
+native-smlib = ["viboceros-command/native-smlib"]
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

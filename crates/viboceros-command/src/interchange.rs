@@ -6,6 +6,8 @@ mod structural_blocks;
 use names::ImportNames;
 #[cfg(test)]
 mod block_tests;
+#[cfg(all(test, feature = "native-smlib"))]
+mod region_tests;
 #[cfg(test)]
 mod tests;
 use std::collections::{BTreeMap, BTreeSet};

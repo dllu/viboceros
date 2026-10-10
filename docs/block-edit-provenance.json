@@ -57,7 +57,6 @@
   "comparison_limits": "Point members and nested references sampled at absolute 1e-9 plus relative 1e-12. Captures do not establish temporary-object metadata, native selection/history, panel or pixel-picking parity. Local tests constrain history, created layers/members, protected batch mutation, graph failure and file guards. No new GPU or performance measurements.",
   "numeric_limits": "Uniform scale and uniform reflection are supported; nonuniform scale and shear are rejected. Native threshold qualification and curved geometry roundtrips remain open.",
   "sha256": {
-    "crates/viboceros-command/src/interchange.rs": "7a162c97b6d4fc049a69661a491d6c1daa7f569a4d14cae4daef8b52b8db2d5e",
     "docs/block-edit-comparison.json": "8780a9fcde6a5e0ed1cabd10ef2e51dd6c349a1fd569c530935bf5b9ec04a630",
     "docs/block-edit-followup-comparison.json": "ef467649e095b7eba7baf87ba2c725a29f1207bf3a0335b932007639b6ef72bf",
     "src/app/named_view.rs": "a74c96cfd32701ec1db9433e26c5a6bff975ea59d336bb525aba4a034d5ed1e8",
@@ -82,7 +81,8 @@
     "docs/block-edit-controls-prior-source/docs/commands/block-edit.md": "a88f439cb2bfa1ebab97277b1b7c04922d3171daf6b90332ea152626f7f9e2fe",
     "docs/block-edit-controls-prior-source/src/app/tests/blocks.rs": "cff571bc7518d979d5c5d5946e64a748a8c52f5eb9e8d54ae51ad2c0abcced6f",
     "docs/block-edit-input-prior-source/src/app.rs": "bb54e0363dc103c1e0bdf7b25d4c21476f2241307d3d584a0e1b828c73d95053",
-    "docs/section-prior-source/crates/viboceros-command/src/lib.rs": "2b9140cdbfb26525ea974b85a512bc27f39cdfd16d7f545e484fd88b3daebdbc"
+    "docs/section-prior-source/crates/viboceros-command/src/lib.rs": "2b9140cdbfb26525ea974b85a512bc27f39cdfd16d7f545e484fd88b3daebdbc",
+    "docs/step-regions-prior-source/crates/viboceros-command/src/interchange.rs": "7a162c97b6d4fc049a69661a491d6c1daa7f569a4d14cae4daef8b52b8db2d5e"
   },
   "remaining_scope": [
     "Add Object and Remove Object editor controls",

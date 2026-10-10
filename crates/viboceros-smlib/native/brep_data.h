@@ -45,8 +45,10 @@ void vb_brep_free(VbBrep *brep);
 #ifdef __cplusplus
 }
 class SmBrep;
+#include <vector>
 VbBrep *vb_export_brep(const SmBrep &solid);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
-                       size_t component_count, const int *inward);
+                       size_t component_count, const int *inward,
+                       std::vector<size_t> *parents = nullptr);
 #endif
 #endif

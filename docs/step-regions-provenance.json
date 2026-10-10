@@ -1,0 +1,194 @@
+{
+  "captured_at_utc": "2026-10-10T08:53:30.481605+00:00",
+  "base_commit": "486deb66d86b844ef893a7de0ca930a72f6bedd3",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "checks": {
+    "workspace": {
+      "passed": 5668,
+      "failed": 0,
+      "ignored": 38
+    },
+    "native_io": {
+      "passed": 226,
+      "failed": 0
+    },
+    "native_command": {
+      "passed": 1285,
+      "failed": 0,
+      "ignored": 2
+    },
+    "native_bridge": {
+      "passed": 25,
+      "failed": 0
+    },
+    "python": {
+      "passed": 1086,
+      "failed": 0
+    },
+    "native_clippy": "passed",
+    "workspace_clippy": "passed",
+    "fmt": "passed",
+    "occt_valid_material_cases": 7,
+    "occt_valid_material_solids": 9,
+    "maximum_occt_relative_volume_error": 2.3424511774392394e-10,
+    "rhino_boundary_samples": 4950,
+    "maximum_boundary_error": 2.6645352591003757e-15,
+    "rhino_failed_material_transfers": 6,
+    "git_diff_check": {
+      "code_and_docs": "passed",
+      "immutable_raw_log_exceptions": [
+        "docs/step-regions-diagnostics/bridge.log:70: new blank line at EOF.",
+        "docs/step-regions-diagnostics/command-native-final.log:1303: new blank line at EOF.",
+        "docs/step-regions-diagnostics/focused.log:14: new blank line at EOF.",
+        "docs/step-regions-diagnostics/io-final.log:241: new blank line at EOF.",
+        "docs/step-regions-diagnostics/io-native.log:241: new blank line at EOF.",
+        "docs/step-regions-diagnostics/workspace-final.log:5896: new blank line at EOF."
+      ]
+    }
+  },
+  "diagnostics": [
+    "Initial Rhino probe rejected instance references; bounded public SDK expansion now records placed geometry and top-level types separately",
+    "An incorrect RhinoObject property name was corrected from SDK documentation; nested-placement and cycle-cleanup tests retain coverage",
+    "Initial writer used TRUE-oriented void shells; final writer uses FALSE plus reversed underlying face and face-bound senses",
+    "An intermediate face-only reversal failed seven local tests; final reversal restores absolute p-loop orientation and all local tests pass",
+    "Rhino 8.32.26160.13001 separates cavity shells into outward bodies despite canonical STEP orientation; these are explicitly not qualified material transfers"
+  ],
+  "limits": [
+    "Native shell planning is optional and Linux-only; unsupported default curved shells remain surface models",
+    "General self-intersection certification, extreme scales and arrangements beyond the existing 128-component/65536-face-pair limits remain unqualified",
+    "Rhino cavity semantics are lost on native STEP import; use 3DM for transfer into this version",
+    "Arbitrary compound object identity, names and materials are not preserved by region splitting"
+  ],
+  "independent_reader": {
+    "occt_version": "7.6.3",
+    "packages_extracted_locally_only": [
+      {
+        "package": "libocct-data-exchange-7.6t64_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "5a129614b2cbfd6f12a19c9be692da916efc521adc8026357ba60e501971b4bd"
+      },
+      {
+        "package": "libocct-data-exchange-dev_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "30bec58eb9557b6786328fec3bbb8a95ac34be4161937d60d20924a9013969a2"
+      },
+      {
+        "package": "libocct-foundation-7.6t64_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "3da6b9fc918d2b032dddc16e8134a94c2a3e6bf0a7770ed7e928852bc5b60c16"
+      },
+      {
+        "package": "libocct-foundation-dev_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "b9f6a4d1e2cf121abc8c7516c41b4c760a2a13f20f8837e1991e390c6c7074f3"
+      },
+      {
+        "package": "libocct-modeling-algorithms-7.6t64_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "f3ef0eabf9ff24fb7585b651907ec59202c62dd47d11dabe53dc7a098c39db63"
+      },
+      {
+        "package": "libocct-modeling-algorithms-dev_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "0ce34d51be4906f6e54313e0c66c79ce99667b2e20140a73f1c5b862f4ae9162"
+      },
+      {
+        "package": "libocct-modeling-data-7.6t64_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "8b994e300ace18eec00275b1ffcf991c3443895b127c6b6ca5be929da924dabe"
+      },
+      {
+        "package": "libocct-modeling-data-dev_7.6.3+dfsg1-7.1build1_arm64.deb",
+        "sha256": "3646b980cfaa2465c61919c6b931167ecbbcf510df9ee386d1860275eb7571f0"
+      }
+    ]
+  },
+  "historical_pin_audit": {
+    "checked": 2321,
+    "newly_broken": []
+  },
+  "source_sha256": {
+    ".gitmodules": "0a8814fdc323727f4117fae2bd9ec4c4daa44dec1d752140c35db6f7d6760b9a",
+    "Cargo.lock": "82091656dc1f25e31cfad00083c632ad701f85a7982f6c2b80936d96d62bd1fb",
+    "Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
+    "crates/viboceros-command/Cargo.toml": "81c393837c217b29527314ffef3a1bfa227ba176201a58b8a4a345cecf7f8362",
+    "crates/viboceros-command/src/interchange.rs": "975af129b647c910a4f21a12149645e88dd2733cae4f6e72278c15082bc91f23",
+    "crates/viboceros-command/src/interchange/region_tests.rs": "80e0107844240a30bb65a65235e2935f9a7d2bc3dc8dca830360912dab5030d4",
+    "crates/viboceros-io/Cargo.toml": "e501436b66a54aca463180999999d6761c0743ff10b02175a156527077990c30",
+    "crates/viboceros-io/examples/step_regions.rs": "3276790aaf00db35b423e35438f62efffa81358bfb4bf13c5dfad40dbf980629",
+    "crates/viboceros-io/src/step.rs": "9c80325b026fa9b1d209c238edd6135ce60a7fbb77a70a2bf9180d809daeb816",
+    "crates/viboceros-io/src/step/export/native/nurbs.rs": "f6c5e0ed22abd0921d639c12588071eb8d52f85b4c334ce593777ac4be1b57f8",
+    "crates/viboceros-io/src/step/export/native/nurbs/regions.rs": "25eeb92b6a4ee71371ca2747a3e0a2461af76bcf1ef80efafc489554d57c43a2",
+    "crates/viboceros-io/src/step/tests.rs": "f8bd1da2771aa704a1cdc3de8f01c218c2366be45630f615aeb5806cc9094c56",
+    "crates/viboceros-io/src/step/tests/regions.rs": "f61c122a54ae254e1a97a6551c18531f6d8eaf8782d1efaf458eb1612e8b5dcf",
+    "crates/viboceros-smlib/native/brep_data.h": "643e94d8b91abcd4d36b9f57e433444085acca2db0c503d7283e6d3407191fec",
+    "crates/viboceros-smlib/native/brep_import.cpp": "4cc466706ea6f25126b071135968bd7da5f7e1dde9d890ac85fd7d1c818ea32a",
+    "crates/viboceros-smlib/native/bridge.cpp": "d53b29db5b1888f14e3889c135c362255697abc4e7e3c359dfd09bea8b8a66f6",
+    "crates/viboceros-smlib/native/bridge.h": "dbd7961fea2d83897ea2e201e23b23be78cbce2ac8793d2815282d88f86f939a",
+    "crates/viboceros-smlib/src/native/brep.rs": "1c6e9450fd3bf014bf00ec37558a076f6ccee698d0614c08821fa4227eae14ba",
+    "docs/commands/export-step.md": "3ae93908e866bc832bf34c6c776b3df07ae9325f034bcc730fdb41b737d0e2b9",
+    "docs/development.md": "966b2b4b0acd20bfe76cc1a837e126ad9eea62e0f2d4a94791eac8c995ba8146",
+    "docs/file-formats.md": "2962b771df996f1947dab3c54e0f5c954d0752401077e797d78733205e9c2f4c",
+    "docs/smlib-bridge.md": "f26d31c0d47805f47dc86a8421cec1ac6c80d7e490bbed4513181bd2400f0dd9",
+    "docs/step-poles.md": "e956d7ecc5828de895906c074a9a3ba4fad8a8c2ff23a5ab207fface4c6353c8",
+    "docs/step-regions-comparison.json": "4708cef3157a6fb1ebb03a6f63ae9f00e035b6b92e6a5aa761e7ae550919eb0c",
+    "docs/step-regions-diagnostics/box-two-cavities.step": "066290ade0f29744c010ab7b90f27308f9eca2c6c56e74852b13b6e454f20025",
+    "docs/step-regions-diagnostics/bridge.log": "cefdcea2f99c14946920f85fc022115afa1ec981af704804796b812cd49be002",
+    "docs/step-regions-diagnostics/clippy-default-final.log": "9fd9bda4a2e7b9fe70d5c3f102636e886be2911ad706cb2b12f375ff9cabf7d9",
+    "docs/step-regions-diagnostics/clippy-native-final.log": "401573b79a5548e0df2cfb1c0aec906294a091a9aa12b68f1199204621b6ce0e",
+    "docs/step-regions-diagnostics/command-native-final.log": "e68afb04e36ad1e5f4db6e434c4f2e40b9e90d0a5457ec7e4739cf02454f0e82",
+    "docs/step-regions-diagnostics/concentric-shells.step": "986285eda14b5b50178cdc88a0e95c59a10b32c5df70a468e147fd6da21231ed",
+    "docs/step-regions-diagnostics/cone-cavity.step": "b4850c78cf2941bb7d6705248035ecaf9d79e308e90cca135e8ecf480b6ddcc6",
+    "docs/step-regions-diagnostics/example-final-qualified.log": "b95258420e61f168300b584c022a02d8bffe4dab96fc2a69b4765298821e587e",
+    "docs/step-regions-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/step-regions-diagnostics/focused.log": "cbf13cd2dc14d142737cfd6dcf0b5aa20b13f61c9fbdb73f5c50b78ac029823f",
+    "docs/step-regions-diagnostics/initial-false-only-native.json": "3d3122fc0a6979d05e78787045bbac23e44fc3a28ceb6eeb1bc1e7fa25d8adf9",
+    "docs/step-regions-diagnostics/initial-instance-attribute.log": "abb548613fc0903603fe797f0cc75c52b7c08ac285ea8b0927caf092dfc3a3ca",
+    "docs/step-regions-diagnostics/initial-instance-type.log": "7b314269610a6ec6783c26c5db6fe194e934cb91e1769e85e9e71b76a0e85d79",
+    "docs/step-regions-diagnostics/initial-native-import.log": "44227b6951adf5f8fb8361fa0aa896c1619290f216b714302959b20664b45b5f",
+    "docs/step-regions-diagnostics/initial-placed-probe.py": "84d8d8c284b669c2802db799eaa6ed4cdcd188176237dc65e8f9ac4975888d3e",
+    "docs/step-regions-diagnostics/initial-probe.py": "79904df326180d1e0bbda775172b309073f13ab233e91d34695c0a44ba2a31d3",
+    "docs/step-regions-diagnostics/initial-true-oriented-native.json": "3d3122fc0a6979d05e78787045bbac23e44fc3a28ceb6eeb1bc1e7fa25d8adf9",
+    "docs/step-regions-diagnostics/initial-true-oriented-occt.json": "4b4f971dd5cb970a956686b6a632b7d777e31f5a24aae2bc124357a9b35d92b4",
+    "docs/step-regions-diagnostics/io-canonical.log": "b156548664fe346117d6469e50b48796b2621a91c0dd8493ae462b738a6d1734",
+    "docs/step-regions-diagnostics/io-final.log": "882fc749df6b8d2ea6ee02e1e8448735766ed8951a70dec5dd77c1f363bef90d",
+    "docs/step-regions-diagnostics/io-native.log": "d84c1628584626162bca4dab47b34e9173ff5426ea0fd3b0dc0212f9acfca681",
+    "docs/step-regions-diagnostics/nested-island.step": "9a94eea469dd2d6000dd6acc95d0a3a5b18602f187b79bca02566782648e8b5c",
+    "docs/step-regions-diagnostics/occt-build-final.log": "03dc148dab2ee80fc49c77be4c99dfee8ae81ab9e476b7ae41ab25ddaa559cc5",
+    "docs/step-regions-diagnostics/occt-download.log": "725a2bfe4920e7485b56111d1c7faa7dbb9c7d1f454830636140497e60b4f905",
+    "docs/step-regions-diagnostics/occt-final.log": "7adf3c8e5eb01555ef491595518e396d731f77cb04fe70eaf94dd056c9e1e468",
+    "docs/step-regions-diagnostics/pin-audit.json": "5cefcab7a9b64afc87697d5cad17e72a1f71b4a7e025dffee8ae543659ec5410",
+    "docs/step-regions-diagnostics/properties.json": "fbdc9b742d3cab518371b2dd29cf2c014bb41b019b8828dc98a4d7ee33953f9c",
+    "docs/step-regions-diagnostics/python-final.log": "c51d61fdf50d6256d9a7d229fadc3761967a1cd358d76e55ddf1391e2770c416",
+    "docs/step-regions-diagnostics/request.json": "698c76fe7ca5bebfa35302b4e01c90dd76a0b9a4b326d1452398d941f3b5c32d",
+    "docs/step-regions-diagnostics/rhino-qualified.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/step-regions-diagnostics/sphere-cavity.step": "5bcf8529b8c79e237aca2f8c9af8e7be1ae8d74ddfcbab7822c40efa1b5e87b9",
+    "docs/step-regions-diagnostics/torus-cavity.step": "11e138a4d606594d14f21b3da923978f9d6cd047d8054b99806455a403f3a89f",
+    "docs/step-regions-diagnostics/torus-hole.step": "aa9ae7b675fdd7306fe6a5c49463ae3c3dc1c53284ad4aae4c038b5140b21e93",
+    "docs/step-regions-diagnostics/workspace-final.log": "1c9e85ab6765c8c200e01e9b3c5882604297ef64b4dfe0dea0f32dc9c3fdfc38",
+    "docs/step-regions-native-reference.json": "880b0d4ef044945ea24654bb56f97d5bafd76844559c36476b6b71e2d98c58a8",
+    "docs/step-regions-occt-reference.json": "4b4f971dd5cb970a956686b6a632b7d777e31f5a24aae2bc124357a9b35d92b4",
+    "docs/step-regions-prior-source/Cargo.lock": "a24cdb36c25a5994a97849f8b4fba838e2f1432c8b042c8e68d93f8cf5b7f27f",
+    "docs/step-regions-prior-source/Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
+    "docs/step-regions-prior-source/crates/viboceros-command/Cargo.toml": "0be147eacb600a373f9788e40672c4feea19fc30dc2a1925617fdee619adfa64",
+    "docs/step-regions-prior-source/crates/viboceros-command/src/interchange.rs": "7a162c97b6d4fc049a69661a491d6c1daa7f569a4d14cae4daef8b52b8db2d5e",
+    "docs/step-regions-prior-source/crates/viboceros-io/src/step/export/native/nurbs.rs": "392629a1b5bdb19897ed0e1ca196d77ea5470db7fa9d2c3a7dc60497eec54a0e",
+    "docs/step-regions-prior-source/crates/viboceros-io/src/step/tests.rs": "12a03c9499ec4af995bdfeeffdf42d2252b2696d7b9b508f67fe50041b584dc4",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/brep_data.h": "43a1bb364288880acd9c63a626e155ce77e031d289044b42beafbc2c3734cb85",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/brep_import.cpp": "8fbc856477ecfd3125ec2f932f07ae3201f45bd2841ea8f2f68f71fb7e003d47",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/bridge.cpp": "6f9e8cebb3e6ca68d02fbb6346d90897829cc2814cd61ccff3f7ecaae7e4e64f",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/bridge.h": "9a4fb0bbbb66f94fa74754ad151daddea40d2689148efafee3c16e0962b29a9e",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/src/native/brep.rs": "59e6656ac3b620de0f6823e7281daff309ee3c82407df72c9e505f301481a755",
+    "docs/step-regions-prior-source/docs/commands/export-step.md": "a8e6fe04559bf4cabe60e782572a071975ad6ac08d3b4201ad2d803b54b20ef8",
+    "docs/step-regions-prior-source/docs/development.md": "d82e2fc4ccb95579c6938c83b0c9312a70c448b10c8c2249a96884c66df95da9",
+    "docs/step-regions-prior-source/docs/file-formats.md": "fe5ad37bb6fb227dbc10f97af68e493e91c43bae281ea868b77e3d2d903d38e2",
+    "docs/step-regions-prior-source/docs/smlib-bridge.md": "f14014724f2766446a2e993cad732bee910efa23a1e1d115dae35d6d833c94b3",
+    "docs/step-regions-prior-source/docs/step-poles.md": "1af811561ce1d6a663c67f890a136583522dd332ac24c93b7cef20a382b27a04",
+    "docs/step-regions-prior-source/tools/rhino_oracle/client.py": "8e52f4b889e329801d3de7de4be8e464aafaa83dee70e06a55357ce41dc1fd61",
+    "docs/step-regions-prior-source/tools/rhino_oracle/rhino_worker.py": "27c3509ff6ef139f55cc95b8a2becf5052616e73a5367ed1d56dff7563584ea7",
+    "docs/step-regions-prior-source/tools/rhino_oracle/step_poles_probe.py": "bf69493f32068997ab242040eabcdc07c0f73cb88b372c54618c8ddc2f342f84",
+    "docs/step-regions-prior-source/tools/rhino_oracle/test_step_poles_probe.py": "579d46f887a2ce590a70d241531e1770804d3d28475f70002c94929d94988a80",
+    "docs/step-regions.md": "c2ea04d9091b221c3b2488a9d6f757193a677351e1e98579b3ecbd2d58cf2f39",
+    "third_party/README.md": "7e2ac1b8dec50ecd160981f21a8aa120f51d40be2003b7cdbfcfdbad44b94207",
+    "third_party/monstertruck-io/src/step/save/topology.rs": "675842b29d204a41af873390fed6ae707607300b1a11a37f9bed44653043636c",
+    "tools/rhino_oracle/client.py": "60607dc9f1b7517851b8eebb032030e740e61e79cecba1c6fd564065a9887b52",
+    "tools/rhino_oracle/rhino_worker.py": "b7996aa3c3a44bab68ce7fc026aca78182f78c187039d1210ffaed2f2e6df340",
+    "tools/rhino_oracle/step_poles_probe.py": "7cbd649aa4c85017cad00e72ca92abb380fe2db5eb42b800aa93f4cce0a61238",
+    "tools/rhino_oracle/test_step_poles_probe.py": "455d6ab8aa267be2c16e9e2f5f541e47b7f89c0c2c4efa4c6617ad080da47ffc",
+    "tools/usd_brep/compare_step_regions.py": "0d57469f2571c74161a9e68d38e69864bf2f69977c0aa4379e7c30a08c4025d9",
+    "tools/usd_brep/inspect_step_regions.cpp": "3dab74b1c2dc6bafff564713cf0390b46b18e08e5265d5c077ca172651ec66d3"
+  }
+}

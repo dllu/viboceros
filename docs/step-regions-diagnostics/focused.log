@@ -1,0 +1,14 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Finished `release` profile [optimized] target(s) in 35.12s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_io-7f2e9b936c0d8bba)
+
+running 5 tests
+test step::tests::regions::sphere_in_torus_hole_is_not_mistaken_for_a_contained_shell ... ok
+test step::tests::regions::touching_crossing_and_wrong_sense_shells_fail_before_writing ... ok
+test step::tests::regions::nested_material_island_is_a_separate_solid_inside_a_curved_void ... ok
+test step::tests::regions::nonconvex_torus_tube_preserves_a_spherical_cavity ... ok
+test step::tests::regions::curved_cavity_shells_keep_one_shape_in_any_component_order ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 220 filtered out; finished in 0.10s
+

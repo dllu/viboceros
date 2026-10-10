@@ -1,0 +1,9 @@
+[
+  {"id":"box-two-cavities","solids":[{"valid":true,"volume":991.62241958846505}]},
+  {"id":"concentric-shells","solids":[{"valid":true,"volume":234.57225152298517}]},
+  {"id":"cone-cavity","solids":[{"valid":true,"volume":20.878501181872856}]},
+  {"id":"nested-island","solids":[{"valid":true,"volume":0.52359877572094904},{"valid":true,"volume":234.57225152298517}]},
+  {"id":"sphere-cavity","solids":[{"valid":true,"volume":966.48967835385963}]},
+  {"id":"torus-cavity","solids":[{"valid":true,"volume":78.891385380244785}]},
+  {"id":"torus-hole","solids":[{"valid":true,"volume":0.52359877572094904},{"valid":true,"volume":78.956835227209908}]}
+]

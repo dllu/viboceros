@@ -1,0 +1,51 @@
+[
+  {
+    "edges": 13,
+    "faces": 7,
+    "id": "sphere-cavity",
+    "objects": 1,
+    "volume": 966.4896783617088
+  },
+  {
+    "edges": 2,
+    "faces": 2,
+    "id": "concentric-shells",
+    "objects": 1,
+    "volume": 234.57225146803788
+  },
+  {
+    "edges": 3,
+    "faces": 3,
+    "id": "nested-island",
+    "objects": 2,
+    "volume": 235.0958502436362
+  },
+  {
+    "edges": 3,
+    "faces": 2,
+    "id": "torus-cavity",
+    "objects": 1,
+    "volume": 78.89138536176507
+  },
+  {
+    "edges": 3,
+    "faces": 2,
+    "id": "torus-hole",
+    "objects": 2,
+    "volume": 79.48043398431317
+  },
+  {
+    "edges": 14,
+    "faces": 8,
+    "id": "box-two-cavities",
+    "objects": 1,
+    "volume": 991.6224195904272
+  },
+  {
+    "edges": 4,
+    "faces": 3,
+    "id": "cone-cavity",
+    "objects": 1,
+    "volume": 20.87850117698217
+  }
+]

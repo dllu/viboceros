@@ -6345,7 +6345,7 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
-    if operation.get('op') == 'step_poles':
+    if operation.get('op') in ('step_poles', 'step_regions'):
         import step_poles_probe
         return step_poles_probe.run(operation, globals())
     if operation.get('op') == 'smlib_reference':
@@ -16910,7 +16910,7 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op') == 'step_poles' for op in request.get('operations', [])):
+        if not at_idle and any(op.get('op') in ('step_poles', 'step_regions') for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))
             return

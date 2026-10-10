@@ -1,0 +1,6 @@
+    Blocking waiting for file lock on build directory
+    Checking monstertruck-io v0.4.0 (/home/dllu/proj/viboceros/third_party/monstertruck-io)
+    Checking monstertruck v0.4.0
+    Checking viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Checking viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 15s

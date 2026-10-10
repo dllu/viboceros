@@ -193,6 +193,26 @@ extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
     });
 }
 
+extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
+                                      const size_t *components, size_t component_count,
+                                      const int *inward, size_t *parents, size_t parent_capacity,
+                                      VbSolid **out, char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(view && out && parents && component_count && component_count <= 128 &&
+                    parent_capacity >= component_count,
+                "Invalid shell plan buffer");
+        auto owner = std::make_unique<VbSolid>();
+        std::vector<size_t> plan;
+        owner->value.reset(
+            vb_import_brep(*view, tolerance, components, component_count, inward, &plan));
+        require(plan.size() == component_count, "Incomplete native shell plan");
+        std::copy(plan.begin(), plan.end(), parents);
+        *out = owner.release();
+    });
+}
+
 extern "C" int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out,
                              char *error, size_t capacity) {
     if (out)

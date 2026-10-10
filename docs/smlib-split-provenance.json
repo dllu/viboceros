@@ -70,7 +70,6 @@
     "STEP pole trims, fillets and offsets remain open"
   ],
   "source_sha256": {
-    "crates/viboceros-command/Cargo.toml": "0be147eacb600a373f9788e40672c4feea19fc30dc2a1925617fdee619adfa64",
     "crates/viboceros-command/examples/curved_split.rs": "56b547afcfbbf52b916a7d8c3c6532d315aefddd1a0f47e31820eeb2a84e8a25",
     "crates/viboceros-command/src/boolean_split.rs": "7f8bbff0254227e03691198a086d09a96990957963f2f9c350814e6544d71a49",
     "crates/viboceros-command/src/boolean_split/native.rs": "9124faa2c207149bb74b5c33f6485df0a5bb0f88cbd5e1c5508bab9fe8d16baf",
@@ -104,6 +103,7 @@
     "docs/smlib-split-diagnostics/workspace-tests-final.log": "6f9082436e4456781e056f738e00e98d1b3e0123937adb18ef0ed83c4a8bbb1c",
     "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
     "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
-    "docs/step-poles-prior-source/docs/development.md": "aed9b188762d0d7449b6a3b7fdf48ca9819a8331ffdb42eb0e2c12fb536a394f"
+    "docs/step-poles-prior-source/docs/development.md": "aed9b188762d0d7449b6a3b7fdf48ca9819a8331ffdb42eb0e2c12fb536a394f",
+    "docs/step-regions-prior-source/crates/viboceros-command/Cargo.toml": "0be147eacb600a373f9788e40672c4feea19fc30dc2a1925617fdee619adfa64"
   }
 }

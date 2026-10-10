@@ -1,0 +1,9 @@
+box-two-cavities: valid material solid, volume 991.62241958846505
+concentric-shells: valid material solid, volume 234.57225152298517
+cone-cavity: valid material solid, volume 20.878501181872856
+nested-island: valid material solid, volume 0.52359877572094904
+nested-island: valid material solid, volume 234.57225152298517
+sphere-cavity: valid material solid, volume 966.48967835385963
+torus-cavity: valid material solid, volume 78.891385380244785
+torus-hole: valid material solid, volume 0.52359877572094904
+torus-hole: valid material solid, volume 78.956835227209908

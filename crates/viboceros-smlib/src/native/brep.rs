@@ -9,6 +9,49 @@ use viboceros_geometry::{
 struct NativeBrep {
     _private: [u8; 0],
 }
+
+#[cfg(test)]
+mod plan_tests {
+    use super::*;
+    #[test]
+    fn invalid_plan_buffers_clear_handles_without_writing_parent_storage() {
+        let view = BrepView {
+            vertex_count: 0,
+            edge_count: 0,
+            trim_count: 0,
+            loop_count: 0,
+            face_count: 0,
+            vertices: std::ptr::null(),
+            edges: std::ptr::null(),
+            trims: std::ptr::null(),
+            loops: std::ptr::null(),
+            faces: std::ptr::null(),
+        };
+        for (count, capacity) in [(2, 1), (129, usize::MAX)] {
+            let mut parent = 73;
+            let mut output = std::ptr::dangling_mut::<NativeSolid>();
+            let mut error = [0 as c_char; 64];
+            let status = unsafe {
+                vb_solid_from_brep_plan(
+                    &view,
+                    1e-6,
+                    std::ptr::null(),
+                    count,
+                    std::ptr::null(),
+                    &mut parent,
+                    capacity,
+                    &mut output,
+                    error.as_mut_ptr(),
+                    error.len(),
+                )
+            };
+            assert_ne!(status, 0);
+            assert!(output.is_null());
+            assert_eq!(parent, 73);
+            assert_eq!(error[63], 0);
+        }
+    }
+}
 #[repr(C)]
 #[derive(Clone, Copy)]
 struct NurbsData {
@@ -104,12 +147,14 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
-    fn vb_solid_from_brep(
+    fn vb_solid_from_brep_plan(
         view: *const BrepView,
         tolerance: f64,
         components: *const usize,
         component_count: usize,
         inward: *const c_int,
+        parents: *mut usize,
+        parent_capacity: usize,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
         capacity: usize,
@@ -447,12 +492,30 @@ impl Solid {
 
     /// Import validated, closed NURBS topology without fitting or healing.
     pub fn from_brep(brep: &Brep, tolerance: Tolerance) -> Result<Self, Error> {
+        Self::from_brep_with_regions(brep, tolerance).map(|(solid, _)| solid)
+    }
+
+    /// Imports a closed B-rep and returns its material-region shell groups.
+    ///
+    /// Each group starts with its outer component, followed by its immediate
+    /// inward cavities. Indices refer to `brep.edge_connected_face_components()`;
+    /// nested material islands form separate groups. Native intersection and
+    /// containment checks authorize the nesting, independently of face order.
+    /// Input geometry is preserved and ambiguous, touching or inconsistent
+    /// component configurations fail rather than receiving guessed regions.
+    pub fn from_brep_with_regions(
+        brep: &Brep,
+        tolerance: Tolerance,
+    ) -> Result<(Self, Vec<Vec<usize>>), Error> {
         if !brep.is_solid() {
             return Err(Error::Kernel(
                 "Import requires a closed manifold B-rep".into(),
             ));
         }
         let parts = brep.edge_connected_face_components();
+        if parts.len() > 128 {
+            return Err(Error::Kernel("B-rep component nesting work limit".into()));
+        }
         let inward = parts
             .iter()
             .map(|faces| {
@@ -574,23 +637,59 @@ impl Solid {
             faces: faces.as_ptr(),
         };
         let mut pointer = std::ptr::null_mut();
+        let mut parents = vec![usize::MAX; parts.len()];
         // All view arrays and owned NURBS buffers remain live throughout native construction.
         call(|error, capacity| unsafe {
-            vb_solid_from_brep(
+            vb_solid_from_brep_plan(
                 &view,
                 tolerance.absolute(),
                 components.as_ptr(),
                 parts.len(),
                 inward.as_ptr(),
+                parents.as_mut_ptr(),
+                parents.len(),
                 &mut pointer,
                 error,
                 capacity,
             )
         })?;
-        Ok(Self {
+        let solid = Self {
             handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
             _thread_local: PhantomData,
-        })
+        };
+        // Validate the native index forest before exposing an owned shell plan.
+        for (index, &parent) in parents.iter().enumerate() {
+            if parent != usize::MAX
+                && (parent >= parents.len() || parent == index || inward[parent] == inward[index])
+            {
+                return Err(Error::InvalidOutput);
+            }
+            let mut cursor = index;
+            for step in 0..=parents.len() {
+                if cursor == usize::MAX {
+                    break;
+                }
+                if step == parents.len() {
+                    return Err(Error::InvalidOutput);
+                }
+                cursor = *parents.get(cursor).ok_or(Error::InvalidOutput)?;
+            }
+            if parent == usize::MAX && inward[index] != 0 {
+                return Err(Error::InvalidOutput);
+            }
+        }
+        let groups = (0..parts.len())
+            .filter(|&c| inward[c] == 0)
+            .map(|c| {
+                std::iter::once(c)
+                    .chain((0..parts.len()).filter(|&v| parents[v] == c && inward[v] != 0))
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        if groups.iter().map(Vec::len).sum::<usize>() != parts.len() {
+            return Err(Error::InvalidOutput);
+        }
+        Ok((solid, groups))
     }
 
     /// Export owned NURBS geometry and shared topology into a validated Rust B-rep.

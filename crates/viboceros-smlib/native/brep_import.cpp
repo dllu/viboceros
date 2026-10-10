@@ -100,7 +100,8 @@ SmSurface *import_surface(const VbNurbsData &data) {
 } // namespace
 
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
-                       size_t component_count, const int *inward) {
+                       size_t component_count, const int *inward,
+                       std::vector<size_t> *parents) {
     require(std::isfinite(tolerance) && tolerance > 0, "Invalid import tolerance");
     require(view.vertex_count && view.edge_count && view.face_count && view.vertices &&
                 view.edges && view.faces && view.loops && view.trims,
@@ -270,6 +271,7 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
     check(result->MakeTopologyFromData(&data, attributes, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE),
           "build imported topology");
     require(result->IsManifoldSolid(), "Imported topology is not a manifold solid");
+    std::vector<size_t> shell_parents(component_count, SIZE_MAX);
     if (component_count > 1) {
         std::vector<std::unique_ptr<SmBrep>> parts;
         std::vector<SmRegion *> regions(component_count);
@@ -343,6 +345,7 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
                 }
             require(bool(inward[c]) == bool(depth % 2),
                     "Shell orientation disagrees with material nesting");
+            shell_parents[c] = parent == component_count ? SIZE_MAX : parent;
             if (parent != component_count) {
                 auto *shell = data.m_vShells[c].m_pShell1;
                 check(result->GetInfiniteRegion()->Remove(shell), "detach nested shell");
@@ -352,5 +355,7 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
         check(result->SetRegionIsVoidFlagsForNestedSolids(), "classify nested material regions");
     } else
         require(!inward[0], "Imported outer shell points inward");
+    if (parents)
+        *parents = std::move(shell_parents);
     return result.release();
 }

@@ -5,6 +5,10 @@ edition.workspace = true
 license.workspace = true
 rust-version.workspace = true
 
+[features]
+default = []
+native-smlib = ["dep:viboceros-smlib"]
+
 [dependencies]
 monstertruck.workspace = true
 num-rational.workspace = true
@@ -12,9 +16,14 @@ num-traits.workspace = true
 tempfile = "3.27.0"
 thiserror.workspace = true
 viboceros-geometry.workspace = true
+viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
 
 [build-dependencies]
 cmake = "0.1.58"
 
 [dev-dependencies]
 serde_json.workspace = true
+
+[[example]]
+name = "step_regions"
+required-features = ["native-smlib"]

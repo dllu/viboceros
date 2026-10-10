@@ -18,6 +18,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Optional Rust SMLib bridge, ownership and geometry transfer](smlib-bridge.md)
 - [Native SMLib B-rep export, CAD interchange and STEP seam selection](smlib-brep-transfer.md)
 - [Certified STEP pole trims and native Rhino import evidence](step-poles.md)
+- [Optional curved STEP voids, material regions and nesting evidence](step-regions.md)
 - [SMLib import, nested regions and optional curved BooleanDifference](smlib-import.md)
 - [Optional curved union/intersection and set ownership](smlib-set-booleans.md)
 - [Optional curved BooleanSplit, branch lineage and volume checks](smlib-boolean-split.md)

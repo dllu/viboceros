@@ -91,6 +91,13 @@ pub struct StepImport {
 pub enum StepError {
     #[error("STEP native export cannot represent B-rep {brep}: {reason}")]
     UnsupportedNativeBrep { brep: usize, reason: &'static str },
+    #[cfg(feature = "native-smlib")]
+    #[error("STEP native export cannot classify material shells of B-rep {brep}: {error}")]
+    NativeShellClassification {
+        brep: usize,
+        #[source]
+        error: viboceros_smlib::Error,
+    },
     #[error("STEP native export requires a B-rep at document object {object}")]
     NativeExportRequiresBrep { object: usize },
     #[error("STEP shell #{shell} cannot be converted to a native planar B-rep: {reason}")]

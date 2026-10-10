@@ -274,8 +274,16 @@ destination intact. Certified convex planar polyhedra become STEP solids;
 strictly contained, disjoint inward convex cavities remain one solid shape.
 Other edge-disconnected shells become separate STEP surface models, so general
 compound B-rep object grouping, names, and materials are not yet preserved.
-In particular, a curved inner cavity shell exports separately and loses its
-void relationship on Rhino import. See [pole transfer evidence](step-poles.md).
+With `--features native-smlib`, closed multi-shell B-reps additionally use
+temporary kernel classification to retain curved voids as `BREP_WITH_VOIDS`.
+Nested material islands and disjoint material regions become separate solids.
+The original Rust surfaces, edges and trims are retained; touching, crossing,
+inconsistent or unclassified shell groups fail before file replacement.
+Default builds still export unsupported curved cavity shells separately.
+Rhino 8.32 imports even canonical void regions as blocks of separate outward
+bodies; use 3DM for cavity transfer into this version. OCCT preserves their
+material solids and volumes.
+See [material-region export](step-regions.md) and [pole transfer evidence](step-poles.md).
 See [command details](commands/export-step.md).
 
 General editable STEP B-rep interchange remains partial. The low-level

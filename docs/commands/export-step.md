@@ -35,8 +35,16 @@ Certification uses exact coordinate predicates and requires straight edges,
 convex face polygons, and a consistent closed boundary. Cavities that touch or
 overlap another shell, or lie outside the outer shell, do not receive void
 semantics. Other edge-disconnected shells become separate STEP surface models.
-Curved cavity shells therefore lose their void relationship on Rhino import;
-use 3DM when that relationship must be retained.
+With the `native-smlib` application feature, closed multi-shell inputs also use
+native shell intersection and nesting checks. Curved outer shells and cavities
+retain one `BREP_WITH_VOIDS` shape per material region; nested islands and
+disjoint solids remain separate shapes. Only the resulting component plan is
+used: source geometry and document history are unchanged. Classification errors
+leave the destination intact. Without this feature, unsupported curved cavity
+shells export separately; use 3DM to retain their void relationship.
+Rhino 8.32 also separates canonical void regions into blocks of outward bodies
+on import. Use 3DM for cavity exchange with this version; the STEP material
+regions are independently validated with Open CASCADE.
 General compound B-rep identity, names, layers, groups, and materials are not
 yet serialized by this mode. Supported curved exports can be read back with
 `ImportStep Native=Yes` as editable B-reps. Convex solid, cavity, and
@@ -47,3 +55,4 @@ destination replacement.
 
 See [file-format limits](../file-formats.md) and [native STEP import](import-step.md).
 The [pole transfer capture](../step-poles.md) includes native Rhino import checks.
+See the subsequent [material-region export](../step-regions.md) for curved voids.

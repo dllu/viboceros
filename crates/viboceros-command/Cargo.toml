@@ -19,7 +19,7 @@ viboceros-io.workspace = true
 
 [features]
 default = []
-native-smlib = ["dep:viboceros-smlib"]
+native-smlib = ["dep:viboceros-smlib", "viboceros-io/native-smlib"]
 
 [dev-dependencies]
 serde_json.workspace = true

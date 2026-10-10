@@ -1,0 +1,39 @@
+[package]
+name = "viboceros-command"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
+num-bigint.workspace = true
+num-rational.workspace = true
+num-traits.workspace = true
+thiserror.workspace = true
+rand.workspace = true
+viboceros-document.workspace = true
+viboceros-drafting.workspace = true
+viboceros-geometry.workspace = true
+viboceros-io.workspace = true
+
+[features]
+default = []
+native-smlib = ["dep:viboceros-smlib"]
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile = "3.27.0"
+monstertruck.workspace = true
+
+[[example]]
+name = "curved_difference"
+required-features = ["native-smlib"]
+
+[[example]]
+name = "curved_sets"
+required-features = ["native-smlib"]
+
+[[example]]
+name = "curved_split"
+required-features = ["native-smlib"]

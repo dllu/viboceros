@@ -1,0 +1,386 @@
+# File formats
+
+[Project overview](../README.md) · [Command reference](commands/README.md)
+
+## Opening and saving 3DM files
+
+`Open3dm path` (or `Open path`) replaces the current document; `Import3dm path`
+merges a file into it. In the application, `SaveAs path.3dm` names the current
+file, and `Save` writes later changes to it. Saving over an existing file keeps
+the previous version beside it with the `.3dmbak` extension. `Export3dm path`
+writes the model without changing the application's current file name.
+
+Save and export preserve working viewport cameras, titles, construction planes,
+display modes, and grid settings. Open restores the views, layout, active
+viewport, maximized state, and active layer. `ReadViewportsFromFile path.3dm`
+copies views and layout into the current document without importing objects.
+
+## Paths and export behavior
+
+File commands preserve internal filename whitespace. Use double quotes around
+a filename to preserve leading/trailing whitespace or make the path explicit,
+for example `ExportStl Binary "parts/two  spaces.stl"`. Backslashes are literal,
+not escape sequences. An unterminated quote or text after the closing quote is
+an error before document edits; quotes are not a general modelling-command syntax.
+
+Path-based STL, STEP, and 3DM exports write to a temporary file beside the
+destination, flush/synchronize the completed contents, then replace the destination.
+Validation, writing, or commit failures leave the existing destination intact
+and remove the temporary file. Stream-based writers cannot roll back bytes
+already accepted by a caller's stream. This is not a power-loss durability
+guarantee for the containing directory.
+
+STL/STEP commands export all visible meshable objects, including locked objects
+and objects on locked layers. Object hiding, hidden layers, and `Isolate` affect
+that set; selection alone does not restrict it. `Export3dm` instead retains the
+whole model and its object/layer visibility and lock attributes. A mesh export
+with no visible meshable objects fails without replacing an existing destination.
+
+STL imports retain the file's unitless coordinates, including finite triangles
+below the document's modelling tolerance. `read_stl` and `read_stl_file` perform
+numerical validation without a tolerance argument. Neither import changes the
+document's units or tolerances; malformed, non-finite, and degenerate facets are
+still rejected. Binary export additionally checks for loss at 32-bit precision.
+Facet validation does not impose the default angular modelling tolerance:
+very thin non-collinear triangles are retained. Cross-product determinants
+compensate product rounding so exactly parallel edges do not gain artificial area.
+The ASCII reader accepts one solid block, case-insensitive keywords, whitespace,
+and free-form solid names. It rejects incomplete facets, extra geometry fields,
+and nonblank content after `endsolid`. Record tokenization uses bounded stack
+storage; this does not impose a file-size or line-length limit.
+
+Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
+OpenNURBS toolkit and preserves points, point-cloud locations, lines, circular arcs, NURBS
+curves, parameterized polylines, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes with connected, single-boundary n-gon face groups, and editable
+rational NURBS B-reps. Mesh faces retain their arity, and supported n-gon boundary and member-face tables survive 3DM round trips. B-rep
+interchange retains shared vertices and edges, exact edge and
+parameter-space trim curves, face surfaces and orientation, outer and inner
+loops, boundary/mated/seam/singular trims, and modelling tolerances. Layer and
+object state are also preserved, including the raw RGB display color, its
+layer/object/material/parent source, and surface wire density. Named group
+definitions and ordered membership survive round trips, including overlapping
+and empty groups.
+[Collapsed mesh records](mesh-edit-records.md) from grip edits also retain face
+indices, colors and n-gons in 3DM; STL export rejects zero-area facets atomically.
+The low-level `ThreeDmModel` reader and writer also retain named model views,
+including projection, camera, target, CPlane, and frustum. Unit-converted reads
+scale their positions and frustum distances along with model geometry. The
+named construction-plane table retains plane frames, grid and snap spacing, line
+counts, thick-line frequency, and the 3DM depth-buffer flag. It is saved with the
+model and can be imported alone with `NamedCPlane Import path.3dm`; unit-converted
+reads scale plane origins and spacing. The GUI's session `NamedView` list is
+included in `Import3dm` and `Export3dm`; Save and
+Open also preserve current model viewports, including their grid and snap settings
+and the active viewport. Saved viewport titles are displayed and used by
+`SetActiveViewport` and `SetMaximizedViewport` after Open or
+`ReadViewportsFromFile`. Unit-converted reads scale grid and snap spacing with
+the camera and construction plane. Open maps four saved window positions into
+the matching 2×2 slots and renders their normalized rectangles, preserving
+unequal splits. Files with three views retain their own rectangles; missing or
+invalid rectangles use a layout appropriate to the number of views. Layouts
+created by `SplitViewportHorizontal` and `SplitViewportVertical` save each
+viewport and its rectangle. Centered overlapping views created by
+`NewViewport` are saved with their own rectangles as well.
+`ReadViewportsFromFile path.3dm` reads the saved model viewports,
+converting camera positions, frustum distances, and grid spacing into the
+current document's units. It leaves objects, layers, named views, and the
+current file path in place. A file with no model viewports is rejected.
+`NamedView Import path.3dm` reads only named views, converts camera and frustum
+coordinates into the current units, and resolves duplicate names with numbered
+suffixes; model objects, viewport layout, and document history stay in place.
+Open restores the file's current layer when it is visible and unlocked; `Import3dm` keeps
+the destination's current layer.
+3DM round trips also keep user text attached to object attributes and user text
+attached to geometry as separate collections, including identical keys in both.
+Low-level B-rep readers/writers preserve raw face sense. On admission to a
+document, `Import3dm` now globally reverses known inward solids, as measured in
+Rhino's file import; unsupported/unknown orientation and nonsolids remain as read.
+This is the same [document-admission policy](document-brep-admission.md) as Add
+and explicit replacement, not a modification of the source file or its low-level
+geometry representation. Nested cavity senses are retained relative to each other.
+Unnamed groups receive deterministic `GroupNN` names on export without changing
+the document. All existing names are reserved before allocation; a single
+candidate sequence avoids repeated scans when many unnamed groups are exported.
+3DM import resolves name collisions with ` (Imported N)` suffixes, preserving
+ASCII-case-insensitive layer matching and case-sensitive group matching. A
+per-import name index and per-base suffix cursors avoid scanning the document
+for every collision candidate or restarting suffix allocation for repeated names.
+File-level regression tests cover repeated imports across undo/redo, including
+renamed layer assignments, ordered memberships, and hidden/locked layer state.
+Standalone circle and ellipse objects are exported without approximation as
+rational NURBS curves. Arc objects retain their analytic type and native domain.
+Polylines retain their native object type and every vertex parameter;
+degree-one NURBS remain NURBS instead of being classified by a knot-vector heuristic.
+Unsupported object types and specialized B-rep trim forms are
+counted and reported during import.
+[Embedded block definitions/references](three-dm-structural-blocks.md) now round
+trip as editable shared definitions and native instance records. Prototype objects
+remain outside the model object table. Missing/cyclic definitions and invalid
+placements fail before document edits; linked/external definitions remain
+unsupported. The low-level [flattened reader](three-dm-blocks.md) is still available.
+Eight [morphed B-rep cross-reader cases](brep-3dm-interchange.md) check actual
+native exports in Rhino, including holes, seams, singular trims and usable meshes.
+
+Polycurves remain composite objects with native line/arc/polyline/NURBS leaves,
+independent parameter intervals, and rational control structure. Nested source
+composites are flattened on a private copy. Circular segments retain angular
+evaluation and endpoint-editing behavior; they are not silently converted to NURBS.
+The bridge shares a versioned, validated binary codec
+for B-reps and polycurves, checks payload sizes before allocation, and rejects
+malformed or trailing data. The typed polycurve payload is version 2; the reader
+also accepts version 1 NURBS-only payloads. It does not fit curves or average endpoints.
+Free NURBS curves with internal full-order knots are decomposed into valid native
+pieces before export. Connected pieces become PolyCurves; positional gaps produce
+separate objects with the original attributes. Export reports the actual object
+count without editing the document. See [full-order curve interchange](curve-3dm-interchange.md)
+for parameter preservation, cross-reader tests, and remaining limits.
+The [rational range adapter](rational-3dm-range.md) prevents silent homogeneous
+coordinate underflow, chooses safe common weight scales when needed, and imports
+subnormal-weight curves and surfaces through direct homogeneous division.
+An independently generated Rhino 8 nested line/arc reference is retained in
+`crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
+alongside it. Tests check the analytic locus and subsequent round trip.
+
+When a distinct, finite line is below OpenNURBS's `LineCurve` coincidence
+threshold, 3DM export uses an exact degree-one NURBS instead. Endpoints and the
+native parameter interval are preserved, but the imported representation is a
+NURBS curve. The same fallback applies to individual line segments in polycurves;
+ordinary line segments retain their analytic representation.
+
+The low-level 3DM I/O model preserves standard, unitless, unset, and custom
+length-unit metadata (`ThreeDmModel::units`). Custom names and finite,
+positive metres-per-unit scales round-trip without rescaling coordinates;
+new I/O models explicitly default to millimetres. The shared
+`LengthUnitSystem` provides validated, checked conversion factors;
+`Document::with_units` initializes explicit document units, and 3DM export
+retains them. Default documents use millimetres. `Import3dm` converts file
+coordinates to document units before editing the document. Defined primitives
+use numerical validation rather than a document-dependent minimum feature size,
+both during decoding and conversion; short lines are not reported as unsupported
+merely because they are below the modelling tolerance. Source-space B-rep
+topology-matching tolerance is converted to the source units.
+That conversion is deferred until a B-rep is decoded: a point-only file is
+not rejected because an unused matching tolerance would over/underflow.
+If a B-rep needs an unrepresentable source tolerance, the import fails with
+an explicit error rather than silently skipping the B-rep.
+Native-file command regressions cover both extremes, including attribute/group
+preservation, exact Undo/Redo restoration, unchanged target settings, and failed
+mixed-geometry imports preserving the complete document and redo history.
+Unitless files retain coordinates; unset units and unrepresentable conversion
+factors or transformed coordinates are errors. The low-level
+`read_3dm_file` still reads raw file coordinates, while
+`read_3dm_file_in_units` performs the conversion. The document API supports
+undoable unit changes through `Document::set_units`; see [document units](units.md).
+The [Units command](commands/units.md) exposes standard and custom model-unit changes;
+the toolbar reports the current units but has no settings editor.
+3DM export also preserves the document's absolute, relative, and angular model
+tolerances. Raw reads expose file tolerance metadata separately from geometry
+decoding tolerance. Unit-aware reads and import commands retain destination
+tolerances; see [tolerance settings and encoding limits](tolerances.md).
+
+Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
+solid/shell B-reps and assemblies. The independent `step/export` module owns
+mesh-to-shell construction, source-unit conversion, and staged destination
+writes; it shares the geometry-record adapters but not the importer's parsing
+or tessellation machinery. Imports apply instance transforms and robustly
+tessellate exact trimmed surfaces into validated display meshes. Tessellation
+extent samples use range-safe quarter stations with exact parameter
+endpoints. Relative extent sizing scales axis spans before computing the diagonal,
+avoiding overflow when finite endpoints span more than the binary64 range.
+Unit tests cover extreme opposite-sign parameter domains and finite coordinates
+up to `f64::MAX`; these validate tolerance setup, not the downstream kernel's
+ability to tessellate arbitrary geometry at those scales. Extent
+sampling rejects non-finite vertex, curve, or surface points before tessellation;
+the extent accumulator validates every coordinate before changing its bounds,
+so NaNs cannot silently disappear through floating-point min/max. Repeated
+assembly instances share source-space tessellation during each import, but
+each transformed mesh is validated independently. Cached tessellations are
+released after their last instance; shell-conversion losses are reported
+once per source shape, not once per instance. Parser,
+topology, and unsupported-representation losses are reported instead of being
+silent. Default STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
+exact outer and inner p-curves are sampled into a constrained UV triangulation
+so holes remain open, with interior knot-span samples refining nonplanar
+trimmed surfaces. STEP writes the results as faceted shells with shared
+topology and planar faces. `ExportStep` converts physical document units to
+millimetres. Edge sharing follows raw vertex indices: coincident but unwelded
+seams remain separate. Sixteen endpoint-sharing/winding/order cases check every
+directed face boundary against source triangle indices; two quad cases check
+the shared triangulation diagonal and opposite edge-use orientations. The
+generated STEP files are also parsed and checked for face/edge record counts.
+These establish the exporter's topology policy, not Rhino seam-conversion parity.
+
+Before serialization, the exporter partitions faces by shared raw edges into
+separate shells, in first-face order, retaining face order within each piece.
+This follows the [STEP connected-face-set shell hierarchy](https://steptools.com/docs/stp_aim/html/t_connected_face_set.html).
+Coordinate-only seam contacts and lone shared vertices do not join components.
+Edges and faces are moved into component-local tables; shared point-only vertices
+are copied and references remapped. Tests cover 257 interleaved panels and a
+two-component export/import round trip. One disconnected mesh can therefore
+import back as multiple objects. Non-manifold connected shells are not repaired
+or certified by this partitioning.
+Connectivity uses ranked unions with path compression over edge incidences,
+without allocating per-face neighbor lists. An independent graph traversal
+checks all 1,100 graphs on zero through five faces, including deterministic
+component/face order, original curve identities, vertex remapping, and edge-use
+orientation. These abstract incidence tests complement the geometric fixtures.
+The `step/export_plane` adapter writes plane placements using
+the native kernel's scale-safe facet normals and reference directions. Parsed
+STEP regression records check finite unit directions and reversed winding from
+mesh scales `1e-200` through `1e200`, including translated origins. Parsed line
+magnitudes also match independent triangle edge lengths. This tests
+serialization, not downstream tessellation or Rhino parity at those scales.
+The `step/export_geometry` adapter writes coordinates, directions, and line
+lengths with an explicit decimal point and uppercase exponent. This fixes
+unparseable records such as a bare `1e21` coordinate. A 12,282-value binary64
+matrix checks exact numeric round trips, including subnormals and signed zero.
+Geometry-number formatting uses a checked 32-byte stack buffer rather than a
+temporary heap string per value. Buffer overflow returns a formatting error
+without truncation or partial append; output-stream buffering is separate.
+Path-based STEP exports buffer record writes and explicitly flush before syncing
+and committing the staged file. Fault-injection tests check buffered write and
+flush errors; staged-file tests check callback failure, cleanup, and successful
+flush-before-commit. A counting sink receives one write for 1,000 four-byte
+fragments. This is a write-count regression, not a wall-clock benchmark.
+Low-level stream exports leave buffering and flushing to their caller.
+The line adapter precomputes finite lengths and unit directions with the native
+kernel's scale-safe norm and normalization, once per unique exported edge.
+Formatting does not repeat geometric arithmetic. Some
+valid extreme-scale native meshes have edge differences or lengths beyond binary64;
+these return an explicit error instead of emitting invalid STEP directions.
+Regression tests cover huge meshes, including failure after a valid
+earlier mesh, and verify unchanged output streams and existing destinations.
+`ExportStep` writes the correspondingly converted absolute tolerance as
+the file's distance accuracy. Full-file parsing tests check exact declared
+accuracy from `f64::MIN_POSITIVE`
+through `f64::MAX`, independently of coordinate magnitude.
+Unitless and unset documents are rejected; conversion failures leave an
+existing destination unchanged. The low-level
+`write_step`/`write_step_file` APIs interpret coordinates as millimetres;
+their `_in_units` counterparts accept explicit source units and tolerance.
+
+`ExportStep Native=Yes` writes editable B-reps as STEP faces and shared edges.
+Planar straight-edged inputs use plane and line entities; curved or nonplanar
+inputs use rational B-splines where needed and explicit UV p-curves on curved
+faces. It preserves face/edge incidence and converts coordinates to millimetres
+without rebuilding the source B-rep's UV trims. Full-turn cylinder walls with
+paired `SEAM_CURVE` uses round trip as editable faces. In a connected shell
+containing a NURBS face, planar neighbors also retain NURBS UV parameterization
+and explicit p-curves. Certified singular trims retain their UV boundaries with
+constant spatial spline supports; sphere poles and cone apices round trip.
+Mixed-sign NURBS weights, uncertified singular boundaries, and non-B-rep
+document objects produce an explicit error; staged file replacement leaves an existing
+destination intact. Certified convex planar polyhedra become STEP solids;
+strictly contained, disjoint inward convex cavities remain one solid shape.
+Other edge-disconnected shells become separate STEP surface models, so general
+compound B-rep object grouping, names, and materials are not yet preserved.
+In particular, a curved inner cavity shell exports separately and loses its
+void relationship on Rhino import. See [pole transfer evidence](step-poles.md).
+See [command details](commands/export-step.md).
+
+General editable STEP B-rep interchange remains partial. The low-level
+`read_step_planar_shells` API converts supported planar source shell definitions
+to validated native B-reps without tessellation; its `_in_units` counterpart
+converts uniform file units into explicit target units. Neither provides assembly
+placement or document integration themselves. `ImportStep` defaults to meshes;
+[`ImportStep Native=Yes`](commands/import-step.md) imports supported planar and
+NURBS shells as editable B-reps, combining each occurrence's outer/cavity shells into
+one document object while retaining topology and orientation.
+The separate `read_step_planar_instances` API applies assembly placements in
+file units, retains occurrence names and grouping indices, and expands oriented
+outer/void and surface-model shells into native shell entries. It does not yet
+assemble classified solids or insert document objects. Its `_in_units`
+counterpart converts placed geometry and assembly translations to target units
+while preserving UV trims, occurrence grouping, and diagnostics.
+`read_step_native_instances` and its `_in_units` counterpart extend that
+assembly path to NURBS/B-spline surfaces, edges, and UV trims. Analytic circle
+and ellipse arcs on supported faces convert to exact multi-span rational NURBS.
+Bounded parabola and hyperbola edges and UV trims convert to exact quadratic NURBS.
+Cylinder and nonsingular cone faces with straight UV iso-trims spanning up to
+one turn also convert to exact rational NURBS patches. Certified collinear
+higher-degree p-curves can represent those iso-trims; paired `SEAM_CURVE` uses
+on a full-turn wall are supported. Ring-torus patches and spherical bands away
+from the poles with straight UV iso-trims convert to exact rational patches,
+including full-angle seam strips. Polar singular trims remain unsupported.
+Linear extrusions of line, polyline, bounded conic, and B-spline/NURBS directrices
+convert to exact tensor-product NURBS surfaces. Revolutions of those directrices
+with straight UV iso-trims convert to exact rational patches over angles up to
+one turn, including
+paired full-turn seams. NURBS faces can have polygon holes with certified
+straight-segment or degree-one polyline UV trims, including higher-degree
+collinear NURBS straight segments. Multi-point STEP polylines are retained as
+exact degree-one NURBS edges and trims. Curved UV
+holes can also use a closed Bézier-span NURBS trim under a strict convex
+containment certificate. Certified curved outer loops can contain holes
+strictly inside their convex endpoint polygon. Other curved multi-loop regions
+remain unsupported.
+`PCURVE` edge geometry on a STEP plane, line extrusion, or certified affine
+2-by-2 B-spline/NURBS patch lifts exactly to 3D NURBS while retaining degree,
+knots, and rational weights. Other p-curve bases still need exact surface-curve
+composition.
+Degree-one, two-control-point isoparametric `PCURVE` edges with same-sign weights
+on curved B-spline/NURBS bases, linear extrusions of curved directrices,
+supported surfaces of revolution, and cylindrical, conical, spherical, or
+toroidal faces import as exact trimmed NURBS isocurves, keeping the source
+p-curve domain. Circular directions keep the exact locus and map arc span
+crossings into that domain; their interior angle follows the rational arc
+parameterization.
+Straight diagonal p-curves on single degree-one 2-by-2 B-spline/NURBS patches
+also import as exact rational quadratic edges. Clamped single-span higher-degree
+patches compose to exact rational Bézier edges up to degree 64. Unclamped
+higher-degree single-span surfaces are clamped at their active domain before
+composition. Rational degree-one straight UV p-curves with unequal endpoint
+weights retain their source parameterization through curved B-spline/NURBS
+patches, including multi-span isocurves.
+Higher-degree polynomial and rational UV Bézier spans compose on non-affine
+B-spline/NURBS bases. Interior surface-knot crossings are isolated with exact
+binary-rational Bernstein subdivision, then split at representable curve
+parameters. Numerically inseparable crossings fail native import.
+Straight diagonals across multi-span B-spline/NURBS surfaces also import as
+joined rational spans when their knot crossings have
+distinct representable parameters; numerically inseparable crossings fail
+native import.
+Other analytic surface types and
+periodic seam arrangements still fail native import.
+The native planar path supports straight-edged polygon holes, identifies the
+outer loop independently of source ordering, and rejects crossing, touching,
+outside, or nested hole boundaries before committing native topology.
+The [native B-rep conversion boundary](step-brep-boundary.md) records the retained
+source topology/trim evidence and the representation work still required.
+
+Assembly regression tests include repeated parts beneath a translated,
+rotated parent, with expected corner coordinates checked independently of
+the importer's matrix arithmetic. These are generated STEP fixtures, not
+Rhino parity measurements. `ImportStep` resolves SI prefixes and
+conversion-based length units (including nested conversion factors), then
+converts coordinates into document units. Tessellation accuracy uses the
+modelling tolerance in source coordinates, while resulting triangles and unit
+transformations use numerical validity checks. Small finite faces are retained;
+genuine collapse remains an error. Export likewise preserves valid small meshes
+while converting the declared file accuracy separately. This
+currently requires a single data section with uniform length units across
+contexts. Missing, mixed, cyclic, or unsupported unit definitions are rejected
+before document edits. Conversion-based plane-angle units, including degrees,
+are accepted for geometry without stored angular parameters, including planar
+solids with straight, circular, or elliptical edges and NURBS surfaces with
+parameter-space trims. Those conic arcs are bounded by endpoint vertices.
+Cylinder, cone, sphere, torus, and surface-of-revolution faces with 2D line,
+polyline, and B-spline trims convert their angular UV coordinates to radians
+before import, including diagonal trims and patches spanning more than half a
+turn. Revolved surfaces convert U while retaining the profile curve's V
+parameter. Linear extrusions inherit U from their directrix: circle and ellipse
+directrices use angular U, while line, polyline, and B-spline directrices do
+not. Surface-curve and p-curve wrappers follow their underlying curve's
+parameterization. Cone semi-angles are converted too. Explicit angular curve
+trims, conic p-curves on angular surfaces, and other angular surfaces remain
+unsupported in non-radian contexts and are rejected before import. Angular
+surfaces also require an assigned plane-angle unit. Mixed-unit assembly
+conversion remains unimplemented. The low-level `read_step` and
+`read_step_file` APIs retain raw file coordinates; their `_in_units`
+counterparts perform checked conversion.
+Both reader paths reject zero or multiple data sections explicitly rather
+than panicking or silently ignoring later sections. UTF-8 decoding retains
+the Latin-1 fallback for legacy raw header bytes.
+The unit-aware reader also rejects duplicate complex-entity components and
+checks explicit dimensional exponents against length dimensions. Conversion
+units must reference dimensions; SI units may use their derived dimensions.

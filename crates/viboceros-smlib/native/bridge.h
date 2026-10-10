@@ -30,6 +30,9 @@ int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capaci
 int vb_solid_from_brep(const VbBrepView *view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward, VbSolid **out, char *error,
                        size_t capacity);
+int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance, const size_t *components,
+                            size_t component_count, const int *inward, size_t *parents,
+                            size_t parent_capacity, VbSolid **out, char *error, size_t capacity);
 int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, char *error,
                   size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);

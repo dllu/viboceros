@@ -420,6 +420,17 @@ where
     S: StepFormat + StepLength + StepSurface,
 {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> Result {
+        self.fmt_with_reversal(formatter, false)
+    }
+}
+
+impl<P, C, S> StepShell<'_, P, C, S>
+where
+    P: StepFormat + Copy,
+    C: StepFormat + StepLength + StepCurve,
+    S: StepFormat + StepLength + StepSurface,
+{
+    fn fmt_with_reversal(&self, formatter: &mut Formatter<'_>, reversed: bool) -> Result {
         let StepShell {
             vertices,
             edges,
@@ -465,7 +476,7 @@ where
             // `CompressedFace` orientation.
             formatter.write_fmt(format_args!(
                 "#{idx} = ADVANCED_FACE('', {face_bound}, #{face_geometry}, {same_sense});\n",
-                same_sense = BooleanDisplay(f.orientation == f.surface.same_sense()),
+                same_sense = BooleanDisplay((f.orientation ^ reversed) == f.surface.same_sense()),
                 face_bound = IndexSliceDisplay(face_bounds.clone()),
             ))?;
             cursor = idx + 1;
@@ -501,7 +512,7 @@ where
                     //
                     // This used to be an unconditional `.T.`, which round-tripped
                     // only because the LOADER dropped the same composition.
-                    orientation = BooleanDisplay(f.orientation),
+                    orientation = BooleanDisplay(f.orientation ^ reversed),
                     oriented_edge_indices =
                         IndexSliceDisplay(ep_oriented_edges..ep_oriented_edges + b.len()),
                 ))?;
@@ -653,9 +664,12 @@ where
                     let oriented_shell_idx = step_shell.face_indices[0] - 2;
                     let shell_idx = step_shell.face_indices[0] - 1;
                     f.write_fmt(format_args!(
-                    "#{oriented_shell_idx} = ORIENTED_CLOSED_SHELL('', *, #{shell_idx}, .T.);\n",
+                    "#{oriented_shell_idx} = ORIENTED_CLOSED_SHELL('', *, #{shell_idx}, .F.);\n",
                 ))?;
-                    Display::fmt(step_shell, f)
+                    // STEP requires FALSE-oriented void shells. Reverse the
+                    // underlying faces so the oriented result retains the
+                    // caller's material boundary sense without changing geometry.
+                    step_shell.fmt_with_reversal(f, true)
                 })
             }
         }

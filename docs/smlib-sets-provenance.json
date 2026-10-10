@@ -69,9 +69,6 @@
     "crates/viboceros-command/src/boolean_solids.rs": "7d12f1070118303e610bff7115642a503c8bed170e8fc2fdcf26b4da1dd73751",
     "crates/viboceros-command/src/boolean_solids/native.rs": "acaa118e25aee05592d2805c9d685ad3415746c02c08c66d78544483128fe5db",
     "crates/viboceros-command/src/boolean_union.rs": "6824a048e84dd3e0cc636004b18c8b686fbfa31d4eff9a71603e45ba6f99f4a7",
-    "crates/viboceros-smlib/native/bridge.cpp": "6f9e8cebb3e6ca68d02fbb6346d90897829cc2814cd61ccff3f7ecaae7e4e64f",
-    "crates/viboceros-smlib/native/bridge.h": "9a4fb0bbbb66f94fa74754ad151daddea40d2689148efafee3c16e0962b29a9e",
-    "crates/viboceros-smlib/src/native/brep.rs": "59e6656ac3b620de0f6823e7281daff309ee3c82407df72c9e505f301481a755",
     "crates/viboceros-smlib/tests/boundary_contact.rs": "d1440b1cc4dfeb37c97d2f05efc39b8d8fc20e5d88a43103233162d3c787c0d6",
     "docs/commands/boolean-intersection.md": "4270eedeb2bc6a4c661c389a3b5bd2bb525840a3a064d878547bd9ad2fe90fee",
     "docs/commands/boolean-union.md": "cb8311cdcd044e7744ff901682702eda0170fc9039d2585fa865065f83aee39e",
@@ -115,6 +112,9 @@
     "docs/smlib-split-prior-source/docs/development.md": "6b36f425579dd4c7c41f9f2d4bd38515a7427d33450a389f4ab1df5df29d685a",
     "docs/smlib-split-prior-source/docs/smlib-set-booleans.md": "0b460f6ecfa5c665104239eee97bd0847d6b104a18b2b4ba991252287051190e",
     "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
-    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f"
+    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/src/native/brep.rs": "59e6656ac3b620de0f6823e7281daff309ee3c82407df72c9e505f301481a755",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/bridge.cpp": "6f9e8cebb3e6ca68d02fbb6346d90897829cc2814cd61ccff3f7ecaae7e4e64f",
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/bridge.h": "9a4fb0bbbb66f94fa74754ad151daddea40d2689148efafee3c16e0962b29a9e"
   }
 }

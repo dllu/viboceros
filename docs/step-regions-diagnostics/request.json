@@ -1,0 +1,48 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/sphere-cavity.step",
+      "case": "sphere-cavity",
+      "id": "sphere-cavity",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/concentric-shells.step",
+      "case": "concentric-shells",
+      "id": "concentric-shells",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/nested-island.step",
+      "case": "nested-island",
+      "id": "nested-island",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/torus-cavity.step",
+      "case": "torus-cavity",
+      "id": "torus-cavity",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/torus-hole.step",
+      "case": "torus-hole",
+      "id": "torus-hole",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/box-two-cavities.step",
+      "case": "box-two-cavities",
+      "id": "box-two-cavities",
+      "op": "step_regions"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-regions-final-qualified/cone-cavity.step",
+      "case": "cone-cavity",
+      "id": "cone-cavity",
+      "op": "step_regions"
+    }
+  ],
+  "protocol_version": 1
+}

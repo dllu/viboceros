@@ -1,0 +1,12 @@
+   Compiling monstertruck-io v0.4.0 (/home/dllu/proj/viboceros/third_party/monstertruck-io)
+   Compiling monstertruck v0.4.0
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Finished `release` profile [optimized] target(s) in 18.35s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/step_regions /tmp/viboceros-step-regions-final-qualified`
+sphere-cavity: 1 material region(s), volume 966.489678361709
+concentric-shells: 1 material region(s), volume 234.572251468038
+nested-island: 2 material region(s), volume 235.095850243636
+torus-cavity: 1 material region(s), volume 78.891385361765
+torus-hole: 2 material region(s), volume 79.480433984313
+box-two-cavities: 1 material region(s), volume 991.622419590427
+cone-cavity: 1 material region(s), volume 20.878501176982

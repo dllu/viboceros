@@ -1,0 +1,170 @@
+{
+  "rhino_engine": "8.32.26160.13001",
+  "occt_engine": "7.6.3",
+  "cases": [
+    {
+      "id": "sphere-cavity",
+      "occt_material_solids": 1,
+      "occt_volumes": [
+        966.4896783538596
+      ],
+      "maximum_occt_relative_volume_error": 8.121432139988092e-12,
+      "source_relative_volume_error": 8.121314511377806e-12,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 2,
+      "rhino_volumes": [
+        33.510321638288815,
+        1000.0000000000003
+      ],
+      "maximum_rhino_leaf_volume_error": 6.89120180983762e-14,
+      "boundary_samples": 1353,
+      "maximum_boundary_error": 2.6645352591003757e-15,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry"
+      ],
+      "top_level_objects": 1
+    },
+    {
+      "id": "concentric-shells",
+      "occt_material_solids": 1,
+      "occt_volumes": [
+        234.57225152298517
+      ],
+      "maximum_occt_relative_volume_error": 2.342446414441096e-10,
+      "source_relative_volume_error": 2.342446414441096e-10,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 2,
+      "rhino_volumes": [
+        33.51032163828884,
+        268.08257310629597
+      ],
+      "maximum_rhino_leaf_volume_error": 1.2319348466202023e-13,
+      "boundary_samples": 330,
+      "maximum_boundary_error": 4.440892098500626e-16,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry"
+      ],
+      "top_level_objects": 1
+    },
+    {
+      "id": "nested-island",
+      "occt_material_solids": 2,
+      "occt_volumes": [
+        0.523598775720949,
+        234.57225152298517
+      ],
+      "maximum_occt_relative_volume_error": 2.3424467173510654e-10,
+      "source_relative_volume_error": 2.3424459664851493e-10,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 3,
+      "rhino_volumes": [
+        0.5235987755448277,
+        33.51032163828884,
+        268.08257310629597
+      ],
+      "maximum_rhino_leaf_volume_error": 1.0212230989732443e-10,
+      "boundary_samples": 495,
+      "maximum_boundary_error": 4.440892098500626e-16,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry",
+        "Rhino.Geometry.Brep"
+      ],
+      "top_level_objects": 2
+    },
+    {
+      "id": "torus-cavity",
+      "occt_material_solids": 1,
+      "occt_volumes": [
+        78.89138538024478
+      ],
+      "maximum_occt_relative_volume_error": 2.342424349855141e-10,
+      "source_relative_volume_error": 2.342424349855141e-10,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 2,
+      "rhino_volumes": [
+        0.0654498471122178,
+        78.9568352086606
+      ],
+      "maximum_rhino_leaf_volume_error": 2.4817543762882314e-09,
+      "boundary_samples": 363,
+      "maximum_boundary_error": 1.7763568394002505e-15,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry"
+      ],
+      "top_level_objects": 1
+    },
+    {
+      "id": "torus-hole",
+      "occt_material_solids": 2,
+      "occt_volumes": [
+        0.523598775720949,
+        78.95683522720991
+      ],
+      "maximum_occt_relative_volume_error": 2.3424467173510654e-10,
+      "source_relative_volume_error": 2.3424252577029875e-10,
+      "rhino_material_transfer": true,
+      "rhino_leaf_solids": 2,
+      "rhino_volumes": [
+        0.5235987755448277,
+        78.9568352086606
+      ],
+      "maximum_rhino_leaf_volume_error": 1.0212230989732443e-10,
+      "boundary_samples": 363,
+      "maximum_boundary_error": 1.7763568394002505e-15,
+      "top_level_types": [
+        "Rhino.Geometry.Brep",
+        "Rhino.Geometry.Brep"
+      ],
+      "top_level_objects": 2
+    },
+    {
+      "id": "box-two-cavities",
+      "occt_material_solids": 1,
+      "occt_volumes": [
+        991.622419588465
+      ],
+      "maximum_occt_relative_volume_error": 1.9786978324348415e-12,
+      "source_relative_volume_error": 1.9786978324348415e-12,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 3,
+      "rhino_volumes": [
+        4.1887902047765015,
+        4.188790204776504,
+        1000.0000000000003
+      ],
+      "maximum_rhino_leaf_volume_error": 2.3608197215609864e-12,
+      "boundary_samples": 1518,
+      "maximum_boundary_error": 1.3322676295501878e-15,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry"
+      ],
+      "top_level_objects": 1
+    },
+    {
+      "id": "cone-cavity",
+      "occt_material_solids": 1,
+      "occt_volumes": [
+        20.878501181872856
+      ],
+      "maximum_occt_relative_volume_error": 2.3424511774392394e-10,
+      "source_relative_volume_error": 2.3424511774392394e-10,
+      "rhino_material_transfer": false,
+      "rhino_leaf_solids": 2,
+      "rhino_volumes": [
+        0.06544984711221753,
+        20.94395102393128
+      ],
+      "maximum_rhino_leaf_volume_error": 2.481750347585635e-09,
+      "boundary_samples": 528,
+      "maximum_boundary_error": 4.638672900218651e-16,
+      "top_level_types": [
+        "Rhino.Geometry.InstanceReferenceGeometry"
+      ],
+      "top_level_objects": 1
+    }
+  ],
+  "geometric_epsilon": 1e-08,
+  "occt_relative_volume_epsilon": 1e-08,
+  "rhino_relative_leaf_volume_epsilon": 5e-08,
+  "scope": "OCCT validates material solids and volumes. Rhino boundary samples qualify shell geometry, but Rhino imports void regions as blocks of separate outward bodies and loses material semantics. General self-intersection validity and complete interactive equivalence remain unproven."
+}

@@ -4,6 +4,8 @@ use std::io::Cursor;
 use super::*;
 mod extrusion_pcurves;
 mod pole_trims;
+#[cfg(feature = "native-smlib")]
+mod regions;
 
 #[test]
 fn nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves() {

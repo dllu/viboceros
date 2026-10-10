@@ -64,6 +64,8 @@ outward solids. Its void relationship and source material volume are lost.
 The boundary samples agree, but this fixture is explicitly **not** qualified
 as a solid transfer. Use 3DM to retain curved cavity semantics. General curved
 `BREP_WITH_VOIDS` certification and grouping remain further work.
+The subsequent [material-region exporter](step-regions.md) addresses curved
+grouping in builds with `native-smlib`; this earlier capture remains unchanged.
 
 [Exact STEP inputs and logs](step-poles-diagnostics/),
 [native capture](step-poles-native-reference.json),
