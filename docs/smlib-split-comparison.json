@@ -1,0 +1,78 @@
+{
+  "engine": "8.32.26160.13001",
+  "cases": [
+    {
+      "id": "piece-0",
+      "native_solid": true,
+      "z_range": [
+        0.0,
+        4.0
+      ],
+      "boundary_samples": 429,
+      "maximum_boundary_error": 8.881784197001252e-16,
+      "faces": 3,
+      "edges": 4,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 0,
+        "closed": true,
+        "manifold": true,
+        "oriented": true
+      }
+    },
+    {
+      "id": "piece-1",
+      "native_solid": true,
+      "z_range": [
+        6.0,
+        10.0
+      ],
+      "boundary_samples": 429,
+      "maximum_boundary_error": 2.6645352591003757e-15,
+      "faces": 3,
+      "edges": 4,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 0,
+        "closed": true,
+        "manifold": true,
+        "oriented": true
+      }
+    },
+    {
+      "id": "piece-2",
+      "native_solid": true,
+      "z_range": [
+        4.0,
+        6.0
+      ],
+      "boundary_samples": 297,
+      "maximum_boundary_error": 2.6645352591003757e-15,
+      "faces": 3,
+      "edges": 3,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 0,
+        "closed": true,
+        "manifold": true,
+        "oriented": true
+      }
+    }
+  ],
+  "geometric_epsilon": 1e-08,
+  "qualified_ranges": [
+    [
+      0.0,
+      4.0
+    ],
+    [
+      4.0,
+      6.0
+    ],
+    [
+      6.0,
+      10.0
+    ]
+  ],
+  "scope": "Native solid validity and boundary samples qualify these artifacts; full interactive partition parity remains unproven."
+}

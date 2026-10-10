@@ -1,0 +1,8 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 25s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/curved_split /tmp/viboceros-curved-split-qualified`
+piece-0: volume 50.265482457907, wrote /tmp/viboceros-curved-split-qualified/piece-0.3dm
+piece-1: volume 50.265482457907, wrote /tmp/viboceros-curved-split-qualified/piece-1.3dm
+piece-2: volume 25.132741227777, wrote /tmp/viboceros-curved-split-qualified/piece-2.3dm

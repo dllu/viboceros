@@ -3,6 +3,8 @@ use super::*;
 use std::borrow::Cow;
 
 const USAGE: &str = "BooleanSplit [DeleteInput=Yes|No] FirstSet=ids SecondSet=ids";
+#[cfg(feature = "native-smlib")]
+mod native;
 #[cfg(test)]
 mod tests;
 
@@ -96,82 +98,95 @@ impl BooleanSplitCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let closed = refs
-            .iter()
-            .enumerate()
-            .filter(|(_, b)| b.is_solid())
-            .collect::<Vec<_>>();
-        let (_, contacts) = boolean_solids::interactions(
-            &closed.iter().map(|(_, b)| **b).collect::<Vec<_>>(),
-            doc.tolerance(),
-            false,
-        )?;
-        let interactions = contacts
-            .into_iter()
-            .map(|[a, b]| [closed[a].0, closed[b].0])
-            .collect::<Vec<_>>();
-        let surfaces = refs.iter().any(|b| !b.is_solid());
-        let indices = ids
-            .iter()
-            .enumerate()
-            .map(|(i, id)| (*id, i))
-            .collect::<BTreeMap<_, _>>();
-        let mut copies = Vec::new();
-        let mut changed = Vec::new();
-        for &target in &first {
-            let index = indices[&target];
-            let cutters = second
+        let prepared = (|| -> Result<_, CommandError> {
+            let closed = refs
                 .iter()
-                .filter_map(|id| {
-                    let j = indices[id];
-                    (j != index
-                        && (!refs[index].is_solid()
-                            || !refs[j].is_solid()
-                            || interactions.contains(&[index.min(j), index.max(j)])))
-                    .then_some(refs[j])
-                })
+                .enumerate()
+                .filter(|(_, b)| b.is_solid())
                 .collect::<Vec<_>>();
-            if cutters.is_empty() {
-                continue;
-            }
-            let mut pieces = partition(refs[index], &cutters, surfaces, doc.tolerance())?;
-            if refs[index].is_solid() {
-                let components = refs[index].edge_connected_face_components();
-                if components.len() > 1 {
-                    let active_faces = pieces
-                        .iter()
-                        .filter(|(_, s, _)| s.iter().any(|p| p[0] > 0))
-                        .flat_map(|(_, s, _)| s.iter().filter(|p| p[0] == 0).map(|p| p[1]))
-                        .collect::<BTreeSet<_>>();
-                    let faces = components
-                        .iter()
-                        .filter(|c| c.iter().any(|i| active_faces.contains(i)))
-                        .flatten()
-                        .copied()
-                        .collect::<Vec<_>>();
-                    if !faces.is_empty() && faces.len() < refs[index].faces().len() {
-                        let active = refs[index].duplicate_faces(&faces, doc.tolerance())?;
-                        pieces = partition(&active, &cutters, surfaces, doc.tolerance())?;
+            let (_, contacts) = boolean_solids::interactions(
+                &closed.iter().map(|(_, b)| **b).collect::<Vec<_>>(),
+                doc.tolerance(),
+                false,
+            )?;
+            let interactions = contacts
+                .into_iter()
+                .map(|[a, b]| [closed[a].0, closed[b].0])
+                .collect::<Vec<_>>();
+            let surfaces = refs.iter().any(|b| !b.is_solid());
+            let indices = ids
+                .iter()
+                .enumerate()
+                .map(|(i, id)| (*id, i))
+                .collect::<BTreeMap<_, _>>();
+            let mut copies = Vec::new();
+            let mut changed = Vec::new();
+            for &target in &first {
+                let index = indices[&target];
+                let cutters = second
+                    .iter()
+                    .filter_map(|id| {
+                        let j = indices[id];
+                        (j != index
+                            && (!refs[index].is_solid()
+                                || !refs[j].is_solid()
+                                || interactions.contains(&[index.min(j), index.max(j)])))
+                        .then_some(refs[j])
+                    })
+                    .collect::<Vec<_>>();
+                if cutters.is_empty() {
+                    continue;
+                }
+                let mut pieces = partition(refs[index], &cutters, surfaces, doc.tolerance())?;
+                if refs[index].is_solid() {
+                    let components = refs[index].edge_connected_face_components();
+                    if components.len() > 1 {
+                        let active_faces = pieces
+                            .iter()
+                            .filter(|(_, s, _)| s.iter().any(|p| p[0] > 0))
+                            .flat_map(|(_, s, _)| s.iter().filter(|p| p[0] == 0).map(|p| p[1]))
+                            .collect::<BTreeSet<_>>();
+                        let faces = components
+                            .iter()
+                            .filter(|c| c.iter().any(|i| active_faces.contains(i)))
+                            .flatten()
+                            .copied()
+                            .collect::<Vec<_>>();
+                        if !faces.is_empty() && faces.len() < refs[index].faces().len() {
+                            let active = refs[index].duplicate_faces(&faces, doc.tolerance())?;
+                            pieces = partition(&active, &cutters, surfaces, doc.tolerance())?;
+                        }
                     }
                 }
+                if pieces.len() <= 1 {
+                    continue;
+                }
+                changed.push(target);
+                for (brep, sources, branches) in pieces {
+                    let text = if branches.iter().all(|&n| n == 1) {
+                        objects[index].geometry_user_text().clone()
+                    } else {
+                        BTreeMap::new()
+                    };
+                    let brep = boolean_solids::merged(brep, &sources, doc.tolerance())?;
+                    copies.push((target, Geometry::Brep(brep), text));
+                }
             }
-            if pieces.len() <= 1 {
-                continue;
+            if changed.is_empty() {
+                return Err(CommandError::NothingSplit);
             }
-            changed.push(target);
-            for (brep, sources, branches) in pieces {
-                let text = if branches.iter().all(|&n| n == 1) {
-                    objects[index].geometry_user_text().clone()
-                } else {
-                    BTreeMap::new()
-                };
-                let brep = boolean_solids::merged(brep, &sources, doc.tolerance())?;
-                copies.push((target, Geometry::Brep(brep), text));
-            }
-        }
-        if changed.is_empty() {
-            return Err(CommandError::NothingSplit);
-        }
+            Ok((copies, changed))
+        })();
+        #[cfg(feature = "native-smlib")]
+        let (copies, changed) = match prepared {
+            Err(CommandError::Geometry(
+                GeometryError::UnsupportedConvexBrepBoolean { .. }
+                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
+            )) => native::split(&refs, &objects, &ids, &first, &second, doc.tolerance())?,
+            result => result?,
+        };
+        #[cfg(not(feature = "native-smlib"))]
+        let (copies, changed) = prepared?;
         doc.clear_selection();
         doc.release_command_selection_on_history_replay(ids)?;
         let outputs = doc.copy_object_pieces_with_metadata_into_source_groups(copies)?;

@@ -39,8 +39,8 @@ still need qualification. These checks do not establish every Rhino policy.
 
 Both paths prepare geometry and metadata before any model edits, then use the
 existing selection, DeleteInput and one-step history logic. Default builds retain
-the Rust implementation. [Closed curved BooleanSplit](smlib-boolean-split.md)
-now also has an optional native path. Fillets and offsets remain open.
+the Rust implementation. BooleanSplit, fillets and offsets are not yet connected
+to the native kernel.
 
 ## Reproduce the workflow
 

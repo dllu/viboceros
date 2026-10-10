@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-10",
+  "base_commit": "f81a164b7c3f8f52d77a441a5f546c8f9e05b68c",
+  "scope": "Optional closed curved BooleanSplit with crossed-material filtering, branch text lineage and staged document updates",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino under private Xvfb and current ARM64 Wine launcher",
+  "private_settings_scheme": "VibocerosOracleCurvedSplit20261010",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "native_valid_solids": 3,
+  "qualified_partition_ranges": [
+    [
+      0,
+      4
+    ],
+    [
+      4,
+      6
+    ],
+    [
+      6,
+      10
+    ]
+  ],
+  "qualified_boundary_samples": 1155,
+  "maximum_boundary_sample_error": 2.6645352591003757e-15,
+  "geometric_epsilon": 1e-08,
+  "full_geometric_partition_equivalence_proven": false,
+  "full_interactive_command_parity_proven": false,
+  "volume_policy": "Independent Rust integrals enforce dimensional conservation at each cut and final crossed-target output.",
+  "metadata_policy": "Disconnected material branches clear geometry text; later cuts preserve that lineage. Target attributes/groups use existing command copies.",
+  "diagnostics": [
+    "Initial overlapping-cut test used conservative underlying-surface bounds; corrected to trimmed partition vertex ranges. Original artifact properties using conservative ranges remain marked diagnostics."
+  ],
+  "validation": {
+    "native_command_rust_passed": 1283,
+    "native_command_rust_failed": 0,
+    "native_command_rust_ignored": 2,
+    "default_workspace_tests": "passed",
+    "final_focused_tests": "passed 7 tests",
+    "native_clippy": "passed -D warnings",
+    "default_clippy": "passed -D warnings",
+    "fmt": "passed",
+    "default_workspace_rust_passed": 5662,
+    "default_workspace_rust_failed": 0,
+    "default_workspace_rust_ignored": 38,
+    "diff_check_exclusions": [
+      "docs/smlib-split-diagnostics/workspace-tests-final.log",
+      "docs/smlib-split-diagnostics/focused-final.log",
+      "docs/smlib-split-diagnostics/native-command-suite.log"
+    ],
+    "diff_check_reason": "Raw Cargo/tool outputs retain their original trailing blank lines."
+  },
+  "commands": [
+    "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-command --features native-smlib --release --target-dir /tmp/viboceros-brep-verification-target -j 10",
+    "cargo test --workspace --release --target-dir /tmp/viboceros-brep-verification-target",
+    "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run -p viboceros-command --features native-smlib --release --target-dir /tmp/viboceros-brep-verification-target -j 10 --example curved_split -- /tmp/viboceros-curved-split-qualified",
+    "WINEDLLOVERRIDES=sspicli,secur32,schannel=b tools/rhino_oracle/run_headless.sh rhino /tmp/viboceros-curved-split-qualified/request.json --scheme VibocerosOracleCurvedSplit20261010 --timeout 300 --output /tmp/viboceros-smlib-split-rhino.json",
+    "python3 tools/usd_brep/compare_curved_split.py docs/smlib-split-native-reference.json docs/smlib-split-comparison.json"
+  ],
+  "prior_source_policy": "Historical recorded hashes relocate to exact immutable snapshots without changing earlier measurements.",
+  "limitations": [
+    "Linux opt-in native-smlib feature; closed solids only",
+    "Curved open targets and sheet cutters remain unsupported by the native adapter",
+    "Successive native operations use NURBS outputs as subsequent operands, unlike original-face exact polyhedral arrangement",
+    "Tangencies/coincidences, tiny features, extreme scales and broader compound configurations need qualification",
+    "Rhino output ordering is not proven",
+    "STEP pole trims, fillets and offsets remain open"
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/Cargo.toml": "0be147eacb600a373f9788e40672c4feea19fc30dc2a1925617fdee619adfa64",
+    "crates/viboceros-command/examples/curved_split.rs": "56b547afcfbbf52b916a7d8c3c6532d315aefddd1a0f47e31820eeb2a84e8a25",
+    "crates/viboceros-command/src/boolean_split.rs": "7f8bbff0254227e03691198a086d09a96990957963f2f9c350814e6544d71a49",
+    "crates/viboceros-command/src/boolean_split/native.rs": "9124faa2c207149bb74b5c33f6485df0a5bb0f88cbd5e1c5508bab9fe8d16baf",
+    "crates/viboceros-smlib/src/lib.rs": "3a4f4e4d786ee311f168733d75c7c3886e071863571e97b47ef41adb4a7e5420",
+    "docs/commands/boolean-split.md": "f7b02709fa5f641c46ec78f05484d74ed2d382bb4f82a84491ed8bb5a88b6546",
+    "docs/development.md": "aed9b188762d0d7449b6a3b7fdf48ca9819a8331ffdb42eb0e2c12fb536a394f",
+    "docs/smlib-boolean-split.md": "088eda31825010e342b0de5bf094cbab5e07751e175b69034526b788f249d7d2",
+    "docs/smlib-set-booleans.md": "b0dc0cd758b1c0dc6ab8602c7ed2d717855bc601a39bd30f181be24823e85f31",
+    "docs/smlib-split-comparison.json": "b996219e4ee636a4363a529ecef856cbe8f0b98ea88017a738ac4064f70e967a",
+    "docs/smlib-split-diagnostics/example-initial.log": "22e029c3cdbf44745601ed033ade21e1d7e4f162d85a7829c37a7b2922e6a096",
+    "docs/smlib-split-diagnostics/initial-conservative-range-properties.json": "6387905745fc249a3bba0c69008bfd65750568faf8bcf1684c674f6b2656b1cf",
+    "docs/smlib-split-diagnostics/initial-range-regression.log": "cfde1fd3422fb717dec7e7e86e2169fb40c75e47cc12d1dc1a2df06a53c08938",
+    "docs/smlib-split-diagnostics/native-command-suite.log": "d086b88a5b0395c8c5e53b49875fda1fdec02bc30c939e32cfa9f780f139cc62",
+    "docs/smlib-split-diagnostics/piece-0.3dm": "94a2ee91779ac375dbbbeef6a08c60d4e116a074697c3528303eff16064cd3f3",
+    "docs/smlib-split-diagnostics/piece-1.3dm": "aa844a51218f1058856663685692c9b4bdaa935a6bbda743ada47fe80cfbeacd",
+    "docs/smlib-split-diagnostics/piece-2.3dm": "9ea1738c560e676caf66c4e52caa2ac5dc28cc7d8638f6dca5161bff3cc336b7",
+    "docs/smlib-split-diagnostics/request.json": "5aeb7628da03b423c57cf3d13e5fbd03fc664407624fe6b10a26fa1b86656cf1",
+    "docs/smlib-split-diagnostics/rhino.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/smlib-split-native-reference.json": "42a9e862ec13541c0591de6d0e96a0cfd2fa760f9a9cad44158e04febf938e64",
+    "docs/smlib-split-prior-source/crates/viboceros-command/Cargo.toml": "f323ee6508d4ebad9d9e53d4e661b60499c9c1630e3c7076320f1b66825fee79",
+    "docs/smlib-split-prior-source/crates/viboceros-smlib/src/lib.rs": "eaf4e157c4eebfbfbb576acfff2e5ac843ce02e805a9a519bb58d05bfb7701fa",
+    "docs/smlib-split-prior-source/docs/development.md": "6b36f425579dd4c7c41f9f2d4bd38515a7427d33450a389f4ab1df5df29d685a",
+    "docs/smlib-split-prior-source/docs/smlib-set-booleans.md": "0b460f6ecfa5c665104239eee97bd0847d6b104a18b2b4ba991252287051190e",
+    "tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
+    "tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "tools/usd_brep/compare_curved_split.py": "a0dd7756a219cc5e57f089382e5be9a72fe84e12028de5b52abedcd2554b892b",
+    "docs/smlib-split-diagnostics/native-clippy-final.log": "8a9136095ae13cde7c25fa87b1cd7a0bff08f52b6fabfd06c05191757eacddd8",
+    "docs/smlib-split-diagnostics/focused-final.log": "69e36d43e2adea282a2e11d42794b7fbe21683c344342bb7e677f4fa336c5f5f",
+    "docs/smlib-split-diagnostics/properties-final.json": "3b33bade007c419a45548c2bf38a98e4c374f2df3cd1701ad820d087ad64e4b2",
+    "docs/smlib-split-diagnostics/default-clippy-final.log": "7500c49a5605bf97a08f5f99f17a6be68b407b0fdcde385f348beea4f91a220b",
+    "docs/smlib-split-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/smlib-split-diagnostics/example-final.log": "2ac0bf1af6ff4aa9a7040e71b88bc32d24ebaea101dcea197691a3f37c696b96",
+    "docs/smlib-split-diagnostics/workspace-tests-final.log": "6f9082436e4456781e056f738e00e98d1b3e0123937adb18ef0ed83c4a8bbb1c"
+  }
+}

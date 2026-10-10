@@ -19,7 +19,6 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Native SMLib B-rep export, CAD interchange and STEP seam selection](smlib-brep-transfer.md)
 - [SMLib import, nested regions and optional curved BooleanDifference](smlib-import.md)
 - [Optional curved union/intersection and set ownership](smlib-set-booleans.md)
-- [Optional curved BooleanSplit, branch lineage and volume checks](smlib-boolean-split.md)
 - [Divide preference memory and native cancellation replay](divide-preferences.md)
 - [Convex polyhedral Boolean kernel and native evidence](convex-booleans.md)
 - [Chained polyhedral Booleans with concave faces, holes and multiple shells](polyhedral-booleans.md)

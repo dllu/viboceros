@@ -1,0 +1,21 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-curved-split-qualified/piece-0.3dm",
+      "id": "piece-0",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-curved-split-qualified/piece-1.3dm",
+      "id": "piece-1",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-curved-split-qualified/piece-2.3dm",
+      "id": "piece-2",
+      "op": "three_dm_brep_interchange"
+    }
+  ],
+  "protocol_version": 1
+}

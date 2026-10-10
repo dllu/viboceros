@@ -1,0 +1,45 @@
+{
+  "expected_volume": 125.66370614359172,
+  "pieces": [
+    {
+      "edges": 4,
+      "faces": 3,
+      "geometry_text": {},
+      "id": "piece-0",
+      "solid": true,
+      "volume": 50.26548245790717,
+      "z_range": [
+        0.0,
+        10.0
+      ]
+    },
+    {
+      "edges": 4,
+      "faces": 3,
+      "geometry_text": {},
+      "id": "piece-1",
+      "solid": true,
+      "volume": 50.26548245790718,
+      "z_range": [
+        0.0,
+        10.0
+      ]
+    },
+    {
+      "edges": 3,
+      "faces": 3,
+      "geometry_text": {
+        "source": "cylinder"
+      },
+      "id": "piece-2",
+      "solid": true,
+      "volume": 25.132741227777373,
+      "z_range": [
+        0.0,
+        10.0
+      ]
+    }
+  ],
+  "retained_cutter": true,
+  "total_volume": 125.66370614359172
+}

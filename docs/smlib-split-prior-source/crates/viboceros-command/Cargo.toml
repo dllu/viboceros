@@ -33,7 +33,3 @@ required-features = ["native-smlib"]
 [[example]]
 name = "curved_sets"
 required-features = ["native-smlib"]
-
-[[example]]
-name = "curved_split"
-required-features = ["native-smlib"]

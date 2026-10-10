@@ -1,5 +1,9 @@
 # BooleanSplit
 
+Linux builds with `--features native-smlib` also offer an
+[optional closed curved-solid path](../smlib-boolean-split.md). Existing Rust
+polyhedral and qualified plane/sheet paths continue to run first.
+
 [Command reference](README.md) · [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/booleanunion.htm#BooleanSplit)
 
 Start `BooleanSplit`, select target surfaces or polysurfaces, and press Enter.
