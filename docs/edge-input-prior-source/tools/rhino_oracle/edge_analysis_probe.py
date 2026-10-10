@@ -12,14 +12,12 @@ def validate(operation):
         raise ValueError('edge analysis requires surfaces, Breps or meshes')
     if 'workflow' in operation:
         w = operation['workflow']
-        if (not isinstance(w, dict) or set(w) - {'command', 'actions', 'undo_redo', 'finish'}
+        if (not isinstance(w, dict) or set(w) - {'command', 'actions', 'undo_redo'}
                 or w.get('command') not in ('ZoomNaked', 'ZoomNonManifold')
                 or not isinstance(w.get('actions'), list) or len(w['actions']) > 32
                 or any(n not in ('All', 'Current', 'Next', 'Previous', 'Mark') for n in w['actions'])
                 or type(w.get('undo_redo', False)) is not bool):
             raise ValueError('invalid edge analysis workflow')
-        if w.get('finish', 'Enter') not in ('Enter', 'Cancel'):
-            raise ValueError('invalid edge analysis finish action')
 
 
 def run(operation, tolerance, host):
@@ -105,9 +103,7 @@ def run_workflow(operation, tolerance, host):
             doc.Objects.Select(key)
         workflow = operation['workflow']
         command = workflow['command'] + ' ' + ' '.join(workflow['actions'])
-        finish = workflow.get('finish', 'Enter')
-        if finish == 'Cancel': command += ' Cancel'
-        macro = '_' + workflow['command'] + ' ' + ' '.join('_' + n for n in workflow['actions']) + ' _' + finish
+        macro = '_' + workflow['command'] + ' ' + ' '.join('_' + n for n in workflow['actions']) + ' _Enter'
         succeeded = Rhino.RhinoApp.RunScript(macro, False)
         result = snapshot()
         result.update(succeeded=bool(succeeded), command=command)

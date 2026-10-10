@@ -39,7 +39,7 @@ class EdgeAnalysisProbeTests(unittest.TestCase):
         validate(fixture)
         for field, value in [('command', 'Quit'), ('actions', ['_Enter']),
                              ('actions', 'Mark'), ('actions', ['Next'] * 33),
-                             ('undo_redo', 1), ('finish', 'Quit'), ('unknown', True)]:
+                             ('undo_redo', 1), ('unknown', True)]:
             workflow = dict(command='ZoomNaked', actions=['Mark'])
             workflow[field] = value
             fixture['workflow'] = workflow

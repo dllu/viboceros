@@ -15,11 +15,6 @@ pub struct Workflow {
     pub actions: Vec<String>,
     #[serde(default)]
     pub undo_redo: bool,
-    #[serde(default = "default_finish")]
-    pub finish: String,
-}
-fn default_finish() -> String {
-    "Enter".into()
 }
 
 fn point_record(doc: &Document, ids: &[ObjectId]) -> Value {
@@ -52,7 +47,6 @@ pub(super) fn run(f: &Fixture, tolerance: Tolerance) -> Result<(Value, u64), Pro
     let registry = CommandRegistry::with_builtins();
     if let Some(workflow) = &f.workflow {
         if !matches!(workflow.command.as_str(), "ZoomNaked" | "ZoomNonManifold")
-            || !matches!(workflow.finish.as_str(), "Enter" | "Cancel")
             || workflow.actions.len() > 32
             || workflow
                 .actions
@@ -63,10 +57,7 @@ pub(super) fn run(f: &Fixture, tolerance: Tolerance) -> Result<(Value, u64), Pro
                 "invalid edge analysis workflow",
             ));
         }
-        let mut command = format!("{} {}", workflow.command, workflow.actions.join(" "));
-        if workflow.finish == "Cancel" {
-            command.push_str(" Cancel");
-        }
+        let command = format!("{} {}", workflow.command, workflow.actions.join(" "));
         let succeeded = registry.execute(&mut doc, &command).is_ok();
         let mut value = point_record(&doc, &ids);
         value["succeeded"] = json!(succeeded);

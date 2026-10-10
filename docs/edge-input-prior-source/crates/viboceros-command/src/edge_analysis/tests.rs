@@ -294,7 +294,7 @@ fn repeated_mark_and_navigation_preserve_action_order_and_pending_zoom() {
         .collect::<Vec<_>>();
     assert_eq!(points.len(), 4);
     assert_eq!(points[1], points[2]);
-    let view = registry.edge_zoom_view(&doc).unwrap().unwrap();
+    let view = registry.edge_analysis_view(&doc).unwrap().unwrap();
     assert_eq!(view.current, Some(1));
     assert!(view.zoom_requested);
     registry
@@ -302,15 +302,15 @@ fn repeated_mark_and_navigation_preserve_action_order_and_pending_zoom() {
         .unwrap();
     assert!(
         registry
-            .edge_zoom_view(&doc)
+            .edge_analysis_view(&doc)
             .unwrap()
             .unwrap()
             .zoom_requested
     );
-    registry.acknowledge_edge_zoom();
+    registry.acknowledge_edge_analysis_zoom();
     assert!(
         !registry
-            .edge_zoom_view(&doc)
+            .edge_analysis_view(&doc)
             .unwrap()
             .unwrap()
             .zoom_requested
@@ -319,31 +319,7 @@ fn repeated_mark_and_navigation_preserve_action_order_and_pending_zoom() {
     assert_eq!(doc.objects().len(), before);
     registry.execute(&mut doc, "ZoomNaked").unwrap();
     assert_eq!(
-        registry.edge_zoom_view(&doc).unwrap().unwrap().current,
+        registry.edge_analysis_view(&doc).unwrap().unwrap().current,
         Some(0)
     );
-}
-
-#[test]
-fn canceled_zoom_commits_accepted_marks_but_invalid_arguments_do_not() {
-    let registry = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    registry
-        .execute(&mut doc, "SrfPt 0,0,0 2,0,0 2,3,0 0,3,0")
-        .unwrap();
-    registry.execute(&mut doc, "SelAll").unwrap();
-    assert!(matches!(
-        registry.execute(&mut doc, "ZoomNaked Mark Cancel"),
-        Err(CommandError::OperationDeclined)
-    ));
-    assert_eq!(doc.objects().len(), 3);
-    assert_eq!(doc.undo_label(), Some("ZoomNaked"));
-    doc.undo().unwrap();
-    assert_eq!(doc.objects().len(), 1);
-    assert!(
-        registry
-            .execute(&mut doc, "ZoomNaked Mark invalid")
-            .is_err()
-    );
-    assert_eq!(doc.objects().len(), 1);
 }

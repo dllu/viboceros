@@ -1567,3 +1567,21 @@ broader curved/multi-face geometry remain open.
 The corrected-source full release run passes 5,615 Rust tests with zero failures
 and 38 ignored tests. All 1,075 Python tests pass; Clippy with warnings denied,
 formatting, diff checks and all 1,602 historical/current source pins are clean.
+
+## Edge-analysis input checkpoint
+
+[Command input and session lifetime](edge-analysis-input.md) adds independent
+persistent ShowEdges and temporary Zoom sessions, command-first selection with
+argument retention, navigation prompts, retained marks on Escape and one Undo
+group across answers. Shared viewport sampling retains both active edge sets.
+Five licensed Rhino window/geometry observations establish the panel lifetime;
+sixteen new cancellation records match exactly, including false command results,
+accepted points and Undo/Redo. The existing 10 topology and 50 marking captures
+still pass the permanent replay suite.
+
+The complete release run passes 5,623 Rust tests with zero failures and 38
+ignored tests. All 1,075 Python tests, Clippy with warnings denied, formatting,
+diff checks and 1,619 source pins pass. An earlier full run exited 143 without
+failure markers; its terminal handle was verified before the successful rerun.
+Detailed evidence is in [provenance](edge-input-provenance.json). Native widget
+details, highlight styling, camera framing and broader geometry remain open.

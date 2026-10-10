@@ -1,0 +1,176 @@
+{
+  "engine_version": "8.32.26160.13001",
+  "protocol_version": 1,
+  "iterations": 1,
+  "engine": "rhino",
+  "results": [
+    {
+      "value": {
+        "input_count": 1,
+        "windows": [
+          "Untitled - Rhino 8 Educational"
+        ],
+        "undo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": []
+        },
+        "redo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ]
+          ]
+        },
+        "macro": "_ZoomNaked _Mark _Enter",
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "command": "ZoomNaked Mark",
+        "succeeded": true
+      },
+      "elapsed_ns": 0,
+      "id": "zoom-enter"
+    },
+    {
+      "value": {
+        "input_count": 1,
+        "windows": [
+          "Untitled - Rhino 8 Educational"
+        ],
+        "undo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": []
+        },
+        "redo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ]
+          ]
+        },
+        "macro": "_ZoomNaked _Mark _Cancel",
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "command": "ZoomNaked Mark",
+        "succeeded": false
+      },
+      "elapsed_ns": 0,
+      "id": "zoom-cancel"
+    },
+    {
+      "value": {
+        "input_count": 1,
+        "windows": [
+          "Untitled - Rhino 8 Educational"
+        ],
+        "macro": "_ZoomNaked  _Cancel",
+        "points": [],
+        "command": "ZoomNaked ",
+        "succeeded": false
+      },
+      "elapsed_ns": 0,
+      "id": "zoom-empty-cancel"
+    },
+    {
+      "value": {
+        "input_count": 1,
+        "windows": [
+          "UNMANAGED TabPanelDockBarFloatingForm -> Edge Analysis",
+          "Untitled - Rhino 8 Educational"
+        ],
+        "macro": "_ShowEdges",
+        "points": [],
+        "command": "ZoomNaked ",
+        "succeeded": true
+      },
+      "elapsed_ns": 0,
+      "id": "show-edges"
+    },
+    {
+      "value": {
+        "input_count": 1,
+        "windows": [
+          "UNMANAGED TabPanelDockBarFloatingForm -> Edge Analysis",
+          "Untitled - Rhino 8 Educational"
+        ],
+        "undo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": []
+        },
+        "redo": {
+          "succeeded": true,
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ]
+          ]
+        },
+        "macro": "_ZoomNaked _Mark _Enter",
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "command": "ZoomNaked Mark",
+        "succeeded": true
+      },
+      "elapsed_ns": 0,
+      "id": "show-then-zoom"
+    }
+  ]
+}

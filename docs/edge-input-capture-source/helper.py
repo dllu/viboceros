@@ -1,3 +1,21 @@
+def windows():
+    import ctypes
+    from ctypes import wintypes
+    user=ctypes.windll.user32
+    callback=ctypes.WINFUNCTYPE(wintypes.BOOL,wintypes.HWND,wintypes.LPARAM)
+    user.GetWindowThreadProcessId.argtypes=[wintypes.HWND,ctypes.POINTER(wintypes.DWORD)]
+    user.GetWindowTextW.argtypes=[wintypes.HWND,wintypes.LPWSTR,ctypes.c_int]
+    user.IsWindowVisible.argtypes=[wintypes.HWND]
+    titles=[]
+    def visit(window,unused):
+        pid=wintypes.DWORD();user.GetWindowThreadProcessId(window,ctypes.byref(pid))
+        if pid.value==ctypes.windll.kernel32.GetCurrentProcessId() and user.IsWindowVisible(window):
+            text=ctypes.create_unicode_buffer(256);user.GetWindowTextW(window,text,256)
+            if text.value: titles.append(text.value)
+        return True
+    user.EnumWindows(callback(visit),0)
+    return titles
+
 """Observe edge topology through public RhinoCommon APIs, without UI mutation."""
 
 
@@ -12,14 +30,12 @@ def validate(operation):
         raise ValueError('edge analysis requires surfaces, Breps or meshes')
     if 'workflow' in operation:
         w = operation['workflow']
-        if (not isinstance(w, dict) or set(w) - {'command', 'actions', 'undo_redo', 'finish'}
+        if (not isinstance(w, dict) or set(w) - {'command', 'actions', 'undo_redo'}
                 or w.get('command') not in ('ZoomNaked', 'ZoomNonManifold')
                 or not isinstance(w.get('actions'), list) or len(w['actions']) > 32
                 or any(n not in ('All', 'Current', 'Next', 'Previous', 'Mark') for n in w['actions'])
                 or type(w.get('undo_redo', False)) is not bool):
             raise ValueError('invalid edge analysis workflow')
-        if w.get('finish', 'Enter') not in ('Enter', 'Cancel'):
-            raise ValueError('invalid edge analysis finish action')
 
 
 def run(operation, tolerance, host):
@@ -105,12 +121,13 @@ def run_workflow(operation, tolerance, host):
             doc.Objects.Select(key)
         workflow = operation['workflow']
         command = workflow['command'] + ' ' + ' '.join(workflow['actions'])
-        finish = workflow.get('finish', 'Enter')
-        if finish == 'Cancel': command += ' Cancel'
-        macro = '_' + workflow['command'] + ' ' + ' '.join('_' + n for n in workflow['actions']) + ' _' + finish
+        macro = '_' + workflow['command'] + ' ' + ' '.join('_' + n for n in workflow['actions']) + ' _Enter'
+        if operation['id']=='show-edges': macro='_ShowEdges'
+        if operation['id']=='show-then-zoom': Rhino.RhinoApp.RunScript('_ShowEdges',False)
+        if operation['id'].endswith('cancel'): macro=macro.rsplit('_Enter',1)[0]+'_Cancel'
         succeeded = Rhino.RhinoApp.RunScript(macro, False)
         result = snapshot()
-        result.update(succeeded=bool(succeeded), command=command)
+        result.update(succeeded=bool(succeeded), command=command, macro=macro, windows=windows())
         outputs.extend(o.Id for o in doc.Objects.GetObjectList(settings) if o.Id not in ids)
         if workflow.get('undo_redo', False):
             ok = Rhino.RhinoApp.RunScript('_Undo', False)

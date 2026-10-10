@@ -2060,7 +2060,6 @@ pub struct VibocerosApp {
     plane_prompt: Option<construction_plane::PlanePrompt>,
     set_view_prompt: Option<set_view::SetViewSession>,
     remember_copy_prompt: bool,
-    edge_zoom_prompt: Option<edge_analysis::ZoomPrompt>,
     copy_cplane_source: Option<construction_plane::CopyCPlaneKind>,
     cplane_options: viboceros_command::construction_plane::PlaneOptions,
     object_prompt: Option<object_selection::PendingObjectCommand>,
@@ -2163,7 +2162,6 @@ impl VibocerosApp {
             plane_prompt: None,
             set_view_prompt: None,
             remember_copy_prompt: false,
-            edge_zoom_prompt: None,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,
@@ -2311,9 +2309,6 @@ impl VibocerosApp {
             self.cancel_end_analysis_pick(false);
         }
         if self.try_continue_zoom_target(&input) {
-            return;
-        }
-        if self.try_continue_edge_zoom(&input) {
             return;
         }
         if self.try_continue_snap_size(&input) {
@@ -2878,7 +2873,6 @@ impl VibocerosApp {
         match result {
             Ok(message) => {
                 self.push_log(message);
-                self.start_edge_zoom_options(input);
                 if self.document.units().meters_per_unit() != previous_unit_scale {
                     // Accepted points outlive a cancelled drawing command, but
                     // must not silently become relative anchors in new units.
@@ -5211,7 +5205,6 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
-        self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
         self.cancel_tween_surfaces();
@@ -8809,7 +8802,7 @@ impl VibocerosApp {
             self.cancel_planar_boolean();
         } else if self.boolean_two_prompt.is_some() {
             self.cancel_boolean_two();
-        } else if self.remember_copy_prompt || self.edge_zoom_prompt.is_some() {
+        } else if self.remember_copy_prompt {
             self.cancel_interactive_command(true);
         } else if self.end_analysis_pick.is_some() && self.set_view_prompt.is_none() {
             self.cancel_end_analysis_pick(true);
@@ -8909,7 +8902,6 @@ impl eframe::App for VibocerosApp {
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
-            && self.edge_zoom_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Delete))
@@ -9181,7 +9173,6 @@ impl eframe::App for VibocerosApp {
             .edge_analysis_view(&self.document)
             .ok()
             .flatten();
-        let edge_zoom_view = self.commands.edge_zoom_view(&self.document).ok().flatten();
         let mut edge_highlights = self
             .edge_prompt
             .as_ref()
@@ -9491,7 +9482,6 @@ impl eframe::App for VibocerosApp {
                             edge_pick,
                             curve_or_edge_pick,
                             edge_analysis: edge_analysis_view.as_ref(),
-                            edge_zoom: edge_zoom_view.as_ref(),
                             edge_highlights: &edge_highlights,
                             edge_endpoints,
                             edge_curve,
@@ -9811,7 +9801,6 @@ mod tests {
             plane_prompt: None,
             set_view_prompt: None,
             remember_copy_prompt: false,
-            edge_zoom_prompt: None,
             copy_cplane_source: None,
             cplane_options: viboceros_command::construction_plane::PlaneOptions::default(),
             object_prompt: None,

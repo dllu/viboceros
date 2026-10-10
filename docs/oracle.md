@@ -2660,3 +2660,9 @@ for example `{"command":"ZoomNaked","actions":["Mark","Next","Mark"],"undo_redo"
 The [50 command workflows](edge-mark.md) run at Rhino idle so their Undo records
 are independent of RunPythonScript. Point arrays preserve creation order using
 public runtime serial numbers; duplicate endpoints remain distinct objects.
+
+Workflow `finish` may be `Enter` (default) or `Cancel`. The
+[16 cancellation recipes](edge-analysis-input.md) retain native false command
+results together with accepted points and Undo/Redo state. These are completed
+native observations; a canceled command is distinct from a failed worker or
+process launch.

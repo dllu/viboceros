@@ -57,7 +57,6 @@
     "docs/block-replace-input-prior-source/tools/rhino_oracle/block_workflow_probe.py": "3948ebbc07a80eaa2416f02c1f1fde85a560dec59640e05e7806860fe93d0f60",
     "docs/block-replace-input-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "afaa6795a17d9aa3184796a8b6c045dcb1aa8f8bdb196ca2342340feddcef277",
     "src/app/block_manager.rs": "9fdfd68a4754772d5c93a0b5993406380019bad5c13b7df81fba8ea1ea6e14bb",
-    "src/app/command_line.rs": "75e839bf3169b9d43cf98fc3bc8250e005250f7e15720ea84d770e9223a156ad",
     "src/app/replace_block.rs": "19f424da628b631f6d6977422b8e5fb558d9d562e02d61449e808c166ab7a7ca",
     "tools/rhino_oracle/fixtures/block_replace_input.json": "de3ebd890af3eb4fb492a45ec5c69c7c46759f6bad810e1afb9787aa07d0faa5",
     "tools/rhino_oracle/observations/block_replace_input.json": "ea0d2105049dfe1e2a3f86951922713b23bfcda96b85372b5e1479ebe027a3b6",
@@ -68,7 +67,8 @@
     "docs/block-add-prior-source/src/app/object_selection.rs": "daa7c33283d429ad1fc37ec844204bd1c542835a785197a1f7db3a5b49876101",
     "docs/block-add-prior-source/src/app/tests/blocks.rs": "ef5ce4b69196e1ec40c1921b806e686dcbd85e17622f8596419233196eb9770e",
     "docs/block-add-prior-source/tools/rhino_oracle/block_workflow_probe.py": "943df00e75d08933121077a58a12e321244d0481b3b03e088f3370d01140b47b",
-    "docs/block-add-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "774bc5dbf757375ad9fd8960ac4e5ba1ad7d0e47cdd468f37cdb6de5a060d718"
+    "docs/block-add-prior-source/tools/rhino_oracle/test_block_workflow_probe.py": "774bc5dbf757375ad9fd8960ac4e5ba1ad7d0e47cdd468f37cdb6de5a060d718",
+    "docs/edge-input-prior-source/src/app/command_line.rs": "75e839bf3169b9d43cf98fc3bc8250e005250f7e15720ea84d770e9223a156ad"
   },
   "remaining_scope": [
     "Native definition-chooser interaction and pixel viewport-picking parity",

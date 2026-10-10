@@ -1,0 +1,156 @@
+{
+  "passed": true,
+  "cases": 16,
+  "matched": 16,
+  "max_absolute_error": 0.0,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "field_exclusions": [],
+  "operations": [
+    {
+      "id": "standalone-surface-cancel-empty",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-cancel-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-cancel-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "standalone-surface-cancel-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-cancel-empty",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-cancel-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-cancel-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "trimmed-hole-cancel-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-cancel-empty",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-cancel-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-cancel-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "welded-cancel-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-cancel-empty",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-cancel-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-cancel-twice",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    },
+    {
+      "id": "non-manifold-cancel-next-mark",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "viboceros_ns_per_iteration": 0.0,
+      "rhino_ns_per_iteration": 0.0,
+      "rhino_to_viboceros_ratio": null,
+      "differences": []
+    }
+  ],
+  "timing_measured": false
+}

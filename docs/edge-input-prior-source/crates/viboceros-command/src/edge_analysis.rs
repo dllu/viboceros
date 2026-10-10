@@ -179,14 +179,6 @@ fn gather(
     }
 }
 impl Session {
-    pub(super) fn clear(&self) {
-        let mut state = self.0.lock().expect("edge analysis state");
-        *state = State {
-            mode: state.mode,
-            color: state.color,
-            ..State::default()
-        };
-    }
     fn resolve(state: &mut State, doc: &Document) -> Result<View, CommandError> {
         state.sources.retain(|id| doc.object(*id).is_some());
         state.cache.retain(|id, _| state.sources.contains(id));
@@ -257,31 +249,20 @@ impl Command for AnalysisCommand {
     fn name(&self) -> &'static str {
         self.name
     }
-    fn commits_on_error(&self, error: &CommandError) -> bool {
-        self.name.starts_with("Zoom") && matches!(error, CommandError::OperationDeclined)
-    }
     fn object_selection_prompt(
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok((self.name != "ShowEdgesOff"
-            && (args.is_empty()
-                || self.name.starts_with("Zoom")
-                || args.iter().any(|s| {
-                    matches!(
-                        s.trim_start_matches('_').to_ascii_lowercase().as_str(),
-                        "add" | "remove"
-                    )
-                })
-                || !self.session.0.lock().expect("edge analysis state").enabled))
-            .then(|| ObjectSelectionPrompt {
+        Ok(
+            (self.name != "ShowEdgesOff" && args.is_empty()).then(|| ObjectSelectionPrompt {
                 command: self.name,
                 filter: ObjectSelectionFilter::EdgeAnalysis,
                 options: Vec::new(),
                 menus: Vec::new(),
                 choices: Vec::new(),
                 workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
-            }))
+            }),
+        )
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let mut proposed = self.session.0.lock().expect("edge analysis state").clone();
@@ -307,9 +288,8 @@ impl Command for AnalysisCommand {
         }
         let mut action = "replace";
         let mut actions = Vec::new();
-        let mut canceled = false;
         let mut seen = BTreeSet::new();
-        for (position, arg) in args.iter().enumerate() {
+        for arg in args {
             let arg = arg.trim_start_matches('_');
             if let Some((key, value)) = arg.split_once('=') {
                 if !seen.insert(key.to_ascii_lowercase()) {
@@ -353,11 +333,6 @@ impl Command for AnalysisCommand {
                     "zoom" => {}
                     "all" | "current" | "next" | "previous" | "mark" => {
                         actions.push(arg.to_ascii_lowercase());
-                    }
-                    "enter" | "cancel"
-                        if self.name.starts_with("Zoom") && position + 1 == args.len() =>
-                    {
-                        canceled = arg.eq_ignore_ascii_case("cancel");
                     }
                     _ => return Err(CommandError::Usage(USAGE)),
                 }
@@ -418,9 +393,6 @@ impl Command for AnalysisCommand {
             view = Session::resolve(&mut proposed, doc)?;
         }
         *self.session.0.lock().expect("edge analysis state") = proposed;
-        if canceled {
-            return Err(CommandError::OperationDeclined);
-        }
         Ok(format!(
             "Edge analysis: {} {} edges on {} objects",
             count,

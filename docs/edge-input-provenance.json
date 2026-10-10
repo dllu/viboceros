@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "1fabd9f87f0c50c118a5a759be2c881945389f75",
+  "scope": "Command-first edge-analysis input, independent persistent/transient sessions, grouped interactive marking and retained edits on Cancel",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino 8 under private Xvfb and ARM64 Wine/FEX",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "native_role_capture": {
+    "cases": 5,
+    "observation": "docs/edge-input-capture-source/native.json",
+    "findings": [
+      "Zoom completion has no Edge Analysis panel",
+      "ShowEdges opens a persistent panel",
+      "ShowEdges panel survives a subsequent Zoom command",
+      "Escape retains accepted marks and their Undo step"
+    ]
+  },
+  "native_cancel_comparison": {
+    "passed": true,
+    "cases": 16,
+    "matched": 16,
+    "max_absolute_error": 0.0,
+    "absolute_epsilon": 1e-09,
+    "relative_epsilon": 1e-12,
+    "field_exclusions": [],
+    "timing_measured": false
+  },
+  "native_timing_measured": false,
+  "full_native_parity": false,
+  "remaining_scope": [
+    "Native panel widgets and highlight styling during input",
+    "Precise zoom camera framing",
+    "General selection-order variants",
+    "Broader curved and multi-face B-reps",
+    "Full Rhino command and performance coverage"
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "8eac9aa19f6bfa65578c20661738458212449407ee45431942e1fbd4d3f23695",
+    "crates/viboceros-command/src/edge_analysis.rs": "f525f2415f52fb9600de48b1b62f5edbb18c84f127407d02ce34864b7cba233e",
+    "crates/viboceros-command/src/edge_analysis/tests.rs": "706d9793abc6233bd7a84e78a4b081379c0c658d358d353a2c125027247f36a8",
+    "crates/viboceros-oracle/src/edge_analysis.rs": "99cdb647080020bea8e53c0a262eae3ae22ebfcc0336ef02d2a09e1097f9c307",
+    "crates/viboceros-oracle/tests/edge_analysis.rs": "95319f2300f37fda1fce6d6580ba585f5ce3947587b61411d68b8056f8a13924",
+    "src/app.rs": "89fef38ee6175f3fa82359ce8ff6eb286c1d0ffba239cc3336c286fd58ef6172",
+    "src/app/object_selection.rs": "c9c8524c3a7b51afecd78d280ce73a28ebe75b5a05c0416824dd22b950252168",
+    "src/app/edge_analysis.rs": "c28aeafa927bb67965c03c21e0547f689b0366722c5fea1e801e69f24005029d",
+    "src/app/command_line.rs": "d235268d2d4594bc935b9bf97efafd65f4765ad557e894c917481c06864eb5be",
+    "src/app/tests/edge_analysis.rs": "b37f2d34d68754500d7598152e0a51f0bffad28ad237aebbb01df2ea1f32a39f",
+    "src/viewport.rs": "68f482d718d4e24363216096743702cde897b239f5b599fe94471d5e43a4fc04",
+    "src/viewport/display_cache.rs": "81fe2b7dee6a0047cedd753b92e9ab6bba0b50c5d3cf5c097e600d3c9f29e993",
+    "tools/rhino_oracle/edge_analysis_probe.py": "bd61878e2d5cfe0267ed6560486be774a20420996fcb89c5d921b698633cd7b8",
+    "tools/rhino_oracle/test_edge_analysis_probe.py": "7be03ddb8427354bdbab9be7ccc94ba45edda5622ac860be2a57060bf5971fb3",
+    "tools/rhino_oracle/fixtures/edge_zoom_cancel.json": "4f9a2d1a4c75f5b0a33bae963bb90cdee72f30c487b846b0053ce782404f93f2",
+    "tools/rhino_oracle/observations/edge_zoom_cancel.json": "baf3bfcf9bfa6526a4c1d5d8c44eb9dab5e262c0fa4e2f8b6b356b9664f72bc7",
+    "docs/edge-zoom-cancel-comparison.json": "283c2cfbe0e1758e5d61fac51a7a99c114d9a426bb5a91cad5fe1e3ad20518f4"
+  },
+  "capture_source_sha256": {
+    "docs/edge-input-capture-source/request.json": "65026fdad38907979eac50a8b2bd0884f72408e8220afe69fe667967c6760a37",
+    "docs/edge-input-capture-source/helper.py": "498b60f3405827944d6875743ac69bb589bfea1859da488dc4301afc4f146b07",
+    "docs/edge-input-capture-source/native.json": "8456ff43b6762c1dfbbc9e594bf566873c1808f1e3db97aed18f1d86cd8a0483",
+    "docs/edge-input-capture-source/capture.py": "529f82db731a88de7a69aea47f3cb4f20bcd4df94eecd369d1140c7e9ef5bbf6"
+  },
+  "verified": {
+    "rust": {
+      "passed": 5623,
+      "failed": 0,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 1075,
+      "failed": 0
+    },
+    "clippy": "passed --workspace --all-targets -- -D warnings",
+    "format_and_diff": "passed",
+    "native_cancel_replay": {
+      "cases": 16,
+      "matched": 16,
+      "max_absolute_error": 0.0
+    },
+    "existing_native_edge_records": "10 topology + 50 navigation/marking cases pass through integration replay",
+    "interrupted_workspace_run": "Exited 143 before completion, with no failure markers; its terminal handle was verified and a subsequent complete run passed.",
+    "logs_sha256": {
+      "/tmp/viboceros-edge-input-workspace-complete.log": "f108bd89ddc2d4ef1cc9ae1d93e3b1e26903df133a8f9f550da791f904ebf0f0",
+      "/tmp/viboceros-edge-input-workspace-final.log": "00f6673d53b751d2f1344e2d6bf143224269b686e78350c080214c0a9e10cb50",
+      "/tmp/viboceros-edge-input-python-full.log": "417321b20e9c7773ecaaaf4a4bfa131ad684c2394643bd0c8445cffbbb756c17",
+      "/tmp/viboceros-edge-input-clippy-current.log": "9606e75f671959ff84ae5e171bd4f40b262724669b53acbb34398adfc353a501",
+      "/tmp/viboceros-edge-input-focused-tests.log": "7697b8f31e90cec1e4ce87e53e953d0e103376f950e77b7ee89c2b8ab01655b4",
+      "/tmp/viboceros-edge-zoom-cancel-launch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

@@ -52,7 +52,6 @@ impl VibocerosApp {
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
-            && self.edge_zoom_prompt.is_none()
             && !self.component_selection.has_choices()
     }
 
@@ -169,8 +168,6 @@ impl VibocerosApp {
                 ui.horizontal(|ui| {
                     let label = if self.remember_copy_prompt {
                         "RememberCopyOptions"
-                    } else if let Some(prompt) = &self.edge_zoom_prompt {
-                        prompt.command
                     } else if self.zoom_factor_pending.is_some() {
                         "Zoom Factor"
                     } else if self.plane_prompt.is_some() {
@@ -257,8 +254,6 @@ impl VibocerosApp {
                                 "Define the construction plane; Esc returns to the previous prompt"
                             } else if self.remember_copy_prompt {
                                 "Yes or No; Enter accepts, Esc cancels"
-                            } else if self.edge_zoom_prompt.is_some() {
-                                "All, Current, Next, Previous or Mark; Enter or Esc ends"
                             } else if let Some(prompt) = set_view_prompt {
                                 prompt.message()
                             } else if let Some(p)=&self.tween_surfaces_prompt {

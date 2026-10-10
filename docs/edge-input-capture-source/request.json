@@ -1,0 +1,332 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "edge_analysis",
+      "id": "zoom-enter",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "workflow": {
+        "command": "ZoomNaked",
+        "actions": [
+          "Mark"
+        ],
+        "undo_redo": true
+      }
+    },
+    {
+      "op": "edge_analysis",
+      "id": "zoom-cancel",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "workflow": {
+        "command": "ZoomNaked",
+        "actions": [
+          "Mark"
+        ],
+        "undo_redo": true
+      }
+    },
+    {
+      "op": "edge_analysis",
+      "id": "zoom-empty-cancel",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "workflow": {
+        "command": "ZoomNaked",
+        "actions": [],
+        "undo_redo": false
+      }
+    },
+    {
+      "op": "edge_analysis",
+      "id": "show-edges",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "workflow": {
+        "command": "ZoomNaked",
+        "actions": [],
+        "undo_redo": false
+      }
+    },
+    {
+      "op": "edge_analysis",
+      "id": "show-then-zoom",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "workflow": {
+        "command": "ZoomNaked",
+        "actions": [
+          "Mark"
+        ],
+        "undo_redo": true
+      }
+    }
+  ]
+}

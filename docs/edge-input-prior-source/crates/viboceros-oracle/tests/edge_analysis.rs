@@ -82,28 +82,3 @@ fn edge_mark_replays_native_navigation_duplicates_creation_order_and_history() {
     }
     assert!(numbers > 500);
 }
-
-#[test]
-fn edge_zoom_cancel_replays_native_declines_with_accepted_marks_and_history() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/fixtures/edge_zoom_cancel.json"
-    ))
-    .unwrap();
-    let native: Value = serde_json::from_str(include_str!(
-        "../../../tools/rhino_oracle/observations/edge_zoom_cancel.json"
-    ))
-    .unwrap();
-    let actual = run_request(&request).unwrap();
-    assert_eq!(actual.results.len(), 16);
-    let mut numbers = 0;
-    for result in actual.results {
-        let reference = native["results"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .find(|r| r["id"] == result.id)
-            .unwrap();
-        compare(&result.value, &reference["value"], &result.id, &mut numbers);
-    }
-    assert!(numbers > 100);
-}

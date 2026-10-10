@@ -12,7 +12,7 @@ use viboceros_document::{GeometrySnapshot, Object};
 
 #[derive(Default)]
 pub(super) struct DisplayCache {
-    analyses: Vec<AnalysisDrawing>,
+    analysis: Option<AnalysisDrawing>,
     entries: HashMap<ObjectId, Rc<DisplayGeometry>>,
 }
 
@@ -21,46 +21,15 @@ struct AnalysisDrawing {
     segments: HashMap<(ObjectId, usize), Vec<[Point3; 2]>>,
 }
 
-#[cfg(test)]
-mod edge_analysis_tests {
-    use super::*;
-    #[test]
-    fn persistent_panel_and_transient_zoom_reuse_both_sample_buffers() {
-        let registry = viboceros_command::CommandRegistry::with_builtins();
-        let mut doc = Document::default();
-        registry
-            .execute(&mut doc, "SrfPt 0,0,0 2,0,0 2,3,0 0,3,0")
-            .unwrap();
-        registry.execute(&mut doc, "SelAll").unwrap();
-        registry.execute(&mut doc, "ShowEdges").unwrap();
-        let panel = registry.edge_analysis_view(&doc).unwrap().unwrap();
-        registry.execute(&mut doc, "ZoomNaked").unwrap();
-        let zoom = registry.edge_zoom_view(&doc).unwrap().unwrap();
-        let key = (panel.edges[0].object, panel.edges[0].index);
-        let mut cache = DisplayCache::default();
-        let first = cache.analysis_segments(&panel.edges)[&key].as_ptr();
-        let second = cache.analysis_segments(&zoom.edges)[&key].as_ptr();
-        assert_eq!(cache.analyses.len(), 2);
-        for _ in 0..4 {
-            assert_eq!(cache.analysis_segments(&panel.edges)[&key].as_ptr(), first);
-            assert_eq!(cache.analysis_segments(&zoom.edges)[&key].as_ptr(), second);
-        }
-        assert_eq!(cache.analyses.len(), 2);
-    }
-}
-
 impl DisplayCache {
     pub(super) fn analysis_segments(
         &mut self,
         edges: &std::sync::Arc<[viboceros_command::edge_analysis::Edge]>,
     ) -> &HashMap<(ObjectId, usize), Vec<[Point3; 2]>> {
-        if let Some(index) = self
-            .analyses
-            .iter()
-            .position(|cache| std::sync::Arc::ptr_eq(&cache.edges, edges))
-        {
-            return &self.analyses[index].segments;
-        }
+        if self
+            .analysis
+            .as_ref()
+            .is_none_or(|cache| !std::sync::Arc::ptr_eq(&cache.edges, edges))
         {
             let mut segments = HashMap::new();
             for edge in edges.iter() {
@@ -79,15 +48,12 @@ impl DisplayCache {
                 }
                 segments.insert((edge.object, edge.index), lines);
             }
-            if self.analyses.len() == 2 {
-                self.analyses.remove(0);
-            }
-            self.analyses.push(AnalysisDrawing {
+            self.analysis = Some(AnalysisDrawing {
                 edges: edges.clone(),
                 segments,
             });
         }
-        &self.analyses.last().unwrap().segments
+        &self.analysis.as_ref().unwrap().segments
     }
 
     pub(super) fn get(&mut self, object: &Object, tolerance: Tolerance) -> Rc<DisplayGeometry> {

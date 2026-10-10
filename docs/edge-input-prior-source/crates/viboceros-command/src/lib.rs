@@ -498,7 +498,6 @@ pub trait Command: Send + Sync {
 #[derive(Default)]
 pub struct CommandRegistry {
     edge_analysis: std::sync::Arc<edge_analysis::Session>,
-    edge_zoom: std::sync::Arc<edge_analysis::Session>,
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
@@ -518,11 +517,7 @@ impl CommandRegistry {
         for name in ["ShowEdges", "ShowEdgesOff", "ZoomNaked", "ZoomNonManifold"] {
             registry
                 .register(edge_analysis::AnalysisCommand {
-                    session: if name.starts_with("Zoom") {
-                        registry.edge_zoom.clone()
-                    } else {
-                        registry.edge_analysis.clone()
-                    },
+                    session: registry.edge_analysis.clone(),
                     name,
                 })
                 .expect("unique built-in command");
@@ -1761,41 +1756,6 @@ impl CommandRegistry {
         doc: &Document,
     ) -> Result<Option<edge_analysis::View>, CommandError> {
         self.edge_analysis.view(doc)
-    }
-
-    pub fn edge_zoom_view(
-        &self,
-        doc: &Document,
-    ) -> Result<Option<edge_analysis::View>, CommandError> {
-        self.edge_zoom.view(doc)
-    }
-    pub fn acknowledge_edge_zoom(&self) {
-        self.edge_zoom.acknowledge_zoom();
-    }
-    pub fn clear_edge_zoom(&self) {
-        self.edge_zoom.clear();
-    }
-    pub fn execute_edge_zoom_actions(
-        &self,
-        doc: &mut Document,
-        input: &str,
-        group: &mut viboceros_document::HistoryGroup,
-    ) -> Result<String, CommandError> {
-        doc.begin_group_transaction(group)?;
-        let command = edge_analysis::AnalysisCommand {
-            session: self.edge_zoom.clone(),
-            name: "ShowEdges",
-        };
-        match command.run(doc, &input.split_whitespace().collect::<Vec<_>>()) {
-            Ok(message) => {
-                doc.commit_group_transaction(group)?;
-                Ok(message)
-            }
-            Err(error) => {
-                doc.rollback_transaction()?;
-                Err(error)
-            }
-        }
     }
 
     pub fn command_names(&self) -> Vec<&'static str> {

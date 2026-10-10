@@ -515,11 +515,9 @@ impl VibocerosApp {
                 return true;
             }
             self.document.clear_selection();
-            let command_override = (matches!(
-                description.command,
-                "TweenSurfaces" | "Rebuild" | "ShowEdges" | "ZoomNaked" | "ZoomNonManifold"
-            ) || description.command == "ReducePointCloud"
-                && input.split_whitespace().nth(1).is_some())
+            let command_override = (matches!(description.command, "TweenSurfaces" | "Rebuild")
+                || description.command == "ReducePointCloud"
+                    && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
             self.object_prompt = Some(PendingObjectCommand {
                 description,
@@ -828,7 +826,6 @@ impl VibocerosApp {
                 Ok(message) => {
                     self.object_prompt = None;
                     self.push_log(message);
-                    self.start_edge_zoom_options(&command);
                 }
                 Err(error) => {
                     if pending.description.command == "BooleanUnion" {

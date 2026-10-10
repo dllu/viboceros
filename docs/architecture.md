@@ -854,3 +854,9 @@ Native edge-analysis dialog and zoom parity remain unqualified.
 sequential and repeated navigation/Mark actions, and command-level Undo/Redo.
 Fifty native command workflows match point creation order and source retention;
 mixed naked/non-manifold All marking handles B-reps before meshes.
+
+[Edge-analysis input](edge-analysis-input.md) separates the persistent panel
+from transient Zoom sessions, with command-first source gathering, repeated
+options, retained marks on Escape and one history group across answers. Both
+overlays share a two-entry sampled-edge cache. Sixteen native cancellation
+recipes qualify the command API's retained edits on `OperationDeclined`.

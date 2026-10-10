@@ -30,8 +30,11 @@ Mode and RGB color edits retain the current sources. `Add` and `Remove` use the
 eligible selected objects. Bare `ShowEdges` replaces the sources when eligible
 objects are selected. `ShowEdgesOff`, or closing the window, clears the display;
 the session remembers its mode and color. `ZoomNaked` and `ZoomNonManifold`
-select the corresponding mode and request a fit of the current edge in the
-active viewport. Navigation wraps at the first and last displayed edges.
+start temporary command input in the corresponding mode and request a fit of
+the current edge in the active viewport. Bare commands continue with navigation
+and Mark options; Enter or Esc ends the prompt while retaining accepted marks.
+They preserve an existing ShowEdges panel. Navigation wraps at the first and
+last displayed edges. See [command input and lifetime](../edge-analysis-input.md).
 
 Display, color and navigation do not create model objects or history entries.
 `Mark` creates two point objects on the current layer for each focused edge.

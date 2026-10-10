@@ -346,7 +346,6 @@ pub struct ViewportInput<'a> {
     pub component_pick: Option<ComponentPickFilter>,
     pub component_highlights: &'a [ComponentPick],
     pub edge_analysis: Option<&'a viboceros_command::edge_analysis::View>,
-    pub edge_zoom: Option<&'a viboceros_command::edge_analysis::View>,
     pub edge_highlights: &'a [EdgePick],
     pub edge_endpoints: Option<[Point3; 2]>,
     pub edge_curve: Option<&'a NurbsCurve>,
@@ -421,7 +420,6 @@ impl Default for ViewportInput<'_> {
             component_pick: None,
             component_highlights: &[],
             edge_analysis: None,
-            edge_zoom: None,
             edge_highlights: &[],
             edge_endpoints: None,
             edge_curve: None,
@@ -1831,9 +1829,6 @@ impl Viewport {
         }
         self.paint_edge_highlights(&painter, rect, document, input.edge_highlights);
         if let Some(view) = input.edge_analysis {
-            self.paint_edge_analysis(&painter, rect, document, view);
-        }
-        if let Some(view) = input.edge_zoom {
             self.paint_edge_analysis(&painter, rect, document, view);
         }
         if let Some(ends) = input.edge_endpoints {

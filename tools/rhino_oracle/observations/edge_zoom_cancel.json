@@ -1,0 +1,632 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "standalone-surface-cancel-empty",
+      "value": {
+        "command": "ZoomNaked  Cancel",
+        "input_count": 1,
+        "points": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "standalone-surface-cancel-mark",
+      "value": {
+        "command": "ZoomNaked Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "standalone-surface-cancel-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "standalone-surface-cancel-next-mark",
+      "value": {
+        "command": "ZoomNaked Next Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            2.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              2.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "trimmed-hole-cancel-empty",
+      "value": {
+        "command": "ZoomNaked  Cancel",
+        "input_count": 1,
+        "points": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "trimmed-hole-cancel-mark",
+      "value": {
+        "command": "ZoomNaked Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "trimmed-hole-cancel-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ],
+            [
+              -2.0,
+              -2.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "trimmed-hole-cancel-next-mark",
+      "value": {
+        "command": "ZoomNaked Next Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ],
+            [
+              -1.0,
+              -1.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "welded-cancel-empty",
+      "value": {
+        "command": "ZoomNaked  Cancel",
+        "input_count": 1,
+        "points": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "welded-cancel-mark",
+      "value": {
+        "command": "ZoomNaked Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "welded-cancel-twice",
+      "value": {
+        "command": "ZoomNaked Mark Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "welded-cancel-next-mark",
+      "value": {
+        "command": "ZoomNaked Next Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "non-manifold-cancel-empty",
+      "value": {
+        "command": "ZoomNonManifold  Cancel",
+        "input_count": 1,
+        "points": [],
+        "succeeded": false
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "non-manifold-cancel-mark",
+      "value": {
+        "command": "ZoomNonManifold Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "non-manifold-cancel-twice",
+      "value": {
+        "command": "ZoomNonManifold Mark Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "non-manifold-cancel-next-mark",
+      "value": {
+        "command": "ZoomNonManifold Next Mark Cancel",
+        "input_count": 1,
+        "points": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "redo": {
+          "input_count": 1,
+          "points": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "succeeded": true
+        },
+        "succeeded": false,
+        "undo": {
+          "input_count": 1,
+          "points": [],
+          "succeeded": true
+        }
+      }
+    }
+  ]
+}
