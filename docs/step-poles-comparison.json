@@ -1,0 +1,70 @@
+{
+  "engine": "8.32.26160.13001",
+  "geometric_epsilon": 1e-08,
+  "relative_volume_epsilon": 2e-08,
+  "cases": [
+    {
+      "id": "sphere",
+      "native_objects": 1,
+      "boundary_samples": 165,
+      "singular_trims": 2,
+      "maximum_boundary_error": 2.220446049250313e-16,
+      "qualified_solid_transfer": true,
+      "relative_volume_error": 9.923212925642959e-09,
+      "native_volumes": [
+        33.51032197082118
+      ],
+      "native_orientations": [
+        "Outward"
+      ]
+    },
+    {
+      "id": "cone",
+      "native_objects": 1,
+      "boundary_samples": 363,
+      "singular_trims": 2,
+      "maximum_boundary_error": 4.638672900218651e-16,
+      "qualified_solid_transfer": true,
+      "relative_volume_error": 1.2340553860374275e-08,
+      "native_volumes": [
+        20.94395128239191
+      ],
+      "native_orientations": [
+        "Outward"
+      ]
+    },
+    {
+      "id": "sphere-pocket",
+      "native_objects": 1,
+      "boundary_samples": 1419,
+      "singular_trims": 1,
+      "maximum_boundary_error": 1.7763568394002505e-15,
+      "qualified_solid_transfer": true,
+      "relative_volume_error": 2.0744762667898245e-10,
+      "native_volumes": [
+        983.2448389768825
+      ],
+      "native_orientations": [
+        "Outward"
+      ]
+    },
+    {
+      "id": "sphere-cavity",
+      "native_objects": 2,
+      "boundary_samples": 1353,
+      "singular_trims": 2,
+      "maximum_boundary_error": 3.552713678800501e-15,
+      "qualified_solid_transfer": false,
+      "relative_volume_error": null,
+      "native_volumes": [
+        33.51032197082123,
+        1000.0000000000003
+      ],
+      "native_orientations": [
+        "Outward",
+        "Outward"
+      ]
+    }
+  ],
+  "limitation": "Curved cavity shells import separately; void semantics are lost. Boundary samples qualify geometry, not complete equivalence."
+}

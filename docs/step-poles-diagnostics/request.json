@@ -1,0 +1,30 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-step-poles-qualified/sphere.step",
+      "case": "sphere",
+      "id": "sphere",
+      "op": "step_poles"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-poles-qualified/cone.step",
+      "case": "cone",
+      "id": "cone",
+      "op": "step_poles"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-poles-qualified/sphere-pocket.step",
+      "case": "sphere-pocket",
+      "id": "sphere-pocket",
+      "op": "step_poles"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-step-poles-qualified/sphere-cavity.step",
+      "case": "sphere-cavity",
+      "id": "sphere-cavity",
+      "op": "step_poles"
+    }
+  ],
+  "protocol_version": 1
+}

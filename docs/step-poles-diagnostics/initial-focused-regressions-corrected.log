@@ -1,0 +1,28 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Finished `release` profile [optimized] target(s) in 3m 56s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_io-63fbca84810abafa)
+
+running 6 tests
+test step::tests::pole_trims::collapsed_support_with_a_noncollapsed_surface_image_is_rejected ... FAILED
+test step::tests::pole_trims::cone_apex_has_a_certified_pole_trim_after_step_transfer ... ok
+test step::tests::pole_trims::closed_circle_edges_are_not_imported_as_singular_trims ... ok
+test step::tests::pole_trims::reversed_sphere_poles_keep_face_sense_and_oriented_volume ... ok
+test step::tests::pole_trims::sphere_pole_trims_round_trip_as_exact_singular_boundaries ... ok
+test step::tests::pole_trims::pole_export_respects_source_units_without_rescaling_uv_geometry ... ok
+
+failures:
+
+---- step::tests::pole_trims::collapsed_support_with_a_noncollapsed_surface_image_is_rejected stdout ----
+
+thread 'step::tests::pole_trims::collapsed_support_with_a_noncollapsed_surface_image_is_rejected' (190447) panicked at crates/viboceros-io/src/step/tests/pole_trims.rs:61:5:
+UnsupportedNativeShell { shell: 17, reason: "seam p-curves cannot close the face UV loop" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    step::tests::pole_trims::collapsed_support_with_a_noncollapsed_surface_image_is_rejected
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 214 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p viboceros-io --lib`

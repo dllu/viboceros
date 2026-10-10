@@ -1,0 +1,100 @@
+{
+  "captured_at_utc": "2026-10-10T08:05:12.227115+00:00",
+  "base_commit": "662b11fd0e046649ff48fd185e28d8095d5efca9",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "rhino_version": "8.32.26160.13001",
+  "checks": {
+    "workspace": {
+      "passed": 5668,
+      "failed": 0,
+      "ignored": 38
+    },
+    "io": {
+      "passed": 220,
+      "failed": 0
+    },
+    "native_bridge": {
+      "passed": 24,
+      "failed": 0
+    },
+    "python": {
+      "passed": 1083,
+      "failed": 0
+    },
+    "workspace_clippy": "passed",
+    "fmt": "passed",
+    "rhino_import": "sphere, cone and sphere-pocket are valid outward solids; cavity imports as two outward solids",
+    "geometric_epsilon": 1e-08,
+    "boundary_samples": 3300,
+    "maximum_boundary_error": 3.552713678800501e-15,
+    "git_diff_check": {
+      "code_and_docs": "passed",
+      "byte_exact_log_exceptions": [
+        "docs/step-poles-diagnostics/io-suite-final.log:234: new blank line at EOF",
+        "docs/step-poles-diagnostics/native-bridge-suite-final.log:71: new blank line at EOF",
+        "docs/step-poles-diagnostics/workspace-suite-final.log:5892: new blank line at EOF"
+      ]
+    }
+  },
+  "diagnostics": {
+    "initial_interactive_import": "RhinoDoc.Import waited for STEP options until the bounded timeout; replaced with explicit FileStp.Read options",
+    "initial_regressions": "One cylinder assertion incorrectly disallowed its original polar disk singular trims; an endpoint UV perturbation failed earlier loop closure. The final regression preserves endpoints and perturbs the curve interior to exercise the continuous certificate.",
+    "historical_pins": "2272 HEAD-valid historical entries audited with no newly broken entries; matching hashes relocated to byte-exact prior-source snapshots. This is not a claim that every older manifest was already valid."
+  },
+  "limits": [
+    "Curved inner cavity shells export as separate surface models and lose void semantics on Rhino import; use 3DM for these solids",
+    "Elementary spherical STEP faces with angular trims reaching poles remain unsupported",
+    "Boundary samples and volumes qualify these fixtures, not arbitrary geometry, complete parameter equivalence or full interactive parity"
+  ],
+  "source_sha256": {
+    ".gitmodules": "0a8814fdc323727f4117fae2bd9ec4c4daa44dec1d752140c35db6f7d6760b9a",
+    "Cargo.lock": "a24cdb36c25a5994a97849f8b4fba838e2f1432c8b042c8e68d93f8cf5b7f27f",
+    "crates/viboceros-io/examples/step_poles.rs": "b94c12aea390c2a267ebdc9af9f533228e3ae66caf06f0d4823cf5433581ee1b",
+    "crates/viboceros-io/src/step/export/native/nurbs.rs": "392629a1b5bdb19897ed0e1ca196d77ea5470db7fa9d2c3a7dc60497eec54a0e",
+    "crates/viboceros-io/src/step/native_nurbs.rs": "1ff97664b251229a52b513868187d94477d398883d4bcec6bc6a8cbe20c1c6b5",
+    "crates/viboceros-io/src/step/tests.rs": "12a03c9499ec4af995bdfeeffdf42d2252b2696d7b9b508f67fe50041b584dc4",
+    "crates/viboceros-io/src/step/tests/pole_trims.rs": "cbada544d85c74ffcaca632c935a3d12351f478d868eaf345011e7cb46483494",
+    "crates/viboceros-smlib/tests/brep_transfer.rs": "beb5a913e18f26ac6bc485c29d25938ca91ae42f2914e48f923a09842150e55c",
+    "docs/commands/export-step.md": "a8e6fe04559bf4cabe60e782572a071975ad6ac08d3b4201ad2d803b54b20ef8",
+    "docs/development.md": "d82e2fc4ccb95579c6938c83b0c9312a70c448b10c8c2249a96884c66df95da9",
+    "docs/file-formats.md": "fe5ad37bb6fb227dbc10f97af68e493e91c43bae281ea868b77e3d2d903d38e2",
+    "docs/smlib-brep-transfer.md": "252befd58f8e48c17ebb4e588a6189271bf266bf443098bac8b220ce8de4acce",
+    "docs/smlib-bridge.md": "f14014724f2766446a2e993cad732bee910efa23a1e1d115dae35d6d833c94b3",
+    "docs/step-poles-comparison.json": "51441d041e4ec89e93ce6df76c6ab8b01838e1f43f991070d56f7581e33d5384",
+    "docs/step-poles-diagnostics/cone.step": "c144cfd3dc797f009ad804e7df7a4a6f55dea0d8a2792c0f852132d73660fcfa",
+    "docs/step-poles-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/step-poles-diagnostics/initial-focused-regressions-corrected.log": "d608346fa1495d299ab704aac8d9f2ce84bdd3d3e65c4a004ad576503284d68e",
+    "docs/step-poles-diagnostics/initial-focused-regressions-final.log": "acaad834dd3e4aab12fb0a718024b95a0b021995fb555dba4fd2abee5b4ea41d",
+    "docs/step-poles-diagnostics/initial-focused-regressions.log": "35ef6b11849735b85a58a839009d9cc8048bda111fd6545f69d1ad9996756b43",
+    "docs/step-poles-diagnostics/initial-import-options.png": "bb87fc5026626283ae6c92ee367daad52f5a1e061af93d1df10afc0b80fd30ac",
+    "docs/step-poles-diagnostics/initial-interactive-import-timeout.log": "fc83d71bde3e50fca9beac721da3ef2a2ddf2b5ab2c0070d7df025d74b409a2e",
+    "docs/step-poles-diagnostics/initial-workspace.log": "2646a92870c2879aefcb798eee10ad1e75951ac7afb864837a62504e8b69d409",
+    "docs/step-poles-diagnostics/io-suite-final.log": "234baab987587cb6747c0d47e3697d36f20440d03d9436876b88285a5eba922d",
+    "docs/step-poles-diagnostics/native-bridge-suite-final.log": "43c9dbb17afd2e79703482cd16bbc9e13c008bae136b5799e78e8c8c00e3b364",
+    "docs/step-poles-diagnostics/properties.json": "40782a6a983720b955de64379ee87f2b65461aad1e8c1bb5f99037f421b86e61",
+    "docs/step-poles-diagnostics/python-suite-final.log": "15a56c7abfc60e7b8ef46372e846c53845e9a8d3ff5cbdb10b44534172fe8e1a",
+    "docs/step-poles-diagnostics/request.json": "4c8113659d7b7aa2df14ca6b3daee3e51f7d18a749dac2595c8ec92bda2d0ef7",
+    "docs/step-poles-diagnostics/rhino-options-read.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/step-poles-diagnostics/sphere-cavity.step": "16153ebc1724bd86364600ddf06a5846458bfdd8cd2c3d1cf24804b073cbe73f",
+    "docs/step-poles-diagnostics/sphere-pocket.step": "c794222bc13ab548a61d53c305f46fa7cea0a48a21b03a03dcfac2377f365f96",
+    "docs/step-poles-diagnostics/sphere.step": "f5a4dfafaf6918fe3d8ed8398c0de4f2b580f81c63992eceaf83fd4f15724bf6",
+    "docs/step-poles-diagnostics/workspace-clippy-final.log": "e243ab2b1ef31cf3b7bc839639e81587c1a2bb062b51b21e70669b1648b1482f",
+    "docs/step-poles-diagnostics/workspace-suite-final.log": "8bb7ff8bd6bc6dab57e888df870991cdb026ef4ab10256ab549c022feb9759fd",
+    "docs/step-poles-native-reference.json": "3a198b95576736dde7b4f88fa6e26bd98ef38a325a0793f07db15b0aefd91122",
+    "docs/step-poles-prior-source/crates/viboceros-io/src/step/native_nurbs.rs": "317f5cee2ac085bde4cafbaa6a2aa58af2de1f19f03ca41212311b22c6c73f3b",
+    "docs/step-poles-prior-source/crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
+    "docs/step-poles-prior-source/docs/development.md": "aed9b188762d0d7449b6a3b7fdf48ca9819a8331ffdb42eb0e2c12fb536a394f",
+    "docs/step-poles-prior-source/docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32",
+    "docs/step-poles-prior-source/docs/smlib-bridge.md": "632bc93cabb40c9c2834c131b4f98cc615b2c11f92ef0ff1836b7687daf9e48b",
+    "docs/step-poles-prior-source/docs/usd-brep.md": "7481145c5bc18e48533ae49d93b693217779e7e3d32f92af0de2f0d817ba2a1b",
+    "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
+    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "docs/step-poles.md": "1af811561ce1d6a663c67f890a136583522dd332ac24c93b7cef20a382b27a04",
+    "docs/usd-brep.md": "6ada72de933a2f77959d54d01f74cda536c037d7e218d44285b560c5da4c0380",
+    "tools/rhino_oracle/client.py": "8e52f4b889e329801d3de7de4be8e464aafaa83dee70e06a55357ce41dc1fd61",
+    "tools/rhino_oracle/rhino_worker.py": "27c3509ff6ef139f55cc95b8a2becf5052616e73a5367ed1d56dff7563584ea7",
+    "tools/rhino_oracle/step_poles_probe.py": "bf69493f32068997ab242040eabcdc07c0f73cb88b372c54618c8ddc2f342f84",
+    "tools/rhino_oracle/test_step_poles_probe.py": "579d46f887a2ce590a70d241531e1770804d3d28475f70002c94929d94988a80",
+    "tools/usd_brep/compare_step_poles.py": "307f8c481624dc9fa27fb99a1c1977b3719e91cadfcbe5c7dce210fd4a9efc0b"
+  }
+}

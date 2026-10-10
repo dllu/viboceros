@@ -102,11 +102,8 @@
     "docs/smlib-bridge-prior-source/docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
-    "docs/usd-brep.md": "7481145c5bc18e48533ae49d93b693217779e7e3d32f92af0de2f0d817ba2a1b",
-    "tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
     "tools/rhino_oracle/fixtures/smlib_reference.json": "cba822c949ebfb881aee442bda3ec246dc1d8216b5e91838de9f4d19b0bc0322",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
-    "tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/rhino_oracle/smlib_reference_probe.py": "5f15a46455b24a3b766be602584e367ecbc8a3d7c9e2bc15a2986452f278a0d8",
     "tools/rhino_oracle/test_smlib_reference_probe.py": "051710efc3c0c93414a2e5c1ee4e492757796d3dfa152315109c216b613d1657",
@@ -120,6 +117,9 @@
     "docs/smlib-brep-prior-source/docs/smlib-bridge.md": "02ea593357a8799f51f41e05470aaff8ee35ceda3660cb001c11eacec7fac24c",
     "docs/smlib-brep-prior-source/docs/development.md": "9c2037ba54c3052809e11871ffaa39eaf02c292dc66689693565a3f07321ab23",
     "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/lib.rs": "00a4a1dc85517dcd344bf50fb0d77bcf30d36fcdd27f81c5b02e473ff42358ac",
-    "docs/smlib-import-prior-source/Cargo.toml": "eb153e329fbd969ce807a9d008ee71b7b6d20bee847788410ac90ddb0c50d2d7"
+    "docs/smlib-import-prior-source/Cargo.toml": "eb153e329fbd969ce807a9d008ee71b7b6d20bee847788410ac90ddb0c50d2d7",
+    "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
+    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "docs/step-poles-prior-source/docs/usd-brep.md": "7481145c5bc18e48533ae49d93b693217779e7e3d32f92af0de2f0d817ba2a1b"
   }
 }

@@ -38,7 +38,7 @@ pub(super) fn convert_shell(
         .iter()
         .map(|p| BrepVertex::try_new(Point3::try_new(p.x, p.y, p.z)?, tolerance.absolute()))
         .collect::<Result<Vec<_>, _>>()?;
-    let proposals = shell
+    let edges = shell
         .edges
         .iter()
         .map(|edge| {
@@ -49,27 +49,9 @@ pub(super) fn convert_shell(
             )?)
         })
         .collect::<Result<Vec<_>, StepError>>()?;
-    let mut edges = Vec::new();
-    let mut edge_map = Vec::with_capacity(proposals.len());
-    for edge in proposals {
-        let point = vertices[edge.vertices()[0]].point();
-        let positive = edge.curve().control_points()[0].weight() > 0.;
-        let collapsed = edge.vertices()[0] == edge.vertices()[1]
-            && edge
-                .curve()
-                .control_points()
-                .iter()
-                .all(|p| p.point() == point && (p.weight() > 0.) == positive);
-        if collapsed {
-            edge_map.push(None);
-        } else {
-            edge_map.push(Some(edges.len()));
-            edges.push(edge);
-        }
-    }
-    let mut incidence = vec![0; shell.edges.len()];
-    let mut first_face = vec![None; shell.edges.len()];
-    let mut repeated_on_face = vec![false; shell.edges.len()];
+    let mut incidence = vec![0; edges.len()];
+    let mut first_face = vec![None; edges.len()];
+    let mut repeated_on_face = vec![false; edges.len()];
     for (face_index, face) in shell.faces.iter().enumerate() {
         for use_ in face.boundaries.iter().flatten() {
             incidence[use_.index] += 1;
@@ -160,21 +142,9 @@ pub(super) fn convert_shell(
                 } else {
                     [endpoints.1, endpoints.0]
                 };
-                if edge_map[use_.index].is_none() {
-                    trims.push(BrepTrim::try_new(
-                        vertices,
-                        None,
-                        false,
-                        curve,
-                        BrepTrimType::Singular,
-                        SurfaceIso::NotIso,
-                        [0.; 2],
-                    )?);
-                    continue;
-                }
                 trims.push(BrepTrim::try_new(
                     vertices,
-                    edge_map[use_.index],
+                    Some(use_.index),
                     !use_.orientation,
                     curve,
                     if incidence[use_.index] == 2 && repeated_on_face[use_.index] {
@@ -191,28 +161,6 @@ pub(super) fn convert_shell(
             boundaries.push(trims);
         }
         let surface = surface(&face.surface, &boundaries, id, tolerance)?;
-        for trim in boundaries.iter().flatten().filter(|t| t.edge().is_none()) {
-            let point = vertices[trim.vertices()[0]].point();
-            let domain = trim.curve().domain();
-            let support = NurbsCurve::try_new_rational(
-                1,
-                vec![WeightedPoint3::try_new(point, 1.)?; 2],
-                vec![
-                    *domain.start(),
-                    *domain.start(),
-                    *domain.end(),
-                    *domain.end(),
-                ],
-            )?;
-            if surface
-                .parameter_curve_deviation_bound(trim.curve(), &support, tolerance.absolute())?
-                .is_none()
-            {
-                return Err(unsupported(
-                    "collapsed STEP edge does not certify a singular surface boundary",
-                ));
-            }
-        }
         let native = if boundaries.len() == 1 {
             BrepFace::try_new(
                 surface,

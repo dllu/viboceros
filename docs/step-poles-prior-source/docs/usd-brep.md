@@ -100,9 +100,8 @@ that can report success after failed repairs, periodic seam problems, inaccurate
 default mass properties on some circular trims, and tessellation winding defects
 near fillets. The trial tightens property accuracy and uses 15° tessellation
 angles. Healing, fillets, imported periodic topology, tangent/coincident cases,
-scale extremes and broader Rust round trips still need qualification. The
-application now uses the [optional Rust bridge](smlib-bridge.md) for supported
-curved Boolean commands when built with `--features native-smlib`.
+scale extremes and Rust round trips still need qualification. The application
+does not yet call this kernel.
 
 ## Licensing
 

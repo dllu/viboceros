@@ -64,7 +64,6 @@
     "Vertex-only loops, non-manifold boundaries, native classes requiring approximation and model-scale extremes remain unqualified"
   ],
   "source_sha256": {
-    "crates/viboceros-io/src/step/native_nurbs.rs": "317f5cee2ac085bde4cafbaa6a2aa58af2de1f19f03ca41212311b22c6c73f3b",
     "crates/viboceros-io/src/step/native_nurbs/seam_loops.rs": "db0b60506b30fe0c4a1826851323727b6203db20ec2d136140e3c9098f4ed3d1",
     "crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df",
     "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
@@ -72,7 +71,6 @@
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
     "crates/viboceros-smlib/examples/reference.rs": "e000e34301d30c6b65d0fd7ea26033d040fa94e64c245ec9f46bdafdc55baeef",
     "crates/viboceros-smlib/native/brep_export.cpp": "20c3433e43c1446a320a573c6d16a703df7081fb5df88e693185081734e7df1c",
-    "crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
     "crates/viboceros-smlib/tests/native.rs": "bd82038b22187b93a45ef1a14210e7d545520204eec69dd71681fe0d3d42585b",
     "crates/viboceros-smlib/tests/rhino_reference.rs": "5fc069aa154f59c32c1154c497e8ffae5d1c8cb1d7994112468992ed51c260d1",
     "docs/smlib-brep-comparison.json": "2080bea158e6da9a6cd7adb4d82f06ce4a3442a700886708874dfbe565739338",
@@ -112,9 +110,6 @@
     "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/native.rs": "306fee9a7a92b2868a0ca1689987afa6dbf3e81050bf7d68ceae16d3f0a05c6f",
     "docs/smlib-brep-prior-source/docs/development.md": "9c2037ba54c3052809e11871ffaa39eaf02c292dc66689693565a3f07321ab23",
     "docs/smlib-brep-prior-source/docs/smlib-bridge.md": "02ea593357a8799f51f41e05470aaff8ee35ceda3660cb001c11eacec7fac24c",
-    "docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32",
-    "tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
-    "tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/usd_brep/compare_brep.py": "873bb44efd25ec6f288f06bce1cadc8b906dad2d5d21408aab6e9322d3acfb13",
     "docs/smlib-brep-diagnostics/io-tests-final.log": "fdd930a4c9febd07cfb04c4284eb39c30242489b095704ddf691abf725b4ebc2",
@@ -127,6 +122,11 @@
     "docs/smlib-import-prior-source/crates/viboceros-smlib/src/native.rs": "b331072d11e6c7aa580b221be790475c96c50084d3f2d5245073f0d298912a4c",
     "docs/smlib-import-prior-source/crates/viboceros-smlib/src/lib.rs": "6ee210af5758df9efa5f10af2f41c0dd6ed4bf4319f0ac89bcc2c9b975a3165a",
     "docs/smlib-import-prior-source/docs/smlib-bridge.md": "d21041ee7b9a44318136bf13701694fb62d51c66336774c6713f8837288b20c9",
-    "docs/smlib-import-prior-source/docs/development.md": "a021b318172eea963e2b460ab89fbed3d60f6838087acf031a2d25fd4c444b8b"
+    "docs/smlib-import-prior-source/docs/development.md": "a021b318172eea963e2b460ab89fbed3d60f6838087acf031a2d25fd4c444b8b",
+    "docs/step-poles-prior-source/crates/viboceros-io/src/step/native_nurbs.rs": "317f5cee2ac085bde4cafbaa6a2aa58af2de1f19f03ca41212311b22c6c73f3b",
+    "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
+    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "docs/step-poles-prior-source/crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
+    "docs/step-poles-prior-source/docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32"
   }
 }

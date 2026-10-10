@@ -266,12 +266,16 @@ faces. It preserves face/edge incidence and converts coordinates to millimetres
 without rebuilding the source B-rep's UV trims. Full-turn cylinder walls with
 paired `SEAM_CURVE` uses round trip as editable faces. In a connected shell
 containing a NURBS face, planar neighbors also retain NURBS UV parameterization
-and explicit p-curves. Singular trims, mixed-sign NURBS weights, and non-B-rep
+and explicit p-curves. Certified singular trims retain their UV boundaries with
+constant spatial spline supports; sphere poles and cone apices round trip.
+Mixed-sign NURBS weights, uncertified singular boundaries, and non-B-rep
 document objects produce an explicit error; staged file replacement leaves an existing
 destination intact. Certified convex planar polyhedra become STEP solids;
 strictly contained, disjoint inward convex cavities remain one solid shape.
 Other edge-disconnected shells become separate STEP surface models, so general
 compound B-rep object grouping, names, and materials are not yet preserved.
+In particular, a curved inner cavity shell exports separately and loses its
+void relationship on Rhino import. See [pole transfer evidence](step-poles.md).
 See [command details](commands/export-step.md).
 
 General editable STEP B-rep interchange remains partial. The low-level

@@ -1,0 +1,19 @@
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+error[E0061]: this function takes 5 arguments but 4 arguments were supplied
+    --> crates/viboceros-io/src/step/tests/pole_trims.rs:15:18
+     |
+  15 |     let source = Brep::try_cylinder(frame(), 2., 5., Tolerance::DEFAULT).unwrap();
+     |                  ^^^^^^^^^^^^^^^^^^                  ------------------ argument #4 of type `f64` is missing
+     |
+note: associated function defined here
+    --> crates/viboceros-geometry/src/brep.rs:2409:12
+     |
+2409 |     pub fn try_cylinder(
+     |            ^^^^^^^^^^^^
+help: provide the argument
+     |
+  15 |     let source = Brep::try_cylinder(frame(), 2., 5., /* f64 */, Tolerance::DEFAULT).unwrap();
+     |                                                      ++++++++++
+
+For more information about this error, try `rustc --explain E0061`.
+error: could not compile `viboceros-io` (lib test) due to 1 previous error

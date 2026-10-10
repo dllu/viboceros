@@ -1,0 +1,30 @@
+[
+  {
+    "edges": 1,
+    "faces": 1,
+    "id": "sphere",
+    "solid": true,
+    "volume": 33.510321638291124
+  },
+  {
+    "edges": 3,
+    "faces": 2,
+    "id": "cone",
+    "solid": true,
+    "volume": 20.943951023931955
+  },
+  {
+    "edges": 14,
+    "faces": 7,
+    "id": "sphere-pocket",
+    "solid": true,
+    "volume": 983.2448391808543
+  },
+  {
+    "edges": 13,
+    "faces": 7,
+    "id": "sphere-cavity",
+    "solid": true,
+    "volume": 966.4896783617088
+  }
+]

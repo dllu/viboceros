@@ -3,6 +3,7 @@ use std::io::Cursor;
 
 use super::*;
 mod extrusion_pcurves;
+mod pole_trims;
 
 #[test]
 fn nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves() {

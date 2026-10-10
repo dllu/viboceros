@@ -3,9 +3,7 @@
 The `viboceros-smlib` crate adds a narrow C ABI adapter for the pinned NVIDIA
 [USD BRep kernel](usd-brep.md). Linux builds can opt in with the `native`
 feature. Default workspace builds do not compile SMLib or require its submodule
-or TBB. Application curved Boolean commands can opt in with `native-smlib`;
-see [difference/import](smlib-import.md), [union/intersection](smlib-set-booleans.md)
-and [split](smlib-boolean-split.md).
+or TBB. Application commands do not yet use this adapter.
 
 ## Build and exercise
 
@@ -84,9 +82,8 @@ curve sample checks do not establish full B-rep equivalence. Detailed evidence i
 
 [`Solid::to_brep`](smlib-brep-transfer.md) now exports NURBS geometry and shared
 topology into the validated Rust model, including pole trims and exact planar
-pullbacks. Qualified outputs can be saved to 3DM; supported outputs, including
-[certified pole trims](step-poles.md), also round-trip through STEP.
-[Rust-to-SMLib import and optional curved
+pullbacks. Qualified outputs can be saved to 3DM; supported nonsingular outputs
+also round-trip through STEP. [Rust-to-SMLib import and optional curved
 BooleanDifference](smlib-import.md) now provide initial document integration.
 A tessellation is suitable for display but does not replace exact
 topology. Fillets, offsets, healing, general imported geometry,

@@ -180,7 +180,27 @@ fn exact_curved_exports_survive_3dm_and_step_without_display_meshes() {
         let three_dm = round_trip_3dm(&source);
         compare_brep(&source, &three_dm, name);
         let mut bytes = Vec::new();
-        viboceros_io::write_step_nurbs_breps(&mut bytes, [&source]).unwrap();
+        let written = viboceros_io::write_step_nurbs_breps(&mut bytes, [&source]);
+        if source
+            .faces()
+            .iter()
+            .flat_map(|f| f.loops())
+            .flat_map(|l| l.trims())
+            .any(|t| t.edge().is_none())
+        {
+            assert!(
+                matches!(
+                    written,
+                    Err(viboceros_io::StepError::UnsupportedNativeBrep {
+                        reason: "singular UV trim has no STEP edge",
+                        ..
+                    })
+                ),
+                "{name}: {written:?}"
+            );
+            continue;
+        }
+        written.unwrap();
         let decoded = viboceros_io::read_step_native_instances(
             std::io::Cursor::new(bytes),
             Tolerance::DEFAULT,

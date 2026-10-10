@@ -215,13 +215,6 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
-        if any(op.get('op') == 'step_poles' for op in request.get('operations', [])):
-            from .step_poles_probe import validate
-            if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
-                raise OracleProtocolError('STEP pole imports require a private scheme and one iteration')
-            for op in request['operations']:
-                if op.get('op') == 'step_poles':
-                    validate(op)
         if any(op.get('op') == 'smlib_reference' for op in request.get('operations', [])):
             from .smlib_reference_probe import validate
             if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
@@ -1041,9 +1034,6 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
-            if any(op.get('op') == 'step_poles' for op in request['operations']):
-                for helper in ('step_poles_probe.py', 'merge_edges_probe.py'):
-                    shutil.copyfile(worker_source.with_name(helper), job_path / helper)
             if any(op.get('op') == 'smlib_reference' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('smlib_reference_probe.py'), job_path / 'smlib_reference_probe.py')
                 shutil.copyfile(worker_source.with_name('merge_edges_probe.py'), job_path / 'merge_edges_probe.py')

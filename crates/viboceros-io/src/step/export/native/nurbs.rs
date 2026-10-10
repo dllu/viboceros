@@ -16,6 +16,7 @@ use monstertruck::topology::compress::{
 };
 use viboceros_geometry::{
     Brep, LengthUnitSystem, NurbsCurve, NurbsCurve2, NurbsSurface, Point3, Tolerance,
+    WeightedPoint3,
 };
 
 use super::super::super::export_geometry::{ExportLine, ExportPoint};
@@ -85,7 +86,7 @@ enum Model {
 }
 
 /// Writes native edges, surfaces, and UV trims as editable STEP shells.
-/// Singular trims are unsupported. Convex planar solids retain their certified
+/// Singular trims use constant spline supports and exact UV curves. Convex planar solids retain their certified
 /// outer/void structure; other shells remain surface models.
 pub fn write_step_nurbs_breps<'a, W: Write>(
     writer: W,
@@ -252,45 +253,93 @@ fn shell(
         for boundary in face.loops() {
             let mut uses = Vec::new();
             for trim in boundary.trims() {
-                let source_edge = trim
-                    .edge()
-                    .ok_or_else(|| unsupported("singular UV trim has no STEP edge"))?;
-                let local_edge = if let Some(&local) = edge_map.get(&source_edge) {
-                    local
-                } else {
-                    let edge = &brep.edges()[source_edge];
-                    let mut local_vertices = [0; 2];
-                    for (destination, source) in local_vertices.iter_mut().zip(edge.vertices()) {
-                        *destination = *vertex_map.entry(source).or_insert_with(|| {
-                            let local = vertices.len();
-                            let p = brep.vertices()[source].point();
-                            vertices.push(ExportPoint(TruckPoint3::new(
-                                p.x() * scale,
-                                p.y() * scale,
-                                p.z() * scale,
-                            )));
-                            local
+                let local_edge = if let Some(source_edge) = trim.edge() {
+                    if let Some(&local) = edge_map.get(&source_edge) {
+                        local
+                    } else {
+                        let edge = &brep.edges()[source_edge];
+                        let mut local_vertices = [0; 2];
+                        for (destination, source) in local_vertices.iter_mut().zip(edge.vertices())
+                        {
+                            *destination = *vertex_map.entry(source).or_insert_with(|| {
+                                let local = vertices.len();
+                                let p = brep.vertices()[source].point();
+                                vertices.push(ExportPoint(TruckPoint3::new(
+                                    p.x() * scale,
+                                    p.y() * scale,
+                                    p.z() * scale,
+                                )));
+                                local
+                            });
+                        }
+                        if local_vertices.iter().any(|&vertex| {
+                            let p = vertices[vertex].0;
+                            !p.x.is_finite() || !p.y.is_finite() || !p.z.is_finite()
+                        }) {
+                            return Err(unsupported("scaled STEP vertex is not finite"));
+                        }
+                        let local = edges.len();
+                        edges.push(CompressedEdge {
+                            vertices: (local_vertices[0], local_vertices[1]),
+                            curve: curve3(
+                                edge.curve(),
+                                edge.vertices()
+                                    .map(|vertex| brep.vertices()[vertex].point()),
+                                scale,
+                                index,
+                                curved_shell,
+                            )?,
                         });
+                        edge_map.insert(source_edge, local);
+                        local
                     }
-                    if local_vertices.iter().any(|&vertex| {
-                        let p = vertices[vertex].0;
-                        !p.x.is_finite() || !p.y.is_finite() || !p.z.is_finite()
-                    }) {
+                } else {
+                    let vertex = trim.vertices()[0];
+                    if trim.vertices()[1] != vertex {
+                        return Err(unsupported("singular trim must use one vertex"));
+                    }
+                    let point = brep.vertices()[vertex].point();
+                    let domain = trim.curve().domain();
+                    let support = NurbsCurve::try_new_rational(
+                        1,
+                        vec![WeightedPoint3::try_new(point, 1.)?; 2],
+                        vec![
+                            *domain.start(),
+                            *domain.start(),
+                            *domain.end(),
+                            *domain.end(),
+                        ],
+                    )?;
+                    let allowed = tolerance
+                        .absolute()
+                        .max(brep.vertices()[vertex].tolerance());
+                    if face
+                        .surface()
+                        .parameter_curve_deviation_bound(trim.curve(), &support, allowed)?
+                        .is_none()
+                    {
+                        return Err(unsupported(
+                            "singular trim surface image is not certified at its vertex",
+                        ));
+                    }
+                    let local_vertex = *vertex_map.entry(vertex).or_insert_with(|| {
+                        let local = vertices.len();
+                        vertices.push(ExportPoint(TruckPoint3::new(
+                            point.x() * scale,
+                            point.y() * scale,
+                            point.z() * scale,
+                        )));
+                        local
+                    });
+                    let scaled = vertices[local_vertex].0;
+                    if !scaled.x.is_finite() || !scaled.y.is_finite() || !scaled.z.is_finite() {
                         return Err(unsupported("scaled STEP vertex is not finite"));
                     }
                     let local = edges.len();
                     edges.push(CompressedEdge {
-                        vertices: (local_vertices[0], local_vertices[1]),
-                        curve: curve3(
-                            edge.curve(),
-                            edge.vertices()
-                                .map(|vertex| brep.vertices()[vertex].point()),
-                            scale,
-                            index,
-                            curved_shell,
-                        )?,
+                        vertices: (local_vertex, local_vertex),
+                        curve: Curve3::Nurbs(nurbs_curve3(&support, scale, index)?),
                     });
-                    edge_map.insert(source_edge, local);
                     local
                 };
                 uses.push(CompressedEdgeUse {

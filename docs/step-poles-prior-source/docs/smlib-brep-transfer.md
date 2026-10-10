@@ -57,11 +57,10 @@ rejects disconnected or excessive branches. Regression cases reverse candidate
 order and rotate the loop start; native cylinder/through-hole round trips exercise
 the complete writer/reader path.
 
-The subsequent [STEP pole transfer](step-poles.md) adds constant spatial spline
-supports with exact UV boundaries and continuous collapse certification. Spheres
-and spherical pockets now round trip as editable STEP B-reps and import as valid
-Rhino solids. Curved enclosed cavities still require 3DM to retain their void
-relationship: STEP emits their shells separately. Other imported periodic topology, vertex-only loops,
+STEP singular pole trims remain unsupported by the existing writer. Sphere,
+spherical-pocket and enclosed spherical-cavity outputs therefore remain 3DM-only
+at this checkpoint. Their rejection is explicit and tested; their exact topology
+is retained in Rust and 3DM. Other imported periodic topology, vertex-only loops,
 non-manifold boundaries, native classes requiring approximation, scale extremes,
-remain further work. [Rust-to-SMLib import](smlib-import.md) and optional curved
-Boolean commands are available with the `native-smlib` feature.
+and Rust-to-SMLib B-rep import remain further work. The application does not yet
+route its commands through SMLib.

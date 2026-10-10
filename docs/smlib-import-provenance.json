@@ -79,11 +79,9 @@
     "crates/viboceros-smlib/native/brep_import.cpp": "8fbc856477ecfd3125ec2f932f07ae3201f45bd2841ea8f2f68f71fb7e003d47",
     "crates/viboceros-smlib/src/native.rs": "b331072d11e6c7aa580b221be790475c96c50084d3f2d5245073f0d298912a4c",
     "crates/viboceros-smlib/tests/brep_import.rs": "65888c5235863c6b02e2dfe4de6c26f085eec2fd960c6d54c5984c77e2863e6b",
-    "crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
     "crates/viboceros-smlib/tests/native.rs": "bd82038b22187b93a45ef1a14210e7d545520204eec69dd71681fe0d3d42585b",
     "crates/viboceros-smlib/tests/rhino_reference.rs": "5fc069aa154f59c32c1154c497e8ffae5d1c8cb1d7994112468992ed51c260d1",
     "docs/commands/boolean-difference.md": "6dbe969fbf519b3852d03ed995f2a04527805afbcc7e489321f5e737a1756063",
-    "docs/smlib-bridge.md": "632bc93cabb40c9c2834c131b4f98cc615b2c11f92ef0ff1836b7687daf9e48b",
     "docs/smlib-import-command-comparison.json": "e72b7081a76f1a27569a19a3ee18bf9d583d49edafa3e0f206a7cea0b5d8aba3",
     "docs/smlib-import-diagnostics/command-clippy-final.log": "d2c2e4312d3f646869580f2e812f55471fe5d644dfb86bd431eb499a51a82a23",
     "docs/smlib-import-diagnostics/command-example.log": "9421543644438f0c21f17f06bdbd9b51ed9e7c2569e9e98bcc73168acf01aaac",
@@ -116,8 +114,6 @@
     "docs/smlib-import-prior-source/crates/viboceros-smlib/src/native/brep.rs": "7b5d694bd94620f7adae072f70412a27e38e534d3619cfff61769a60409f641c",
     "docs/smlib-import-prior-source/docs/development.md": "a021b318172eea963e2b460ab89fbed3d60f6838087acf031a2d25fd4c444b8b",
     "docs/smlib-import-prior-source/docs/smlib-bridge.md": "d21041ee7b9a44318136bf13701694fb62d51c66336774c6713f8837288b20c9",
-    "tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
-    "tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "docs/smlib-import-diagnostics/native-command-suite.log": "dd55b74ca4eb15d6ad8b67dc9d077b520b83b1160f6cb8e663f2cfbe3919f8a8",
     "docs/smlib-sets-prior-source/crates/viboceros-smlib/native/bridge.cpp": "8c2aeb3d3d36a706d331dfcacb8ef9d5b6013058482e6046d7fd9ca958fa2fa5",
@@ -126,6 +122,10 @@
     "docs/smlib-sets-prior-source/crates/viboceros-command/Cargo.toml": "ef9638e7779f4ba7ac47ab46cef5a91edc1c992dd8654d157d3d2982454242f8",
     "docs/smlib-sets-prior-source/docs/development.md": "6cd9b831ef38293f9573013923dcb56840d76a5a722dc88230f994158f835951",
     "docs/smlib-sets-prior-source/docs/smlib-import.md": "1e49c37fde008cd0c27b2f2b41660d591f51a2945cb3ce5ba38b6642211d857b",
-    "docs/smlib-sets-prior-source/crates/viboceros-smlib/src/lib.rs": "e8a595825093ef98c28476d0e30bf5e2140b6fa3a0edae687f195d281016409a"
+    "docs/smlib-sets-prior-source/crates/viboceros-smlib/src/lib.rs": "e8a595825093ef98c28476d0e30bf5e2140b6fa3a0edae687f195d281016409a",
+    "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
+    "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
+    "docs/step-poles-prior-source/crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
+    "docs/step-poles-prior-source/docs/smlib-bridge.md": "632bc93cabb40c9c2834c131b4f98cc615b2c11f92ef0ff1836b7687daf9e48b"
   }
 }
