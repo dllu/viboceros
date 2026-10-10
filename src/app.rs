@@ -154,6 +154,7 @@ mod distance;
 mod domain;
 mod edge_analysis;
 mod edge_commands;
+mod edge_fillet;
 mod evaluate_point;
 mod evaluate_uv;
 mod grid_settings;
@@ -2074,6 +2075,7 @@ pub struct VibocerosApp {
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
+    edge_fillet_prompt: Option<edge_fillet::Prompt>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
     points_session: Option<points::PointsSession>,
@@ -2177,6 +2179,7 @@ impl VibocerosApp {
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
+            edge_fillet_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
             points_session: None,
@@ -2360,6 +2363,7 @@ impl VibocerosApp {
         }
         if self.try_continue_component_choice(&input)
             || self.try_continue_extract_faces(&input)
+            || self.try_continue_edge_fillet(&input)
             || self.try_continue_unjoin_command(&input)
             || self.try_continue_hole_command(&input)
             || self.try_continue_edge_command(&input)
@@ -2423,6 +2427,7 @@ impl VibocerosApp {
             || self.try_start_remember_copy_options(&input)
             || self.try_start_shrink_faces(&input)
             || self.try_start_hole_command(&input)
+            || self.try_start_edge_fillet(&input)
             || self.try_start_unjoin_command(&input)
             || self.try_start_edge_command(&input)
             || self.try_start_group_prompt(&input)
@@ -2812,6 +2817,7 @@ impl VibocerosApp {
     fn try_execute_command(&mut self, input: &str) -> bool {
         self.selection_menu = None;
         if self.try_continue_component_choice(input)
+            || self.try_continue_edge_fillet(input)
             || self.try_continue_unjoin_command(input)
             || self.try_continue_hole_command(input)
             || self.try_continue_edge_command(input)
@@ -5226,6 +5232,7 @@ impl VibocerosApp {
                 .translation_session
                 .take()
                 .is_some_and(|session| session.applied);
+        self.finish_edge_fillet(false);
         if self.unjoin_prompt.is_some() {
             self.finish_unjoin_command(false);
         }
@@ -8850,6 +8857,7 @@ impl VibocerosApp {
             || self.edge_prompt.is_some()
             || self.hole_prompt.is_some()
             || self.unjoin_prompt.is_some()
+            || self.edge_fillet_prompt.is_some()
         {
             self.cancel_interactive_command(true);
         } else if self.component_selection.has_choices() {
@@ -8906,6 +8914,7 @@ impl eframe::App for VibocerosApp {
             && self.edge_prompt.is_none()
             && self.hole_prompt.is_none()
             && self.unjoin_prompt.is_none()
+            && self.edge_fillet_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
             && !self.remember_copy_prompt
@@ -9193,6 +9202,7 @@ impl eframe::App for VibocerosApp {
             edge_highlights.extend(prompt.highlights());
         }
         if self.unjoin_prompt.is_none()
+            && self.edge_fillet_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
             && !self.picking_extract_faces()
         {
@@ -9216,7 +9226,7 @@ impl eframe::App for VibocerosApp {
                 }
             })
             .or_else(|| {
-                (self.unjoin_prompt.is_some()
+                ((self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
                     && model_input_active
                     && self.plane_prompt.is_none()
                     && !end_analysis_picking)
@@ -9705,6 +9715,7 @@ mod tests {
     mod domain;
     mod draft_angle;
     mod edge_analysis;
+    mod edge_fillet;
     mod evaluate_point;
     mod evaluate_uv;
     mod extract_surface;
@@ -9831,6 +9842,7 @@ mod tests {
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
+            edge_fillet_prompt: None,
             component_selection: Default::default(),
             points_session: None,
             transform_session: None,

@@ -65,7 +65,6 @@
   ],
   "source_sha256": {
     "crates/viboceros-io/src/step/native_nurbs/seam_loops.rs": "db0b60506b30fe0c4a1826851323727b6203db20ec2d136140e3c9098f4ed3d1",
-    "crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df",
     "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
     "crates/viboceros-smlib/examples/export_breps.rs": "5730f23dfee698d4a07db72d5cc123b56c483ac13169f1d46563c9709b089690",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
@@ -127,6 +126,7 @@
     "docs/step-poles-prior-source/tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
     "docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
     "docs/step-poles-prior-source/crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
-    "docs/step-poles-prior-source/docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32"
+    "docs/step-poles-prior-source/docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df"
   }
 }

@@ -1,0 +1,24 @@
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 15.06s
+     Running tests/fillet_edges.rs (/tmp/viboceros-brep-verification-target/release/deps/fillet_edges-0e0438eead0f6db5)
+
+running 1 test
+test all_edges_transfer_as_a_closed_rounded_box ... FAILED
+
+failures:
+
+---- all_edges_transfer_as_a_closed_rounded_box stdout ----
+owned fillet import diagnostic: InvalidBrepTopology { context: "an isoparametric trim leaves its declared surface side" }
+
+thread 'all_edges_transfer_as_a_closed_rounded_box' (375752) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:103:70:
+index out of bounds: the len is 0 but the index is 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    all_edges_transfer_as_a_closed_rounded_box
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.19s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test fillet_edges`

@@ -1215,12 +1215,11 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
         trim->m_iso = static_cast<ON_Surface::ISO>(encoded_iso);
         trim->m_tolerance[0] = tolerance[0];
         trim->m_tolerance[1] = tolerance[1];
-        // Native trims may carry not_iso even when their exact parameter curve
-        // follows an isocurve (for example imported planar STEP boundaries).
+        // Archive isocurve flags are derived from the curve and surface. Native
+        // boundary roundoff can also turn an interior iso into a boundary iso.
         // Resolve this derived archive flag from the curve and surface using
         // OpenNURBS' own classification, without changing geometry or topology.
-        if (trim->m_iso == ON_Surface::not_iso &&
-            !brep->SetTrimIsoFlags(*trim)) {
+        if (!brep->SetTrimIsoFlags(*trim)) {
           error = "OpenNURBS could not classify a B-rep trim isocurve";
           return nullptr;
         }

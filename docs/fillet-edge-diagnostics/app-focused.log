@@ -1,0 +1,14 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `release` profile [optimized] target(s) in 2m 17s
+     Running unittests src/main.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros-04dafb7abf8da57c)
+
+running 2 tests
+test app::tests::edge_fillet::command_first_keeps_geometry_until_confirmation_and_escape_cancels ... ok
+test app::tests::edge_fillet::picked_edge_confirmation_creates_one_undoable_fillet ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1128 filtered out; finished in 0.05s
+

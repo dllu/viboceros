@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "fillet_edge_reference",
+      "id": "box-single",
+      "case": "box-single"
+    },
+    {
+      "op": "fillet_edge_reference",
+      "id": "box-corner",
+      "case": "box-corner"
+    },
+    {
+      "op": "fillet_edge_reference",
+      "id": "box-all",
+      "case": "box-all"
+    },
+    {
+      "op": "fillet_edge_reference",
+      "id": "box-too-large",
+      "case": "box-too-large"
+    }
+  ]
+}

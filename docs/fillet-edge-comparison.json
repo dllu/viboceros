@@ -1,0 +1,80 @@
+{
+  "engine": "8.32.26160.13001",
+  "cases": [
+    {
+      "id": "box-single",
+      "sdk": {
+        "samples": 1485,
+        "maximum_spatial_error": 2.220446049250313e-16,
+        "maximum_lifted_trim_error": 4.5483977628713035e-07,
+        "lifted_trims_qualified": false,
+        "faces": 7,
+        "edges": 15
+      },
+      "exported_3dm": {
+        "samples": 1485,
+        "maximum_spatial_error": 5.329070518200751e-15,
+        "maximum_lifted_trim_error": 1.0658141036401503e-14,
+        "lifted_trims_qualified": true,
+        "faces": 7,
+        "edges": 15
+      },
+      "expected_volume": 997.8539816339745,
+      "local_volume": 997.8539816265047,
+      "local_volume_absolute_error": 7.469793672498781e-09,
+      "rhino_volume": 997.8539804691616,
+      "rhino_volume_diagnostic_error": 1.1648129429886467e-06
+    },
+    {
+      "id": "box-corner",
+      "sdk": {
+        "samples": 2079,
+        "maximum_spatial_error": 5.551115123125783e-16,
+        "maximum_lifted_trim_error": 4.5483977739735337e-07,
+        "lifted_trims_qualified": false,
+        "faces": 10,
+        "edges": 21
+      },
+      "exported_3dm": {
+        "samples": 2112,
+        "maximum_spatial_error": 4.3912418146163645e-09,
+        "maximum_lifted_trim_error": 8.540766871512062e-09,
+        "lifted_trims_qualified": true,
+        "faces": 10,
+        "edges": 21
+      },
+      "expected_volume": 993.7293491873294,
+      "local_volume": 993.7293491573683,
+      "local_volume_absolute_error": 2.996102921315469e-08,
+      "rhino_volume": 993.7293475476065,
+      "rhino_volume_diagnostic_error": 1.6397228819187148e-06
+    },
+    {
+      "id": "box-all",
+      "sdk": {
+        "samples": 4752,
+        "maximum_spatial_error": 4.6629367034256575e-15,
+        "maximum_lifted_trim_error": 9.547918011776346e-15,
+        "lifted_trims_qualified": true,
+        "faces": 26,
+        "edges": 48
+      },
+      "exported_3dm": {
+        "samples": 5016,
+        "maximum_spatial_error": 4.3912418146163645e-09,
+        "maximum_lifted_trim_error": 8.540766871512062e-09,
+        "lifted_trims_qualified": true,
+        "faces": 26,
+        "edges": 48
+      },
+      "expected_volume": 975.5870138909414,
+      "local_volume": 975.5870137694441,
+      "local_volume_absolute_error": 1.214973508467665e-07,
+      "rhino_volume": 975.5870138913363,
+      "rhino_volume_diagnostic_error": 3.9483438740717247e-10
+    }
+  ],
+  "geometric_epsilon": 1e-08,
+  "rust_volume_absolute_epsilon": 6e-07,
+  "scope": "Imported 3DM spatial/lifted boundaries and SDK spatial curves qualify fixed cube fixtures. SDK lifted trims for single/corner cases exceed 1e-8 and remain diagnostic failures. Volume-query differences are retained separately; complete topology/parameter equivalence, general fillets and native command UI parity remain unproven."
+}

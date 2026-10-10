@@ -1,0 +1,7 @@
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 18.24s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/fillet_edges /tmp/viboceros-fillet-edges-cad-final`
+box-single: volume 997.853981626505, 7 faces
+box-corner: volume 993.729349157368, 10 faces
+box-all: volume 975.587013769444, 26 faces

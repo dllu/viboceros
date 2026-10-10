@@ -112,6 +112,15 @@ struct NativeParts {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vb_imported_solid_fillet_edges(
+        solid: *mut NativeSolid,
+        indices: *const usize,
+        count: usize,
+        radius: f64,
+        accuracy: f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_solid_copy(
         solid: *const NativeSolid,
         out: *mut *mut NativeSolid,
@@ -309,14 +318,75 @@ fn close_pole_gaps(
         if vertex != next.vertices()[0] {
             return Err(Error::InvalidOutput);
         }
-        let (boundary, iso) = if end.y() == start.y() && end.y() == *surface.domain_v().start() {
-            (surface.isocurve_u(end.y())?, SurfaceIso::South)
-        } else if end.y() == start.y() && end.y() == *surface.domain_v().end() {
-            (surface.isocurve_u(end.y())?, SurfaceIso::North)
-        } else if end.x() == start.x() && end.x() == *surface.domain_u().start() {
-            (surface.isocurve_v(end.x())?, SurfaceIso::West)
-        } else if end.x() == start.x() && end.x() == *surface.domain_u().end() {
-            (surface.isocurve_v(end.x())?, SurfaceIso::East)
+        let near = |a: f64, b: f64, boundary: f64| {
+            let epsilon = (32. * f64::EPSILON * a.abs().max(b.abs()).max(boundary.abs()).max(1.))
+                .max(tolerance.absolute());
+            (a - boundary).abs() <= epsilon && (b - boundary).abs() <= epsilon
+        };
+        let (boundary, end, start) = if near(end.y(), start.y(), *surface.domain_v().start()) {
+            let v = *surface.domain_v().start();
+            (
+                surface.isocurve_u(v)?,
+                Point2::try_new(
+                    end.x()
+                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
+                    v,
+                )?,
+                Point2::try_new(
+                    start
+                        .x()
+                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
+                    v,
+                )?,
+            )
+        } else if near(end.y(), start.y(), *surface.domain_v().end()) {
+            let v = *surface.domain_v().end();
+            (
+                surface.isocurve_u(v)?,
+                Point2::try_new(
+                    end.x()
+                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
+                    v,
+                )?,
+                Point2::try_new(
+                    start
+                        .x()
+                        .clamp(*surface.domain_u().start(), *surface.domain_u().end()),
+                    v,
+                )?,
+            )
+        } else if near(end.x(), start.x(), *surface.domain_u().start()) {
+            let u = *surface.domain_u().start();
+            (
+                surface.isocurve_v(u)?,
+                Point2::try_new(
+                    u,
+                    end.y()
+                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
+                )?,
+                Point2::try_new(
+                    u,
+                    start
+                        .y()
+                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
+                )?,
+            )
+        } else if near(end.x(), start.x(), *surface.domain_u().end()) {
+            let u = *surface.domain_u().end();
+            (
+                surface.isocurve_v(u)?,
+                Point2::try_new(
+                    u,
+                    end.y()
+                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
+                )?,
+                Point2::try_new(
+                    u,
+                    start
+                        .y()
+                        .clamp(*surface.domain_v().start(), *surface.domain_v().end()),
+                )?,
+            )
         } else {
             return Err(Error::Kernel(format!(
                 "UV loop gap is not a pole boundary: {end:?} to {start:?}"
@@ -343,6 +413,22 @@ fn close_pole_gaps(
             ],
             vec![0., 0., 1., 1.],
         )?;
+        // Near-boundary coordinates only propose a connector. The complete UV
+        // segment must continuously certify at the same spatial vertex.
+        let support = NurbsCurve::try_new_rational(
+            1,
+            vec![WeightedPoint3::try_new(vertex.point(), 1.)?; 2],
+            vec![0., 0., 1., 1.],
+        )?;
+        if surface
+            .parameter_curve_deviation_bound(&curve, &support, epsilon)?
+            .is_none()
+        {
+            return Err(Error::Kernel(
+                "Pole connector surface image is not certified".into(),
+            ));
+        }
+        let iso = classify_iso(surface, &curve);
         let index = trim.vertices()[1];
         gaps.push(Some(BrepTrim::try_new(
             [index, index],
@@ -422,6 +508,37 @@ impl NurbsData {
 }
 
 impl Solid {
+    /// Fillets original Rust edge indices on a freshly imported temporary solid.
+    /// The input B-rep is never mutated. Repeated indices select the edge once.
+    pub fn fillet_brep_edges(
+        brep: &Brep,
+        edges: &[usize],
+        radius: f64,
+        tolerance: Tolerance,
+    ) -> Result<Self, Error> {
+        if edges.is_empty()
+            || edges.len() > 100000
+            || !radius.is_finite()
+            || radius <= 0.
+            || edges.iter().any(|&edge| edge >= brep.edges().len())
+        {
+            return Err(Error::Kernel("Invalid fillet parameters".into()));
+        }
+        let solid = Self::from_brep(brep, tolerance)?;
+        let accuracy = (radius * 1e-10).min(tolerance.absolute() * 0.1);
+        call(|error, capacity| unsafe {
+            vb_imported_solid_fillet_edges(
+                solid.handle.as_ptr(),
+                edges.as_ptr(),
+                edges.len(),
+                radius,
+                accuracy,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(solid)
+    }
     pub fn try_clone(&self) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {

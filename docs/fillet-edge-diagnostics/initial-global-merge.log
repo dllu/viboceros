@@ -1,0 +1,23 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 7.39s
+     Running tests/fillet_edges.rs (/tmp/viboceros-brep-verification-target/release/deps/fillet_edges-0e0438eead0f6db5)
+
+running 2 tests
+test all_edges_transfer_as_a_closed_rounded_box ... FAILED
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... ok
+
+failures:
+
+---- all_edges_transfer_as_a_closed_rounded_box stdout ----
+
+thread 'all_edges_transfer_as_a_closed_rounded_box' (298905) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:70:5:
+Rust 975.587013769444070, expected 975.587013890941421
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    all_edges_transfer_as_a_closed_rounded_box
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test fillet_edges`

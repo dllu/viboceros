@@ -35,6 +35,8 @@ int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance, const size
                             size_t parent_capacity, VbSolid **out, char *error, size_t capacity);
 int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, char *error,
                   size_t capacity);
+int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
+                                   double radius, double accuracy, char *error, size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);
 int vb_mesh_copy(const VbMesh *mesh, double *vertices, size_t vertex_count, uint32_t *triangles,
                  size_t triangle_count);

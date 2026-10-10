@@ -1,0 +1,7 @@
+    Blocking waiting for file lock on build directory
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Checking viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Checking viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Checking viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Checking viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `release` profile [optimized] target(s) in 1m 25s

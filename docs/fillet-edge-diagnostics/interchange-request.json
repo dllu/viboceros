@@ -1,0 +1,21 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "three_dm_brep_interchange",
+      "id": "box-single",
+      "artifact_path": "/tmp/viboceros-fillet-edges-cad-final/box-single.3dm"
+    },
+    {
+      "op": "three_dm_brep_interchange",
+      "id": "box-corner",
+      "artifact_path": "/tmp/viboceros-fillet-edges-cad-final/box-corner.3dm"
+    },
+    {
+      "op": "three_dm_brep_interchange",
+      "id": "box-all",
+      "artifact_path": "/tmp/viboceros-fillet-edges-cad-final/box-all.3dm"
+    }
+  ]
+}

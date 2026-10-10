@@ -6345,6 +6345,9 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
+    if operation.get('op') == 'fillet_edge_reference':
+        import fillet_edge_probe
+        return fillet_edge_probe.run(operation, globals())
     if operation.get('op') in ('step_poles', 'step_regions'):
         import step_poles_probe
         return step_poles_probe.run(operation, globals())

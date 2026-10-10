@@ -1,0 +1,12 @@
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 14.32s
+     Running tests/fillet_edges.rs (/tmp/viboceros-brep-verification-target/release/deps/fillet_edges-0e0438eead0f6db5)
+
+running 3 tests
+test invalid_or_oversized_fillet_requests_leave_the_source_unchanged ... ok
+test all_edges_transfer_as_a_closed_rounded_box ... ok
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+

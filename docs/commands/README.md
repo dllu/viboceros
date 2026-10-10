@@ -433,3 +433,5 @@ Import3dm path/to/model.3dm
 Export3dm path/to/model.3dm
 Help
 ```
+
+- [FilletEdge: circular solid-edge rounding and component input](fillet-edge.md)

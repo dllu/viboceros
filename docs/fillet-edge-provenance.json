@@ -1,0 +1,158 @@
+{
+  "captured_at_utc": "2026-10-10T10:18:41.336180+00:00",
+  "base_commit": "932da53f56452a6ad71879edc19c6fe38f3a86a7",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "checks": {
+    "workspace-final": {
+      "passed": 5671,
+      "failed": 0,
+      "ignored": 38
+    },
+    "command-verified": {
+      "passed": 1290,
+      "failed": 0,
+      "ignored": 2
+    },
+    "bridge-verified": {
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0
+    },
+    "app-suite": {
+      "passed": 1113,
+      "failed": 0,
+      "ignored": 17
+    },
+    "diff_check": {
+      "code_and_docs": "passed",
+      "immutable_raw_log_exceptions": [
+        "docs/fillet-edge-diagnostics/app-focused.log:14: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/app-suite.log:1143: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/bridge-verified.log:83: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/command-suite.log:1308: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/command-verified.log:1313: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/iso-compatible.log:12: new blank line at EOF.",
+        "docs/fillet-edge-diagnostics/workspace-final.log:5904: new blank line at EOF."
+      ]
+    }
+  },
+  "python": {
+    "passed": 1087,
+    "failed": 0
+  },
+  "clippy": "default workspace and native application passed",
+  "fmt": "passed",
+  "geometry": {
+    "epsilon": 1e-08,
+    "rust_volume_absolute_epsilon": 6e-07,
+    "qualified_editable_3dm_cases": 3,
+    "sdk_spatial_curves_qualified": 3,
+    "sdk_lifted_trim_diagnostics": [
+      "single/corner SDK lifted trims depart analytic geometry by approximately 4.55e-7; not qualified at 1e-8"
+    ],
+    "sdk_oversized_radius": "returns no result; native bridge now rejects nonadjacent-face interference"
+  },
+  "limits": [
+    "Constant-radius circular closed-B-rep fillets only; Linux optional native backend",
+    "Variable-radius handles, previews, open inputs, rail alternatives and editing previous fillets remain work",
+    "Boundary-intersection guard is limited to 362 output faces; individual-surface self-intersections and extra adjacent-face intersections remain unqualified",
+    "Retained STEP outputs are surface models, not qualified independent material solids",
+    "Native command UI parity and broad geometry/scale robustness remain unproven"
+  ],
+  "diagnostics": [
+    "Initial default cross-section precision failed analytic volume checks; explicit executive configuration improves boundary fidelity",
+    "Near-pole connectors require continuous surface-image proof and canonical natural-side isocurve metadata",
+    "Archive export recomputes derived isocurve flags; import restores exact compatible flags without altering geometry",
+    "Temporary decoder instrumentation was removed byte-for-byte before final validation"
+  ],
+  "historical_pin_audit": {
+    "checked": 2410,
+    "newly_broken": []
+  },
+  "source_sha256": {
+    ".gitmodules": "0a8814fdc323727f4117fae2bd9ec4c4daa44dec1d752140c35db6f7d6760b9a",
+    "Cargo.lock": "82091656dc1f25e31cfad00083c632ad701f85a7982f6c2b80936d96d62bd1fb",
+    "crates/viboceros-command/src/fillet_edge.rs": "d8ea421fcd7378aa780f94a422a847da3e985e8da8655408f3811a5ef9d4d98e",
+    "crates/viboceros-command/src/fillet_edge/tests.rs": "1602685439fe9ddf179982a904d7e03dbc159430a0eb39ac0ba11fb5dfb16847",
+    "crates/viboceros-command/src/lib.rs": "d6a556cab7e303b7542ed65321f8d39c0986aecfcae54c53aa3e7c5e3c4fb654",
+    "crates/viboceros-io/native/viboceros_opennurbs.cpp": "bc8677f55c2101ff0edf7f1af9457ba7b2dc6cf333f74c77053362f82222b6a7",
+    "crates/viboceros-io/src/three_dm_geometry.rs": "279ed1a5858009efa745d9f64344f83edd01faf759e0e565c430f0245f8f19ef",
+    "crates/viboceros-smlib/Cargo.toml": "cd428268be3df677a67451bf1dc4b1aeabeccd80521a1740b1cf7c85847a3e0f",
+    "crates/viboceros-smlib/examples/fillet_edges.rs": "866f360ebb6a019ab33e8d0667025efeb74e5c25f4193f6b38f8cf39e121ebf7",
+    "crates/viboceros-smlib/native/brep_data.h": "2073620834821ba8c66e3108f8bb01d22558f1f9befe0254401cc2e25a437c98",
+    "crates/viboceros-smlib/native/brep_import.cpp": "953e898f39f643710761ae132e3069d3adef52309ff7c8ce45166c2d0332445c",
+    "crates/viboceros-smlib/native/bridge.cpp": "3435ca262956a8ac08c2d701dbda79da19586adae902f6acd17571020a1db0cd",
+    "crates/viboceros-smlib/native/bridge.h": "786b4d63abd84e1d98bf20108fac2fb2494003ee5d89bccc441974e2a060b5ac",
+    "crates/viboceros-smlib/src/native/brep.rs": "6d635ec020322f1c9a27d7143cd128e42cab3325e6c6e02fa31f7d0e6f22c0a2",
+    "crates/viboceros-smlib/tests/fillet_edges.rs": "89fa2fdf768e4c53299c04b3612b7ab78dde6334799d433ce58c8618fc0bb067",
+    "docs/commands/README.md": "d5d5e9558a701125cdb5005ba249d368596f8bf15b02df1db5c3ea3516704467",
+    "docs/commands/fillet-edge.md": "f6356140cf39e2b8085e5efb86a75053cf19c4036627a064b2a16a5d4b7df4a9",
+    "docs/development.md": "99181ac6cb0a906dafb20ad3b42d0fde29985b5790547a3c2e44edfe610097cb",
+    "docs/fillet-edge-comparison.json": "23391853b1a5f2012416000c175c89da1a90888f324127f146e888ca492fc4b0",
+    "docs/fillet-edge-diagnostics/app-focused.log": "697ebe51d6f8beabb4fba9aef8f7dc936a3c6454fa9e2f130c73c10376d1f3d9",
+    "docs/fillet-edge-diagnostics/app-suite.log": "99175236bbb5dc6ad91ebc0b61786906bf531ddbb15dddd23b884671c9b503e1",
+    "docs/fillet-edge-diagnostics/box-all.3dm": "9320316d09e7cd6cefa97cac55259933e751c7fa091bb85e97657c8bc5e50542",
+    "docs/fillet-edge-diagnostics/box-all.step": "81b3469ac8e8395bf718b3bf14508e389d656c0a0648f53f4f32a07cc8acfde4",
+    "docs/fillet-edge-diagnostics/box-corner.3dm": "72df721c18d39c756e37400aceedf77c098085e8b14a053c171923c23129de26",
+    "docs/fillet-edge-diagnostics/box-corner.step": "9d09e6d266bec35ee386a00b1691f137568ef14c009a11208eafab95653a1777",
+    "docs/fillet-edge-diagnostics/box-single.3dm": "e1f72908be44dc5cbe3c559cd4bae05856a0a976914efe822676d622b9a70baf",
+    "docs/fillet-edge-diagnostics/box-single.step": "a406346084a51e41184e9f1da1c183c10694be5973992355a119920179b27dd7",
+    "docs/fillet-edge-diagnostics/bridge-verified.log": "96abc0a6a93077b6bfc8cf900ce6c3c4d66d2c4647ce94e728e98c0ac7dd754d",
+    "docs/fillet-edge-diagnostics/clippy-verified.log": "818e7e8e059b1f6f7da110de67df5840e9afcfce2a39b32f0ca3bd157eae7102",
+    "docs/fillet-edge-diagnostics/command-suite.log": "f5fc9f832ac8b76a19b51d6ddf41c197a8584da4b3ce11f39651985bc3ce6f53",
+    "docs/fillet-edge-diagnostics/command-verified.log": "2fed56a8b0879c82b2d23ebacb04c2537ab16621139e1d702421e4090efc12b2",
+    "docs/fillet-edge-diagnostics/example-final.log": "8c919381c0764af4cbc8768cd84f1d4fd05d3ec62b86b042f406767f3ebcc758",
+    "docs/fillet-edge-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/fillet-edge-diagnostics/initial-continuous-poles.log": "0e6202293aece177c7df7dc5f086091f918f143ec9c1d481cf04d35e40bde101",
+    "docs/fillet-edge-diagnostics/initial-direct-api-trial.cpp": "92e01902f55e06670322f1b1864554ca530a7bb7fcd221aa5e023164647c2ee5",
+    "docs/fillet-edge-diagnostics/initial-direct-api-trial.log": "c75dc1fe54d84960ccc67587498fe163580c1e0da3b87c2963c164c2435fc216",
+    "docs/fillet-edge-diagnostics/initial-focused-corrected.log": "d940c5635f8374ae3a902eb6d50750245bc1fd6ed08eb5cd0b6fd32375aff9f8",
+    "docs/fillet-edge-diagnostics/initial-global-merge.log": "58593db6fb143796c361d1675a8897b9aa56c89b7e30a7fc636581d98fcf6889",
+    "docs/fillet-edge-diagnostics/initial-pole-proof.log": "3088a545a72a372e92a34aea0148c83946b714a3a794c4951a8510a6a5abce3c",
+    "docs/fillet-edge-diagnostics/initial-section-accuracy.log": "34e6ce1134d28f9d84b02bce781cd5bf08366f00d5301f1f1ef486536ec0d8b3",
+    "docs/fillet-edge-diagnostics/interchange-native.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/fillet-edge-diagnostics/interchange-request.json": "7ab7d57938b5088475e9fe5c99346cccb5b3cbd7c0805aa35e616c7e9ecc6c0a",
+    "docs/fillet-edge-diagnostics/iso-compatible.log": "ebb686e37fbdede17d7bdf0ad2fca7468fe4d8334ba850b074bc8f6de8644a98",
+    "docs/fillet-edge-diagnostics/local-decode-diagnostic.log": "1d1592d028ee31135600b002a481dae9a0dfd3da33a124e1920578145b334030",
+    "docs/fillet-edge-diagnostics/local-decode-next.log": "8253597df84ae02fa6a4679939d47a5b57cb5f5b80a08d2a39c1618e0e416238",
+    "docs/fillet-edge-diagnostics/native-clippy-final.log": "8abc27f6524fb79b30ff43884bfe52db7a19e5eb56d048e957d29e9a89bb3cca",
+    "docs/fillet-edge-diagnostics/occt.log": "7f35f1c3a034d443ef69ff7a930e1c0de0401c2a55d72cb8f19bec471c68cd35",
+    "docs/fillet-edge-diagnostics/pin-audit.json": "f4c8047cbf3bc822c6410710b2248988d6456695ea204447e732c7cd45ef3dad",
+    "docs/fillet-edge-diagnostics/properties.json": "cbaa0389b8de1e93ddcbb11e78162a4859f3f7edff86fb25938fedf494253598",
+    "docs/fillet-edge-diagnostics/python.log": "4dcf4f346cc755653382d22a7360d66874fe3d8b4812570c64f19d92927e403d",
+    "docs/fillet-edge-diagnostics/reference-request.json": "a106b754810897d29b6a62e269acbec8dbceeb9b2b72863d9a62d2241ad5ab0a",
+    "docs/fillet-edge-diagnostics/workspace-final.log": "1eba5e09b709aff891346942db729a27e1bf29cde19aaedd896900a102c8bd9c",
+    "docs/fillet-edge-interchange-reference.json": "4919bf844e391efd3b7742181a124f5dd72d1845732e08b817ba7b7725f42979",
+    "docs/fillet-edge-native-reference.json": "0877eddfb20c6bfd9b30dc14c4ee9557b0368a45a7d875639f2f104db9741937",
+    "docs/fillet-edge-prior-source/crates/viboceros-command/src/lib.rs": "c0452a9a0f02fc486893eeb08675d621a94cb3d2a1fcf6f8b0927f612d4fb7d8",
+    "docs/fillet-edge-prior-source/crates/viboceros-io/native/viboceros_opennurbs.cpp": "1906034917b879f371bec82cf2fc1403bed9fdbaddbd8fb0d65b159d6ce20c5b",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/native/brep_data.h": "643e94d8b91abcd4d36b9f57e433444085acca2db0c503d7283e6d3407191fec",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/native/brep_import.cpp": "4cc466706ea6f25126b071135968bd7da5f7e1dde9d890ac85fd7d1c818ea32a",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/native/bridge.cpp": "d53b29db5b1888f14e3889c135c362255697abc4e7e3c359dfd09bea8b8a66f6",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/native/bridge.h": "dbd7961fea2d83897ea2e201e23b23be78cbce2ac8793d2815282d88f86f939a",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/src/native/brep.rs": "1c6e9450fd3bf014bf00ec37558a076f6ccee698d0614c08821fa4227eae14ba",
+    "docs/fillet-edge-prior-source/docs/development.md": "966b2b4b0acd20bfe76cc1a837e126ad9eea62e0f2d4a94791eac8c995ba8146",
+    "docs/fillet-edge-prior-source/docs/smlib-bridge.md": "f26d31c0d47805f47dc86a8421cec1ac6c80d7e490bbed4513181bd2400f0dd9",
+    "docs/fillet-edge-prior-source/src/app.rs": "4774deb33d700123899a55d798bcf19b9be7df8db927fd4afe1c833e7d377d23",
+    "docs/fillet-edge-prior-source/src/app/block_edit.rs": "984c6c03c534436314a5f4680a5789431af921f345a6fb64e4eecbfe94468d7f",
+    "docs/fillet-edge-prior-source/src/app/command_line.rs": "d235268d2d4594bc935b9bf97efafd65f4765ad557e894c917481c06864eb5be",
+    "docs/fillet-edge-prior-source/src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b",
+    "docs/fillet-edge-prior-source/tools/rhino_oracle/client.py": "60607dc9f1b7517851b8eebb032030e740e61e79cecba1c6fd564065a9887b52",
+    "docs/fillet-edge-prior-source/tools/rhino_oracle/rhino_worker.py": "b7996aa3c3a44bab68ce7fc026aca78182f78c187039d1210ffaed2f2e6df340",
+    "docs/fillet-edge.md": "6598cf8062c5bf735830a2c8f1d08d446aa6a8f522d4cddb94371f9f843d5490",
+    "docs/smlib-bridge.md": "702a6956265bc12e10768c404c99fe67073ffb0b91482b3a2980c77ff2734934",
+    "src/app.rs": "598a8c83c098c023ce0455c85f2e0412ba823448d0c2eec0a166868c823f61fa",
+    "src/app/block_edit.rs": "870df3b352e932f1fe61e4b59d399b1fb00baaffd2a58d351cba1997347b4cf0",
+    "src/app/command_line.rs": "439d418faab4519b968c5e08e96cee5cbd7590e7ee0f18455128445e95fe2c4b",
+    "src/app/component_selection.rs": "ce2ce65e9d5767965f104f063831b655bc322ea375a3973c9253bf54697a73e3",
+    "src/app/edge_fillet.rs": "bb3a5753fd90f0d119330fe52a28f6746718021a14518bbcbdae8e8b32b5ee38",
+    "src/app/object_selection.rs": "7331b6ab848746374a6ec0955be3d894997eca3b1eb1730a1203f058ee3ad7ba",
+    "src/app/tests/edge_fillet.rs": "aaa71f0a5042614b7b4a937fc7e9ee25922dde8e3e7188142acbeb59dc35afcc",
+    "tools/rhino_oracle/client.py": "01eeb0f2fd56d39d76506c495930057b5e088ce31a7b109d1c9971ae4925435a",
+    "tools/rhino_oracle/fillet_edge_probe.py": "c6e48f6cae339e84fd27b08193ce99c22076cccc7e5bb425d8afd0be1fcb94fa",
+    "tools/rhino_oracle/rhino_worker.py": "8ba4b0197e97eb3c9b5ec3e59f65561ffad26d11f34bd81b8ba2083857298135",
+    "tools/rhino_oracle/test_fillet_edge_probe.py": "52f9ff4239150e273653f0b5e98e3f12b36c469e40af635aeefe9a1240fb0a15",
+    "tools/usd_brep/compare_fillet_edges.py": "21e50d3bcd92fa5daed282aa42316b9518139b23351a6ca971bfc6fca7c2c602"
+  }
+}

@@ -215,6 +215,13 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
+        if any(op.get('op') == 'fillet_edge_reference' for op in request.get('operations', [])):
+            from .fillet_edge_probe import validate
+            if self.settings_scheme is None or request.get('iterations', 1) != 1:
+                raise OracleProtocolError('Edge fillet references require a private scheme and one iteration')
+            for op in request['operations']:
+                if op.get('op') == 'fillet_edge_reference':
+                    validate(op)
         if any(op.get('op') in ('step_poles', 'step_regions') for op in request.get('operations', [])):
             from .step_poles_probe import validate
             if self.settings_scheme is None or type(request.get('iterations', 1)) is not int or request.get('iterations', 1) != 1:
@@ -1041,6 +1048,8 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            if any(op.get('op') == 'fillet_edge_reference' for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('fillet_edge_probe.py'), job_path / 'fillet_edge_probe.py')
             if any(op.get('op') in ('step_poles', 'step_regions') for op in request['operations']):
                 for helper in ('step_poles_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(helper), job_path / helper)

@@ -1,0 +1,29 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 4.02s
+     Running tests/fillet_edges.rs (/tmp/viboceros-brep-verification-target/release/deps/fillet_edges-0e0438eead0f6db5)
+
+running 2 tests
+test all_edges_transfer_as_a_closed_rounded_box ... FAILED
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... FAILED
+
+failures:
+
+---- all_edges_transfer_as_a_closed_rounded_box stdout ----
+
+thread 'all_edges_transfer_as_a_closed_rounded_box' (293783) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:56:10:
+called `Result::unwrap()` on an `Err` value: Kernel("UV loop gap is not a pole boundary: Point2([1.0, -1.7938038903913487e-16]) to Point2([0.9999999999999998, 0.9999999999999998])")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- single_original_edge_rounds_with_analytic_volume_and_source_preservation stdout ----
+
+thread 'single_original_edge_rounds_with_analytic_volume_and_source_preservation' (293784) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:23:9:
+assertion failed: (result.signed_volume(Tolerance::DEFAULT).unwrap() - expected).abs() < 1e-7
+
+
+failures:
+    all_edges_transfer_as_a_closed_rounded_box
+    single_original_edge_rounds_with_analytic_volume_and_source_preservation
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test fillet_edges`

@@ -193,6 +193,7 @@ impl VibocerosApp {
             || self.edge_prompt.is_some()
             || self.hole_prompt.is_some()
             || self.unjoin_prompt.is_some()
+            || self.edge_fillet_prompt.is_some()
             || self.set_view_prompt.is_some()
             || self.end_analysis_pick.is_some()
             || self.remember_copy_prompt

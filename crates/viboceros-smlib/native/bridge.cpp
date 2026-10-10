@@ -8,6 +8,8 @@
 #include <SmBSplineCurve.h>
 #include <SmBrep.h>
 #include <SmFace.h>
+#include <SmVertex.h>
+#include <SmFilletExecutive.h>
 #include <SmPoly.h>
 #include <algorithm>
 #include <cmath>
@@ -21,6 +23,9 @@
 
 struct VbSolid {
     std::unique_ptr<SmBrep> value;
+    // Only fresh imports retain source indices. Mutating operations clear this
+    // correspondence before topology changes; copies and Boolean results have none.
+    std::vector<SmEdge *> source_edges;
 };
 struct VbParts {
     std::vector<std::unique_ptr<VbSolid>> values;
@@ -206,10 +211,81 @@ extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
         auto owner = std::make_unique<VbSolid>();
         std::vector<size_t> plan;
         owner->value.reset(
-            vb_import_brep(*view, tolerance, components, component_count, inward, &plan));
+            vb_import_brep(*view, tolerance, components, component_count, inward, &plan,
+                           &owner->source_edges));
         require(plan.size() == component_count, "Incomplete native shell plan");
         std::copy(plan.begin(), plan.end(), parents);
         *out = owner.release();
+    });
+}
+
+extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
+                                              double radius, double accuracy, char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(solid && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
+                "Invalid fillet parameters");
+        require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
+                "Fillet accuracy is below the native numerical floor");
+        require(!solid->source_edges.empty(), "Fillet requires fresh source edge identities");
+        std::vector<bool> seen(solid->source_edges.size(), false);
+        SmTArray<SmEdge *> edges;
+        for (size_t i = 0; i < count; ++i) {
+            require(indices[i] < seen.size(), "Fillet source edge index is out of range");
+            if (!seen[indices[i]]) {
+                seen[indices[i]] = true;
+                edges.Add(solid->source_edges[indices[i]]);
+            }
+        }
+        solid->source_edges.clear();
+        SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
+        check(executive.SetFilletParameters(solid->value.get(), edges, SM_FSG_CIRCULAR,
+              SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), 1, 1.0),
+              "configure precise edge fillet");
+        executive.SetDoGlobalMerge(TRUE);
+        check(executive.DoFillet(), "fillet source edges");
+        require(executive.GetFilletErrorInfo()->GetErrorCode() == SM_FILERR_OK,
+                "Fillet executive reported an incomplete or failed operation");
+        check(solid->value->StitchAndOrient(), "orient fillet output");
+        require(solid->value->IsManifoldSolid(), "Fillet output is not a manifold solid");
+        SmTArray<SmFace *> faces;
+        solid->value->GetFaces(faces);
+        require(faces.GetSize() <= 362, "Fillet boundary intersection work limit");
+        for (ULONG a = 0; a < faces.GetSize(); ++a) {
+            SmTArray<SmEdge *> first_edges;
+            SmTArray<SmVertex *> first_vertices;
+            faces[a]->GetEdges(first_edges);
+            faces[a]->GetVertices(first_vertices);
+            for (ULONG b = a + 1; b < faces.GetSize(); ++b) {
+                SmTArray<SmEdge *> second_edges;
+                faces[b]->GetEdges(second_edges);
+                bool adjacent = false;
+                for (ULONG i = 0; i < first_edges.GetSize(); ++i)
+                    for (ULONG j = 0; j < second_edges.GetSize(); ++j)
+                        adjacent |= first_edges[i] == second_edges[j];
+                if (adjacent) continue;
+                SmTArray<SmCurve *> curves;
+                SmTArray<SmPoint3d> points;
+                const auto status = SmApiIntersectFaces(faces[a], faces[b], curves, &points);
+                const bool crossed = curves.GetSize() != 0;
+                for (ULONG i = 0; i < curves.GetSize(); ++i) delete curves[i];
+                check(status, "check fillet boundary intersections");
+                require(!crossed, "Fillet boundary has intersecting nonadjacent faces");
+                SmTArray<SmVertex *> second_vertices;
+                faces[b]->GetVertices(second_vertices);
+                for (ULONG p = 0; p < points.GetSize(); ++p) {
+                    bool shared = false;
+                    for (ULONG i = 0; i < first_vertices.GetSize(); ++i)
+                        for (ULONG j = 0; j < second_vertices.GetSize(); ++j)
+                            if (first_vertices[i] == second_vertices[j]) {
+                                const auto vertex = first_vertices[i]->GetPoint();
+                                const double dx = vertex.x-points[p].x, dy = vertex.y-points[p].y,
+                                             dz = vertex.z-points[p].z;
+                                shared |= std::hypot(dx,dy,dz) <= 10*accuracy;
+                            }
+                    require(shared, "Fillet boundary has non-topological face contacts");
+                }
+            }
+        }
     });
 }
 

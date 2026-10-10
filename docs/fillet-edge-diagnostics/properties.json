@@ -1,0 +1,42 @@
+[
+  {
+    "edges": 15,
+    "faces": 7,
+    "id": "box-single",
+    "selected_edges": [
+      8
+    ],
+    "volume": 997.8539816265047
+  },
+  {
+    "edges": 21,
+    "faces": 10,
+    "id": "box-corner",
+    "selected_edges": [
+      0,
+      3,
+      8
+    ],
+    "volume": 993.7293491573683
+  },
+  {
+    "edges": 48,
+    "faces": 26,
+    "id": "box-all",
+    "selected_edges": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "volume": 975.5870137694441
+  }
+]

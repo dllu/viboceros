@@ -101,7 +101,7 @@ SmSurface *import_surface(const VbNurbsData &data) {
 
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
-                       std::vector<size_t> *parents) {
+                       std::vector<size_t> *parents, std::vector<SmEdge *> *source_edges) {
     require(std::isfinite(tolerance) && tolerance > 0, "Invalid import tolerance");
     require(view.vertex_count && view.edge_count && view.face_count && view.vertices &&
                 view.edges && view.faces && view.loops && view.trims,
@@ -357,5 +357,10 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
         require(!inward[0], "Imported outer shell points inward");
     if (parents)
         *parents = std::move(shell_parents);
+    if (source_edges) {
+        source_edges->reserve(view.edge_count);
+        for (size_t i = 0; i < view.edge_count; ++i)
+            source_edges->push_back(data.m_vEdges[i].m_pEdge);
+    }
     return result.release();
 }

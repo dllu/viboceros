@@ -32,3 +32,7 @@ required-features = ["native"]
 [[example]]
 name = "export_breps"
 required-features = ["native"]
+
+[[example]]
+name = "fillet_edges"
+required-features = ["native"]

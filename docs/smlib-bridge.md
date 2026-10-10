@@ -6,7 +6,8 @@ feature. Default workspace builds do not compile SMLib or require its submodule
 or TBB. Application curved Boolean commands can opt in with `native-smlib`;
 see [difference/import](smlib-import.md), [union/intersection](smlib-set-booleans.md)
 and [split](smlib-boolean-split.md).
-The same application feature enables [curved STEP material regions](step-regions.md).
+The same application feature enables [curved STEP material regions](step-regions.md)
+and [circular edge fillets](fillet-edge.md).
 
 ## Build and exercise
 

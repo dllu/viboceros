@@ -1,0 +1,29 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 5.69s
+     Running tests/fillet_edges.rs (/tmp/viboceros-brep-verification-target/release/deps/fillet_edges-0e0438eead0f6db5)
+
+running 2 tests
+test all_edges_transfer_as_a_closed_rounded_box ... FAILED
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... FAILED
+
+failures:
+
+---- all_edges_transfer_as_a_closed_rounded_box stdout ----
+
+thread 'all_edges_transfer_as_a_closed_rounded_box' (294165) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:61:10:
+called `Result::unwrap()` on an `Err` value: Kernel("Pole connector surface image is not certified")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- single_original_edge_rounds_with_analytic_volume_and_source_preservation stdout ----
+
+thread 'single_original_edge_rounds_with_analytic_volume_and_source_preservation' (294166) panicked at crates/viboceros-smlib/tests/fillet_edges.rs:24:9:
+edge 0: Rust 997.853868823909124, native 997.853858781421991, expected 997.853981633974513
+
+
+failures:
+    all_edges_transfer_as_a_closed_rounded_box
+    single_original_edge_rounds_with_analytic_volume_and_source_preservation
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test fillet_edges`

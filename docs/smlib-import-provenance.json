@@ -65,8 +65,6 @@
     "crates/viboceros-command/examples/curved_difference.rs": "fcc3a2eb96c5d2ea7d6c55bd4cc98754e8d0a150d39de28eb9524adc7f038126",
     "crates/viboceros-command/src/boolean_difference.rs": "80dca17d3871a7980e4fa0fa365845772e21662db80c6bae76749e4815ec5bb6",
     "crates/viboceros-command/src/boolean_difference/native.rs": "71c8eabcbf79857c95c97496294650b963560e5e3f82fef31a559c4c4ec0a678",
-    "crates/viboceros-command/src/lib.rs": "c0452a9a0f02fc486893eeb08675d621a94cb3d2a1fcf6f8b0927f612d4fb7d8",
-    "crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df",
     "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
     "crates/viboceros-smlib/examples/export_breps.rs": "5730f23dfee698d4a07db72d5cc123b56c483ac13169f1d46563c9709b089690",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
@@ -126,6 +124,8 @@
     "docs/step-regions-prior-source/Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
     "docs/step-regions-prior-source/Cargo.lock": "a24cdb36c25a5994a97849f8b4fba838e2f1432c8b042c8e68d93f8cf5b7f27f",
     "docs/step-regions-prior-source/crates/viboceros-smlib/native/brep_data.h": "43a1bb364288880acd9c63a626e155ce77e031d289044b42beafbc2c3734cb85",
-    "docs/step-regions-prior-source/crates/viboceros-smlib/native/brep_import.cpp": "8fbc856477ecfd3125ec2f932f07ae3201f45bd2841ea8f2f68f71fb7e003d47"
+    "docs/step-regions-prior-source/crates/viboceros-smlib/native/brep_import.cpp": "8fbc856477ecfd3125ec2f932f07ae3201f45bd2841ea8f2f68f71fb7e003d47",
+    "docs/fillet-edge-prior-source/crates/viboceros-command/src/lib.rs": "c0452a9a0f02fc486893eeb08675d621a94cb3d2a1fcf6f8b0927f612d4fb7d8",
+    "docs/fillet-edge-prior-source/crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df"
   }
 }

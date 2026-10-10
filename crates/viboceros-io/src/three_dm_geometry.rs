@@ -203,7 +203,7 @@ pub(crate) fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, Ge
                     4 => BrepTrimType::Singular,
                     _ => return Err(GeometryCodecError::Malformed),
                 };
-                let iso = match reader.u8()? {
+                let archive_iso = match reader.u8()? {
                     0 => SurfaceIso::NotIso,
                     1 => SurfaceIso::InteriorUConstant,
                     2 => SurfaceIso::InteriorVConstant,
@@ -215,6 +215,38 @@ pub(crate) fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, Ge
                 };
                 let trim_tolerance = [reader.f64()?, reader.f64()?];
                 let curve = reader.curve2()?;
+                // OpenNURBS classifies nearly-boundary isocurves with a boundary
+                // flag. Rust's side predicates are exact; derive the compatible
+                // flag from the unchanged parameter controls when necessary.
+                let point = curve.control_points()[0].point();
+                let u_domain = surface.domain_u();
+                let v_domain = surface.domain_v();
+                let controls = curve.control_points();
+                let iso = if archive_iso == SurfaceIso::NotIso {
+                    SurfaceIso::NotIso
+                } else if controls.iter().all(|p| p.point().x() == point.x()) {
+                    if point.x() == *u_domain.start() {
+                        SurfaceIso::West
+                    } else if point.x() == *u_domain.end() {
+                        SurfaceIso::East
+                    } else if point.x() > *u_domain.start() && point.x() < *u_domain.end() {
+                        SurfaceIso::InteriorUConstant
+                    } else {
+                        SurfaceIso::NotIso
+                    }
+                } else if controls.iter().all(|p| p.point().y() == point.y()) {
+                    if point.y() == *v_domain.start() {
+                        SurfaceIso::South
+                    } else if point.y() == *v_domain.end() {
+                        SurfaceIso::North
+                    } else if point.y() > *v_domain.start() && point.y() < *v_domain.end() {
+                        SurfaceIso::InteriorVConstant
+                    } else {
+                        SurfaceIso::NotIso
+                    }
+                } else {
+                    SurfaceIso::NotIso
+                };
                 trims.push(BrepTrim::try_new(
                     vertices,
                     edge,
