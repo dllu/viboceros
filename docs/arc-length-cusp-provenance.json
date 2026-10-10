@@ -69,8 +69,6 @@
     "crates/viboceros-oracle/tests/divide_turnaround.rs": "33d5ee8349efbe7058c795434d67ea838a7ca4a1ba8f882a97041687088b7385",
     "tools/rhino_oracle/fixtures/divide_turnaround.json": "180ceb4dd40032c194bb0b0ece40297bd2a8f23b194c93353294c50765a90753",
     "tools/rhino_oracle/observations/divide_turnaround.json": "9727deb13b57d72a50f2dbf2ab2d96114d5ca8cfa4c4da6da4d093439d5449a5",
-    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
-    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
     "docs/arc-length-cusps.md": "4fc5a8bbb588baec0ea4dfb3389e256026f8ab99180606cccf5909fdb2494dd0",
     "docs/divide-turnaround-comparison.json": "83a4afea1692c5125b948ddcd882d3cae6b03c41de770e78405dbaca8dc6821d",
     "docs/arc-length-cusp-diagnostics/integration-before.log": "0364fb2043285864f00e2fc532ee6614eb16329d02d9e95f9528b266f5910e37",
@@ -83,6 +81,8 @@
     "docs/rational-line-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "3eb652691dbf0d09846971ff601e428c3b67f291e822cee457c67e72046d344f",
     "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length.rs": "c0cf55ea7cab24d83e77270b30a06f2d141c0b5b66b0eeb43fcc12125aa84088",
     "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length/spans.rs": "2a958f1a2083c727be80b04696bbb3647e16044e4b54ec9202c9f4d78274320a",
-    "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de"
+    "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57"
   }
 }

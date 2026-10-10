@@ -23,18 +23,9 @@ pub struct Options {
 }
 impl Options {
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
-        Self::parse_with_defaults(arguments, prompt::Prompt::default().options)
-    }
-
-    fn parse_with_defaults(arguments: &[&str], defaults: Self) -> Result<Self, CommandError> {
         let mut positional = Vec::new();
         let mut seen = BTreeSet::new();
-        let mut flags = [
-            defaults.mark_ends,
-            defaults.split,
-            defaults.delete_remainder,
-            defaults.group_output,
-        ];
+        let mut flags = [false; 4];
         for word in arguments {
             let word = word.trim_start_matches('_');
             if let Some((key, value)) = word.split_once('=') {
@@ -100,27 +91,7 @@ impl Options {
     }
 }
 
-impl CommandRegistry {
-    pub fn divide_prompt_default(&self) -> prompt::Prompt {
-        self.divide_preferences.get().for_invocation()
-    }
-
-    /// Remember valid preview edits independently of document history or cancellation.
-    pub fn accept_divide_prompt(&self, prompt: prompt::Prompt) -> Result<(), CommandError> {
-        Options::parse(
-            &prompt
-                .command_line()
-                .split_whitespace()
-                .skip(1)
-                .collect::<Vec<_>>(),
-        )?;
-        self.divide_preferences
-            .set(prompt.with_options(prompt.options));
-        Ok(())
-    }
-}
-
-pub(super) struct DivideCommand(pub(super) std::sync::Arc<remembered::Remembered<prompt::Prompt>>);
+pub struct DivideCommand;
 impl Command for DivideCommand {
     fn name(&self) -> &'static str {
         "Divide"
@@ -142,7 +113,7 @@ impl Command for DivideCommand {
                 workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
             }));
         }
-        Options::parse_with_defaults(args, self.0.get().options)?;
+        Options::parse(args)?;
         Ok(Some(ObjectSelectionPrompt {
             command: "Divide",
             filter: ObjectSelectionFilter::Curves,
@@ -160,8 +131,7 @@ impl Command for DivideCommand {
         self.object_selection_prompt(arguments)
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let preferences = self.0.get();
-        let options = Options::parse_with_defaults(args, preferences.options)?;
+        let options = Options::parse(args)?;
         let Prepared {
             source_ids,
             output,
@@ -187,7 +157,6 @@ impl Command for DivideCommand {
             }
         }
         replace_selection(doc, ids.iter().copied())?;
-        self.0.set(preferences.with_options(options));
         Ok(format!(
             "Divided {} curve(s), adding {} {}",
             source_ids.len(),

@@ -1709,7 +1709,7 @@ fn divide_command_first_length_split_previews_remainder_policy_and_cancels_clean
 }
 
 #[test]
-fn divide_chord_preview_shares_distance_and_drops_on_source_change_or_new_command() {
+fn divide_chord_preview_keeps_mode_values_and_drops_on_source_change_or_new_command() {
     let mut app = test_app();
     enter(&mut app, "Line 0,0,0 10,0,0");
     enter(&mut app, "SelAll");
@@ -1729,7 +1729,7 @@ fn divide_chord_preview_shares_distance_and_drops_on_source_change_or_new_comman
     enter(&mut app, "EqualChordLength 2.5");
     assert_eq!(app.divide_preview_points().unwrap().len(), 5);
     enter(&mut app, "Length");
-    assert_eq!(app.divide_preview_points().unwrap().len(), 5);
+    assert_eq!(app.divide_preview_points().unwrap().len(), 4);
     enter(&mut app, "NumberSegments");
     assert_eq!(app.divide_preview_points().unwrap().len(), 5);
     app.document.clear_selection();
@@ -1745,179 +1745,6 @@ fn divide_chord_preview_shares_distance_and_drops_on_source_change_or_new_comman
     assert!(app.object_prompt.is_none());
     assert!(app.divide_preview_points().is_none());
     assert_eq!(app.document.objects().len(), 2);
-}
-
-#[test]
-fn divide_remembers_cancelled_flags_and_numbers_without_model_history() {
-    let mut app = test_app();
-    enter(&mut app, "Line 0,0,0 20.7,0,0");
-    enter(&mut app, "SelAll");
-    app.document.clear_history().unwrap();
-    let source = app.document.objects().next().unwrap().clone();
-    enter(&mut app, "Divide");
-    enter(&mut app, "6 MarkEnds=Yes GroupOutput=Yes");
-    enter(&mut app, "Length 2.5");
-    enter(&mut app, "EqualChordLength 3");
-    enter(&mut app, "Cancel");
-    assert_eq!(app.document.objects().next().unwrap(), &source);
-    assert!(!app.document.can_undo());
-    enter(&mut app, "Div");
-    assert_eq!(
-        app.object_prompt.as_ref().unwrap().label(),
-        "Number of segments"
-    );
-    assert_eq!(app.divide_preview_points().unwrap().len(), 7);
-    enter(&mut app, "Length");
-    assert_eq!(app.divide_preview_points().unwrap()[1], point(3., 0., 0.));
-    enter(&mut app, "GroupOutput=No Split=Yes DeleteRemainder=Yes");
-    enter(&mut app, "Cancel");
-    enter(&mut app, "Divide");
-    let defaults = app.commands.divide_prompt_default();
-    assert!(defaults.options.split && defaults.options.delete_remainder);
-    assert!(!defaults.options.group_output);
-    assert_eq!(
-        defaults.options.specification,
-        viboceros_command::divide::Specification::Count(6)
-    );
-    enter(&mut app, "Length DeleteRemainder=No");
-    enter(&mut app, "0");
-    assert!(
-        !app.commands
-            .divide_prompt_default()
-            .options
-            .delete_remainder
-    );
-    enter(&mut app, "");
-    assert_eq!(app.document.objects().len(), 7);
-    enter(&mut app, "Undo");
-    assert_eq!(app.document.objects().next().unwrap(), &source);
-    assert!(app.commands.divide_prompt_default().options.split);
-}
-
-#[test]
-fn divide_preferences_replay_native_points_groups_and_source_retention() {
-    let capture: serde_json::Value = serde_json::from_str(include_str!(
-        "../../../docs/divide-preferences-diagnostics/native-qualified.json"
-    ))
-    .unwrap();
-    let mut app = test_app();
-    let mut checked = 0;
-    for case in capture["results"].as_array().unwrap() {
-        for step in case["value"]["steps"].as_array().unwrap() {
-            enter(&mut app, "Line 0,0,0 20.7,0,0");
-            let source = app.document.objects().next().unwrap().id();
-            enter(&mut app, "SelAll");
-            app.document.clear_history().unwrap();
-            let words = step["macro"]
-                .as_str()
-                .unwrap()
-                .split_whitespace()
-                .collect::<Vec<_>>();
-            assert_eq!(words[0], "_Divide");
-            enter(&mut app, "Divide");
-            for word in &words[1..] {
-                if word.eq_ignore_ascii_case("_Enter") {
-                    if app.object_prompt.is_some() {
-                        enter(&mut app, "");
-                    }
-                } else {
-                    enter(&mut app, word);
-                }
-            }
-            assert!(app.object_prompt.is_none(), "{}", step["macro"]);
-            let expected = &step["after"];
-            let outputs = app
-                .document
-                .objects()
-                .filter(|o| o.id() != source)
-                .collect::<Vec<_>>();
-            assert_eq!(
-                outputs.len(),
-                expected["outputs"].as_array().unwrap().len(),
-                "{}",
-                step["macro"]
-            );
-            assert_eq!(
-                usize::from(app.document.object(source).is_some()),
-                expected["input_count"].as_u64().unwrap() as usize
-            );
-            let groups = outputs
-                .iter()
-                .flat_map(|o| o.group_ids().iter().copied())
-                .collect::<std::collections::BTreeSet<_>>();
-            assert_eq!(
-                groups.len(),
-                expected["group_count"].as_u64().unwrap() as usize
-            );
-            let mut group_map = std::collections::BTreeMap::new();
-            for (actual, row) in outputs.iter().zip(expected["outputs"].as_array().unwrap()) {
-                let actual_groups = actual
-                    .group_ids()
-                    .iter()
-                    .map(|id| {
-                        let next = group_map.len();
-                        *group_map.entry(*id).or_insert(next)
-                    })
-                    .collect::<Vec<_>>();
-                let expected_groups = row["groups"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .map(|v| v.as_u64().unwrap() as usize)
-                    .collect::<Vec<_>>();
-                assert_eq!(actual_groups, expected_groups);
-                let expected_points = row["points"].as_array().unwrap();
-                let actual_points = match actual.geometry() {
-                    Geometry::Point(p) => {
-                        assert_eq!(row["kind"], "point");
-                        vec![*p]
-                    }
-                    geometry => {
-                        assert_eq!(row["kind"], "curve");
-                        let curve = geometry.curve_ref().unwrap();
-                        let domain = curve.domain();
-                        (0..=16)
-                            .map(|i| {
-                                curve
-                                    .evaluate(
-                                        domain.start()
-                                            + (domain.end() - domain.start()) * i as f64 / 16.,
-                                    )
-                                    .unwrap()
-                            })
-                            .collect()
-                    }
-                };
-                assert_eq!(actual_points.len(), expected_points.len());
-                for (actual, expected) in actual_points.iter().zip(expected_points) {
-                    let p = point(
-                        expected[0].as_f64().unwrap(),
-                        expected[1].as_f64().unwrap(),
-                        expected[2].as_f64().unwrap(),
-                    );
-                    assert!(
-                        actual.distance_to(p).unwrap() < 1e-9,
-                        "{}: {actual:?} != {p:?}",
-                        step["macro"]
-                    );
-                }
-            }
-            assert_eq!(
-                app.document.undo_label() == Some("Divide"),
-                step["succeeded"].as_bool().unwrap(),
-                "{}",
-                step["macro"]
-            );
-            if !step["succeeded"].as_bool().unwrap() {
-                assert!(!app.document.can_undo());
-            }
-            app.document
-                .delete_objects(app.document.objects().map(|o| o.id()).collect::<Vec<_>>())
-                .unwrap();
-            checked += 1;
-        }
-    }
-    assert_eq!(checked, 30);
 }
 
 #[test]

@@ -55,14 +55,11 @@
   ],
   "historical_evidence": "Early seam-harness and pre-circular-carrier diagnostics retain rejected outcomes; they are not qualified captures and their exact early helper bytes were not archived. Prior source snapshots preserve existing provenance pins without rewriting their hashes.",
   "source_sha256": {
-    "crates/viboceros-command/src/lib.rs": "7bf866f97ea8a2cf3da756dac4c69ff126303548ac42fca08510c26b4f2a9ad0",
     "crates/viboceros-geometry/src/curve.rs": "5c6197c704fcebc699dda222b9fb391cfe8f2c11d08b8b88ddfa274db0fb5d91",
     "crates/viboceros-geometry/src/lib.rs": "80bf8441f9f918dd09a94069f92f788cd5b94dd419d5bf54b2ccb6fab7e0c99c",
     "crates/viboceros-oracle/src/lib.rs": "9aca8ab368294cc6e0ce59b173bf0736097065323dd1d02c94573efc3728f421",
     "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
     "tools/rhino_oracle/test_divide_probe.py": "6e8f5b43ce625462cbecb2c3043e659b878029b84ed899c74571c781e51acf00",
-    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
-    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/fixtures/divide_command.json": "24d6906950d0fcb01cca55b5c471dd9c6b67ab3fa79ba18817ed9bc26fd8c4d6",
     "tools/rhino_oracle/observations/divide_command.json": "b472327e34a60607d03a274dc557bec4c273c63f014199f710398f5dbed53674",
@@ -81,6 +78,9 @@
     "docs/divide-curved-prior-source/crates/viboceros-geometry/src/curve/chord_division.rs": "74415ff6bc26ac61bb58a78acc873a1687cc7606f73041c6239f9983ba84fee3",
     "docs/divide-curved-prior-source/tools/rhino_oracle/divide_probe.py": "49b9bacf1e105d006905ef81089dd8165f7f7729e205f21fae4d4826336632c6",
     "docs/divide-curved-prior-source/crates/viboceros-oracle/src/divide_command.rs": "668399e436e741989357014132961c2966c191886e9d34ccce9e930ab74564cb",
-    "docs/rational-line-prior-source/crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf"
+    "docs/rational-line-prior-source/crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/lib.rs": "7bf866f97ea8a2cf3da756dac4c69ff126303548ac42fca08510c26b4f2a9ad0"
   }
 }

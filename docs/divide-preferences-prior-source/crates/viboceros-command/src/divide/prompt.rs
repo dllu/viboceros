@@ -5,7 +5,8 @@ use super::{CommandError, Options, Specification, USAGE};
 pub struct Prompt {
     pub options: Options,
     count: usize,
-    distance: f64,
+    length: f64,
+    chord: f64,
 }
 
 impl Default for Prompt {
@@ -19,31 +20,13 @@ impl Default for Prompt {
                 group_output: false,
             },
             count: 1,
-            distance: 1.,
+            length: 1.,
+            chord: 1.,
         }
     }
 }
 
 impl Prompt {
-    /// Start each invocation in count mode, retaining numeric and output settings.
-    pub fn for_invocation(mut self) -> Self {
-        self.options.specification = Specification::Count(self.count);
-        self
-    }
-
-    pub(super) fn with_options(mut self, options: Options) -> Self {
-        self.options = options;
-        self.remember_number();
-        self
-    }
-
-    fn remember_number(&mut self) {
-        match self.options.specification {
-            Specification::Count(n) => self.count = n,
-            Specification::Length(n) | Specification::Chord(n) => self.distance = n,
-        }
-    }
-
     pub fn label(self) -> &'static str {
         match self.options.specification {
             Specification::Count(_) => "Number of segments",
@@ -116,10 +99,10 @@ impl Prompt {
         };
         let specification = match mode {
             Some(mode) if mode.eq_ignore_ascii_case("Length") => {
-                Specification::Length(staged.distance)
+                Specification::Length(staged.length)
             }
             Some(mode) if mode.eq_ignore_ascii_case("EqualChordLength") => {
-                Specification::Chord(staged.distance)
+                Specification::Chord(staged.chord)
             }
             Some(mode) if mode.eq_ignore_ascii_case("NumberSegments") => {
                 Specification::Count(staged.count)
@@ -137,7 +120,11 @@ impl Prompt {
         } else {
             specification
         };
-        staged.remember_number();
+        match staged.options.specification {
+            Specification::Count(n) => staged.count = n,
+            Specification::Length(n) => staged.length = n,
+            Specification::Chord(n) => staged.chord = n,
+        }
         Ok(staged)
     }
 }
@@ -147,12 +134,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn mode_changes_share_distance_and_retain_count_and_output_options() {
+    fn mode_changes_retain_each_numeric_value_and_output_options() {
         let count = Prompt::default().updated("4 MarkEnds=Yes").unwrap();
         let length = count.updated("Length 2.5 Split=Yes").unwrap();
         let chord = length.updated("EqualChordLength 3").unwrap();
         let restored = chord.updated("Length").unwrap();
-        assert_eq!(restored.options.specification, Specification::Length(3.));
+        assert_eq!(restored.options.specification, Specification::Length(2.5));
         assert!(restored.options.mark_ends && restored.options.split);
         assert_eq!(
             restored

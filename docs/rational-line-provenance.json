@@ -96,12 +96,8 @@
     "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
     "crates/viboceros-geometry/src/curve/arc_length/rational_line_tests.rs": "84fd36c88c78594b4ff5b03d3ba08a3cfe11fa32efb768c8f9bc507ac139b2d0",
     "crates/viboceros-geometry/src/error.rs": "2d648fb7aadd41c6976befdab35bb88453e216ea783d5c528c09a9a7b4316adb",
-    "crates/viboceros-command/src/divide.rs": "d66a15ecae9f7634adab84f26c17d6c8068680dc8c4581394205ba5b7c211d06",
-    "crates/viboceros-command/src/divide/tests.rs": "85cf4da8b461ce34ba68807a925c2431bfdba611c78acc53141921ae0ade8da8",
     "crates/viboceros-oracle/tests/divide_rational_line.rs": "d05f0b2913838382bd326031c77ea6af8c90c290ede6f15ddf1b636eb03d77ea",
     "tools/rhino_oracle/divide_probe.py": "4a56fc5d4b673e6065b8cad4d15f6799e07f2235a3971d872a5fdc862f31c40b",
-    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
-    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
     "tools/rhino_oracle/fixtures/divide_rational_line.json": "d4c5aa7e1b5421c814206c2de60275b965d4a091c87fd15fba5adfb074ed7796",
     "tools/rhino_oracle/observations/divide_rational_line.json": "70017e754207e6c30afec2ccf958d6f7a96b17c5419a1d1b4bfbf076a0619a43",
     "docs/rational-line-arc-length.md": "e89d592eb687d18f2b4deff60e0f0ad30676fad91ba3ef226fe8e74ca2fb0ee6",
@@ -122,6 +118,10 @@
     "docs/rational-line-diagnostics/native-inspection-request.json": "d89de3427f9a2a731f862c2a9ea60ef93c1bed64c354a268844bab3646ed3a82",
     "docs/rational-line-diagnostics/native-inspection.json": "d0be1f27c41abe88374ba53db2542554b33212327592195fb248c31965b462df",
     "docs/rational-line-diagnostics/workspace-before-span-retention.log": "7839d8ae2c01306cdf6ad7b3d0357df6b67bad01b6b32bff60b11d2a10c53fda",
-    "docs/rational-line-diagnostics/workspace-before-split-guard.log": "ce4d7cf72f0582ecd28f02fad1a81b97e5eb5eb9f9142092df1419a835c1ce6d"
+    "docs/rational-line-diagnostics/workspace-before-split-guard.log": "ce4d7cf72f0582ecd28f02fad1a81b97e5eb5eb9f9142092df1419a835c1ce6d",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide.rs": "d66a15ecae9f7634adab84f26c17d6c8068680dc8c4581394205ba5b7c211d06",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide/tests.rs": "85cf4da8b461ce34ba68807a925c2431bfdba611c78acc53141921ae0ade8da8"
   }
 }

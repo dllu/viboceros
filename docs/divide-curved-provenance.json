@@ -111,10 +111,7 @@
     "crates/viboceros-oracle/src/divide_command.rs": "a266d54388700e691728d0c7ee3e820c3f6787f76b97c57cbee799ac78104c9d",
     "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
     "crates/viboceros-oracle/tests/divide_curved.rs": "661f01590946f6d61f7b08a0b0e0209fea9197cfc3c49afa9f2fa4c1bda2798b",
-    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
-    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
     "docs/divide-curved.md": "125db437c342de2235da87bd69233164dd3e019d1581a487dc8a29ac0f89cea4",
-    "docs/commands/divide.md": "4e7d52a2f8a31b1ad4c69d7c937f5c2b72ba915cea948ae1520628e802673c13",
     "docs/divide-curved-prior-source/tools/rhino_oracle/divide_probe.py": "49b9bacf1e105d006905ef81089dd8165f7f7729e205f21fae4d4826336632c6",
     "tools/rhino_oracle/fixtures/divide_curved.json": "d16044d572c78a040a897090a0a546980cb70797ea166efc60aeb86fd13f065f",
     "tools/rhino_oracle/observations/divide_curved.json": "8be61ea34574c9ea4d61bbc2bd8abed138381e06861503fdd8893bebbd7c7e33",
@@ -141,6 +138,9 @@
     "docs/divide-curved-diagnostics/weighted-regression-before.log": "43b9a40559a15bf3840b5a1fa091e07e2b5f2b3b44368ffc299426fee03bb650",
     "docs/arc-length-cusp-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68",
     "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
-    "docs/rational-line-prior-source/crates/viboceros-command/src/divide.rs": "e5c824b48a0af71ce00670d6e6eecb2d047cb3fb7a998ce44fd5e8fc68f70f9c"
+    "docs/rational-line-prior-source/crates/viboceros-command/src/divide.rs": "e5c824b48a0af71ce00670d6e6eecb2d047cb3fb7a998ce44fd5e8fc68f70f9c",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "docs/divide-preferences-prior-source/docs/commands/divide.md": "4e7d52a2f8a31b1ad4c69d7c937f5c2b72ba915cea948ae1520628e802673c13"
   }
 }

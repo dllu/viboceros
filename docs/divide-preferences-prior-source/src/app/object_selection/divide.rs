@@ -67,7 +67,7 @@ impl VibocerosApp {
                 return;
             }
         }
-        match Session::new(&self.document, self.commands.divide_prompt_default()) {
+        match Session::new(&self.document, Prompt::default()) {
             Ok(session) => {
                 let pending = self.object_prompt.as_mut().unwrap();
                 pending.command_override = Some(session.prompt.command_line());
@@ -119,10 +119,6 @@ impl VibocerosApp {
         };
         match updated.and_then(|prompt| Session::new(&self.document, prompt)) {
             Ok(session) => {
-                if let Err(error) = self.commands.accept_divide_prompt(session.prompt) {
-                    self.push_log(format!("Error: {error}"));
-                    return true;
-                }
                 let pending = self.object_prompt.as_mut().unwrap();
                 pending.command_override = Some(session.prompt.command_line());
                 pending.divide = Some(session);

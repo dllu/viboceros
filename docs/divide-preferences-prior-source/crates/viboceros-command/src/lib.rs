@@ -509,7 +509,6 @@ pub struct CommandRegistry {
     taper_preferences: std::sync::Arc<taper::TaperPreferences>,
     maelstrom_preferences: std::sync::Arc<maelstrom::MaelstromPreferences>,
     smooth_preferences: std::sync::Arc<remembered::Remembered<smooth::Options>>,
-    divide_preferences: std::sync::Arc<remembered::Remembered<divide::prompt::Prompt>>,
     surface_rebuild_preferences: std::sync::Arc<remembered::Remembered<surface_rebuild::Options>>,
     tween_surface_preferences: std::sync::Arc<remembered::Remembered<tween_surfaces::Preferences>>,
 }
@@ -1013,7 +1012,7 @@ impl CommandRegistry {
             .register(VolumeCommand::new(true))
             .expect("unique built-in command");
         registry
-            .register(divide::DivideCommand(registry.divide_preferences.clone()))
+            .register(divide::DivideCommand)
             .expect("unique built-in command");
         registry
             .register(CrvStartCommand)

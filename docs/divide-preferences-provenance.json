@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "fa6bb2aaf50f139eada26ca6c4dd58e8828792c2",
+  "scope": "Registry-owned Divide preferences and shared length/chord numeric memory",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino 8 under dedicated Xvfb and ARM64 Wine/FEX",
+  "private_settings_scheme": "VibocerosOracleDividePreferencesQualified20261010",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "qualified_cases": 8,
+  "qualified_steps": 30,
+  "native_successes": 26,
+  "native_cancellations": 4,
+  "active_after_steps": 0,
+  "native_capture_source_sha256": {
+    "docs/divide-preferences-capture-source/tools/rhino_oracle/divide_preferences_probe.py": "03ee9d53235eeabf9df4179dbff562e57e498870ee26955ab0cbe6f150cefc67",
+    "tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
+    "tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1"
+  },
+  "comparison": {
+    "replayed_steps": 30,
+    "absolute_point_epsilon": 1e-09,
+    "fields": [
+      "output_count",
+      "output_kind",
+      "normalized_group_ids",
+      "source_retention",
+      "point_coordinates",
+      "17_samples_per_split_curve",
+      "success_or_cancellation"
+    ],
+    "excluded_fields": [
+      "split_parameter_domains",
+      "native_command_history_and_events"
+    ],
+    "exclusion_reason": "Line parameterizations may differ; public Rhino events/history have no identical local serialization. Local accepted transaction/cancel outcome is compared."
+  },
+  "limitations": [
+    "No disk-persisted startup preferences",
+    "Initial local MarkEnds remains No; fresh native scheme showed Yes",
+    "Local numeric edits preview and await Enter; native numeric responses complete immediately",
+    "Native numeric-preview cancellation persistence not proven",
+    "Seam/direction input, SubCrv and preview appearance remain open"
+  ],
+  "validation": {
+    "rust_passed": 5660,
+    "rust_failed": 0,
+    "rust_ignored": 38,
+    "suite_summaries": 23,
+    "python_passed": 1079,
+    "clippy": "passed -D warnings",
+    "fmt": "passed",
+    "native_replay_steps": 30,
+    "commands": [
+      "cargo test --workspace --release --target-dir /tmp/viboceros-brep-verification-target",
+      "python3 -m unittest discover -s tools/rhino_oracle -t .",
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo fmt --all -- --check"
+    ],
+    "diff_check": "Passed with the immutable raw cargo log excluded because its original output ends with a blank line.",
+    "diff_check_exclusions": [
+      "docs/divide-preferences-diagnostics/workspace-final.log"
+    ]
+  },
+  "source_sha256": {
+    "crates/viboceros-command/src/divide.rs": "0540a82a9b818a9e0814710594cf3e5839dbacea0e0018851ce55dc365526f6c",
+    "crates/viboceros-command/src/divide/prompt.rs": "bc22a8889bcc9a02c7c3d9aadf3f6b0d491d808e3c1113fdf04d2ad92a1c9752",
+    "crates/viboceros-command/src/divide/tests.rs": "2242b35fc05188e39a74ecd13cfbcba3b3b11b05827edf84c3fe813966ffcb8f",
+    "crates/viboceros-command/src/lib.rs": "9171f9e0aa26fbd22e68dcc5b0fb3f75f260e5e10a4063e13cc8edae1bc027a2",
+    "docs/commands/divide.md": "d5fd2565e3f9e6ee12b8a656167bad022f7a3b4765b2e17408ee0b492825722d",
+    "docs/divide-input.md": "c57a219ec2f075c025fa875e71b8222b86e4f346f38a341a6b36fa8205122eae",
+    "docs/divide-preferences-capture-source/tools/rhino_oracle/divide_preferences_probe.py": "03ee9d53235eeabf9df4179dbff562e57e498870ee26955ab0cbe6f150cefc67",
+    "docs/divide-preferences-diagnostics/native-initial.json": "36203eddf88125495353f8059696d047c7719b9be216a78a95fad9cb3dcdeb7a",
+    "docs/divide-preferences-diagnostics/native-qualified.json": "749522d03975fd77f210e3b35ef83ae0479f17b5d6112638f201f1590d02d4ba",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide.rs": "d66a15ecae9f7634adab84f26c17d6c8068680dc8c4581394205ba5b7c211d06",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide/prompt.rs": "5b9716f60f84e3365c010a10d943ab3775432a252f8493a185693ecc08416b99",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide/tests.rs": "85cf4da8b461ce34ba68807a925c2431bfdba611c78acc53141921ae0ade8da8",
+    "docs/divide-preferences-prior-source/crates/viboceros-command/src/lib.rs": "7bf866f97ea8a2cf3da756dac4c69ff126303548ac42fca08510c26b4f2a9ad0",
+    "docs/divide-preferences-prior-source/docs/commands/divide.md": "4e7d52a2f8a31b1ad4c69d7c937f5c2b72ba915cea948ae1520628e802673c13",
+    "docs/divide-preferences-prior-source/docs/divide-input.md": "063dc6ed58a91766ad16783a1d838cc9470a1a380accd8e63bb58e92fab23dba",
+    "docs/divide-preferences-prior-source/src/app/object_selection/divide.rs": "985165a2e2794755bc08512a6826648f12743f1efafd710eded895a2f2b196d6",
+    "docs/divide-preferences-prior-source/src/app/tests/object_selection.rs": "b8f4116936d5c94559085da13e93429304b28eb5f7a0c1142a6d1fde6cecbe3b",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-preferences-prior-source/tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "docs/divide-preferences.md": "deb33a8e990fbef72c7ff39c0372e2a1001330b02484e47e91e5a5c7041ef5ed",
+    "src/app/object_selection/divide.rs": "772d37278b80c2d1fa3eae52a8adbafa565849c12d87b3810bfbda92d0920cd8",
+    "src/app/tests/object_selection.rs": "73951b4cab312716d7d3d3065a4faea504978f7b914e10b530e2ba9fd389068f",
+    "tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
+    "tools/rhino_oracle/divide_preferences_probe.py": "f1f26169713ef6ba497ecba042cf792f60174add0aa7200bab10700a8122a5a7",
+    "tools/rhino_oracle/fixtures/divide_preferences.json": "753190a3bbb9a2ba3bd9dc17bb2e23a9cdd69e16096c65f28ed35204be29b218",
+    "tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
+    "tools/rhino_oracle/test_divide_preferences_probe.py": "cd07672d51984f2baa276579b555bbcbae81acdc83022feab0b3040ced34c9d8",
+    "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f",
+    "docs/divide-preferences-diagnostics/workspace-final.log": "639fa7a97ee063f34f4740ba93d853ce39c9dcb7fcbe9cd364c2d1588d5bb6df",
+    "docs/divide-preferences-diagnostics/python-final.log": "0004fdf10a3d7b193259588d998a04f2310e4852465d713c6d426c2da8696992",
+    "docs/divide-preferences-diagnostics/clippy-final.log": "a5824cbdfc4bbdc2edd4184f0a48906d39370d0881eaae3f6bd7b6c5b04826c3",
+    "docs/divide-preferences-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "capture_commands": [
+    "WINEDLLOVERRIDES=sspicli,secur32,schannel=b tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/divide_preferences.json --scheme VibocerosOracleDividePreferencesQualified20261010 --timeout 300 --output /tmp/viboceros-divide-preferences-qualified-native.json"
+  ],
+  "prior_source_policy": "Existing provenance keys move to exact immutable source snapshots without changing recorded hashes."
+}

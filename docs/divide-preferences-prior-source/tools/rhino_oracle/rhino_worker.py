@@ -6345,9 +6345,6 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
-    if operation.get('op')=='divide_preferences':
-        import divide_preferences_probe
-        return divide_preferences_probe.run(operation,globals())
     if operation.get('op')=='divide_command':
         import divide_probe
         return divide_probe.run(operation,tolerance,globals())
@@ -16904,10 +16901,6 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op')=='divide_preferences' for op in request.get('operations',[])):
-            import merge_edges_probe
-            merge_edges_probe.at_idle(Rhino,lambda:_main(True))
-            return
         if not at_idle and any(op.get('op')=='divide_command' for op in request.get('operations',[])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino,lambda:_main(True))

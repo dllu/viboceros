@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_preferences",
+      "id": "count_repeat",
+      "case": "count_repeat"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "length_then_count",
+      "case": "length_then_count"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "chord_then_count",
+      "case": "chord_then_count"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "length_chord_memory",
+      "case": "length_chord_memory"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "cancel_options",
+      "case": "cancel_options"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "cancel_points",
+      "case": "cancel_points"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "cancel_remainder",
+      "case": "cancel_remainder"
+    },
+    {
+      "op": "divide_preferences",
+      "id": "cancel_mode",
+      "case": "cancel_mode"
+    }
+  ]
+}

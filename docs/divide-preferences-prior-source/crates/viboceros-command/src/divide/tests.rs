@@ -1,68 +1,6 @@
 use super::*;
 
 #[test]
-fn preferences_survive_undo_share_aliases_and_documents_and_isolate_registries() {
-    let registry = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    registry.execute(&mut doc, "Line 0,0,0 20.7,0,0").unwrap();
-    registry.execute(&mut doc, "SelAll").unwrap();
-    registry
-        .execute(&mut doc, "Div 6 MarkEnds=Yes GroupOutput=Yes")
-        .unwrap();
-    assert_eq!(doc.selected_object_count(), 7);
-    doc.undo().unwrap();
-    let defaults = registry.divide_prompt_default();
-    assert_eq!(defaults.options.specification, Specification::Count(6));
-    assert!(defaults.options.mark_ends && defaults.options.group_output);
-    let mut other = Document::default();
-    registry.execute(&mut other, "Line 0,0,0 20.7,0,0").unwrap();
-    registry.execute(&mut other, "SelAll").unwrap();
-    registry
-        .execute(&mut other, "Divide Length 2.5 MarkEnds=No GroupOutput=No")
-        .unwrap();
-    assert_eq!(other.selected_object_count(), 8);
-    other.undo().unwrap();
-    registry.execute(&mut other, "SelAll").unwrap();
-    registry
-        .execute(&mut other, "Div EqualChordLength 3")
-        .unwrap();
-    other.undo().unwrap();
-    let saved = registry.divide_prompt_default();
-    assert_eq!(saved.options.specification, Specification::Count(6));
-    assert_eq!(
-        saved.updated("Length").unwrap().options.specification,
-        Specification::Length(3.)
-    );
-    assert!(!saved.options.mark_ends && !saved.options.group_output);
-    assert_eq!(
-        CommandRegistry::with_builtins().divide_prompt_default(),
-        prompt::Prompt::default()
-    );
-    for invalid in [
-        "Divide 0 Split=Yes",
-        "Divide Length NaN",
-        "Divide 4 Unknown=Yes",
-    ] {
-        assert!(registry.execute(&mut other, invalid).is_err());
-        assert_eq!(registry.divide_prompt_default(), saved);
-    }
-    let no_selection = Document::default();
-    assert!(preview_points(&no_selection, saved.options).is_err());
-    assert_eq!(registry.divide_prompt_default(), saved);
-    let mut invalid = saved;
-    invalid.options.specification = Specification::Length(f64::NAN);
-    assert!(registry.accept_divide_prompt(invalid).is_err());
-    assert_eq!(registry.divide_prompt_default(), saved);
-    let mut accepted = saved;
-    accepted.options.specification = Specification::Count(9);
-    registry.accept_divide_prompt(accepted).unwrap();
-    assert_eq!(
-        registry.divide_prompt_default().options.specification,
-        Specification::Count(9)
-    );
-}
-
-#[test]
 fn split_length_remainder_uses_source_intervals_attributes_and_one_undo() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();

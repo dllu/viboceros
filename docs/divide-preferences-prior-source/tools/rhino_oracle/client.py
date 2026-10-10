@@ -215,12 +215,6 @@ class OracleClient:
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
         worker_source = Path(__file__).with_name("rhino_worker.py")
-        if any(op.get('op')=='divide_preferences' for op in request.get('operations',[])):
-            from .divide_preferences_probe import validate
-            if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1:
-                raise OracleProtocolError('Divide preferences require a private scheme and one iteration')
-            for op in request['operations']:
-                if op.get('op')=='divide_preferences':validate(op)
         if any(op.get('op')=='divide_command' for op in request.get('operations',[])):
             from .divide_probe import validate
             if self.settings_scheme is None or type(request.get('iterations',1))is not int or request.get('iterations',1)!=1:
@@ -1027,9 +1021,6 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
-            if any(op.get('op')=='divide_preferences' for op in request['operations']):
-                for helper in ('divide_preferences_probe.py','join_probe.py','merge_edges_probe.py'):
-                    shutil.copyfile(worker_source.with_name(helper),job_path/helper)
             if any(op.get('op')=='divide_command' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('divide_probe.py'),job_path/'divide_probe.py')
                 shutil.copyfile(worker_source.with_name('merge_edges_probe.py'),job_path/'merge_edges_probe.py')

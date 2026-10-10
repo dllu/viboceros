@@ -18,12 +18,8 @@ Entering bare `Divide` first gathers curves, then opens a numeric/options
 prompt. Enter a count, or choose `Length` or `EqualChordLength` and enter a
 distance. Changing the number or output options updates viewport station
 markers; Enter accepts the pending result, and Escape cancels without creating
-objects or history. `NumberSegments` returns to count mode. The count and a
-shared Length/EqualChordLength distance are remembered across invocations;
-each invocation starts in count mode. The initial local count/distance is 1.
-Output flags survive cancellation and Undo, and omitted flags use the remembered
-values. Preferences last for the application session. See
-[native preference evidence](../divide-preferences.md).
+objects or history. `NumberSegments` returns to count mode. Each mode retains
+its last number during the invocation; the initial local count/distance is 1.
 Bare boolean option names toggle their values, and `name=Yes|No` sets them.
 Split previews mark piece boundaries, including any retained remainder.
 
@@ -61,5 +57,5 @@ The [native fixture](../../tools/rhino_oracle/fixtures/divide_command.json) cove
 domains and remainder deletion. Detailed [qualification](../divide-command.md)
 records the result and limits. The UI currently accepts complete division
 arguments before source picking or [bare numeric/options input](../divide-input.md).
-Native seam/direction changes, SubCrv selection, persisted startup defaults and
+Native seam/direction changes, SubCrv selection, saved native defaults and
 preview styling remain work in progress.
