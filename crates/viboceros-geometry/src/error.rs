@@ -387,6 +387,11 @@ pub enum GeometryError {
     #[error("a curve division length must be finite and strictly positive")]
     InvalidCurveDivisionLength,
 
+    #[error(
+        "a curve division station cannot be represented by its native parameter at the requested tolerance"
+    )]
+    UnrepresentableCurveDivisionParameter,
+
     #[error("curve division would create more than {maximum} points")]
     TooManyCurveDivisionPoints { maximum: usize },
 

@@ -18,9 +18,7 @@ def run(operation, tolerance, host):
     validate(operation)
     import Rhino, System
     doc=Rhino.RhinoDoc.ActiveDoc
-    if Rhino.Commands.Command.InCommand():raise ValueError('Divide requires idle execution')
     sources=[];outputs=[];layers=[]
-    command_started=False
     original_layer=doc.Layers.CurrentLayerIndex
     settings=Rhino.DocObjects.ObjectEnumeratorSettings()
     baseline=set(o.Id for o in doc.Objects.GetObjectList(settings))
@@ -46,10 +44,7 @@ def run(operation, tolerance, host):
         if split and mode!='count':mode_option += '_DeleteRemainder='+('_Yes'if delete else'_No')+' '
         macro='_Divide '+options+' '+mode_option+'%.17g'%operation['value']+' _Enter'
         if any(doc.Objects.FindId(k).Geometry.IsClosed for k in sources):macro=macro.replace('_Divide ','_Divide _Enter ',1)
-        history_before=Rhino.RhinoApp.CommandHistoryWindowText
-        command_started=True
         ok=Rhino.RhinoApp.RunScript(macro,True)
-        active=bool(Rhino.Commands.Command.InCommand())
         objects=sorted((o for o in doc.Objects.GetObjectList(settings)if o.Id not in baseline and o.Id not in sources),key=lambda o:int(o.RuntimeSerialNumber))
         outputs=[o.Id for o in objects]
         records=[];group_map={}
@@ -65,13 +60,9 @@ def run(operation, tolerance, host):
                     t=g.Domain.T0 if i==0 else g.Domain.T1 if i==16 else g.Domain.T0+(g.Domain.T1-g.Domain.T0)*i/16.
                     p=g.PointAt(t);points.append([float(p.X),float(p.Y),float(p.Z)])
             records.append(dict(kind=kind,points=points,domain=domain,closed=closed,name=a.Name or '',layer='current'if a.LayerIndex==original_layer else'source',color_source=str(a.ColorSource),groups=groups))
-        result=dict(succeeded=bool(ok)and not active,outputs=records,input_count=sum(doc.Objects.FindId(k)is not None and not doc.Objects.FindId(k).IsDeleted for k in sources),group_count=len(group_map))
-        if operation.get('inspect_sources',False):
-            result['source_types']=source_types
-            result['command_active']=active
-            result['command_history']=Rhino.RhinoApp.CommandHistoryWindowText[len(history_before):]
+        result=dict(succeeded=bool(ok),outputs=records,input_count=sum(doc.Objects.FindId(k)is not None and not doc.Objects.FindId(k).IsDeleted for k in sources),group_count=len(group_map))
+        if operation.get('inspect_sources',False):result['source_types']=source_types
         return result,0
     finally:
-        if command_started and Rhino.Commands.Command.InCommand():Rhino.RhinoApp.RunScript('!',False)
         for key in outputs+sources:doc.Objects.Delete(key,True)
         for index in reversed(layers):doc.Layers.Delete(index,True)

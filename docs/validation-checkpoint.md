@@ -1669,3 +1669,32 @@ checks pass. [Provenance](arc-length-cusp-provenance.json) binds current sources
 native recipes, rejected results and final comparison. Unsampled sharp features,
 extreme rational weights, native cusp inversion and full geometry/performance
 qualification remain open.
+
+## Rational line arc-length checkpoint
+
+[Degree-one rational arc length](rational-line-arc-length.md) uses straight
+span geometry and exact projective distance/parameter expressions. Extreme
+weights no longer hide almost all motion from derivative quadrature. The
+sampler carries span metadata through polycurve parameter maps, retains direct
+degree-one domains, and bypasses numerical integration and lookup tables.
+
+Four new kernel regressions cover extreme/reversed/negative weights, corners,
+poles, trimmed domains, forward/inverse queries and polycurve sampling. An
+updated regression verifies analytic measurement/sampling of a subnormal span
+that integration normalization still rejects. A command regression checks
+accurate point placement and atomic rejection of an unrepresentable polycurve
+Split cut. Divide now validates cut coordinates before trimming.
+
+Thirty-two fresh licensed Rhino recipes under private Xvfb retain sixteen
+moderate-weight matches at 5e-7 absolute plus 1e-12 relative epsilon. Sixteen
+extreme-weight records remain full-field diagnostics: native macros end with
+zero output, local point geometry remains accurate, and six local Split cases
+reject unrepresentable cuts. Native-only command history and completion-state
+inspection confirms the zero outputs are not unfinished getters.
+
+The final release run passes 5,657 Rust tests with zero failures and 38 ignored
+tests. All 1,077 Python tests, Clippy with warnings denied, formatting, diff
+checks and source-pin validation pass. [Provenance](rational-line-provenance.json)
+records exact sources, captured helper versions and rejected intermediate
+results. Extreme native compatibility, parameter representability, general
+rational integration and full geometry/performance qualification remain open.

@@ -66,13 +66,9 @@
   "source_sha256": {
     "crates/viboceros-geometry/src/integration.rs": "317de4530ea675dbe081d205922cba76ba18fd729d6407d85cdeabfdd259be85",
     "crates/viboceros-geometry/src/finite_sum.rs": "d56fa845aa7e65cfffb75453280012a7f8447bd1da1102cdc8cd15f497d061d0",
-    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "3eb652691dbf0d09846971ff601e428c3b67f291e822cee457c67e72046d344f",
-    "crates/viboceros-geometry/src/curve/arc_length.rs": "c0cf55ea7cab24d83e77270b30a06f2d141c0b5b66b0eeb43fcc12125aa84088",
-    "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "2a958f1a2083c727be80b04696bbb3647e16044e4b54ec9202c9f4d78274320a",
     "crates/viboceros-oracle/tests/divide_turnaround.rs": "33d5ee8349efbe7058c795434d67ea838a7ca4a1ba8f882a97041687088b7385",
     "tools/rhino_oracle/fixtures/divide_turnaround.json": "180ceb4dd40032c194bb0b0ece40297bd2a8f23b194c93353294c50765a90753",
     "tools/rhino_oracle/observations/divide_turnaround.json": "9727deb13b57d72a50f2dbf2ab2d96114d5ca8cfa4c4da6da4d093439d5449a5",
-    "tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
     "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
     "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
     "docs/arc-length-cusps.md": "4fc5a8bbb588baec0ea4dfb3389e256026f8ab99180606cccf5909fdb2494dd0",
@@ -83,6 +79,10 @@
     "docs/arc-length-cusp-diagnostics/turnaround-local-final.json": "ef7f33e02797ad6ce19272f667de3f5583e33e32cad8a62027f1e97d74afedae",
     "docs/arc-length-cusp-diagnostics/turnaround-local-intermediate.json": "ef7f33e02797ad6ce19272f667de3f5583e33e32cad8a62027f1e97d74afedae",
     "docs/arc-length-cusp-prior-source/crates/viboceros-geometry/src/integration.rs": "eb739cd11b1995ec2a56c96d0afb4b4c3b57ed24196e2a6b1074cc2d9f0d98b6",
-    "docs/arc-length-cusp-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68"
+    "docs/arc-length-cusp-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "3eb652691dbf0d09846971ff601e428c3b67f291e822cee457c67e72046d344f",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length.rs": "c0cf55ea7cab24d83e77270b30a06f2d141c0b5b66b0eeb43fcc12125aa84088",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length/spans.rs": "2a958f1a2083c727be80b04696bbb3647e16044e4b54ec9202c9f4d78274320a",
+    "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de"
   }
 }

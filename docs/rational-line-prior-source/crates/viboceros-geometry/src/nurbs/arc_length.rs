@@ -3,19 +3,11 @@
 use crate::{
     GeometryError, NurbsCurve, Real, Tolerance, integration::integrate_adaptive, require_finite,
 };
-mod linear;
 
 impl NurbsCurve {
-    /// Measures degree-one spans from their straight geometry; higher degrees
-    /// use adaptive Gauss-Kronrod integration in a normalized domain.
+    /// Computes arc length span by span with adaptive Gauss-Kronrod
+    /// integration of the exact first derivative in a normalized domain.
     pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
-        if let Some(spans) = self.rational_line_spans()? {
-            let mut sum = crate::FiniteSum::default();
-            for span in spans {
-                sum.add(span.length)?;
-            }
-            return sum.total();
-        }
         let curve = self.for_integration()?;
         let absolute_per_span = tolerance.absolute() / curve.spans().count() as Real;
         if absolute_per_span <= 0.0 {
@@ -50,93 +42,6 @@ mod tests {
     use super::*;
     use crate::{Circle3, Point3, Vector3};
     use std::borrow::Cow;
-
-    #[test]
-    fn degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion() {
-        let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
-        let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-10).unwrap();
-        for weights in [
-            [1., 2_f64.powi(100)],
-            [2_f64.powi(100), 1.],
-            [-1., -2_f64.powi(100)],
-        ] {
-            let curve = NurbsCurve::try_new_rational(
-                1,
-                vec![
-                    crate::WeightedPoint3::try_new(p(0., 0.), weights[0]).unwrap(),
-                    crate::WeightedPoint3::try_new(p(2., 0.), weights[1]).unwrap(),
-                ],
-                vec![0., 0., 1., 1.],
-            )
-            .unwrap();
-            assert!(
-                (curve.length(tolerance).unwrap() - 2.).abs() < 1e-12,
-                "{weights:?}"
-            );
-            let samples = crate::CurveRef::NurbsCurve(&curve)
-                .divide_by_count_samples(4, true, tolerance)
-                .unwrap();
-            assert_eq!(samples.len(), 5);
-            for (s, x) in samples.iter().zip([0., 0.5, 1., 1.5, 2.]) {
-                assert!(
-                    (s.point().x() - x).abs() < 1e-12,
-                    "{weights:?}: {:?}",
-                    s.point()
-                );
-            }
-        }
-        let curve = NurbsCurve::try_new_rational(
-            1,
-            vec![
-                crate::WeightedPoint3::try_new(p(0., 0.), 1.).unwrap(),
-                crate::WeightedPoint3::try_new(p(2., 0.), 2_f64.powi(100)).unwrap(),
-                crate::WeightedPoint3::try_new(p(2., 3.), 1.).unwrap(),
-            ],
-            vec![0., 0., 1., 2., 2.],
-        )
-        .unwrap();
-        assert!((curve.length(tolerance).unwrap() - 5.).abs() < 1e-12);
-        let samples = crate::CurveRef::NurbsCurve(&curve)
-            .divide_by_length_samples(1., true, tolerance)
-            .unwrap();
-        assert_eq!(samples.len(), 6);
-        for (s, expected) in samples.iter().zip([
-            p(0., 0.),
-            p(1., 0.),
-            p(2., 0.),
-            p(2., 1.),
-            p(2., 2.),
-            p(2., 3.),
-        ]) {
-            assert!(s.point().distance_to(expected).unwrap() < 1e-12);
-        }
-    }
-
-    #[test]
-    fn degree_one_length_rejects_denominator_poles_and_retains_partial_domains() {
-        let p = |x| Point3::try_new(x, 0., 0.).unwrap();
-        let controls = |w| {
-            vec![
-                crate::WeightedPoint3::try_new(p(0.), 1.).unwrap(),
-                crate::WeightedPoint3::try_new(p(2.), w).unwrap(),
-            ]
-        };
-        let pole = NurbsCurve::try_new_rational(1, controls(-1.), vec![0., 0., 1., 1.]).unwrap();
-        assert_eq!(
-            pole.length(Tolerance::DEFAULT),
-            Err(GeometryError::ZeroWeightAtParameter)
-        );
-        let curve = NurbsCurve::try_new_rational(1, controls(16.), vec![0., 0., 1., 1.])
-            .unwrap()
-            .try_trimmed(0.1..=0.8)
-            .unwrap();
-        let expected = curve
-            .evaluate(0.1)
-            .unwrap()
-            .distance_to(curve.evaluate(0.8).unwrap())
-            .unwrap();
-        assert!((curve.length(Tolerance::DEFAULT).unwrap() - expected).abs() < 1e-12);
-    }
 
     #[test]
     fn non_dyadic_turnaround_length_and_stations_agree_with_exact_total_variation() {
@@ -207,7 +112,7 @@ mod tests {
     }
 
     #[test]
-    fn degree_one_length_preserves_spans_that_integration_normalization_would_erase() {
+    fn length_rejects_normalization_that_erases_an_interval() {
         let curve = NurbsCurve::try_new(
             1,
             (0..4)
@@ -223,18 +128,7 @@ mod tests {
             ],
         )
         .unwrap();
-        assert!(curve.for_integration().is_err());
-        assert_eq!(curve.length(Tolerance::DEFAULT).unwrap(), 3.);
-        let sampler = crate::curve::ArcLengthSampler::try_new(
-            crate::CurveRef::NurbsCurve(&curve),
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        assert_eq!(sampler.total_length(), 3.);
-        assert_eq!(
-            sampler.point_at_distance(1.5).unwrap(),
-            Point3::try_new(1.5, 0., 0.).unwrap()
-        );
+        assert!(curve.length(Tolerance::DEFAULT).is_err());
     }
 
     #[test]

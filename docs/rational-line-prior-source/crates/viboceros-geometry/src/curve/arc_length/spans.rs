@@ -1,7 +1,6 @@
 //! Native span construction and initial length integration.
 
 use super::numerical_distance_tolerance;
-use crate::exact_scalar::{rational, scalar};
 use crate::{
     CurveRef, GeometryError, Real, Tolerance, integration::integrate_adaptive, require_finite,
 };
@@ -12,53 +11,13 @@ pub(super) enum LinearSpan {
     Line,
     Polyline(usize),
     CompositeLine(usize),
-    CompositePolyline {
-        segment: usize,
-        edge: usize,
-    },
-    Rational {
-        controls: [crate::WeightedPoint3; 2],
-    },
-}
-
-impl LinearSpan {
-    pub(super) fn rational_parameter_at_distance(
-        self,
-        domain: [Real; 2],
-        distance: Real,
-        length: Real,
-    ) -> Result<Option<Real>, GeometryError> {
-        let Self::Rational { controls } = self else {
-            return Ok(None);
-        };
-        let d = rational(distance);
-        let a = (rational(length) - &d) * rational(controls[1].weight());
-        let b = d * rational(controls[0].weight());
-        scalar(&((rational(domain[0]) * &a + rational(domain[1]) * &b) / (a + b))).map(Some)
-    }
-
-    pub(super) fn rational_distance_at_parameter(
-        self,
-        domain: [Real; 2],
-        parameter: Real,
-        length: Real,
-    ) -> Result<Option<Real>, GeometryError> {
-        let Self::Rational { controls } = self else {
-            return Ok(None);
-        };
-        let t = rational(parameter);
-        let a = (rational(domain[1]) - &t) * rational(controls[0].weight());
-        let b = (t - rational(domain[0])) * rational(controls[1].weight());
-        scalar(&(rational(length) * &b / (a + b))).map(Some)
-    }
+    CompositePolyline { segment: usize, edge: usize },
 }
 
 pub(super) struct RawSpan {
     pub(super) start: Real,
     pub(super) end: Real,
     pub(super) length: Real,
-    // True requires numerical speed integration and optional lookup tables.
-    // Projective rational lines have varying speed but use closed-form queries.
     pub(super) variable_speed: bool,
     pub(super) linear: Option<LinearSpan>,
 }
@@ -128,20 +87,6 @@ pub(super) fn raw_spans(
                 })
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
-        CurveRef::NurbsCurve(curve) if curve.degree() == 1 => curve
-            .rational_line_spans()?
-            .expect("degree-one spans")
-            .into_iter()
-            .map(|span| RawSpan {
-                start: span.domain[0],
-                end: span.domain[1],
-                length: span.length,
-                variable_speed: false,
-                linear: Some(LinearSpan::Rational {
-                    controls: span.controls,
-                }),
-            })
-            .collect(),
         CurveRef::NurbsCurve(curve) => curve
             .spans()
             .map(|(start, end)| {
@@ -170,7 +115,6 @@ pub(super) fn raw_spans(
                                 segment: index,
                                 edge,
                             },
-                            LinearSpan::Rational { controls } => LinearSpan::Rational { controls },
                             _ => unreachable!("polycurve leaves are not nested composites"),
                         }),
                         ..span

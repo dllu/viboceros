@@ -53,7 +53,6 @@
   "prior_source_policy": "Existing provenance keys move to exact immutable source snapshots without changing their recorded hashes.",
   "source_sha256": {
     "crates/viboceros-command/src/divide/prompt.rs": "5b9716f60f84e3365c010a10d943ab3775432a252f8493a185693ecc08416b99",
-    "crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf",
     "src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b",
     "src/app/object_selection/divide.rs": "985165a2e2794755bc08512a6826648f12743f1efafd710eded895a2f2b196d6",
     "src/app/transform_sources.rs": "025b6730a06222598bb36f2bc56f449b77a5a6fb8723da3cd17441af366d1bc3",
@@ -65,6 +64,7 @@
     "docs/divide-command-comparison.json": "cc2a329d26ce28e12ebd64aaac5ba52e20c9b3a63b4083d5896d005cae789ee8",
     "docs/divide-input.md": "063dc6ed58a91766ad16783a1d838cc9470a1a380accd8e63bb58e92fab23dba",
     "docs/divide-curved-prior-source/docs/commands/divide.md": "65e484ee95824b1a1b9c0d862de8a08ae9988a56fe4af6b427a1796e7cf8e4b7",
-    "docs/divide-curved-prior-source/crates/viboceros-command/src/divide.rs": "a05af8d7f815ac4e5e1076fcbd8cfbf301e6f30d18281c2ddaadbb6e10233bd3"
+    "docs/divide-curved-prior-source/crates/viboceros-command/src/divide.rs": "a05af8d7f815ac4e5e1076fcbd8cfbf301e6f30d18281c2ddaadbb6e10233bd3",
+    "docs/rational-line-prior-source/crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf"
   }
 }

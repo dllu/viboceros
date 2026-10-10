@@ -9,8 +9,6 @@ mod spans;
 use spans::{LinearSpan, RawSpan, raw_spans};
 
 #[cfg(test)]
-mod rational_line_tests;
-#[cfg(test)]
 mod tests;
 
 // Bounds the optional cache to 16 MiB of parameter/length pairs. Counts
@@ -89,7 +87,7 @@ impl<'a> ArcLengthSampler<'a> {
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let normalized = match curve {
-            CurveRef::NurbsCurve(c) if c.degree() != 1 && c.domain() != (0.0..=1.0) => {
+            CurveRef::NurbsCurve(c) if c.domain() != (0.0..=1.0) => {
                 Some(Curve3::NurbsCurve(c.for_integration()?.into_owned()))
             }
             CurveRef::PolyCurve(c) => match c.for_integration()? {
@@ -242,19 +240,6 @@ impl<'a> ArcLengthSampler<'a> {
             // Prefix integration and full-span integration need not round to
             // the same total. Use the inverse query's canonical span scale.
             scaled_ratio(partial, span.length, table_length)?.clamp(0.0, span.length)
-        } else if let Some(distance) = span
-            .linear
-            .map(|linear| {
-                linear.rational_distance_at_parameter(
-                    [span.start, span.end],
-                    parameter,
-                    span.length,
-                )
-            })
-            .transpose()?
-            .flatten()
-        {
-            distance
         } else {
             span.length * ((parameter - span.start) / (span.end - span.start))
         };
@@ -456,20 +441,6 @@ impl<'a> ArcLengthSampler<'a> {
             return Ok(span.end);
         }
         if !span.variable_speed {
-            if let Some(parameter) = span
-                .linear
-                .map(|linear| {
-                    linear.rational_parameter_at_distance(
-                        [span.start, span.end],
-                        local_distance,
-                        span.length,
-                    )
-                })
-                .transpose()?
-                .flatten()
-            {
-                return Ok(parameter);
-            }
             let fraction = local_distance / span.length;
             return Ok(stable_lerp(span.start, span.end, fraction));
         }
@@ -507,17 +478,6 @@ impl<'a> ArcLengthSampler<'a> {
             .partition_point(|span| span.cumulative_end <= distance)
             .min(self.spans.len() - 1);
         let span = self.spans[index];
-        if let Some(LinearSpan::Rational { controls }) = span.linear {
-            let fraction = ((distance - span.cumulative_start) / span.length).clamp(0., 1.);
-            return Some((
-                crate::LineSegment::from_validated(
-                    controls[0].point(),
-                    controls[1].point(),
-                    [0., 1.],
-                ),
-                fraction,
-            ));
-        }
         let (curve, edge) = match span.linear? {
             LinearSpan::Line => (self.curve(), None),
             LinearSpan::Polyline(edge) => (self.curve(), Some(edge)),
@@ -533,7 +493,6 @@ impl<'a> ArcLengthSampler<'a> {
                 };
                 (curve.segments()[segment].as_ref(), Some(edge))
             }
-            LinearSpan::Rational { .. } => unreachable!("rational line geometry handled above"),
         };
         let (start, end) = match (curve, edge) {
             (CurveRef::Line(line), None) => (line.start(), line.end()),

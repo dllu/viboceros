@@ -1,0 +1,26 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 23s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_command-1a1930f9248a2833)
+
+running 1 test
+test divide::tests::weighted_polycurve_points_remain_accurate_and_unrepresentable_split_is_atomic ... FAILED
+
+failures:
+
+---- divide::tests::weighted_polycurve_points_remain_accurate_and_unrepresentable_split_is_atomic stdout ----
+
+thread 'divide::tests::weighted_polycurve_points_remain_accurate_and_unrepresentable_split_is_atomic' (4070055) panicked at crates/viboceros-command/src/divide/tests.rs:118:5:
+Err(NoObjectsSelected)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    divide::tests::weighted_polycurve_points_remain_accurate_and_unrepresentable_split_is_atomic
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1263 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p viboceros-command --lib`

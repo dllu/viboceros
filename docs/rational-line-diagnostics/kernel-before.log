@@ -1,0 +1,22 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 3m 29s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_geometry-e78e4975e15b7a19)
+
+running 1 test
+test nurbs::arc_length::tests::degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion ... FAILED
+
+failures:
+
+---- nurbs::arc_length::tests::degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion stdout ----
+
+thread 'nurbs::arc_length::tests::degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion' (4036162) panicked at crates/viboceros-geometry/src/nurbs/arc_length.rs:52:13:
+[1.0, 1.2676506002282294e30]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    nurbs::arc_length::tests::degree_one_rational_length_and_stations_do_not_miss_extreme_weight_motion
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2131 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p viboceros-geometry --lib`

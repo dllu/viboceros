@@ -1,0 +1,3044 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "count-moderate-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-moderate-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 0,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0,
+              0.020408163265306124
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.040050062578222786,
+                0.0,
+                0.0
+              ],
+              [
+                0.07862407862407864,
+                0.0,
+                0.0
+              ],
+              [
+                0.11580217129071171,
+                0.0,
+                0.0
+              ],
+              [
+                0.15165876777251186,
+                0.0,
+                0.0
+              ],
+              [
+                0.1862630966239814,
+                0.0,
+                0.0
+              ],
+              [
+                0.21967963386727693,
+                0.0,
+                0.0
+              ],
+              [
+                0.2519685039370079,
+                0.0,
+                0.0
+              ],
+              [
+                0.2831858407079646,
+                0.0,
+                0.0
+              ],
+              [
+                0.3133841131664853,
+                0.0,
+                0.0
+              ],
+              [
+                0.3426124197002141,
+                0.0,
+                0.0
+              ],
+              [
+                0.37091675447839834,
+                0.0,
+                0.0
+              ],
+              [
+                0.3983402489626556,
+                0.0,
+                0.0
+              ],
+              [
+                0.424923391215526,
+                0.0,
+                0.0
+              ],
+              [
+                0.4507042253521127,
+                0.0,
+                0.0
+              ],
+              [
+                0.47571853320118923,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.020408163265306124,
+              0.0588235294117647
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                0.5438282647584973,
+                0.0,
+                0.0
+              ],
+              [
+                0.5853658536585366,
+                0.0,
+                0.0
+              ],
+              [
+                0.6247877758913412,
+                0.0,
+                0.0
+              ],
+              [
+                0.662251655629139,
+                0.0,
+                0.0
+              ],
+              [
+                0.6978998384491114,
+                0.0,
+                0.0
+              ],
+              [
+                0.7318611987381702,
+                0.0,
+                0.0
+              ],
+              [
+                0.7642526964560862,
+                0.0,
+                0.0
+              ],
+              [
+                0.7951807228915662,
+                0.0,
+                0.0
+              ],
+              [
+                0.8247422680412371,
+                0.0,
+                0.0
+              ],
+              [
+                0.8530259365994235,
+                0.0,
+                0.0
+              ],
+              [
+                0.8801128349788434,
+                0.0,
+                0.0
+              ],
+              [
+                0.9060773480662982,
+                0.0,
+                0.0
+              ],
+              [
+                0.9309878213802434,
+                0.0,
+                0.0
+              ],
+              [
+                0.9549071618037134,
+                0.0,
+                0.0
+              ],
+              [
+                0.9778933680104029,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0588235294117647,
+              0.15789473684210345
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ],
+              [
+                1.0532915360501558,
+                0.0,
+                0.0
+              ],
+              [
+                1.101796407185627,
+                0.0,
+                0.0
+              ],
+              [
+                1.1461318051575908,
+                0.0,
+                0.0
+              ],
+              [
+                1.186813186813184,
+                0.0,
+                0.0
+              ],
+              [
+                1.2242744063324504,
+                0.0,
+                0.0
+              ],
+              [
+                1.2588832487309607,
+                0.0,
+                0.0
+              ],
+              [
+                1.2909535452322698,
+                0.0,
+                0.0
+              ],
+              [
+                1.3207547169811278,
+                0.0,
+                0.0
+              ],
+              [
+                1.3485193621867837,
+                0.0,
+                0.0
+              ],
+              [
+                1.3744493392070438,
+                0.0,
+                0.0
+              ],
+              [
+                1.3987206823027671,
+                0.0,
+                0.0
+              ],
+              [
+                1.4214876033057804,
+                0.0,
+                0.0
+              ],
+              [
+                1.4428857715430812,
+                0.0,
+                0.0
+              ],
+              [
+                1.4630350194552477,
+                0.0,
+                0.0
+              ],
+              [
+                1.4820415879016964,
+                0.0,
+                0.0
+              ],
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.15789473684210345,
+              1.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ],
+              [
+                1.620253164556959,
+                0.0,
+                0.0
+              ],
+              [
+                1.702127659574466,
+                0.0,
+                0.0
+              ],
+              [
+                1.7614678899082554,
+                0.0,
+                0.0
+              ],
+              [
+                1.8064516129032249,
+                0.0,
+                0.0
+              ],
+              [
+                1.8417266187050352,
+                0.0,
+                0.0
+              ],
+              [
+                1.8701298701298696,
+                0.0,
+                0.0
+              ],
+              [
+                1.8934911242603545,
+                0.0,
+                0.0
+              ],
+              [
+                1.9130434782608692,
+                0.0,
+                0.0
+              ],
+              [
+                1.9296482412060298,
+                0.0,
+                0.0
+              ],
+              [
+                1.9439252336448596,
+                0.0,
+                0.0
+              ],
+              [
+                1.9563318777292575,
+                0.0,
+                0.0
+              ],
+              [
+                1.9672131147540983,
+                0.0,
+                0.0
+              ],
+              [
+                1.9768339768339769,
+                0.0,
+                0.0
+              ],
+              [
+                1.9854014598540146,
+                0.0,
+                0.0
+              ],
+              [
+                1.9930795847750864,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-moderate-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-moderate-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 0,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0,
+              0.020408163265306124
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.040050062578222786,
+                0.0,
+                0.0
+              ],
+              [
+                0.07862407862407864,
+                0.0,
+                0.0
+              ],
+              [
+                0.11580217129071171,
+                0.0,
+                0.0
+              ],
+              [
+                0.15165876777251186,
+                0.0,
+                0.0
+              ],
+              [
+                0.1862630966239814,
+                0.0,
+                0.0
+              ],
+              [
+                0.21967963386727693,
+                0.0,
+                0.0
+              ],
+              [
+                0.2519685039370079,
+                0.0,
+                0.0
+              ],
+              [
+                0.2831858407079646,
+                0.0,
+                0.0
+              ],
+              [
+                0.3133841131664853,
+                0.0,
+                0.0
+              ],
+              [
+                0.3426124197002141,
+                0.0,
+                0.0
+              ],
+              [
+                0.37091675447839834,
+                0.0,
+                0.0
+              ],
+              [
+                0.3983402489626556,
+                0.0,
+                0.0
+              ],
+              [
+                0.424923391215526,
+                0.0,
+                0.0
+              ],
+              [
+                0.4507042253521127,
+                0.0,
+                0.0
+              ],
+              [
+                0.47571853320118923,
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.020408163265306124,
+              0.0588235294117647
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.5,
+                0.0,
+                0.0
+              ],
+              [
+                0.5438282647584973,
+                0.0,
+                0.0
+              ],
+              [
+                0.5853658536585366,
+                0.0,
+                0.0
+              ],
+              [
+                0.6247877758913412,
+                0.0,
+                0.0
+              ],
+              [
+                0.662251655629139,
+                0.0,
+                0.0
+              ],
+              [
+                0.6978998384491114,
+                0.0,
+                0.0
+              ],
+              [
+                0.7318611987381702,
+                0.0,
+                0.0
+              ],
+              [
+                0.7642526964560862,
+                0.0,
+                0.0
+              ],
+              [
+                0.7951807228915662,
+                0.0,
+                0.0
+              ],
+              [
+                0.8247422680412371,
+                0.0,
+                0.0
+              ],
+              [
+                0.8530259365994235,
+                0.0,
+                0.0
+              ],
+              [
+                0.8801128349788434,
+                0.0,
+                0.0
+              ],
+              [
+                0.9060773480662982,
+                0.0,
+                0.0
+              ],
+              [
+                0.9309878213802434,
+                0.0,
+                0.0
+              ],
+              [
+                0.9549071618037134,
+                0.0,
+                0.0
+              ],
+              [
+                0.9778933680104029,
+                0.0,
+                0.0
+              ],
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0588235294117647,
+              0.15789473684210345
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.9999999999999999,
+                0.0,
+                0.0
+              ],
+              [
+                1.0532915360501558,
+                0.0,
+                0.0
+              ],
+              [
+                1.101796407185627,
+                0.0,
+                0.0
+              ],
+              [
+                1.1461318051575908,
+                0.0,
+                0.0
+              ],
+              [
+                1.186813186813184,
+                0.0,
+                0.0
+              ],
+              [
+                1.2242744063324504,
+                0.0,
+                0.0
+              ],
+              [
+                1.2588832487309607,
+                0.0,
+                0.0
+              ],
+              [
+                1.2909535452322698,
+                0.0,
+                0.0
+              ],
+              [
+                1.3207547169811278,
+                0.0,
+                0.0
+              ],
+              [
+                1.3485193621867837,
+                0.0,
+                0.0
+              ],
+              [
+                1.3744493392070438,
+                0.0,
+                0.0
+              ],
+              [
+                1.3987206823027671,
+                0.0,
+                0.0
+              ],
+              [
+                1.4214876033057804,
+                0.0,
+                0.0
+              ],
+              [
+                1.4428857715430812,
+                0.0,
+                0.0
+              ],
+              [
+                1.4630350194552477,
+                0.0,
+                0.0
+              ],
+              [
+                1.4820415879016964,
+                0.0,
+                0.0
+              ],
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.15789473684210345,
+              1.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                1.499999999999995,
+                0.0,
+                0.0
+              ],
+              [
+                1.620253164556959,
+                0.0,
+                0.0
+              ],
+              [
+                1.702127659574466,
+                0.0,
+                0.0
+              ],
+              [
+                1.7614678899082554,
+                0.0,
+                0.0
+              ],
+              [
+                1.8064516129032249,
+                0.0,
+                0.0
+              ],
+              [
+                1.8417266187050352,
+                0.0,
+                0.0
+              ],
+              [
+                1.8701298701298696,
+                0.0,
+                0.0
+              ],
+              [
+                1.8934911242603545,
+                0.0,
+                0.0
+              ],
+              [
+                1.9130434782608692,
+                0.0,
+                0.0
+              ],
+              [
+                1.9296482412060298,
+                0.0,
+                0.0
+              ],
+              [
+                1.9439252336448596,
+                0.0,
+                0.0
+              ],
+              [
+                1.9563318777292575,
+                0.0,
+                0.0
+              ],
+              [
+                1.9672131147540983,
+                0.0,
+                0.0
+              ],
+              [
+                1.9768339768339769,
+                0.0,
+                0.0
+              ],
+              [
+                1.9854014598540146,
+                0.0,
+                0.0
+              ],
+              [
+                1.9930795847750864,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-extreme-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-extreme-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-extreme-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-extreme-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-reversed-weight-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-reversed-weight-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-reversed-weight-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-reversed-weight-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-corner-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-corner-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-corner-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-corner-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-polycurve-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -0.75,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                1.75,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-polycurve-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 0,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0,
+              1.25
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.921875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.84375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.765625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.6875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.609375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.53125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.453125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.296875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.21875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.140625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.984375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.90625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.828125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.75,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              1.25,
+              3.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -0.75,
+                0.0,
+                0.0
+              ],
+              [
+                -0.609375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.46875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.328125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.1875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.046875,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.078125,
+                0.0
+              ],
+              [
+                2.0,
+                0.21875,
+                0.0
+              ],
+              [
+                2.0,
+                0.359375,
+                0.0
+              ],
+              [
+                2.0,
+                0.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              3.5,
+              4.75
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                0.5,
+                0.0
+              ],
+              [
+                2.0,
+                0.578125,
+                0.0
+              ],
+              [
+                2.0,
+                0.65625,
+                0.0
+              ],
+              [
+                2.0,
+                0.734375,
+                0.0
+              ],
+              [
+                2.0,
+                0.8125,
+                0.0
+              ],
+              [
+                2.0,
+                0.8906249999999999,
+                0.0
+              ],
+              [
+                2.0,
+                0.9687499999999999,
+                0.0
+              ],
+              [
+                2.0,
+                1.046875,
+                0.0
+              ],
+              [
+                2.0,
+                1.125,
+                0.0
+              ],
+              [
+                2.0,
+                1.2031249999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.2812499999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.3593749999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.4374999999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.5156249999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.5937499999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.6718749999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.7499999999999998,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              4.75,
+              6.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                1.7499999999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.8281249999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.9062499999999998,
+                0.0
+              ],
+              [
+                2.0,
+                1.9843749999999998,
+                0.0
+              ],
+              [
+                2.0,
+                2.0625,
+                0.0
+              ],
+              [
+                2.0,
+                2.140625,
+                0.0
+              ],
+              [
+                2.0,
+                2.21875,
+                0.0
+              ],
+              [
+                2.0,
+                2.296875,
+                0.0
+              ],
+              [
+                2.0,
+                2.375,
+                0.0
+              ],
+              [
+                2.0,
+                2.453125,
+                0.0
+              ],
+              [
+                2.0,
+                2.53125,
+                0.0
+              ],
+              [
+                2.0,
+                2.609375,
+                0.0
+              ],
+              [
+                2.0,
+                2.6875,
+                0.0
+              ],
+              [
+                2.0,
+                2.765625,
+                0.0
+              ],
+              [
+                2.0,
+                2.84375,
+                0.0
+              ],
+              [
+                2.0,
+                2.921875,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-polycurve-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -1.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                0.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                1.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                2.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-polycurve-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 0,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0,
+              0.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -2.0,
+                0.0,
+                0.0
+              ],
+              [
+                -1.96875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.9375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.90625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.84375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.8125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.78125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.75,
+                0.0,
+                0.0
+              ],
+              [
+                -1.71875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.6875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.65625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.59375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.53125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.5,
+              1.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -1.5,
+                0.0,
+                0.0
+              ],
+              [
+                -1.46875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.4375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.40625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.34375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.3125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.28125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.25,
+                0.0,
+                0.0
+              ],
+              [
+                -1.21875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.1875,
+                0.0,
+                0.0
+              ],
+              [
+                -1.15625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.09375,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0625,
+                0.0,
+                0.0
+              ],
+              [
+                -1.03125,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              1.0,
+              1.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                -0.96875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.9375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.90625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.84375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.8125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.78125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.75,
+                0.0,
+                0.0
+              ],
+              [
+                -0.71875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.65625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.59375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.5625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.53125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.5,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              1.5,
+              2.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                -0.5,
+                0.0,
+                0.0
+              ],
+              [
+                -0.46875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.4375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.40625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.34375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.3125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.28125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.25,
+                0.0,
+                0.0
+              ],
+              [
+                -0.21875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.1875,
+                0.0,
+                0.0
+              ],
+              [
+                -0.15625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.125,
+                0.0,
+                0.0
+              ],
+              [
+                -0.09375,
+                0.0,
+                0.0
+              ],
+              [
+                -0.0625,
+                0.0,
+                0.0
+              ],
+              [
+                -0.03125,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              2.0,
+              3.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.03125,
+                0.0
+              ],
+              [
+                2.0,
+                0.125,
+                0.0
+              ],
+              [
+                2.0,
+                0.21875,
+                0.0
+              ],
+              [
+                2.0,
+                0.3125,
+                0.0
+              ],
+              [
+                2.0,
+                0.40625,
+                0.0
+              ],
+              [
+                2.0,
+                0.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              3.5,
+              4.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                0.5,
+                0.0
+              ],
+              [
+                2.0,
+                0.53125,
+                0.0
+              ],
+              [
+                2.0,
+                0.5625,
+                0.0
+              ],
+              [
+                2.0,
+                0.59375,
+                0.0
+              ],
+              [
+                2.0,
+                0.625,
+                0.0
+              ],
+              [
+                2.0,
+                0.65625,
+                0.0
+              ],
+              [
+                2.0,
+                0.6875,
+                0.0
+              ],
+              [
+                2.0,
+                0.71875,
+                0.0
+              ],
+              [
+                2.0,
+                0.75,
+                0.0
+              ],
+              [
+                2.0,
+                0.78125,
+                0.0
+              ],
+              [
+                2.0,
+                0.8125,
+                0.0
+              ],
+              [
+                2.0,
+                0.84375,
+                0.0
+              ],
+              [
+                2.0,
+                0.875,
+                0.0
+              ],
+              [
+                2.0,
+                0.90625,
+                0.0
+              ],
+              [
+                2.0,
+                0.9375,
+                0.0
+              ],
+              [
+                2.0,
+                0.96875,
+                0.0
+              ],
+              [
+                2.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              4.0,
+              4.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                1.0,
+                0.0
+              ],
+              [
+                2.0,
+                1.03125,
+                0.0
+              ],
+              [
+                2.0,
+                1.0625,
+                0.0
+              ],
+              [
+                2.0,
+                1.09375,
+                0.0
+              ],
+              [
+                2.0,
+                1.125,
+                0.0
+              ],
+              [
+                2.0,
+                1.15625,
+                0.0
+              ],
+              [
+                2.0,
+                1.1875,
+                0.0
+              ],
+              [
+                2.0,
+                1.21875,
+                0.0
+              ],
+              [
+                2.0,
+                1.25,
+                0.0
+              ],
+              [
+                2.0,
+                1.28125,
+                0.0
+              ],
+              [
+                2.0,
+                1.3125,
+                0.0
+              ],
+              [
+                2.0,
+                1.34375,
+                0.0
+              ],
+              [
+                2.0,
+                1.375,
+                0.0
+              ],
+              [
+                2.0,
+                1.40625,
+                0.0
+              ],
+              [
+                2.0,
+                1.4375,
+                0.0
+              ],
+              [
+                2.0,
+                1.46875,
+                0.0
+              ],
+              [
+                2.0,
+                1.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              4.5,
+              5.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                1.5,
+                0.0
+              ],
+              [
+                2.0,
+                1.53125,
+                0.0
+              ],
+              [
+                2.0,
+                1.5625,
+                0.0
+              ],
+              [
+                2.0,
+                1.59375,
+                0.0
+              ],
+              [
+                2.0,
+                1.625,
+                0.0
+              ],
+              [
+                2.0,
+                1.65625,
+                0.0
+              ],
+              [
+                2.0,
+                1.6875,
+                0.0
+              ],
+              [
+                2.0,
+                1.71875,
+                0.0
+              ],
+              [
+                2.0,
+                1.75,
+                0.0
+              ],
+              [
+                2.0,
+                1.78125,
+                0.0
+              ],
+              [
+                2.0,
+                1.8125,
+                0.0
+              ],
+              [
+                2.0,
+                1.84375,
+                0.0
+              ],
+              [
+                2.0,
+                1.875,
+                0.0
+              ],
+              [
+                2.0,
+                1.90625,
+                0.0
+              ],
+              [
+                2.0,
+                1.9375,
+                0.0
+              ],
+              [
+                2.0,
+                1.96875,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              5.0,
+              5.5
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                2.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.03125,
+                0.0
+              ],
+              [
+                2.0,
+                2.0625,
+                0.0
+              ],
+              [
+                2.0,
+                2.09375,
+                0.0
+              ],
+              [
+                2.0,
+                2.125,
+                0.0
+              ],
+              [
+                2.0,
+                2.15625,
+                0.0
+              ],
+              [
+                2.0,
+                2.1875,
+                0.0
+              ],
+              [
+                2.0,
+                2.21875,
+                0.0
+              ],
+              [
+                2.0,
+                2.25,
+                0.0
+              ],
+              [
+                2.0,
+                2.28125,
+                0.0
+              ],
+              [
+                2.0,
+                2.3125,
+                0.0
+              ],
+              [
+                2.0,
+                2.34375,
+                0.0
+              ],
+              [
+                2.0,
+                2.375,
+                0.0
+              ],
+              [
+                2.0,
+                2.40625,
+                0.0
+              ],
+              [
+                2.0,
+                2.4375,
+                0.0
+              ],
+              [
+                2.0,
+                2.46875,
+                0.0
+              ],
+              [
+                2.0,
+                2.5,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              5.5,
+              6.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                2.0,
+                2.5,
+                0.0
+              ],
+              [
+                2.0,
+                2.53125,
+                0.0
+              ],
+              [
+                2.0,
+                2.5625,
+                0.0
+              ],
+              [
+                2.0,
+                2.59375,
+                0.0
+              ],
+              [
+                2.0,
+                2.625,
+                0.0
+              ],
+              [
+                2.0,
+                2.65625,
+                0.0
+              ],
+              [
+                2.0,
+                2.6875,
+                0.0
+              ],
+              [
+                2.0,
+                2.71875,
+                0.0
+              ],
+              [
+                2.0,
+                2.75,
+                0.0
+              ],
+              [
+                2.0,
+                2.78125,
+                0.0
+              ],
+              [
+                2.0,
+                2.8125,
+                0.0
+              ],
+              [
+                2.0,
+                2.84375,
+                0.0
+              ],
+              [
+                2.0,
+                2.875,
+                0.0
+              ],
+              [
+                2.0,
+                2.90625,
+                0.0
+              ],
+              [
+                2.0,
+                2.9375,
+                0.0
+              ],
+              [
+                2.0,
+                2.96875,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    }
+  ]
+}

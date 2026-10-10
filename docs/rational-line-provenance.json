@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "c444c3fab63094980b4882c6877d196b40b52458",
+  "scope": "Closed-form degree-one rational arc length, projective sampling and atomic rejection of unrepresentable Split cuts",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino 8 under private Xvfb and ARM64 Wine/FEX",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "private_settings_schemes": [
+    "VibocerosOracleRationalLine20261010",
+    "VibocerosOracleRationalLineInspect20261010",
+    "VibocerosOracleRationalLineQualified20261010"
+  ],
+  "qualified_capture_cases": 32,
+  "inspection_cases": 20,
+  "inspection_active_commands": 0,
+  "captured_helper_versions": {
+    "initial_20_cases": "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py",
+    "inspection_and_qualified_cases": "tools/rhino_oracle/divide_probe.py"
+  },
+  "native_timing_measured": false,
+  "full_native_parity": false,
+  "comparison": {
+    "cases": 32,
+    "local_successes": 26,
+    "tight_matches": 0,
+    "qualified_matches": 16,
+    "tight_absolute_epsilon": 1e-09,
+    "qualified_absolute_epsilon": 5e-07,
+    "relative_epsilon": 1e-12,
+    "field_exclusions": [],
+    "unresolved_cases": [
+      "count-extreme-s0",
+      "count-extreme-s1",
+      "length-extreme-s0",
+      "length-extreme-s1",
+      "count-reversed-weight-s0",
+      "count-reversed-weight-s1",
+      "length-reversed-weight-s0",
+      "length-reversed-weight-s1",
+      "count-corner-s0",
+      "count-corner-s1",
+      "length-corner-s0",
+      "length-corner-s1",
+      "count-polycurve-s0",
+      "count-polycurve-s1",
+      "length-polycurve-s0",
+      "length-polycurve-s1"
+    ]
+  },
+  "verified": {
+    "rust": {
+      "passed": 5657,
+      "failed": 0,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 1077,
+      "failed": 0
+    },
+    "new_kernel_tests": 4,
+    "updated_domain_retention_test": 1,
+    "new_command_tests": 1,
+    "new_oracle_tests": 1,
+    "clippy": "passed --workspace --all-targets -- -D warnings",
+    "format": "passed cargo fmt --all -- --check",
+    "logs_sha256": {
+      "/tmp/viboceros-rational-line-workspace-verified.log": "145dcfc26d610d35828a9d8690b122ecd907000c398376a4857867b948c53148",
+      "/tmp/viboceros-rational-line-python.log": "b5503781e6a79da70abd08b8aaad7dceaa3771173f68973149081d4e7a4b5b8a",
+      "/tmp/viboceros-rational-line-clippy-verified.log": "e649848c4326ac30d54a77cb4b78abea2036c40a8f43f07927e94e36086dc1ff"
+    },
+    "source_pin_audit": {
+      "checked": 1749,
+      "mismatches": 0,
+      "scope": "top-level source maps in docs/*provenance*.json"
+    },
+    "diff": "passed with immutable raw workspace log EOF exception",
+    "immutable_diff_exception": {
+      "path": "docs/rational-line-diagnostics/workspace-before-split-guard.log",
+      "reason": "Captured raw log ends with a blank line; original bytes and source hash are preserved."
+    }
+  },
+  "remaining_scope": [
+    "Sixteen extreme-weight native zero-output differences",
+    "Unrepresentable binary64 parameters and six rejected extreme Split cases",
+    "General rational integration and performance qualification",
+    "Full Rhino command, interchange and UI compatibility"
+  ],
+  "diagnostic_scope": "Earlier workspace logs and pre-guard output record intermediate states; exact intermediate source versions were not all archived. Original pinned source snapshots and current final source hashes are retained. The failed guard test setup lacked reselection after Undo and is corrected in the final test.",
+  "source_sha256": {
+    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "8dea1c01de947637311d6eeb8d457431007e4f6e9834d134207e206f66620bd3",
+    "crates/viboceros-geometry/src/nurbs/arc_length/linear.rs": "4d844cd939fda03ef88a7fe5195048d4c7a7a69da5ac4d6a97693477abb29bfd",
+    "crates/viboceros-geometry/src/curve/arc_length.rs": "2022499da072f43e57dd5a071b3f5d35a59f9ae7f8c6aa8088ab220e5fcff6c8",
+    "crates/viboceros-geometry/src/curve/arc_length/spans.rs": "32546d55b61a1921d019ffcfc97c9d18699693b4df862fc24658ff13be388fd5",
+    "crates/viboceros-geometry/src/curve/arc_length/rational_line_tests.rs": "84fd36c88c78594b4ff5b03d3ba08a3cfe11fa32efb768c8f9bc507ac139b2d0",
+    "crates/viboceros-geometry/src/error.rs": "2d648fb7aadd41c6976befdab35bb88453e216ea783d5c528c09a9a7b4316adb",
+    "crates/viboceros-command/src/divide.rs": "d66a15ecae9f7634adab84f26c17d6c8068680dc8c4581394205ba5b7c211d06",
+    "crates/viboceros-command/src/divide/tests.rs": "85cf4da8b461ce34ba68807a925c2431bfdba611c78acc53141921ae0ade8da8",
+    "crates/viboceros-oracle/tests/divide_rational_line.rs": "d05f0b2913838382bd326031c77ea6af8c90c290ede6f15ddf1b636eb03d77ea",
+    "tools/rhino_oracle/divide_probe.py": "4a56fc5d4b673e6065b8cad4d15f6799e07f2235a3971d872a5fdc862f31c40b",
+    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "tools/rhino_oracle/fixtures/divide_rational_line.json": "d4c5aa7e1b5421c814206c2de60275b965d4a091c87fd15fba5adfb074ed7796",
+    "tools/rhino_oracle/observations/divide_rational_line.json": "70017e754207e6c30afec2ccf958d6f7a96b17c5419a1d1b4bfbf076a0619a43",
+    "docs/rational-line-arc-length.md": "e89d592eb687d18f2b4deff60e0f0ad30676fad91ba3ef226fe8e74ca2fb0ee6",
+    "docs/divide-rational-line-comparison.json": "68f24dfbe489839d873d64762857674271149c0577d0c335c5445f8add1c5d8a",
+    "docs/rational-line-prior-source/crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf",
+    "docs/rational-line-prior-source/crates/viboceros-command/src/divide.rs": "e5c824b48a0af71ce00670d6e6eecb2d047cb3fb7a998ce44fd5e8fc68f70f9c",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length/spans.rs": "2a958f1a2083c727be80b04696bbb3647e16044e4b54ec9202c9f4d78274320a",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/curve/arc_length.rs": "c0cf55ea7cab24d83e77270b30a06f2d141c0b5b66b0eeb43fcc12125aa84088",
+    "docs/rational-line-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "3eb652691dbf0d09846971ff601e428c3b67f291e822cee457c67e72046d344f",
+    "docs/rational-line-prior-source/tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
+    "docs/rational-line-diagnostics/comparison-before.json": "76a9f95eebecdf192eccfdefd55f1af7d3d900da676f51703319f882cb5d73aa",
+    "docs/rational-line-diagnostics/guard-test-setup-before.log": "020d8e6c35f7a5eabf41d688f02e2379b4bee101a315db9eda5ac45aa278c288",
+    "docs/rational-line-diagnostics/kernel-before.log": "419933ccbe76f22e5a5c53f72b8be653b0e77840fda2aa17b82627eb995d4966",
+    "docs/rational-line-diagnostics/local-before-split-guard.json": "b823a6c55be5ad67a0b1420100882cd4d918746cb56c090ca8fe17e2c4c39040",
+    "docs/rational-line-diagnostics/local-before.json": "ef21493489e3518ecba74320329c468919384fdf57bb9ce7478368b32593c998",
+    "docs/rational-line-diagnostics/local-final.json": "5943cfa5804f3f8130c9d9badd43b04d3e491b49f536683dbf8791cd6186d7ec",
+    "docs/rational-line-diagnostics/native-initial.json": "cc634f9feb5f0811ba5719d5461db4c95790b505bafbb67d5349bf4f44ab5f2f",
+    "docs/rational-line-diagnostics/native-inspection-request.json": "d89de3427f9a2a731f862c2a9ea60ef93c1bed64c354a268844bab3646ed3a82",
+    "docs/rational-line-diagnostics/native-inspection.json": "d0be1f27c41abe88374ba53db2542554b33212327592195fb248c31965b462df",
+    "docs/rational-line-diagnostics/workspace-before-span-retention.log": "7839d8ae2c01306cdf6ad7b3d0357df6b67bad01b6b32bff60b11d2a10c53fda",
+    "docs/rational-line-diagnostics/workspace-before-split-guard.log": "ce4d7cf72f0582ecd28f02fad1a81b97e5eb5eb9f9142092df1419a835c1ce6d"
+  }
+}

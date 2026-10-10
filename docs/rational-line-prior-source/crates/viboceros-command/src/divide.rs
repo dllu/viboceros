@@ -212,14 +212,6 @@ fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
             .ok_or(CommandError::UnsupportedDivideGeometry)?;
         let mut stations = stations(curve, options.specification, doc.tolerance())?;
         if options.split {
-            for station in &stations {
-                if !curve
-                    .evaluate(station.parameter)?
-                    .is_near(station.point, doc.tolerance())
-                {
-                    return Err(GeometryError::UnrepresentableCurveDivisionParameter.into());
-                }
-            }
             let end = *curve.domain().end();
             if stations.last().is_some_and(|s| s.parameter < end) && !options.delete_remainder {
                 stations.push(CurveDivisionPoint {

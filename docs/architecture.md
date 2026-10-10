@@ -891,3 +891,10 @@ depth limit, and signed cancellation respects the global absolute tolerance.
 Roundoff-limited intervals leave other refinable intervals active. Eighteen
 native Divide recipes now execute; three native cusp inversion differences
 remain raw diagnostics.
+
+[Rational line arc length](rational-line-arc-length.md) measures degree-one
+spans from straight geometry and uses exact projective distance/parameter
+queries. The sampler retains this metadata through polycurve parameter maps
+and bypasses derivative integration and lookup construction for those spans.
+Endpoint-sign checks reject poles; direct geometric station sampling retains
+points beside heavily compressed native parameters.
