@@ -13,3 +13,9 @@
   same-face edge uses as `SEAM_CURVE`; its loader retains explicit p-curves on
   closed surface curves and uses them for exact face trims. See its
   [license](monstertruck-io/LICENSE).
+- `usd-brep` pins NVIDIA's Apache-2.0 licensed release 1.0.0
+  (`c9c5979f04cea8c38213004d4f04df0dcfb40d05`). It contains the SMLib
+  solid-modeling kernel and native/Python/USD APIs. It is an optional experiment,
+  built separately from Cargo; see [the trial](../docs/usd-brep.md), its
+  [license](usd-brep/LICENSE), and
+  [third-party notices](usd-brep/THIRD_PARTY_NOTICES.md).

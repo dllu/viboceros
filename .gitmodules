@@ -3,3 +3,6 @@
 	url = https://github.com/mcneel/opennurbs.git
 	branch = 8.x
 	shallow = true
+[submodule "third_party/usd-brep"]
+	path = third_party/usd-brep
+	url = https://github.com/NVIDIA-Omniverse/usd-brep.git

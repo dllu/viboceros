@@ -1,0 +1,202 @@
+{
+  "captured_at_utc": "2026-10-10T04:51:43.154030+00:00",
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "host": {
+    "architecture": "aarch64",
+    "compiler": "GCC 13.3.0",
+    "cmake": "3.28.3",
+    "tbb": "2021.11.0"
+  },
+  "scope": "Native kernel and SM_API; analytic primitives and tessellation only. No Rust, USD, Python or Rhino parity qualification.",
+  "checks": {
+    "solid_volume_relative_tolerance": 1e-06,
+    "bounds_absolute_tolerance": 0.0001,
+    "mesh_volume_relative_tolerance": 0.005,
+    "property_relative_accuracy": 1e-08,
+    "chord_height": 0.005,
+    "curve_angle_degrees": 15,
+    "surface_angle_degrees": 15
+  },
+  "measurements": [
+    {
+      "case": "box",
+      "manifold": true,
+      "volume": 1000,
+      "expected_volume": 1000,
+      "operation_ms": 0,
+      "tessellation_ms": 0.318785,
+      "mesh_manifold": true,
+      "mesh_volume": 1000.0000000000001,
+      "mesh_faces": 12,
+      "mesh_vertices": 8,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          10,
+          10
+        ]
+      ]
+    },
+    {
+      "case": "box_union",
+      "manifold": true,
+      "volume": 1720,
+      "expected_volume": 1720,
+      "operation_ms": 0.437922,
+      "tessellation_ms": 0.432065,
+      "mesh_manifold": true,
+      "mesh_volume": 1719.9999999999993,
+      "mesh_faces": 36,
+      "mesh_vertices": 20,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          15,
+          12,
+          13
+        ]
+      ]
+    },
+    {
+      "case": "box_intersection",
+      "manifold": true,
+      "volume": 279.99999999999994,
+      "expected_volume": 280,
+      "operation_ms": 0.332625,
+      "tessellation_ms": 0.1344,
+      "mesh_manifold": true,
+      "mesh_volume": 280,
+      "mesh_faces": 12,
+      "mesh_vertices": 8,
+      "bounds": [
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          10,
+          10,
+          10
+        ]
+      ]
+    },
+    {
+      "case": "box_difference",
+      "manifold": true,
+      "volume": 720,
+      "expected_volume": 720,
+      "operation_ms": 0.281569,
+      "tessellation_ms": 0.217456,
+      "mesh_manifold": true,
+      "mesh_volume": 720.0000000000001,
+      "mesh_faces": 24,
+      "mesh_vertices": 14,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          10,
+          10
+        ]
+      ]
+    },
+    {
+      "case": "cylinder_through_hole",
+      "manifold": true,
+      "volume": 874.3362952331241,
+      "expected_volume": 874.3362938564082,
+      "operation_ms": 0.939203,
+      "tessellation_ms": 3.984203,
+      "mesh_manifold": true,
+      "mesh_volume": 874.5393648293089,
+      "mesh_faces": 272,
+      "mesh_vertices": 136,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          10,
+          10
+        ]
+      ]
+    },
+    {
+      "case": "sphere_cavity",
+      "manifold": true,
+      "volume": 966.4896777689949,
+      "expected_volume": 966.4896783617089,
+      "operation_ms": 1.218979,
+      "tessellation_ms": 16.803327,
+      "mesh_manifold": true,
+      "mesh_volume": 966.6262857432331,
+      "mesh_faces": 3788,
+      "mesh_vertices": 1898,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          10,
+          10
+        ]
+      ]
+    },
+    {
+      "case": "hemisphere_pocket",
+      "manifold": true,
+      "volume": 983.2448375275843,
+      "expected_volume": 983.2448391808545,
+      "operation_ms": 0.474673,
+      "tessellation_ms": 11.524944,
+      "mesh_manifold": true,
+      "mesh_volume": 983.3129239373444,
+      "mesh_faces": 1966,
+      "mesh_vertices": 985,
+      "bounds": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          10,
+          10,
+          10.000000000000002
+        ]
+      ]
+    }
+  ],
+  "upstream_example_output": "4 x 4 through-holes in a 12 x 12 x 1.5 plate, radius 0.75.\nTimings exclude construction, qualification, and cleanup; they are not speed guarantees.\nno per-cut bounds: 16 differences, 0 bounds calls; Boolean 17.2834 ms, bounds 0 ms; volume 173.588; checks passed\nordinary bounds: 16 differences, 16 bounds calls; Boolean 16.9984 ms, bounds 0.11592 ms; volume 173.588; checks passed\ntight bounds: 16 differences, 16 bounds calls; Boolean 17.3651 ms, bounds 94.344 ms; volume 173.588; checks passed\n",
+  "ctest_output": "Internal ctest changing into directory: /tmp/viboceros-usd-brep-build\nTest project /tmp/viboceros-usd-brep-build\n    Start 1: upstream_boolean_bounds\n1/2 Test #1: upstream_boolean_bounds ..........   Passed    0.43 sec\n    Start 2: native_smoke\n2/2 Test #2: native_smoke .....................   Passed    0.10 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.53 sec\n",
+  "upstream_prebuild_exit_code": 1,
+  "upstream_prebuild_failure": "Package not found on specified remote servers! (name: python, version: 3.12.15+nv1-manylinux_2_35_aarch64)",
+  "source_sha256": {
+    "tools/usd_brep/CMakeLists.txt": "e6b52ba80502839944cb00980454248f195b64adc679b470ad54e2b45063a009",
+    "tools/usd_brep/smoke.cpp": "9d97c26d104f4d15462d0475b40879e0d68c74326434f7932bd9449e114ad826",
+    "third_party/usd-brep/LICENSE": "83ab8ebac4587a65c32ed2dbdba3c00a86c315a6562929ddff3ec17a175e6065",
+    "third_party/usd-brep/source/SM_API/inc/SmApiBrep.h": "ca08db54ad2211c4c98eb229bb875573e799fe731b9226288737181705fb4296",
+    "third_party/usd-brep/source/SM_API/inc/SmApiQueries.h": "59e8a99a62b7dfc4663c8b2f3e9e23a62b9477a15223a71347dd5e394575e4ee",
+    "third_party/usd-brep/Examples/SM_API/boolean_bounds.cpp": "a755ccb93674b35d38d3b7d72f25fd69dcbf13e7789d1f88f84156ca9f446f33"
+  }
+}

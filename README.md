@@ -13,7 +13,7 @@ compatibility is still in progress.
 Install Rust 1.95 or newer, CMake, and a C++17 compiler, then run:
 
 ```sh
-git submodule update --init --recursive
+git submodule update --init third_party/opennurbs
 cargo run --release
 ```
 
@@ -27,4 +27,5 @@ Linux supports Wayland and X11; wgpu uses Vulkan when available.
 - [File formats and limitations](docs/file-formats.md)
 - [Architecture and implementation status](docs/architecture.md)
 - [Development and testing](docs/development.md)
+- [USD BRep kernel trial](docs/usd-brep.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)

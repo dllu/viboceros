@@ -14,6 +14,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 
 ## Focused checks
 
+- [Optional USD BRep native-kernel build and analytic checks](usd-brep.md)
 - [Convex polyhedral Boolean kernel and native evidence](convex-booleans.md)
 - [Chained polyhedral Booleans with concave faces, holes and multiple shells](polyhedral-booleans.md)
 - [Command adapters and compound shell evidence](polyhedral-boolean-commands.md)
