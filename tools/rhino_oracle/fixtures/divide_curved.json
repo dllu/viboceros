@@ -1,0 +1,2613 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_command",
+      "id": "count-arc-s0-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-arc-s0-m1-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-arc-s1-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-arc-s0-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-arc-s0-m1-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-arc-s1-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-arc-s1-m0-d1",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-arc-s0-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-arc-s0-m1-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-arc-s1-m0-d0",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-arc-s1-m0-d1",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-ellipse-s0-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-ellipse-s0-m1-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-ellipse-s1-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-ellipse-s0-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-ellipse-s0-m1-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-ellipse-s1-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-ellipse-s1-m0-d1",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-ellipse-s0-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-ellipse-s0-m1-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-ellipse-s1-m0-d0",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-ellipse-s1-m0-d1",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-quadratic-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-quadratic-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-quadratic-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-quadratic-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-quadratic-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-quadratic-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-quadratic-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-quadratic-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-quadratic-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-quadratic-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-quadratic-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            7,
+            7,
+            7
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-rational-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-rational-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-rational-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-rational-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-rational-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-rational-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-rational-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-rational-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-rational-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-rational-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-rational-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                2
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                6,
+                -2,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                9,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -3,
+            -3,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polycurve-s0-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polycurve-s0-m1-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polycurve-s1-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polycurve-s0-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polycurve-s0-m1-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polycurve-s1-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polycurve-s1-m0-d1",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polycurve-s0-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polycurve-s0-m1-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polycurve-s1-m0-d0",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polycurve-s1-m0-d1",
+      "sources": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                0,
+                -3,
+                0
+              ],
+              "end": [
+                3,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  3,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ],
+                [
+                  -3,
+                  0,
+                  0
+                ]
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                -3,
+                0,
+                0
+              ],
+              "end": [
+                -7,
+                2,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    }
+  ]
+}

@@ -876,3 +876,11 @@ station markers share the command's output preparation and retain immutable
 source geometry identities. Preview edits leave the document unchanged; Enter
 accepts one transaction, while cancellation or source changes discard the
 pending preview. Native defaults, seam/direction controls and SubCrv remain open.
+
+[Curved Divide](divide-curved.md) extends native replay to arcs, ellipses,
+rational 3D curves and mixed polycurves. Chord roots retain exact rational
+intervals, independently validate denominator poles and distinguish near-contact
+complex roots with a bounded Sturm check. Native source inspection corrects
+Circle recipe representation; explicit NURBS-circle splits retain their original
+rational parameters. Extreme-weight and turnaround Split differences remain
+recorded diagnostics.

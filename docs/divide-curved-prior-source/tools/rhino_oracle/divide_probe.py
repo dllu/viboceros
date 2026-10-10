@@ -3,7 +3,7 @@ import math
 
 def validate(operation):
     required={'op','id','sources','mode','value'}
-    if not required.issubset(operation) or set(operation)-required-{'mark_ends','split','delete_remainder','group','inspect_sources'}:
+    if not required.issubset(operation) or set(operation)-required-{'mark_ends','split','delete_remainder','group'}:
         raise ValueError('invalid Divide fields')
     if not isinstance(operation['sources'],list) or not 1<=len(operation['sources'])<=64 or any(not isinstance(s,dict) or s.get('type') not in ('line','circle','arc','ellipse','polyline','nurbs','polycurve') for s in operation['sources']):
         raise ValueError('invalid Divide sources')
@@ -11,7 +11,7 @@ def validate(operation):
         raise ValueError('invalid Divide mode/value')
     if operation['mode']=='count' and (operation['value']!=int(operation['value']) or operation['value']>1000000):
         raise ValueError('invalid Divide segment count')
-    for key in ('mark_ends','split','delete_remainder','group','inspect_sources'):
+    for key in ('mark_ends','split','delete_remainder','group'):
         if type(operation.get(key,False))is not bool:raise ValueError('invalid Divide option')
 
 def run(operation, tolerance, host):
@@ -30,7 +30,6 @@ def run(operation, tolerance, host):
             try:sources.append(doc.Objects.Add(geometry,attributes))
             finally:geometry.Dispose();attributes.Dispose()
         doc.Layers.SetCurrentLayerIndex(original_layer,True)
-        source_types=[str(doc.Objects.FindId(k).Geometry.GetType().FullName) for k in sources]
         doc.Objects.UnselectAll()
         for key in sources:doc.Objects.Select(key)
         mode=operation['mode']
@@ -61,7 +60,6 @@ def run(operation, tolerance, host):
                     p=g.PointAt(t);points.append([float(p.X),float(p.Y),float(p.Z)])
             records.append(dict(kind=kind,points=points,domain=domain,closed=closed,name=a.Name or '',layer='current'if a.LayerIndex==original_layer else'source',color_source=str(a.ColorSource),groups=groups))
         result=dict(succeeded=bool(ok),outputs=records,input_count=sum(doc.Objects.FindId(k)is not None and not doc.Objects.FindId(k).IsDeleted for k in sources),group_count=len(group_map))
-        if operation.get('inspect_sources',False):result['source_types']=source_types
         return result,0
     finally:
         for key in outputs+sources:doc.Objects.Delete(key,True)

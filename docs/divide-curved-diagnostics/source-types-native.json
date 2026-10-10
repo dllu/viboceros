@@ -1,0 +1,284 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 0,
+      "id": "inspect-circle",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                1.8369701987210297e-16,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -3.0,
+                3.6739403974420594e-16,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -5.51091059616309e-16,
+                -3.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "source_types": [
+          "Rhino.Geometry.ArcCurve"
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inspect-ellipse",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                5.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -5.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "source_types": [
+          "Rhino.Geometry.NurbsCurve"
+        ],
+        "succeeded": true
+      }
+    },
+    {
+      "elapsed_ns": 0,
+      "id": "inspect-arc",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                3.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                2.1213203251785395,
+                2.1213203619407457,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                1.8369701987210297e-16,
+                3.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -2.1213203619407457,
+                2.121320325178539,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                -3.0,
+                3.6739403974420594e-16,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "source_types": [
+          "Rhino.Geometry.ArcCurve"
+        ],
+        "succeeded": true
+      }
+    }
+  ]
+}

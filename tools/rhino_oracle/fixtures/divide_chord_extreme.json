@@ -1,0 +1,182 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_command",
+      "id": "chord-weighted-line-s0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1267650600228229401496703205376
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 1,
+      "split": false,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-weighted-line-s1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1267650600228229401496703205376
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 1,
+      "split": true,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-non-dyadic-contact-s0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 1,
+      "split": false,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-non-dyadic-contact-s1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 1,
+      "split": true,
+      "mark_ends": true,
+      "group": true
+    }
+  ]
+}

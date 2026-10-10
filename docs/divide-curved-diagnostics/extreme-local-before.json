@@ -1,0 +1,284 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "chord-weighted-line-s0",
+      "value": {
+        "group_count": 1,
+        "input_count": 1,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromLayer",
+            "domain": null,
+            "groups": [
+              0
+            ],
+            "kind": "point",
+            "layer": "current",
+            "name": "",
+            "points": [
+              [
+                1.9999999999417923,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "chord-weighted-line-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 0,
+        "outputs": [
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              0.0,
+              2.710505431213761e-20
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999990686774,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999995343387,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999996895592,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999997671694,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999998137354,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999998447795,
+                0.0,
+                0.0
+              ],
+              [
+                1.999999999866954,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999998835847,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999998965197,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999068678,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999153344,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999223899,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999283598,
+                0.0,
+                0.0
+              ],
+              [
+                1.999999999933477,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999379119,
+                0.0,
+                0.0
+              ],
+              [
+                1.9999999999417923,
+                0.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "closed": false,
+            "color_source": "ColorFromObject",
+            "domain": [
+              2.710505431213761e-20,
+              1.0
+            ],
+            "groups": [],
+            "kind": "curve",
+            "layer": "source",
+            "name": "Source0",
+            "points": [
+              [
+                1.9999999999417923,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                0.0,
+                0.0
+              ]
+            ]
+          }
+        ],
+        "succeeded": true
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "chord-non-dyadic-contact-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "chord-non-dyadic-contact-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    }
+  ]
+}

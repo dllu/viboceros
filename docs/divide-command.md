@@ -55,9 +55,17 @@ integration test preserves the tighter epsilon for the other 27 cases and uses
 5e-7 for these three; it does not establish tighter numerical parity. Both
 reports remain in [comparison](divide-command-comparison.json).
 
-The native fixture builder creates circles as rational NURBS; the local oracle
-now constructs that same representation. Native Divide simplifies circular
-NURBS split outputs to analytic arcs, preserving the source interval while
-using angular parameter speed. The implementation certifies a circular locus
-and maps stations to that carrier before splitting. Length-mode MarkEnds also
-does not add an incomplete final endpoint in the native captures.
+Native source inspection confirms Circle recipes become ArcCurve objects.
+The local oracle now preserves their analytic counterpart, correcting an
+earlier NURBS promotion. Explicit NURBS-circle captures instead preserve rational
+split parameterization; the earlier whole-circle analytic carrier has been
+removed. Length-mode MarkEnds does not add an incomplete final endpoint in the
+native captures. The [curved checkpoint](divide-curved.md) records the source
+inspection and parameterization correction, while the preceding comparison
+remains historical evidence from its recorded implementation.
+
+The later [curved qualification](divide-curved.md) adds arcs, ellipses,
+rational/nonrational NURBS and mixed polycurves, plus extreme-weight and
+non-dyadic-contact diagnostics. It fixes the chord root-depth cutoff and removes
+the chord kernel's dependence on arc-length integration. Its two extreme Split
+records remain unresolved; the raw outputs and comparisons are retained.

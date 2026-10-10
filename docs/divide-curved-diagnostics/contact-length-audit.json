@@ -1,0 +1,16 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "outcomes": [
+    {
+      "status": "failure",
+      "id": "contact-length-preflight",
+      "error": {
+        "kind": "geometry",
+        "message": "adaptive numerical integration did not converge at the requested tolerance"
+      }
+    }
+  ]
+}

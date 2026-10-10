@@ -219,7 +219,18 @@ fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
                     point: curve.end_point()?,
                 });
             }
-            let owned = curve.to_owned();
+            let owned = split_carrier(curve, doc.tolerance())?;
+            if let viboceros_geometry::Curve3::Circle(circle) = &owned {
+                let last = *curve.domain().end();
+                for station in &mut stations {
+                    station.parameter = if station.parameter == last {
+                        *circle.domain().end()
+                    } else {
+                        CurveRef::Circle(circle)
+                            .closest_parameter(station.point, doc.tolerance())?
+                    };
+                }
+            }
             for pair in stations.windows(2) {
                 let fragment = owned.try_trimmed(pair[0].parameter..=pair[1].parameter)?;
                 output.push((Geometry::from(fragment), attributes.clone()));
@@ -290,4 +301,30 @@ fn stations(
             point: s.point(),
         })
         .collect())
+}
+
+fn split_carrier(
+    curve: CurveRef<'_>,
+    tolerance: Tolerance,
+) -> Result<viboceros_geometry::Curve3, GeometryError> {
+    if let CurveRef::NurbsCurve(nurbs) = curve
+        && curve.is_closed()?
+        && let Some(center) = nurbs.circular_center(tolerance)?
+        && let Some(radius) = nurbs.circular_radius(tolerance)?
+    {
+        let first = curve.start_point()?;
+        let radial = center.vector_to(first)?;
+        let (_, tangent) = curve.evaluate_with_derivative(*curve.domain().start())?;
+        let normal = radial.cross(tangent)?.normalized(tolerance)?;
+        let circle = Circle3::try_from_frame(
+            center,
+            radius,
+            radial.normalized(tolerance)?,
+            normal,
+            tolerance,
+        )?
+        .try_reparameterized(curve.domain())?;
+        return Ok(viboceros_geometry::Curve3::Circle(circle));
+    }
+    Ok(curve.to_owned())
 }

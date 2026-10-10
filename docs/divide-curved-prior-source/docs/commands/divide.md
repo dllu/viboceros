@@ -45,13 +45,6 @@ including tangent contacts. Circular geometry has an analytic path. Polynomial
 coefficient construction and output counts are bounded; singular rational traversal and invalid values fail
 before output admission.
 
-General chord traversal now keeps subdivision bounds rational, removes the
-fixed-depth cutoff and checks denominator poles independently of arc length.
-A bounded Sturm check distinguishes real contact from nearly touching complex
-roots when the bracket reaches binary64 parameter resolution. See
-[curved and extreme qualification](../divide-curved.md) for native captures,
-regressions and the remaining Split differences.
-
 The [native fixture](../../tools/rhino_oracle/fixtures/divide_command.json) covers
 30 line, circle and polyline recipes, including source metadata, groups, split
 domains and remainder deletion. Detailed [qualification](../divide-command.md)

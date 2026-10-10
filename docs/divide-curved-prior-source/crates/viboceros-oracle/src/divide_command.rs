@@ -35,9 +35,13 @@ pub(super) fn run(f: &Fixture, tolerance: Tolerance) -> Result<(Value, u64), Pro
         let attrs = ObjectAttributes::on_layer(layer)
             .with_name(format!("Source{i}"))
             .with_object_color(viboceros_document::ColorRgb::new(20 + i as u8, 40, 60));
-        // Native source inspection confirms Circle/Arc recipes become
-        // ArcCurve objects. Preserve the matching analytic representation.
-        let geometry = source.geometry()?.into();
+        let curve = source.geometry()?;
+        // The shared native fixture builder constructs circles as NURBS.
+        let geometry = if matches!(source, CurveInput::Circle { .. }) {
+            Geometry::NurbsCurve(curve.as_ref().to_nurbs()?)
+        } else {
+            curve.into()
+        };
         ids.push(doc.add_geometry_with_attributes(geometry, attrs)?);
     }
     doc.select_objects_direct(ids.iter().copied(), SelectionMode::Replace)?;

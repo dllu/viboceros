@@ -3,8 +3,6 @@ use super::*;
 use crate::exact_scalar::{Rational, rational};
 use num_bigint::BigInt;
 use num_traits::{Signed, Zero};
-mod roots;
-use roots::first_root;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CurveDivisionPoint {
@@ -73,27 +71,10 @@ impl CurveRef<'_> {
             }
             return Ok(points);
         }
+        // Validate the entire traversal, including rational denominator poles.
+        let _ = self.length(tolerance)?;
         let nurbs = self.to_nurbs()?;
         let spans = nurbs.try_bezier_spans()?;
-        // Chord traversal needs a finite rational curve, not an arc-length
-        // integral. Validate denominators independently, including poles in
-        // spans after the last reachable chord station.
-        for span in &spans {
-            let weights = span
-                .control_points()
-                .iter()
-                .map(|p| rational(p.weight()))
-                .collect::<Vec<_>>();
-            if first_root(
-                &weights,
-                [*span.domain().start(), *span.domain().end()],
-                None,
-            )?
-            .is_some()
-            {
-                return Err(GeometryError::ZeroWeightAtParameter);
-            }
-        }
         let mut parameter = *nurbs.domain().start();
         let mut point = self.start_point()?;
         let mut stations = vec![CurveDivisionPoint {
@@ -111,8 +92,9 @@ impl CurveRef<'_> {
                 if let Some(t) = first_root(
                     &coefficients,
                     [*domain.start(), *domain.end()],
-                    Some(parameter),
-                )? {
+                    parameter,
+                    0,
+                ) {
                     next = Some(t);
                     break;
                 }
@@ -219,6 +201,53 @@ fn sphere_coefficients(
     Ok(coefficients)
 }
 
+fn first_root(c: &[Rational], interval: [Real; 2], after: Real, depth: usize) -> Option<Real> {
+    if interval[1] <= after {
+        return None;
+    }
+    if c[0].is_zero() && interval[0] > after {
+        return Some(interval[0]);
+    }
+    let mut previous = 0;
+    let mut changes = 0;
+    for value in c {
+        let sign = if value.is_positive() {
+            1
+        } else if value.is_negative() {
+            -1
+        } else {
+            0
+        };
+        if sign != 0 {
+            if previous != 0 && previous != sign {
+                changes += 1;
+            }
+            previous = sign;
+        }
+    }
+    if changes == 0 {
+        return c.last().unwrap().is_zero().then_some(interval[1]);
+    }
+    let middle = interval[0].midpoint(interval[1]);
+    if depth >= 64 || middle <= interval[0] || middle >= interval[1] {
+        return (middle > after).then_some(middle);
+    }
+    let mut row = c.to_vec();
+    let n = c.len() - 1;
+    let mut left = vec![c[0].clone()];
+    let mut right = vec![c[n].clone()];
+    for count in (1..=n).rev() {
+        for i in 0..count {
+            row[i] = (&row[i] + &row[i + 1]) / BigInt::from(2);
+        }
+        left.push(row[0].clone());
+        right.push(row[count - 1].clone());
+    }
+    right.reverse();
+    first_root(&left, [interval[0], middle], after, depth + 1)
+        .or_else(|| first_root(&right, [middle, interval[1]], after, depth + 1))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -267,66 +296,6 @@ mod tests {
                 CurveRef::Line(&curve)
                     .divide_by_chord_length(value, Tolerance::DEFAULT)
                     .is_err()
-            );
-        }
-    }
-
-    #[test]
-    fn rational_line_chords_resolve_stations_before_sixty_four_subdivisions() {
-        let curve = NurbsCurve::try_new_rational(
-            1,
-            vec![
-                crate::WeightedPoint3::try_new(p(0., 0.), 1.).unwrap(),
-                crate::WeightedPoint3::try_new(p(2., 0.), 2_f64.powi(100)).unwrap(),
-            ],
-            vec![0., 0., 1., 1.],
-        )
-        .unwrap();
-        let stations = CurveRef::NurbsCurve(&curve)
-            .divide_by_chord_length(1., Tolerance::DEFAULT)
-            .unwrap();
-        assert_eq!(stations.len(), 3);
-        assert!(stations[1].parameter < 2_f64.powi(-64));
-        assert!((stations[1].point.x() - 1.).abs() < 1e-12);
-        assert_eq!(stations[2].point, p(2., 0.));
-    }
-
-    #[test]
-    fn non_dyadic_turnaround_contact_does_not_require_an_arc_length_integral() {
-        let curve = NurbsCurve::try_new(
-            2,
-            vec![p(0., 0.), p(2.5, 0.), p(-1.25, 0.)],
-            vec![0., 0., 0., 1., 1., 1.],
-        )
-        .unwrap();
-        let stations = CurveRef::NurbsCurve(&curve)
-            .divide_by_chord_length(1., Tolerance::DEFAULT)
-            .unwrap();
-        assert_eq!(stations.len(), 4);
-        for (station, expected) in stations.iter().zip([0., 1., 0., -1.]) {
-            assert!((station.point.x() - expected).abs() < 1e-12);
-        }
-        for pair in stations.windows(2) {
-            assert!(pair[1].parameter > pair[0].parameter);
-        }
-    }
-
-    #[test]
-    fn denominator_poles_are_rejected_even_when_no_chord_is_reachable() {
-        for weights in [[1., -1., 1.], [1., -2., 1.]] {
-            let curve = NurbsCurve::try_new_rational(
-                2,
-                weights
-                    .into_iter()
-                    .enumerate()
-                    .map(|(i, w)| crate::WeightedPoint3::try_new(p(i as Real, 0.), w).unwrap())
-                    .collect(),
-                vec![0., 0., 0., 1., 1., 1.],
-            )
-            .unwrap();
-            assert_eq!(
-                CurveRef::NurbsCurve(&curve).divide_by_chord_length(1000., Tolerance::DEFAULT),
-                Err(GeometryError::ZeroWeightAtParameter)
             );
         }
     }

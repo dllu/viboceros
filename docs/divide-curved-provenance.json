@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "6079bef0361d1ad46405285e89cf5b492ec7b067",
+  "scope": "Exact chord root intervals, rational pole validation, native curved Divide qualification and preserved NURBS-circle split parameterization",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino 8 under private Xvfb and ARM64 Wine/FEX",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "private_settings_schemes": [
+    "VibocerosOracleDivideCurved20261009",
+    "VibocerosOracleDivideChordExtreme20261009",
+    "VibocerosOracleDivideSourceTypes20261009",
+    "VibocerosOracleDivideNurbsCircle20261009"
+  ],
+  "fresh_native_geometry_cases": 63,
+  "fresh_native_source_type_cases": 3,
+  "captured_helper_versions": {
+    "55_curved_and_4_extreme_cases": "docs/divide-curved-prior-source/tools/rhino_oracle/divide_probe.py",
+    "4_nurbs_circle_and_3_source_type_cases": "tools/rhino_oracle/divide_probe.py"
+  },
+  "native_timing_measured": false,
+  "full_native_parity": false,
+  "comparisons": {
+    "curved": {
+      "cases": 55,
+      "tight_matches": 20,
+      "qualified_matches": 55,
+      "tight_absolute_epsilon": 1e-09,
+      "qualified_absolute_epsilon": 5e-07,
+      "relative_epsilon": 1e-12,
+      "field_exclusions": [],
+      "max_absolute_error": 1.1585148307347026e-07,
+      "unresolved_cases": []
+    },
+    "chord-extreme": {
+      "cases": 4,
+      "tight_matches": 1,
+      "qualified_matches": 2,
+      "tight_absolute_epsilon": 1e-09,
+      "qualified_absolute_epsilon": 5e-07,
+      "relative_epsilon": 1e-12,
+      "field_exclusions": [],
+      "max_absolute_error": 1.8823529411764706,
+      "unresolved_cases": [
+        "chord-weighted-line-s1",
+        "chord-non-dyadic-contact-s1"
+      ]
+    },
+    "nurbs-circle": {
+      "cases": 4,
+      "tight_matches": 1,
+      "qualified_matches": 4,
+      "tight_absolute_epsilon": 1e-09,
+      "qualified_absolute_epsilon": 5e-07,
+      "relative_epsilon": 1e-12,
+      "field_exclusions": [],
+      "max_absolute_error": 1.1861457949180476e-07,
+      "unresolved_cases": []
+    },
+    "circle-source": {
+      "cases": 30,
+      "tight_matches": 27,
+      "qualified_matches": 30,
+      "tight_absolute_epsilon": 1e-09,
+      "qualified_absolute_epsilon": 5e-07,
+      "relative_epsilon": 1e-12,
+      "field_exclusions": [],
+      "max_absolute_error": 1.1752123363351075e-07,
+      "unresolved_cases": []
+    }
+  },
+  "verified": {
+    "rust": {
+      "passed": 5645,
+      "failed": 0,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 1077,
+      "failed": 0
+    },
+    "new_kernel_tests": 4,
+    "new_oracle_integration_tests": 3,
+    "clippy": "passed --workspace --all-targets -- -D warnings",
+    "format": "passed cargo fmt --all -- --check",
+    "logs_sha256": {
+      "/tmp/viboceros-divide-curved-workspace-final.log": "39a0483750880999be6f3483f3c4d08a76463c94f12deb5b424471f4820a210e",
+      "/tmp/viboceros-divide-curved-python-final.log": "7096c224726ed280a0d0dcff879d307577b0803875f809a807e610474bef97aa",
+      "/tmp/viboceros-divide-curved-clippy-complete.log": "fd0ab314b9b2bfb7908ac8f5959022ecdc9753ed9c7d172ffdb8873ad48ef29b",
+      "/tmp/viboceros-divide-roots-focused.log": "4e38861706f05a8ae86182fa7cd82edf85c7cc45c3fa8f80e95630f0407e3278"
+    },
+    "source_pin_audit": {
+      "checked": 1696,
+      "mismatches": 0,
+      "scope": "top-level source maps in docs/*provenance*.json"
+    }
+  },
+  "remaining_scope": [
+    "Native weighted-line Split output-count policy",
+    "Native non-dyadic contact Split parameterization",
+    "Cusp arc-length integration that fails its current adaptive-depth budget",
+    "General extreme domains, high degrees and performance qualification",
+    "Native saved preferences, seam/direction controls and SubCrv",
+    "Full Rhino command, interchange and UI compatibility"
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/divide.rs": "e5c824b48a0af71ce00670d6e6eecb2d047cb3fb7a998ce44fd5e8fc68f70f9c",
+    "crates/viboceros-geometry/src/curve/chord_division.rs": "c242b22846765411c441ace1bee6a58e578abb8bde661376f1a47985ae1f5d19",
+    "crates/viboceros-geometry/src/curve/chord_division/roots.rs": "cbe3edbe60d9b08db9c4240602da36ca63c5318f31b7bd1018b67fae6c39bd80",
+    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68",
+    "crates/viboceros-oracle/src/divide_command.rs": "a266d54388700e691728d0c7ee3e820c3f6787f76b97c57cbee799ac78104c9d",
+    "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
+    "crates/viboceros-oracle/tests/divide_curved.rs": "661f01590946f6d61f7b08a0b0e0209fea9197cfc3c49afa9f2fa4c1bda2798b",
+    "tools/rhino_oracle/divide_probe.py": "082af224a2b5780b51ea98c46d2372cd7302a92e36840c9d53c46800dc32d4de",
+    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "docs/divide-curved.md": "125db437c342de2235da87bd69233164dd3e019d1581a487dc8a29ac0f89cea4",
+    "docs/commands/divide.md": "4e7d52a2f8a31b1ad4c69d7c937f5c2b72ba915cea948ae1520628e802673c13",
+    "docs/divide-curved-prior-source/tools/rhino_oracle/divide_probe.py": "49b9bacf1e105d006905ef81089dd8165f7f7729e205f21fae4d4826336632c6",
+    "tools/rhino_oracle/fixtures/divide_curved.json": "d16044d572c78a040a897090a0a546980cb70797ea166efc60aeb86fd13f065f",
+    "tools/rhino_oracle/observations/divide_curved.json": "8be61ea34574c9ea4d61bbc2bd8abed138381e06861503fdd8893bebbd7c7e33",
+    "tools/rhino_oracle/fixtures/divide_chord_extreme.json": "fdbda656f019dca7660027297f4027ff5175a70dd1b3d13297955f43d51b637d",
+    "tools/rhino_oracle/observations/divide_chord_extreme.json": "ae058a2fc0ec63155e0994b7dc43cc4596047d418ccc2492482d133ac1745e0b",
+    "tools/rhino_oracle/fixtures/divide_nurbs_circle.json": "021b71b8388b374ce8e6d05650eea5b43582be53cb108b9f7c6ba1281a6d242f",
+    "tools/rhino_oracle/observations/divide_nurbs_circle.json": "7e681c8e6431fd1eb121a685d9501fa6ea914816005c9706c9291e0cccc9dc03",
+    "docs/divide-curved-comparison.json": "2101373bfede260472b48d46c5513b76cb41a77b56b2f3bee6ad9c5848a269eb",
+    "docs/divide-chord-extreme-comparison.json": "23e8a123bc8916d532246fd535844ee57e513ca9b4a6713b10574e7114765772",
+    "docs/divide-nurbs-circle-comparison.json": "e666e5aabf24ae9cc4a9690a8181dce2d74759a9ded19f7b3b839cc535586368",
+    "docs/divide-circle-source-comparison.json": "33c434b8a652301314f21d0c46c17e0e7ba8a0739fb0c8a7a7baf362bac8bcd5",
+    "docs/divide-curved-diagnostics/chord-extreme-local-final.json": "dc8b593f29d75ec76305a2de1f9a7b243bfe134915d3a76355f5c6a2315ca424",
+    "docs/divide-curved-diagnostics/contact-length-audit.json": "41774846cd0770dd9df110da0525a717a1dc59baf2914e120b80c2b97acb2e02",
+    "docs/divide-curved-diagnostics/contact-length-request.json": "820d24590581e1e3e10d75d466ab1267e0772cf83e8d23aa0158687eb523b6e4",
+    "docs/divide-curved-diagnostics/curved-local-before.json": "502f08c03cf3813fde4e9533d4a84dc74730d0c65f5da650cf7af24cdc6026eb",
+    "docs/divide-curved-diagnostics/curved-tight-before.json": "eb7702ee7265b16da006b677b0d3e7e18d3f16e8d20b16a75736031f6ca9924e",
+    "docs/divide-curved-diagnostics/extreme-local-before.json": "dd3bc938e8464c5006f7ac75e95c6b1de2411d3f34edfca9ef4be0a360138a9b",
+    "docs/divide-curved-diagnostics/extreme-tight-before.json": "1e5a5c815373e168b171f88bc4b29b5c52c6d736b058010b68879f449bcf3775",
+    "docs/divide-curved-diagnostics/nurbs-circle-comparison-before.json": "b2f425e90ddb9a8eaa9ac94a51391b9860c1ed01e87ed96b49cd4b4799d8041f",
+    "docs/divide-curved-diagnostics/nurbs-circle-local-before.json": "3a41be25e5ebd502c3a55dcc5532356a97a0daea1115843905dacac58cf2be05",
+    "docs/divide-curved-diagnostics/nurbs-circle-local-final.json": "54ecfd8c0836c7afc947b95953d299662c49e7bd1973fffb9116af1997485a0c",
+    "docs/divide-curved-diagnostics/source-types-native.json": "57f85f047225f0df56475ef97266ec2b014961bfc047a1cc054586872af6b2c0",
+    "docs/divide-curved-diagnostics/source-types-request.json": "fa3c645cf4460f6fe14965f2ac44c317b2591de41833aea6869191261b00bd0c",
+    "docs/divide-curved-diagnostics/weighted-regression-before.log": "43b9a40559a15bf3840b5a1fa091e07e2b5f2b3b44368ffc299426fee03bb650"
+  }
+}

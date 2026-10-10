@@ -1,0 +1,24 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 3m 30s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_geometry-e78e4975e15b7a19)
+
+running 1 test
+test curve::chord_division::tests::rational_line_chords_resolve_stations_before_sixty_four_subdivisions ... FAILED
+
+failures:
+
+---- curve::chord_division::tests::rational_line_chords_resolve_stations_before_sixty_four_subdivisions stdout ----
+
+thread 'curve::chord_division::tests::rational_line_chords_resolve_stations_before_sixty_four_subdivisions' (3952196) panicked at crates/viboceros-geometry/src/curve/chord_division.rs:314:9:
+assertion `left == right` failed
+  left: 2
+ right: 3
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    curve::chord_division::tests::rational_line_chords_resolve_stations_before_sixty_four_subdivisions
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2122 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p viboceros-geometry --lib`

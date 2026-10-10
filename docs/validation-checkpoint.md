@@ -1622,3 +1622,27 @@ still pass their documented per-case epsilons. No new native UI or timing
 capture was made. [Provenance](divide-input-provenance.json) binds the final
 sources and logs. Native preview styling, persistent defaults, seam/direction
 changes and SubCrv remain open.
+
+## Curved Divide checkpoint
+
+[Curved Divide qualification](divide-curved.md) adds 63 licensed Rhino recipes
+under private Xvfb, plus three SDK source-type observations. Exact rational
+intervals replace the chord root-depth cutoff; denominator validation no longer
+depends on arc-length integration. A bounded-degree Sturm check rejects false
+near-contact roots. The rational line with weight ratio 2^100 now produces its
+missing midpoint station, and non-dyadic turnaround chord division succeeds.
+
+Source inspection corrected the oracle's earlier Circle-to-NURBS promotion.
+Explicit NURBS-circle Split captures then exposed an incorrect whole-circle
+analytic carrier; trimming now retains original rational domains and samples.
+All 55 regular curved recipes and four NURBS-circle recipes match within their
+documented per-case epsilons. Two extreme point cases match; both extreme Split
+cases remain full-field diagnostics with unresolved native output counts or
+parameterization. They are not included in matching point qualification.
+
+The final complete release run passes 5,645 Rust tests with zero failures and
+38 ignored tests. All 1,077 Python tests, Clippy with warnings denied,
+formatting and diff checks pass. [Provenance](divide-curved-provenance.json)
+records sources, captured helper versions, raw diagnostics and final reports.
+Cusp arc-length integration, native extreme Split policies, general extreme
+domains and broad geometry/performance qualification remain open.

@@ -1,0 +1,98 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_command",
+      "id": "inspect-circle",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "group": true,
+      "inspect_sources": true
+    },
+    {
+      "op": "divide_command",
+      "id": "inspect-ellipse",
+      "sources": [
+        {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "group": true,
+      "inspect_sources": true
+    },
+    {
+      "op": "divide_command",
+      "id": "inspect-arc",
+      "sources": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -3,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "group": true,
+      "inspect_sources": true
+    }
+  ]
+}
