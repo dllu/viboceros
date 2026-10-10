@@ -3766,16 +3766,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "viboceros-smlib"
-version = "0.1.0"
-dependencies = [
- "cmake",
- "serde_json",
- "thiserror 2.0.20",
- "viboceros-geometry",
-]
-
-[[package]]
 name = "walkdir"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

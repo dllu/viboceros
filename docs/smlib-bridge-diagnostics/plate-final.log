@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.05s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/perforated_plate /tmp/viboceros-smlib-plate-final.obj`
+Wrote /tmp/viboceros-smlib-plate-final.obj: 1544 vertices, 3148 triangles, solid volume 173.588498713374, expected 173.588499176538

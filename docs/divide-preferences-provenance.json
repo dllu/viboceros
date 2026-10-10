@@ -16,8 +16,8 @@
   "active_after_steps": 0,
   "native_capture_source_sha256": {
     "docs/divide-preferences-capture-source/tools/rhino_oracle/divide_preferences_probe.py": "03ee9d53235eeabf9df4179dbff562e57e498870ee26955ab0cbe6f150cefc67",
-    "tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
-    "tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1"
+    "docs/smlib-bridge-prior-source/tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
+    "docs/smlib-bridge-prior-source/tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1"
   },
   "comparison": {
     "replayed_steps": 30,
@@ -87,19 +87,19 @@
     "docs/divide-preferences.md": "deb33a8e990fbef72c7ff39c0372e2a1001330b02484e47e91e5a5c7041ef5ed",
     "src/app/object_selection/divide.rs": "772d37278b80c2d1fa3eae52a8adbafa565849c12d87b3810bfbda92d0920cd8",
     "src/app/tests/object_selection.rs": "73951b4cab312716d7d3d3065a4faea504978f7b914e10b530e2ba9fd389068f",
-    "tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
     "tools/rhino_oracle/divide_preferences_probe.py": "f1f26169713ef6ba497ecba042cf792f60174add0aa7200bab10700a8122a5a7",
     "tools/rhino_oracle/fixtures/divide_preferences.json": "753190a3bbb9a2ba3bd9dc17bb2e23a9cdd69e16096c65f28ed35204be29b218",
-    "tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
     "tools/rhino_oracle/test_divide_preferences_probe.py": "cd07672d51984f2baa276579b555bbcbae81acdc83022feab0b3040ced34c9d8",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
-    "docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f",
     "docs/divide-preferences-diagnostics/workspace-final.log": "639fa7a97ee063f34f4740ba93d853ce39c9dcb7fcbe9cd364c2d1588d5bb6df",
     "docs/divide-preferences-diagnostics/python-final.log": "0004fdf10a3d7b193259588d998a04f2310e4852465d713c6d426c2da8696992",
     "docs/divide-preferences-diagnostics/clippy-final.log": "a5824cbdfc4bbdc2edd4184f0a48906d39370d0881eaae3f6bd7b6c5b04826c3",
-    "docs/divide-preferences-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    "docs/divide-preferences-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/smlib-bridge-prior-source/tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
+    "docs/smlib-bridge-prior-source/tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
+    "docs/smlib-bridge-prior-source/docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f"
   },
   "capture_commands": [
     "WINEDLLOVERRIDES=sspicli,secur32,schannel=b tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/divide_preferences.json --scheme VibocerosOracleDividePreferencesQualified20261010 --timeout 300 --output /tmp/viboceros-divide-preferences-qualified-native.json"

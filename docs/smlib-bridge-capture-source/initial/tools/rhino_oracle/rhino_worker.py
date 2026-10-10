@@ -16907,10 +16907,6 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op') == 'smlib_reference' for op in request.get('operations', [])):
-            import merge_edges_probe
-            merge_edges_probe.at_idle(Rhino, lambda: _main(True))
-            return
         if not at_idle and any(op.get('op')=='divide_preferences' for op in request.get('operations',[])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino,lambda:_main(True))

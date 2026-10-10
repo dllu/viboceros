@@ -7,7 +7,9 @@ NVIDIA's [USD BRep](https://github.com/NVIDIA-Omniverse/usd-brep) is pinned as
 `c9c5979f04cea8c38213004d4f04df0dcfb40d05`. The Apache-2.0 SMLib kernel offers
 NURBS solid modeling, curved booleans, fillets, offsets, healing and tessellation.
 The native `SM_API` is a C++ API with opaque topology pointers, C++ argument
-types and overloads; Rust would need a narrow C ABI bridge. The kernel can be
+types and overloads; an [optional Rust C ABI bridge](smlib-bridge.md) now exposes
+native solids, copied-operand booleans, mesh output and NURBS curve transfer.
+Complete exact B-rep transfer remains open. The kernel can be
 built without the USD scene-format layer.
 
 ## Reproduce the native trial

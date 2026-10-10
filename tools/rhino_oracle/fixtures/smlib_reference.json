@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "smlib_reference",
+      "id": "box",
+      "case": "box"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "box_union",
+      "case": "box_union"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "box_intersection",
+      "case": "box_intersection"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "box_difference",
+      "case": "box_difference"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "cylinder_through_hole",
+      "case": "cylinder_through_hole"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "sphere_cavity",
+      "case": "sphere_cavity"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "hemisphere_pocket",
+      "case": "hemisphere_pocket"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "perforated_plate",
+      "case": "perforated_plate"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "rational_curve_unit",
+      "case": "rational_curve_unit"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "rational_curve_shifted",
+      "case": "rational_curve_shifted"
+    },
+    {
+      "op": "smlib_reference",
+      "id": "rational_polyline",
+      "case": "rational_polyline"
+    }
+  ]
+}

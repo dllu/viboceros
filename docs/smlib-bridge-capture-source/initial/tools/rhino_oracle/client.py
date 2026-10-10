@@ -1036,7 +1036,6 @@ class OracleClient:
             worker_path = job_path / "rhino_worker.py"
             if any(op.get('op') == 'smlib_reference' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('smlib_reference_probe.py'), job_path / 'smlib_reference_probe.py')
-                shutil.copyfile(worker_source.with_name('merge_edges_probe.py'), job_path / 'merge_edges_probe.py')
             if any(op.get('op')=='divide_preferences' for op in request['operations']):
                 for helper in ('divide_preferences_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(helper),job_path/helper)

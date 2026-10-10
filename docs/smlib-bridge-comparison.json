@@ -1,0 +1,75 @@
+{
+  "qualified": 10,
+  "diagnostics": 1,
+  "volume_absolute_epsilon": 2e-06,
+  "volume_relative_epsilon": 1e-12,
+  "bounds_absolute_epsilon": 0.0001,
+  "curve_coordinate_epsilon": 1e-12,
+  "cases": [
+    {
+      "id": "box",
+      "status": "qualified",
+      "volume_absolute_error": 0.0,
+      "bounds_maximum_absolute_error": 0.0
+    },
+    {
+      "id": "box_union",
+      "status": "qualified",
+      "volume_absolute_error": 4.547473508864641e-13,
+      "bounds_maximum_absolute_error": 0.0
+    },
+    {
+      "id": "box_intersection",
+      "status": "qualified",
+      "volume_absolute_error": 1.1368683772161603e-13,
+      "bounds_maximum_absolute_error": 2.220446049250313e-16
+    },
+    {
+      "id": "box_difference",
+      "status": "qualified",
+      "volume_absolute_error": 0.0,
+      "bounds_maximum_absolute_error": 0.0
+    },
+    {
+      "id": "cylinder_through_hole",
+      "status": "qualified",
+      "volume_absolute_error": 1.8936358401333564e-06,
+      "bounds_maximum_absolute_error": 0.0
+    },
+    {
+      "id": "sphere_cavity",
+      "status": "diagnostic",
+      "reason": "Rhino SDK returned zero results; SMLib matches analytic cavity volume."
+    },
+    {
+      "id": "hemisphere_pocket",
+      "status": "qualified",
+      "volume_absolute_error": 1.4016901559443795e-06,
+      "bounds_maximum_absolute_error": 1.7763568394002505e-15
+    },
+    {
+      "id": "perforated_plate",
+      "status": "qualified",
+      "volume_absolute_error": 4.2134851696573605e-07,
+      "bounds_maximum_absolute_error": 0.0
+    },
+    {
+      "id": "rational_curve_unit",
+      "status": "qualified",
+      "definition_equal": true,
+      "maximum_coordinate_error": 2.220446049250313e-16
+    },
+    {
+      "id": "rational_curve_shifted",
+      "status": "qualified",
+      "definition_equal": true,
+      "maximum_coordinate_error": 2.220446049250313e-16
+    },
+    {
+      "id": "rational_polyline",
+      "status": "qualified",
+      "definition_equal": true,
+      "maximum_coordinate_error": 4.440892098500626e-16
+    }
+  ]
+}

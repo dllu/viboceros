@@ -1,0 +1,11 @@
+{
+  "vertices": 1544,
+  "triangles": 3148,
+  "edges": 4722,
+  "euler_characteristic": -30,
+  "expected_euler_characteristic": -30,
+  "boundary_or_nonmanifold_edges": 0,
+  "orientation_conflict_edges": 0,
+  "mesh_signed_volume": 173.74743621489912,
+  "analytic_solid_volume": 173.5884991765378
+}
