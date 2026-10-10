@@ -1,0 +1,16 @@
+{
+  "engine": "8.32.26160.13001",
+  "native_solid": true,
+  "native_faces": 7,
+  "native_edges": 15,
+  "edge_samples_checked": 495,
+  "maximum_boundary_sample_error": 2.0463541972048915e-10,
+  "geometric_epsilon": 1e-08,
+  "display_mesh_diagnostic": {
+    "boundaries_closed": true,
+    "boundary_loops": 3,
+    "closed": false,
+    "manifold": true,
+    "oriented": true
+  }
+}

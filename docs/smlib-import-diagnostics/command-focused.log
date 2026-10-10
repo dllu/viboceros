@@ -1,0 +1,13 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 2m 34s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_command-c77d2ba48b827f8e)
+
+running 4 tests
+test boolean_difference::native::tests::complete_removal_and_disjoint_cutters_follow_existing_history_policy ... ok
+test boolean_difference::native::tests::unsupported_open_target_is_atomic ... ok
+test boolean_difference::native::tests::curved_split_results_are_separate_objects_with_source_attributes ... ok
+test boolean_difference::native::tests::curved_difference_keeps_metadata_groups_and_one_undo ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1265 filtered out; finished in 1.49s
+

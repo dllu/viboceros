@@ -1,0 +1,7 @@
+oracle failed: Rhino probe did not respond within 300 seconds (owned_pids=[38195, 38405], owned_window='0x00e00006', ui_fallback_sent=True)
+Launcher output:
+Launched Rhino 8 through direct ARM64 Wine
+Wine: /home/dllu/wines/build/wine/wine-install-rhino-uxtheme/bin/wine
+WINEPREFIX: /home/dllu/wines/prefixes/rhino/prefix
+Executable: /home/dllu/wines/prefixes/rhino/prefix/drive_c/Program Files/Rhino 8/System/Rhino.exe
+Launcher log: /home/dllu/wines/prefixes/rhino/logs/rhino-arm64-wine-direct.log

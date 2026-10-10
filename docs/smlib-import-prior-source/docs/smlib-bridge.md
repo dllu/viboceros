@@ -83,9 +83,8 @@ curve sample checks do not establish full B-rep equivalence. Detailed evidence i
 [`Solid::to_brep`](smlib-brep-transfer.md) now exports NURBS geometry and shared
 topology into the validated Rust model, including pole trims and exact planar
 pullbacks. Qualified outputs can be saved to 3DM; supported nonsingular outputs
-also round-trip through STEP. [Rust-to-SMLib import and optional curved
-BooleanDifference](smlib-import.md) now provide initial document integration.
-A tessellation is suitable for display but does not replace exact
+also round-trip through STEP. Rust-to-SMLib B-rep import and command integration
+remain open. A tessellation is suitable for display but does not replace exact
 topology. Fillets, offsets, healing, general imported geometry,
 empty Boolean results and model-scale extremes also need qualification.
 

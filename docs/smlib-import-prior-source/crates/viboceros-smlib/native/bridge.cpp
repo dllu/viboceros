@@ -20,9 +20,6 @@
 struct VbSolid {
     std::unique_ptr<SmBrep> value;
 };
-struct VbParts {
-    std::vector<std::unique_ptr<VbSolid>> values;
-};
 struct VbCurve {
     std::unique_ptr<SmBSplineCurve> value;
     size_t degree;
@@ -157,37 +154,12 @@ extern "C" void vb_solid_free(VbSolid *solid) {
     delete solid;
 }
 
-extern "C" int vb_solid_census(const VbSolid *solid, size_t counts[2], char *error,
-                               size_t capacity) {
-    return guarded(error, capacity, [&] {
-        require(solid && counts, "Invalid material census");
-        long material = 0, voids = 0;
-        check(SmApiBrepMaterialCensus(solid->value.get(), material, voids), "material census");
-        require(material >= 0 && voids >= 0, "Invalid material counts");
-        counts[0] = material;
-        counts[1] = voids;
-    });
-}
-
 extern "C" int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity) {
     if (out)
         *out = nullptr;
     return guarded(error, capacity, [&] {
         require(solid && out, "Invalid solid export");
         *out = vb_export_brep(*solid->value);
-    });
-}
-
-extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
-                                  const size_t *components, size_t component_count,
-                                  const int *inward, VbSolid **out, char *error, size_t capacity) {
-    if (out)
-        *out = nullptr;
-    return guarded(error, capacity, [&] {
-        require(view && out, "Invalid B-rep import");
-        auto owner = std::make_unique<VbSolid>();
-        owner->value.reset(vb_import_brep(*view, tolerance, components, component_count, inward));
-        *out = owner.release();
     });
 }
 
@@ -356,63 +328,4 @@ extern "C" int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t p
 extern "C" void vb_curve_free(VbCurve *curve) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete curve;
-}
-
-extern "C" int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity) {
-    return guarded(error, capacity, [&] {
-        require(solid && empty, "Invalid empty query");
-        SmTArray<SmFace *> faces;
-        solid->value->GetFaces(faces);
-        *empty = faces.GetSize() == 0;
-    });
-}
-
-extern "C" int vb_solid_parts(const VbSolid *solid, VbParts **out, char *error, size_t capacity) {
-    if (out)
-        *out = nullptr;
-    return guarded(error, capacity, [&] {
-        require(solid && out, "Invalid solid parts query");
-        SmBrep *raw = nullptr;
-        const auto copied = SmApiBrepCopy(solid->value.get(), raw);
-        std::unique_ptr<SmBrep> copy(raw);
-        check(copied, "copy for material parts");
-        SmTArray<SmBrep *> bodies;
-        SmBrep *separate = copy.release();
-        struct Cleanup {
-            SmBrep *&source;
-            SmTArray<SmBrep *> &bodies;
-            ~Cleanup() {
-                bool listed = false;
-                for (ULONG i = 0; i < bodies.GetSize(); ++i) {
-                    if (bodies[i] == source)
-                        listed = true;
-                    delete bodies[i];
-                }
-                if (!listed)
-                    delete source;
-            }
-        } cleanup{separate, bodies};
-        check(SmBrep::CreateOneBrepPerBody(separate, bodies, FALSE), "separate material bodies");
-        require(bodies.GetSize() <= 128, "Material part resource limit");
-        auto parts = std::make_unique<VbParts>();
-        parts->values.reserve(bodies.GetSize());
-        for (ULONG i = 0; i < bodies.GetSize(); ++i) {
-            auto item = std::make_unique<VbSolid>();
-            item->value.reset(bodies[i]);
-            if (separate == bodies[i])
-                separate = nullptr;
-            bodies[i] = nullptr;
-            parts->values.push_back(std::move(item));
-        }
-        separate = nullptr;
-        *out = parts.release();
-    });
-}
-extern "C" size_t vb_parts_count(const VbParts *parts) { return parts ? parts->values.size() : 0; }
-extern "C" VbSolid *vb_parts_take(VbParts *parts, size_t index) {
-    return parts && index < parts->values.size() ? parts->values[index].release() : nullptr;
-}
-extern "C" void vb_parts_free(VbParts *parts) {
-    std::lock_guard<std::mutex> lock(kernel_mutex);
-    delete parts;
 }

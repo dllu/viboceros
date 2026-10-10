@@ -17504,9 +17504,6 @@ fn format_point(point: Point3) -> String {
 
 #[derive(Debug, Error)]
 pub enum CommandError {
-    #[cfg(feature = "native-smlib")]
-    #[error(transparent)]
-    NativeSmlib(#[from] viboceros_smlib::Error),
     #[error("Contour exceeds the limit of 100000 planes; increase spacing or restrict Range")]
     ContourPlaneLimit,
     #[error("Contour plane origins cannot be represented distinctly as finite coordinates")]

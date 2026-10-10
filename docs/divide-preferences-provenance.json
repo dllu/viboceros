@@ -68,7 +68,6 @@
     "crates/viboceros-command/src/divide.rs": "0540a82a9b818a9e0814710594cf3e5839dbacea0e0018851ce55dc365526f6c",
     "crates/viboceros-command/src/divide/prompt.rs": "bc22a8889bcc9a02c7c3d9aadf3f6b0d491d808e3c1113fdf04d2ad92a1c9752",
     "crates/viboceros-command/src/divide/tests.rs": "2242b35fc05188e39a74ecd13cfbcba3b3b11b05827edf84c3fe813966ffcb8f",
-    "crates/viboceros-command/src/lib.rs": "9171f9e0aa26fbd22e68dcc5b0fb3f75f260e5e10a4063e13cc8edae1bc027a2",
     "docs/commands/divide.md": "d5fd2565e3f9e6ee12b8a656167bad022f7a3b4765b2e17408ee0b492825722d",
     "docs/divide-input.md": "c57a219ec2f075c025fa875e71b8222b86e4f346f38a341a6b36fa8205122eae",
     "docs/divide-preferences-capture-source/tools/rhino_oracle/divide_preferences_probe.py": "03ee9d53235eeabf9df4179dbff562e57e498870ee26955ab0cbe6f150cefc67",
@@ -99,7 +98,8 @@
     "docs/divide-preferences-diagnostics/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
-    "docs/smlib-bridge-prior-source/docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f"
+    "docs/smlib-bridge-prior-source/docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f",
+    "docs/smlib-import-prior-source/crates/viboceros-command/src/lib.rs": "9171f9e0aa26fbd22e68dcc5b0fb3f75f260e5e10a4063e13cc8edae1bc027a2"
   },
   "capture_commands": [
     "WINEDLLOVERRIDES=sspicli,secur32,schannel=b tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/divide_preferences.json --scheme VibocerosOracleDividePreferencesQualified20261010 --timeout 300 --output /tmp/viboceros-divide-preferences-qualified-native.json"

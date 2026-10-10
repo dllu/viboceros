@@ -1,0 +1,6 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 52s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/curved_difference /tmp/viboceros-curved-difference-qualified`
+BooleanDifference: volume 874.336293861113; wrote /tmp/viboceros-curved-difference-qualified/drilled-block.3dm

@@ -68,10 +68,6 @@ viboceros-io.workspace = true
 pollster = "1.0.1"
 viboceros-oracle = { path = "crates/viboceros-oracle" }
 
-[features]
-default = []
-native-smlib = ["viboceros-command/native-smlib"]
-
 [profile.release]
 lto = "thin"
 codegen-units = 1

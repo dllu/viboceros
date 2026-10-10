@@ -1,0 +1,11 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-curved-difference-qualified/drilled-block.3dm",
+      "id": "curved_difference_command",
+      "op": "three_dm_brep_interchange"
+    }
+  ],
+  "protocol_version": 1
+}

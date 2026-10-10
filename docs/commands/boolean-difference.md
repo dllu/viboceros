@@ -15,6 +15,11 @@ At least one target and one cutter are required. Points and unrelated objects
 are filtered out. First-set objects cannot also be picked as cutters. Explicit
 ID sets execute directly for scripts.
 
+Linux builds with `--features native-smlib` can use the
+[optional curved-solid path](../smlib-import.md). Qualified box/cylinder
+subtraction retains the same options and document history; broader curved
+workflows remain under qualification.
+
 `DeleteInput` and `DeleteCutters` default to `Yes`. Both can be changed during
 either selection phase. Accepted changes are remembered by the command registry
 across documents, cancellation, failure, and Undo/Redo. Invalid option batches do

@@ -2,8 +2,8 @@
 //!
 //! Kernel handles are thread-local; native calls are serialized process-wide.
 //! Boolean operations copy their operands before mutation. Native solids can
-//! import and export owned NURBS topology with validated Rust B-reps. The optional
-//! application feature uses this adapter for curved BooleanDifference.
+//! export owned NURBS topology into validated Rust B-reps. Rust-to-native import
+//! and application command integration remain in progress.
 #[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]

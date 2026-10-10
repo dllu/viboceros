@@ -2,6 +2,8 @@
 use super::*;
 use std::borrow::Cow;
 
+#[cfg(feature = "native-smlib")]
+mod native;
 #[cfg(test)]
 mod tests;
 const USAGE: &str =
@@ -105,52 +107,66 @@ impl BooleanDifferenceCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let (kernel, interactions) = boolean_solids::interactions(&refs, doc.tolerance(), true)?;
-        if !interactions
-            .iter()
-            .any(|p| p[0] < first.len() && p[1] >= first.len())
-        {
-            return Err(CommandError::NothingSubtracted);
-        }
-        let mut copies = Vec::new();
-        for (target, &id) in first.iter().enumerate() {
-            let cutters = interactions
+        let prepared = (|| -> Result<_, CommandError> {
+            let (kernel, interactions) =
+                boolean_solids::interactions(&refs, doc.tolerance(), true)?;
+            if !interactions
                 .iter()
-                .filter(|p| p[0] == target && p[1] >= first.len())
-                .map(|p| refs[p[1]])
-                .collect::<Vec<_>>();
-            if cutters.is_empty() {
-                copies.push((
-                    id,
-                    Geometry::Brep(refs[target].clone()),
-                    objects[target].geometry_user_text().clone(),
-                ));
-                continue;
+                .any(|p| p[0] < first.len() && p[1] >= first.len())
+            {
+                return Err(CommandError::NothingSubtracted);
             }
-            let local = std::iter::once(refs[target])
-                .chain(cutters.iter().copied())
-                .collect::<Vec<_>>();
-            let pairs = (1..local.len()).map(|i| [0, i]).collect::<Vec<_>>();
-            let active = boolean_solids::active_faces(&local, &pairs, doc.tolerance(), true)?;
-            let mut shells = Vec::new();
-            for piece in kernel.difference(refs[target], &cutters, doc.tolerance())? {
-                shells.extend(boolean_solids::participating_shells(
-                    piece.brep,
-                    &piece.face_sources,
-                    &active,
-                    doc.tolerance(),
-                )?);
+            let mut copies = Vec::new();
+            for (target, &id) in first.iter().enumerate() {
+                let cutters = interactions
+                    .iter()
+                    .filter(|p| p[0] == target && p[1] >= first.len())
+                    .map(|p| refs[p[1]])
+                    .collect::<Vec<_>>();
+                if cutters.is_empty() {
+                    copies.push((
+                        id,
+                        Geometry::Brep(refs[target].clone()),
+                        objects[target].geometry_user_text().clone(),
+                    ));
+                    continue;
+                }
+                let local = std::iter::once(refs[target])
+                    .chain(cutters.iter().copied())
+                    .collect::<Vec<_>>();
+                let pairs = (1..local.len()).map(|i| [0, i]).collect::<Vec<_>>();
+                let active = boolean_solids::active_faces(&local, &pairs, doc.tolerance(), true)?;
+                let mut shells = Vec::new();
+                for piece in kernel.difference(refs[target], &cutters, doc.tolerance())? {
+                    shells.extend(boolean_solids::participating_shells(
+                        piece.brep,
+                        &piece.face_sources,
+                        &active,
+                        doc.tolerance(),
+                    )?);
+                }
+                let text = if shells.len() == 1 {
+                    objects[target].geometry_user_text().clone()
+                } else {
+                    BTreeMap::new()
+                };
+                for (brep, sources) in shells {
+                    let b = boolean_solids::merged(brep, &sources, doc.tolerance())?;
+                    copies.push((id, Geometry::Brep(b), text.clone()));
+                }
             }
-            let text = if shells.len() == 1 {
-                objects[target].geometry_user_text().clone()
-            } else {
-                BTreeMap::new()
-            };
-            for (brep, sources) in shells {
-                let b = boolean_solids::merged(brep, &sources, doc.tolerance())?;
-                copies.push((id, Geometry::Brep(b), text.clone()));
-            }
-        }
+            Ok(copies)
+        })();
+        #[cfg(feature = "native-smlib")]
+        let copies = match prepared {
+            Err(CommandError::Geometry(
+                GeometryError::UnsupportedConvexBrepBoolean { .. }
+                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
+            )) => native::difference(&refs, &objects, &first, doc.tolerance())?,
+            result => result?,
+        };
+        #[cfg(not(feature = "native-smlib"))]
+        let copies = prepared?;
         // Successful full removal has no copies; it still consumes accepted inputs.
         doc.select_command_results(ids.iter().copied())?;
         doc.release_command_selection_on_history_replay(if post {

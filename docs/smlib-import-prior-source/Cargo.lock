@@ -3700,7 +3700,6 @@ dependencies = [
  "viboceros-drafting",
  "viboceros-geometry",
  "viboceros-io",
- "viboceros-smlib",
 ]
 
 [[package]]

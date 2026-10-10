@@ -18,7 +18,7 @@ target_include_directories(SM_API SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SM_API/
 target_compile_definitions(SM_API PRIVATE SM_API_EXPORTS)
 target_compile_options(SM_API PRIVATE -Wno-write-strings)
 target_link_libraries(SM_API PUBLIC SMLib)
-add_library(viboceros_smlib STATIC bridge.cpp brep_export.cpp brep_import.cpp)
+add_library(viboceros_smlib STATIC bridge.cpp brep_export.cpp)
 target_link_libraries(viboceros_smlib PUBLIC SM_API)
 target_compile_options(viboceros_smlib PRIVATE -Wall -Wextra -Werror)
 install(TARGETS viboceros_smlib SM_API SMLib ARCHIVE DESTINATION lib)

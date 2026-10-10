@@ -1,0 +1,21 @@
+third_party/usd-brep/source/SMLib/inc/SmAttribute.h:138:17: runtime error: member call on address 0x51c000004080 which does not point to an object of type 'SmTArray'
+0x51c000004080: note: object has invalid vptr
+ 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^~~~~~~~~~~~~~~~~~~~~~~
+              invalid vptr
+third_party/usd-brep/source/SMLib/inc/SmTArray.h:378:3: runtime error: member access within address 0x51c000004080 which does not point to an object of type 'SmObject'
+0x51c000004080: note: object has invalid vptr
+ 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^~~~~~~~~~~~~~~~~~~~~~~
+              invalid vptr
+third_party/usd-brep/source/SMLib/inc/SmTArray.h:1082:3: runtime error: member access within address 0x51c000004080 which does not point to an object of type 'SmTArray'
+0x51c000004080: note: object has invalid vptr
+ 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^~~~~~~~~~~~~~~~~~~~~~~
+              invalid vptr
+third_party/usd-brep/source/SMLib/inc/SmTArray.h:1270:20: runtime error: member access within address 0x51c000004080 which does not point to an object of type 'SmTArray'
+0x51c000004080: note: object has invalid vptr
+ 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00
+              ^~~~~~~~~~~~~~~~~~~~~~~
+              invalid vptr
+16 import/boolean/extraction lifecycle cycles passed

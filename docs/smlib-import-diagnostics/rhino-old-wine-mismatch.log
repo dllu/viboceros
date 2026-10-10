@@ -1,0 +1,5 @@
+oracle failed: Rhino launcher exited with status 1
+wine client error:0: version mismatch 962/952.
+Your wine binary was not upgraded correctly,
+or you have an older one somewhere in your PATH.
+Or maybe the wrong wineserver is still running?

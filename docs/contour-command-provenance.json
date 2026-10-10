@@ -88,7 +88,6 @@
     "Performance parity and full Rhino command coverage"
   ],
   "sha256": {
-    "crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3",
     "src/app/contour.rs": "709c21e48e6479c032588dded0c393bb23dc39244be1bc7262e3ff9a4a587de1",
     "src/app/tests/section.rs": "ed377dda8819f4c3c997391f82c8e69c2f46685ea918850a8857b05fd3a07959",
     "tools/rhino_oracle/contour_probe.py": "0435b1bed188dc7c0f35e322c74587563af0d1909a43538d9dd2d7a0b936138d",
@@ -115,6 +114,7 @@
     "docs/edge-analysis-native-prior-source/crates/viboceros-oracle/src/lib.rs": "1a37ce2ffa046b1cbe4a1f14f329f0590c8505f2a33046af62b18a8b82089ce1",
     "docs/edge-analysis-native-prior-source/tools/rhino_oracle/client.py": "1f19b6b80652397fd7bd3e7b57df831e35afed36e6024f70d746e0b53691340f",
     "docs/edge-input-prior-source/src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710",
-    "docs/smlib-bridge-prior-source/Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1"
+    "docs/smlib-bridge-prior-source/Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
+    "docs/smlib-import-prior-source/crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3"
   }
 }

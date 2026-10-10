@@ -72,7 +72,6 @@
     "General imported geometry, periodic topology, fillets, healing, scale extremes and empty Boolean outputs remain unqualified"
   ],
   "source_sha256": {
-    "Cargo.toml": "eb153e329fbd969ce807a9d008ee71b7b6d20bee847788410ac90ddb0c50d2d7",
     "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
     "crates/viboceros-smlib/examples/reference.rs": "e000e34301d30c6b65d0fd7ea26033d040fa94e64c245ec9f46bdafdc55baeef",
@@ -120,6 +119,7 @@
     "docs/smlib-brep-prior-source/crates/viboceros-smlib/Cargo.toml": "9ff9bcccffd474d8d89dd3a6f13af4c3c7bdd9b0b2c581994ffa540e7bfb6541",
     "docs/smlib-brep-prior-source/docs/smlib-bridge.md": "02ea593357a8799f51f41e05470aaff8ee35ceda3660cb001c11eacec7fac24c",
     "docs/smlib-brep-prior-source/docs/development.md": "9c2037ba54c3052809e11871ffaa39eaf02c292dc66689693565a3f07321ab23",
-    "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/lib.rs": "00a4a1dc85517dcd344bf50fb0d77bcf30d36fcdd27f81c5b02e473ff42358ac"
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/lib.rs": "00a4a1dc85517dcd344bf50fb0d77bcf30d36fcdd27f81c5b02e473ff42358ac",
+    "docs/smlib-import-prior-source/Cargo.toml": "eb153e329fbd969ce807a9d008ee71b7b6d20bee847788410ac90ddb0c50d2d7"
   }
 }

@@ -46,7 +46,5 @@ void vb_brep_free(VbBrep *brep);
 }
 class SmBrep;
 VbBrep *vb_export_brep(const SmBrep &solid);
-SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
-                       size_t component_count, const int *inward);
 #endif
 #endif
