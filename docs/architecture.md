@@ -868,5 +868,11 @@ Complete argument lines retain their options through curve picking. The chord
 kernel uses analytic primitive paths and exact rational Bernstein sphere
 equations for general curves. [Native qualification](divide-command.md) covers
 30 recipes; three circular length cases retain documented numerical differences
-at the tighter epsilon. Bare prompting and broader geometry qualification remain
-open.
+at the tighter epsilon. Broader geometry qualification remains open.
+
+[Divide input](divide-input.md) now gathers curves for a bare command, then
+keeps count, length, chord and output edits in a numeric prompt. Cached viewport
+station markers share the command's output preparation and retain immutable
+source geometry identities. Preview edits leave the document unchanged; Enter
+accepts one transaction, while cancellation or source changes discard the
+pending preview. Native defaults, seam/direction controls and SubCrv remain open.

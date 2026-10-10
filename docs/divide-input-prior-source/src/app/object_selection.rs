@@ -3,7 +3,6 @@ use super::*;
 use std::collections::BTreeSet;
 use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSelectionWorkflow};
 use viboceros_document::{Geometry, ObjectId, SelectionMode};
-mod divide;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ObjectPromptPhase {
@@ -16,7 +15,7 @@ pub(super) enum ObjectPromptPhase {
     RebuildValue(&'static str),
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct PendingObjectCommand {
     pub(super) description: ObjectSelectionPrompt,
     pub(super) phase: ObjectPromptPhase,
@@ -29,7 +28,6 @@ pub(super) struct PendingObjectCommand {
     pub(super) cloud_removal: Option<PendingCloudRemoval>,
     pub(super) cloud_action_target: Option<ObjectId>,
     pub(super) special_selection: Option<BTreeSet<ObjectId>>,
-    pub(super) divide: Option<divide::Session>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -48,9 +46,6 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn label(&self) -> &'static str {
-        if let Some(session) = &self.divide {
-            return session.prompt.label();
-        }
         match self.phase {
             ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
             ObjectPromptPhase::Choice(index) => self.description.choices[index].name,
@@ -62,17 +57,6 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn hint(&self) -> &'static str {
-        if self.description.command == "Divide" {
-            return if self.phase == ObjectPromptPhase::Selecting {
-                if self.description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
-                    "Select curves; Enter divides, Esc cancels"
-                } else {
-                    "Select curves; Enter opens division options, Esc cancels"
-                }
-            } else {
-                "Enter a number or choose Length, EqualChordLength, NumberSegments or output options; Enter creates the previewed result, Esc cancels"
-            };
-        }
         if self.description.command == "BooleanUnion" {
             return "Select at least two surfaces or polysurfaces, or type options; Enter unions, Esc cancels";
         }
@@ -322,7 +306,6 @@ impl VibocerosApp {
                 cloud_removal: None,
                 cloud_action_target: None,
                 special_selection: Some(BTreeSet::new()),
-                divide: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -369,7 +352,6 @@ impl VibocerosApp {
                 cloud_removal: None,
                 cloud_action_target: Some(target),
                 special_selection: None,
-                divide: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -401,7 +383,6 @@ impl VibocerosApp {
                 cloud_removal: None,
                 cloud_action_target: None,
                 special_selection: None,
-                divide: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -438,7 +419,6 @@ impl VibocerosApp {
                 }),
                 cloud_action_target: None,
                 special_selection: None,
-                divide: None,
             });
             self.command_input.clear();
             self.push_log(format!("> {input}"));
@@ -517,7 +497,6 @@ impl VibocerosApp {
                         cloud_removal: None,
                         cloud_action_target: None,
                         special_selection: None,
-                        divide: None,
                     });
                 }
                 Ok(None) => return false,
@@ -559,13 +538,11 @@ impl VibocerosApp {
                 cloud_removal: None,
                 cloud_action_target: None,
                 special_selection: None,
-                divide: None,
             });
         }
         self.command_input.clear();
         self.initialize_smooth_options(input, preselected);
         self.initialize_rebuild_options();
-        self.initialize_divide_prompt();
         self.push_log(format!("> {input}"));
         self.log_object_prompt();
         true
@@ -612,9 +589,6 @@ impl VibocerosApp {
             return true;
         }
         if self.continue_rebuild_options(input) {
-            return true;
-        }
-        if self.continue_divide_prompt(input) {
             return true;
         }
         if self.continue_smooth_options(input) {
@@ -776,7 +750,6 @@ impl VibocerosApp {
                                 pending.phase = ObjectPromptPhase::Options;
                                 self.object_prompt = Some(pending);
                                 self.initialize_rebuild_options();
-                                self.initialize_divide_prompt();
                                 self.command_input.clear();
                                 self.log_object_prompt();
                                 return true;

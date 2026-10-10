@@ -1603,3 +1603,22 @@ length cases require 5e-7 absolute epsilon, with maximum difference
 [Provenance](divide-command-provenance.json) retains source and validation hashes.
 Tighter circular length parity, broad rational-curve qualification, bare-value
 prompting, preview, seam/direction changes, SubCrv and performance remain open.
+
+## Divide input checkpoint
+
+[Bare Divide input](divide-input.md) now gathers curves and opens a typed
+numeric/options stage with cached viewport station markers. Count, length and
+chord values remain available when switching modes. Edits and cancellation
+create no geometry or history; Enter accepts one transaction. Noncurve
+preselection is excluded and restored on cancellation. Source geometry identity,
+selection order and tolerance qualify the preview; stale markers disappear and
+stale acceptance is rejected.
+
+Five application regressions and two prompt-parser tests cover these paths.
+The complete workspace release run passes 5,638 Rust tests with zero failures
+and 38 ignored tests. All 1,077 Python tests, Clippy with warnings denied,
+formatting and diff checks pass. The existing 30 native Divide output recipes
+still pass their documented per-case epsilons. No new native UI or timing
+capture was made. [Provenance](divide-input-provenance.json) binds the final
+sources and logs. Native preview styling, persistent defaults, seam/direction
+changes and SubCrv remain open.

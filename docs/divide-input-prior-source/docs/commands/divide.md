@@ -14,15 +14,6 @@ selected. `Div` remains an alias. Every invocation stages all results before
 document mutation and forms one Undo step. Inputs remain when point objects are
 created; Split replaces the inputs with trimmed curve pieces.
 
-Entering bare `Divide` first gathers curves, then opens a numeric/options
-prompt. Enter a count, or choose `Length` or `EqualChordLength` and enter a
-distance. Changing the number or output options updates viewport station
-markers; Enter accepts the pending result, and Escape cancels without creating
-objects or history. `NumberSegments` returns to count mode. Each mode retains
-its last number during the invocation; the initial local count/distance is 1.
-Bare boolean option names toggle their values, and `name=Yes|No` sets them.
-Split previews mark piece boundaries, including any retained remainder.
-
 Options are case-insensitive Yes/No values. Bare `MarkEnds` remains accepted.
 
 - `MarkEnds` defaults to No. In count/arc-length point modes, open-curve ends
@@ -49,6 +40,5 @@ The [native fixture](../../tools/rhino_oracle/fixtures/divide_command.json) cove
 30 line, circle and polyline recipes, including source metadata, groups, split
 domains and remainder deletion. Detailed [qualification](../divide-command.md)
 records the result and limits. The UI currently accepts complete division
-arguments before source picking or [bare numeric/options input](../divide-input.md).
-Native seam/direction changes, SubCrv selection, saved native defaults and
-preview styling remain work in progress.
+arguments before source picking; bare-value prompting, native preview,
+interactive seam/direction changes and SubCrv selection remain work in progress.

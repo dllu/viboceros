@@ -41,10 +41,8 @@ cargo test -p viboceros-oracle --release --test divide
 
 [Provenance](divide-command-provenance.json) records exact sources and validation.
 Broader rational curves, extreme coordinates/domains, default preference memory,
-interactive seam/direction changes and SubCrv selection remain
-qualification/implementation work. [Bare prompting and station previews](divide-input.md)
-were added in a later checkpoint; these command recipes do not qualify their
-native interaction fidelity. These recipes do not
+bare command prompting, preview, interactive seam/direction changes and SubCrv
+selection remain qualification/implementation work. These recipes do not
 establish full Divide or Rhino compatibility.
 
 The replay passes 27 of 30 recipes at 1e-9 absolute plus 1e-12 relative epsilon.

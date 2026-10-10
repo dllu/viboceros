@@ -9040,9 +9040,6 @@ impl eframe::App for VibocerosApp {
         } else {
             None
         };
-        let division_preview = model_input_active
-            .then(|| self.divide_preview_points())
-            .flatten();
         let subcurve_hover = self.subcurve_preview_hover();
         let mirror_preview = self
             .transform_session
@@ -9476,11 +9473,9 @@ impl eframe::App for VibocerosApp {
                                     .filter(|p| p.show_curve)
                                     .map(|p| &p.geometry.curve)
                             }),
-                            preview_points: division_preview.as_deref().unwrap_or_else(|| {
-                                subcurve_preview
-                                    .as_ref()
-                                    .map_or(&[], |p| &p.geometry.endpoints)
-                            }),
+                            preview_points: subcurve_preview
+                                .as_ref()
+                                .map_or(&[], |p| &p.geometry.endpoints),
                             mirror_preview,
                             translation_preview,
                             affine_preview,

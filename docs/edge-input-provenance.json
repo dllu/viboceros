@@ -42,7 +42,6 @@
     "crates/viboceros-command/src/edge_analysis/tests.rs": "706d9793abc6233bd7a84e78a4b081379c0c658d358d353a2c125027247f36a8",
     "crates/viboceros-oracle/src/edge_analysis.rs": "99cdb647080020bea8e53c0a262eae3ae22ebfcc0336ef02d2a09e1097f9c307",
     "crates/viboceros-oracle/tests/edge_analysis.rs": "95319f2300f37fda1fce6d6580ba585f5ce3947587b61411d68b8056f8a13924",
-    "src/app.rs": "89fef38ee6175f3fa82359ce8ff6eb286c1d0ffba239cc3336c286fd58ef6172",
     "src/app/edge_analysis.rs": "c28aeafa927bb67965c03c21e0547f689b0366722c5fea1e801e69f24005029d",
     "src/app/command_line.rs": "d235268d2d4594bc935b9bf97efafd65f4765ad557e894c917481c06864eb5be",
     "src/viewport.rs": "68f482d718d4e24363216096743702cde897b239f5b599fe94471d5e43a4fc04",
@@ -54,7 +53,8 @@
     "docs/edge-zoom-cancel-comparison.json": "283c2cfbe0e1758e5d61fac51a7a99c114d9a426bb5a91cad5fe1e3ad20518f4",
     "docs/divide-prior-source/crates/viboceros-command/src/lib.rs": "8eac9aa19f6bfa65578c20661738458212449407ee45431942e1fbd4d3f23695",
     "docs/divide-prior-source/src/app/object_selection.rs": "c9c8524c3a7b51afecd78d280ce73a28ebe75b5a05c0416824dd22b950252168",
-    "docs/divide-prior-source/src/app/tests/edge_analysis.rs": "b37f2d34d68754500d7598152e0a51f0bffad28ad237aebbb01df2ea1f32a39f"
+    "docs/divide-prior-source/src/app/tests/edge_analysis.rs": "b37f2d34d68754500d7598152e0a51f0bffad28ad237aebbb01df2ea1f32a39f",
+    "docs/divide-input-prior-source/src/app.rs": "89fef38ee6175f3fa82359ce8ff6eb286c1d0ffba239cc3336c286fd58ef6172"
   },
   "capture_source_sha256": {
     "docs/edge-input-capture-source/request.json": "65026fdad38907979eac50a8b2bd0884f72408e8220afe69fe667967c6760a37",

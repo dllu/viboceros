@@ -1,7 +1,6 @@
 //! Curve division with staged point/split outputs and source-domain intervals.
 use super::*;
 use viboceros_geometry::CurveDivisionPoint;
-pub mod prompt;
 #[cfg(test)]
 mod tests;
 
@@ -104,14 +103,7 @@ impl Command for DivideCommand {
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         if args.is_empty() {
-            return Ok(Some(ObjectSelectionPrompt {
-                command: "Divide",
-                filter: ObjectSelectionFilter::Curves,
-                options: Vec::new(),
-                menus: Vec::new(),
-                choices: Vec::new(),
-                workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
-            }));
+            return Ok(None);
         }
         Options::parse(args)?;
         Ok(Some(ObjectSelectionPrompt {
@@ -123,25 +115,90 @@ impl Command for DivideCommand {
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
         }))
     }
-    fn object_selection_confirmation(
-        &self,
-        _document: &Document,
-        arguments: &[&str],
-    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        self.object_selection_prompt(arguments)
-    }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let options = Options::parse(args)?;
-        let Prepared {
-            source_ids,
-            output,
-            batches,
-        } = prepare(doc, options)?;
+        let sources = doc
+            .selected_objects()
+            .map(|o| (o.id(), o.geometry().clone(), o.attributes().clone()))
+            .collect::<Vec<_>>();
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let mut output = Vec::new();
+        let mut batches = Vec::new();
+        for (_, geometry, attributes) in &sources {
+            let curve = geometry
+                .curve_ref()
+                .ok_or(CommandError::UnsupportedDivideGeometry)?;
+            let mut stations = stations(curve, options.specification, doc.tolerance())?;
+            if options.split {
+                let end = *curve.domain().end();
+                if stations.last().is_some_and(|s| s.parameter < end) && !options.delete_remainder {
+                    stations.push(CurveDivisionPoint {
+                        parameter: end,
+                        point: curve.end_point()?,
+                    });
+                }
+                let owned = split_carrier(curve, doc.tolerance())?;
+                if let viboceros_geometry::Curve3::Circle(circle) = &owned {
+                    let last = *curve.domain().end();
+                    for station in &mut stations {
+                        station.parameter = if station.parameter == last {
+                            *circle.domain().end()
+                        } else {
+                            CurveRef::Circle(circle)
+                                .closest_parameter(station.point, doc.tolerance())?
+                        };
+                    }
+                }
+                for pair in stations.windows(2) {
+                    let fragment = owned.try_trimmed(pair[0].parameter..=pair[1].parameter)?;
+                    output.push((Geometry::from(fragment), attributes.clone()));
+                }
+            } else {
+                let closed = curve.is_closed()?;
+                if closed {
+                    if stations.len() > 1
+                        && stations
+                            .last()
+                            .is_some_and(|s| s.point.is_near(stations[0].point, doc.tolerance()))
+                    {
+                        stations.pop();
+                    }
+                } else if !matches!(options.specification, Specification::Chord(_)) {
+                    let end = curve.end_point()?;
+                    if !options.mark_ends {
+                        if stations
+                            .last()
+                            .is_some_and(|s| s.point.is_near(end, doc.tolerance()))
+                        {
+                            stations.pop();
+                        }
+                        if !stations.is_empty() {
+                            stations.remove(0);
+                        }
+                    }
+                }
+                let attributes = ObjectAttributes::on_layer(doc.current_layer_id());
+                output.extend(
+                    stations
+                        .into_iter()
+                        .map(|s| (Geometry::Point(s.point), attributes.clone())),
+                );
+            }
+            if output.len() > MAX_CURVE_DIVISION_POINTS {
+                return Err(GeometryError::TooManyCurveDivisionPoints {
+                    maximum: MAX_CURVE_DIVISION_POINTS,
+                }
+                .into());
+            }
+            batches.push(output.len());
+        }
         if output.is_empty() {
             return Err(CommandError::NoCurveDivisionPoints);
         }
         if options.split {
-            doc.delete_objects(source_ids.iter().copied())?;
+            doc.delete_objects(sources.iter().map(|s| s.0))?;
         }
         let ids = output
             .into_iter()
@@ -159,7 +216,7 @@ impl Command for DivideCommand {
         replace_selection(doc, ids.iter().copied())?;
         Ok(format!(
             "Divided {} curve(s), adding {} {}",
-            source_ids.len(),
+            sources.len(),
             ids.len(),
             if options.split {
                 "curve(s)"
@@ -168,117 +225,6 @@ impl Command for DivideCommand {
             }
         ))
     }
-}
-
-struct Prepared {
-    source_ids: Vec<ObjectId>,
-    output: Vec<(Geometry, ObjectAttributes)>,
-    batches: Vec<usize>,
-}
-
-/// Read-only station markers from the same output preparation as execution.
-/// Split markers show each piece's boundaries, including a retained remainder.
-pub fn preview_points(doc: &Document, options: Options) -> Result<Vec<Point3>, CommandError> {
-    let prepared = prepare(doc, options)?;
-    let mut points = Vec::new();
-    for (geometry, _) in prepared.output {
-        match geometry {
-            Geometry::Point(point) => points.push(point),
-            geometry => {
-                let curve = geometry
-                    .curve_ref()
-                    .ok_or(CommandError::UnsupportedDivideGeometry)?;
-                points.push(curve.start_point()?);
-                points.push(curve.end_point()?);
-            }
-        }
-    }
-    Ok(points)
-}
-
-fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
-    let sources = doc
-        .selected_objects()
-        .map(|o| (o.id(), o.geometry().clone(), o.attributes().clone()))
-        .collect::<Vec<_>>();
-    if sources.is_empty() {
-        return Err(CommandError::NoObjectsSelected);
-    }
-    let mut output = Vec::new();
-    let mut batches = Vec::new();
-    for (_, geometry, attributes) in &sources {
-        let curve = geometry
-            .curve_ref()
-            .ok_or(CommandError::UnsupportedDivideGeometry)?;
-        let mut stations = stations(curve, options.specification, doc.tolerance())?;
-        if options.split {
-            let end = *curve.domain().end();
-            if stations.last().is_some_and(|s| s.parameter < end) && !options.delete_remainder {
-                stations.push(CurveDivisionPoint {
-                    parameter: end,
-                    point: curve.end_point()?,
-                });
-            }
-            let owned = split_carrier(curve, doc.tolerance())?;
-            if let viboceros_geometry::Curve3::Circle(circle) = &owned {
-                let last = *curve.domain().end();
-                for station in &mut stations {
-                    station.parameter = if station.parameter == last {
-                        *circle.domain().end()
-                    } else {
-                        CurveRef::Circle(circle)
-                            .closest_parameter(station.point, doc.tolerance())?
-                    };
-                }
-            }
-            for pair in stations.windows(2) {
-                let fragment = owned.try_trimmed(pair[0].parameter..=pair[1].parameter)?;
-                output.push((Geometry::from(fragment), attributes.clone()));
-            }
-        } else {
-            let closed = curve.is_closed()?;
-            if closed {
-                if stations.len() > 1
-                    && stations
-                        .last()
-                        .is_some_and(|s| s.point.is_near(stations[0].point, doc.tolerance()))
-                {
-                    stations.pop();
-                }
-            } else if !matches!(options.specification, Specification::Chord(_)) {
-                let end = curve.end_point()?;
-                if !options.mark_ends {
-                    if stations
-                        .last()
-                        .is_some_and(|s| s.point.is_near(end, doc.tolerance()))
-                    {
-                        stations.pop();
-                    }
-                    if !stations.is_empty() {
-                        stations.remove(0);
-                    }
-                }
-            }
-            let attributes = ObjectAttributes::on_layer(doc.current_layer_id());
-            output.extend(
-                stations
-                    .into_iter()
-                    .map(|s| (Geometry::Point(s.point), attributes.clone())),
-            );
-        }
-        if output.len() > MAX_CURVE_DIVISION_POINTS {
-            return Err(GeometryError::TooManyCurveDivisionPoints {
-                maximum: MAX_CURVE_DIVISION_POINTS,
-            }
-            .into());
-        }
-        batches.push(output.len());
-    }
-    Ok(Prepared {
-        source_ids: sources.iter().map(|s| s.0).collect(),
-        output,
-        batches,
-    })
 }
 
 fn stations(
