@@ -127,7 +127,7 @@ pub use catenary::{
 };
 pub use circle_curve::Circle3;
 pub use circular::CircularArc3;
-pub use curve::{CurveDivisionPoint, CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
+pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use curve_blend_pair::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
 pub use curve_chamfer_pair::{
     CurveChamferExtensionStyles, try_chamfer_curves_joined, try_chamfer_curves_joined_with_styles,

@@ -1591,3 +1591,25 @@ fn transparent_interface_and_cplane_prompts_preserve_mesh_picks() {
     assert_eq!(app.document.selected_object_count(), 0);
     assert_eq!(app.document.objects().len(), 4);
 }
+#[test]
+fn divide_complete_options_are_retained_through_command_first_curve_selection() {
+    let mut app = test_app();
+    for command in [
+        "Line 0,0,0 9,0,0",
+        "SelNone",
+        "Divide Length 2.5 Split=Yes DeleteRemainder=Yes",
+    ] {
+        app.command_input = command.into();
+        app.run_command();
+    }
+    assert!(app.object_prompt.is_some());
+    for command in ["SelAll", ""] {
+        app.command_input = command.into();
+        app.run_command();
+    }
+    assert!(app.object_prompt.is_none());
+    assert_eq!(app.document.objects().len(), 3);
+    app.command_input = "Undo".into();
+    app.run_command();
+    assert_eq!(app.document.objects().len(), 1);
+}

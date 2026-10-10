@@ -84,7 +84,6 @@ mod conversion;
 mod conversion_session;
 mod copy_options;
 mod distribute;
-mod divide_command;
 mod document_brep;
 mod document_units;
 mod edge_analysis;
@@ -426,11 +425,6 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: contour_command::Fixture,
-    },
-    DivideCommand {
-        id: String,
-        #[serde(flatten)]
-        fixture: divide_command::Fixture,
     },
     EdgeAnalysis {
         id: String,
@@ -2197,7 +2191,6 @@ impl Operation {
             | Self::PlaneArray { id, .. }
             | Self::SectionCommand { id, .. }
             | Self::ContourCommand { id, .. }
-            | Self::DivideCommand { id, .. }
             | Self::EdgeAnalysis { id, .. }
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
@@ -2838,7 +2831,6 @@ fn execute(
         }
         Operation::SectionCommand { fixture, .. } => section_command::run(fixture, tolerance)?,
         Operation::ContourCommand { fixture, .. } => contour_command::run(fixture, tolerance)?,
-        Operation::DivideCommand { fixture, .. } => divide_command::run(fixture, tolerance)?,
         Operation::EdgeAnalysis { fixture, .. } => edge_analysis::run(fixture, tolerance)?,
         Operation::BlockWorkflow { fixture, .. } => block_workflow::run(fixture, tolerance)?,
         Operation::PointsCommand { fixture, .. } => points_command::run(fixture, tolerance)?,

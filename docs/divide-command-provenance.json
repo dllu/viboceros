@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "base_commit": "f46102b91bfa2593eea53d6c478b01b71c3ca85d",
+  "scope": "Divide count/length/chord points, split pieces, remainder deletion, source groups and command-first curve input",
+  "native_engine_version": "8.32.26160.13001",
+  "native_runtime": "Licensed Rhino 8 under private Xvfb and ARM64 Wine/FEX",
+  "process_environment": {
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b"
+  },
+  "settings_scheme": "VibocerosOracleDivideQualified20261009",
+  "native_timing_measured": false,
+  "full_native_parity": false,
+  "native_comparison": {
+    "cases": 30,
+    "tight_matches": 27,
+    "tight_absolute_epsilon": 1e-09,
+    "qualified_matches": 30,
+    "qualified_absolute_epsilon": 5e-07,
+    "relative_epsilon": 1e-12,
+    "max_absolute_error": 1.1752123363351075e-07,
+    "field_exclusions": [],
+    "unresolved_tight_cases": [
+      "length-circle-s0-m0",
+      "length-circle-s0-m1",
+      "length-circle-s1-m0"
+    ]
+  },
+  "verified": {
+    "rust": {
+      "passed": 5631,
+      "failed": 0,
+      "ignored": 38
+    },
+    "python": {
+      "passed": 1077,
+      "failed": 0
+    },
+    "clippy": "passed --workspace --all-targets -- -D warnings",
+    "format": "passed cargo fmt --all -- --check",
+    "logs_sha256": {
+      "/tmp/viboceros-divide-workspace-complete.log": "762e9e91c00e4374c52a65bd74abb3312e0ddb625e1158e9b8463d78fe67d4bd",
+      "/tmp/viboceros-divide-python-full.log": "38c99790a2c8d705be8a400fd78a893af33db8f6f9df810dcb51bc8bb87ef060",
+      "/tmp/viboceros-divide-clippy-commit.log": "e04bfd46d897cee9e146794c1a7c27124129e2f4a7fa3eccca77bfc10b57b3ec"
+    },
+    "source_pin_audit": "1646 top-level source pins in docs/*provenance*.json, excluding historical capture_source_sha256 maps; zero mismatches."
+  },
+  "remaining_scope": [
+    "Tighter circular-NURBS length station and split-domain parity",
+    "Broad rational curves and extreme coordinates/domains",
+    "Native default preference memory",
+    "Bare command/value prompting and preview",
+    "Interactive seam/direction changes and SubCrv selection",
+    "Full command and performance qualification"
+  ],
+  "historical_evidence": "Early seam-harness and pre-circular-carrier diagnostics retain rejected outcomes; they are not qualified captures and their exact early helper bytes were not archived. Prior source snapshots preserve existing provenance pins without rewriting their hashes.",
+  "source_sha256": {
+    "crates/viboceros-command/src/divide.rs": "e3101a9372e49410a66925d103400995fff5d14dfd25ca91edaeadfc7bf01862",
+    "crates/viboceros-command/src/divide/tests.rs": "7e710362503c995fe405da0876f32de93c1fe5e591dbced009267f0357ffe6bf",
+    "crates/viboceros-command/src/lib.rs": "7bf866f97ea8a2cf3da756dac4c69ff126303548ac42fca08510c26b4f2a9ad0",
+    "crates/viboceros-geometry/src/curve/chord_division.rs": "74415ff6bc26ac61bb58a78acc873a1687cc7606f73041c6239f9983ba84fee3",
+    "crates/viboceros-geometry/src/curve.rs": "5c6197c704fcebc699dda222b9fb391cfe8f2c11d08b8b88ddfa274db0fb5d91",
+    "crates/viboceros-geometry/src/lib.rs": "80bf8441f9f918dd09a94069f92f788cd5b94dd419d5bf54b2ccb6fab7e0c99c",
+    "crates/viboceros-oracle/src/divide_command.rs": "668399e436e741989357014132961c2966c191886e9d34ccce9e930ab74564cb",
+    "crates/viboceros-oracle/src/lib.rs": "9aca8ab368294cc6e0ce59b173bf0736097065323dd1d02c94573efc3728f421",
+    "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
+    "src/app/object_selection.rs": "b04d280a41046bbd0ab6dd4e43408c301b8221930cc5df4b2b87f29f83851227",
+    "src/app/tests/object_selection.rs": "4c941b0aacd0c9fc1b38fb1615840177232932fe9c255b5391c7b6f77387741c",
+    "tools/rhino_oracle/divide_probe.py": "49b9bacf1e105d006905ef81089dd8165f7f7729e205f21fae4d4826336632c6",
+    "tools/rhino_oracle/test_divide_probe.py": "6e8f5b43ce625462cbecb2c3043e659b878029b84ed899c74571c781e51acf00",
+    "tools/rhino_oracle/client.py": "a5e5ccd7cac0566c1e191ecff6601aa835580af4a1480d9a77d5e38edcf93329",
+    "tools/rhino_oracle/rhino_worker.py": "9c882d0d3a83110789370b0ac9af2c0a47021be38582149e2ca263e5d27aac57",
+    "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
+    "tools/rhino_oracle/fixtures/divide_command.json": "24d6906950d0fcb01cca55b5c471dd9c6b67ab3fa79ba18817ed9bc26fd8c4d6",
+    "tools/rhino_oracle/observations/divide_command.json": "b472327e34a60607d03a274dc557bec4c273c63f014199f710398f5dbed53674",
+    "docs/divide-command-comparison.json": "cc2a329d26ce28e12ebd64aaac5ba52e20c9b3a63b4083d5896d005cae789ee8",
+    "docs/commands/divide.md": "9a556ebd82e6e805a8d1bdf187241fc875b4cd889f77f0a23086286a6ca9c078",
+    "docs/divide-command.md": "129fedd9b26a09777a9f72d92ba2e2f100b2de86971825d16b8b8fe1377521bf",
+    "docs/divide-diagnostics/before-circular-carrier-local.json": "260ea7f2490fb8632d41f9ca936912083aa5382a4ef291c97e4340afec887d18",
+    "docs/divide-diagnostics/circular-comparison-5e-7.json": "21e91cf486b7d61d5e307bd77d774e4fd01c8c3370ee883b7311ed16389a2bce",
+    "docs/divide-diagnostics/circular-comparison-tight.json": "70a961ca313361d415dc9245806c775ac71166ec9d40402838f1e6385b0418ec",
+    "docs/divide-diagnostics/current-layer-test-before-length-end-policy.txt": "61e88347772fd7e71b0f311a77c32beae81c4060b72a8846931ec13588f13436",
+    "docs/divide-diagnostics/seam-harness-progress.json": "1041c2afc765aa5d46700668e4d5a5bb557c39f6fa010fe2628ddce4123ed167",
+    "docs/divide-capture-helper.json": "f5b438d9ea9fd24a782781ed6e0fc848ab85b3eb6e3b780ab8dfafed0c4073d0"
+  }
+}

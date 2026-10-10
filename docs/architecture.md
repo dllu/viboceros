@@ -860,3 +860,13 @@ from transient Zoom sessions, with command-first source gathering, repeated
 options, retained marks on Escape and one history group across answers. Both
 overlays share a two-entry sampled-edge cache. Sixteen native cancellation
 recipes qualify the command API's retained edits on `OperationDeclined`.
+
+[Divide](commands/divide.md) stages count, length and equal-chord outputs in a
+dedicated command module, with current-layer points, source-attribute split
+pieces, remainder deletion, per-source point groups and one-step history.
+Complete argument lines retain their options through curve picking. The chord
+kernel uses analytic primitive paths and exact rational Bernstein sphere
+equations for general curves. [Native qualification](divide-command.md) covers
+30 recipes; three circular length cases retain documented numerical differences
+at the tighter epsilon. Bare prompting and broader geometry qualification remain
+open.

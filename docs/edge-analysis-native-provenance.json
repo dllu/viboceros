@@ -69,10 +69,8 @@
   "source_sha256": {
     "crates/viboceros-command/src/object_selection.rs": "390d1ae732a3780648970f9e794af5733aa07306681baafbda7112cb0de613c6",
     "crates/viboceros-geometry/src/mesh.rs": "c34f18007f3b4d94710a5922e2eb457149da622e61dcb7776456c2d960de33a5",
-    "crates/viboceros-geometry/src/lib.rs": "321be6bc1e19b7699f8ef10925f2077f845b6080f878318c7bbcedb0b3fa4b2d",
     "src/viewport/edge_picking.rs": "6c7c1ddd1d221716133b5525e3960e0013c9124d996cff9008144c0ab8c00af4",
     "src/viewport/extents.rs": "812065b62d62f38d7f7cce80870dfe8647a7298b40c35dde0bcd98e2633f8f72",
-    "crates/viboceros-oracle/src/lib.rs": "c292e74e004666bdb8f4e1d94ee78fa3d0bfaf8f755d01cee8396b724e65f0e3",
     "tools/rhino_oracle/fixtures/edge_analysis.json": "0b07331bef9619fa848e53940305df1288bc14b90b21af4645909ee0e6228214",
     "tools/rhino_oracle/observations/edge_analysis.json": "8b64b66673195192fff2fc7799f0c3e2a4562102168ec862fd64d2f2fe4885a0",
     "docs/edge-analysis-native-comparison.json": "ef5ac218a45e8f802c57cfc683de689c29b8ed2a6167344e51ec09e65c8ef85a",
@@ -90,6 +88,8 @@
     "docs/edge-input-prior-source/src/app/tests/edge_analysis.rs": "c3756cebcbc4a1c6e3199e8b434bf98d7042ce42fec3a8f171f6156a756dae03",
     "docs/edge-input-prior-source/src/viewport.rs": "93b077e3606b3988001cb4ebbb1aacddc72bb61ac7fae6131a9e2e4ee886d5c3",
     "docs/edge-input-prior-source/src/viewport/display_cache.rs": "afe27922bea41bbc8e479fd38c2414841e71f9dc570761514ae532c4652cb5a5",
-    "docs/edge-input-prior-source/src/viewport/edge_picking/tests.rs": "5b3340edc9075797875375a0db021d7d934c62a13fa22ae1d239b6008e48b5ac"
+    "docs/edge-input-prior-source/src/viewport/edge_picking/tests.rs": "5b3340edc9075797875375a0db021d7d934c62a13fa22ae1d239b6008e48b5ac",
+    "docs/divide-prior-source/crates/viboceros-geometry/src/lib.rs": "321be6bc1e19b7699f8ef10925f2077f845b6080f878318c7bbcedb0b3fa4b2d",
+    "docs/divide-prior-source/crates/viboceros-oracle/src/lib.rs": "c292e74e004666bdb8f4e1d94ee78fa3d0bfaf8f755d01cee8396b724e65f0e3"
   }
 }

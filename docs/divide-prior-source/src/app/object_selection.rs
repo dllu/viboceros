@@ -517,12 +517,7 @@ impl VibocerosApp {
             self.document.clear_selection();
             let command_override = (matches!(
                 description.command,
-                "TweenSurfaces"
-                    | "Rebuild"
-                    | "ShowEdges"
-                    | "ZoomNaked"
-                    | "ZoomNonManifold"
-                    | "Divide"
+                "TweenSurfaces" | "Rebuild" | "ShowEdges" | "ZoomNaked" | "ZoomNonManifold"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());

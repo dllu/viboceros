@@ -5,6 +5,7 @@ commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
 - [ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](show-edges.md)
+- [Divide by count, arc length and chord length; Split and output groups](divide.md)
 - [Block definition management](block-manager.md)
 - [CreateUniqueBlock and definition duplication](create-unique-block.md)
 - [ReplaceBlock](replace-block.md)

@@ -6345,9 +6345,6 @@ def _conversion_session(operation, tolerance):
 
 
 def _execute(operation, iterations, tolerance):
-    if operation.get('op')=='divide_command':
-        import divide_probe
-        return divide_probe.run(operation,tolerance,globals())
     if operation.get('op') == 'edge_analysis':
         import edge_analysis_probe
         return edge_analysis_probe.run(operation, tolerance, globals())
@@ -16901,10 +16898,6 @@ def _main(at_idle=False):
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
-        if not at_idle and any(op.get('op')=='divide_command' for op in request.get('operations',[])):
-            import merge_edges_probe
-            merge_edges_probe.at_idle(Rhino,lambda:_main(True))
-            return
         if not at_idle and any(op.get('op') == 'edge_analysis' and 'workflow' in op for op in request.get('operations', [])):
             import merge_edges_probe
             merge_edges_probe.at_idle(Rhino, lambda: _main(True))

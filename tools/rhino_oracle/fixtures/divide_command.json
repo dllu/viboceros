@@ -1,0 +1,900 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_command",
+      "id": "count-line-s0-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-line-s0-m1",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-line-s1-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-line-s0-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-line-s0-m1",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-line-s1-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-line-s0-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-line-s0-m1",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-line-s1-m0",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-circle-s0-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-circle-s0-m1",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-circle-s1-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-circle-s0-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-circle-s0-m1",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-circle-s1-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-circle-s0-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-circle-s0-m1",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-circle-s1-m0",
+      "sources": [
+        {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 3,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polyline-s0-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polyline-s0-m1",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-polyline-s1-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polyline-s0-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polyline-s0-m1",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-polyline-s1-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polyline-s0-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polyline-s0-m1",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": true,
+      "split": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-polyline-s1-m0",
+      "sources": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              0
+            ],
+            [
+              3,
+              4,
+              0
+            ],
+            [
+              8,
+              4,
+              0
+            ]
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "mark_ends": false,
+      "split": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-line-delete",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.5,
+      "split": true,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "chord-line-delete",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            9,
+            0,
+            0
+          ]
+        }
+      ],
+      "mode": "chord",
+      "value": 2.5,
+      "split": true,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-multiple",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            2,
+            0
+          ],
+          "end": [
+            10,
+            2,
+            0
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "mark_ends": true,
+      "group": true
+    }
+  ]
+}

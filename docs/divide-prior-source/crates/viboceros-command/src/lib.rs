@@ -9,7 +9,6 @@ pub mod blocks;
 pub mod contour;
 mod create_unique_block;
 mod create_uv_curves;
-pub mod divide;
 pub mod edge_analysis;
 pub mod replace_block;
 pub mod section;
@@ -1012,7 +1011,7 @@ impl CommandRegistry {
             .register(VolumeCommand::new(true))
             .expect("unique built-in command");
         registry
-            .register(divide::DivideCommand)
+            .register(DivideCommand)
             .expect("unique built-in command");
         registry
             .register(CrvStartCommand)
@@ -8197,8 +8196,156 @@ impl Command for LayerCommand {
     }
 }
 
+struct DivideCommand;
+
+impl Command for DivideCommand {
+    fn name(&self) -> &'static str {
+        "Divide"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Div"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (specification, mark_ends) = parse_division_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.geometry().clone(), object.attributes().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut output = Vec::new();
+        for (geometry, attributes) in &selected {
+            let curve =
+                geometry_curve_ref(geometry).ok_or(CommandError::UnsupportedDivideGeometry)?;
+            let points =
+                command_division_points(curve, specification, mark_ends, document.tolerance())?;
+            let output_count = output.len().checked_add(points.len()).ok_or(
+                GeometryError::TooManyCurveDivisionPoints {
+                    maximum: MAX_CURVE_DIVISION_POINTS,
+                },
+            )?;
+            if output_count > MAX_CURVE_DIVISION_POINTS {
+                return Err(GeometryError::TooManyCurveDivisionPoints {
+                    maximum: MAX_CURVE_DIVISION_POINTS,
+                }
+                .into());
+            }
+            output.extend(points.into_iter().map(|point| (point, attributes.clone())));
+        }
+        if output.is_empty() {
+            return Err(CommandError::NoCurveDivisionPoints);
+        }
+
+        let mut ids = Vec::with_capacity(output.len());
+        for (point, attributes) in output {
+            ids.push(document.add_geometry_with_attributes(Geometry::Point(point), attributes)?);
+        }
+        replace_selection(document, ids.iter().copied())?;
+        Ok(format!(
+            "Divided {} curve(s), adding {} point(s)",
+            selected.len(),
+            ids.len()
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+enum DivisionSpecification {
+    Count(usize),
+    Length(Real),
+}
+
+fn parse_division_arguments(
+    arguments: &[&str],
+) -> Result<(DivisionSpecification, bool), CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(
+            "Divide segment-count [MarkEnds] | Divide Length segment-length [MarkEnds]",
+        ));
+    };
+    let (specification, option_index) = if first.eq_ignore_ascii_case("length") {
+        let value = arguments.get(1).ok_or(CommandError::Usage(
+            "Divide Length segment-length [MarkEnds]",
+        ))?;
+        (DivisionSpecification::Length(parse_finite_real(value)?), 2)
+    } else {
+        let count = first
+            .parse::<usize>()
+            .map_err(|_| CommandError::InvalidInteger((*first).to_owned()))?;
+        (DivisionSpecification::Count(count), 1)
+    };
+    let mark_ends = match &arguments[option_index..] {
+        [] => false,
+        [option] if option.eq_ignore_ascii_case("MarkEnds") => true,
+        _ => {
+            return Err(CommandError::Usage(
+                "Divide segment-count [MarkEnds] | Divide Length segment-length [MarkEnds]",
+            ));
+        }
+    };
+    Ok((specification, mark_ends))
+}
+
 fn geometry_curve_ref(geometry: &Geometry) -> Option<CurveRef<'_>> {
     geometry.curve_ref()
+}
+
+fn command_division_points(
+    curve: CurveRef<'_>,
+    specification: DivisionSpecification,
+    mark_ends: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<Point3>, CommandError> {
+    let closed = curve.is_closed()?;
+    let mut points = match specification {
+        DivisionSpecification::Count(count) => {
+            let mut points = curve.divide_by_count(count, true, tolerance)?;
+            if !closed && !mark_ends {
+                points.remove(0);
+                points.pop();
+            }
+            return Ok(points);
+        }
+        DivisionSpecification::Length(length) => curve.divide_by_length(length, true, tolerance)?,
+    };
+
+    let start = curve.start_point()?;
+    let end = curve.end_point()?;
+    if closed {
+        if points.len() > 1
+            && points
+                .last()
+                .is_some_and(|point| point.is_near(start, tolerance))
+        {
+            points.pop();
+        }
+    } else if mark_ends {
+        if let Some(last) = points.last_mut()
+            && last.is_near(end, tolerance)
+        {
+            *last = end;
+        } else {
+            points.push(end);
+        }
+    } else {
+        if points
+            .last()
+            .is_some_and(|point| point.is_near(end, tolerance))
+        {
+            points.pop();
+        }
+        if points
+            .first()
+            .is_some_and(|point| point.is_near(start, tolerance))
+        {
+            points.remove(0);
+        }
+    }
+    Ok(points)
 }
 
 struct CrvStartCommand;
@@ -21526,7 +21673,7 @@ mod tests {
     }
 
     #[test]
-    fn divides_selected_curves_by_count_or_length_on_current_layer_and_preserves_source() {
+    fn divides_selected_curves_by_count_or_length_and_preserves_attributes() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry
@@ -21538,8 +21685,6 @@ mod tests {
             .execute(&mut document, "Layer Current Default")
             .unwrap();
         registry.execute(&mut document, "SelAll").unwrap();
-        let source = document.objects().next().unwrap().id();
-        let output_layer = document.current_layer_id();
 
         assert_eq!(
             registry.execute(&mut document, "Div 5").unwrap(),
@@ -21550,7 +21695,7 @@ mod tests {
         let mut points = document
             .selected_objects()
             .map(|object| {
-                assert_eq!(object.attributes().layer_id(), output_layer);
+                assert_eq!(object.attributes().layer_id(), source_layer);
                 let Geometry::Point(point) = object.geometry() else {
                     panic!("expected a division point")
                 };
@@ -21558,10 +21703,6 @@ mod tests {
             })
             .collect::<Vec<_>>();
         points.sort_by(|left, right| left.x().total_cmp(&right.x()));
-        assert_eq!(
-            document.object(source).unwrap().attributes().layer_id(),
-            source_layer
-        );
         assert_eq!(
             points,
             [2.0, 4.0, 6.0, 8.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
@@ -21575,7 +21716,7 @@ mod tests {
             registry
                 .execute(&mut document, "Divide Length 3 MarkEnds")
                 .unwrap(),
-            "Divided 1 curve(s), adding 4 point(s)"
+            "Divided 1 curve(s), adding 5 point(s)"
         );
         let mut points = document
             .selected_objects()
@@ -21587,7 +21728,7 @@ mod tests {
         points.sort_by(|left, right| left.x().total_cmp(&right.x()));
         assert_eq!(
             points,
-            [0.0, 3.0, 6.0, 9.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+            [0.0, 3.0, 6.0, 9.0, 10.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
         );
     }
 

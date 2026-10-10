@@ -1585,3 +1585,21 @@ diff checks and 1,619 source pins pass. An earlier full run exited 143 without
 failure markers; its terminal handle was verified before the successful rerun.
 Detailed evidence is in [provenance](edge-input-provenance.json). Native widget
 details, highlight styling, camera framing and broader geometry remain open.
+
+## Divide checkpoint
+
+[Divide](divide-command.md) adds equal-chord stations, Split, DeleteRemainder and
+GroupOutput with atomic output staging, one-step Undo and complete argument
+retention through curve picking. Native captures establish current-layer point
+attributes, per-source point grouping, ungrouped split outputs, circular-NURBS
+arc simplification and the Length MarkEnds remainder policy.
+
+The final workspace release run passes 5,631 Rust tests with zero failures and
+38 ignored tests. All 1,077 Python tests, Clippy with warnings denied and
+formatting pass. The permanent replay checks every output field in 30 native
+recipes: 27 match at 1e-9 absolute plus 1e-12 relative epsilon; three circular
+length cases require 5e-7 absolute epsilon, with maximum difference
+1.1752123363351075e-7. No fields are excluded and no timing comparison was made.
+[Provenance](divide-command-provenance.json) retains source and validation hashes.
+Tighter circular length parity, broad rational-curve qualification, bare-value
+prompting, preview, seam/direction changes, SubCrv and performance remain open.

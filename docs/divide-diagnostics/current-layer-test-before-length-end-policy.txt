@@ -1,0 +1,64 @@
+fn divides_selected_curves_by_count_or_length_on_current_layer_and_preserves_source() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Construction")
+            .unwrap();
+        let source_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let source = document.objects().next().unwrap().id();
+        let output_layer = document.current_layer_id();
+
+        assert_eq!(
+            registry.execute(&mut document, "Div 5").unwrap(),
+            "Divided 1 curve(s), adding 4 point(s)"
+        );
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.selected_object_count(), 4);
+        let mut points = document
+            .selected_objects()
+            .map(|object| {
+                assert_eq!(object.attributes().layer_id(), output_layer);
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected a division point")
+                };
+                *point
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            document.object(source).unwrap().attributes().layer_id(),
+            source_layer
+        );
+        assert_eq!(
+            points,
+            [2.0, 4.0, 6.0, 8.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+        );
+        assert_eq!(document.undo_label(), Some("Divide"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Divide Length 3 MarkEnds")
+                .unwrap(),
+            "Divided 1 curve(s), adding 5 point(s)"
+        );
+        let mut points = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected a division point"),
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            points,
+            [0.0, 3.0, 6.0, 9.0, 10.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+        );
+    }
