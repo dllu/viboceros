@@ -44,36 +44,6 @@ mod tests {
     use std::borrow::Cow;
 
     #[test]
-    fn non_dyadic_turnaround_length_and_stations_agree_with_exact_total_variation() {
-        let p = |x| Point3::try_new(x, 0., 0.).unwrap();
-        let curve = NurbsCurve::try_new(
-            2,
-            vec![p(0.), p(2.5), p(-1.25)],
-            vec![0., 0., 0., 1., 1., 1.],
-        )
-        .unwrap();
-        let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-10).unwrap();
-        for domain in [0.0..=1.0, 100.0..=105.0, 0.0..=1e-200, 0.0..=1e200] {
-            let mapped = curve.clone().try_reparameterized(domain.clone()).unwrap();
-            assert!(
-                (mapped.length(tolerance).unwrap() - 3.25).abs() < 1e-11,
-                "{domain:?}"
-            );
-            let stations = crate::CurveRef::NurbsCurve(&mapped)
-                .divide_by_count_samples(4, true, tolerance)
-                .unwrap();
-            assert_eq!(stations.len(), 5);
-            for (station, x) in stations.iter().zip([0., 0.8125, 0.375, -0.4375, -1.25]) {
-                assert!(
-                    (station.point().x() - x).abs() < 1e-10,
-                    "{domain:?}: {:?}",
-                    station.point()
-                );
-            }
-        }
-    }
-
-    #[test]
     fn rational_circle_length_survives_extreme_multispan_domains() {
         let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-10).unwrap();
         let curve = Circle3::try_new(

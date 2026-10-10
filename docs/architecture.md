@@ -884,3 +884,10 @@ complex roots with a bounded Sturm check. Native source inspection corrects
 Circle recipe representation; explicit NURBS-circle splits retain their original
 rational parameters. Extreme-weight and turnaround Split differences remain
 recorded diagnostics.
+
+[Cusp arc length](arc-length-cusps.md) uses global estimated-error refinement
+with exact running sums. A non-dyadic turnaround no longer exhausts a local
+depth limit, and signed cancellation respects the global absolute tolerance.
+Roundoff-limited intervals leave other refinable intervals active. Eighteen
+native Divide recipes now execute; three native cusp inversion differences
+remain raw diagnostics.

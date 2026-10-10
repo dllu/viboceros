@@ -1646,3 +1646,26 @@ formatting and diff checks pass. [Provenance](divide-curved-provenance.json)
 records sources, captured helper versions, raw diagnostics and final reports.
 Cusp arc-length integration, native extreme Split policies, general extreme
 domains and broad geometry/performance qualification remain open.
+
+## Cusp arc-length checkpoint
+
+[Global integration refinement](arc-length-cusps.md) fixes the non-dyadic
+turnaround length failure and a signed-cancellation error outside the requested
+absolute tolerance. Exact finite sums track interval values and estimated
+errors; the largest refinable error drives subdivision. Stable intervals at
+roundoff remain in the global sum while other intervals continue refining.
+
+Five new kernel regressions verify a closed-form cusp integral, signed
+cancellation, bounded roundoff failure, refinement beside a large constant
+interval, and exact backtracking NURBS length/stations across four parameter
+domains. Eighteen fresh licensed Rhino Divide recipes under private Xvfb now
+execute locally, compared with zero successes previously. Fifteen match at
+5e-7 absolute plus 1e-12 relative epsilon. Three cusp inversion records remain
+full-field diagnostics; no output is fitted to hide those differences.
+
+The final release run passes 5,651 Rust tests with zero failures and 38 ignored
+tests. All 1,077 Python tests, Clippy with warnings denied, formatting and diff
+checks pass. [Provenance](arc-length-cusp-provenance.json) binds current sources,
+native recipes, rejected results and final comparison. Unsampled sharp features,
+extreme rational weights, native cusp inversion and full geometry/performance
+qualification remain open.

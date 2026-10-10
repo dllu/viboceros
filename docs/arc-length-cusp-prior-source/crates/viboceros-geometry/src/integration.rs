@@ -1,6 +1,6 @@
-use crate::{FiniteSum, GeometryError, Real, require_finite, vector::product_three};
-use std::{cmp::Ordering, collections::BinaryHeap};
+use crate::{GeometryError, Real, require_finite, vector::product_three};
 
+const MAX_ADAPTIVE_DEPTH: u32 = 24;
 const MAX_ADAPTIVE_INTERVALS: usize = 65_536;
 
 // Positive abscissae and weights for the embedded Gauss 7 / Kronrod 15 rule.
@@ -45,107 +45,73 @@ pub(crate) fn integrate_adaptive(
     if start >= end || absolute_tolerance <= 0.0 || relative_tolerance <= 0.0 {
         return Err(GeometryError::NumericalIntegrationDidNotConverge);
     }
-    let estimate = gauss_kronrod_15(start, end, &mut integrand)?;
-    if estimate.error <= absolute_tolerance.max(relative_tolerance * estimate.value.abs()) {
-        return Ok(estimate.value);
-    }
-    let mut values = FiniteSum::default();
-    let mut errors = FiniteSum::default();
-    values.add(estimate.value)?;
-    errors.add(estimate.error)?;
-    let mut intervals = BinaryHeap::from([AdaptiveInterval {
+    let mut remaining_intervals = MAX_ADAPTIVE_INTERVALS;
+    adaptive_interval(
         start,
         end,
-        estimate,
-    }]);
-    let mut evaluated = 1;
-    loop {
-        let value = values.total()?;
-        let error = errors.total()?;
-        let target = absolute_tolerance.max(relative_tolerance * value.abs());
-        if error <= target {
-            return Ok(value);
-        }
-        if evaluated + 2 > MAX_ADAPTIVE_INTERVALS {
-            return Err(GeometryError::NumericalIntegrationDidNotConverge);
-        }
-        let parent = intervals
-            .pop()
-            .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
-        let midpoint = parent.start.midpoint(parent.end);
-        if midpoint <= parent.start || midpoint >= parent.end {
-            return Err(GeometryError::NumericalIntegrationDidNotConverge);
-        }
-        let left = gauss_kronrod_15(parent.start, midpoint, &mut integrand)?;
-        let right = gauss_kronrod_15(midpoint, parent.end, &mut integrand)?;
-        evaluated += 2;
-        // A stable interval at its roundoff floor cannot improve by splitting.
-        // Keep its estimate in the global sums, but allow other intervals to
-        // reduce their errors. An empty refinement heap rejects unattainable
-        // precision promptly. Larger child errors reveal new uncertainty and
-        // must still be admitted, even when the parent was at its floor.
-        let mut change = FiniteSum::default();
-        change.add(left.value)?;
-        change.add(right.value)?;
-        change.add(-parent.estimate.value)?;
-        let child_error = left.error + right.error;
-        if parent.estimate.error <= 64. * Real::EPSILON * parent.estimate.absolute
-            && child_error >= 0.99 * parent.estimate.error
-            && child_error <= 1.01 * parent.estimate.error
-            && change.total()?.abs() <= 64. * Real::EPSILON * parent.estimate.absolute
-        {
-            continue;
-        }
-        values.add(-parent.estimate.value)?;
-        values.add(left.value)?;
-        values.add(right.value)?;
-        errors.add(-parent.estimate.error)?;
-        errors.add(left.error)?;
-        errors.add(right.error)?;
-        intervals.push(AdaptiveInterval {
-            start: parent.start,
-            end: midpoint,
-            estimate: left,
-        });
-        intervals.push(AdaptiveInterval {
-            start: midpoint,
-            end: parent.end,
-            estimate: right,
-        });
-    }
+        absolute_tolerance,
+        relative_tolerance,
+        0,
+        &mut remaining_intervals,
+        &mut integrand,
+    )
 }
 
-struct AdaptiveInterval {
+fn adaptive_interval(
     start: Real,
     end: Real,
-    estimate: IntegrationEstimate,
-}
-
-impl Ord for AdaptiveInterval {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.estimate
-            .error
-            .total_cmp(&other.estimate.error)
-            .then_with(|| other.start.total_cmp(&self.start))
-            .then_with(|| other.end.total_cmp(&self.end))
+    absolute_tolerance: Real,
+    relative_tolerance: Real,
+    depth: u32,
+    remaining_intervals: &mut usize,
+    integrand: &mut impl FnMut(Real) -> Result<Real, GeometryError>,
+) -> Result<Real, GeometryError> {
+    let Some(remaining) = remaining_intervals.checked_sub(1) else {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    };
+    *remaining_intervals = remaining;
+    let estimate = gauss_kronrod_15(start, end, integrand)?;
+    let target = absolute_tolerance.max(relative_tolerance * estimate.value.abs());
+    if estimate.error <= target {
+        return Ok(estimate.value);
     }
-}
-impl PartialOrd for AdaptiveInterval {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+    if depth >= MAX_ADAPTIVE_DEPTH {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
     }
-}
-impl PartialEq for AdaptiveInterval {
-    fn eq(&self, other: &Self) -> bool {
-        self.cmp(other) == Ordering::Equal
+    let midpoint = start * 0.5 + end * 0.5;
+    if midpoint <= start || midpoint >= end {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
     }
+    let child_tolerance = absolute_tolerance * 0.5;
+    if child_tolerance <= 0.0 {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    }
+    let left = adaptive_interval(
+        start,
+        midpoint,
+        child_tolerance,
+        relative_tolerance,
+        depth + 1,
+        remaining_intervals,
+        integrand,
+    )?;
+    let right = adaptive_interval(
+        midpoint,
+        end,
+        child_tolerance,
+        relative_tolerance,
+        depth + 1,
+        remaining_intervals,
+        integrand,
+    )?;
+    let value = left + right;
+    require_finite([value], "numerical integral")?;
+    Ok(value)
 }
-impl Eq for AdaptiveInterval {}
 
 struct IntegrationEstimate {
     value: Real,
     error: Real,
-    absolute: Real,
 }
 
 fn gauss_kronrod_15(
@@ -174,7 +140,6 @@ fn gauss_kronrod_15(
         return Ok(IntegrationEstimate {
             value: 0.0,
             error: 0.0,
-            absolute: 0.0,
         });
     }
 
@@ -235,11 +200,7 @@ fn gauss_kronrod_15(
         [value, error, absolute_integral, ascending_integral],
         "numerical integration estimate",
     )?;
-    Ok(IntegrationEstimate {
-        value,
-        error,
-        absolute: absolute_integral,
-    })
+    Ok(IntegrationEstimate { value, error })
 }
 
 fn checked_integrand(value: Real) -> Result<Real, GeometryError> {
@@ -268,52 +229,5 @@ mod tests {
     fn rejects_invalid_intervals_and_nonfinite_integrands() {
         assert!(integrate_adaptive(1.0, 0.0, 1.0e-9, 1.0e-12, |_| Ok(1.0)).is_err());
         assert!(integrate_adaptive(0.0, 1.0, 1.0e-9, 1.0e-12, |_| Ok(Real::NAN)).is_err());
-    }
-
-    #[test]
-    fn localized_non_dyadic_cusp_uses_a_global_error_budget() {
-        let mut evaluations = 0;
-        let value = integrate_adaptive(0., 1., 1e-12, 1e-12, |x| {
-            evaluations += 1;
-            Ok((x - 0.4).abs())
-        })
-        .unwrap();
-        assert!((value - 0.26).abs() <= 1e-12);
-        assert!(evaluations < 1000, "{evaluations}");
-    }
-
-    #[test]
-    fn signed_cancellation_keeps_the_global_absolute_tolerance() {
-        let value =
-            integrate_adaptive(0., 1., 1e-12, 1e-4, |x| Ok((x - 0.4).abs() - 0.26)).unwrap();
-        assert!(value.abs() <= 1e-12, "{value}");
-    }
-
-    #[test]
-    fn unattainable_roundoff_precision_fails_without_exhausting_the_work_budget() {
-        let mut evaluations = 0;
-        let result = integrate_adaptive(0., 1., 1e-30, 1e-30, |_| {
-            evaluations += 1;
-            Ok(1.)
-        });
-        assert_eq!(
-            result,
-            Err(GeometryError::NumericalIntegrationDidNotConverge)
-        );
-        assert!(evaluations <= 45, "{evaluations}");
-    }
-
-    #[test]
-    fn a_roundoff_limited_interval_does_not_block_refinement_elsewhere() {
-        let value = integrate_adaptive(0., 1., 1e-4, 1e-16, |x| {
-            Ok(if x < 0.5 {
-                1e10
-            } else {
-                (20000. * (x - 0.5)).sin()
-            })
-        })
-        .unwrap();
-        let expected = 5e9 + (1. - 10000_f64.cos()) / 20000.;
-        assert!((value - expected).abs() <= 1e-4, "{value} != {expected}");
     }
 }

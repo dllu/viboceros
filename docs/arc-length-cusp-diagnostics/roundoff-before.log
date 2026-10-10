@@ -1,0 +1,22 @@
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 3m 28s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_geometry-e78e4975e15b7a19)
+
+running 1 test
+test integration::tests::a_roundoff_limited_interval_does_not_block_refinement_elsewhere ... FAILED
+
+failures:
+
+---- integration::tests::a_roundoff_limited_interval_does_not_block_refinement_elsewhere stdout ----
+
+thread 'integration::tests::a_roundoff_limited_interval_does_not_block_refinement_elsewhere' (3996709) panicked at crates/viboceros-geometry/src/integration.rs:301:12:
+called `Result::unwrap()` on an `Err` value: NumericalIntegrationDidNotConverge
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    integration::tests::a_roundoff_limited_interval_does_not_block_refinement_elsewhere
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2130 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p viboceros-geometry --lib`

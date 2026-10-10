@@ -1,0 +1,188 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "count-planar-s0-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-planar-s0-m1-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-planar-s1-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-s0-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-s0-m1-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-s1-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-s1-m0-d1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-cusp-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-planar-cusp-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-spatial-s0-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-spatial-s0-m1-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "count-spatial-s1-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-s0-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-s0-m1-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-s1-m0-d0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-s1-m0-d1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-cusp-s0",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    },
+    {
+      "id": "length-spatial-cusp-s1",
+      "value": {
+        "group_count": 0,
+        "input_count": 1,
+        "outputs": [],
+        "succeeded": false
+      },
+      "elapsed_ns": 0
+    }
+  ]
+}

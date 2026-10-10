@@ -1,0 +1,902 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "divide_command",
+      "id": "count-planar-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-planar-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-planar-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 0.4,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 0.4,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 0.4,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 0.4,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-cusp-s0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 1,
+      "split": false,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-planar-cusp-s1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2.5,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1.25,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 1,
+      "split": true,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-spatial-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-spatial-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "count-spatial-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "count",
+      "value": 4,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-s0-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.8,
+      "split": false,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-s0-m1-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.8,
+      "split": false,
+      "mark_ends": true,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-s1-m0-d0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.8,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": false,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-s1-m0-d1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 2.8,
+      "split": true,
+      "mark_ends": false,
+      "delete_remainder": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-cusp-s0",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 7,
+      "split": false,
+      "mark_ends": true,
+      "group": true
+    },
+    {
+      "op": "divide_command",
+      "id": "length-spatial-cusp-s1",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                10,
+                -4,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                15,
+                3.5,
+                17
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7.5,
+                -7.75,
+                -5.5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "mode": "length",
+      "value": 7,
+      "split": true,
+      "mark_ends": true,
+      "group": true
+    }
+  ]
+}

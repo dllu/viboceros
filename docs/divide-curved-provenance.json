@@ -109,7 +109,6 @@
     "crates/viboceros-command/src/divide.rs": "e5c824b48a0af71ce00670d6e6eecb2d047cb3fb7a998ce44fd5e8fc68f70f9c",
     "crates/viboceros-geometry/src/curve/chord_division.rs": "c242b22846765411c441ace1bee6a58e578abb8bde661376f1a47985ae1f5d19",
     "crates/viboceros-geometry/src/curve/chord_division/roots.rs": "cbe3edbe60d9b08db9c4240602da36ca63c5318f31b7bd1018b67fae6c39bd80",
-    "crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68",
     "crates/viboceros-oracle/src/divide_command.rs": "a266d54388700e691728d0c7ee3e820c3f6787f76b97c57cbee799ac78104c9d",
     "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
     "crates/viboceros-oracle/tests/divide_curved.rs": "661f01590946f6d61f7b08a0b0e0209fea9197cfc3c49afa9f2fa4c1bda2798b",
@@ -141,6 +140,7 @@
     "docs/divide-curved-diagnostics/nurbs-circle-local-final.json": "54ecfd8c0836c7afc947b95953d299662c49e7bd1973fffb9116af1997485a0c",
     "docs/divide-curved-diagnostics/source-types-native.json": "57f85f047225f0df56475ef97266ec2b014961bfc047a1cc054586872af6b2c0",
     "docs/divide-curved-diagnostics/source-types-request.json": "fa3c645cf4460f6fe14965f2ac44c317b2591de41833aea6869191261b00bd0c",
-    "docs/divide-curved-diagnostics/weighted-regression-before.log": "43b9a40559a15bf3840b5a1fa091e07e2b5f2b3b44368ffc299426fee03bb650"
+    "docs/divide-curved-diagnostics/weighted-regression-before.log": "43b9a40559a15bf3840b5a1fa091e07e2b5f2b3b44368ffc299426fee03bb650",
+    "docs/arc-length-cusp-prior-source/crates/viboceros-geometry/src/nurbs/arc_length.rs": "6866e2e03c467a9554ca8a7572154a70ff93613c2d59297d4041684e6f91fd68"
   }
 }
