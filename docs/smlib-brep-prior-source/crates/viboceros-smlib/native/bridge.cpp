@@ -154,15 +154,6 @@ extern "C" void vb_solid_free(VbSolid *solid) {
     delete solid;
 }
 
-extern "C" int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity) {
-    if (out)
-        *out = nullptr;
-    return guarded(error, capacity, [&] {
-        require(solid && out, "Invalid solid export");
-        *out = vb_export_brep(*solid->value);
-    });
-}
-
 extern "C" int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out,
                              char *error, size_t capacity) {
     if (out)

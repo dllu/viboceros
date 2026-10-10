@@ -72,20 +72,12 @@
     "General imported geometry, periodic topology, fillets, healing, scale extremes and empty Boolean outputs remain unqualified"
   ],
   "source_sha256": {
-    "Cargo.lock": "e653124baec6d7be47612838642e04c4b02fe603349607ae7b77b27c6944100f",
     "Cargo.toml": "eb153e329fbd969ce807a9d008ee71b7b6d20bee847788410ac90ddb0c50d2d7",
-    "crates/viboceros-smlib/Cargo.toml": "9ff9bcccffd474d8d89dd3a6f13af4c3c7bdd9b0b2c581994ffa540e7bfb6541",
     "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
     "crates/viboceros-smlib/examples/reference.rs": "e000e34301d30c6b65d0fd7ea26033d040fa94e64c245ec9f46bdafdc55baeef",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "295cbfb45d51acc1b8e63648a983c4b499f6a1dabd7b4e336d17834928738b5d",
-    "crates/viboceros-smlib/native/bridge.cpp": "b49c4dd024d515708ffc4bbe09106d033a2e4c93e8752fd7d151f4d9bb7c0326",
-    "crates/viboceros-smlib/native/bridge.h": "d6d197ce324b809f6a7a49d0f3f3e0d8edca3b9a66033868cb43eaebd914e1a5",
-    "crates/viboceros-smlib/src/lib.rs": "00a4a1dc85517dcd344bf50fb0d77bcf30d36fcdd27f81c5b02e473ff42358ac",
-    "crates/viboceros-smlib/src/native.rs": "306fee9a7a92b2868a0ca1689987afa6dbf3e81050bf7d68ceae16d3f0a05c6f",
     "crates/viboceros-smlib/tests/native.rs": "bd82038b22187b93a45ef1a14210e7d545520204eec69dd71681fe0d3d42585b",
     "crates/viboceros-smlib/tests/rhino_reference.rs": "5fc069aa154f59c32c1154c497e8ffae5d1c8cb1d7994112468992ed51c260d1",
-    "docs/development.md": "9c2037ba54c3052809e11871ffaa39eaf02c292dc66689693565a3f07321ab23",
     "docs/smlib-bridge-capture-source/final-initial/tools/rhino_oracle/smlib_reference_probe.py": "7ff89a854e3e268cf67bb65e0d2d236c772f3a36f8e21faf0116ac42d559ccaa",
     "docs/smlib-bridge-capture-source/initial/tools/rhino_oracle/client.py": "041d167b0612679e2b7542e58f5429b917329f5c4f0dae191ecc4a25affa5aff",
     "docs/smlib-bridge-capture-source/initial/tools/rhino_oracle/rhino_worker.py": "0e8f4c3d32b5a0f00ed18a9edb488b1ecda30cb5e5657cb75af8ad2696a2d69e",
@@ -111,7 +103,6 @@
     "docs/smlib-bridge-prior-source/docs/development.md": "aab1917ec7d9c371a93b9de59740b42c824b829fc6a3e5e1ed7cf4f69ab1576f",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/client.py": "86cb19f8284ad993b651b4e984e6283369ac89709d4d1848b1db584b550589e3",
     "docs/smlib-bridge-prior-source/tools/rhino_oracle/rhino_worker.py": "036f4bec11683a293ae2a72879ef689dce10c543b33839b207068be12b5d14c1",
-    "docs/smlib-bridge.md": "02ea593357a8799f51f41e05470aaff8ee35ceda3660cb001c11eacec7fac24c",
     "docs/usd-brep.md": "7481145c5bc18e48533ae49d93b693217779e7e3d32f92af0de2f0d817ba2a1b",
     "tools/rhino_oracle/client.py": "2c4a2fa7af016a4837cbe86070f8daac5d6c3fea66e6cf74e9b0e5631971a6a6",
     "tools/rhino_oracle/fixtures/smlib_reference.json": "cba822c949ebfb881aee442bda3ec246dc1d8216b5e91838de9f4d19b0bc0322",
@@ -120,6 +111,15 @@
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/rhino_oracle/smlib_reference_probe.py": "5f15a46455b24a3b766be602584e367ecbc8a3d7c9e2bc15a2986452f278a0d8",
     "tools/rhino_oracle/test_smlib_reference_probe.py": "051710efc3c0c93414a2e5c1ee4e492757796d3dfa152315109c216b613d1657",
-    "docs/smlib-bridge-diagnostics/plate-mesh-audit.json": "ae9bf8212d1e9cf4763189e5aef5e72e42b245fe52f4eee830a4f89006b7d246"
+    "docs/smlib-bridge-diagnostics/plate-mesh-audit.json": "ae9bf8212d1e9cf4763189e5aef5e72e42b245fe52f4eee830a4f89006b7d246",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/native/CMakeLists.txt": "295cbfb45d51acc1b8e63648a983c4b499f6a1dabd7b4e336d17834928738b5d",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/native/bridge.cpp": "b49c4dd024d515708ffc4bbe09106d033a2e4c93e8752fd7d151f4d9bb7c0326",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/native/bridge.h": "d6d197ce324b809f6a7a49d0f3f3e0d8edca3b9a66033868cb43eaebd914e1a5",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/native.rs": "306fee9a7a92b2868a0ca1689987afa6dbf3e81050bf7d68ceae16d3f0a05c6f",
+    "docs/smlib-brep-prior-source/Cargo.lock": "e653124baec6d7be47612838642e04c4b02fe603349607ae7b77b27c6944100f",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/Cargo.toml": "9ff9bcccffd474d8d89dd3a6f13af4c3c7bdd9b0b2c581994ffa540e7bfb6541",
+    "docs/smlib-brep-prior-source/docs/smlib-bridge.md": "02ea593357a8799f51f41e05470aaff8ee35ceda3660cb001c11eacec7fac24c",
+    "docs/smlib-brep-prior-source/docs/development.md": "9c2037ba54c3052809e11871ffaa39eaf02c292dc66689693565a3f07321ab23",
+    "docs/smlib-brep-prior-source/crates/viboceros-smlib/src/lib.rs": "00a4a1dc85517dcd344bf50fb0d77bcf30d36fcdd27f81c5b02e473ff42358ac"
   }
 }

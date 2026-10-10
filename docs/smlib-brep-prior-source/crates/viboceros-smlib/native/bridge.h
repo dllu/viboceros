@@ -1,6 +1,5 @@
 #ifndef VIBOCEROS_SMLIB_H
 #define VIBOCEROS_SMLIB_H
-#include "brep_data.h"
 #include <stddef.h>
 #include <stdint.h>
 #ifdef __cplusplus
@@ -16,7 +15,6 @@ int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, VbSolid 
 int vb_solid_properties(const VbSolid *solid, double accuracy, double *volume, double bounds[6],
                         int *manifold, char *error, size_t capacity);
 void vb_solid_free(VbSolid *solid);
-int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity);
 int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, char *error,
                   size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);

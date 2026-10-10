@@ -1,0 +1,78 @@
+{
+  "native_engine": "8.32.26160.13001",
+  "cases": [
+    {
+      "id": "box",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 0.0,
+      "numeric_fields": 5690
+    },
+    {
+      "id": "cylinder",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 2023
+    },
+    {
+      "id": "sphere",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 1029
+    },
+    {
+      "id": "through_hole",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 5.329070518200751e-15,
+      "numeric_fields": 7171
+    },
+    {
+      "id": "pocket",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 6999
+    },
+    {
+      "id": "cavity",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 2.6645352591003757e-15,
+      "numeric_fields": 6719
+    },
+    {
+      "id": "box_union",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 13412
+    },
+    {
+      "id": "box_intersection",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 5690
+    },
+    {
+      "id": "box_difference",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 3.552713678800501e-15,
+      "numeric_fields": 9551
+    },
+    {
+      "id": "plate",
+      "qualified": true,
+      "errors": [],
+      "maximum_absolute_error": 5.329070518200751e-15,
+      "numeric_fields": 29386
+    }
+  ],
+  "absolute_epsilon": 1e-12,
+  "relative_epsilon": 1e-12,
+  "fields": "Exact topology and all expected definitions, tolerances, edge/face and lifted trim samples. Native additional mesh fields are retained separately."
+}

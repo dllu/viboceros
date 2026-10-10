@@ -1,0 +1,16 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 5.88s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/export_breps /tmp/viboceros-smlib-brep-final`
+box: 6 faces, 12 edges, 8 vertices, volume 1000.000000000000
+cylinder: 3 faces, 3 edges, 2 vertices, volume 150.796447372310
+sphere: STEP remains unsupported: STEP native export cannot represent B-rep 0: singular UV trim has no STEP edge
+sphere: 1 faces, 1 edges, 2 vertices, volume 33.510321638291
+through_hole: 7 faces, 15 edges, 10 vertices, volume 874.336293856408
+pocket: STEP remains unsupported: STEP native export cannot represent B-rep 0: singular UV trim has no STEP edge
+pocket: 7 faces, 14 edges, 10 vertices, volume 983.244839180854
+cavity: STEP remains unsupported: STEP native export cannot represent B-rep 0: singular UV trim has no STEP edge
+cavity: 7 faces, 13 edges, 10 vertices, volume 966.489678361709
+box_union: 12 faces, 30 edges, 20 vertices, volume 1720.000000000000
+box_intersection: 6 faces, 12 edges, 8 vertices, volume 280.000000000000
+box_difference: 9 faces, 21 edges, 14 vertices, volume 720.000000000000
+plate: 22 faces, 60 edges, 40 vertices, volume 173.588499176538

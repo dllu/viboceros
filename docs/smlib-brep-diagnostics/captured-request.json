@@ -1,0 +1,56 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/box.3dm",
+      "id": "box",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/cylinder.3dm",
+      "id": "cylinder",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/sphere.3dm",
+      "id": "sphere",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/through_hole.3dm",
+      "id": "through_hole",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/pocket.3dm",
+      "id": "pocket",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/cavity.3dm",
+      "id": "cavity",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/box_union.3dm",
+      "id": "box_union",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/box_intersection.3dm",
+      "id": "box_intersection",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/box_difference.3dm",
+      "id": "box_difference",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-smlib-brep-qualified/plate.3dm",
+      "id": "plate",
+      "op": "three_dm_brep_interchange"
+    }
+  ],
+  "protocol_version": 1
+}

@@ -2,6 +2,7 @@
 mod curved_pcurve;
 mod extrusion;
 mod pcurve_certificate;
+mod seam_loops;
 use super::{StepError, Table, native_planar, reported_trimmed_shell};
 use monstertruck::core::cgmath64::{InnerSpace, Transform as _};
 use monstertruck::meshing::prelude::{BoundedCurve, ParametricCurve, ParametricSurface};
@@ -88,12 +89,47 @@ pub(super) fn convert_shell(
         for boundary in &face.boundaries {
             let mut trims = Vec::with_capacity(boundary.len());
             let mut previous_end = None;
-            for use_ in boundary {
+            let seam_uses = if boundary.iter().any(|use_| repeated_on_face[use_.index]) {
+                boundary.as_slice()
+            } else {
+                &[]
+            };
+            let mut choices = Vec::with_capacity(seam_uses.len());
+            for use_ in seam_uses {
                 let source = use_
                     .trim_curve
                     .as_ref()
                     .ok_or_else(|| unsupported("missing UV trim"))?;
-                let mut curve = trim_curve(source.curve().as_ref(), id)?;
+                let mut candidates = if repeated_on_face[use_.index] {
+                    seam_loops::alternatives(
+                        &shell.edges[use_.index].curve,
+                        &face.surface,
+                        !use_.orientation,
+                        id,
+                    )?
+                } else {
+                    Vec::new()
+                };
+                if candidates.is_empty() {
+                    candidates.push(trim_curve(source.curve().as_ref(), id)?);
+                }
+                choices.push(candidates);
+            }
+            let selected = if choices.iter().any(|c| c.len() > 1) {
+                Some(seam_loops::select(&choices, periodic_axes, tolerance, id)?)
+            } else {
+                None
+            };
+            for (use_index, use_) in boundary.iter().enumerate() {
+                let source = use_
+                    .trim_curve
+                    .as_ref()
+                    .ok_or_else(|| unsupported("missing UV trim"))?;
+                let mut curve = if let Some(selected) = &selected {
+                    selected[use_index].clone()
+                } else {
+                    trim_curve(source.curve().as_ref(), id)?
+                };
                 if periodic_axes != [false; 2] {
                     if let Some(end) = previous_end {
                         curve = align_periodic_trim(curve, end, periodic_axes, tolerance)?;

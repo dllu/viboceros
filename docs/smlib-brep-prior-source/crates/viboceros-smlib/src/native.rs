@@ -7,7 +7,6 @@ use std::{
 use viboceros_geometry::{
     GeometryError, NurbsCurve, Point3, Tolerance, TriangleMesh, WeightedPoint3,
 };
-mod brep;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
