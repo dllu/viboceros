@@ -29,7 +29,3 @@ monstertruck.workspace = true
 [[example]]
 name = "curved_difference"
 required-features = ["native-smlib"]
-
-[[example]]
-name = "curved_sets"
-required-features = ["native-smlib"]

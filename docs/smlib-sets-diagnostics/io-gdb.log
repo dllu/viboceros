@@ -1,0 +1,698 @@
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.ubuntu.com>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+
+running 214 tests
+[New Thread 0xfffff7a4dee0 (LWP 110314)]
+[New Thread 0xfffff783dee0 (LWP 110315)]
+[New Thread 0xfffff762dee0 (LWP 110316)]
+[Thread 0xfffff7a4dee0 (LWP 110314) exited]
+[New Thread 0xfffff741dee0 (LWP 110317)]
+[New Thread 0xfffff720dee0 (LWP 110318)]
+[New Thread 0xfffff6ffdee0 (LWP 110319)]
+[Thread 0xfffff6ffdee0 (LWP 110319) exited]
+[Thread 0xfffff720dee0 (LWP 110318) exited]
+[New Thread 0xfffff6dedee0 (LWP 110320)]
+[New Thread 0xfffff6bddee0 (LWP 110321)]
+[New Thread 0xfffff69cdee0 (LWP 110322)]
+[New Thread 0xfffff67bdee0 (LWP 110323)]
+[New Thread 0xfffff65adee0 (LWP 110324)]
+[New Thread 0xfffff639dee0 (LWP 110325)]
+[New Thread 0xfffff618dee0 (LWP 110326)]
+[Thread 0xfffff65adee0 (LWP 110324) exited]
+[Thread 0xfffff639dee0 (LWP 110325) exited]
+[Thread 0xfffff6bddee0 (LWP 110321) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110327)]
+[Thread 0xfffff5f7dee0 (LWP 110327) exited]
+[New Thread 0xfffff5d6dee0 (LWP 110328)]
+[New Thread 0xfffff5b5dee0 (LWP 110329)]
+[Thread 0xfffff741dee0 (LWP 110317) exited]
+[Thread 0xfffff5d6dee0 (LWP 110328) exited]
+[New Thread 0xfffff594dee0 (LWP 110330)]
+[New Thread 0xfffff573dee0 (LWP 110331)]
+[New Thread 0xfffff552dee0 (LWP 110332)]
+[Thread 0xfffff552dee0 (LWP 110332) exited]
+[Thread 0xfffff618dee0 (LWP 110326) exited]
+[New Thread 0xfffff531dee0 (LWP 110333)]
+[New Thread 0xfffff510dee0 (LWP 110334)]
+[New Thread 0xfffff4efdee0 (LWP 110335)]
+[New Thread 0xfffff4cedee0 (LWP 110336)]
+test staged_file::tests::abandoned_partial_write_preserves_destination_and_removes_staging_file ... ok
+[Thread 0xfffff4efdee0 (LWP 110335) exited]
+[New Thread 0xfffff4addee0 (LWP 110337)]
+[New Thread 0xfffff7a4dee0 (LWP 110338)]
+test step::export::native::nurbs::tests::common_tiny_nurbs_weights_keep_small_euclidean_controls ... ok
+[New Thread 0xfffff48cdee0 (LWP 110339)]
+[New Thread 0xfffff720dee0 (LWP 110340)]
+test step::export::tests::buffered_export_batches_small_writes_and_propagates_flush_failures ... ok
+[Thread 0xfffff7a4dee0 (LWP 110338) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110342)]
+test step::export_geometry::tests::number_buffer_rejects_overflow_without_truncation_or_partial_append ... ok
+[New Thread 0xfffff46bdee0 (LWP 110341)]
+[Thread 0xfffff720dee0 (LWP 110340) exited]
+[New Thread 0xfffff65adee0 (LWP 110343)]
+test step::export::tests::exported_quad_triangulation_shares_only_its_internal_diagonal ... ok
+[Thread 0xfffff6ffdee0 (LWP 110342) exited]
+[New Thread 0xfffff6bddee0 (LWP 110345)]
+test step::native_nurbs::curved_pcurve::tests::continuous_qualification_rejects_between_station_edge_excursions ... ok
+[New Thread 0xfffff44adee0 (LWP 110344)]
+[Thread 0xfffff65adee0 (LWP 110343) exited]
+[Thread 0xfffff531dee0 (LWP 110333) exited]
+[Thread 0xfffff783dee0 (LWP 110315) exited]
+[New Thread 0xfffff429dee0 (LWP 110347)]
+[New Thread 0xfffff639dee0 (LWP 110346)]
+test step::native_nurbs::curved_pcurve::tests::curved_uv_bezier_spans_compose_with_polynomial_and_rational_surface_patches ... ok
+[New Thread 0xffffb7ffdee0 (LWP 110348)]
+[New Thread 0xfffff5f7dee0 (LWP 110349)]
+test step::export::components::tests::partition_matches_independent_reachability_for_every_graph_up_to_five_faces ... ok
+[New Thread 0xffffb7dedee0 (LWP 110350)]
+[Thread 0xfffff5f7dee0 (LWP 110349) exited]
+[New Thread 0xfffff741dee0 (LWP 110351)]
+test step::native_nurbs::curved_pcurve::tests::curved_uv_knot_tangency_and_simultaneous_crossings_compose ... ok
+[New Thread 0xffffb7bddee0 (LWP 110352)]
+[New Thread 0xfffff5d6dee0 (LWP 110353)]
+test step::native_nurbs::curved_pcurve::tests::curved_rational_uv_path_crosses_surface_knot_at_irrational_parameter ... ok
+[New Thread 0xffffb79cdee0 (LWP 110354)]
+[New Thread 0xffffb77bdee0 (LWP 110356)]
+[New Thread 0xfffff618dee0 (LWP 110355)]
+test step::native_nurbs::curved_pcurve::tests::curved_uv_path_on_discontinuous_knot_uses_evaluators_following_span ... ok
+[New Thread 0xffffb75adee0 (LWP 110357)]
+[Thread 0xfffff69cdee0 (LWP 110322) exited]
+[New Thread 0xfffff552dee0 (LWP 110358)]
+test step::native_nurbs::curved_pcurve::tests::discontinuous_component_selection_copies_controls_and_keeps_following_side ... ok
+[New Thread 0xffffb739dee0 (LWP 110359)]
+[New Thread 0xfffff4efdee0 (LWP 110360)]
+test step::native_nurbs::extrusion::tests::extrusion_curve_images_reject_outside_or_mixed_weight_charts ... ok
+[New Thread 0xffffb718dee0 (LWP 110361)]
+[New Thread 0xfffff7a4dee0 (LWP 110362)]
+test step::native_nurbs::seam_loops::tests::cyclic_continuity_selects_seams_independently_of_array_and_loop_start_order ... ok
+[Thread 0xfffff4efdee0 (LWP 110360) exited]
+[New Thread 0xfffff720dee0 (LWP 110364)]
+test step::native_nurbs::seam_loops::tests::disconnected_seam_choices_are_rejected ... ok
+[New Thread 0xffffb6f7dee0 (LWP 110363)]
+test step::native_nurbs::tests::affine_surface_certificate_rejects_warp_and_unequal_weights ... ok[Thread 0xfffff618dee0 (LWP 110355) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110365)]
+
+[New Thread 0xffffb6d6dee0 (LWP 110366)]
+[Thread 0xfffff741dee0 (LWP 110351) exited]
+[New Thread 0xffffb6b5dee0 (LWP 110368)]
+[New Thread 0xfffff65adee0 (LWP 110367)]
+test step::native_nurbs::curved_pcurve::tests::curved_uv_spans_aligned_with_surface_knots_join_at_original_parameters ... ok
+[New Thread 0xffffb694dee0 (LWP 110369)]
+[New Thread 0xfffff531dee0 (LWP 110370)]
+[Thread 0xfffff65adee0 (LWP 110367) exited]
+[Thread 0xfffff6dedee0 (LWP 110320) exited]
+[Thread 0xfffff67bdee0 (LWP 110323) exited]
+[Thread 0xfffff762dee0 (LWP 110316) exited]
+test staged_file::tests::failed_commit_preserves_directory_and_cleans_temporary_file ... ok
+[Thread 0xfffff531dee0 (LWP 110370) exited]
+[New Thread 0xfffff783dee0 (LWP 110371)]
+test step::native_nurbs::tests::conic_extrusion_axial_pcurve_uses_converted_directrix_parameterization ... ok
+[Thread 0xfffff594dee0 (LWP 110330) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110372)]
+test step::export::tests::exported_topology_preserves_raw_seams_and_directed_face_boundaries ... ok
+[New Thread 0xfffff69cdee0 (LWP 110373)]
+test step::native_nurbs::tests::planar_pcurve_edge_lifts_rational_controls_without_losing_weights ... ok
+[Thread 0xfffff5f7dee0 (LWP 110372) exited]
+[Thread 0xfffff69cdee0 (LWP 110373) exited]
+[New Thread 0xfffff4efdee0 (LWP 110374)]
+test step::native_nurbs::tests::elementary_surface_pcurve_edges_preserve_iso_geometry ... ok
+[Thread 0xfffff4efdee0 (LWP 110374) exited]
+[New Thread 0xfffff618dee0 (LWP 110375)]
+test step::native_nurbs::tests::curved_extrusion_pcurve_edges_preserve_partial_and_reversed_iso_segments ... ok
+[Thread 0xfffff618dee0 (LWP 110375) exited]
+[New Thread 0xfffff741dee0 (LWP 110376)]
+test step::native_nurbs::tests::revolved_pcurve_edges_preserve_exact_meridians_and_circular_locus ... ok
+[Thread 0xfffff741dee0 (LWP 110376) exited]
+[New Thread 0xfffff65adee0 (LWP 110377)]
+test step::export::tests::disconnected_panels_partition_and_remap_in_first_face_order ... ok
+[Thread 0xfffff65adee0 (LWP 110377) exited]
+[New Thread 0xfffff6dedee0 (LWP 110378)]
+test step::export::tests::staged_buffer_flushes_before_commit_and_preserves_destination_on_callback_failure ... ok
+[New Thread 0xfffff67bdee0 (LWP 110379)]
+test staged_file::tests::successful_commit_replaces_only_the_destination ... ok
+[New Thread 0xfffff762dee0 (LWP 110380)]
+test step::native_nurbs::tests::straight_spline_pcurve_qualification_uses_the_callers_actual_tolerance ... ok
+[New Thread 0xfffff531dee0 (LWP 110381)]
+test step::native_nurbs::curved_pcurve::tests::curved_uv_path_can_cross_the_same_surface_knot_twice ... ok
+[New Thread 0xfffff594dee0 (LWP 110382)]
+[Thread 0xfffff531dee0 (LWP 110381) exited]
+[Thread 0xfffff67bdee0 (LWP 110379) exited]
+[Thread 0xfffff6dedee0 (LWP 110378) exited]
+test step::native_planar::curves::tests::linear_bspline_uv_trims_preserve_domain_direction_and_evaluation ... ok
+[Thread 0xfffff594dee0 (LWP 110382) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110383)]
+test step::native_planar::curves::tests::linear_trim_adapter_rejects_curved_and_multispan_bspline_trims ... ok
+[New Thread 0xfffff69cdee0 (LWP 110384)]
+test step::native_planar::curves::tests::rational_edge_adapter_rejects_invalid_weights_coordinates_and_non_linear_spans ... ok
+[New Thread 0xfffff4efdee0 (LWP 110385)]
+[Thread 0xfffff69cdee0 (LWP 110384) exited]
+test step::native_planar::curves::tests::rational_edges_preserve_euclidean_controls_weights_and_parameterization ... ok
+test step::native_planar::curves::tests::rational_linear_uv_trims_preserve_weights_and_nonuniform_parameterization ... ok
+[New Thread 0xfffff618dee0 (LWP 110386)]
+[Thread 0xfffff783dee0 (LWP 110371) exited]
+[New Thread 0xfffff741dee0 (LWP 110387)]
+test step::native_planar::curves::tests::two_point_polylines_preserve_linear_edge_and_trim_evaluation ... ok
+[Thread 0xfffff618dee0 (LWP 110386) exited]
+[Thread 0xfffff5d6dee0 (LWP 110353) exited]
+[New Thread 0xfffff65adee0 (LWP 110388)]
+test step::tests::exported_mesh_round_trips_as_a_shared_edge_step_shell ... ok
+[New Thread 0xfffff531dee0 (LWP 110389)]
+test step::tests::cached_source_is_reused_but_each_instance_is_validated ... ok
+[New Thread 0xfffff67bdee0 (LWP 110390)]
+test step::tests::both_step_readers_preserve_geometry_with_legacy_header_bytes ... ok
+[Thread 0xfffff639dee0 (LWP 110346) exited]
+[New Thread 0xfffff6dedee0 (LWP 110391)]
+test step::tests::exported_plane_directions_remain_unit_length_across_mesh_scales ... ok
+[New Thread 0xfffff594dee0 (LWP 110392)]
+test step::tests::failed_step_export_does_not_replace_an_existing_file ... ok
+[Thread 0xfffff6dedee0 (LWP 110391) exited]
+[New Thread 0xfffff69cdee0 (LWP 110393)]
+test step::native_nurbs::tests::unclamped_single_span_surface_diagonal_pcurve_clamps_without_changing_locus ... ok
+[New Thread 0xfffff783dee0 (LWP 110394)]
+[Thread 0xfffff65adee0 (LWP 110388) exited]
+test step::tests::imports_conversion_based_length_units_by_factor_not_name ... ok
+[New Thread 0xfffff618dee0 (LWP 110395)]
+test step::native_nurbs::tests::curved_surface_pcurve_edges_preserve_partial_and_reversed_iso_segments ... ok
+[Thread 0xfffff67bdee0 (LWP 110390) exited]
+[Thread 0xfffff4efdee0 (LWP 110385) exited]
+[New Thread 0xfffff5d6dee0 (LWP 110396)]
+test step::native_nurbs::tests::bilinear_surface_diagonal_pcurves_compose_to_exact_quadratics ... ok
+[Thread 0xfffff783dee0 (LWP 110394) exited]
+[New Thread 0xfffff639dee0 (LWP 110397)]
+test step::tests::invalid_export_units_preserve_the_destination_and_stream ... ok
+[New Thread 0xfffff6dedee0 (LWP 110398)]
+[Thread 0xfffff594dee0 (LWP 110392) exited]
+[Thread 0xfffff618dee0 (LWP 110395) exited]
+test step::tests::imports_si_length_units_into_target_coordinates ... ok
+[New Thread 0xfffff65adee0 (LWP 110400)]
+[Thread 0xfffff6dedee0 (LWP 110398) exited]
+test step::tests::imports_an_analytic_step_solid_as_a_validated_mesh ... ok
+test step::tests::instance_plan_resolves_nested_placements_without_loading_shell_geometry ... ok
+[Thread 0xfffff65adee0 (LWP 110400) exited]
+[New Thread 0xfffff4efdee0 (LWP 110401)]
+test step::tests::native_planar_instances_honor_oriented_surface_model_shells ... ok
+[New Thread 0xfffff67bdee0 (LWP 110402)]
+[Thread 0xfffff4efdee0 (LWP 110401) exited]
+[Thread 0xfffff639dee0 (LWP 110397) exited]
+[Thread 0xfffff5f7dee0 (LWP 110383) exited]
+[New Thread 0xfffff783dee0 (LWP 110403)]
+test step::tests::native_instance_units_reject_invalid_units_and_preserve_unitless_coordinates ... ok
+[New Thread 0xfffff594dee0 (LWP 110404)]
+test step::tests::native_planar_instances_keep_solid_void_shells_and_their_sense ... ok
+[New Thread 0xfffff618dee0 (LWP 110405)]
+test step::tests::native_planar_reader_preserves_face_reversal_in_signed_volume ... ok
+[Thread 0xfffff618dee0 (LWP 110405) exited]
+[New Thread 0xfffff6dedee0 (LWP 110408)]
+test step::tests::native_planar_reader_preserves_open_triangle_and_rejects_curved_surfaces ... ok
+[Thread 0xfffff762dee0 (LWP 110380) exited]
+[Thread 0xfffff6ffdee0 (LWP 110365) exited]
+[New Thread 0xfffff65adee0 (LWP 110417)]
+test step::tests::native_planar_reader_preserves_cube_brep_geometry_without_tessellation ... ok
+[Thread 0xfffff5d6dee0 (LWP 110396) exited]
+[New Thread 0xfffff639dee0 (LWP 110419)]
+test step::tests::extrusion_pcurves::serialized_extrusion_curved_pcurve_import_retains_native_surfaces_and_certified_edges ... ok
+test step::tests::native_planar_step_retains_small_holes ... ok
+[New Thread 0xfffff5f7dee0 (LWP 110420)]
+[Thread 0xfffff5f7dee0 (LWP 110420) exited]
+[Thread 0xfffff594dee0 (LWP 110404) exited]
+[Thread 0xfffff69cdee0 (LWP 110393) exited]
+[New Thread 0xfffff4efdee0 (LWP 110421)]
+test step::tests::native_step_imports_analytic_ellipse_arc ... ok
+[New Thread 0xfffff618dee0 (LWP 110422)]
+test step::tests::explicit_linear_bspline_step_pcurves_import_without_losing_parameter_intervals ... ok
+[Thread 0xfffff741dee0 (LWP 110387) exited]
+[New Thread 0xfffff762dee0 (LWP 110423)]
+test step::native_nurbs::tests::rational_linear_uv_pcurve_preserves_unequal_weight_parameterization ... ok
+[Thread 0xfffff639dee0 (LWP 110419) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110424)]
+test step::tests::native_planar_instances_preserve_nested_placements_and_shared_source_ids ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110425)]
+[Thread 0xfffff6ffdee0 (LWP 110424) exited]
+test step::tests::native_step_imports_analytic_circle_edge_and_uv_trim ... ok
+[Thread 0xfffff67bdee0 (LWP 110402) exited]
+[New Thread 0xfffff594dee0 (LWP 110427)]
+test step::tests::native_step_imports_closed_quadratic_outer_with_inner_hole ... ok
+[Thread 0xfffff783dee0 (LWP 110403) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110428)]
+test step::tests::native_instance_units_scale_nested_placements_and_preserve_uv_and_metadata ... ok
+[New Thread 0xfffff69cdee0 (LWP 110429)]
+test step::tests::imports_planar_step_with_degree_angle_units_without_changing_coordinates ... ok
+[Thread 0xfffff65adee0 (LWP 110417) exited]
+[New Thread 0xfffff741dee0 (LWP 110445)]
+test step::tests::native_step_imports_certified_quadratic_hole_on_bspline_face ... ok
+[Thread 0xfffff69cdee0 (LWP 110429) exited]
+[New Thread 0xfffff639dee0 (LWP 110446)]
+test step::tests::native_planar_unit_reader_rejects_missing_or_invalid_units_and_preserves_unitless_coordinates ... ok
+[New Thread 0xfffff783dee0 (LWP 110453)]
+test step::tests::native_step_imports_exact_parabola_and_hyperbola_trims ... ok
+[Thread 0xfffff5d6dee0 (LWP 110425) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110454)]
+test step::tests::native_planar_unit_conversion_scales_geometry_but_preserves_uv_trims ... ok
+[New Thread 0xfffff67bdee0 (LWP 110462)]
+test step::tests::native_step_imports_bspline_faces_with_polygon_holes ... ok
+[Thread 0xfffff639dee0 (LWP 110446) exited]
+[New Thread 0xfffff65adee0 (LWP 110470)]
+test step::tests::native_step_imports_full_longitude_spherical_band_seam ... ok
+[New Thread 0xfffff69cdee0 (LWP 110471)]
+test step::tests::native_step_imports_exact_revolved_polyline_conic_bspline_and_nurbs_faces ... ok
+[Thread 0xfffff67bdee0 (LWP 110462) exited]
+[New Thread 0xfffff5d6dee0 (LWP 110472)]
+test step::tests::native_step_imports_full_turn_toroidal_strip_seam ... ok
+[New Thread 0xfffff639dee0 (LWP 110473)]
+test step::tests::native_step_imports_three_span_cubic_outer_with_hole ... ok
+[Thread 0xfffff5d6dee0 (LWP 110472) exited]
+[New Thread 0xfffff67bdee0 (LWP 110474)]
+[Thread 0xfffff69cdee0 (LWP 110471) exited]
+test step::tests::nurbs_brep_step_export_keeps_open_rational_arc_surface ... ok
+test step::tests::nurbs_brep_step_export_keeps_curved_edges_and_surface_shape ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110475)]
+[Thread 0xfffff65adee0 (LWP 110470) exited]
+[Thread 0xfffff783dee0 (LWP 110453) exited]
+[New Thread 0xfffff69cdee0 (LWP 110480)]
+test step::tests::nested_assembly_composes_noncommuting_transforms_parent_first ... ok
+test step::tests::native_step_imports_multispan_polyline_and_affine_pcurve_edges_with_holes ... ok
+[Thread 0xfffff639dee0 (LWP 110473) exited]
+[New Thread 0xfffff65adee0 (LWP 110500)]
+test step::tests::nurbs_brep_step_export_retains_curved_surface_and_explicit_pcurves ... ok
+[Thread 0xfffff69cdee0 (LWP 110480) exited]
+[Thread 0xfffff7a4dee0 (LWP 110362) exited]
+[New Thread 0xfffff783dee0 (LWP 110501)]
+test step::tests::parsed_cube_retains_shared_edges_and_face_local_trim_availability ... ok
+[New Thread 0xfffff639dee0 (LWP 110502)]
+[Thread 0xfffff783dee0 (LWP 110501) exited]
+[Thread 0xfffff594dee0 (LWP 110427) exited]
+[New Thread 0xfffff69cdee0 (LWP 110503)]
+[Thread 0xfffff531dee0 (LWP 110389) exited]
+test step::native_nurbs::tests::rational_linear_uv_isocurve_crosses_surface_knots_at_source_parameters ... ok
+[Thread 0xfffff741dee0 (LWP 110445) exited]
+[New Thread 0xfffff7a4dee0 (LWP 110506)]
+test step::tests::native_step_imports_exact_spherical_bands ... ok
+[Thread 0xfffff67bdee0 (LWP 110474) exited]
+[New Thread 0xfffff594dee0 (LWP 110512)]
+test step::tests::planar_brep_step_export_does_not_label_disjoint_boxes_as_voids ... ok
+[Thread 0xfffff69cdee0 (LWP 110503) exited]
+[New Thread 0xfffff783dee0 (LWP 110522)]
+test step::tests::instance_plan_order_is_stable_across_parses_with_duplicate_names ... ok
+[Thread 0xfffff6ffdee0 (LWP 110454) exited]
+[New Thread 0xfffff531dee0 (LWP 110523)]
+test step::tests::planar_brep_step_export_keeps_polygon_hole_and_rejects_curved_edges_atomically ... ok
+[Thread 0xfffff531dee0 (LWP 110523) exited]
+[Thread 0xfffff639dee0 (LWP 110502) exited]
+[Thread 0xfffff5d6dee0 (LWP 110475) exited]
+[Thread 0xfffff6bddee0 (LWP 110345) exited]
+[New Thread 0xfffff69cdee0 (LWP 110530)]
+test step::tests::native_step_imports_full_turn_revolved_bspline_seam ... ok
+[Thread 0xfffff69cdee0 (LWP 110530) exited]
+[New Thread 0xfffff741dee0 (LWP 110532)]
+[Thread 0xfffff594dee0 (LWP 110512) exited]
+[Thread 0xfffff741dee0 (LWP 110532) exited]
+test step::tests::nurbs_brep_step_export_roundtrips_periodic_seam ... ok
+[Thread 0xfffff5f7dee0 (LWP 110428) exited]
+[New Thread 0xfffff67bdee0 (LWP 110540)]
+test step::tests::native_step_imports_periodic_revolved_wall_seams ... ok
+[Thread 0xfffff67bdee0 (LWP 110540) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110541)]
+test step::tests::nurbs_step_export_keeps_pcurves_on_planar_neighbors_in_mixed_shell ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110549)]
+[Thread 0xfffff5d6dee0 (LWP 110549) exited]
+test step::tests::planar_brep_step_export_keeps_cube_faces_edges_and_volume_editable ... ok
+test step::tests::planar_step_multiple_holes_convert_and_invalid_regions_fail ... ok
+[New Thread 0xfffff639dee0 (LWP 110552)]
+[New Thread 0xfffff531dee0 (LWP 110554)]
+test step::native_nurbs::tests::bezier_surface_diagonal_pcurves_compose_to_exact_rational_curves ... ok
+[New Thread 0xfffff6bddee0 (LWP 110556)]
+test step::tests::rejects_invalid_and_geometry_free_step_data ... ok
+[Thread 0xfffff531dee0 (LWP 110554) exited]
+[New Thread 0xfffff69cdee0 (LWP 110557)]
+test step::tests::native_step_imports_exact_toroidal_patches ... ok
+[New Thread 0xfffff5f7dee0 (LWP 110559)]
+test step::tests::planar_brep_step_export_retains_certified_box_cavity_as_one_solid ... ok
+[Thread 0xfffff762dee0 (LWP 110423) exited]
+[New Thread 0xfffff594dee0 (LWP 110560)]
+test step::tests::rejects_missing_mixed_and_cyclic_step_units ... ok
+[Thread 0xfffff6ffdee0 (LWP 110541) exited]
+[New Thread 0xfffff741dee0 (LWP 110561)]
+test step::tests::relative_tessellation_extent_scales_before_overflow ... ok
+[Thread 0xfffff741dee0 (LWP 110561) exited]
+[Thread 0xfffff5f7dee0 (LWP 110559) exited]
+[Thread 0xfffff69cdee0 (LWP 110557) exited]
+[Thread 0xfffff639dee0 (LWP 110552) exited]
+[New Thread 0xfffff67bdee0 (LWP 110562)]
+test step::tests::sampled_extent_rejects_nonfinite_coordinates_without_partial_updates ... ok
+[Thread 0xfffff594dee0 (LWP 110560) exited]
+[Thread 0xfffff783dee0 (LWP 110522) exited]
+[New Thread 0xfffff5d6dee0 (LWP 110564)]
+test step::tests::step_unit_conversion_rejects_collapsed_triangles_before_writing ... ok
+[Thread 0xfffff5d6dee0 (LWP 110564) exited]
+[Thread 0xfffff67bdee0 (LWP 110562) exited]
+[New Thread 0xfffff531dee0 (LWP 110570)]
+test step::tests::native_step_imports_exact_line_polyline_conic_bspline_and_nurbs_extrusions ... ok
+[New Thread 0xfffff762dee0 (LWP 110571)]
+test step::tests::tessellation_setup_propagates_invalid_shell_samples ... ok
+[Thread 0xfffff762dee0 (LWP 110571) exited]
+[Thread 0xfffff7a4dee0 (LWP 110506) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110573)]
+test step::tests::repeated_assembly_instances_preserve_names_and_transforms ... ok
+[Thread 0xfffff531dee0 (LWP 110570) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110575)]
+test step::tests::tessellation_sampling_preserves_finite_extreme_parameter_ranges ... ok
+[New Thread 0xfffff69cdee0 (LWP 110578)]
+test step::tests::unit_aware_export_scales_validation_and_declared_accuracy ... ok
+[Thread 0xfffff69cdee0 (LWP 110578) exited]
+[Thread 0xfffff6ffdee0 (LWP 110575) exited]
+[Thread 0xfffff5f7dee0 (LWP 110573) exited]
+[Thread 0xfffff6bddee0 (LWP 110556) exited]
+[Thread 0xfffff6dedee0 (LWP 110408) exited]
+[New Thread 0xfffff741dee0 (LWP 110579)]
+test step::tests::planar_hole_trims_survive_loading_and_native_conversion ... ok
+[Thread 0xfffff741dee0 (LWP 110579) exited]
+[New Thread 0xfffff783dee0 (LWP 110580)]
+[Thread 0xfffff783dee0 (LWP 110580) exited]
+test step::tests::unit_aware_export_accuracy_is_parseable_and_exact_across_finite_scales ... ok
+[New Thread 0xfffff594dee0 (LWP 110583)]
+test step::tests::step_real_format_preserves_finite_binary64_values_and_required_decimal_point ... ok
+[Thread 0xfffff594dee0 (LWP 110583) exited]
+[New Thread 0xfffff639dee0 (LWP 110584)]
+test step::tests::unrepresentable_export_directions_preserve_stream_and_destination ... ok
+[Thread 0xfffff639dee0 (LWP 110584) exited]
+[New Thread 0xfffff5d6dee0 (LWP 110586)]
+[Thread 0xfffff5d6dee0 (LWP 110586) exited]
+test step::tests::unit_aware_step_export_matches_its_millimetre_declaration ... ok
+[New Thread 0xfffff67bdee0 (LWP 110587)]
+test step::tests::planar_brep_step_export_requires_separated_contained_void_boxes ... ok
+[Thread 0xfffff67bdee0 (LWP 110587) exited]
+[New Thread 0xfffff7a4dee0 (LWP 110593)]
+test step::units::angle::tests::converts_both_spherical_and_toroidal_parameters ... ok
+[Thread 0xfffff7a4dee0 (LWP 110593) exited]
+[New Thread 0xfffff762dee0 (LWP 110595)]
+[Thread 0xfffff762dee0 (LWP 110595) exited]
+test step::tests::unsupported_data_section_counts_return_errors_in_both_readers ... ok
+test step::units::angle::tests::converts_diagonal_trims_and_rejects_shared_parameter_points ... ok
+[New Thread 0xfffff531dee0 (LWP 110598)]
+test step::units::angle::tests::normalizes_degree_cone_and_its_angular_iso_trim ... ok
+[Thread 0xfffff531dee0 (LWP 110598) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110599)]
+[Thread 0xfffff5f7dee0 (LWP 110599) exited]
+[Thread 0xfffff65adee0 (LWP 110500) exited]
+[New Thread 0xfffff69cdee0 (LWP 110603)]
+test step::tests::native_step_imports_analytic_open_revolved_patches ... ok
+[Thread 0xfffff69cdee0 (LWP 110603) exited]
+[New Thread 0xfffff6dedee0 (LWP 110606)]
+test step::units::angle::tests::converts_polyline_and_bspline_control_points_without_changing_axial_coordinates ... ok
+[Thread 0xfffff6dedee0 (LWP 110606) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110610)]
+test step::tests::step_unit_conversion_retains_meshes_smaller_than_model_tolerance ... ok
+[Thread 0xfffff6ffdee0 (LWP 110610) exited]
+[New Thread 0xfffff6bddee0 (LWP 110614)]
+test step::units::angle::tests::rejects_cyclic_extrusion_directrix ... ok
+[Thread 0xfffff6bddee0 (LWP 110614) exited]
+[New Thread 0xfffff741dee0 (LWP 110618)]
+test step::units::angle::tests::rejects_point_shared_by_one_and_two_angle_axis_surfaces ... ok
+[Thread 0xfffff741dee0 (LWP 110618) exited]
+[New Thread 0xfffff783dee0 (LWP 110622)]
+[Thread 0xfffff783dee0 (LWP 110622) exited]
+test step::units::tests::angular_surfaces_require_an_assigned_plane_angle_unit ... ok
+[New Thread 0xfffff594dee0 (LWP 110631)]
+[Thread 0xfffff618dee0 (LWP 110422) exited]
+test step::units::tests::conversion_based_angles_are_accepted_only_without_angular_geometry ... ok
+[New Thread 0xfffff639dee0 (LWP 110643)]
+[Thread 0xfffff639dee0 (LWP 110643) exited]
+test step::units::tests::conversion_cycles_and_depth_limits_are_checked_after_valid_dimensions ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110648)]
+[Thread 0xfffff5d6dee0 (LWP 110648) exited]
+test step::units::tests::explicit_dimensions_require_exact_finite_length_exponents ... ok
+[New Thread 0xfffff67bdee0 (LWP 110649)]
+[Thread 0xfffff67bdee0 (LWP 110649) exited]
+test step::units::tests::rejects_ambiguous_unit_components_and_non_length_dimensions ... ok
+[New Thread 0xfffff7a4dee0 (LWP 110655)]
+test step::units::tests::rejects_invalid_factors_and_missing_geometry_context_units ... ok
+[New Thread 0xfffff762dee0 (LWP 110662)]
+test step::units::tests::resolves_si_prefixes_and_nested_conversion_measures ... ok
+[Thread 0xfffff762dee0 (LWP 110662) exited]
+[New Thread 0xfffff531dee0 (LWP 110663)]
+test stl::tests::ascii_reader_retains_case_whitespace_and_free_form_name_support ... ok
+[New Thread 0xfffff5f7dee0 (LWP 110664)]
+[Thread 0xfffff7a4dee0 (LWP 110655) exited]
+test step::tests::planar_brep_step_export_certifies_tetrahedron_and_sheared_box ... ok
+[Thread 0xfffff5f7dee0 (LWP 110664) exited]
+[New Thread 0xfffff65adee0 (LWP 110668)]
+test stl::tests::ascii_round_trip_preserves_geometry ... ok
+[Thread 0xfffff531dee0 (LWP 110663) exited]
+[New Thread 0xfffff69cdee0 (LWP 110675)]
+test stl::tests::ascii_state_machine_rejects_incomplete_extra_and_reordered_records ... ok
+[New Thread 0xfffff6dedee0 (LWP 110677)]
+test stl::tests::binary_export_rejects_coordinates_outside_f32 ... ok
+[Thread 0xfffff65adee0 (LWP 110668) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110681)]
+test stl::tests::binary_export_rejects_faces_collapsed_by_f32_rounding_before_truncating_a_file ... ok
+[Thread 0xfffff6dedee0 (LWP 110677) exited]
+[New Thread 0xfffff6bddee0 (LWP 110682)]
+test stl::tests::binary_round_trip_and_solid_header_detection ... ok
+[Thread 0xfffff6bddee0 (LWP 110682) exited]
+[Thread 0xfffff6ffdee0 (LWP 110681) exited]
+[Thread 0xfffff552dee0 (LWP 110358) exited]
+[New Thread 0xfffff741dee0 (LWP 110684)]
+test stl::tests::collapsed_records_reject_stl_before_replacing_existing_file ... ok
+[New Thread 0xfffff783dee0 (LWP 110687)]
+test step::tests::native_step_imports_diagonal_pcurve_on_spline_patches ... ok
+[New Thread 0xfffff618dee0 (LWP 110688)]
+test stl::tests::reads_the_ascii_pyramid_fixture ... ok
+[Thread 0xfffff618dee0 (LWP 110688) exited]
+[New Thread 0xfffff639dee0 (LWP 110689)]
+test stl::tests::rejects_coincident_vertices_in_both_encodings ... ok
+test stl::tests::rejects_malformed_ascii_and_binary_lengths ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110690)]
+[Thread 0xfffff5d6dee0 (LWP 110690) exited]
+[Thread 0xfffff594dee0 (LWP 110631) exited]
+[New Thread 0xfffff67bdee0 (LWP 110691)]
+[Thread 0xfffff67bdee0 (LWP 110691) exited]
+test stl::tests::thin_noncollinear_triangles_survive_both_stl_encodings ... ok
+[Thread 0xfffff783dee0 (LWP 110687) exited]
+[New Thread 0xfffff762dee0 (LWP 110698)]
+test stl::tests::small_valid_triangles_survive_both_stl_encodings ... ok
+[Thread 0xfffff639dee0 (LWP 110689) exited]
+[New Thread 0xfffff7a4dee0 (LWP 110700)]
+test three_dm::blocks::tests::invalid_graph_export_preserves_existing_destination_and_input_model ... ok
+[New Thread 0xfffff5f7dee0 (LWP 110703)]
+test three_dm::blocks::tests::hidden_members_and_hidden_locked_roots_roundtrip_without_visibility_normalization ... ok
+[New Thread 0xfffff531dee0 (LWP 110705)]
+test three_dm::blocks::tests::structural_reader_keeps_native_prototypes_nested_references_and_ordinary_objects ... ok
+[Thread 0xfffff69cdee0 (LWP 110675) exited]
+[New Thread 0xfffff6dedee0 (LWP 110706)]
+test three_dm::blocks::tests::invalid_reference_graphs_and_singular_or_projective_placements_fail_structural_reading ... ok
+[New Thread 0xfffff65adee0 (LWP 110715)]
+test three_dm::blocks::tests::structural_unit_conversion_scales_prototypes_and_each_translation_once ... ok
+[New Thread 0xfffff6ffdee0 (LWP 110716)]
+test three_dm::instances::tests::hidden_locked_instances_propagate_to_members_and_bad_graphs_fail_read ... ok
+[Thread 0xfffff762dee0 (LWP 110698) exited]
+[New Thread 0xfffff6bddee0 (LWP 110717)]
+test step::native_nurbs::tests::multispan_rational_surface_diagonal_pcurves_cross_both_knot_directions ... ok
+[Thread 0xfffff5f7dee0 (LWP 110703) exited]
+[New Thread 0xfffff552dee0 (LWP 110724)]
+test three_dm::instances::tests::placement_matrix_preserves_noncommuting_order_and_rejects_projective_values ... ok
+[Thread 0xfffff7a4dee0 (LWP 110700) exited]
+[New Thread 0xfffff618dee0 (LWP 110725)]
+test three_dm::mesh_ngon::tests::codec_round_trips_and_rejects_truncation_or_trailing_bytes ... ok
+[New Thread 0xfffff5d6dee0 (LWP 110727)]
+test stl::tests::file_exports_replace_complete_files_and_clean_up_failed_commits ... ok
+[New Thread 0xfffff594dee0 (LWP 110728)]
+[Thread 0xfffff618dee0 (LWP 110725) exited]
+[Thread 0xfffff552dee0 (LWP 110724) exited]
+test three_dm::instances::tests::nested_and_repeated_blocks_expand_at_placed_coordinates_with_inherited_attributes ... ok
+[Thread 0xfffff6bddee0 (LWP 110717) exited]
+[Thread 0xfffff6ffdee0 (LWP 110716) exited]
+[Thread 0xfffff531dee0 (LWP 110705) exited]
+[New Thread 0xfffff783dee0 (LWP 110738)]
+test three_dm::point_cloud_data::tests::channel_payload_round_trips_and_rejects_damage ... ok
+test three_dm::instances::tests::reflected_blocks_keep_boundary_correspondence_solid_volume_and_stored_cloud_normals ... ok
+[New Thread 0xfffff67bdee0 (LWP 110739)]
+test three_dm::blocks::tests::native_structural_writer_roundtrips_the_graph_and_flattened_reader_agrees_on_placements ... ok
+[New Thread 0xfffff639dee0 (LWP 110740)]
+test three_dm::tests::attribute_and_geometry_user_text_round_trip_independently ... ok
+[New Thread 0xfffff69cdee0 (LWP 110741)]
+test three_dm::tests::collapsed_native_mesh_records_round_trip_with_colors_and_ngons ... ok
+[New Thread 0xfffff762dee0 (LWP 110742)]
+[New Thread 0xfffff5f7dee0 (LWP 110748)]
+test three_dm::tests::brep_import_rejects_unrepresentable_matching_tolerance_without_silent_skipping ... ok
+[Thread 0xfffff783dee0 (LWP 110738) exited]
+[New Thread 0xfffff7a4dee0 (LWP 110753)]
+test three_dm::tests::invalid_custom_units_do_not_replace_an_existing_file ... ok
+[New Thread 0xfffff552dee0 (LWP 110757)]
+test three_dm::tests::invalid_tolerance_is_rejected_before_any_destination_access ... ok
+[New Thread 0xfffff618dee0 (LWP 110758)]
+test three_dm::tests::imports_preserve_geometry_below_the_document_modelling_tolerance ... ok
+[New Thread 0xfffff6ffdee0 (LWP 110759)]
+test three_dm::tests::imports_rhino_nested_analytic_polycurve_without_fitting ... ok
+[Thread 0xfffff762dee0 (LWP 110742) exited]
+[Thread 0xfffff639dee0 (LWP 110740) exited]
+[Thread 0xfffff67bdee0 (LWP 110739) exited]
+[New Thread 0xfffff6bddee0 (LWP 110760)]
+test three_dm::tests::exports_small_lines_as_exact_parameterized_nurbs_when_native_lines_are_invalid ... ok
+[New Thread 0xfffff531dee0 (LWP 110761)]
+test three_dm::tests::named_construction_planes_round_trip_and_scale_without_model_geometry ... ok
+[New Thread 0xfffff783dee0 (LWP 110762)]
+test three_dm::tests::open_nurbs_round_trip_preserves_mesh_ngon_face_groups ... ok
+[New Thread 0xfffff762dee0 (LWP 110763)]
+[Thread 0xfffff762dee0 (LWP 110763) exited]
+test three_dm::tests::named_views_round_trip_through_3dm_and_scale_with_units ... ok
+[Thread 0xfffff7a4dee0 (LWP 110753) exited]
+[Thread 0xfffff5f7dee0 (LWP 110748) exited]
+[New Thread 0xfffff67bdee0 (LWP 110764)]
+test three_dm::tests::native_polycurve_and_exploded_leaf_types_survive_3dm_round_trip ... ok
+[Thread 0xfffff67bdee0 (LWP 110764) exited]
+[Thread 0xfffff6dedee0 (LWP 110706) exited]
+[New Thread 0xfffff639dee0 (LWP 110765)]
+test three_dm::tests::rejects_invalid_layer_and_group_references_before_calling_native_code ... ok
+[Thread 0xfffff531dee0 (LWP 110761) exited]
+[Thread 0xfffff6bddee0 (LWP 110760) exited]
+[Thread 0xfffff6ffdee0 (LWP 110759) exited]
+[New Thread 0xfffff762dee0 (LWP 110766)]
+[Thread 0xfffff69cdee0 (LWP 110741) exited]
+test three_dm::tests::point_cloud_channels_round_trip_through_opennurbs ... ok
+[New Thread 0xfffff7a4dee0 (LWP 110767)]
+test three_dm::tests::open_nurbs_round_trip_preserves_negative_projective_weights ... ok
+[New Thread 0xfffff5f7dee0 (LWP 110768)]
+test three_dm::tests::reports_non_3dm_input_as_a_native_error ... ok
+[New Thread 0xfffff67bdee0 (LWP 110769)]
+test three_dm::tests::import_units_scale_coordinates_and_preserve_attributes ... ok
+[Thread 0xfffff5f7dee0 (LWP 110768) exited]
+[Thread 0xfffff762dee0 (LWP 110766) exited]
+[Thread 0xfffff639dee0 (LWP 110765) exited]
+[Thread 0xfffff65adee0 (LWP 110715) exited]
+[New Thread 0xfffff6dedee0 (LWP 110770)]
+test three_dm::tests::reads_official_old_archive_curve_surface_and_group_fixtures ... ok
+[New Thread 0xfffff6bddee0 (LWP 110771)]
+test three_dm::tests::reads_official_opennurbs_brep_and_trimmed_surface_fixtures ... ok
+[New Thread 0xfffff531dee0 (LWP 110772)]
+test three_dm::tests::polyline_round_trip_retains_parameters_and_distinguishes_nurbs_geometry ... ok
+[Thread 0xfffff783dee0 (LWP 110762) exited]
+[Thread 0xfffff552dee0 (LWP 110757) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110773)]
+test three_dm::tests::open_nurbs_round_trip_preserves_geometry_layers_and_groups ... ok
+[Thread 0xfffff618dee0 (LWP 110758) exited]
+[New Thread 0xfffff69cdee0 (LWP 110774)]
+[Thread 0xfffff67bdee0 (LWP 110769) exited]
+test three_dm::tests::two_point_camera_locks_survive_named_and_working_view_records ... ok
+[Thread 0xfffff7a4dee0 (LWP 110767) exited]
+[New Thread 0xfffff639dee0 (LWP 110775)]
+test three_dm_curves::tests::collapsed_composite_breaks_fail_without_overwriting_an_existing_file ... ok
+[Thread 0xfffff6dedee0 (LWP 110770) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110776)]
+test three_dm_curves::tests::a_closed_piece_is_not_embedded_in_an_invalid_multi_segment_polycurve ... ok
+[Thread 0xfffff5f7dee0 (LWP 110776) exited]
+[New Thread 0xfffff762dee0 (LWP 110777)]
+test three_dm::tests::import_units_scale_mixed_geometry_without_losing_objects ... ok
+[Thread 0xfffff762dee0 (LWP 110777) exited]
+[New Thread 0xfffff65adee0 (LWP 110778)]
+[Thread 0xfffff65adee0 (LWP 110778) exited]
+test three_dm::tests::point_import_does_not_require_a_representable_brep_matching_tolerance ... ok
+[New Thread 0xfffff552dee0 (LWP 110779)]
+test three_dm::tests::recorded_rhino_arc_planes_and_angles_survive_native_3dm_round_trip ... ok
+[New Thread 0xfffff783dee0 (LWP 110780)]
+[Thread 0xfffff531dee0 (LWP 110772) exited]
+test three_dm_curves::tests::closed_seam_edit_with_independent_scales_exports_without_rotating_again ... ok
+[Thread 0xfffff552dee0 (LWP 110779) exited]
+[New Thread 0xfffff7a4dee0 (LWP 110781)]
+test three_dm::tests::polycurve_round_trip_preserves_segments_domains_and_attributes ... ok
+test three_dm_curves::tests::connected_blocks_export_as_one_native_polycurve_with_independent_scales ... ok
+[New Thread 0xfffff618dee0 (LWP 110782)]
+[Thread 0xfffff639dee0 (LWP 110775) exited]
+[Thread 0xfffff69cdee0 (LWP 110774) exited]
+[New Thread 0xfffff67bdee0 (LWP 110783)]
+test three_dm_curves::tests::intervals_with_overflowing_total_width_do_not_create_invalid_polycurves ... ok
+[New Thread 0xfffff6dedee0 (LWP 110784)]
+[Thread 0xfffff6bddee0 (LWP 110771) exited]
+[Thread 0xfffff720dee0 (LWP 110364) exited]
+test three_dm_geometry::tests::legacy_polycurve_payload_remains_readable_and_arc_payload_is_strict ... ok
+[Thread 0xfffff6ffdee0 (LWP 110773) exited]
+[Thread 0xfffff594dee0 (LWP 110728) exited]
+[New Thread 0xfffff5f7dee0 (LWP 110785)]
+test three_dm_geometry::tests::malformed_or_trailing_payload_is_rejected ... ok
+[New Thread 0xfffff762dee0 (LWP 110786)]
+test three_dm_geometry::tests::polycurve_codec_preserves_local_domains_and_rejects_malformed_data ... ok
+[Thread 0xfffff6dedee0 (LWP 110784) exited]
+[New Thread 0xfffff65adee0 (LWP 110787)]
+test three_dm_curves::tests::positional_jumps_expand_to_separate_objects_without_bridging ... ok
+[New Thread 0xfffff531dee0 (LWP 110788)]
+test three_dm_geometry::tests::versioned_payload_round_trips_exact_solid_topology ... ok
+[New Thread 0xfffff552dee0 (LWP 110789)]
+test three_dm_curves::tests::standalone_pieces_lifted_out_of_a_polycurve_keep_the_outer_domain ... ok
+[New Thread 0xfffff69cdee0 (LWP 110790)]
+test step::native_nurbs::tests::rational_linear_uv_pcurve_crosses_surface_knots_at_source_parameters ... ok
+[New Thread 0xfffff720dee0 (LWP 110791)]
+[Thread 0xfffff552dee0 (LWP 110789) exited]
+test three_dm_curves::tests::valid_ordinary_curves_are_borrowed_and_keep_their_representation ... ok
+[Thread 0xfffff5f7dee0 (LWP 110785) exited]
+[New Thread 0xfffff639dee0 (LWP 110792)]
+test three_dm_curves::tests::segment_limit_flushes_a_complete_group_without_losing_the_next_piece ... ok
+[Thread 0xfffff65adee0 (LWP 110787) exited]
+[Thread 0xfffff762dee0 (LWP 110786) exited]
+[New Thread 0xfffff6ffdee0 (LWP 110793)]
+test three_dm_curves::tests::nested_full_order_leaf_splits_retain_outer_parameters_and_other_leaf_types ... ok
+[New Thread 0xfffff6bddee0 (LWP 110794)]
+test three_dm::tests::model_tolerance_boundary_values_round_trip_without_normalization ... ok
+test three_dm_rational_tests::exact_subnormal_products_are_allowed_when_no_all_normal_encoding_exists ... ok
+test three_dm_rational_tests::irreconcilable_products_fail_without_replacing_existing_data ... ok
+test three_dm_rational_tests::finite_reciprocals_in_the_lowest_usable_weight_bin_are_not_rejected ... ok
+test three_dm_rational_tests::free_surface_conversion_preserves_tiny_euclidean_controls ... ok
+test three_dm_rational_tests::full_order_decomposition_and_binary_scaling_preserve_independent_pieces ... ok
+test three_dm_rational_tests::polycurve_codec_uses_the_same_safe_rational_conversion ... ok
+[Thread 0xfffff720dee0 (LWP 110791) exited]
+test three_dm_rational_tests::rounding_to_the_smallest_subnormal_is_allowed_only_when_coordinates_recover ... ok
+test three_dm_rational_tests::overflowing_products_use_a_common_scale_instead_of_rejecting_valid_geometry ... ok
+test three_dm_rational_tests::subnormal_weights_must_not_overflow_opennurbs_reciprocal_dehomogenization ... ok
+[Thread 0xfffff639dee0 (LWP 110792) exited]
+[Thread 0xfffff69cdee0 (LWP 110790) exited]
+[Thread 0xfffff6ffdee0 (LWP 110793) exited]
+test three_dm_rational_tests::tiny_products_must_not_silently_erase_euclidean_curve_coordinates ... ok
+[Thread 0xfffff6bddee0 (LWP 110794) exited]
+test three_dm_rational_tests::brep::brep_edges_uv_trims_and_signed_surfaces_share_safe_serialization ... ok
+[Thread 0xfffff7a4dee0 (LWP 110781) exited]
+test three_dm_rational_tests::importer_recovers_subnormal_homogeneous_controls_without_forming_a_reciprocal ... [Thread 0xfffff531dee0 (LWP 110788) exited]
+ok
+test three_dm_rational_tests::binary_scaling_handles_subnormal_endpoints_and_preserves_ordinary_weights ... ok
+[Thread 0xfffff783dee0 (LWP 110780) exited]
+test three_dm_rational_tests::brep::partitioned_closed_faces_keep_solid_incidence_and_round_trip ... ok
+[Thread 0xfffff67bdee0 (LWP 110783) exited]
+test three_dm_rational_tests::brep::coalesced_rational_brep_edges_and_trims_round_trip_without_new_full_order_knots ... ok
+[Thread 0xfffff618dee0 (LWP 110782) exited]
+test three_dm::tests::model_length_units_round_trip_without_rescaling_coordinates ... ok
+[Thread 0xfffff5d6dee0 (LWP 110727) exited]
+test three_dm::instances::tests::invalid_placements_and_empty_branching_graphs_fail_before_partial_results ... ok
+[Thread 0xfffff741dee0 (LWP 110684) exited]
+test step::tests::native_step_imports_curved_rational_uv_pcurve_on_spline_surfaces ... ok
+[Thread 0xfffff4efdee0 (LWP 110421) exited]
+test step::native_nurbs::extrusion::tests::curved_and_reversed_rational_paths_on_spline_extrusions_keep_domains_and_loci ... ok
+
+test result: ok. 214 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.37s
+
+[Thread 0xfffff4cedee0 (LWP 110336) exited]
+[Thread 0xffffb694dee0 (LWP 110369) exited]
+[Thread 0xffffb6b5dee0 (LWP 110368) exited]
+[Thread 0xffffb6d6dee0 (LWP 110366) exited]
+[Thread 0xffffb6f7dee0 (LWP 110363) exited]
+[Thread 0xffffb718dee0 (LWP 110361) exited]
+[Thread 0xffffb739dee0 (LWP 110359) exited]
+[Thread 0xffffb75adee0 (LWP 110357) exited]
+[Thread 0xffffb77bdee0 (LWP 110356) exited]
+[Thread 0xfffff429dee0 (LWP 110347) exited]
+[Thread 0xffffb7ffdee0 (LWP 110348) exited]
+[Thread 0xfffff46bdee0 (LWP 110341) exited]
+[Thread 0xfffff44adee0 (LWP 110344) exited]
+[Thread 0xfffff48cdee0 (LWP 110339) exited]
+[Thread 0xfffff4addee0 (LWP 110337) exited]
+[Thread 0xfffff510dee0 (LWP 110334) exited]
+[Thread 0xfffff5b5dee0 (LWP 110329) exited]
+[Thread 0xffffb7dedee0 (LWP 110350) exited]
+[Thread 0xffffb7bddee0 (LWP 110352) exited]
+[Thread 0xfffff7fee020 (LWP 110312) exited]
+[Thread 0xfffff573dee0 (LWP 110331) exited]
+[Thread 0xffffb79cdee0 (LWP 110354) exited]
+[New process 110312]
+[Inferior 1 (process 110312) exited normally]

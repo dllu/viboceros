@@ -1,0 +1,7 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 3m 29s
+     Running `/tmp/viboceros-brep-verification-target/release/examples/curved_sets /tmp/viboceros-curved-sets-qualified`
+union: volume 1016.755160821027, wrote /tmp/viboceros-curved-sets-qualified/union.3dm
+common_intersection: volume 16.755160819146, wrote /tmp/viboceros-curved-sets-qualified/common_intersection.3dm
+two_set_intersection: volume 16.755160819146, wrote /tmp/viboceros-curved-sets-qualified/two_set_intersection.3dm

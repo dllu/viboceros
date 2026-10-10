@@ -87,57 +87,78 @@ impl BooleanUnionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().collect::<Vec<_>>();
-        let (kernel, interactions) =
-            boolean_solids::interactions(&refs, document.tolerance(), false)?;
-        if interactions.is_empty() {
-            return Err(CommandError::NothingUnioned);
-        }
-        let components = kernel.union(&refs, document.tolerance())?;
-        let active =
-            boolean_solids::active_faces(&refs, &interactions, document.tolerance(), false)?;
-        let mut copies = Vec::new();
-        let mut consumed = Vec::new();
-        for component in components {
-            if !interactions
-                .iter()
-                .any(|pair| pair.iter().all(|i| component.source_indices.contains(i)))
-            {
-                continue;
+        let prepared = (|| -> Result<_, CommandError> {
+            let (kernel, interactions) =
+                boolean_solids::interactions(&refs, document.tolerance(), false)?;
+            if interactions.is_empty() {
+                return Err(CommandError::NothingUnioned);
             }
-            let owner = component.boundary_source_indices[0];
-            let geometry_owner = *component
-                .boundary_source_indices
-                .last()
-                .expect("nonempty boundary");
-            let shells = boolean_solids::participating_shells(
-                component.brep,
-                &component.face_sources,
-                &active,
-                document.tolerance(),
-            )?;
-            let text = if shells.len() == 1 {
-                sources[geometry_owner].geometry_user_text().clone()
-            } else {
-                BTreeMap::new()
-            };
-            for (brep, sources_of_faces) in shells {
-                let brep = if options.merge_coplanar {
-                    brep.try_merge_coplanar_polygon_faces_in_groups(
-                        &vec![0; brep.faces().len()],
-                        document.tolerance(),
-                    )?
-                    .unwrap_or(brep)
-                    .try_merge_all_edges(0., document.tolerance())?
+            let components = kernel.union(&refs, document.tolerance())?;
+            let active =
+                boolean_solids::active_faces(&refs, &interactions, document.tolerance(), false)?;
+            let mut copies = Vec::new();
+            let mut consumed = Vec::new();
+            for component in components {
+                if !interactions
+                    .iter()
+                    .any(|pair| pair.iter().all(|i| component.source_indices.contains(i)))
+                {
+                    continue;
+                }
+                let owner = component.boundary_source_indices[0];
+                let geometry_owner = *component
+                    .boundary_source_indices
+                    .last()
+                    .expect("nonempty boundary");
+                let shells = boolean_solids::participating_shells(
+                    component.brep,
+                    &component.face_sources,
+                    &active,
+                    document.tolerance(),
+                )?;
+                let text = if shells.len() == 1 {
+                    sources[geometry_owner].geometry_user_text().clone()
                 } else {
-                    boolean_solids::merged(brep, &sources_of_faces, document.tolerance())?
+                    BTreeMap::new()
                 };
-                copies.push((sources[owner].id(), Geometry::Brep(brep), text.clone()));
+                for (brep, sources_of_faces) in shells {
+                    let brep = if options.merge_coplanar {
+                        brep.try_merge_coplanar_polygon_faces_in_groups(
+                            &vec![0; brep.faces().len()],
+                            document.tolerance(),
+                        )?
+                        .unwrap_or(brep)
+                        .try_merge_all_edges(0., document.tolerance())?
+                    } else {
+                        boolean_solids::merged(brep, &sources_of_faces, document.tolerance())?
+                    };
+                    copies.push((sources[owner].id(), Geometry::Brep(brep), text.clone()));
+                }
+                consumed.extend(component.source_indices.iter().map(|&i| sources[i].id()));
             }
-            consumed.extend(component.source_indices.iter().map(|&i| sources[i].id()));
-        }
-        if copies.is_empty() {
-            return Err(CommandError::NothingUnioned);
-        }
+            if copies.is_empty() {
+                return Err(CommandError::NothingUnioned);
+            }
+            Ok((copies, consumed))
+        })();
+        #[cfg(feature = "native-smlib")]
+        let (copies, consumed) = match prepared {
+            Err(CommandError::Geometry(
+                GeometryError::UnsupportedConvexBrepBoolean { .. }
+                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
+            )) => {
+                let result = boolean_solids::native::union(
+                    &refs,
+                    &sources,
+                    options.merge_coplanar,
+                    document.tolerance(),
+                )?;
+                (result.copies, result.consumed)
+            }
+            result => result?,
+        };
+        #[cfg(not(feature = "native-smlib"))]
+        let (copies, consumed) = prepared?;
         let all_sources = sources.iter().map(|o| o.id()).collect::<Vec<_>>();
         // Construction, merging and metadata staging have finished before edits.
         let outputs = document.copy_object_pieces_with_metadata_into_source_groups(copies)?;

@@ -1,5 +1,9 @@
 # BooleanIntersection
 
+Linux builds with `--features native-smlib` also offer an
+[optional closed curved-solid path](../smlib-set-booleans.md) for common and
+two-set intersections, preserving the shared document history flow.
+
 [Command reference](README.md) · [Kernel and limits](../convex-booleans.md)
 
 ```text

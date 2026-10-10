@@ -1,0 +1,21 @@
+{
+  "iterations": 1,
+  "operations": [
+    {
+      "artifact_path": "/tmp/viboceros-curved-sets-qualified/union.3dm",
+      "id": "union",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-curved-sets-qualified/common_intersection.3dm",
+      "id": "common_intersection",
+      "op": "three_dm_brep_interchange"
+    },
+    {
+      "artifact_path": "/tmp/viboceros-curved-sets-qualified/two_set_intersection.3dm",
+      "id": "two_set_intersection",
+      "op": "three_dm_brep_interchange"
+    }
+  ],
+  "protocol_version": 1
+}

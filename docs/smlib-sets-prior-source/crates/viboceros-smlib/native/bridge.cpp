@@ -2,12 +2,10 @@
 #include <SmApiBrep.h>
 #include <SmApiCurves.h>
 #include <SmApiGeneral.h>
-#include <SmApiIntersectors.h>
 #include <SmApiPrimitives.h>
 #include <SmApiQueries.h>
 #include <SmBSplineCurve.h>
 #include <SmBrep.h>
-#include <SmFace.h>
 #include <SmPoly.h>
 #include <algorithm>
 #include <cmath>
@@ -417,50 +415,4 @@ extern "C" VbSolid *vb_parts_take(VbParts *parts, size_t index) {
 extern "C" void vb_parts_free(VbParts *parts) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete parts;
-}
-
-extern "C" int vb_solid_boundary_contact(const VbSolid *a, const VbSolid *b, double tolerance,
-                                         int *contact, char *error, size_t capacity) {
-    return guarded(error, capacity, [&] {
-        require(a && b && contact && std::isfinite(tolerance) && tolerance > 0,
-                "Invalid boundary contact query");
-        *contact = 0;
-        SmTArray<SmFace *> first, second;
-        a->value->GetFaces(first);
-        b->value->GetFaces(second);
-        size_t work = 0;
-        for (ULONG i = 0; i < first.GetSize(); ++i)
-            for (ULONG j = 0; j < second.GetSize(); ++j) {
-                require(++work <= 65536, "Boundary contact work limit");
-                SmTArray<SmCurve *> curves;
-                SmTArray<SmPoint3d> points;
-                const auto status = SmApiIntersectFaces(first[i], second[j], curves, &points);
-                struct Cleanup {
-                    SmTArray<SmCurve *> &curves;
-                    ~Cleanup() {
-                        for (ULONG k = 0; k < curves.GetSize(); ++k)
-                            delete curves[k];
-                    }
-                } cleanup{curves};
-                check(status, "intersect boundaries for contact");
-                if (curves.GetSize() > 0) {
-                    *contact = 1;
-                    return;
-                }
-            }
-    });
-}
-
-extern "C" int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, size_t capacity) {
-    if (out)
-        *out = nullptr;
-    return guarded(error, capacity, [&] {
-        require(solid && out, "Invalid solid copy");
-        auto owner = std::make_unique<VbSolid>();
-        SmBrep *raw = nullptr;
-        const auto status = SmApiBrepCopy(solid->value.get(), raw);
-        owner->value.reset(raw);
-        check(status, "copy native solid");
-        *out = owner.release();
-    });
 }

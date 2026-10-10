@@ -6,6 +6,8 @@ use viboceros_geometry::{
 };
 mod common;
 mod compound;
+#[cfg(feature = "native-smlib")]
+pub(super) mod native;
 
 pub(super) fn common_intersection(
     breps: &[&Brep],

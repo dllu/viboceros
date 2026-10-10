@@ -28,8 +28,8 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 ```
 
 Compiler, CMake and system TBB requirements are in the [bridge guide](smlib-bridge.md).
-Default builds retain the Rust Boolean kernel. The feature extends Difference,
-[Union and Intersection](smlib-set-booleans.md): convex/polyhedral paths run first, and explicit
+Default builds retain the Rust Boolean kernel. The feature extends
+`BooleanDifference` only: convex/polyhedral paths run first, and explicit
 unsupported-geometry errors select native closed-solid subtraction. Arithmetic,
 work-limit and topology errors remain errors. Open sheets remain unsupported.
 
@@ -43,8 +43,8 @@ split results clear it according to the existing policy.
 No-change detection uses independently integrated Rust volumes and dimensional
 document tolerance; subtraction that increases volume is rejected. Tangency,
 coincident curved faces, small removed features, broader multi-object policies,
-extreme scales and native output ordering need further qualification. Split,
-fillets and offsets are not yet routed through this adapter.
+extreme scales and native output ordering need further qualification. Union,
+Intersection, Split, fillets and offsets are not yet routed through this adapter.
 
 ## Reproduce the document workflow
 

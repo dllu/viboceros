@@ -1,0 +1,69 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 2m 37s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_smlib-d96540466e5535bf)
+
+running 1 test
+test native::tests::c_boundary_clears_failed_outputs_and_terminates_small_error_buffers ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/boundary_contact.rs (/tmp/viboceros-brep-verification-target/release/deps/boundary_contact-1317bbb3a64b541b)
+
+running 1 test
+test boundary_contact_separates_intersections_containment_and_disjoint_inputs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/brep_import.rs (/tmp/viboceros-brep-verification-target/release/deps/brep_import-0f6ba7dfec40c9b5)
+
+running 10 tests
+test complete_subtraction_returns_an_empty_owned_result ... ok
+test open_shells_and_touching_components_are_rejected_without_poisoning_context ... ok
+test inconsistent_shell_sense_is_rejected ... ok
+test disconnected_material_shells_remain_distinct_after_import ... ok
+test overlapping_component_shells_fail_before_becoming_a_native_solid ... ok
+test imported_cavity_and_disconnected_solids_classify_followup_cutters ... ok
+test rust_solids_import_with_preserved_geometry_and_oriented_volume ... ok
+test generated_cad_artifacts_import_including_cavities_and_repeated_cutters ... ok
+test nested_island_regions_and_repeated_followup_operations_remain_valid ... ok
+test imported_operands_support_curved_subtraction_and_stay_unchanged ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/brep_transfer.rs (/tmp/viboceros-brep-verification-target/release/deps/brep_transfer-d4aea4268699de41)
+
+running 3 tests
+test native_box_transfers_shared_edges_faces_and_oriented_loops ... ok
+test curved_solid_transfer_covers_cylinders_spheres_and_intersecting_cuts ... ok
+test exact_curved_exports_survive_3dm_and_step_without_display_meshes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/native.rs (/tmp/viboceros-brep-verification-target/release/deps/native-2acf4a905ad5b046)
+
+running 6 tests
+test invalid_queries_and_tessellation_preserve_solid_and_return_errors ... ok
+test unsupported_negative_weights_and_unclamped_curves_fail_explicitly ... ok
+test independently_owned_worker_calls_are_serialized_and_handles_drop_cleanly ... ok
+test boolean_operands_remain_owned_and_curved_outputs_become_closed_rust_meshes ... ok
+test polynomial_curve_transfer_handles_unit_weights_and_nonuniform_cubic_knots ... ok
+test rational_curve_transfer_retains_knots_control_points_weights_and_evaluation ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/rhino_reference.rs (/tmp/viboceros-brep-verification-target/release/deps/rhino_reference-2a9607aed619c6a7)
+
+running 2 tests
+test native_solid_references_match_volume_bounds_and_manifold_status ... ok
+test native_rational_curves_preserve_definitions_and_all_parameter_samples ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+   Doc-tests viboceros_smlib
+
+running 1 test
+test crates/viboceros-smlib/src/native.rs - native::Solid (line 126) - compile fail ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

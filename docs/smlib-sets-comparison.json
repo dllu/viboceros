@@ -1,0 +1,58 @@
+{
+  "engine": "8.32.26160.13001",
+  "cases": [
+    {
+      "id": "union",
+      "solid": true,
+      "faces": 7,
+      "edges": 14,
+      "edge_samples": 462,
+      "maximum_boundary_sample_error": 5.329070518200751e-15,
+      "surface_samples": 567,
+      "maximum_surface_sample_error": 1.7763568394002505e-15,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 3,
+        "closed": false,
+        "manifold": true,
+        "oriented": true
+      }
+    },
+    {
+      "id": "common_intersection",
+      "solid": true,
+      "faces": 2,
+      "edges": 2,
+      "edge_samples": 66,
+      "maximum_boundary_sample_error": 5.329070518200751e-15,
+      "surface_samples": 162,
+      "maximum_surface_sample_error": 1.7763568394002505e-15,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 0,
+        "closed": true,
+        "manifold": true,
+        "oriented": true
+      }
+    },
+    {
+      "id": "two_set_intersection",
+      "solid": true,
+      "faces": 2,
+      "edges": 2,
+      "edge_samples": 66,
+      "maximum_boundary_sample_error": 5.329070518200751e-15,
+      "surface_samples": 162,
+      "maximum_surface_sample_error": 1.7763568394002505e-15,
+      "display_mesh": {
+        "boundaries_closed": true,
+        "boundary_loops": 0,
+        "closed": true,
+        "manifold": true,
+        "oriented": true
+      }
+    }
+  ],
+  "geometric_epsilon": 1e-08,
+  "scope": "Rhino accepts each 3DM as a valid solid; samples qualify analytic boundary/surface membership, not full interactive command parity."
+}

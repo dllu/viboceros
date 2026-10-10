@@ -21,10 +21,7 @@ int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, VbSolid 
 int vb_solid_properties(const VbSolid *solid, double accuracy, double *volume, double bounds[6],
                         int *manifold, char *error, size_t capacity);
 void vb_solid_free(VbSolid *solid);
-int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, size_t capacity);
 int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity);
-int vb_solid_boundary_contact(const VbSolid *a, const VbSolid *b, double tolerance, int *contact,
-                              char *error, size_t capacity);
 int vb_solid_census(const VbSolid *solid, size_t counts[2], char *error, size_t capacity);
 int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity);
 int vb_solid_from_brep(const VbBrepView *view, double tolerance, const size_t *components,

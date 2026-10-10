@@ -179,6 +179,17 @@ fn unsupported_inputs_invalid_sets_and_locked_objects_preserve_objects_and_redo(
         };
         let before = doc.objects().cloned().collect::<Vec<_>>();
         let redo = doc.redo_label().map(str::to_owned);
+        if kind == "curved" && cfg!(feature = "native-smlib") {
+            registry.execute(&mut doc, &command).unwrap();
+            assert!(doc.objects().len() > 0);
+            assert!(
+                doc.objects()
+                    .all(|o| matches!(o.geometry(),Geometry::Brep(b)if b.is_solid()))
+            );
+            doc.undo().unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+            continue;
+        }
         assert!(registry.execute(&mut doc, &command).is_err(), "{kind}");
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before, "{kind}");
         assert_eq!(doc.redo_label(), redo.as_deref());

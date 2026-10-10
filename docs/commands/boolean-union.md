@@ -1,5 +1,9 @@
 # BooleanUnion
 
+Linux builds with `--features native-smlib` also offer an
+[optional closed curved-solid path](../smlib-set-booleans.md). Its geometry and
+multi-object policy qualification remains narrower than the full command scope.
+
 [Command reference](README.md) · [Kernel and limits](../convex-booleans.md)
 
 ```text

@@ -69,20 +69,6 @@ struct NativeParts {
     _private: [u8; 0],
 }
 unsafe extern "C" {
-    fn vb_solid_copy(
-        solid: *const NativeSolid,
-        out: *mut *mut NativeSolid,
-        error: *mut c_char,
-        capacity: usize,
-    ) -> c_int;
-    fn vb_solid_boundary_contact(
-        a: *const NativeSolid,
-        b: *const NativeSolid,
-        tolerance: f64,
-        contact: *mut c_int,
-        error: *mut c_char,
-        capacity: usize,
-    ) -> c_int;
     fn vb_solid_parts(
         solid: *const NativeSolid,
         out: *mut *mut NativeParts,
@@ -377,31 +363,6 @@ impl NurbsData {
 }
 
 impl Solid {
-    pub fn try_clone(&self) -> Result<Self, Error> {
-        let mut pointer = std::ptr::null_mut();
-        call(|error, capacity| unsafe {
-            vb_solid_copy(self.handle.as_ptr(), &mut pointer, error, capacity)
-        })?;
-        Ok(Self {
-            handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
-            _thread_local: PhantomData,
-        })
-    }
-    /// Detect a non-point intersection between the two exact boundary graphs.
-    pub fn boundary_contact(&self, other: &Self, tolerance: Tolerance) -> Result<bool, Error> {
-        let mut contact = 0;
-        call(|error, capacity| unsafe {
-            vb_solid_boundary_contact(
-                self.handle.as_ptr(),
-                other.handle.as_ptr(),
-                tolerance.absolute(),
-                &mut contact,
-                error,
-                capacity,
-            )
-        })?;
-        Ok(contact != 0)
-    }
     pub fn material_parts(&self) -> Result<Vec<Self>, Error> {
         struct Parts(NonNull<NativeParts>);
         impl Drop for Parts {

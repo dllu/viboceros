@@ -1,0 +1,3 @@
+    Blocking waiting for file lock on build directory
+    Checking viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+    Finished `release` profile [optimized] target(s) in 2m 14s

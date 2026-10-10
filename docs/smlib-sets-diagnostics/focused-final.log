@@ -1,0 +1,17 @@
+    Blocking waiting for file lock on artifact directory
+    Finished `release` profile [optimized] target(s) in 8m 24s
+     Running unittests src/lib.rs (/tmp/viboceros-brep-verification-target/release/deps/viboceros_command-c77d2ba48b827f8e)
+
+running 9 tests
+test boolean_solids::native::tests::empty_intersection_and_open_union_leave_geometry_and_history_unchanged ... ok
+test boolean_solids::native::tests::disjoint_and_contained_union_inputs_remain_unchanged ... ok
+test boolean_solids::native::tests::two_set_intersection_keeps_separate_material_outputs_and_clears_split_text ... ok
+test boolean_solids::native::tests::successful_union_consumes_interior_inputs_and_keeps_disjoint_singletons ... ok
+test boolean_solids::native::tests::two_set_intersection_deletes_disjoint_inputs_and_keeps_maximal_first_owner ... ok
+test boolean_solids::native::tests::equal_inputs_do_not_steal_boundary_ownership_in_a_changing_union ... ok
+test boolean_solids::native::tests::curved_common_and_two_set_intersections_preserve_first_set_ownership ... ok
+test boolean_solids::native::tests::common_intersection_skips_enclosing_inputs_and_admits_smaller_owner ... ok
+test boolean_solids::native::tests::curved_union_preserves_owners_groups_selection_and_undo ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 1269 filtered out; finished in 3.46s
+

@@ -111,89 +111,108 @@ impl BooleanIntersectionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let compound_sets = refs
-            .iter()
-            .any(|b| b.edge_connected_face_components().len() > 1);
-        let (kernel, interactions) = if compound_sets || common {
-            // Each specialized pipeline certifies inputs and tests its exact
-            // regions. Avoid constructing an unused interaction arrangement.
-            (boolean_solids::Kernel::Polyhedral, Vec::new())
-        } else {
-            boolean_solids::interactions(&refs, doc.tolerance(), false)?
-        };
-        if !compound_sets
-            && !common
-            && !interactions
+        let prepared = (|| -> Result<_, CommandError> {
+            let compound_sets = refs
                 .iter()
-                .any(|p| p[0] < first.len() && p[1] >= first.len())
-        {
-            return Err(CommandError::NothingIntersected);
-        }
-        let mut copies = Vec::new();
-        let staged = if common {
-            Some(boolean_solids::common_intersection(&refs, doc.tolerance())?)
-        } else {
-            boolean_solids::compound_intersection(
-                &refs,
-                doc.tolerance(),
-                common,
-                first.len(),
-                kernel,
-            )?
-        };
-        if let Some(results) = staged {
-            for result in results {
-                let brep = if common {
-                    let b = result.component.brep;
-                    // Common intersection merges coplanar boundary faces across
-                    // original owners. Two-set pairs retain their source seams.
-                    boolean_solids::finish_boundary(
-                        b.try_merge_coplanar_polygon_faces_in_groups(
-                            &vec![0; b.faces().len()],
+                .any(|b| b.edge_connected_face_components().len() > 1);
+            let (kernel, interactions) = if compound_sets || common {
+                // Each specialized pipeline certifies inputs and tests its exact
+                // regions. Avoid constructing an unused interaction arrangement.
+                (boolean_solids::Kernel::Polyhedral, Vec::new())
+            } else {
+                boolean_solids::interactions(&refs, doc.tolerance(), false)?
+            };
+            if !compound_sets
+                && !common
+                && !interactions
+                    .iter()
+                    .any(|p| p[0] < first.len() && p[1] >= first.len())
+            {
+                return Err(CommandError::NothingIntersected);
+            }
+            let mut copies = Vec::new();
+            let staged = if common {
+                Some(boolean_solids::common_intersection(&refs, doc.tolerance())?)
+            } else {
+                boolean_solids::compound_intersection(
+                    &refs,
+                    doc.tolerance(),
+                    common,
+                    first.len(),
+                    kernel,
+                )?
+            };
+            if let Some(results) = staged {
+                for result in results {
+                    let brep = if common {
+                        let b = result.component.brep;
+                        // Common intersection merges coplanar boundary faces across
+                        // original owners. Two-set pairs retain their source seams.
+                        boolean_solids::finish_boundary(
+                            b.try_merge_coplanar_polygon_faces_in_groups(
+                                &vec![0; b.faces().len()],
+                                doc.tolerance(),
+                            )?
+                            .unwrap_or(b),
                             doc.tolerance(),
                         )?
-                        .unwrap_or(b),
-                        doc.tolerance(),
-                    )?
-                } else {
-                    boolean_solids::merged(
-                        result.component.brep,
-                        &result.component.face_sources,
-                        doc.tolerance(),
-                    )?
-                };
-                let text = result
-                    .geometry_owner
-                    .map(|i| objects[i].geometry_user_text().clone())
-                    .unwrap_or_default();
-                copies.push((ids[result.owner], Geometry::Brep(brep), text));
-            }
-        } else {
-            let results =
-                kernel.sets(&refs[..first.len()], &refs[first.len()..], doc.tolerance())?;
-            let mut counts = BTreeMap::new();
-            for result in &results {
-                *counts.entry(result.maximal_pairs[0][0]).or_insert(0usize) += 1;
-            }
-            for result in results {
-                let owner = result.maximal_pairs[0][0];
-                let geometry_owner = result.maximal_pairs.last().unwrap()[0];
-                let brep =
-                    boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
-                copies.push((
-                    ids[owner],
-                    Geometry::Brep(brep),
-                    if counts[&owner] == 1 {
-                        objects[geometry_owner].geometry_user_text().clone()
                     } else {
-                        BTreeMap::new()
-                    },
-                ));
+                        boolean_solids::merged(
+                            result.component.brep,
+                            &result.component.face_sources,
+                            doc.tolerance(),
+                        )?
+                    };
+                    let text = result
+                        .geometry_owner
+                        .map(|i| objects[i].geometry_user_text().clone())
+                        .unwrap_or_default();
+                    copies.push((ids[result.owner], Geometry::Brep(brep), text));
+                }
+            } else {
+                let results =
+                    kernel.sets(&refs[..first.len()], &refs[first.len()..], doc.tolerance())?;
+                let mut counts = BTreeMap::new();
+                for result in &results {
+                    *counts.entry(result.maximal_pairs[0][0]).or_insert(0usize) += 1;
+                }
+                for result in results {
+                    let owner = result.maximal_pairs[0][0];
+                    let geometry_owner = result.maximal_pairs.last().unwrap()[0];
+                    let brep =
+                        boolean_solids::merged(result.brep, &result.face_sources, doc.tolerance())?;
+                    copies.push((
+                        ids[owner],
+                        Geometry::Brep(brep),
+                        if counts[&owner] == 1 {
+                            objects[geometry_owner].geometry_user_text().clone()
+                        } else {
+                            BTreeMap::new()
+                        },
+                    ));
+                }
             }
-        }
-        if copies.is_empty() {
-            return Err(CommandError::NothingIntersected);
-        }
+            if copies.is_empty() {
+                return Err(CommandError::NothingIntersected);
+            }
+            Ok(copies)
+        })();
+        #[cfg(feature = "native-smlib")]
+        let copies = match prepared {
+            Err(CommandError::Geometry(
+                GeometryError::UnsupportedConvexBrepBoolean { .. }
+                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
+            )) => boolean_solids::native::intersection(
+                &refs,
+                &objects,
+                first.len(),
+                common,
+                doc.tolerance(),
+            )?,
+            result => result?,
+        };
+        #[cfg(not(feature = "native-smlib"))]
+        let copies = prepared?;
         // First-set picks stay selected through the second phase. Geometry and
         // metadata are completely staged before this transactional model edit.
         doc.select_command_results(ids.iter().copied())?;
