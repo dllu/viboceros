@@ -8,6 +8,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Planar-face tolerance argument is ignored by the kernel entry point.**
+  `SmApiCreatePlanarFaces` passes a hard-coded `0.01`, but
+  `SmBrep::CreatePlanarFacesWith3DCurves` ignores that argument and uses the
+  receiving B-rep's tolerance. The bridge configures its private B-rep before
+  calling the existing constructor. See [planar surfaces](smlib-planar-surfaces.md).
+- **Curve-intersection wrapper fixes tolerance at `0.001` (source audit).**
+  `SmApiIntersectCurves` also reports `SM_ERR` for empty successful solves.
+  Callers needing model-specific tolerance must use the existing native
+  `GlobalCurveIntersect` entry point. This wrapper was inspected during planar
+  integration; the final planar command needs only native plane grouping and
+  region construction. Source:
+  [SmApiIntersectors.cpp](../third_party/usd-brep/source/SM_API/src/SmApiIntersectors.cpp).
 - **Revolution wrapper can discard profile pieces (source audit).**
   `SmApiCreateSurfaceRevolution` revolves a profile through a producer that can
   split its kinks, then returns only the first surface from the resulting
@@ -103,6 +115,13 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Portable planar overlap policy differs from current Rhino.** The live
+  fixture with an outer rectangle, two competing inner rectangles and a separate
+  inner hole produces areas 83 and 16 in both Rhino and usd-brep. The previous
+  custom command policy detached both competing holes and produced areas 99, 16
+  and 16. Native PlanarSrf now uses the kernel region constructor directly;
+  portable builds retain the older policy pending correction. See
+  [planar qualification](smlib-planar-surfaces.md).
 - **Native Join is not raw Rhino parity.** The
   [92-case replay](smlib-join-comparison.json) has no native execution errors but
   only 14 complete raw matches. Stored uncertainty, UV domains, face senses,

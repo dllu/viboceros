@@ -1,0 +1,624 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "planar_surface_command",
+      "id": "nested-keep",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                10,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                8,
+                8,
+                0
+              ],
+              [
+                2,
+                8,
+                0
+              ],
+              [
+                2,
+                2,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                4,
+                4,
+                0
+              ],
+              [
+                6,
+                4,
+                0
+              ],
+              [
+                6,
+                6,
+                0
+              ],
+              [
+                4,
+                6,
+                0
+              ],
+              [
+                4,
+                4,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": false
+    },
+    {
+      "op": "planar_surface_command",
+      "id": "nested-delete",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                10,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                8,
+                2,
+                0
+              ],
+              [
+                8,
+                8,
+                0
+              ],
+              [
+                2,
+                8,
+                0
+              ],
+              [
+                2,
+                2,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                4,
+                4,
+                0
+              ],
+              [
+                6,
+                4,
+                0
+              ],
+              [
+                6,
+                6,
+                0
+              ],
+              [
+                4,
+                6,
+                0
+              ],
+              [
+                4,
+                4,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": true
+    },
+    {
+      "op": "planar_surface_command",
+      "id": "overlapping-keep",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                10,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                6,
+                2,
+                0
+              ],
+              [
+                6,
+                6,
+                0
+              ],
+              [
+                2,
+                6,
+                0
+              ],
+              [
+                2,
+                2,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                4,
+                4,
+                0
+              ],
+              [
+                8,
+                4,
+                0
+              ],
+              [
+                8,
+                8,
+                0
+              ],
+              [
+                4,
+                8,
+                0
+              ],
+              [
+                4,
+                4,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0.5,
+                0.5,
+                0
+              ],
+              [
+                1.5,
+                0.5,
+                0
+              ],
+              [
+                1.5,
+                1.5,
+                0
+              ],
+              [
+                0.5,
+                1.5,
+                0
+              ],
+              [
+                0.5,
+                0.5,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": false
+    },
+    {
+      "op": "planar_surface_command",
+      "id": "overlapping-delete",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                10,
+                0,
+                0
+              ],
+              [
+                10,
+                10,
+                0
+              ],
+              [
+                0,
+                10,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                6,
+                2,
+                0
+              ],
+              [
+                6,
+                6,
+                0
+              ],
+              [
+                2,
+                6,
+                0
+              ],
+              [
+                2,
+                2,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                4,
+                4,
+                0
+              ],
+              [
+                8,
+                4,
+                0
+              ],
+              [
+                8,
+                8,
+                0
+              ],
+              [
+                4,
+                8,
+                0
+              ],
+              [
+                4,
+                4,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0.5,
+                0.5,
+                0
+              ],
+              [
+                1.5,
+                0.5,
+                0
+              ],
+              [
+                1.5,
+                1.5,
+                0
+              ],
+              [
+                0.5,
+                1.5,
+                0
+              ],
+              [
+                0.5,
+                0.5,
+                0
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": true
+    },
+    {
+      "op": "planar_surface_command",
+      "id": "two-planes-keep",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                5,
+                0,
+                2
+              ],
+              [
+                7,
+                0,
+                2
+              ],
+              [
+                7,
+                3,
+                2
+              ],
+              [
+                5,
+                3,
+                2
+              ],
+              [
+                5,
+                0,
+                2
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": false
+    },
+    {
+      "op": "planar_surface_command",
+      "id": "two-planes-delete",
+      "curves": [
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "polyline",
+            "vertices": [
+              [
+                5,
+                0,
+                2
+              ],
+              [
+                7,
+                0,
+                2
+              ],
+              [
+                7,
+                3,
+                2
+              ],
+              [
+                5,
+                3,
+                2
+              ],
+              [
+                5,
+                0,
+                2
+              ]
+            ]
+          }
+        }
+      ],
+      "delete_input": true
+    }
+  ]
+}

@@ -2,6 +2,12 @@ use super::*;
 use viboceros_geometry::Brep;
 
 unsafe extern "C" {
+    fn vb_shape_bounds(
+        shape: *const NativeSolid,
+        bounds: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_face_count(
         shape: *const NativeSolid,
         count: *mut usize,
@@ -44,6 +50,22 @@ pub struct StitchResult {
 }
 
 impl Shape {
+    /// Query the native trimmed boundary's tight bounding box, including sheets.
+    pub fn tight_bounds(&self) -> Result<viboceros_geometry::BoundingBox3, Error> {
+        let mut values = [0.; 6];
+        call(|error, capacity| unsafe {
+            vb_shape_bounds(
+                self.model.handle.as_ptr(),
+                values.as_mut_ptr(),
+                error,
+                capacity,
+            )
+        })?;
+        Ok(viboceros_geometry::BoundingBox3::from_points([
+            Point3::try_new(values[0], values[1], values[2])?,
+            Point3::try_new(values[3], values[4], values[5])?,
+        ])?)
+    }
     /// Stitch a private copy using SMLib's manifold edge-pair mode.
     /// The effective radius is the larger of `distance` and the sum of each
     /// candidate pair's stored tolerances. Individual glue failures are skipped;

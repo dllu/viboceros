@@ -1,0 +1,284 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "outcomes": [
+    {
+      "status": "success",
+      "result": {
+        "id": "nested-keep",
+        "value": {
+          "regions": [
+            {
+              "area": 64.00000000000003,
+              "faces": 1,
+              "loops": [
+                2
+              ],
+              "max": [
+                10.0,
+                10.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 4.000000000000001,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                6.0,
+                6.0,
+                0.0
+              ],
+              "min": [
+                4.0,
+                4.0,
+                0.0
+              ]
+            }
+          ],
+          "retained_sources": 3
+        },
+        "elapsed_ns": 1211857
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "nested-delete",
+        "value": {
+          "regions": [
+            {
+              "area": 64.00000000000003,
+              "faces": 1,
+              "loops": [
+                2
+              ],
+              "max": [
+                10.0,
+                10.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 4.000000000000001,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                6.0,
+                6.0,
+                0.0
+              ],
+              "min": [
+                4.0,
+                4.0,
+                0.0
+              ]
+            }
+          ],
+          "retained_sources": 0
+        },
+        "elapsed_ns": 1107377
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "overlapping-keep",
+        "value": {
+          "regions": [
+            {
+              "area": 83.00000000000006,
+              "faces": 1,
+              "loops": [
+                3
+              ],
+              "max": [
+                10.0,
+                10.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 16.000000000000014,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "min": [
+                4.0,
+                4.0,
+                0.0
+              ]
+            }
+          ],
+          "retained_sources": 4
+        },
+        "elapsed_ns": 1388625
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "overlapping-delete",
+        "value": {
+          "regions": [
+            {
+              "area": 83.00000000000006,
+              "faces": 1,
+              "loops": [
+                3
+              ],
+              "max": [
+                10.0,
+                10.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 16.000000000000014,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                8.0,
+                8.0,
+                0.0
+              ],
+              "min": [
+                4.0,
+                4.0,
+                0.0
+              ]
+            }
+          ],
+          "retained_sources": 0
+        },
+        "elapsed_ns": 1393681
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "two-planes-keep",
+        "value": {
+          "regions": [
+            {
+              "area": 6.0,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                2.0,
+                3.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 5.999999999999999,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                7.0,
+                3.0,
+                2.0
+              ],
+              "min": [
+                5.0,
+                0.0,
+                2.0
+              ]
+            }
+          ],
+          "retained_sources": 2
+        },
+        "elapsed_ns": 821409
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "two-planes-delete",
+        "value": {
+          "regions": [
+            {
+              "area": 6.0,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                2.0,
+                3.0,
+                0.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            {
+              "area": 5.999999999999999,
+              "faces": 1,
+              "loops": [
+                1
+              ],
+              "max": [
+                7.0,
+                3.0,
+                2.0
+              ],
+              "min": [
+                5.0,
+                0.0,
+                2.0
+              ]
+            }
+          ],
+          "retained_sources": 0
+        },
+        "elapsed_ns": 806688
+      }
+    }
+  ]
+}

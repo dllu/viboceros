@@ -138,6 +138,7 @@ mod curve_native;
 mod curve_offset;
 mod ellipse_offset;
 mod non_manifold_selection;
+mod planar_surface;
 mod volume_selection;
 pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
@@ -714,6 +715,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: curve_native::RevolveFixture,
+    },
+    PlanarSurfaceCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: planar_surface::Fixture,
     },
     CurveNative {
         id: String,
@@ -2276,6 +2282,7 @@ impl Operation {
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
+            | Self::PlanarSurfaceCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
             | Self::CurveDirectionMatch { id, .. }
@@ -2918,6 +2925,9 @@ fn execute(
         } => curve_native::extrude_command(curve, *distance, iterations, tolerance)?,
         Operation::CurveRevolveCommand { fixture, .. } => {
             curve_native::revolve_command(fixture, iterations, tolerance)?
+        }
+        Operation::PlanarSurfaceCommand { fixture, .. } => {
+            planar_surface::run(fixture, iterations, tolerance)?
         }
         Operation::CurveNative { fixture, .. } => {
             curve_native::run(fixture, iterations, tolerance)?

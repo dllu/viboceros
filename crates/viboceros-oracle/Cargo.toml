@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
@@ -14,3 +15,7 @@ viboceros-document.workspace = true
 viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
 viboceros-io.workspace = true
+
+[features]
+default = []
+native-smlib = ["dep:viboceros-smlib", "viboceros-command/native-smlib"]

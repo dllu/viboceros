@@ -2,6 +2,22 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curves_coplanar(
+        curves: *const *const NativeCurve,
+        count: usize,
+        tolerance: f64,
+        coplanar: *mut c_int,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_planar_faces(
+        curves: *const *const NativeCurve,
+        count: usize,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curve_revolve(
         curve: *const NativeCurve,
         origin: *const f64,
@@ -32,6 +48,25 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Query the entire profile group with the native plane classifier.
+    pub fn are_coplanar(curves: &[&Self], tolerance: Tolerance) -> Result<bool, Error> {
+        let handles = curves
+            .iter()
+            .map(|c| c.handle.as_ptr().cast_const())
+            .collect::<Vec<_>>();
+        let mut plane = 0;
+        call(|error, capacity| unsafe {
+            vb_curves_coplanar(
+                handles.as_ptr(),
+                handles.len(),
+                tolerance.absolute(),
+                &mut plane,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(plane != 0)
+    }
     /// Import a modeling profile with an equivalent clamped active interval.
     /// Uniformly negative weights are flipped as one homogeneous gauge.
     /// Mixed signs retain the strict importer rejection; source data is unchanged.
@@ -96,6 +131,31 @@ impl KernelCurve {
 }
 
 impl Shape {
+    /// Construct native coplanar regions, including holes and nested islands.
+    /// The kernel consumes private profile copies; caller-owned curves remain usable.
+    pub fn planar_faces(curves: &[&KernelCurve], tolerance: Tolerance) -> Result<Self, Error> {
+        let handles = curves
+            .iter()
+            .map(|c| c.handle.as_ptr().cast_const())
+            .collect::<Vec<_>>();
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_planar_faces(
+                handles.as_ptr(),
+                handles.len(),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
     /// Sweep private copies of profiles into sheets or capped solid regions.
     /// Profile handles and their geometry remain owned by the caller.
     pub fn linear_sweep(

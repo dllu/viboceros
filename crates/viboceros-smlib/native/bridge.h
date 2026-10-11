@@ -39,6 +39,7 @@ int vb_shape_stitch(const VbSolid *shape, double distance, size_t *face_origins,
                     size_t face_capacity, size_t *face_count, size_t *stitched_edges,
                     double gaps[2], VbSolid **out, char *error, size_t capacity);
 int vb_shape_face_count(const VbSolid *shape, size_t *count, char *error, size_t capacity);
+int vb_shape_bounds(const VbSolid *shape, double bounds[6], char *error, size_t capacity);
 int vb_solid_from_brep(const VbBrepView *view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward, VbSolid **out, char *error,
                        size_t capacity);
@@ -68,6 +69,10 @@ int vb_curve_extrude(const VbCurve *curve, const double displacement[3], VbSurfa
 int vb_curve_revolve(const VbCurve *curve, const double origin[3], const double axis[3],
                      double angle_degrees, double parameter_length, VbSurfaceData **out,
                      char *error, size_t capacity);
+int vb_shape_planar_faces(const VbCurve *const *curves, size_t count, double tolerance,
+                          VbSolid **out, char *error, size_t capacity);
+int vb_curves_coplanar(const VbCurve *const *curves, size_t count, double tolerance,
+                       int *coplanar, char *error, size_t capacity);
 int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
                           const double displacement[3], int cap_ends, double tolerance,
                           VbSolid **out, char *error, size_t capacity);

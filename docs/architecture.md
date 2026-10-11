@@ -26,6 +26,8 @@ splitting; their command selection and document mutation policies remain in Rust
 sharing NURBS transfer while retaining the command's existing document policy.
 [Revolve](smlib-revolution.md) uses the upstream NURBS tensor constructor and
 the same surface transfer and modeling-profile preparation.
+[PlanarSrf](smlib-planar-surfaces.md) delegates plane/contact queries and nested
+region construction to usd-brep, excluding the portable containment adapter.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

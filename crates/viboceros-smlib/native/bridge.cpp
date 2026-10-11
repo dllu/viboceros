@@ -10,6 +10,7 @@
 #include <SmBSplineSurface.h>
 #include <SmBrep.h>
 #include <SmFace.h>
+#include <SmEdge.h>
 #include <SmFaceuse.h>
 #include <SmRegion.h>
 #include <SmShell.h>
@@ -319,6 +320,18 @@ extern "C" int vb_shape_face_count(const VbSolid *shape, size_t *count, char *er
         SmTArray<SmFace *> faces;
         shape->value->GetFaces(faces);
         *count = faces.GetSize();
+    });
+}
+
+extern "C" int vb_shape_bounds(const VbSolid *shape, double bounds[6], char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(shape && bounds, "Invalid shape bounds query");
+        SmPoint3d lo, hi;
+        check(SmApiBrepBoundingBox(shape->value.get(), TRUE, lo, hi), "tight shape bounds");
+        for (int i = 0; i < 3; ++i) {
+            require(std::isfinite(lo[i]) && std::isfinite(hi[i]) && lo[i] <= hi[i], "Invalid shape bounds");
+            bounds[i] = lo[i]; bounds[i + 3] = hi[i];
+        }
     });
 }
 
@@ -702,6 +715,64 @@ extern "C" int vb_curve_revolve(const VbCurve *curve, const double origin[3], co
                                             parameter_length, domain.GetMax().y)),
               "set revolution parameter domain");
         *out = vb_export_surface(*raw);
+    });
+}
+
+extern "C" int vb_shape_planar_faces(const VbCurve *const *curves, size_t count,
+                                      double tolerance, VbSolid **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curves && count && count <= 128 && out && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid planar-face arguments");
+        auto *context = SmApiGetOrCreateContext();
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(new (*context) SmBrep());
+        owner->value->SetTolerance(tolerance, FALSE);
+        SmTArray<SmCurve *> profiles;
+        std::vector<std::unique_ptr<SmCurve>> copies;
+        for (size_t i = 0; i < count; ++i) {
+            require(curves[i] && curves[i]->value, "Missing planar-face profile");
+            SmCurve *copy = nullptr;
+            const auto status = curves[i]->value->Copy(*context, copy);
+            copies.emplace_back(copy);
+            check(status, "copy planar-face profile");
+            require(copy, "Missing copied planar-face profile");
+            profiles.Add(copy);
+        }
+        SmTArray<SmFace *> faces;
+        const auto status = owner->value->CreatePlanarFacesWith3DCurves(
+            owner->value->GetInfiniteRegion(), profiles, tolerance, faces);
+        if (status != SM_SUCCESS) {
+            // The same failure contract as SM_API: originals are caller-owned
+            // on failure even when a partial B-rep already attached some curves.
+            SmTArray<SmEdge *> edges;
+            owner->value->GetEdges(edges);
+            for (ULONG i = 0; i < edges.GetSize(); ++i)
+                for (ULONG j = 0; j < profiles.GetSize(); ++j)
+                    if (edges[i]->GetCurve() == profiles[j]) {
+                        edges[i]->SetCurve(nullptr, FALSE, FALSE, FALSE);
+                        break;
+                    }
+            check(status, "create planar faces");
+        }
+        for (auto &copy : copies) copy.release();
+        require(faces.GetSize() > 0, "No planar faces were created");
+        check(SmApiTurnToNurbs(owner->value.get()), "convert exact planar faces to NURBS");
+        *out = owner.release();
+    });
+}
+
+extern "C" int vb_curves_coplanar(const VbCurve *const *curves, size_t count, double tolerance,
+                                    int *coplanar, char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(curves && count && count <= 128 && coplanar && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid coplanar curve query");
+        SmTArray<SmCurve *> values;
+        for (size_t i = 0; i < count; ++i) {
+            require(curves[i] && curves[i]->value, "Missing coplanar curve");
+            values.Add(curves[i]->value.get());
+        }
+        *coplanar = values[0]->AreCoPlanar(values, tolerance);
     });
 }
 

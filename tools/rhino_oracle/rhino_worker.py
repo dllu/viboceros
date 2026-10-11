@@ -14193,6 +14193,55 @@ def _execute(operation, iterations, tolerance):
             first.Dispose()
             second.Dispose()
 
+    if kind == "planar_surface_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        curves = [_cut_source(c) for c in operation["curves"]]
+        def create_planar_regions():
+            original_ids = set(item.Id for item in document.Objects)
+            source_ids = []
+            try:
+                document.Objects.UnselectAll()
+                for curve in curves:
+                    source_id = document.Objects.AddCurve(curve)
+                    source_ids.append(source_id)
+                    document.Objects.Select(source_id)
+                # PlanarSrf has no DeleteInput option. Source deletion is an
+                # explicit follow-up in this probe for the application's option.
+                command = "_-PlanarSrf"
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    raise ValueError("native planar surface command failed")
+                if operation.get("delete_input", False):
+                    for source_id in source_ids:
+                        document.Objects.Delete(source_id, True)
+                regions = []
+                for item in sorted(document.Objects, key=lambda item: item.RuntimeSerialNumber):
+                    if item.Id in original_ids or item.Id in source_ids:
+                        continue
+                    brep = item.Geometry
+                    if not isinstance(brep, Rhino.Geometry.Brep):
+                        raise ValueError("PlanarSrf must create B-reps")
+                    properties = Rhino.Geometry.AreaMassProperties.Compute(brep)
+                    if properties is None:
+                        raise ValueError("missing planar area")
+                    bounds = brep.GetBoundingBox(True)
+                    regions.append({"faces": brep.Faces.Count,
+                        "loops": [face.Loops.Count for face in brep.Faces],
+                        "area": float(properties.Area),
+                        "min": _xyz(bounds.Min), "max": _xyz(bounds.Max)})
+                    properties.Dispose()
+                return {"regions": regions, "retained_sources": sum(
+                    document.Objects.FindId(source_id) is not None for source_id in source_ids)}
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+        try:
+            return _measure(iterations, create_planar_regions)
+        finally:
+            for curve in curves:
+                curve.Dispose()
+
     if kind in ("curve_extrude_command", "curve_revolve_command"):
         document = Rhino.RhinoDoc.ActiveDoc
         source = _cut_source(operation["curve"])

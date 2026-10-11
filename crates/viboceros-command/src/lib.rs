@@ -73,7 +73,9 @@ use interchange::{document_geometry_from_3dm, geometry_to_3dm};
 use viboceros_document::ObjectColorSource;
 mod bezier;
 mod extrude_curve;
+mod planar_surface;
 mod revolve;
+use planar_surface::PlanarSurfaceCommand;
 use revolve::RevolveCommand;
 mod extrude_mesh;
 use extrude_curve::ExtrudeCurveCommand;
@@ -4207,241 +4209,6 @@ impl Command for SrfPtCommand {
         surface.tessellate(1, document.tolerance())?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
         Ok(format!("Added four-corner NURBS surface {id}"))
-    }
-}
-
-const PLANAR_SURFACE_USAGE: &str = "PlanarSrf [DeleteInput=Yes|No]";
-
-struct PlanarSurfaceCommand;
-
-struct PlanarSurfaceBoundary {
-    id: ObjectId,
-    curve: NurbsCurve,
-    untrimmed_face: Brep,
-    area: Real,
-    bounds: BoundingBox3,
-    probe: Point3,
-}
-
-fn bounds_overlap(left: BoundingBox3, right: BoundingBox3, tolerance: Tolerance) -> bool {
-    left.min()
-        .to_array()
-        .into_iter()
-        .zip(left.max().to_array())
-        .zip(
-            right
-                .min()
-                .to_array()
-                .into_iter()
-                .zip(right.max().to_array()),
-        )
-        .all(|((left_min, left_max), (right_min, right_max))| {
-            (left_min <= right_max || tolerance.approx_eq(left_min, right_max))
-                && (right_min <= left_max || tolerance.approx_eq(right_min, left_max))
-        })
-}
-
-fn bounds_contain_point(bounds: BoundingBox3, point: Point3, tolerance: Tolerance) -> bool {
-    bounds
-        .min()
-        .to_array()
-        .into_iter()
-        .zip(bounds.max().to_array())
-        .zip(point.to_array())
-        .all(|((min, max), coordinate)| {
-            (min <= coordinate || tolerance.approx_eq(min, coordinate))
-                && (coordinate <= max || tolerance.approx_eq(coordinate, max))
-        })
-}
-
-impl Command for PlanarSurfaceCommand {
-    fn name(&self) -> &'static str {
-        "PlanarSrf"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["PlanarSurface"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let mut delete_input = None;
-        for argument in arguments {
-            let Some((name, value)) = argument.split_once('=') else {
-                return Err(CommandError::Usage(PLANAR_SURFACE_USAGE));
-            };
-            if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
-                delete_input =
-                    Some(parse_yes_no(value).ok_or(CommandError::Usage(PLANAR_SURFACE_USAGE))?);
-            } else {
-                return Err(CommandError::Usage(PLANAR_SURFACE_USAGE));
-            }
-        }
-
-        let selected = selected_ids(document)?;
-        let mut boundaries = Vec::new();
-        for id in selected {
-            let Some(curve) = document
-                .object(id)
-                .expect("selected objects exist")
-                .geometry()
-                .nurbs_curve_representation()?
-            else {
-                continue;
-            };
-            if curve.is_closed()? && curve.is_planar(document.tolerance())? {
-                let untrimmed_face = Brep::try_planar_face(&curve, document.tolerance())?;
-                let area = untrimmed_face.area(document.tolerance())?;
-                let bounds = curve.control_point_bounds();
-                let probe = curve.evaluate(*curve.domain().start())?;
-                boundaries.push(PlanarSurfaceBoundary {
-                    id,
-                    curve,
-                    untrimmed_face,
-                    area,
-                    bounds,
-                    probe,
-                });
-            }
-        }
-        if boundaries.is_empty() {
-            return Err(CommandError::NoPlanarSurfaceBoundaries);
-        }
-
-        // A strict containment forest applies the same even-odd region rule
-        // as planar CAD boundaries: children cut holes, grandchildren become
-        // independent islands, and disjoint or partially overlapping loops
-        // remain independent faces. The smallest containing loop is the
-        // immediate parent when several levels are nested.
-        let mut parents: Vec<Option<usize>> = vec![None; boundaries.len()];
-        let mut indices_by_area = (0..boundaries.len()).collect::<Vec<_>>();
-        indices_by_area.sort_by(|left, right| {
-            boundaries[*left]
-                .area
-                .total_cmp(&boundaries[*right].area)
-                .then(left.cmp(right))
-        });
-        for child_index in 0..boundaries.len() {
-            for &outer_index in &indices_by_area {
-                if outer_index == child_index
-                    || boundaries[outer_index].area <= boundaries[child_index].area
-                    || !bounds_contain_point(
-                        boundaries[outer_index].bounds,
-                        boundaries[child_index].probe,
-                        document.tolerance(),
-                    )
-                {
-                    continue;
-                }
-                if Brep::try_planar_face_with_holes(
-                    &boundaries[outer_index].curve,
-                    std::slice::from_ref(&boundaries[child_index].curve),
-                    document.tolerance(),
-                )
-                .is_ok()
-                {
-                    parents[child_index] = Some(outer_index);
-                    break;
-                }
-            }
-        }
-
-        // Intersecting siblings cannot both be trim holes. Rhino treats
-        // partially overlapping input curves as independent surfaces, so
-        // detach both while leaving unrelated siblings assigned as holes.
-        let mut detached = vec![false; boundaries.len()];
-        for parent_index in 0..boundaries.len() {
-            let children = parents
-                .iter()
-                .enumerate()
-                .filter_map(|(index, parent)| (*parent == Some(parent_index)).then_some(index))
-                .collect::<Vec<_>>();
-            for first_position in 0..children.len() {
-                for second_position in (first_position + 1)..children.len() {
-                    let first = children[first_position];
-                    let second = children[second_position];
-                    if !bounds_overlap(
-                        boundaries[first].bounds,
-                        boundaries[second].bounds,
-                        document.tolerance(),
-                    ) {
-                        continue;
-                    }
-                    let holes = [
-                        boundaries[first].curve.clone(),
-                        boundaries[second].curve.clone(),
-                    ];
-                    if Brep::try_planar_face_with_holes(
-                        &boundaries[parent_index].curve,
-                        &holes,
-                        document.tolerance(),
-                    )
-                    .is_err()
-                    {
-                        detached[first] = true;
-                        detached[second] = true;
-                    }
-                }
-            }
-        }
-        for (parent, detached) in parents.iter_mut().zip(detached) {
-            if detached {
-                *parent = None;
-            }
-        }
-        let depths = (0..boundaries.len())
-            .map(|index| {
-                let mut depth = 0_usize;
-                let mut ancestor = parents[index];
-                while let Some(parent) = ancestor {
-                    depth += 1;
-                    debug_assert!(depth < boundaries.len());
-                    ancestor = parents[parent];
-                }
-                depth
-            })
-            .collect::<Vec<_>>();
-
-        let mut faces = Vec::new();
-        for outer_index in 0..boundaries.len() {
-            if depths[outer_index] % 2 != 0 {
-                continue;
-            }
-            let holes = parents
-                .iter()
-                .enumerate()
-                .filter(|(_, parent)| **parent == Some(outer_index))
-                .map(|(index, _)| boundaries[index].curve.clone())
-                .collect::<Vec<_>>();
-            let face = if holes.is_empty() {
-                boundaries[outer_index].untrimmed_face.clone()
-            } else {
-                Brep::try_planar_face_with_holes(
-                    &boundaries[outer_index].curve,
-                    &holes,
-                    document.tolerance(),
-                )?
-            };
-            faces.push(face);
-        }
-
-        let face_count = faces.len();
-        for face in faces {
-            document.add_geometry(Geometry::Brep(face))?;
-        }
-        let delete_input = delete_input.unwrap_or(false);
-        if delete_input {
-            for boundary in &boundaries {
-                document.delete_object(boundary.id)?;
-            }
-        }
-        Ok(format!(
-            "Created {face_count} exact trimmed planar surface(s){}",
-            if delete_input {
-                ", deleting the input curves"
-            } else {
-                ""
-            }
-        ))
     }
 }
 
@@ -38698,9 +38465,10 @@ mod tests {
             .select_objects_direct(inputs, SelectionMode::Replace)
             .unwrap();
 
+        let expected_count = if cfg!(feature = "native-smlib") { 2 } else { 3 };
         assert_eq!(
             registry.execute(&mut document, "PlanarSrf").unwrap(),
-            "Created 3 exact trimmed planar surface(s)"
+            format!("Created {expected_count} exact trimmed planar surface(s)")
         );
         let mut output_regions = document
             .objects()
@@ -38713,7 +38481,18 @@ mod tests {
             })
             .collect::<Vec<_>>();
         output_regions.sort_by(|left, right| left.1.total_cmp(&right.1));
-        assert_eq!(output_regions, vec![(1, 16.0), (1, 16.0), (2, 99.0)]);
+        let expected = if cfg!(feature = "native-smlib") {
+            vec![(1, 16.), (3, 83.)]
+        } else {
+            vec![(1, 16.), (1, 16.), (2, 99.)]
+        };
+        assert_eq!(output_regions.len(), expected.len());
+        for ((loops, area), (expected_loops, expected_area)) in
+            output_regions.into_iter().zip(expected)
+        {
+            assert_eq!(loops, expected_loops);
+            assert!((area - expected_area).abs() < 1e-12);
+        }
     }
 
     #[test]
