@@ -1,0 +1,250 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "outcomes": [
+    {
+      "status": "success",
+      "result": {
+        "id": "line",
+        "value": {
+          "surfaces": [
+            {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                5.477225575051661
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                5.477225575051661,
+                5.477225575051661
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "elapsed_ns": 115585
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "polyline",
+        "value": {
+          "surfaces": [
+            {
+              "control_count": [
+                2,
+                3
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    2.0,
+                    5.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                5.744562646538029
+              ],
+              "domain_v": [
+                0.0,
+                2.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                5.744562646538029,
+                5.744562646538029
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            }
+          ]
+        },
+        "elapsed_ns": 82368
+      }
+    },
+    {
+      "status": "success",
+      "result": {
+        "id": "negative-height",
+        "value": {
+          "surfaces": [
+            {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    -5.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    2.0,
+                    -5.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                5.477225575051661
+              ],
+              "domain_v": [
+                0.0,
+                4.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                5.477225575051661,
+                5.477225575051661
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                4.0,
+                4.0
+              ]
+            }
+          ]
+        },
+        "elapsed_ns": 68016
+      }
+    }
+  ]
+}

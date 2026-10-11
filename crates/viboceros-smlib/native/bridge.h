@@ -66,6 +66,10 @@ int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count,
 void vb_curve_free(VbCurve *curve);
 int vb_curve_extrude(const VbCurve *curve, const double displacement[3], VbSurfaceData **out,
                      char *error, size_t capacity);
+int vb_curve_apex_surface(const VbCurve *curve, const double apex[3], VbSurfaceData **out,
+                          char *error, size_t capacity);
+int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], double tolerance,
+                        VbSolid **out, char *error, size_t capacity);
 int vb_curve_revolve(const VbCurve *curve, const double origin[3], const double axis[3],
                      double angle_degrees, double parameter_length, VbSurfaceData **out,
                      char *error, size_t capacity);

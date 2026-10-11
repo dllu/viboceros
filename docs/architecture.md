@@ -28,6 +28,8 @@ sharing NURBS transfer while retaining the command's existing document policy.
 the same surface transfer and modeling-profile preparation.
 [PlanarSrf](smlib-planar-surfaces.md) delegates plane/contact queries and nested
 region construction to usd-brep, excluding the portable containment adapter.
+[ExtrudeCrvToPoint](smlib-apex.md) shares native profile preparation and NURBS
+transfer, using ruled surfaces and native base-cap/stitch operations.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

@@ -1,0 +1,85 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_apex_command",
+      "id": "line",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            0,
+            0
+          ]
+        }
+      },
+      "apex": [
+        1,
+        2,
+        5
+      ]
+    },
+    {
+      "op": "curve_apex_command",
+      "id": "polyline",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        }
+      },
+      "apex": [
+        2,
+        2,
+        5
+      ]
+    },
+    {
+      "op": "curve_apex_command",
+      "id": "negative-height",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            0,
+            0
+          ]
+        }
+      },
+      "apex": [
+        1,
+        2,
+        -5
+      ]
+    }
+  ]
+}

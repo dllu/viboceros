@@ -401,15 +401,43 @@ pub(super) fn extrude_command(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
+    generated_surface_command(
+        definition,
+        &format!("ExtrudeCrv {distance} Output=Surface Solid=No"),
+        iterations,
+        tolerance,
+    )
+}
+
+pub(super) fn apex_command(
+    definition: &CutSource,
+    apex: [f64; 3],
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    generated_surface_command(
+        definition,
+        &format!(
+            "ExtrudeCrvToPoint {},{},{} Output=Surface Solid=No",
+            apex[0], apex[1], apex[2]
+        ),
+        iterations,
+        tolerance,
+    )
+}
+
+fn generated_surface_command(
+    definition: &CutSource,
+    command: &str,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
     let source = definition.geometry(tolerance)?;
     let run = || -> Result<Value, ProbeError> {
         let mut document = viboceros_document::Document::new(tolerance);
         let source_id = document.add_geometry(source.clone())?;
         document.select_objects_direct([source_id], viboceros_document::SelectionMode::Replace)?;
-        viboceros_command::CommandRegistry::with_builtins().execute(
-            &mut document,
-            &format!("ExtrudeCrv {distance} Output=Surface Solid=No"),
-        )?;
+        viboceros_command::CommandRegistry::with_builtins().execute(&mut document, command)?;
         let surfaces = document
             .objects()
             .filter(|object| object.id() != source_id)

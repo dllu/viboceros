@@ -711,6 +711,11 @@ pub enum Operation {
         curve: curve_native::CutSource,
         distance: f64,
     },
+    CurveApexCommand {
+        id: String,
+        curve: curve_native::CutSource,
+        apex: [f64; 3],
+    },
     CurveRevolveCommand {
         id: String,
         #[serde(flatten)]
@@ -2281,6 +2286,7 @@ impl Operation {
             | Self::NonManifoldSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
+            | Self::CurveApexCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
             | Self::PlanarSurfaceCommand { id, .. }
             | Self::PolycurveNative { id, .. }
@@ -2923,6 +2929,9 @@ fn execute(
         Operation::CurveExtrudeCommand {
             curve, distance, ..
         } => curve_native::extrude_command(curve, *distance, iterations, tolerance)?,
+        Operation::CurveApexCommand { curve, apex, .. } => {
+            curve_native::apex_command(curve, *apex, iterations, tolerance)?
+        }
         Operation::CurveRevolveCommand { fixture, .. } => {
             curve_native::revolve_command(fixture, iterations, tolerance)?
         }

@@ -81,6 +81,36 @@ template <class Function> int guarded(char *error, size_t capacity, Function fun
 bool finite3(const double *p) {
     return p && std::isfinite(p[0]) && std::isfinite(p[1]) && std::isfinite(p[2]);
 }
+
+std::unique_ptr<SmBSplineSurface> apex_surface(const VbCurve &curve, const double apex[3]) {
+    require(finite3(apex), "Invalid apex coordinates");
+    auto *context = SmApiGetOrCreateContext();
+    SmCurve *copied = nullptr;
+    const auto copied_status = curve.value->Copy(*context, copied);
+    std::unique_ptr<SmCurve> copy_owner(copied);
+    check(copied_status, "copy apex boundary");
+    require(copied && copied->IsKindOf(SmBSplineCurve_TYPE), "Missing apex boundary copy");
+    auto *collapsed = static_cast<SmBSplineCurve *>(copied);
+    const SmPoint3d point(apex[0], apex[1], apex[2]);
+    for (size_t i = 0; i < curve.points.size() / 4; ++i)
+        check(collapsed->SetControlPoint(SM_CP_EUCLIDIAN_RATIONAL, i, point,
+                                         curve.points[4 * i + 3]), "collapse apex boundary");
+    SmBSplineSurface *raw = nullptr;
+    const auto status = SmBSplineSurface::CreateRuledSurface(*context, *curve.value, *collapsed,
+                                                           SM_SP_U, raw);
+    std::unique_ptr<SmBSplineSurface> result(raw);
+    check(status, "create apex ruled surface");
+    require(raw, "Missing apex ruled surface");
+    SmPoint3d start;
+    check(curve.value->EvaluatePoint(curve.value->GetNaturalInterval().GetMin(), start),
+          "evaluate apex profile start");
+    const double length = start.DistanceBetween(point);
+    require(std::isfinite(length) && length > 0, "Apex coincides with the profile start");
+    const auto domain = raw->GetNaturalUVDomain();
+    check(raw->Reparameterize(SmExtent2d(0, domain.GetMin().y, length, domain.GetMax().y)),
+          "set apex surface parameter domain");
+    return result;
+}
 } // namespace
 
 extern "C" int vb_solid_primitive(int kind, const double origin[3], const double size[3],
@@ -637,6 +667,44 @@ extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[
                                                 domain.GetMax().x, vector.Length())),
               "set extrusion distance domain");
         *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_curve_apex_surface(const VbCurve *curve, const double apex[3],
+                                      VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curve && out, "Invalid apex surface arguments");
+        auto surface = apex_surface(*curve, apex);
+        *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], double tolerance,
+                                    VbSolid **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curve && out && finite3(apex) && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid apex solid arguments");
+        SmPoint3d plane_point;
+        SmVector3d normal;
+        require(curve->value->IsClosed(curve->value->GetNaturalInterval()) &&
+                    curve->value->IsPlanar(tolerance, &plane_point, &normal),
+                "Apex solid requires a closed planar profile");
+        require(std::abs((SmPoint3d(apex[0], apex[1], apex[2]) - plane_point).Dot(normal)) > tolerance,
+                "Apex solid must leave the profile plane");
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
+        owner->value->SetTolerance(tolerance, FALSE);
+        auto surface = apex_surface(*curve, apex);
+        auto *raw = surface.release();
+        const auto status = owner->value->CreateEndCapsFromSurface(raw, 1);
+        if (status != SM_SUCCESS && !raw->GetOwner()) surface.reset(raw);
+        check(status, "create apex solid and base cap");
+        check(owner->value->StitchAndOrient(), "stitch apex solid");
+        require(owner->value->IsManifoldSolid(), "Apex extrusion did not produce a manifold solid");
+        check(SmApiTurnToNurbs(owner->value.get()), "convert exact apex solid to NURBS");
+        *out = owner.release();
     });
 }
 

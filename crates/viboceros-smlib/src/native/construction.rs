@@ -2,6 +2,21 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curve_apex_surface(
+        curve: *const NativeCurve,
+        apex: *const f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_apex_solid(
+        curve: *const NativeCurve,
+        apex: *const f64,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curves_coplanar(
         curves: *const *const NativeCurve,
         count: usize,
@@ -48,6 +63,21 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Create an exact native ruled surface from this profile to an apex.
+    /// The collapsed boundary retains the profile weights; source is unchanged.
+    pub fn apex_surface(&self, apex: Point3) -> Result<NurbsSurface, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_curve_apex_surface(
+                self.handle.as_ptr(),
+                apex.to_array().as_ptr(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        brep::surface_from_native(pointer)
+    }
     /// Query the entire profile group with the native plane classifier.
     pub fn are_coplanar(curves: &[&Self], tolerance: Tolerance) -> Result<bool, Error> {
         let handles = curves
@@ -131,6 +161,30 @@ impl KernelCurve {
 }
 
 impl Shape {
+    /// Construct a capped native apex solid from a closed planar profile copy.
+    pub fn apex_solid(
+        curve: &KernelCurve,
+        apex: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_apex_solid(
+                curve.handle.as_ptr(),
+                apex.to_array().as_ptr(),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
     /// Construct native coplanar regions, including holes and nested islands.
     /// The kernel consumes private profile copies; caller-owned curves remain usable.
     pub fn planar_faces(curves: &[&KernelCurve], tolerance: Tolerance) -> Result<Self, Error> {

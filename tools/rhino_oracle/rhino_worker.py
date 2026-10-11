@@ -14242,7 +14242,7 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
-    if kind in ("curve_extrude_command", "curve_revolve_command"):
+    if kind in ("curve_extrude_command", "curve_revolve_command", "curve_apex_command"):
         document = Rhino.RhinoDoc.ActiveDoc
         source = _cut_source(operation["curve"])
         def extrude_native_curve():
@@ -14254,6 +14254,9 @@ def _execute(operation, iterations, tolerance):
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
                 if kind == "curve_extrude_command":
                     command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                elif kind == "curve_apex_command":
+                    command = "_-ExtrudeCrvToPoint _Output=_Surface _Solid=_No _SplitAtTangents=_No %s" % (
+                        ",".join("%.17g" % float(v) for v in operation["apex"]))
                 else:
                     point_text = lambda p: ",".join("%.17g" % float(v) for v in p)
                     start = float(operation["start_degrees"])

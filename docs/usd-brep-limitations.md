@@ -8,6 +8,13 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **End-cap convenience helper leaves final stitching status unchecked.**
+  `SmBrep::CreateEndCapsFromSurface` can return success after calling
+  `StitchAndOrient` without checking the result. The apex adapter follows the
+  call with checked stitching and manifold status, then validated B-rep export.
+  No fixture inducing the ignored internal failure has been retained. Its cap
+  planarity checks also use the default `IsPlanar` tolerance; general nearly
+  planar cap behavior remains unqualified. See [apex extrusion](smlib-apex.md).
 - **Planar-face tolerance argument is ignored by the kernel entry point.**
   `SmApiCreatePlanarFaces` passes a hard-coded `0.01`, but
   `SmBrep::CreatePlanarFacesWith3DCurves` ignores that argument and uses the
