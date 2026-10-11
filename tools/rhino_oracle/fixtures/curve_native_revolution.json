@@ -1,0 +1,137 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_revolve_command",
+      "id": "line-full",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            3
+          ]
+        }
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis_end": [
+        0,
+        0,
+        1
+      ],
+      "start_degrees": 0,
+      "sweep_degrees": 360
+    },
+    {
+      "op": "curve_revolve_command",
+      "id": "line-partial",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            3
+          ]
+        }
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis_end": [
+        0,
+        0,
+        1
+      ],
+      "start_degrees": 30,
+      "sweep_degrees": 120
+    },
+    {
+      "op": "curve_revolve_command",
+      "id": "line-negative",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            3
+          ]
+        }
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis_end": [
+        0,
+        0,
+        1
+      ],
+      "start_degrees": 10,
+      "sweep_degrees": -90
+    },
+    {
+      "op": "curve_revolve_command",
+      "id": "kinked-full",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              1
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "axis_end": [
+        0,
+        0,
+        1
+      ],
+      "start_degrees": 0,
+      "sweep_degrees": 360
+    }
+  ]
+}

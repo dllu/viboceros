@@ -675,6 +675,36 @@ extern "C" int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
     });
 }
 
+extern "C" int vb_curve_revolve(const VbCurve *curve, const double origin[3], const double axis[3],
+                                 double angle_degrees, double parameter_length, VbSurfaceData **out,
+                                 char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curve && out && finite3(origin) && finite3(axis) &&
+                    std::isfinite(angle_degrees) && angle_degrees > 0 && angle_degrees <= 360 &&
+                    std::isfinite(parameter_length) && parameter_length > 0,
+                "Invalid surface revolution arguments");
+        SmVector3d direction(axis[0], axis[1], axis[2]);
+        check(direction.Unitize(), "normalize revolution axis");
+        SmBSplineSurface *raw = nullptr;
+        // The high-level wrapper returns only the first surface after splitting
+        // profile kinks. The existing tensor constructor retains the full curve.
+        // Its bSwapUV header description is inverted in the pinned release:
+        // FALSE constructs circular U and profile V.
+        const auto status = SmBSplineSurface::CreateSurfOfRevolution(*SmApiGetOrCreateContext(),
+            curve->value.get(), SmPoint3d(origin[0], origin[1], origin[2]), direction,
+            angle_degrees, raw, FALSE);
+        std::unique_ptr<SmBSplineSurface> owner(raw);
+        check(status, "create revolution surface");
+        require(raw, "Missing revolution surface");
+        const auto domain = raw->GetNaturalUVDomain();
+        check(raw->Reparameterize(SmExtent2d(0, domain.GetMin().y,
+                                            parameter_length, domain.GetMax().y)),
+              "set revolution parameter domain");
+        *out = vb_export_surface(*raw);
+    });
+}
+
 extern "C" int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
         require(solid && empty, "Invalid empty query");

@@ -8,6 +8,24 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Revolution wrapper can discard profile pieces (source audit).**
+  `SmApiCreateSurfaceRevolution` revolves a profile through a producer that can
+  split its kinks, then returns only the first surface from the resulting
+  B-rep. The adapter instead uses the existing
+  `SmBSplineSurface::CreateSurfOfRevolution` tensor constructor, retaining all
+  profile spans. See [native revolution](smlib-revolution.md).
+- **Revolution UV flag documentation is inverted in the pinned release.**
+  The tensor constructor's header describes `bSwapUV=True` as circular U, but
+  its implementation and bridge regressions produce circular U with `False`.
+  The adapter explicitly selects that behavior and reparameterizes the result
+  with the native operation. Source:
+  [SmBSplineSurface.cpp](../third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp).
+- **Revolution radial degeneracy depends on coordinate magnitude.**
+  The native tensor constructor compares each control's radius with
+  `SM_EFF_ZERO * (1 + maximum coordinate magnitude)`. The command translates
+  to its axis origin before construction and restores world placement afterward.
+  A regression covers a radius near `1e-4` at an origin of `1e9`. General aspect
+  ratio and scale extremes remain unqualified.
 - **Linear-sweep wrapper lacks explicit creation tolerance.**
   `SmApiCreateLinearSweep` constructs a new B-rep with its default tolerance.
   The native ExtrudeCrv adapter invokes the same existing producer on a private

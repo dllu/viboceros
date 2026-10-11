@@ -1449,16 +1449,8 @@ impl NurbsSurface {
             let offset = axis_origin.vector_to(point)?;
             axis_origin.translated(axis_vector.scaled(offset.dot(axis_vector)?)?)
         };
-        let mut radius_estimate: Real = 0.0;
-        for index in 0..=64 {
-            let point = curve.evaluate(curve.parameter_at(index as Real / 64.0)?)?;
-            radius_estimate = radius_estimate.max(point.distance_to(axis_center(point)?)?);
-        }
-        if radius_estimate == 0.0 {
-            return Err(GeometryError::Degenerate {
-                context: "revolution profile radius",
-            });
-        }
+        let domain_length =
+            curve.revolution_parameter_length(axis_origin, axis_direction, sweep_angle_radians)?;
 
         let sweep_magnitude = sweep_angle_radians.abs();
         let quadrant_limit = (0.5 + f64::EPSILON.sqrt()) * std::f64::consts::PI;
@@ -1471,9 +1463,6 @@ impl NurbsSurface {
         };
         let segment_angle = sweep_angle_radians / span_count as Real;
         let middle_weight = (0.5 * segment_angle).cos();
-        let domain_length = radius_estimate * sweep_magnitude;
-        require_finite([domain_length], "revolution parameter domain")?;
-
         let control_count_u = span_count
             .checked_mul(2)
             .and_then(|count| count.checked_add(1))

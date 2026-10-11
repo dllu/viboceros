@@ -1,0 +1,92 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "line-full",
+      "comparison": {
+        "id": "line-full",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 254064.0,
+        "rhino_ns_per_iteration": 80703735.0,
+        "rhino_to_viboceros_ratio": 317.6512020593236,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "line-partial",
+      "comparison": {
+        "id": "line-partial",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 223920.0,
+        "rhino_ns_per_iteration": 64590454.0,
+        "rhino_to_viboceros_ratio": 288.45326009289033,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "line-negative",
+      "comparison": {
+        "id": "line-negative",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-15,
+        "viboceros_ns_per_iteration": 198032.0,
+        "rhino_ns_per_iteration": 108245850.0,
+        "rhino_to_viboceros_ratio": 546.6078714551184,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "kinked-full",
+      "comparison": {
+        "id": "kinked-full",
+        "passed": true,
+        "max_absolute_error": 1.3322676295501878e-15,
+        "viboceros_ns_per_iteration": 223729.0,
+        "rhino_ns_per_iteration": 61210632.0,
+        "rhino_to_viboceros_ratio": 273.5927483696794,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 4,
+  "matched": 4,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "fixture": "tools/rhino_oracle/fixtures/curve_native_revolution.json",
+  "fixture_sha256": "a23b79750737f4b421999a3fa7efd528b1b8199c01a30a091cba03b61d9b9ed1",
+  "observation": "tools/rhino_oracle/observations/curve_native_revolution.json",
+  "observation_sha256": "da5f6acfba986cddeed066365df238a875c39f0510f16f7cde2a40e381863b26",
+  "native_reference": "docs/smlib-revolution-native-reference.json",
+  "native_reference_sha256": "30e277ab97f3b325b79e3f4e38957d9f02c337974bcd1102058e53b8c5869913",
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "probe_sha256": "9cf2d013b7c5e83ae020ea3767a5514822389f662fc428715c2e848cd205d63f",
+  "build_command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo build --release -p viboceros-oracle --features viboceros-command/native-smlib",
+  "native_command": "target/release/viboceros-oracle --audit tools/rhino_oracle/fixtures/curve_native_revolution.json docs/smlib-revolution-native-reference.json",
+  "capture_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_native_revolution.json --timeout 360 --scheme VibocerosOracleUsdRevolve20261011 --output tools/rhino_oracle/observations/curve_native_revolution.json",
+  "qualification": "Complete raw NURBS definition replay with CreaseSplitting disabled and SplitAtTangents=No. No control-net/domain/order normalization. Audit native timings are placeholders, not kernel speed measurements.",
+  "source_sha256": {
+    "crates/viboceros-command/src/revolve.rs": "f9204d9239c618c4e9b47c2c46f4b7e6a8021118d4be0d3ff81825d3709f6e7c",
+    "crates/viboceros-command/src/revolve/native.rs": "009e8e4a1817c20b4dd92b2117d2dcab010f3295a69fc38e8bef10faa3d35e26",
+    "crates/viboceros-command/src/extrude_curve/native.rs": "aa6420a92a8fabe1e41ee4a28cdc8c1afe8156068be1e55c71995421a4f3b0fb",
+    "crates/viboceros-geometry/src/nurbs.rs": "a90d616c7be99b8a4b5392c17befe719409cdc92d062f71e4d19c7856893659e",
+    "crates/viboceros-geometry/src/nurbs_surface.rs": "307371638c1a1d03f128024c865a5d558b42f549c21a575a0e78c09139d2bc66",
+    "crates/viboceros-smlib/native/bridge.cpp": "8c272794ca210a58e9adbd82c71a4f24d0092553f04b52a65ba06a099e91c785",
+    "crates/viboceros-smlib/src/native/construction.rs": "5ef10e6d4a0e9d12fadf06e6c2fff75a465082e5e6050fd98618aacb240f12b3",
+    "crates/viboceros-oracle/src/curve_native.rs": "94100af2d4f4d084c2bcdaed6972be8f718d6776fece42f846c303058d0cacf3",
+    "tools/rhino_oracle/rhino_worker.py": "69d68644560fb115e386c2d2ed42429fab5fb0e9fdcb1042816507375b6cdea8"
+  }
+}

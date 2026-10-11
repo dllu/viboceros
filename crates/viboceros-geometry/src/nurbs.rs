@@ -4137,6 +4137,43 @@ impl NurbsCurve {
         self
     }
 
+    /// Circular parameter length for the existing Revolve command convention.
+    /// This retains its 65-station radius estimate, not an exact maximum-radius
+    /// query or an error bound. It changes no geometry and needs no control net.
+    pub fn revolution_parameter_length(
+        &self,
+        axis_origin: Point3,
+        axis_direction: crate::UnitVector3,
+        sweep_angle_radians: Real,
+    ) -> Result<Real, GeometryError> {
+        if !sweep_angle_radians.is_finite()
+            || sweep_angle_radians == 0.
+            || sweep_angle_radians.abs() > std::f64::consts::TAU
+        {
+            return Err(GeometryError::InvalidRevolutionSweep);
+        }
+        let axis_vector = axis_direction.as_vector();
+        let mut radius: Real = 0.;
+        for index in 0..=64 {
+            let point = self.evaluate(self.parameter_at(index as Real / 64.)?)?;
+            let offset = axis_origin.vector_to(point)?;
+            let center = axis_origin.translated(axis_vector.scaled(offset.dot(axis_vector)?)?)?;
+            radius = radius.max(point.distance_to(center)?);
+        }
+        if radius == 0. {
+            return Err(GeometryError::Degenerate {
+                context: "revolution profile radius",
+            });
+        }
+        let length = radius * sweep_angle_radians.abs();
+        if !length.is_finite() {
+            return Err(GeometryError::NonFinite {
+                context: "revolution parameter domain",
+            });
+        }
+        Ok(length)
+    }
+
     /// Clamps the active interval without changing its parameterization or locus.
     /// Exterior knots and controls are removed using the existing de Boor
     /// endpoint extraction. The source is unchanged.

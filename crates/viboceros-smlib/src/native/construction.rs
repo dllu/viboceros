@@ -2,6 +2,16 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curve_revolve(
+        curve: *const NativeCurve,
+        origin: *const f64,
+        axis: *const f64,
+        angle_degrees: f64,
+        parameter_length: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curve_extrude(
         curve: *const NativeCurve,
         displacement: *const f64,
@@ -22,6 +32,52 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Import a modeling profile with an equivalent clamped active interval.
+    /// Uniformly negative weights are flipped as one homogeneous gauge.
+    /// Mixed signs retain the strict importer rejection; source data is unchanged.
+    pub fn from_nurbs_for_modeling(curve: &NurbsCurve) -> Result<Self, Error> {
+        let clamped = curve.try_clamped_to_active_domain()?;
+        let prepared = if clamped.control_points().iter().all(|p| p.weight() < 0.) {
+            NurbsCurve::try_new_rational(
+                clamped.degree(),
+                clamped
+                    .control_points()
+                    .iter()
+                    .map(|p| WeightedPoint3::try_new(p.point(), -p.weight()))
+                    .collect::<Result<Vec<_>, _>>()?,
+                clamped.knots().to_vec(),
+            )?
+        } else {
+            clamped
+        };
+        Self::from_nurbs(&prepared)
+    }
+
+    /// Create a complete native revolution tensor, circular U and profile V.
+    /// The angular sweep is positive and at most 360 degrees; reverse the axis
+    /// for a negative sweep. `parameter_length` specifies the circular U domain.
+    pub fn revolved_surface(
+        &self,
+        origin: Point3,
+        axis: Vector3,
+        angle_degrees: f64,
+        parameter_length: f64,
+    ) -> Result<NurbsSurface, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_curve_revolve(
+                self.handle.as_ptr(),
+                origin.to_array().as_ptr(),
+                axis.to_array().as_ptr(),
+                angle_degrees,
+                parameter_length,
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        brep::surface_from_native(pointer)
+    }
     /// Produce an exact native extrusion surface; this curve is unchanged.
     /// The returned surface owns its NURBS data and contains no native pointers.
     pub fn extruded_surface(&self, displacement: Vector3) -> Result<NurbsSurface, Error> {

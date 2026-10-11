@@ -14193,7 +14193,7 @@ def _execute(operation, iterations, tolerance):
             first.Dispose()
             second.Dispose()
 
-    if kind == "curve_extrude_command":
+    if kind in ("curve_extrude_command", "curve_revolve_command"):
         document = Rhino.RhinoDoc.ActiveDoc
         source = _cut_source(operation["curve"])
         def extrude_native_curve():
@@ -14203,7 +14203,17 @@ def _execute(operation, iterations, tolerance):
                 source_id = document.Objects.AddCurve(source)
                 document.Objects.Select(source_id)
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
-                command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                if kind == "curve_extrude_command":
+                    command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                else:
+                    point_text = lambda p: ",".join("%.17g" % float(v) for v in p)
+                    start = float(operation["start_degrees"])
+                    # Rhino asks for the sweep amount after the start angle.
+                    # It does not interpret this value as an absolute end angle.
+                    end = float(operation["sweep_degrees"])
+                    command = ("_-Revolve %s %s _Output=_Surface _Deformable=_No "
+                               "_SplitAtTangents=_No _AskForStartAngle=_Yes %.17g %.17g") % (
+                        point_text(operation["origin"]), point_text(operation["axis_end"]), start, end)
                 if not Rhino.RhinoApp.RunScript(command, False):
                     raise ValueError("native extrusion command failed")
                 surfaces = []

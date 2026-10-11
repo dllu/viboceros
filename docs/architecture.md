@@ -24,6 +24,8 @@ offset/shell operations; the planar offset adapter is excluded from native build
 splitting; their command selection and document mutation policies remain in Rust.
 [ExtrudeCrv](smlib-extrusion.md) uses native surface and capped-sweep producers,
 sharing NURBS transfer while retaining the command's existing document policy.
+[Revolve](smlib-revolution.md) uses the upstream NURBS tensor constructor and
+the same surface transfer and modeling-profile preparation.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

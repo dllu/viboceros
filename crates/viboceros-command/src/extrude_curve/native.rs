@@ -9,28 +9,13 @@ pub(super) fn extrude(
     solid: bool,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
-    let translated = curve
-        .transformed(AffineTransform3::from_translation(start))?
-        .try_clamped_to_active_domain()?;
-    let translated = if translated.control_points().iter().all(|p| p.weight() < 0.) {
-        NurbsCurve::try_new_rational(
-            translated.degree(),
-            translated
-                .control_points()
-                .iter()
-                .map(|p| WeightedPoint3::try_new(p.point(), -p.weight()))
-                .collect::<Result<Vec<_>, _>>()?,
-            translated.knots().to_vec(),
-        )?
-    } else {
-        translated
-    };
+    let translated = curve.transformed(AffineTransform3::from_translation(start))?;
     let displacement = Vector3::try_new(
         end.x() - start.x(),
         end.y() - start.y(),
         end.z() - start.z(),
     )?;
-    let profile = KernelCurve::from_nurbs(&translated)?;
+    let profile = KernelCurve::from_nurbs_for_modeling(&translated)?;
     if solid && curve.is_closed()? && curve.is_planar(tolerance)? {
         let result =
             Shape::linear_sweep(&[&profile], displacement, true, tolerance)?.to_brep(tolerance)?;

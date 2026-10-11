@@ -15,7 +15,8 @@ native solids, copied-operand booleans, native mass queries, mesh output and
 `--features native-smlib` use the kernel directly for [BooleanDifference](smlib-import.md),
 and also enable curved union/intersection, split, edge fillets and STEP material
 regions, plus [native surface joining](smlib-joining.md) and
-[curve extrusion](smlib-extrusion.md). Broader arbitrary-input qualification remains open. The kernel can be
+[curve extrusion](smlib-extrusion.md) and [revolution](smlib-revolution.md).
+Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
 
 ## Reproduce the native trial

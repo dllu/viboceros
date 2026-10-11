@@ -19,7 +19,7 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-For solid Booleans, curve extrusion, surface joining and offsets, edge fillets
+For solid Booleans, curve extrusion and revolution, surface joining and offsets, edge fillets
 and STEP material regions on Linux,
 install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 

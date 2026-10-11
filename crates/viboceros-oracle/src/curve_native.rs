@@ -436,6 +436,61 @@ pub(super) fn extrude_command(
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct RevolveFixture {
+    curve: CutSource,
+    origin: [f64; 3],
+    axis_end: [f64; 3],
+    start_degrees: f64,
+    sweep_degrees: f64,
+}
+
+pub(super) fn revolve_command(
+    f: &RevolveFixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let source = f.curve.geometry(tolerance)?;
+    let run = || -> Result<Value, ProbeError> {
+        let mut document = viboceros_document::Document::new(tolerance);
+        let source_id = document.add_geometry(source.clone())?;
+        document.select_objects_direct([source_id], viboceros_document::SelectionMode::Replace)?;
+        let point = |p: [f64; 3]| format!("{},{},{}", p[0], p[1], p[2]);
+        viboceros_command::CommandRegistry::with_builtins().execute(
+            &mut document,
+            &format!(
+                "Revolve {} {} {} StartAngle={} Output=Surface Deformable=No SplitAtTangents=No",
+                point(f.origin),
+                point(f.axis_end),
+                f.sweep_degrees,
+                f.start_degrees
+            ),
+        )?;
+        let surfaces = document
+            .objects()
+            .filter(|o| o.id() != source_id)
+            .map(|o| {
+                let Geometry::NurbsSurface(surface) = o.geometry() else {
+                    return Err(ProbeError::FixtureInvariant(
+                        "revolve must produce a surface",
+                    ));
+                };
+                Ok(super::nurbs_surface_definition_value(surface))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(json!({"surfaces":surfaces}))
+    };
+    let mut value = run()?;
+    let started = std::time::Instant::now();
+    for _ in 0..iterations {
+        value = std::hint::black_box(run()?);
+    }
+    Ok((
+        value,
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?,
+    ))
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum NativeCurveEdit {
     Trim { domain: [f64; 2] },
