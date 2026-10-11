@@ -1,8 +1,9 @@
 # BooleanSplit
 
-Linux builds with `--features native-smlib` also offer an
-[optional closed curved-solid path](../smlib-boolean-split.md). Existing Rust
-polyhedral and qualified plane/sheet paths continue to run first.
+Linux builds with `--features native-smlib` use
+[usd-brep directly](../smlib-boolean-split.md) when all operands are closed planar
+or curved solids. Finite-plane and open-sheet operands use the qualified Rust
+paths. Native failures propagate before model edits.
 
 [Command reference](README.md) · [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/booleanunion.htm#BooleanSplit)
 
@@ -44,12 +45,18 @@ command-first execution for native workflow comparisons.
 partial and joint coverage queries, mixed cutters and preserved cap surfaces.
 The target kernel accepts certified closed polyhedral B-reps, including concave
 planar faces, holes, cavity shells and disjoint shells. All cutters in a target's
-partition share one exact arrangement of original faces. Overlapping cutter
+partition in the Rust path share one exact arrangement of original faces. Overlapping cutter
 boundaries remain interfaces between separate pieces. Intermediate region
 classification uses exact membership; rounded intermediate geometry never becomes
 an operand. Connected-branch counts share that arrangement for metadata handling.
 Bounded work, rational sizes and output face counts produce explicit failures.
 All outputs are staged before document edits.
+
+Native closed-solid builds run kernel intersections and differences in original
+cutter order, preserving separate interfaces and branch metadata. Kernel emptiness
+queries decide whether each branch exists; volume tolerance is only a conservation
+check, so small valid branches are retained. Intermediate native NURBS results
+can be used as later operands, and each final editable B-rep passes Rust validation.
 
 Strict containment, equality, disjoint sources and pure face/edge/point contact
 produce no command split. A strictly internal cutter is ignored even when another
@@ -81,8 +88,8 @@ comparison. See [provenance](../boolean-split-provenance.json).
 [Trimmed sheets and compound inputs](../boolean-split-topology.md) have separate
 outer-coverage, branch-lineage and participating-shell policies.
 [Open planar targets](../boolean-split-open-targets.md) produce shared and unshared
-boundaries containing target and cutter faces. Curved and nonplanar inputs remain
-unsupported. Object insertion order
+boundaries containing target and cutter faces. Curved open-target and nonplanar
+sheet-cutter inputs remain unsupported. Object insertion order
 differs from the captured native order; replays match pieces by owner and centroid
 without hiding that difference. General native face/edge ordering, tolerance
 contacts, compound command policies and relative performance remain unverified.

@@ -1,4 +1,4 @@
-//! Optional closed curved partitions, preserving target metadata and branch lineage.
+//! Native closed-solid partitions, preserving target metadata and branch lineage.
 use super::*;
 use crate::boolean_solids::native::{Output, epsilon, imports};
 use viboceros_smlib::{BooleanOperation, Solid};
@@ -30,7 +30,7 @@ pub(super) fn split(
         let index = indices[&target];
         let original = native[index].volume(1e-11)?;
         let epsilon = epsilon(&[breps[index]], tolerance)?;
-        if original <= epsilon {
+        if original <= 0. {
             return Err(error("Split target has no positive material volume"));
         }
         let mut active = BTreeSet::new();
@@ -45,9 +45,10 @@ pub(super) fn split(
                     continue;
                 }
                 let inside = body.boolean(&native[cutter], BooleanOperation::Intersection)?;
-                let amount = inside.volume(1e-11)?;
-                if amount > epsilon
-                    && body_volume - amount > epsilon
+                if !inside.is_empty()?
+                    && !body
+                        .boolean(&native[cutter], BooleanOperation::Difference)?
+                        .is_empty()?
                     && body.boundary_contact(&native[cutter], tolerance)?
                 {
                     active.insert(cutter);
@@ -84,18 +85,19 @@ pub(super) fn split(
                 let inside = piece
                     .solid
                     .boolean(&native[cutter], BooleanOperation::Intersection)?;
-                let amount = inside.volume(1e-11)?;
-                if amount <= epsilon || (before - amount).abs() <= epsilon {
+                if inside.is_empty()? {
                     next.push(piece);
                     continue;
                 }
                 let outside = piece
                     .solid
                     .boolean(&native[cutter], BooleanOperation::Difference)?;
-                let remainder = outside.volume(1e-11)?;
-                if remainder <= epsilon {
-                    return Err(error("Split branches disagree about material coverage"));
+                if outside.is_empty()? {
+                    next.push(piece);
+                    continue;
                 }
+                let amount = inside.volume(1e-11)?;
+                let remainder = outside.volume(1e-11)?;
                 if (amount + remainder - before).abs() > epsilon {
                     return Err(error("Split failed volume conservation"));
                 }
@@ -152,6 +154,57 @@ pub(super) fn split(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn small_partition_survives_the_volume_conservation_threshold() {
+        let tolerance = Tolerance::DEFAULT;
+        let mut doc = Document::default();
+        let source = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame(), [[0., 100_000.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        let cutter = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame(), [[99_999., 100_001.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        doc.set_object_geometry_user_text([source], "part", Some("split-source"))
+            .unwrap();
+        doc.clear_history().unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut doc,
+                &format!("BooleanSplit FirstSet={source} SecondSet={cutter}",),
+            )
+            .unwrap();
+        assert!(doc.object(source).is_none());
+        assert!(doc.object(cutter).is_some());
+        let outputs = doc
+            .objects()
+            .filter(|o| o.id() != cutter)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut volumes = Vec::new();
+        for output in outputs {
+            assert_eq!(
+                output.geometry_user_text().get("part").map(String::as_str),
+                Some("split-source")
+            );
+            let Geometry::Brep(brep) = output.geometry() else {
+                panic!("editable solid")
+            };
+            assert!(brep.is_solid());
+            volumes.push(brep.signed_volume(tolerance).unwrap());
+        }
+        volumes.sort_by(f64::total_cmp);
+        assert!((volumes[0] - 1.).abs() < 1e-9, "{volumes:?}");
+        assert!((volumes[1] - (1e15 - 1.)).abs() <= 0.25);
+        assert!(volumes[0] < tolerance.absolute() * 3. * 100_000_f64.powi(2));
+        doc.undo().unwrap();
+        assert!(doc.object(source).is_some() && doc.object(cutter).is_some());
+        assert_eq!(doc.objects().count(), 2);
+    }
+
     fn p(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
     }

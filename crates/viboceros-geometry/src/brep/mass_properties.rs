@@ -5,8 +5,9 @@ use super::{
     neumaier_add, normalized_span_parameter, planar_surface_plane, rectangular_face_trim_bounds,
 };
 use crate::{
-    GeometryError, NurbsSurface, Real, Tolerance, Vector3, integration::integrate_adaptive,
-    nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
+    BoundingBox3, GeometryError, NurbsSurface, Real, Tolerance, Vector3,
+    integration::integrate_adaptive, nurbs_surface::integrate_area_patch, require_finite,
+    vector::product_three,
 };
 
 mod boundary;
@@ -46,7 +47,7 @@ impl Brep {
     /// Computes oriented volume of a closed, consistently oriented B-rep.
     ///
     /// The divergence-theorem flux is integrated over exact rectangular or
-    /// trimmed NURBS faces. The bounds center is subtracted before the scalar
+    /// trimmed NURBS faces. The vertex-bounds center is subtracted before the scalar
     /// triple product; display tessellation is never used.
     pub fn signed_volume(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
         if !self.is_solid() {
@@ -61,7 +62,14 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<Real, GeometryError> {
         let bounds = self.bounds();
-        let reference = bounds.center()?;
+        // A trimmed face can retain a much larger supporting surface. Choose
+        // the flux origin from topological vertices so small retained regions
+        // do not integrate around an unrelated control-hull center.
+        let reference = if self.vertices.is_empty() {
+            bounds.center()?
+        } else {
+            BoundingBox3::from_points(self.vertices.iter().map(|v| v.point))?.center()?
+        };
         let scale = bounds
             .min()
             .distance_to(bounds.max())?

@@ -1,15 +1,17 @@
-# Optional curved BooleanSplit
+# Native closed-solid BooleanSplit
 
-Linux builds with `--features native-smlib` now stage closed curved splits through
-the [SMLib bridge](smlib-import.md). The existing Rust partition paths run first;
-only explicit unsupported-geometry errors select the native path. Arithmetic,
-work-limit, topology and native failures remain errors. Existing qualified
-polyhedral and plane/sheet workflows retain their original implementation.
+Linux builds with `--features native-smlib` route closed planar and curved operands
+directly through the [SMLib bridge](smlib-import.md), without preparing a Rust
+Boolean arrangement first. Arithmetic, work-limit, topology and native failures
+propagate before model changes. Finite-plane and open-sheet operands retain their
+qualified Rust paths; builds without the feature use the Rust implementation.
 
 ## Partition and lineage
 
 Native imports copy operands. For each target material body, cutters must have
-positive inside and outside volume and non-point boundary contact. Strictly
+nonempty inside and outside material and non-point boundary contact. Kernel set
+queries make those decisions; integrated volume is a conservation check, not a
+split threshold. Strictly
 internal, enclosing, equal, disjoint and self cutters do not split that body.
 Only crossed material bodies enter the partition, matching the existing compound
 target policy; unrelated bodies do not become replacement objects.
@@ -22,6 +24,14 @@ branches. A disconnected branch clears geometry user text for all its children;
 later cuts carry that state. Single connected children retain their target's
 geometry text. Final output volume must match the crossed target material.
 Partition/output counts are bounded to 4,096.
+
+A unit-volume corner partition of a 100,000-unit cube qualifies the small-piece
+path: both solids survive even though the small branch is below the dimensional
+conservation threshold. Geometry text, cutter retention and one-step undo are
+checked. The Rust flux integration now chooses its reference from topological
+vertices; a retained supporting surface can have a much larger control hull than
+the trimmed result, and using that hull's center caused cancellation in this
+small branch's volume query.
 
 All outputs are staged before document mutation. Results use existing target
 attributes, layer, groups, selection, DeleteInput preference and one-step history.
@@ -60,5 +70,5 @@ scales, general compound/region configurations and Rhino output order require
 further work. Native operations consume rounded NURBS outputs between successive
 cuts; this differs from the Rust polyhedral path's one exact original-face
 arrangement. Every stage is validated and volume-checked, but these checks are
-not a complete proof of geometric partition equivalence. STEP pole trims,
-fillets and offsets remain open.
+not a complete proof of geometric partition equivalence. STEP pole trims and
+circular edge fillets are available through the adapter; offsets remain further work.

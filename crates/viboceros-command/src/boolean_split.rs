@@ -1,4 +1,4 @@
-//! BooleanSplit document policy over one exact original-operand arrangement.
+//! BooleanSplit document policy with native closed-solid and planar-sheet paths.
 use super::*;
 use std::borrow::Cow;
 
@@ -98,7 +98,7 @@ impl BooleanSplitCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let prepared = (|| -> Result<_, CommandError> {
+        let legacy = || -> Result<_, CommandError> {
             let closed = refs
                 .iter()
                 .enumerate()
@@ -176,17 +176,15 @@ impl BooleanSplitCommand {
                 return Err(CommandError::NothingSplit);
             }
             Ok((copies, changed))
-        })();
+        };
         #[cfg(feature = "native-smlib")]
-        let (copies, changed) = match prepared {
-            Err(CommandError::Geometry(
-                GeometryError::UnsupportedConvexBrepBoolean { .. }
-                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
-            )) => native::split(&refs, &objects, &ids, &first, &second, doc.tolerance())?,
-            result => result?,
+        let (copies, changed) = if refs.iter().all(|b| b.is_solid()) {
+            native::split(&refs, &objects, &ids, &first, &second, doc.tolerance())?
+        } else {
+            legacy()?
         };
         #[cfg(not(feature = "native-smlib"))]
-        let (copies, changed) = prepared?;
+        let (copies, changed) = legacy()?;
         doc.clear_selection();
         doc.release_command_selection_on_history_replay(ids)?;
         let outputs = doc.copy_object_pieces_with_metadata_into_source_groups(copies)?;

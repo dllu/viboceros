@@ -10,9 +10,10 @@ Native modeling uses the separate `viboceros-smlib` adapter around usd-brep's
 SMLib kernel. Rust retains document geometry and metadata; the adapter transfers
 validated NURBS topology, serializes kernel calls and uses copied operands.
 With `native-smlib`, BooleanDifference and BooleanUnion enter this backend
-directly for planar and curved solids. Intersection and Split still retain their
-existing Rust paths before native fallback; removing those remaining duplicate routes
-is ongoing. Command contact, shell participation and history policies stay
+directly for planar and curved solids. BooleanSplit also enters SMLib directly
+when all operands are closed solids; finite-plane and open-sheet workflows retain
+the Rust path. Intersection still retains its Rust paths before native fallback.
+Removing those remaining duplicate routes is ongoing. Command contact, shell participation and history policies stay
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
