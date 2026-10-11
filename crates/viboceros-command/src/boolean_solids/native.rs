@@ -40,6 +40,52 @@ pub(crate) fn parts(solid: &Solid, tolerance: Tolerance) -> Result<Vec<Brep>, Co
         .map(|b| b.to_brep(tolerance))
         .collect::<Result<_, _>>()?)
 }
+
+/// Original connected boundaries for command participation. The kernel treats
+/// each query boundary as outward, including an original cavity shell.
+pub(crate) fn shells(
+    brep: &Brep,
+    solid: &Solid,
+    tolerance: Tolerance,
+) -> Result<Vec<(Vec<usize>, Solid)>, CommandError> {
+    let components = brep.edge_connected_face_components();
+    if components.len() == 1 {
+        return Ok(vec![(components[0].clone(), solid.try_clone()?)]);
+    }
+    components
+        .iter()
+        .map(|faces| {
+            let mut shell = brep.sub_brep(faces, tolerance)?;
+            if shell.signed_volume(tolerance)? < 0. {
+                shell.reverse_orientation();
+            }
+            Ok((faces.clone(), Solid::from_brep(&shell, tolerance)?))
+        })
+        .collect()
+}
+
+fn participating_output(
+    solid: &Solid,
+    active: &[Solid],
+    tolerance: Tolerance,
+) -> Result<Vec<Brep>, CommandError> {
+    let result = solid.to_brep(tolerance)?;
+    let mut outputs = Vec::new();
+    for component in result.edge_connected_face_components() {
+        let mut shell = result.sub_brep(&component, tolerance)?;
+        if shell.signed_volume(tolerance)? < 0. {
+            shell.reverse_orientation();
+        }
+        let boundary = Solid::from_brep(&shell, tolerance)?;
+        for source in active {
+            if boundary.boundary_contact(source, tolerance)? {
+                outputs.push(shell);
+                break;
+            }
+        }
+    }
+    Ok(outputs)
+}
 fn root(parents: &[usize], mut i: usize) -> usize {
     while parents[i] != i {
         i = parents[i];
@@ -54,17 +100,19 @@ pub(crate) fn union(
     tolerance: Tolerance,
 ) -> Result<UnionOutput, CommandError> {
     let native = imports(breps, tolerance)?;
-    let eps = epsilon(breps, tolerance)?;
-    let volumes = native.iter().map(volume).collect::<Result<Vec<_>, _>>()?;
     let mut parents = (0..breps.len()).collect::<Vec<_>>();
     let mut contacts = Vec::new();
     let mut equal = vec![vec![false; breps.len()]; breps.len()];
     for a in 0..breps.len() {
         for b in a + 1..breps.len() {
-            let overlap = native[a].boolean(&native[b], BooleanOperation::Intersection)?;
-            let size = volume(&overlap)?;
-            let covered_a = (volumes[a] - size).abs() <= eps;
-            let covered_b = (volumes[b] - size).abs() <= eps;
+            // Delegate set coverage to the kernel. Small positive material
+            // must not disappear merely because it has small integrated volume.
+            let covered_a = native[a]
+                .boolean(&native[b], BooleanOperation::Difference)?
+                .is_empty()?;
+            let covered_b = native[b]
+                .boolean(&native[a], BooleanOperation::Difference)?
+                .is_empty()?;
             if covered_a && covered_b {
                 equal[a][b] = true;
                 equal[b][a] = true;
@@ -95,32 +143,23 @@ pub(crate) fn union(
             .iter()
             .any(|pair| g.contains(&pair[0]) && g.contains(&pair[1]))
     }) {
-        let mut result = native[group[0]].boolean(&native[group[1]], BooleanOperation::Union)?;
+        let mut result = native[group[0]].boolean_with_postprocess(
+            &native[group[1]],
+            BooleanOperation::Union,
+            merge,
+        )?;
         for &i in &group[2..] {
-            result = result.boolean(&native[i], BooleanOperation::Union)?;
+            result = result.boolean_with_postprocess(&native[i], BooleanOperation::Union, merge)?;
         }
         let mut contributors = Vec::new();
-        for &i in group {
-            let mut others: Option<Solid> = None;
-            for &j in group {
-                if i == j {
-                    continue;
-                }
-                if j > i && equal[i][j] {
-                    continue;
-                }
-                others = Some(if let Some(current) = others {
-                    current.boolean(&native[j], BooleanOperation::Union)?
-                } else {
-                    native[j].try_clone()?
-                });
+        for (position, &i) in group.iter().enumerate() {
+            // A contained input can still own a coincident exterior face.
+            // Native boundary queries decide participation; material volume
+            // cannot identify those contributors. Earlier equal inputs win.
+            if group[..position].iter().any(|&j| equal[i][j]) {
+                continue;
             }
-            let exposed = if let Some(others) = others {
-                volume(&native[i].boolean(&others, BooleanOperation::Difference)?)? > eps
-            } else {
-                true
-            };
-            if exposed {
+            if native[i].boundary_contact(&result, tolerance)? {
                 contributors.push(i);
             }
         }
@@ -129,7 +168,21 @@ pub(crate) fn union(
         }
         let owner = contributors[0];
         let geometry_owner = *contributors.last().unwrap();
-        let mut outputs = parts(&result, tolerance)?;
+        let mut active = Vec::new();
+        for &i in group {
+            for (_, shell) in shells(breps[i], &native[i], tolerance)? {
+                for &j in group {
+                    if i != j && shell.boundary_contact(&native[j], tolerance)? {
+                        active.push(shell);
+                        break;
+                    }
+                }
+            }
+        }
+        // Rhino returns participating connected boundaries as separate outward
+        // objects, including opened cavity boundaries. Material-body extraction
+        // alone would keep those cavities attached to the surrounding object.
+        let mut outputs = participating_output(&result, &active, tolerance)?;
         let text = if outputs.len() == 1 {
             objects[geometry_owner].geometry_user_text().clone()
         } else {
@@ -270,6 +323,53 @@ pub(crate) fn intersection(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn small_boundary_contributor_survives_dimensional_volume_thresholds() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let mut doc = Document::default();
+        let large = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame, [[0., 100_000.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        let small = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame, [[99_999., 100_001.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        doc.set_object_geometry_user_text([small], "part", Some("small-boundary"))
+            .unwrap();
+        doc.select_objects_direct([large, small], SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        CommandRegistry::with_builtins()
+            .execute(&mut doc, "BooleanUnion")
+            .unwrap();
+        assert_eq!(doc.objects().count(), 1);
+        let output = doc.objects().next().unwrap();
+        assert_eq!(
+            output.geometry_user_text().get("part").map(String::as_str),
+            Some("small-boundary")
+        );
+        let Geometry::Brep(brep) = output.geometry() else {
+            panic!("editable B-rep")
+        };
+        assert!(
+            brep.vertices()
+                .iter()
+                .any(|v| v.point() == p(100_001., 100_001., 100_001.))
+        );
+        assert!(7. < epsilon(&[brep], tolerance).unwrap());
+        doc.undo().unwrap();
+        assert!(doc.object(large).is_some() && doc.object(small).is_some());
+    }
+
     fn p(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
     }

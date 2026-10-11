@@ -31,8 +31,9 @@ Compiler, CMake and system TBB requirements are in the [bridge guide](smlib-brid
 Default builds retain the Rust Boolean kernel. With `native-smlib`, Difference
 routes closed planar and curved inputs directly to SMLib; the Rust convex and
 polyhedral Difference adapters are compiled only without that feature. Native
-errors propagate before document edits. [Union and Intersection](smlib-set-booleans.md)
-still select the native adapter after explicit unsupported-geometry errors.
+errors propagate before document edits. [Union](smlib-set-booleans.md) also enters
+SMLib directly; Intersection still selects the adapter after explicit
+unsupported-geometry errors.
 Open sheets remain unsupported by native subtraction.
 
 Participation uses native face intersections against original shells and

@@ -110,12 +110,12 @@ extern "C" int vb_solid_primitive(int kind, const double origin[3], const double
     });
 }
 
-extern "C" int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, VbSolid **out,
+extern "C" int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, int post_process, VbSolid **out,
                                 char *error, size_t capacity) {
     if (out)
         *out = nullptr;
     return guarded(error, capacity, [&] {
-        require(a && b && out && operation >= 0 && operation <= 2,
+        require(a && b && out && operation >= 0 && operation <= 2 && (post_process==0 || post_process==1),
                 "Invalid Boolean operands or operation");
         auto owner = std::make_unique<VbSolid>();
         SmBrep *raw_a = nullptr;
@@ -127,7 +127,10 @@ extern "C" int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operatio
         std::unique_ptr<SmBrep> cutter(raw_b);
         check(copy_b, "copy B");
         SmBrep *result = nullptr;
-        const auto status = operation == 0   ? SmApiBooleanUnion(raw_a, raw_b, result)
+        const auto status = !post_process ? SmApiBooleanWithOptions(raw_a, raw_b,
+                            operation==0 ? SM_BO_UNION : operation==1 ? SM_BO_INTERSECTION : SM_BO_DIFFERENCE,
+                            FALSE,FALSE,FALSE,FALSE,FALSE,result)
+                            : operation == 0   ? SmApiBooleanUnion(raw_a, raw_b, result)
                             : operation == 1 ? SmApiBooleanIntersection(raw_a, raw_b, result)
                                              : SmApiBooleanDifference(raw_a, raw_b, result);
         if (status == SM_SUCCESS)

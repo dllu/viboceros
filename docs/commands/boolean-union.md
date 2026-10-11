@@ -1,8 +1,9 @@
 # BooleanUnion
 
-Linux builds with `--features native-smlib` also offer an
-[optional closed curved-solid path](../smlib-set-booleans.md). Its geometry and
-multi-object policy qualification remains narrower than the full command scope.
+Linux builds with `--features native-smlib` use
+[usd-brep directly](../smlib-set-booleans.md) for closed planar and curved solids.
+Native errors propagate before model edits; the Rust Union adapters are compiled
+only without that feature. Broader arbitrary-input qualification remains open.
 
 [Command reference](README.md) · [Kernel and limits](../convex-booleans.md)
 
@@ -26,6 +27,12 @@ option batches do not change preferences.
   faces. `No` combines fragments of each original face while retaining boundaries
   between faces from different inputs. Eligible collinear edge subdivisions are
   removed in either mode.
+
+Native builds pass `No` through the kernel's topology-cleanup option, retaining
+imprinted seams; the kernel can retain additional face and edge partitions.
+`Yes` enables cleanup and merges supported planar output. The recorded
+[native Union seam ledger](../smlib-union-partitions.json) keeps those representation
+differences separate from physical geometry and metadata comparisons.
 
 ## Document behavior
 
@@ -53,7 +60,8 @@ bodies successfully union. Cancellation changes no geometry or model history.
 Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
 cavities, and straight edges from earlier Boolean results. The convex certificate
 selects the faster construction when available; otherwise the general exact
-polyhedral certificate applies. Curved and open inputs, intersecting input
+polyhedral certificate applies in builds without `native-smlib`. Native builds
+delegate these closed inputs and qualified curved solids to SMLib. Open inputs, intersecting input
 shells, unsupported plane roundoff, resource exhaustion, and singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence

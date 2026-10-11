@@ -232,7 +232,9 @@ fn compare_physical(
         witnesses(&own, &captured, case);
         witnesses(&captured, &own, case);
         if native["source"].is_null() && native["solid"] == true {
-            let expected = if cfg!(feature = "native-smlib") && case == "d_rounded_uv" {
+            let expected = if cfg!(feature = "native-smlib")
+                && matches!(case, "d_rounded_uv" | "u_rounded_uv")
+            {
                 // The physical boundary and signed volume pass above, but the
                 // exact outside witness cannot classify the native UV roundoff.
                 BrepSolidOrientation::Unknown
@@ -347,12 +349,16 @@ fn replays_native_polyhedral_commands_including_nonmanifold_boundary() {
     #[cfg(feature = "native-smlib")]
     let expected = {
         let mut expected = expected;
-        expected.retain(|row| !row["case"].as_str().unwrap().starts_with("d_"));
+        expected.retain(|row| !matches!(row["case"].as_str().unwrap().as_bytes()[0], b'd' | b'u'));
         let native: Vec<Value> = serde_json::from_str(include_str!(
             "../../../../docs/smlib-difference-partitions.json"
         ))
         .unwrap();
         expected.extend(native);
+        let union: Value =
+            serde_json::from_str(include_str!("../../../../docs/smlib-union-partitions.json"))
+                .unwrap();
+        expected.extend(union["polyhedral"].as_array().unwrap().iter().cloned());
         expected.sort_by_key(|row| {
             let id = format!("polycmd_{}", row["case"].as_str().unwrap());
             capture["results"]
@@ -364,9 +370,9 @@ fn replays_native_polyhedral_commands_including_nonmanifold_boundary() {
         });
         expected
     };
-    assert_eq!(partitions, expected, "unrecorded native seam difference");
     eprintln!(
         "native polyhedral command face partitions: {}",
         serde_json::to_string_pretty(&partitions).unwrap()
     );
+    assert_eq!(partitions, expected, "unrecorded native seam difference");
 }

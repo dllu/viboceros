@@ -1,8 +1,8 @@
 //! Shared ID-set parsing and original-face coplanar merging.
 use super::*;
 #[cfg(not(feature = "native-smlib"))]
-use viboceros_geometry::BrepDifferenceComponent;
-use viboceros_geometry::{BrepPolyhedralBooleanComponent, BrepSetIntersection, BrepUnionComponent};
+use viboceros_geometry::{BrepDifferenceComponent, BrepUnionComponent};
+use viboceros_geometry::{BrepPolyhedralBooleanComponent, BrepSetIntersection};
 mod common;
 mod compound;
 #[cfg(feature = "native-smlib")]
@@ -48,6 +48,7 @@ pub(super) fn interactions(
 }
 
 impl Kernel {
+    #[cfg(not(feature = "native-smlib"))]
     pub(super) fn union(
         self,
         breps: &[&Brep],
@@ -92,6 +93,7 @@ impl Kernel {
 /// Resolve interaction participation per original shell, before output merging
 /// removes face provenance. Object pairs restrict the participating operands
 /// (Difference uses only target/cutter pairs).
+#[cfg(not(feature = "native-smlib"))]
 pub(super) fn active_faces(
     breps: &[&Brep],
     pairs: &[[usize; 2]],
@@ -138,8 +140,10 @@ pub(super) fn active_faces(
     Ok(result)
 }
 
+#[cfg(not(feature = "native-smlib"))]
 pub(super) type ShellWithSources = (Brep, Vec<[usize; 2]>);
 
+#[cfg(not(feature = "native-smlib"))]
 pub(super) fn participating_shells(
     brep: Brep,
     sources: &[[usize; 2]],

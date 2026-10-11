@@ -1,4 +1,4 @@
-//! Polyhedral BooleanUnion command; exact construction stays in geometry.
+//! BooleanUnion document policies with a native solid backend.
 use super::*;
 
 #[cfg(test)]
@@ -87,7 +87,18 @@ impl BooleanUnionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().collect::<Vec<_>>();
-        let prepared = (|| -> Result<_, CommandError> {
+        #[cfg(feature = "native-smlib")]
+        let (copies, consumed) = {
+            let result = boolean_solids::native::union(
+                &refs,
+                &sources,
+                options.merge_coplanar,
+                document.tolerance(),
+            )?;
+            (result.copies, result.consumed)
+        };
+        #[cfg(not(feature = "native-smlib"))]
+        let (copies, consumed) = (|| -> Result<_, CommandError> {
             let (kernel, interactions) =
                 boolean_solids::interactions(&refs, document.tolerance(), false)?;
             if interactions.is_empty() {
@@ -140,25 +151,7 @@ impl BooleanUnionCommand {
                 return Err(CommandError::NothingUnioned);
             }
             Ok((copies, consumed))
-        })();
-        #[cfg(feature = "native-smlib")]
-        let (copies, consumed) = match prepared {
-            Err(CommandError::Geometry(
-                GeometryError::UnsupportedConvexBrepBoolean { .. }
-                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
-            )) => {
-                let result = boolean_solids::native::union(
-                    &refs,
-                    &sources,
-                    options.merge_coplanar,
-                    document.tolerance(),
-                )?;
-                (result.copies, result.consumed)
-            }
-            result => result?,
-        };
-        #[cfg(not(feature = "native-smlib"))]
-        let (copies, consumed) = prepared?;
+        })()?;
         let all_sources = sources.iter().map(|o| o.id()).collect::<Vec<_>>();
         // Construction, merging and metadata staging have finished before edits.
         let outputs = document.copy_object_pieces_with_metadata_into_source_groups(copies)?;

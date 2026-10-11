@@ -9,9 +9,9 @@ file formats, or command parsing.
 Native modeling uses the separate `viboceros-smlib` adapter around usd-brep's
 SMLib kernel. Rust retains document geometry and metadata; the adapter transfers
 validated NURBS topology, serializes kernel calls and uses copied operands.
-With `native-smlib`, BooleanDifference enters this backend directly for planar
-and curved solids. Union, Intersection and Split still retain their existing
-Rust paths before native fallback; removing those remaining duplicate routes
+With `native-smlib`, BooleanDifference and BooleanUnion enter this backend
+directly for planar and curved solids. Intersection and Split still retain their
+existing Rust paths before native fallback; removing those remaining duplicate routes
 is ongoing. Command contact, shell participation and history policies stay
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
 

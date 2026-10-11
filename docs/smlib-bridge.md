@@ -39,6 +39,9 @@ cargo run -p viboceros-smlib --features native --example reference --release
 `Solid::box_solid`, `Solid::sphere` and `Solid::cylinder` construct independently
 owned native solids. `Solid::boolean` performs union, intersection or difference
 on copies and returns a new solid. Both inputs survive success and failure.
+`boolean_with_postprocess` exposes the kernel's optional topology cleanup;
+disabling it retains imprinted seams without changing the operation's material
+set. The copied-operand ownership contract is identical.
 `properties` returns volume, tight bounds and manifold status with explicit
 relative integration accuracy. `tessellate` produces a validated Viboceros
 `TriangleMesh` from a complete triangular mesh, with explicit quality controls.

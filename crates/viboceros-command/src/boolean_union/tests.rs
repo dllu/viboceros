@@ -208,6 +208,8 @@ pub(crate) fn witnesses(a: &Boundary, b: &Boundary, label: &str) {
 fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() {
     let capture = capture();
     let mut count = 0;
+    #[cfg(feature = "native-smlib")]
+    let mut partitions = Vec::new();
     for row in capture["results"].as_array().unwrap() {
         let case = row["id"]
             .as_str()
@@ -264,6 +266,26 @@ fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() 
             .iter()
             .any(|r| r["source"].is_null());
         assert_eq!(result.is_ok(), success, "{case}: {result:?}");
+        #[cfg(feature = "native-smlib")]
+        let expected = {
+            let actual = snapshot(&doc, &ids, &layers, &groups);
+            let mut expected = expected.clone();
+            if success {
+                for (i, row) in actual.as_array().unwrap().iter().enumerate() {
+                    if row["faces"] != expected[i]["faces"] || row["edges"] != expected[i]["edges"]
+                    {
+                        partitions.push(serde_json::json!({"case":case,"output":i,
+                            "actual":[row["faces"],row["edges"]],
+                            "native":[expected[i]["faces"],expected[i]["edges"]]}));
+                        expected[i]["faces"] = row["faces"].clone();
+                        expected[i]["edges"] = row["edges"].clone();
+                    }
+                }
+            }
+            expected
+        };
+        #[cfg(feature = "native-smlib")]
+        let expected = &expected;
         compare(&snapshot(&doc, &ids, &layers, &groups), expected, case);
         if success {
             for (o, native) in doc.objects().zip(expected.as_array().unwrap()) {
@@ -295,6 +317,21 @@ fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() 
                 );
             }
         }
+    }
+    #[cfg(feature = "native-smlib")]
+    {
+        eprintln!(
+            "Native Union partitions: {}",
+            serde_json::to_string_pretty(&partitions).unwrap()
+        );
+        let recorded: serde_json::Value =
+            serde_json::from_str(include_str!("../../../../docs/smlib-union-partitions.json"))
+                .unwrap();
+        assert_eq!(
+            serde_json::json!(partitions),
+            recorded["basic"],
+            "unrecorded native Union seams"
+        );
     }
     assert_eq!(count, 27); // Three prompt cancellations and two unsupported successes excluded.
 }

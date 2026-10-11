@@ -1,6 +1,6 @@
 //! Native solid subtraction with command contact and metadata policies.
 use super::*;
-use crate::boolean_solids::native::{Output, imports, parts};
+use crate::boolean_solids::native::{Output, imports, parts, shells};
 use std::borrow::Cow;
 use viboceros_smlib::{BooleanOperation, Solid};
 pub(super) fn difference(
@@ -13,26 +13,11 @@ pub(super) fn difference(
     let mut outputs = Vec::new();
     let mut changed = false;
     for (index, &id) in targets.iter().enumerate() {
-        let components = breps[index].edge_connected_face_components();
         let cutters = &native[targets.len()..];
         let mut active = vec![false; cutters.len()];
         let mut faces = Vec::new();
-        for component in &components {
-            // Rhino decides participation per original shell. Inactive detached
-            // shells and unopened cavities are omitted from replacements.
-            let imported;
-            let boundary = if components.len() == 1 {
-                &native[index]
-            } else {
-                let shell = breps[index].sub_brep(component, tolerance)?;
-                let shell = if shell.signed_volume(tolerance)? < 0. {
-                    shell.reversed()
-                } else {
-                    shell
-                };
-                imported = Solid::from_brep(&shell, tolerance)?;
-                &imported
-            };
+        for (component, boundary) in shells(breps[index], &native[index], tolerance)? {
+            // Participation is decided per original boundary, including voids.
             let mut participates = false;
             for (i, cutter) in cutters.iter().enumerate() {
                 if boundary.boundary_contact(cutter, tolerance)? {

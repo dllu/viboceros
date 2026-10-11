@@ -1,27 +1,42 @@
-# Optional curved union and intersection
+# Native union and curved intersection
 
-Linux builds with `--features native-smlib` now stage closed curved solids for
-BooleanUnion and BooleanIntersection through the [SMLib bridge](smlib-import.md).
-Existing convex/polyhedral command paths run first. Only their explicit
-unsupported-geometry errors select the native path; arithmetic, topology,
-resource and native failures remain errors. Open sheets remain unsupported.
+Linux builds with `--features native-smlib` route BooleanUnion directly through
+the [SMLib bridge](smlib-import.md) for closed planar and curved solids. The old
+Rust Union adapter and shell participation helpers are compiled only without
+that feature. BooleanIntersection still tries its Rust paths before selecting
+native curved geometry after explicit unsupported-geometry errors. All native
+failures propagate before document changes. Open sheets remain unsupported by
+the native adapter.
 
 ## Union staging
 
-Each native input is an independent copy. Pair intersections establish equal
-or enclosed regions, and face-level intersections identify non-point boundary
+Each native input is an independent copy. Kernel Difference emptiness establishes
+equal or enclosed regions, and face-level intersections identify non-point boundary
 contact. The contact query preserves inputs and propagates solver failures.
 Related inputs form connected groups; a group must contain an actual boundary
 interaction to produce a replacement. Equal, disjoint and strictly nested-only
 groups remain unchanged. Interior inputs join a changing group and are consumed,
 while unrelated singleton objects retain their original IDs and selection.
 
-Contributors with exposed material determine ownership: the first supplies
-attributes/groups and the last supplies geometry user text for a single result.
-Material-body extraction keeps cavities with their body and separates disconnected
-material outputs. MergeCoplanarFaces uses the existing Rust planar face merge
-where supported. Broader coincident-face ownership and preservation of every
-original native face partition remain under qualification.
+Input boundaries that contact the resulting boundary determine ownership: the
+first supplies attributes/groups and the last supplies geometry user text for a
+single result. This includes contained inputs that contribute coincident exterior
+faces; earlier equal inputs retain priority. Volume thresholds do not decide
+coverage or ownership, so small contributing regions survive.
+
+Original connected shells are queried independently, using the same helper as
+Difference. Only participating output boundaries are retained. Rhino's captured
+Union behavior emits opened cavity boundaries as separate outward objects and
+omits inactive detached shells and unopened cavities. The native command follows
+that policy, while the library's material-body API continues to retain voids.
+Multiple outputs clear geometry user text.
+
+MergeCoplanarFaces=No disables native Boolean topology cleanup to retain imprinted
+seams. Yes enables cleanup and uses the existing Rust planar merge where supported.
+The kernel can retain different partitions from Rhino; [the seam ledger](smlib-union-partitions.json)
+records those differences independently of metadata, mass and boundary checks.
+Broader coincident-face ownership and complete topology/parameter parity remain
+under qualification.
 
 ## Intersection staging
 
@@ -32,15 +47,19 @@ reports no changes. Two-set intersection computes pair regions and unions them
 before material-body extraction. Maximal first-set pair contributors determine
 attributes and geometry text; multiple outputs for an owner clear that text.
 
-Work is bounded to 128 inputs and 128 retained pair regions. Independent Rust
-volume integration supplies dimensional no-change and coverage comparisons;
-native status failures are never converted to no-change answers. Tiny features,+near-equality, broad compound configurations, tangencies and output ordering
+Work is bounded to 128 inputs and 128 retained pair regions. Intersection still
+uses native volume queries and dimensional tolerances for ownership and coverage;
+Union uses kernel set and boundary predicates directly. Independent Rust mass
+and boundary comparisons qualify the saved fixtures;
+native status failures are never converted to no-change answers. Tiny features,
+near-equality, broad compound configurations, tangencies and output ordering
 still need qualification. These checks do not establish every Rhino policy.
 
 Both paths prepare geometry and metadata before any model edits, then use the
 existing selection, DeleteInput and one-step history logic. Default builds retain
 the Rust implementation. [Closed curved BooleanSplit](smlib-boolean-split.md)
-now also has an optional native path. Fillets and offsets remain open.
+also has a native path, as do [circular edge fillets](fillet-edge.md). Offsets
+remain further work.
 
 ## Reproduce the workflow
 

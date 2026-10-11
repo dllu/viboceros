@@ -1,0 +1,65 @@
+{
+  "basic": [
+    {
+      "actual": [
+        14,
+        32
+      ],
+      "case": "partial_coplanar",
+      "native": [
+        12,
+        26
+      ],
+      "output": 0
+    },
+    {
+      "actual": [
+        18,
+        36
+      ],
+      "case": "three_shared",
+      "native": [
+        14,
+        28
+      ],
+      "output": 0
+    },
+    {
+      "actual": [
+        9,
+        21
+      ],
+      "case": "boundary_contained",
+      "native": [
+        6,
+        12
+      ],
+      "output": 0
+    },
+    {
+      "actual": [
+        14,
+        28
+      ],
+      "case": "coplanar_equal",
+      "native": [
+        10,
+        20
+      ],
+      "output": 0
+    },
+    {
+      "actual": [
+        18,
+        36
+      ],
+      "case": "face_priority",
+      "native": [
+        12,
+        26
+      ],
+      "output": 0
+    }
+  ],
+  "polyhedral": []
+}

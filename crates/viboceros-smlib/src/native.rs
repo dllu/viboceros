@@ -44,6 +44,7 @@ unsafe extern "C" {
         a: *const NativeSolid,
         b: *const NativeSolid,
         operation: c_int,
+        post_process: c_int,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
         capacity: usize,
@@ -202,6 +203,17 @@ impl Solid {
 
     /// Returns a new result, preserving both inputs on success and failure.
     pub fn boolean(&self, other: &Self, operation: BooleanOperation) -> Result<Self, Error> {
+        self.boolean_with_postprocess(other, operation, true)
+    }
+
+    /// Perform a copied-operand Boolean with optional kernel topology cleanup.
+    /// Disabling cleanup retains imprinted seams; both inputs stay unchanged.
+    pub fn boolean_with_postprocess(
+        &self,
+        other: &Self,
+        operation: BooleanOperation,
+        post_process: bool,
+    ) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();
         let operation = match operation {
             BooleanOperation::Union => 0,
@@ -214,6 +226,7 @@ impl Solid {
                 self.handle.as_ptr(),
                 other.handle.as_ptr(),
                 operation,
+                c_int::from(post_process),
                 &mut pointer,
                 error,
                 capacity,

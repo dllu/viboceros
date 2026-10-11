@@ -13,6 +13,27 @@ fn relative(actual: f64, expected: f64, epsilon: f64) {
 }
 
 #[test]
+fn boolean_cleanup_option_retains_seams_and_preserves_both_operands() {
+    let a = Solid::box_solid(p(0., 0., 0.), [2.; 3]).unwrap();
+    let b = Solid::box_solid(p(2., 0., 0.), [2.; 3]).unwrap();
+    let before = (
+        a.to_brep(Tolerance::DEFAULT).unwrap(),
+        b.to_brep(Tolerance::DEFAULT).unwrap(),
+    );
+    for (cleanup, faces) in [(false, 10), (true, 6)] {
+        let result = a
+            .boolean_with_postprocess(&b, BooleanOperation::Union, cleanup)
+            .unwrap();
+        let brep = result.to_brep(Tolerance::DEFAULT).unwrap();
+        assert!(brep.is_solid());
+        assert_eq!(brep.faces().len(), faces);
+        assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 16.).abs() < 1e-9);
+        assert_eq!(a.to_brep(Tolerance::DEFAULT).unwrap(), before.0);
+        assert_eq!(b.to_brep(Tolerance::DEFAULT).unwrap(), before.1);
+    }
+}
+
+#[test]
 fn kernel_volume_conserves_curved_partitions_and_handles_empty_results() {
     let tolerance = Tolerance::DEFAULT;
     let frame = Frame3::try_from_normal(
