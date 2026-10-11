@@ -650,6 +650,11 @@ class OracleClient:
             if self.settings_scheme is None:
                 raise OracleProtocolError('Compound intersections require a private Rhino settings scheme')
             validate_request(request)
+        if any(op.get('op') == 'common_curved' for op in request.get('operations', [])):
+            from .common_curved_probe import validate_request
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Curved common recipes require a private Rhino settings scheme')
+            validate_request(request)
         if any(op.get('op') == 'common_participation' for op in request.get('operations', [])):
             from .common_participation_probe import validate_request
             if self.settings_scheme is None:
@@ -1239,6 +1244,9 @@ class OracleClient:
             if any(op.get('op') == 'compound_intersection' for op in request.get('operations', [])):
                 for name in ('compound_intersection_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'common_curved' for op in request.get('operations', [])):
+                for name in ('common_curved_probe.py', 'common_participation_probe.py', 'compound_recipe_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name), job_path / name)
             if any(op.get('op') == 'common_participation' for op in request.get('operations', [])):
                 for name in ('common_participation_probe.py', 'compound_recipe_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)

@@ -863,19 +863,25 @@ impl Solid {
         let face_data = borrowed(&owner, view.faces, view.face_count)?;
         let mut uses = vec![Vec::new(); edges.len()];
         for (face_index, face) in face_data.iter().enumerate() {
-            for loop_data in range(loop_data, face.first_loop, face.loop_count)? {
+            for (loop_index, loop_data) in range(loop_data, face.first_loop, face.loop_count)?
+                .iter()
+                .enumerate()
+            {
                 for trim in range(trim_data, loop_data.first_trim, loop_data.trim_count)? {
                     uses.get_mut(trim.edge)
                         .ok_or(Error::InvalidOutput)?
-                        .push(face_index);
+                        .push((face_index, loop_index));
                 }
             }
         }
         let mut faces = Vec::new();
-        for face in face_data {
+        for (face_index, face) in face_data.iter().enumerate() {
             let surface = face.surface.surface(&owner)?;
             let mut loops = Vec::new();
-            for loop_data in range(loop_data, face.first_loop, face.loop_count)? {
+            for (loop_index, loop_data) in range(loop_data, face.first_loop, face.loop_count)?
+                .iter()
+                .enumerate()
+            {
                 let mut trims = Vec::new();
                 for trim in range(trim_data, loop_data.first_trim, loop_data.trim_count)? {
                     let curve = match surface
@@ -890,11 +896,17 @@ impl Solid {
                         curve
                     };
                     let incidence = &uses[trim.edge];
-                    let kind = match incidence.as_slice() {
-                        [_] => BrepTrimType::Boundary,
-                        [a, b] if a == b => BrepTrimType::Seam,
-                        [_, _] => BrepTrimType::Mated,
-                        _ => return Err(Error::InvalidOutput),
+                    let kind = if incidence.len() == 1 {
+                        BrepTrimType::Boundary
+                    } else if incidence
+                        .iter()
+                        .filter(|&&owner| owner == (face_index, loop_index))
+                        .count()
+                        >= 2
+                    {
+                        BrepTrimType::Seam
+                    } else {
+                        BrepTrimType::Mated
                     };
                     let iso = classify_iso(&surface, &curve);
                     trims.push(BrepTrim::try_new(

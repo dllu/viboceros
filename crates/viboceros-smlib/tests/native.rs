@@ -13,6 +13,46 @@ fn relative(actual: f64, expected: f64, epsilon: f64) {
 }
 
 #[test]
+fn nonmanifold_material_boundary_exports_all_edge_uses() {
+    let a = Solid::box_solid(p(0., 0., 0.), [2.; 3]).unwrap();
+    let b = Solid::box_solid(p(2., 2., 0.), [2.; 3]).unwrap();
+    let result = a.boolean(&b, BooleanOperation::Union).unwrap();
+    let brep = result.to_brep(Tolerance::DEFAULT).unwrap();
+    assert!(!brep.is_solid());
+    assert_eq!(brep.faces().len(), 12);
+    assert!((brep.area(Tolerance::DEFAULT).unwrap() - 48.).abs() < 1e-9);
+    assert_eq!(
+        brep.faces()
+            .iter()
+            .flat_map(|f| f.loops())
+            .flat_map(|l| l.trims())
+            .filter(|t| t.edge().is_some())
+            .count(),
+        48
+    );
+}
+
+#[test]
+fn boundary_coverage_distinguishes_enclosed_voids_from_material_coverage() {
+    let outer = Solid::box_solid(p(0., 0., 0.), [3.; 3]).unwrap();
+    let hole = Solid::box_solid(p(1., 1., 1.), [1.; 3]).unwrap();
+    let cavity = outer.boolean(&hole, BooleanOperation::Difference).unwrap();
+    let surrounding = Solid::box_solid(p(0.75, 0.75, 0.75), [1.5; 3]).unwrap();
+    assert!(surrounding.boundary_is_covered_by(&cavity).unwrap());
+    assert!(
+        !surrounding
+            .boolean(&cavity, BooleanOperation::Difference)
+            .unwrap()
+            .is_empty()
+            .unwrap()
+    );
+    assert!(!outer.boundary_is_covered_by(&surrounding).unwrap());
+    let before = surrounding.to_brep(Tolerance::DEFAULT).unwrap();
+    assert!(surrounding.boundary_is_covered_by(&outer).unwrap());
+    assert_eq!(surrounding.to_brep(Tolerance::DEFAULT).unwrap(), before);
+}
+
+#[test]
 fn boolean_cleanup_option_retains_seams_and_preserves_both_operands() {
     let a = Solid::box_solid(p(0., 0., 0.), [2.; 3]).unwrap();
     let b = Solid::box_solid(p(2., 0., 0.), [2.; 3]).unwrap();

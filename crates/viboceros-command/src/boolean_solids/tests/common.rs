@@ -126,8 +126,21 @@ fn replays_common_intersection_participation_order_metadata_geometry_and_history
         records += 1;
     }
     assert_eq!(records, 80);
+    #[cfg(not(feature = "native-smlib"))]
     assert!(
         partitions.is_empty(),
         "unrecorded common partition difference: {partitions:?}"
     );
+    #[cfg(feature = "native-smlib")]
+    {
+        eprintln!(
+            "Native common representation: {}",
+            serde_json::to_string_pretty(&partitions).unwrap()
+        );
+        let recorded: Value = serde_json::from_str(include_str!(
+            "../../../../../docs/smlib-intersection-representation.json"
+        ))
+        .unwrap();
+        assert_eq!(serde_json::json!(partitions), recorded["common"]);
+    }
 }

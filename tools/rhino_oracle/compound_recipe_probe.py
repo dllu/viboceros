@@ -4,7 +4,7 @@ The historical compound probe remains frozen with its capture provenance.
 This reusable runner takes validated recipe data from its closed caller.
 """
 
-def run_recipe(op, host, spec, shapes, validate_request):
+def run_recipe(op, host, spec, shapes, validate_request, geometry_factory=None):
     validate_request(dict(protocol_version=1, operations=[op]))
     Rhino, System = host['Rhino'], host['System']
     if Rhino.Commands.Command.InCommand():
@@ -24,6 +24,12 @@ def run_recipe(op, host, spec, shapes, validate_request):
         return g
 
     def geometry(shape):
+        if geometry_factory is not None:
+            custom = geometry_factory(shape, G)
+            if custom is not None:
+                result = keep(custom)
+                if not result.IsValid or not result.IsSolid: raise ValueError('invalid custom source')
+                return result
         pieces = []
         for bounds, inward in shapes[shape]:
             g = keep(G.BoundingBox(G.Point3d(*[p[0] for p in bounds]), G.Point3d(*[p[1] for p in bounds])).ToBrep())

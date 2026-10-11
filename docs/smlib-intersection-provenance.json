@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-11",
+  "base_commit": "1ca3325bcb15d16c2cb18b329eeac83606e55b41",
+  "kernel_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Direct usd-brep common and closed two-set BooleanIntersection with original-boundary, oriented-shell and document metadata policies",
+  "capture": {
+    "engine": "Licensed Rhino 8 public commands",
+    "engine_version": "8.32.26160.13001",
+    "runtime": "Private Xvfb with ARM64 Wine launcher",
+    "settings_scheme_prefix": "VibocerosOracleCurvedCommonFinal_",
+    "complete_settings_scheme_retained": false,
+    "command_cases": 4,
+    "outcomes": {
+      "inscribed": "Nothing",
+      "inside": "Nothing",
+      "crossing": "Success",
+      "two_sets_inscribed": "Nothing"
+    },
+    "geometry": "Box [0,2]^3; sphere centered at (1,1,1), radius 1, 0.5 or 1.25",
+    "public_command_history_retained": true
+  },
+  "qualification": {
+    "independent_polyhedral_mass_and_bidirectional_boundary_replays": true,
+    "curved_geometry": "Finite spatial edge and lifted-trim samples against independent sphere/cube boundary",
+    "curved_sample_epsilon": 1e-08,
+    "curved_full_boundary_equivalence_proven": false,
+    "curved_scalar_mass_parity_proven": false,
+    "curved_rust_volume": "NumericalIntegrationDidNotConverge for the crossing-sphere result",
+    "curved_rhino_volume": "Recorded scalar differs from the independent analytic value; retained as diagnostic",
+    "exact_orientation": "Unknown witnesses and partition differences are explicitly gated by the representation ledger; physical comparisons remain mandatory"
+  },
+  "validation": {
+    "native_command_suite": {
+      "passed": 1295,
+      "failed": 0,
+      "ignored": 2
+    },
+    "additional_small_region_regression": {
+      "passed": 1,
+      "failed": 0
+    },
+    "native_bridge_suite": {
+      "passed": 34,
+      "failed": 0,
+      "ignored": 1
+    },
+    "native_application_intersection": {
+      "passed": 9,
+      "failed": 0
+    },
+    "default_command_intersection": {
+      "passed": 2,
+      "failed": 0
+    },
+    "python_discovery": {
+      "passed": 1089,
+      "failed": 0
+    },
+    "rust_fmt": "passed",
+    "clippy": "native-smlib and default command all-targets, -D warnings",
+    "checks": [
+      "cargo test -p viboceros-command --features native-smlib --lib",
+      "cargo test -p viboceros-command --features native-smlib --lib small_common_and_two_set",
+      "cargo test -p viboceros-smlib --features native --tests",
+      "cargo test -p viboceros --features native-smlib boolean_intersection",
+      "cargo test -p viboceros-command --no-default-features boolean_intersection",
+      "Python unittest full discovery (1,089 tests)"
+    ]
+  },
+  "source_policy": "Artifact hashes identify retained evidence. Replay source hashes identify the final tested sources; they do not assert byte-for-byte identity with scripts at capture time.",
+  "artifact_sha256": {
+    "tools/rhino_oracle/fixtures/common_curved.json": "32f9c8063fd6a919926fcb65e7cac5ac48c5d3a67d295b90467d2f28989bc117",
+    "tools/rhino_oracle/observations/common_curved.json": "81a280d5569836b2b6a9579209daa99a90d1280c9154d439d89ea50c57bb880f",
+    "docs/smlib-intersection-representation.json": "84b57914d17ba09e7e8741497941bcee455709e7118844f317da88d6e36222ef"
+  },
+  "replay_source_sha256": {
+    "crates/viboceros-command/src/boolean_intersection.rs": "ccab01c25350cf1017a004650c4d3f7e55681ba6b73b522349c354af617f8e76",
+    "crates/viboceros-command/src/boolean_solids/native.rs": "064e210b06316c95b70e19f06503671946b2a4701606c8b59479f0d68db043cc",
+    "crates/viboceros-command/src/boolean_solids/native/compound_intersection.rs": "8a2142c8add4f971fb2d189a4ff0ea833daf77984b2921c9e0c015cab3baf8b0",
+    "crates/viboceros-smlib/native/bridge.cpp": "cdba807765289ae6c08fe5e70f8b82ebcb30ee3f83a4d6b51f6c6c061ce226e1",
+    "crates/viboceros-smlib/src/native.rs": "1b7d4c969f2ef97639b2b4f3783970fd9a1f7a64bc89f36e3445948198f4e254",
+    "crates/viboceros-smlib/src/native/brep.rs": "b9bb346157996041c46f0e5f0ed447b2292a89c87e273168c7ee2e86cfce8fe4",
+    "tools/rhino_oracle/common_curved_probe.py": "cebc5313c9e2032cd1763a7a975f8c62e272192a2cc44156e6811ffa4f9a8f7f",
+    "tools/rhino_oracle/compound_recipe_probe.py": "cc49b7c07eda4f2503412ac32678b54444212da9e4dfa01a5bd4eb62f7fdd14a",
+    "tools/rhino_oracle/test_common_curved.py": "5da8d074227371719ef0aaac3001035fdf0cf3ce306a7217062777831c571745",
+    "tools/rhino_oracle/client.py": "dbf65b90255fe166f082c3641cabb51d961b99309b92f98904eb98d3f15ab007",
+    "tools/rhino_oracle/rhino_worker.py": "c2a1be3d16d9d2e700f462c14495efe40eef2a62a66ee3169b47fd4f08432665"
+  }
+}

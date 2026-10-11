@@ -42,6 +42,11 @@ on copies and returns a new solid. Both inputs survive success and failure.
 `boolean_with_postprocess` exposes the kernel's optional topology cleanup;
 disabling it retains imprinted seams without changing the operation's material
 set. The copied-operand ownership contract is identical.
+`boundary_is_covered_by` uses the kernel's cookie-cutter Difference to classify
+the original boundary against material, including boundaries around an enclosed
+void. Exact transfer now retains all nonmanifold edge uses, with trim kinds
+classified by face and loop incidence; input import still requires closed
+manifold solids. The edge-contact export regression checks all 48 trim uses.
 `properties` returns volume, tight bounds and manifold status with explicit
 relative integration accuracy. `tessellate` produces a validated Viboceros
 `TriangleMesh` from a complete triangular mesh, with explicit quality controls.

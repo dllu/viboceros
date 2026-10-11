@@ -16,7 +16,7 @@ VbSolid *vb_parts_take(VbParts *parts, size_t index);
 void vb_parts_free(VbParts *parts);
 int vb_solid_primitive(int kind, const double origin[3], const double size[3], VbSolid **out,
                        char *error, size_t capacity);
-int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, int post_process, VbSolid **out, char *error,
+int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, int options, VbSolid **out, char *error,
                      size_t capacity);
 int vb_solid_properties(const VbSolid *solid, double accuracy, double *volume, double bounds[6],
                         int *manifold, char *error, size_t capacity);

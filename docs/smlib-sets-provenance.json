@@ -65,9 +65,7 @@
   ],
   "source_sha256": {
     "crates/viboceros-command/examples/curved_sets.rs": "4163d645dfa00117e7684dc255cd3942aa6f5e3cc4731f2144d7571abcbe73a4",
-    "crates/viboceros-command/src/boolean_intersection.rs": "19c7b11bca3ac940d6bab826d1a632f6b3650b2d7e52a0a0f29ddeba0e846617",
     "crates/viboceros-smlib/tests/boundary_contact.rs": "d1440b1cc4dfeb37c97d2f05efc39b8d8fc20e5d88a43103233162d3c787c0d6",
-    "docs/commands/boolean-intersection.md": "4270eedeb2bc6a4c661c389a3b5bd2bb525840a3a064d878547bd9ad2fe90fee",
     "docs/smlib-sets-comparison.json": "709588ed8b943234cb7575ff25cfdf76fe0a91144dde6f8933f95b9957f415a7",
     "docs/smlib-sets-diagnostics/common_intersection.3dm": "1ea07fef1ac070b3adbe6f0dea3f3b9dd22870a4a0b9ee302219eadd96f4da9e",
     "docs/smlib-sets-diagnostics/contact-test.log": "acc34e1b70ac9c872a92131b97d29f97255a0ec9f8155e07b70811a194984f07",
@@ -80,7 +78,6 @@
     "docs/smlib-sets-native-reference.json": "e923de4c496bd93856ca1ceb1d36d9e4e62deb9390f0e2eb2925942677de6f13",
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/usd_brep/compare_curved_sets.py": "3a5690d8d8be2129d4faa6a3029a4b33d3ddd036c304aaa329876088f090d068",
-    "crates/viboceros-command/src/boolean_intersection/tests.rs": "7d03867b551f8f97673ef4193fa50ca33f28eba5cbefed753d15fad34f308367",
     "docs/smlib-sets-diagnostics/io-direct-1.log": "2d15e2c00809687fb14ce223915ab0957a979a78b808ff9cdf205fa57dea673b",
     "docs/smlib-sets-diagnostics/io-cargo-recheck.log": "b017ff3fd0722500b27241095d74e0657083defaed456721dc1e91652cab8431",
     "docs/smlib-sets-diagnostics/io-gdb.log": "ca401f319a55897c104d95e59fa273fbdf5ccd1ed1329a64620ff2ad0ab971ca",
@@ -117,6 +114,9 @@
     "cf33557bb9a19f4c90543ea8bd1244ad66353e0d:crates/viboceros-command/src/boolean_solids.rs": "7d12f1070118303e610bff7115642a503c8bed170e8fc2fdcf26b4da1dd73751",
     "cf33557bb9a19f4c90543ea8bd1244ad66353e0d:docs/smlib-import.md": "b27c6e8c8a74f768d1c4f4c619e0793bdba03d25db0091b48af8fe671f083fc9",
     "24a35e1c47fd7f9aac7836b70fbec380d4763486:crates/viboceros-command/src/boolean_union.rs": "6824a048e84dd3e0cc636004b18c8b686fbfa31d4eff9a71603e45ba6f99f4a7",
-    "24a35e1c47fd7f9aac7836b70fbec380d4763486:docs/commands/boolean-union.md": "cb8311cdcd044e7744ff901682702eda0170fc9039d2585fa865065f83aee39e"
+    "24a35e1c47fd7f9aac7836b70fbec380d4763486:docs/commands/boolean-union.md": "cb8311cdcd044e7744ff901682702eda0170fc9039d2585fa865065f83aee39e",
+    "1ca3325bcb15d16c2cb18b329eeac83606e55b41:crates/viboceros-command/src/boolean_intersection.rs": "19c7b11bca3ac940d6bab826d1a632f6b3650b2d7e52a0a0f29ddeba0e846617",
+    "1ca3325bcb15d16c2cb18b329eeac83606e55b41:docs/commands/boolean-intersection.md": "4270eedeb2bc6a4c661c389a3b5bd2bb525840a3a064d878547bd9ad2fe90fee",
+    "1ca3325bcb15d16c2cb18b329eeac83606e55b41:crates/viboceros-command/src/boolean_intersection/tests.rs": "7d03867b551f8f97673ef4193fa50ca33f28eba5cbefed753d15fad34f308367"
   }
 }

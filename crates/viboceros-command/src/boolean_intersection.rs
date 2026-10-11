@@ -111,7 +111,7 @@ impl BooleanIntersectionCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let prepared = (|| -> Result<_, CommandError> {
+        let legacy = || -> Result<_, CommandError> {
             let compound_sets = refs
                 .iter()
                 .any(|b| b.edge_connected_face_components().len() > 1);
@@ -131,17 +131,15 @@ impl BooleanIntersectionCommand {
                 return Err(CommandError::NothingIntersected);
             }
             let mut copies = Vec::new();
+            #[cfg(not(feature = "native-smlib"))]
             let staged = if common {
                 Some(boolean_solids::common_intersection(&refs, doc.tolerance())?)
             } else {
-                boolean_solids::compound_intersection(
-                    &refs,
-                    doc.tolerance(),
-                    common,
-                    first.len(),
-                    kernel,
-                )?
+                boolean_solids::compound_intersection(&refs, doc.tolerance(), first.len(), kernel)?
             };
+            #[cfg(feature = "native-smlib")]
+            let staged =
+                boolean_solids::compound_intersection(&refs, doc.tolerance(), first.len(), kernel)?;
             if let Some(results) = staged {
                 for result in results {
                     let brep = if common {
@@ -196,23 +194,21 @@ impl BooleanIntersectionCommand {
                 return Err(CommandError::NothingIntersected);
             }
             Ok(copies)
-        })();
+        };
         #[cfg(feature = "native-smlib")]
-        let copies = match prepared {
-            Err(CommandError::Geometry(
-                GeometryError::UnsupportedConvexBrepBoolean { .. }
-                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
-            )) => boolean_solids::native::intersection(
+        let copies = if common || refs.iter().all(|b| b.is_solid()) {
+            boolean_solids::native::intersection(
                 &refs,
                 &objects,
                 first.len(),
                 common,
                 doc.tolerance(),
-            )?,
-            result => result?,
+            )?
+        } else {
+            legacy()?
         };
         #[cfg(not(feature = "native-smlib"))]
-        let copies = prepared?;
+        let copies = legacy()?;
         // First-set picks stay selected through the second phase. Geometry and
         // metadata are completely staged before this transactional model edit.
         doc.select_command_results(ids.iter().copied())?;

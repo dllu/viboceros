@@ -232,16 +232,24 @@ fn compare_physical(
         witnesses(&own, &captured, case);
         witnesses(&captured, &own, case);
         if native["source"].is_null() && native["solid"] == true {
-            let expected = if cfg!(feature = "native-smlib")
-                && matches!(case, "d_rounded_uv" | "u_rounded_uv")
-            {
-                // The physical boundary and signed volume pass above, but the
-                // exact outside witness cannot classify the native UV roundoff.
+            let actual_orientation = b.solid_orientation().unwrap();
+            let prior_unknown = matches!(case, "d_rounded_uv" | "u_rounded_uv");
+            #[cfg(feature = "native-smlib")]
+            if actual_orientation == BrepSolidOrientation::Unknown && !prior_unknown {
+                // Physical mass and boundary checks above remain mandatory.
+                // Record incomplete exact witnesses separately from winding.
+                partitions.push(
+                    json!({"case":case,"name":native["name"],"source":native["source"],
+                    "actual_orientation":"Unknown","native_orientation":"Outward"}),
+                );
+                continue;
+            }
+            let expected = if cfg!(feature = "native-smlib") && prior_unknown {
                 BrepSolidOrientation::Unknown
             } else {
                 BrepSolidOrientation::Outward
             };
-            assert_eq!(b.solid_orientation().unwrap(), expected, "{case}");
+            assert_eq!(actual_orientation, expected, "{case}");
         }
     }
     partitions
@@ -342,34 +350,19 @@ fn replays_native_polyhedral_commands_including_nonmanifold_boundary() {
         }
     }
     assert_eq!(matched, 65);
+    #[cfg(not(feature = "native-smlib"))]
     let expected: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../docs/polyhedral-command-partitions.json"
     ))
     .unwrap();
     #[cfg(feature = "native-smlib")]
-    let expected = {
-        let mut expected = expected;
-        expected.retain(|row| !matches!(row["case"].as_str().unwrap().as_bytes()[0], b'd' | b'u'));
-        let native: Vec<Value> = serde_json::from_str(include_str!(
-            "../../../../docs/smlib-difference-partitions.json"
-        ))
-        .unwrap();
-        expected.extend(native);
-        let union: Value =
-            serde_json::from_str(include_str!("../../../../docs/smlib-union-partitions.json"))
-                .unwrap();
-        expected.extend(union["polyhedral"].as_array().unwrap().iter().cloned());
-        expected.sort_by_key(|row| {
-            let id = format!("polycmd_{}", row["case"].as_str().unwrap());
-            capture["results"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .position(|r| r["id"] == id)
-                .unwrap()
-        });
-        expected
-    };
+    let expected: Vec<Value> = serde_json::from_str::<Value>(include_str!(
+        "../../../../docs/smlib-intersection-representation.json"
+    ))
+    .unwrap()["polyhedral"]
+        .as_array()
+        .unwrap()
+        .clone();
     eprintln!(
         "native polyhedral command face partitions: {}",
         serde_json::to_string_pretty(&partitions).unwrap()

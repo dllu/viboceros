@@ -1,10 +1,11 @@
-# Native union and curved intersection
+# Native union and intersection
 
 Linux builds with `--features native-smlib` route BooleanUnion directly through
 the [SMLib bridge](smlib-import.md) for closed planar and curved solids. The old
 Rust Union adapter and shell participation helpers are compiled only without
-that feature. BooleanIntersection still tries its Rust paths before selecting
-native curved geometry after explicit unsupported-geometry errors. All native
+that feature. Common BooleanIntersection enters SMLib directly; two-set
+Intersection also does so for closed operands. Open two-set inputs retain the
+qualified Rust path. All native
 failures propagate before document changes. Open sheets remain unsupported by
 the native adapter.
 
@@ -40,16 +41,26 @@ under qualification.
 
 ## Intersection staging
 
-Common intersection reduces inputs in order. An enclosing or equal input leaves
-the current owner unchanged; a fully replacing smaller input takes ownership;
-a cutting input supplies the latest geometry user text. Empty common material
-reports no changes. Two-set intersection computes pair regions and unions them
-before material-body extraction. Maximal first-set pair contributors determine
-attributes and geometry text; multiple outputs for an owner clear that text.
+Common intersection reduces inputs in order with kernel set-coverage and boundary
+queries. Strict enclosures do not supply metadata; a smaller replacing input
+takes ownership. Equal intermediate regions fail, and some original boundary
+interaction must occur for the command to succeed. The first surviving owner
+supplies attributes and the last supplies geometry user text for one output.
+The old Rust common reducer and compound-common implementation are compiled only
+without the native feature.
 
-Work is bounded to 128 inputs and 128 retained pair regions. Intersection still
-uses native volume queries and dimensional tolerances for ownership and coverage;
-Union uses kernel set and boundary predicates directly. Independent Rust mass
+Ordinary two-set intersections construct original pair regions and use kernel
+set coverage to select maximal contributors. Compound inputs preprocess each
+set and then apply the captured oriented-shell rules: positive pairs intersect,
+crossing negative pairs union their finite enclosures, and mixed pairs subtract
+the inward enclosure. Boundaries may produce separate overlapping objects.
+Kernel cookie-cutter queries establish boundary coverage for preprocessing,
+which differs from material containment around an enclosed void. All clipping
+and material operations remain in SMLib.
+
+Work is bounded to 128 inputs and 128 retained pair regions. Kernel emptiness and
+boundary predicates decide ownership and coverage; volume thresholds do not
+discard small regions. Independent Rust mass
 and boundary comparisons qualify the saved fixtures;
 native status failures are never converted to no-change answers. Tiny features,
 near-equality, broad compound configurations, tangencies and output ordering
@@ -81,3 +92,21 @@ analytic boundaries/surfaces within 1e-8, with observed maximum errors of
 equivalence or interactive command parity. Native display-mesh diagnostics are
 retained separately. [Provenance](smlib-sets-provenance.json)
 records actual checks, geometry captures and remaining differences.
+
+The 80 ordinary common, 65 polyhedral, compound and oriented-pair captures retain
+their independent geometry, mass, attributes and history comparisons. Native
+partitions and incomplete exact orientation witnesses are recorded in
+[the representation ledger](smlib-intersection-representation.json). A valid
+physical result can remain `Unknown` to the separate conservative Rust witness;
+no volume-sign heuristic replaces that classifier.
+
+Four new [curved command captures](../tools/rhino_oracle/observations/common_curved.json)
+on private Xvfb confirm that an inscribed tangent sphere and a strictly enclosed
+sphere produce no replacement, while a crossing sphere succeeds. The crossing
+result qualifies sampled spatial edges and lifted trims against the independent
+sphere/cube boundary at 1e-8. Its Rust scalar volume query did not converge;
+Rhino's recorded scalar volume also differs from the analytic value and remains diagnostic.
+These captures qualify command participation, metadata/history and finite
+boundary samples, not full curved mass-query or whole-boundary parity.
+[Capture and replay provenance](smlib-intersection-provenance.json) records
+artifact hashes, kernel revision, validation and these limits.

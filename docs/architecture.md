@@ -12,8 +12,9 @@ validated NURBS topology, serializes kernel calls and uses copied operands.
 With `native-smlib`, BooleanDifference and BooleanUnion enter this backend
 directly for planar and curved solids. BooleanSplit also enters SMLib directly
 when all operands are closed solids; finite-plane and open-sheet workflows retain
-the Rust path. Intersection still retains its Rust paths before native fallback.
-Removing those remaining duplicate routes is ongoing. Command contact, shell participation and history policies stay
+the Rust path. Common Intersection enters SMLib directly; two-set Intersection
+does the same when all inputs are closed. Open/sheet modeling still retains Rust
+adapters, and removing those remaining duplicate routes is ongoing. Command contact, shell participation and history policies stay
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
 
 The document's [native block catalog](block-definitions.md) retains shared geometry

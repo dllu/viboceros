@@ -1,0 +1,26 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "common_curved",
+      "id": "curved_common_inscribed",
+      "case": "inscribed"
+    },
+    {
+      "op": "common_curved",
+      "id": "curved_common_inside",
+      "case": "inside"
+    },
+    {
+      "op": "common_curved",
+      "id": "curved_common_crossing",
+      "case": "crossing"
+    },
+    {
+      "op": "common_curved",
+      "id": "curved_common_two_sets_inscribed",
+      "case": "two_sets_inscribed"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 # BooleanIntersection
 
-Linux builds with `--features native-smlib` also offer an
-[optional closed curved-solid path](../smlib-set-booleans.md) for common and
-two-set intersections, preserving the shared document history flow.
+Linux builds with `--features native-smlib` use
+[usd-brep directly](../smlib-set-booleans.md) for common and closed two-set
+intersections. Open two-set inputs retain the qualified Rust path. Geometry
+and policy failures propagate before document changes.
 
 [Command reference](README.md) · [Kernel and limits](../convex-booleans.md)
 
@@ -71,7 +72,8 @@ replacement. Boundary-contained solids with an intersecting boundary can succeed
 Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
 cavities, and straight edges from earlier Boolean results. The convex certificate
 selects the faster construction when available; otherwise the general exact
-polyhedral certificate applies. Curved and open inputs, intersecting input
+polyhedral certificate applies in builds without `native-smlib`. Native builds
+delegate these closed inputs and qualified curved solids to SMLib. Curved open inputs, intersecting input
 shells, unsupported plane roundoff, resource exhaustion, and uncertified singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence
@@ -85,7 +87,10 @@ groups, geometry user text, face/edge counts, mass properties, and finite
 bidirectional polygon-boundary witnesses. Captured Undo/Redo and remembered
 successful options are replayed. Application tests cover both selection phases,
 preselection, pick order, filtering, cancellation, remembered options, and
-history. See [capture provenance](../boolean-intersection-provenance.json).
+history. Native representations can retain different partitions and incomplete
+exact orientation witnesses; [the native ledger](../smlib-intersection-representation.json)
+records those differences while physical and metadata comparisons remain in
+place. See [capture provenance](../boolean-intersection-provenance.json).
 
 Absolute comparison epsilons are `1e-10` for volume and centroid, `1e-9` for area,
 and `1e-7` for boundary witnesses. Finite witnesses permit different supporting

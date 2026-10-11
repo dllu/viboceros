@@ -44,7 +44,7 @@ unsafe extern "C" {
         a: *const NativeSolid,
         b: *const NativeSolid,
         operation: c_int,
-        post_process: c_int,
+        options: c_int,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
         capacity: usize,
@@ -214,6 +214,24 @@ impl Solid {
         operation: BooleanOperation,
         post_process: bool,
     ) -> Result<Self, Error> {
+        self.boolean_options(other, operation, post_process, false)
+    }
+
+    /// Check the original boundary against another solid's material using the
+    /// kernel's cookie-cutter operation. This is distinct from volume coverage:
+    /// the boundary can surround an enclosed void while lying in material.
+    pub fn boundary_is_covered_by(&self, other: &Self) -> Result<bool, Error> {
+        self.boolean_options(other, BooleanOperation::Difference, true, true)?
+            .is_empty()
+    }
+
+    fn boolean_options(
+        &self,
+        other: &Self,
+        operation: BooleanOperation,
+        post_process: bool,
+        cookie_cutter: bool,
+    ) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();
         let operation = match operation {
             BooleanOperation::Union => 0,
@@ -226,7 +244,7 @@ impl Solid {
                 self.handle.as_ptr(),
                 other.handle.as_ptr(),
                 operation,
-                c_int::from(post_process),
+                c_int::from(post_process) | (c_int::from(cookie_cutter) << 1),
                 &mut pointer,
                 error,
                 capacity,

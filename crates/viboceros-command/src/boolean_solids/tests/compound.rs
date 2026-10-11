@@ -182,10 +182,23 @@ fn replays_compound_sets_common_intersection_metadata_and_history() {
         }
     }
     assert_eq!((matched, failures), (31, 1));
+    #[cfg(not(feature = "native-smlib"))]
     let expected: Vec<Value> = serde_json::from_str(include_str!(
         "../../../../../docs/compound-intersection-partitions.json"
     ))
     .unwrap();
+    #[cfg(feature = "native-smlib")]
+    let expected: Vec<Value> = serde_json::from_str::<Value>(include_str!(
+        "../../../../../docs/smlib-intersection-representation.json"
+    ))
+    .unwrap()["compound"]
+        .as_array()
+        .unwrap()
+        .clone();
+    eprintln!(
+        "Native compound representation: {}",
+        serde_json::to_string_pretty(&partitions).unwrap()
+    );
     assert_eq!(partitions, expected, "unrecorded native seam difference");
 }
 
@@ -196,7 +209,7 @@ fn inconsistent_raw_compound_orientation_is_rejected_during_staging() {
     let a = shape("cavity").reversed();
     let b = shape("cross");
     let before = (a.clone(), b.clone());
-    let result = compound_intersection(&[&a, &b], Tolerance::DEFAULT, false, 1, Kernel::Polyhedral);
+    let result = compound_intersection(&[&a, &b], Tolerance::DEFAULT, 1, Kernel::Polyhedral);
     assert!(
         matches!(
             &result,

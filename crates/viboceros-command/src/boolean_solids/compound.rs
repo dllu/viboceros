@@ -56,6 +56,7 @@ fn original_shells(
     Ok(originals)
 }
 
+#[cfg(not(feature = "native-smlib"))]
 fn contact(plan: &mut Plan<'_>, a: &Region, b: &Region) -> Result<bool, GeometryError> {
     if plan.covered_by(a, b)? && plan.covered_by(b, a)? {
         return Ok(false);
@@ -322,6 +323,7 @@ pub(super) fn sets(
 /// connected boundaries, and turns inward solid cavities outward. Enclosing
 /// inactive inputs do not supply result metadata. Nonmanifold boundaries retain
 /// their winding and have no declared solid orientation.
+#[cfg(not(feature = "native-smlib"))]
 pub(super) fn common(
     breps: &[&Brep],
     tolerance: Tolerance,

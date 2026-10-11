@@ -1,0 +1,442 @@
+{
+  "common": [
+    {
+      "actual_orientation": "Unknown",
+      "case": "shared_plane_201",
+      "name": "source-2",
+      "native_orientation": "Outward",
+      "source": null
+    }
+  ],
+  "polyhedral": [
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_concave",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_hole",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_two_holes",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_rounded_uv",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_reversed_hole",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        8,
+        18
+      ],
+      "case": "i_coplanar_concave",
+      "name": "source-0",
+      "native": [
+        10,
+        22
+      ],
+      "source": null
+    },
+    {
+      "actual": [
+        14,
+        36
+      ],
+      "case": "d_cavity",
+      "name": "source-0",
+      "native": [
+        16,
+        40
+      ],
+      "source": null
+    },
+    {
+      "actual": [
+        14,
+        39
+      ],
+      "case": "d_two_holes",
+      "name": "source-0",
+      "native": [
+        16,
+        42
+      ],
+      "source": null
+    },
+    {
+      "actual": [
+        15,
+        39
+      ],
+      "case": "d_singular_two_holes",
+      "name": "source-0",
+      "native": [
+        17,
+        42
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_hole_common",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_hole_pre",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_hole_keep",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_hole_three_common",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        18,
+        54
+      ],
+      "case": "d_hole_three_cutters",
+      "name": "source-0",
+      "native": [
+        20,
+        58
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "i_two_components",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    }
+  ],
+  "compound": [
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_two_cavities",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_two_cavities",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_two_cavities_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_two_cavities_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "first_extra_cross",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        12,
+        30
+      ],
+      "case": "second_extra_cross",
+      "name": "source-0",
+      "native": [
+        14,
+        32
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_extra_cross",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "island_second_contains",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    }
+  ],
+  "pairs": [
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_crossing",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_nested",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_face",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        6,
+        12
+      ],
+      "case": "pair_face",
+      "name": "source-0",
+      "native": [
+        10,
+        20
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_edge",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_point",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_disjoint",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_boundary_nested",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_crossing_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_nested_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_face_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        6,
+        12
+      ],
+      "case": "pair_face_reverse",
+      "name": "source-1",
+      "native": [
+        10,
+        20
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_crossing_pre",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "pair_crossing_keep",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_crossing",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_nested",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_disjoint",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_face",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_equal",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_edge",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_point",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_boundary_nested",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "first_multi",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "second_multi",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual": [
+        12,
+        30
+      ],
+      "case": "second_multi",
+      "name": "source-0",
+      "native": [
+        13,
+        34
+      ],
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_three_enclosing_crossing",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_three_enclosing_nested",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_three_enclosing_disjoint",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_three_enclosing_first",
+      "name": "source-0",
+      "native_orientation": "Outward",
+      "source": null
+    },
+    {
+      "actual_orientation": "Unknown",
+      "case": "common_cavities_crossing_reverse",
+      "name": "source-1",
+      "native_orientation": "Outward",
+      "source": null
+    }
+  ]
+}

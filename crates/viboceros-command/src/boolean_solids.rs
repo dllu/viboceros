@@ -3,11 +3,13 @@ use super::*;
 #[cfg(not(feature = "native-smlib"))]
 use viboceros_geometry::{BrepDifferenceComponent, BrepUnionComponent};
 use viboceros_geometry::{BrepPolyhedralBooleanComponent, BrepSetIntersection};
+#[cfg(not(feature = "native-smlib"))]
 mod common;
 mod compound;
 #[cfg(feature = "native-smlib")]
 pub(super) mod native;
 
+#[cfg(not(feature = "native-smlib"))]
 pub(super) fn common_intersection(
     breps: &[&Brep],
     tolerance: Tolerance,
@@ -177,22 +179,17 @@ pub(super) struct ShellIntersection {
 pub(super) fn compound_intersection(
     breps: &[&Brep],
     tolerance: Tolerance,
-    common: bool,
     first_count: usize,
     kernel: Kernel,
 ) -> Result<Option<Vec<ShellIntersection>>, GeometryError> {
     if breps
         .iter()
         .all(|b| b.edge_connected_face_components().len() == 1)
-        && (common || breps.len() != 2 || matches!(kernel, Kernel::Convex))
+        && (breps.len() != 2 || matches!(kernel, Kernel::Convex))
     {
         return Ok(None);
     }
-    if common {
-        compound::common(breps, tolerance).map(Some)
-    } else {
-        compound::sets(breps, first_count, tolerance).map(Some)
-    }
+    compound::sets(breps, first_count, tolerance).map(Some)
 }
 
 #[cfg(test)]

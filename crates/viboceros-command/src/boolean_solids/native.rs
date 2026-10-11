@@ -1,6 +1,7 @@
 //! Native closed-solid set operations, staged independently of document edits.
 use super::*;
 use viboceros_smlib::{BooleanOperation, Solid};
+mod compound_intersection;
 pub(crate) type Output = (ObjectId, Geometry, BTreeMap<String, String>);
 pub(crate) struct UnionOutput {
     pub copies: Vec<Output>,
@@ -9,9 +10,6 @@ pub(crate) struct UnionOutput {
 
 fn unsupported(context: &str) -> CommandError {
     viboceros_smlib::Error::Kernel(context.into()).into()
-}
-pub(crate) fn volume(solid: &Solid) -> Result<f64, CommandError> {
-    Ok(solid.volume(1e-8)?)
 }
 pub(crate) fn epsilon(breps: &[&Brep], tolerance: Tolerance) -> Result<f64, CommandError> {
     let mut scale = 0_f64;
@@ -64,7 +62,7 @@ pub(crate) fn shells(
         .collect()
 }
 
-fn participating_output(
+pub(super) fn participating_output(
     solid: &Solid,
     active: &[Solid],
     tolerance: Tolerance,
@@ -73,6 +71,12 @@ fn participating_output(
     let mut outputs = Vec::new();
     for component in result.edge_connected_face_components() {
         let mut shell = result.sub_brep(&component, tolerance)?;
+        if !shell.is_solid() {
+            // The material boundary exporter retains native edge contacts.
+            // They have no solid volume or declared outward orientation.
+            outputs.push(shell);
+            continue;
+        }
         if shell.signed_volume(tolerance)? < 0. {
             shell.reverse_orientation();
         }
@@ -217,55 +221,39 @@ pub(crate) fn intersection(
     tolerance: Tolerance,
 ) -> Result<Vec<Output>, CommandError> {
     let native = imports(breps, tolerance)?;
-    let eps = epsilon(breps, tolerance)?;
     if common {
-        let mut current = native[0].try_clone()?;
-        let mut owner = 0;
-        let mut last = 0;
-        for (i, input) in native.iter().enumerate().skip(1) {
-            let before = volume(&current)?;
-            let mut next = current.boolean(input, BooleanOperation::Intersection)?;
-            let after = volume(&next)?;
-            if after <= eps {
-                return Err(CommandError::NothingIntersected);
-            }
-            if (after - before).abs() > eps {
-                if (after - volume(input)?).abs() <= eps {
-                    owner = i;
-                    next = input.try_clone()?;
-                }
-                last = i;
-            }
-            current = next;
+        if breps
+            .iter()
+            .any(|b| b.edge_connected_face_components().len() > 1)
+        {
+            return compound_common(breps, &native, objects, tolerance);
         }
-        let result = parts(&current, tolerance)?;
-        let text = if result.len() == 1 {
-            objects[last].geometry_user_text().clone()
-        } else {
-            BTreeMap::new()
-        };
-        return Ok(result
-            .into_iter()
-            .map(|b| (objects[owner].id(), Geometry::Brep(b), text.clone()))
-            .collect());
+        return common_intersection(&native, objects, tolerance);
+    }
+    if breps
+        .iter()
+        .any(|b| b.edge_connected_face_components().len() > 1)
+    {
+        return compound_intersection::sets(breps, &native, objects, first, tolerance);
     }
     // Intersect each original pair, then union intersecting pair regions per material body.
     let mut regions = Vec::<(Solid, [usize; 2])>::new();
-    let mut region_volumes = Vec::new();
+    let mut crossed = false;
     for a in 0..first {
         for b in first..native.len() {
             let region = native[a].boolean(&native[b], BooleanOperation::Intersection)?;
-            let region_volume = volume(&region)?;
-            if region_volume > eps {
+            if !(covered_by(&native[a], &native[b])? && covered_by(&native[b], &native[a])?) {
+                crossed |= native[a].boundary_contact(&native[b], tolerance)?;
+            }
+            if !region.is_empty()? {
                 if regions.len() >= 128 {
                     return Err(GeometryError::BrepBooleanWorkLimit.into());
                 }
-                region_volumes.push(region_volume);
                 regions.push((region, [a, b]));
             }
         }
     }
-    if regions.is_empty() {
+    if !crossed || regions.is_empty() {
         return Err(CommandError::NothingIntersected);
     }
     let mut merged = regions[0].0.try_clone()?;
@@ -276,7 +264,10 @@ pub(crate) fn intersection(
     for body in merged.material_parts()? {
         let mut contributors = Vec::new();
         for (index, (region, pair)) in regions.iter().enumerate() {
-            if volume(&region.boolean(&body, BooleanOperation::Intersection)?)? <= eps {
+            if region
+                .boolean(&body, BooleanOperation::Intersection)?
+                .is_empty()?
+            {
                 continue;
             }
             let mut covered = false;
@@ -285,9 +276,7 @@ pub(crate) fn intersection(
                     continue;
                 }
                 let outside = region.boolean(container, BooleanOperation::Difference)?;
-                if volume(&outside)? <= eps
-                    && (region_volumes[other] > region_volumes[index] + eps || other < index)
-                {
+                if outside.is_empty()? && (!covered_by(container, region)? || other < index) {
                     covered = true;
                     break;
                 }
@@ -320,9 +309,316 @@ pub(crate) fn intersection(
     Ok(outputs)
 }
 
+fn covered_by(a: &Solid, b: &Solid) -> Result<bool, CommandError> {
+    Ok(a.boolean(b, BooleanOperation::Difference)?.is_empty()?)
+}
+
+fn compound_common(
+    breps: &[&Brep],
+    inputs: &[Solid],
+    objects: &[&viboceros_document::Object],
+    tolerance: Tolerance,
+) -> Result<Vec<Output>, CommandError> {
+    let originals = breps
+        .iter()
+        .zip(inputs)
+        .map(|(b, s)| shells(b, s, tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut owners = BTreeSet::new();
+    let mut active = Vec::new();
+    for a in 0..inputs.len() {
+        for b in a + 1..inputs.len() {
+            for (_, left) in &originals[a] {
+                for (_, right) in &originals[b] {
+                    if covered_by(left, right)? && covered_by(right, left)? {
+                        continue;
+                    }
+                    if left.boundary_contact(right, tolerance)? {
+                        owners.extend([a, b]);
+                        active.push(left.try_clone()?);
+                        active.push(right.try_clone()?);
+                    }
+                }
+            }
+        }
+    }
+    let Some(&first) = owners.first() else {
+        return Err(CommandError::NothingIntersected);
+    };
+    let mut current = inputs[0].try_clone()?;
+    for input in &inputs[1..] {
+        current = current.boolean(input, BooleanOperation::Intersection)?;
+        if current.is_empty()? {
+            return Err(CommandError::NothingIntersected);
+        }
+    }
+    let outputs = participating_output(&current, &active, tolerance)?;
+    if outputs.is_empty() {
+        return Err(CommandError::NothingIntersected);
+    }
+    let text = if outputs.len() == 1 {
+        objects[*owners.last().unwrap()]
+            .geometry_user_text()
+            .clone()
+    } else {
+        BTreeMap::new()
+    };
+    let mut result = Vec::new();
+    for output in outputs {
+        let mut owner = first;
+        if output.is_solid() {
+            let boundary = Solid::from_brep(&output, tolerance)?;
+            for &i in &owners {
+                if covered_by(&boundary, &inputs[i])? && covered_by(&inputs[i], &boundary)? {
+                    owner = i;
+                    break;
+                }
+            }
+        }
+        result.push((objects[owner].id(), Geometry::Brep(output), text.clone()));
+    }
+    Ok(result)
+}
+
+fn common_intersection(
+    inputs: &[Solid],
+    objects: &[&viboceros_document::Object],
+    tolerance: Tolerance,
+) -> Result<Vec<Output>, CommandError> {
+    let mut current = inputs[0].try_clone()?;
+    let mut owners = vec![0];
+    let mut interacted = false;
+    for (i, input) in inputs.iter().enumerate().skip(1) {
+        let current_inside = covered_by(&current, input)?;
+        let input_inside = covered_by(input, &current)?;
+        if current_inside && input_inside {
+            return Err(unsupported("Equal common-intersection operands"));
+        }
+        let crossing = current.boundary_contact(input, tolerance)?;
+        if !crossing {
+            if input_inside {
+                current = input.try_clone()?;
+                owners = vec![i];
+            } else if !current_inside {
+                current = current.boolean(input, BooleanOperation::Intersection)?;
+                if current.is_empty()? {
+                    return Err(CommandError::NothingIntersected);
+                }
+            }
+            continue;
+        }
+        let mut retained = Vec::new();
+        for owner in owners {
+            let keep = if input_inside {
+                inputs[owner].boundary_contact(input, tolerance)?
+            } else {
+                !covered_by(input, &inputs[owner])?
+            };
+            if keep {
+                retained.push(owner);
+            }
+        }
+        retained.push(i);
+        owners = retained;
+        current = current.boolean(input, BooleanOperation::Intersection)?;
+        if current.is_empty()? {
+            return Err(CommandError::NothingIntersected);
+        }
+        interacted = true;
+    }
+    if !interacted {
+        return Err(CommandError::NothingIntersected);
+    }
+    let result = parts(&current, tolerance)?;
+    let owner = owners[0];
+    let text = if result.len() == 1 {
+        objects[*owners.last().unwrap()]
+            .geometry_user_text()
+            .clone()
+    } else {
+        BTreeMap::new()
+    };
+    Ok(result
+        .into_iter()
+        .map(|b| (objects[owner].id(), Geometry::Brep(b), text.clone()))
+        .collect())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn small_common_and_two_set_regions_survive_without_volume_filtering() {
+        for common in [true, false] {
+            let tolerance = Tolerance::DEFAULT;
+            let mut doc = Document::default();
+            let a = doc
+                .add_geometry(Geometry::Brep(
+                    Brep::try_box(frame(0.), [[0., 100_000.]; 3], tolerance).unwrap(),
+                ))
+                .unwrap();
+            let b = doc
+                .add_geometry(Geometry::Brep(
+                    Brep::try_box(frame(0.), [[99_999., 100_001.]; 3], tolerance).unwrap(),
+                ))
+                .unwrap();
+            doc.clear_history().unwrap();
+            let command = if common {
+                format!("BooleanIntersection FirstSet={a},{b}")
+            } else {
+                format!("BooleanIntersection FirstSet={a} SecondSet={b}")
+            };
+            CommandRegistry::with_builtins()
+                .execute(&mut doc, &command)
+                .unwrap();
+            assert_eq!(doc.objects().count(), 1);
+            let Geometry::Brep(result) = doc.objects().next().unwrap().geometry() else {
+                panic!("editable B-rep")
+            };
+            assert!(result.is_solid());
+            assert!((result.signed_volume(tolerance).unwrap() - 1.).abs() < 1e-9);
+            assert!(result.vertices().iter().all(|v| {
+                v.point()
+                    .to_array()
+                    .iter()
+                    .all(|c| (99_999. - 1e-8..=100_000. + 1e-8).contains(c))
+            }));
+            doc.undo().unwrap();
+            assert!(doc.object(a).is_some() && doc.object(b).is_some());
+        }
+    }
+
+    #[test]
+    fn curved_common_contacts_match_public_rhino_command_outcomes() {
+        let capture: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../../tools/rhino_oracle/observations/common_curved.json"
+        ))
+        .unwrap();
+        for row in capture["results"].as_array().unwrap() {
+            let case = row["id"]
+                .as_str()
+                .unwrap()
+                .strip_prefix("curved_common_")
+                .unwrap();
+            let radius = match case {
+                "inside" => 0.5,
+                "crossing" => 1.25,
+                _ => 1.,
+            };
+            let tolerance = Tolerance::DEFAULT;
+            let mut doc = Document::default();
+            let a = doc
+                .add_geometry(Geometry::Brep(
+                    Brep::try_box(frame(0.), [[0., 2.]; 3], tolerance).unwrap(),
+                ))
+                .unwrap();
+            let sphere_frame = Frame3::try_from_normal(
+                p(1., 1., 1.),
+                Vector3::try_new(0., 0., 1.).unwrap(),
+                tolerance,
+            )
+            .unwrap();
+            let b = doc
+                .add_geometry(Geometry::Brep(
+                    Brep::try_surface_face(
+                        NurbsSurface::try_sphere(sphere_frame, radius).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            doc.set_object_geometry_user_text([a], "Code", Some("geometry-0"))
+                .unwrap();
+            doc.set_object_geometry_user_text([b], "Code", Some("geometry-1"))
+                .unwrap();
+            doc.select_objects_direct([a, b], SelectionMode::Replace)
+                .unwrap();
+            doc.clear_history().unwrap();
+            let before = doc.objects().cloned().collect::<Vec<_>>();
+            let command = if case == "two_sets_inscribed" {
+                format!("BooleanIntersection FirstSet={a} SecondSet={b}")
+            } else {
+                format!("BooleanIntersection FirstSet={a},{b}")
+            };
+            let result = CommandRegistry::with_builtins().execute_postselected(
+                &mut doc,
+                &command,
+                Default::default(),
+            );
+            let native = row["value"]["command"]["events"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|e| e["name"] == "BooleanIntersection")
+                .unwrap()["result"]
+                .as_str()
+                .unwrap();
+            assert_eq!(result.is_ok(), native == "Success", "{case}: {result:?}");
+            if result.is_ok() {
+                assert_eq!(doc.objects().count(), 1);
+                let output = doc.objects().next().unwrap();
+                assert_eq!(
+                    output.geometry_user_text().get("Code").map(String::as_str),
+                    Some("geometry-1")
+                );
+                let Geometry::Brep(brep) = output.geometry() else {
+                    panic!("editable B-rep")
+                };
+                let on_boundary = |point: Point3| {
+                    let coordinates = point.to_array();
+                    assert!(
+                        coordinates
+                            .iter()
+                            .all(|&c| (-1e-8..=2. + 1e-8).contains(&c))
+                    );
+                    let radial = coordinates
+                        .iter()
+                        .map(|c| (c - 1.).powi(2))
+                        .sum::<f64>()
+                        .sqrt();
+                    assert!(radial <= radius + 1e-8);
+                    let plane_distance = coordinates
+                        .iter()
+                        .map(|c| c.abs().min((c - 2.).abs()))
+                        .fold(f64::INFINITY, f64::min);
+                    assert!((radial - radius).abs().min(plane_distance) <= 1e-8);
+                };
+                for edge in brep.edges() {
+                    let domain = edge.curve().domain();
+                    for i in 0..=32 {
+                        on_boundary(
+                            edge.curve()
+                                .evaluate(
+                                    domain.start()
+                                        + (domain.end() - domain.start()) * i as f64 / 32.,
+                                )
+                                .unwrap(),
+                        );
+                    }
+                }
+                for face in brep.faces() {
+                    for boundary in face.loops() {
+                        for trim in boundary.trims() {
+                            let domain = trim.curve().domain();
+                            for i in 0..=32 {
+                                let uv = trim
+                                    .curve()
+                                    .evaluate(
+                                        domain.start()
+                                            + (domain.end() - domain.start()) * i as f64 / 32.,
+                                    )
+                                    .unwrap();
+                                on_boundary(face.surface().evaluate(uv.x(), uv.y()).unwrap());
+                            }
+                        }
+                    }
+                }
+                doc.undo().unwrap();
+            }
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before, "{case}");
+        }
+    }
+
     #[test]
     fn small_boundary_contributor_survives_dimensional_volume_thresholds() {
         let tolerance = Tolerance::DEFAULT;
