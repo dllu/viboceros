@@ -6,6 +6,15 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
+Native modeling uses the separate `viboceros-smlib` adapter around usd-brep's
+SMLib kernel. Rust retains document geometry and metadata; the adapter transfers
+validated NURBS topology, serializes kernel calls and uses copied operands.
+With `native-smlib`, BooleanDifference enters this backend directly for planar
+and curved solids. Union, Intersection and Split still retain their existing
+Rust paths before native fallback; removing those remaining duplicate routes
+is ongoing. Command contact, shell participation and history policies stay
+outside the kernel's geometric operations. See [the native integration](smlib-import.md).
+
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,
 bounded placement resolution and unit rescaling. [Instance objects](block-instances.md)
@@ -105,7 +114,8 @@ The mixed planar path splits straight/circular edges, audits input loops and
 shares oriented contour assembly for partial arcs and polygonal/circular holes.
 Membership checks include model-space distance to avoid surface-domain clamping
 errors; completed mixed results can be used as later operands. General curved Boolean commands
-remain unimplemented.
+are available through the [native SMLib adapter](smlib-import.md) for qualified
+closed solids; arbitrary curved and open inputs remain under implementation.
 The [continuous surface/trim certificate](surface-curve-certificates.md)
 now proves complete matched-parameter edge correspondence with exact rational
 tensor composition and conservative bounds at knot crossings. Surface cutting

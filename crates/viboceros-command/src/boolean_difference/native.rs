@@ -1,7 +1,8 @@
-//! Optional curved-solid subtraction, staged before document mutation.
+//! Native solid subtraction with command contact and metadata policies.
 use super::*;
 use crate::boolean_solids::native::{Output, imports, parts};
-use viboceros_smlib::BooleanOperation;
+use std::borrow::Cow;
+use viboceros_smlib::{BooleanOperation, Solid};
 pub(super) fn difference(
     breps: &[&Brep],
     objects: &[&viboceros_document::Object],
@@ -12,24 +13,95 @@ pub(super) fn difference(
     let mut outputs = Vec::new();
     let mut changed = false;
     for (index, &id) in targets.iter().enumerate() {
-        let original = breps[index].signed_volume(tolerance)?;
+        let components = breps[index].edge_connected_face_components();
+        let cutters = &native[targets.len()..];
+        let mut active = vec![false; cutters.len()];
+        let mut faces = Vec::new();
+        for component in &components {
+            // Rhino decides participation per original shell. Inactive detached
+            // shells and unopened cavities are omitted from replacements.
+            let imported;
+            let boundary = if components.len() == 1 {
+                &native[index]
+            } else {
+                let shell = breps[index].sub_brep(component, tolerance)?;
+                let shell = if shell.signed_volume(tolerance)? < 0. {
+                    shell.reversed()
+                } else {
+                    shell
+                };
+                imported = Solid::from_brep(&shell, tolerance)?;
+                &imported
+            };
+            let mut participates = false;
+            for (i, cutter) in cutters.iter().enumerate() {
+                if boundary.boundary_contact(cutter, tolerance)? {
+                    active[i] = true;
+                    participates = true;
+                }
+            }
+            if participates {
+                faces.extend(component);
+            }
+        }
+        if faces.is_empty() {
+            outputs.push((
+                id,
+                Geometry::Brep(breps[index].clone()),
+                objects[index].geometry_user_text().clone(),
+            ));
+            continue;
+        }
+        let participating = if faces.len() == breps[index].faces().len() {
+            Cow::Borrowed(breps[index])
+        } else {
+            Cow::Owned(breps[index].sub_brep(&faces, tolerance)?)
+        };
+        let subset = if matches!(participating, Cow::Owned(_)) {
+            Some(Solid::from_brep(&participating, tolerance)?)
+        } else {
+            None
+        };
+        let input = subset.as_ref().unwrap_or(&native[index]);
+        let original = participating.signed_volume(tolerance)?;
         if original <= 0. {
             return Err(viboceros_smlib::Error::Kernel(
-                "Curved subtraction requires outward material boundaries".into(),
+                "Subtraction requires outward material boundaries".into(),
             )
             .into());
         }
         let mut result = None;
-        for cutter in &native[targets.len()..] {
-            let source = result.as_ref().unwrap_or(&native[index]);
-            let next = source.boolean(cutter, BooleanOperation::Difference)?;
+        for (i, cutter) in cutters.iter().enumerate() {
+            // Command participation is decided against the original boundary,
+            // so a previous cut cannot activate a strictly interior cutter.
+            if !active[i] {
+                continue;
+            }
+            let removed = input.boolean(cutter, BooleanOperation::Difference)?;
+            if removed.is_empty()?
+                && cutter
+                    .boolean(input, BooleanOperation::Difference)?
+                    .is_empty()?
+            {
+                return Err(viboceros_smlib::Error::Kernel(
+                    "Coincident subtraction operands are unsupported".into(),
+                )
+                .into());
+            }
+            changed = true;
+            let source = result.as_ref().unwrap_or(input);
+            let next = if result.is_none() {
+                removed
+            } else {
+                source.boolean(cutter, BooleanOperation::Difference)?
+            };
             let empty = next.is_empty()?;
             result = Some(next);
             if empty {
                 break;
             }
         }
-        let result = result.expect("validated nonempty cutter set");
+        let result = result.expect("participating shell has an original interacting cutter");
         if result.is_empty()? {
             changed = true;
             continue;
@@ -41,10 +113,10 @@ pub(super) fn difference(
             .collect::<Result<Vec<_>, _>>()?
             .into_iter()
             .sum::<f64>();
-        let scale = breps[index]
+        let scale = participating
             .bounds()
             .min()
-            .distance_to(breps[index].bounds().max())?;
+            .distance_to(participating.bounds().max())?;
         let epsilon = tolerance.absolute() * scale * scale + tolerance.relative() * original.abs();
         if volume > original + epsilon {
             return Err(viboceros_smlib::Error::Kernel(
@@ -52,22 +124,15 @@ pub(super) fn difference(
             )
             .into());
         }
-        if original - volume > epsilon {
-            changed = true;
-            let text = if parts.len() == 1 {
-                objects[index].geometry_user_text().clone()
-            } else {
-                BTreeMap::new()
-            };
-            for part in parts {
-                outputs.push((id, Geometry::Brep(part), text.clone()));
-            }
+        // A small volume difference does not establish geometric equality:
+        // a narrow through-hole can have arbitrarily small removed volume.
+        let text = if parts.len() == 1 {
+            objects[index].geometry_user_text().clone()
         } else {
-            outputs.push((
-                id,
-                Geometry::Brep(breps[index].clone()),
-                objects[index].geometry_user_text().clone(),
-            ));
+            BTreeMap::new()
+        };
+        for part in parts {
+            outputs.push((id, Geometry::Brep(part), text.clone()));
         }
     }
     if !changed {
@@ -196,7 +261,7 @@ mod tests {
                         Tolerance::DEFAULT,
                     )
                     .unwrap(),
-                    [[-4., 4.], [-4., 4.], [-2., 12.]],
+                    [[-4., 4.], [-4., 4.], [-1., 12.]],
                     Tolerance::DEFAULT,
                 )
                 .unwrap(),
@@ -286,5 +351,126 @@ mod tests {
             volume += b.signed_volume(Tolerance::DEFAULT).unwrap();
         }
         assert!((volume - 40. * std::f64::consts::PI).abs() < 1e-6);
+    }
+
+    #[test]
+    fn small_corner_cut_is_retained_below_the_volume_tolerance() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = Frame3::try_from_normal(
+            point(0., 0., 0.),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let mut doc = Document::default();
+        let source = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame, [[0., 100_000.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        let cutter = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(frame, [[99_999., 100_001.]; 3], tolerance).unwrap(),
+            ))
+            .unwrap();
+        assert!(1. < tolerance.absolute() * 3. * 100_000_f64.powi(2));
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut doc,
+                &format!("BooleanDifference FirstSet={source} SecondSet={cutter}",),
+            )
+            .unwrap();
+        assert_eq!(doc.objects().count(), 1);
+        let Geometry::Brep(brep) = doc.objects().next().unwrap().geometry() else {
+            panic!("editable B-rep")
+        };
+        assert!(brep.is_solid());
+        assert_eq!(
+            brep.faces().len(),
+            9,
+            "the three new corner faces must survive"
+        );
+        assert!(
+            brep.vertices()
+                .iter()
+                .any(|v| v.point() == point(99_999., 99_999., 99_999.))
+        );
+    }
+
+    #[test]
+    fn unopened_curved_cavity_and_detached_shell_are_excluded_from_replacement() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = |origin| {
+            Frame3::try_from_normal(origin, Vector3::try_new(0., 0., 1.).unwrap(), tolerance)
+                .unwrap()
+        };
+        let target = Brep::try_disjoint_union(
+            vec![
+                Brep::try_box(frame(point(0., 0., 0.)), [[0., 3.]; 3], tolerance).unwrap(),
+                Brep::try_surface_face(
+                    NurbsSurface::try_sphere(frame(point(1.5, 1.5, 1.5)), 0.25).unwrap(),
+                    tolerance,
+                )
+                .unwrap()
+                .reversed(),
+                Brep::try_box(frame(point(0., 0., 0.)), [[10., 11.]; 3], tolerance).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let mut doc = Document::default();
+        let source = doc.add_geometry(Geometry::Brep(target.clone())).unwrap();
+        let cutter = doc
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame(point(0., 0., 0.)),
+                    [[2.5, 3.5], [2.5, 3.5], [1., 2.]],
+                    tolerance,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        doc.set_object_geometry_user_text([source], "part", Some("compound"))
+            .unwrap();
+        doc.clear_history().unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut doc,
+                &format!("BooleanDifference FirstSet={source} SecondSet={cutter} DeleteInput=No",),
+            )
+            .unwrap();
+        let outputs = doc
+            .objects()
+            .filter(|o| o.id() != source && o.id() != cutter)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 1);
+        assert_eq!(
+            outputs[0]
+                .geometry_user_text()
+                .get("part")
+                .map(String::as_str),
+            Some("compound")
+        );
+        let Geometry::Brep(result) = outputs[0].geometry() else {
+            panic!("editable B-rep")
+        };
+        assert!((result.signed_volume(tolerance).unwrap() - 26.75).abs() < 1e-8);
+        assert_eq!(
+            Solid::from_brep(result, tolerance)
+                .unwrap()
+                .material_census()
+                .unwrap(),
+            [1, 0]
+        );
+        assert_eq!(
+            doc.object(source).unwrap().geometry(),
+            &Geometry::Brep(target.clone())
+        );
+        doc.undo().unwrap();
+        assert_eq!(doc.objects().count(), 2);
+        assert_eq!(
+            doc.object(source).unwrap().geometry(),
+            &Geometry::Brep(target)
+        );
     }
 }

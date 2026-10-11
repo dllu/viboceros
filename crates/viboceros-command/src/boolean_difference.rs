@@ -1,4 +1,4 @@
-//! Native subtraction policies over exact polyhedral construction.
+//! BooleanDifference document policies with a native solid backend.
 use super::*;
 use std::borrow::Cow;
 
@@ -107,7 +107,10 @@ impl BooleanDifferenceCommand {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let refs = breps.iter().map(Cow::as_ref).collect::<Vec<_>>();
-        let prepared = (|| -> Result<_, CommandError> {
+        #[cfg(feature = "native-smlib")]
+        let copies = native::difference(&refs, &objects, &first, doc.tolerance())?;
+        #[cfg(not(feature = "native-smlib"))]
+        let copies = (|| -> Result<_, CommandError> {
             let (kernel, interactions) =
                 boolean_solids::interactions(&refs, doc.tolerance(), true)?;
             if !interactions
@@ -156,17 +159,7 @@ impl BooleanDifferenceCommand {
                 }
             }
             Ok(copies)
-        })();
-        #[cfg(feature = "native-smlib")]
-        let copies = match prepared {
-            Err(CommandError::Geometry(
-                GeometryError::UnsupportedConvexBrepBoolean { .. }
-                | GeometryError::UnsupportedPolyhedralBrepBoolean { .. },
-            )) => native::difference(&refs, &objects, &first, doc.tolerance())?,
-            result => result?,
-        };
-        #[cfg(not(feature = "native-smlib"))]
-        let copies = prepared?;
+        })()?;
         // Successful full removal has no copies; it still consumes accepted inputs.
         doc.select_command_results(ids.iter().copied())?;
         doc.release_command_selection_on_history_replay(if post {

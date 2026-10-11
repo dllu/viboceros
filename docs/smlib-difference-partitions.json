@@ -1,0 +1,54 @@
+[
+  {
+    "actual": [
+      14,
+      36
+    ],
+    "case": "d_cavity",
+    "name": "source-0",
+    "native": [
+      16,
+      40
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      14,
+      39
+    ],
+    "case": "d_two_holes",
+    "name": "source-0",
+    "native": [
+      16,
+      42
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      15,
+      39
+    ],
+    "case": "d_singular_two_holes",
+    "name": "source-0",
+    "native": [
+      17,
+      42
+    ],
+    "source": null
+  },
+  {
+    "actual": [
+      18,
+      54
+    ],
+    "case": "d_hole_three_cutters",
+    "name": "source-0",
+    "native": [
+      20,
+      58
+    ],
+    "source": null
+  }
+]

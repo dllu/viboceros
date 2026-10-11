@@ -35,5 +35,5 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [File formats and limitations](docs/file-formats.md)
 - [Architecture and implementation status](docs/architecture.md)
 - [Development and testing](docs/development.md)
-- [USD BRep kernel trial](docs/usd-brep.md)
+- [USD BRep kernel integration](docs/usd-brep.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)

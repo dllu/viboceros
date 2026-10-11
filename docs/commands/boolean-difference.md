@@ -15,10 +15,10 @@ At least one target and one cutter are required. Points and unrelated objects
 are filtered out. First-set objects cannot also be picked as cutters. Explicit
 ID sets execute directly for scripts.
 
-Linux builds with `--features native-smlib` can use the
-[optional curved-solid path](../smlib-import.md). Qualified box/cylinder
-subtraction retains the same options and document history; broader curved
-workflows remain under qualification.
+Linux builds with `--features native-smlib` use
+[usd-brep directly](../smlib-import.md) for closed planar and curved solids.
+The native path retains the same contact, shell participation, options and
+document-history policies. Broader curved workflows remain under qualification.
 
 `DeleteInput` and `DeleteCutters` default to `Yes`. Both can be changed during
 either selection phase. Accepted changes are remembered by the command registry
@@ -67,8 +67,9 @@ replay.
 
 Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
 cavities, and straight edges from earlier Boolean results. The convex certificate
-selects the faster construction when available; otherwise the general exact
-polyhedral certificate applies. Curved and open inputs, intersecting input
+selects the faster construction in builds without `native-smlib`; otherwise the
+general exact polyhedral certificate applies. Native builds use SMLib for these
+closed solids and qualified curved inputs. Open inputs, intersecting input
 shells, unsupported plane roundoff, resource exhaustion, and singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence
@@ -85,8 +86,12 @@ each target by location; raw ordering differences are retained in the captures
 and reported by the replay. One coplanar recipe explicitly records 13 faces in
 both results and 31 kernel edges versus 33 native edges: different cap and side
 overlap ownership creates two additional native collinear junctions. All other
-count, metadata, mass-property, and boundary assertions remain unchanged. These
-internal seams are not native-equivalent. The tests replay preselected and
+count, metadata, mass-property, and boundary assertions remain unchanged for
+the Rust backend. With SMLib, this case has 10 faces and 24 edges after native
+coplanar merging; all metadata, mass-property and physical-boundary assertions
+remain in place. Additional [native-backend seam differences](../smlib-difference-partitions.json)
+are recorded for the polyhedral workflows. These internal seams are not
+native-equivalent. The tests replay preselected and
 command-first Undo/Redo and successful option memory. Application tests cover
 both phases, filtering, preselection, explicit sets, option visibility and memory,
 cancellation, and history. See [capture provenance](../boolean-difference-provenance.json).

@@ -107,15 +107,26 @@ fn replays_44_native_outcomes_geometry_metadata_selection_preferences_and_histor
             order_differences.push(case.to_owned());
         }
         if case == "coplanar_cutters" {
-            // Native cap overlap belongs to the later cutter, while its side
-            // overlap belongs to the earlier one. Our consistent first-owner
-            // policy aligns those seams, removing two collinear junctions.
-            // Preserve this exact representation difference; compare all other
-            // counts, metadata, mass properties and physical boundary witnesses.
+            // The Rust backend aligns source seams; SMLib merges more coplanar
+            // patches. Record each representation while retaining the same
+            // metadata, mass-property and bidirectional boundary comparisons.
             assert_eq!(original[0]["faces"], 13);
             assert_eq!(original[0]["edges"], 33);
-            assert_eq!(snapshot(&doc, &ids, &layers, &groups)[0]["edges"], 31);
-            expected[0]["edges"] = serde_json::json!(31);
+            let counts = if cfg!(feature = "native-smlib") {
+                [10, 24]
+            } else {
+                [13, 31]
+            };
+            assert_eq!(
+                snapshot(&doc, &ids, &layers, &groups)[0]["faces"],
+                counts[0]
+            );
+            assert_eq!(
+                snapshot(&doc, &ids, &layers, &groups)[0]["edges"],
+                counts[1]
+            );
+            expected[0]["faces"] = serde_json::json!(counts[0]);
+            expected[0]["edges"] = serde_json::json!(counts[1]);
         }
         let expected = &expected;
         compare(&snapshot(&doc, &ids, &layers, &groups), expected, case);

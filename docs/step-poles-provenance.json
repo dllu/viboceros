@@ -74,7 +74,6 @@
     "docs/step-poles-diagnostics/workspace-clippy-final.log": "e243ab2b1ef31cf3b7bc839639e81587c1a2bb062b51b21e70669b1648b1482f",
     "docs/step-poles-diagnostics/workspace-suite-final.log": "8bb7ff8bd6bc6dab57e888df870991cdb026ef4ab10256ab549c022feb9759fd",
     "docs/step-poles-native-reference.json": "3a198b95576736dde7b4f88fa6e26bd98ef38a325a0793f07db15b0aefd91122",
-    "docs/usd-brep.md": "6ada72de933a2f77959d54d01f74cda536c037d7e218d44285b560c5da4c0380",
     "tools/usd_brep/compare_step_poles.py": "307f8c481624dc9fa27fb99a1c1977b3719e91cadfcbe5c7dce210fd4a9efc0b"
   },
   "source_git_sha256": {
@@ -97,6 +96,7 @@
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-regions-prior-source/docs/commands/export-step.md": "a8e6fe04559bf4cabe60e782572a071975ad6ac08d3b4201ad2d803b54b20ef8",
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-regions-prior-source/docs/smlib-bridge.md": "f14014724f2766446a2e993cad732bee910efa23a1e1d115dae35d6d833c94b3",
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-regions-prior-source/docs/step-poles.md": "1af811561ce1d6a663c67f890a136583522dd332ac24c93b7cef20a382b27a04",
-    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-regions-prior-source/docs/development.md": "d82e2fc4ccb95579c6938c83b0c9312a70c448b10c8c2249a96884c66df95da9"
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-regions-prior-source/docs/development.md": "d82e2fc4ccb95579c6938c83b0c9312a70c448b10c8c2249a96884c66df95da9",
+    "cf33557bb9a19f4c90543ea8bd1244ad66353e0d:docs/usd-brep.md": "6ada72de933a2f77959d54d01f74cda536c037d7e218d44285b560c5da4c0380"
   }
 }

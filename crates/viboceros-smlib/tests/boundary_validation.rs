@@ -1,8 +1,26 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{
-    Brep, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, NurbsSurface, Point3, Tolerance,
+    Brep, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, Frame3, NurbsSurface, Point3,
+    Tolerance, Vector3,
 };
 use viboceros_smlib::Solid;
+
+#[test]
+#[ignore = "Supplementary intersections are pathologically slow for a thin polar cap"]
+fn thin_polar_cylinder_boundary_query_preserves_source() {
+    let tolerance = Tolerance::DEFAULT;
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let source = Brep::try_cylinder(frame, 1e-5, -1., 11., tolerance).unwrap();
+    let before = source.clone();
+    let native = Solid::from_brep(&source, tolerance).unwrap();
+    native.validate_boundary_intersections(tolerance).unwrap();
+    assert_eq!(source, before);
+}
 
 fn pillow(root: Option<f64>) -> Brep {
     let coefficients = if let Some(a) = root {

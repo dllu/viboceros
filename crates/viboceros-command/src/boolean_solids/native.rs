@@ -24,10 +24,14 @@ pub(crate) fn imports(breps: &[&Brep], tolerance: Tolerance) -> Result<Vec<Solid
     if breps.len() > 128 {
         return Err(GeometryError::BrepBooleanWorkLimit.into());
     }
-    Ok(breps
+    breps
         .iter()
-        .map(|b| Solid::from_brep(b, tolerance))
-        .collect::<Result<_, _>>()?)
+        .map(|b| {
+            let solid = Solid::from_brep(b, tolerance)?;
+            solid.validate_boundary_intersections(tolerance)?;
+            Ok(solid)
+        })
+        .collect()
 }
 pub(crate) fn parts(solid: &Solid, tolerance: Tolerance) -> Result<Vec<Brep>, CommandError> {
     Ok(solid

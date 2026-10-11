@@ -1,9 +1,8 @@
 //! Shared ID-set parsing and original-face coplanar merging.
 use super::*;
-use viboceros_geometry::{
-    BrepDifferenceComponent, BrepPolyhedralBooleanComponent, BrepSetIntersection,
-    BrepUnionComponent,
-};
+#[cfg(not(feature = "native-smlib"))]
+use viboceros_geometry::BrepDifferenceComponent;
+use viboceros_geometry::{BrepPolyhedralBooleanComponent, BrepSetIntersection, BrepUnionComponent};
 mod common;
 mod compound;
 #[cfg(feature = "native-smlib")]
@@ -74,6 +73,7 @@ impl Kernel {
             }
         }
     }
+    #[cfg(not(feature = "native-smlib"))]
     pub(super) fn difference(
         self,
         target: &Brep,

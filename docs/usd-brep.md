@@ -1,4 +1,4 @@
-# USD BRep kernel trial
+# USD BRep kernel integration
 
 [Project overview](../README.md)
 
@@ -8,8 +8,11 @@ NVIDIA's [USD BRep](https://github.com/NVIDIA-Omniverse/usd-brep) is pinned as
 NURBS solid modeling, curved booleans, fillets, offsets, healing and tessellation.
 The native `SM_API` is a C++ API with opaque topology pointers, C++ argument
 types and overloads; an [optional Rust C ABI bridge](smlib-bridge.md) now exposes
-native solids, copied-operand booleans, mesh output and NURBS curve transfer.
-Complete exact B-rep transfer remains open. The kernel can be
+native solids, copied-operand booleans, native mass queries, mesh output and
+[validated NURBS B-rep transfer](smlib-brep-transfer.md). Application builds with
+`--features native-smlib` use the kernel directly for [BooleanDifference](smlib-import.md),
+and also enable curved union/intersection, split, edge fillets and STEP material
+regions. Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
 
 ## Reproduce the native trial
