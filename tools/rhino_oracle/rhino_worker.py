@@ -14242,14 +14242,22 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
-    if kind in ("curve_extrude_command", "curve_revolve_command", "curve_apex_command"):
+    if kind in ("curve_extrude_command", "curve_revolve_command", "curve_apex_command", "curve_along_command"):
         document = Rhino.RhinoDoc.ActiveDoc
         source = _cut_source(operation["curve"])
+        path = None
+        if kind == "curve_along_command":
+            try:
+                path = _cut_source(operation["path"])
+            except Exception:
+                source.Dispose()
+                raise
         def extrude_native_curve():
             original_ids = set(item.Id for item in document.Objects)
             try:
                 document.Objects.UnselectAll()
                 source_id = document.Objects.AddCurve(source)
+                path_id = document.Objects.AddCurve(path) if path is not None else System.Guid.Empty
                 document.Objects.Select(source_id)
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
                 if kind == "curve_extrude_command":
@@ -14257,6 +14265,9 @@ def _execute(operation, iterations, tolerance):
                 elif kind == "curve_apex_command":
                     command = "_-ExtrudeCrvToPoint _Output=_Surface _Solid=_No _SplitAtTangents=_No %s" % (
                         ",".join("%.17g" % float(v) for v in operation["apex"]))
+                elif kind == "curve_along_command":
+                    command = ("_-ExtrudeCrvAlongCrv _Output=_Surface _Solid=_No "
+                               "_DeleteInput=_No _SplitAtTangents=_No '_-SelID %s") % path_id
                 else:
                     point_text = lambda p: ",".join("%.17g" % float(v) for v in p)
                     start = float(operation["start_degrees"])
@@ -14269,8 +14280,9 @@ def _execute(operation, iterations, tolerance):
                 if not Rhino.RhinoApp.RunScript(command, False):
                     raise ValueError("native extrusion command failed")
                 surfaces = []
+                samples = []
                 for item in document.Objects:
-                    if item.Id == source_id or item.Id in original_ids:
+                    if item.Id in (source_id, path_id) or item.Id in original_ids:
                         continue
                     geometry = item.Geometry
                     if isinstance(geometry, Rhino.Geometry.Brep) and geometry.Faces.Count == 1:
@@ -14278,9 +14290,17 @@ def _execute(operation, iterations, tolerance):
                     if not isinstance(geometry, Rhino.Geometry.Surface):
                         raise ValueError("native extrusion did not produce one surface")
                     surfaces.append(_nurbs_surface_definition(geometry))
+                    if kind == "curve_along_command":
+                        samples.append([_xyz(geometry.PointAt(
+                            geometry.Domain(0).ParameterAt(i / 8.0),
+                            geometry.Domain(1).ParameterAt(j / 8.0)))
+                            for i in range(9) for j in range(9)])
                 if not surfaces:
                     raise ValueError("native extrusion left no surfaces")
-                return {"surfaces": surfaces}
+                result = {"surfaces": surfaces}
+                if kind == "curve_along_command":
+                    result["samples"] = samples
+                return result
             finally:
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
                 document.Objects.UnselectAll()
@@ -14291,6 +14311,8 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, extrude_native_curve)
         finally:
             source.Dispose()
+            if path is not None:
+                path.Dispose()
 
     if kind == "curve_split_command":
         document = Rhino.RhinoDoc.ActiveDoc

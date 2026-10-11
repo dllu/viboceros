@@ -30,6 +30,8 @@ the same surface transfer and modeling-profile preparation.
 region construction to usd-brep, excluding the portable containment adapter.
 [ExtrudeCrvToPoint](smlib-apex.md) shares native profile preparation and NURBS
 transfer, using ruled surfaces and native base-cap/stitch operations.
+[ExtrudeCrvAlongCrv](smlib-translational-sweep.md) uses the exact translational
+sweep constructor and shares native cap construction with apex extrusion.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

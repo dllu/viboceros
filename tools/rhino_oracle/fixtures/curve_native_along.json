@@ -1,0 +1,481 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_along_command",
+      "id": "line-rational-path",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            2,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "path": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              11,
+              2,
+              1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              12,
+              3,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          2,
+          2,
+          2,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "rational-profile-path",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          3,
+          3,
+          3,
+          8,
+          8,
+          8
+        ]
+      },
+      "path": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              11,
+              2,
+              1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              12,
+              3,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          2,
+          2,
+          2,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "polyline-rational-path",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -2,
+          6
+        ]
+      },
+      "path": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              11,
+              2,
+              1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              12,
+              3,
+              4
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          2,
+          2,
+          2,
+          7,
+          7,
+          7
+        ]
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "reversed-path",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          3,
+          3,
+          3,
+          8,
+          8,
+          8
+        ]
+      },
+      "path": {
+        "native": {
+          "type": "line",
+          "start": [
+            10,
+            0,
+            0
+          ],
+          "end": [
+            12,
+            3,
+            -4
+          ]
+        },
+        "domain": [
+          -5,
+          5
+        ],
+        "reversed": true
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "closed-path",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            2
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "path": {
+        "native": {
+          "type": "circle",
+          "center": [
+            10,
+            0,
+            0
+          ],
+          "radius": 3,
+          "normal": [
+            0,
+            0,
+            1
+          ],
+          "x_axis": [
+            1,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "unclamped-profile-path",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3,
+              2,
+              1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "path": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              20,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              21,
+              2,
+              2
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              23,
+              1,
+              5
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "op": "curve_along_command",
+      "id": "negative-homogeneous-gauges",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": -1
+          },
+          {
+            "point": [
+              4,
+              1,
+              0
+            ],
+            "weight": -0.75
+          },
+          {
+            "point": [
+              3,
+              1,
+              0
+            ],
+            "weight": -1
+          }
+        ],
+        "knots": [
+          3,
+          3,
+          3,
+          8,
+          8,
+          8
+        ]
+      },
+      "path": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": -1
+          },
+          {
+            "point": [
+              11,
+              2,
+              1
+            ],
+            "weight": -0.5
+          },
+          {
+            "point": [
+              12,
+              3,
+              4
+            ],
+            "weight": -1
+          }
+        ],
+        "knots": [
+          2,
+          2,
+          2,
+          7,
+          7,
+          7
+        ]
+      }
+    }
+  ]
+}

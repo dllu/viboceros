@@ -8,6 +8,7 @@
 #include <SmApiSurfaces.h>
 #include <SmBSplineCurve.h>
 #include <SmBSplineSurface.h>
+#include <SmAxis2Placement.h>
 #include <SmBrep.h>
 #include <SmFace.h>
 #include <SmEdge.h>
@@ -82,15 +83,59 @@ bool finite3(const double *p) {
     return p && std::isfinite(p[0]) && std::isfinite(p[1]) && std::isfinite(p[2]);
 }
 
+std::unique_ptr<SmBSplineCurve> copy_curve(const VbCurve &curve) {
+    SmCurve *copied = nullptr;
+    const auto status = curve.value->Copy(*SmApiGetOrCreateContext(), copied);
+    std::unique_ptr<SmCurve> copy_owner(copied);
+    check(status, "copy modeling curve");
+    require(copied && copied->IsKindOf(SmBSplineCurve_TYPE), "Missing NURBS curve copy");
+    copy_owner.release();
+    return std::unique_ptr<SmBSplineCurve>(static_cast<SmBSplineCurve *>(copied));
+}
+
+std::unique_ptr<VbSolid> capped_surface(std::unique_ptr<SmBSplineSurface> surface,
+                                       int ends, double tolerance) {
+    auto owner = std::make_unique<VbSolid>();
+    owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
+    owner->value->SetTolerance(tolerance, FALSE);
+    auto *raw = surface.release();
+    const auto status = owner->value->CreateEndCapsFromSurface(raw, ends);
+    if (status != SM_SUCCESS && !raw->GetOwner()) surface.reset(raw);
+    check(status, "create swept solid caps");
+    check(owner->value->StitchAndOrient(), "stitch swept solid");
+    require(owner->value->IsManifoldSolid(), "Sweep did not produce a manifold solid");
+    check(SmApiTurnToNurbs(owner->value.get()), "convert exact swept solid to NURBS");
+    return owner;
+}
+
+std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, const VbCurve &path) {
+    require(profile.points.size() / 4 <= limit / (path.points.size() / 4),
+            "Translational sweep control-net resource limit");
+    bool nonconstant = false;
+    for (size_t i = 4; i < path.points.size(); i += 4)
+        for (size_t axis = 0; axis < 3; ++axis)
+            nonconstant = nonconstant || path.points[i + axis] != path.points[axis];
+    require(nonconstant, "Constant translational sweep path");
+    SmPoint3d start;
+    check(path.value->EvaluatePoint(path.value->GetNaturalInterval().GetMin(), start),
+          "evaluate translational sweep path start");
+    auto shifted = copy_curve(path);
+    const SmAxis2Placement translation(SmPoint3d(-start.x, -start.y, -start.z),
+                                      SmVector3d(1, 0, 0), SmVector3d(0, 1, 0));
+    check(shifted->Transform(translation), "translate sweep path to its start");
+    SmBSplineSurface *raw = nullptr;
+    const auto status = SmBSplineSurface::CreateSweepSurface(*SmApiGetOrCreateContext(),
+        profile.value.get(), shifted.get(), nullptr, TRUE, 0, raw);
+    std::unique_ptr<SmBSplineSurface> result(raw);
+    check(status, "create exact translational sweep");
+    require(raw, "Missing translational sweep surface");
+    return result;
+}
+
 std::unique_ptr<SmBSplineSurface> apex_surface(const VbCurve &curve, const double apex[3]) {
     require(finite3(apex), "Invalid apex coordinates");
     auto *context = SmApiGetOrCreateContext();
-    SmCurve *copied = nullptr;
-    const auto copied_status = curve.value->Copy(*context, copied);
-    std::unique_ptr<SmCurve> copy_owner(copied);
-    check(copied_status, "copy apex boundary");
-    require(copied && copied->IsKindOf(SmBSplineCurve_TYPE), "Missing apex boundary copy");
-    auto *collapsed = static_cast<SmBSplineCurve *>(copied);
+    auto collapsed = copy_curve(curve);
     const SmPoint3d point(apex[0], apex[1], apex[2]);
     for (size_t i = 0; i < curve.points.size() / 4; ++i)
         check(collapsed->SetControlPoint(SM_CP_EUCLIDIAN_RATIONAL, i, point,
@@ -680,6 +725,40 @@ extern "C" int vb_curve_apex_surface(const VbCurve *curve, const double apex[3],
     });
 }
 
+extern "C" int vb_curve_translational_sweep(const VbCurve *profile, const VbCurve *path,
+                                           VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(profile && path && out, "Invalid translational sweep arguments");
+        auto surface = translational_sweep(*profile, *path);
+        *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_shape_translational_sweep(const VbCurve *profile, const VbCurve *path,
+                                           double tolerance, VbSolid **out, char *error,
+                                           size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(profile && path && out && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid capped translational sweep arguments");
+        SmVector3d normal;
+        require(profile->value->IsClosed(profile->value->GetNaturalInterval()) &&
+                    profile->value->IsPlanar(tolerance, nullptr, &normal),
+                "Capped translational sweep requires a closed planar profile");
+        require(!path->value->IsClosed(path->value->GetNaturalInterval()),
+                "Capped translational sweep requires an open path");
+        SmPoint3d start, end;
+        check(path->value->EvaluatePoint(path->value->GetNaturalInterval().GetMin(), start),
+              "evaluate capped sweep path start");
+        check(path->value->EvaluatePoint(path->value->GetNaturalInterval().GetMax(), end),
+              "evaluate capped sweep path end");
+        require(std::abs((end - start).Dot(normal)) > tolerance,
+                "Capped translational sweep must leave the profile plane");
+        *out = capped_surface(translational_sweep(*profile, *path), 3, tolerance).release();
+    });
+}
+
 extern "C" int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], double tolerance,
                                     VbSolid **out, char *error, size_t capacity) {
     if (out) *out = nullptr;
@@ -693,18 +772,7 @@ extern "C" int vb_shape_apex_solid(const VbCurve *curve, const double apex[3], d
                 "Apex solid requires a closed planar profile");
         require(std::abs((SmPoint3d(apex[0], apex[1], apex[2]) - plane_point).Dot(normal)) > tolerance,
                 "Apex solid must leave the profile plane");
-        auto owner = std::make_unique<VbSolid>();
-        owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
-        owner->value->SetTolerance(tolerance, FALSE);
-        auto surface = apex_surface(*curve, apex);
-        auto *raw = surface.release();
-        const auto status = owner->value->CreateEndCapsFromSurface(raw, 1);
-        if (status != SM_SUCCESS && !raw->GetOwner()) surface.reset(raw);
-        check(status, "create apex solid and base cap");
-        check(owner->value->StitchAndOrient(), "stitch apex solid");
-        require(owner->value->IsManifoldSolid(), "Apex extrusion did not produce a manifold solid");
-        check(SmApiTurnToNurbs(owner->value.get()), "convert exact apex solid to NURBS");
-        *out = owner.release();
+        *out = capped_surface(apex_surface(*curve, apex), 1, tolerance).release();
     });
 }
 

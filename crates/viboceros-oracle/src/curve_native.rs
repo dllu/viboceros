@@ -402,8 +402,9 @@ pub(super) fn extrude_command(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     generated_surface_command(
-        definition,
+        &[definition],
         &format!("ExtrudeCrv {distance} Output=Surface Solid=No"),
+        false,
         iterations,
         tolerance,
     )
@@ -416,41 +417,87 @@ pub(super) fn apex_command(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     generated_surface_command(
-        definition,
+        &[definition],
         &format!(
             "ExtrudeCrvToPoint {},{},{} Output=Surface Solid=No",
             apex[0], apex[1], apex[2]
         ),
+        false,
+        iterations,
+        tolerance,
+    )
+}
+
+pub(super) fn along_command(
+    definition: &CutSource,
+    path: &CutSource,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    generated_surface_command(
+        &[definition, path],
+        "ExtrudeCrvAlongCrv Output=Surface Solid=No SplitAtTangents=No",
+        true,
         iterations,
         tolerance,
     )
 }
 
 fn generated_surface_command(
-    definition: &CutSource,
+    definitions: &[&CutSource],
     command: &str,
+    record_samples: bool,
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    let source = definition.geometry(tolerance)?;
+    let sources = definitions
+        .iter()
+        .map(|d| d.geometry(tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
     let run = || -> Result<Value, ProbeError> {
         let mut document = viboceros_document::Document::new(tolerance);
-        let source_id = document.add_geometry(source.clone())?;
-        document.select_objects_direct([source_id], viboceros_document::SelectionMode::Replace)?;
+        let source_ids = sources
+            .iter()
+            .map(|s| document.add_geometry(s.clone()))
+            .collect::<Result<Vec<_>, _>>()?;
+        document.select_objects_direct(
+            source_ids.iter().copied(),
+            viboceros_document::SelectionMode::Replace,
+        )?;
         viboceros_command::CommandRegistry::with_builtins().execute(&mut document, command)?;
         let surfaces = document
             .objects()
-            .filter(|object| object.id() != source_id)
+            .filter(|object| !source_ids.contains(&object.id()))
             .map(|object| {
                 let Geometry::NurbsSurface(surface) = object.geometry() else {
                     return Err(ProbeError::FixtureInvariant(
-                        "open extrusion must produce a surface",
+                        "sheet construction must produce a surface",
                     ));
                 };
-                Ok(super::nurbs_surface_definition_value(surface))
+                Ok(surface)
             })
             .collect::<Result<Vec<_>, _>>()?;
-        Ok(json!({"surfaces": surfaces}))
+        let mut record = json!({"surfaces": surfaces.iter().map(|s| super::nurbs_surface_definition_value(s)).collect::<Vec<_>>()});
+        if record_samples {
+            record["samples"] = Value::Array(
+                surfaces
+                    .iter()
+                    .map(|s| {
+                        let mut points = Vec::with_capacity(81);
+                        for i in 0..=8 {
+                            let u = s.parameter_at_u(i as f64 / 8.)?;
+                            for j in 0..=8 {
+                                points.push(
+                                    s.evaluate(u, s.parameter_at_v(j as f64 / 8.)?)?.to_array(),
+                                );
+                            }
+                        }
+                        Ok(json!(points))
+                    })
+                    .collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?,
+            );
+        }
+        Ok(record)
     };
     let mut value = run()?;
     let started = std::time::Instant::now();

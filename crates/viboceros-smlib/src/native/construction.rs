@@ -2,6 +2,21 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curve_translational_sweep(
+        profile: *const NativeCurve,
+        path: *const NativeCurve,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_translational_sweep(
+        profile: *const NativeCurve,
+        path: *const NativeCurve,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curve_apex_surface(
         curve: *const NativeCurve,
         apex: *const f64,
@@ -63,6 +78,21 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Exact fixed-orientation sweep: profile(u) + path(v) - path(start).
+    /// U/V retain profile/path parameters. Both input handles remain unchanged.
+    pub fn translational_sweep(&self, path: &Self) -> Result<NurbsSurface, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_curve_translational_sweep(
+                self.handle.as_ptr(),
+                path.handle.as_ptr(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        brep::surface_from_native(pointer)
+    }
     /// Create an exact native ruled surface from this profile to an apex.
     /// The collapsed boundary retains the profile weights; source is unchanged.
     pub fn apex_surface(&self, apex: Point3) -> Result<NurbsSurface, Error> {
@@ -161,6 +191,31 @@ impl KernelCurve {
 }
 
 impl Shape {
+    /// Cap and stitch the native exact sweep of a closed planar profile along
+    /// an open path. The path endpoint displacement must leave the profile plane.
+    pub fn translational_sweep(
+        profile: &KernelCurve,
+        path: &KernelCurve,
+        tolerance: Tolerance,
+    ) -> Result<Self, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_translational_sweep(
+                profile.handle.as_ptr(),
+                path.handle.as_ptr(),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
     /// Construct a capped native apex solid from a closed planar profile copy.
     pub fn apex_solid(
         curve: &KernelCurve,

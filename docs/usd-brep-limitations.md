@@ -8,10 +8,19 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Public sweep wrapper selects rotation and a fixed approximation tolerance
+  (source audit).** `SmApiCreateSweep` calls `CreateSweepSurface` with
+  `bDoTranslationalSweep=False` and `1e-5`. This is unsuitable for Rhino's
+  fixed-orientation ExtrudeCrvAlongCrv sum surface. The adapter uses the same
+  existing constructor's exact `True` mode, with a privately translated path.
+  This is an API mode limitation, not evidence that its rotating sweep is
+  mathematically invalid. See [curve-path extrusion](smlib-translational-sweep.md)
+  and [SmApiSurfaces.cpp](../third_party/usd-brep/source/SM_API/src/SmApiSurfaces.cpp).
 - **End-cap convenience helper leaves final stitching status unchecked.**
   `SmBrep::CreateEndCapsFromSurface` can return success after calling
   `StitchAndOrient` without checking the result. The apex adapter follows the
   call with checked stitching and manifold status, then validated B-rep export.
+  Curve-path extrusion now shares that adapter helper.
   No fixture inducing the ignored internal failure has been retained. Its cap
   planarity checks also use the default `IsPlanar` tolerance; general nearly
   planar cap behavior remains unqualified. See [apex extrusion](smlib-apex.md).
@@ -145,6 +154,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Clamped modeling imports change curve-path extrusion representation.**
+  The live unclamped profile/path fixture retains an unclamped path knot vector
+  in Rhino, while our existing curve importer requires clamping the active
+  interval. Six of seven complete raw sheet definitions match; this one has
+  different outer knots and controls. All seven captured 9×9 parameter grids
+  match, with maximum point-coordinate error `7.11e-15`. Independent native
+  grids also check preparation against the original unclamped curves. This is
+  an adapter representation difference, not an established usd-brep geometry
+  bug or a continuous-surface parity certificate. See
+  [qualification](smlib-translational-sweep.md) and
+  [retained raw comparison](smlib-translational-sweep-comparison.json).
 - **Fixed: tolerance snapshots preceded native UV creation.**
   `GetOrCreateUVTrimCurve` can increase edge and vertex tolerances. The exporter
   previously copied those fields first, then copied the UV trims, producing

@@ -51,7 +51,8 @@ impl Command for SweepCommand {
             return Err(CommandError::Usage(USAGE));
         }
         let selected = selected_ids(document)?;
-        let rail_id = resolve_curve_along_curve_path(document, &selected, rail_name)?;
+        let rail_id =
+            extrude_along_curve::resolve_curve_along_curve_path(document, &selected, rail_name)?;
         let rail = document
             .object(rail_id)
             .unwrap()

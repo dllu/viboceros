@@ -1,0 +1,294 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "line-rational-path",
+      "comparison": {
+        "id": "line-rational-path",
+        "passed": true,
+        "max_absolute_error": 1.3322676295501878e-15,
+        "viboceros_ns_per_iteration": 138016.0,
+        "rhino_ns_per_iteration": 169929504.0,
+        "rhino_to_viboceros_ratio": 1231.2304660329237,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "rational-profile-path",
+      "comparison": {
+        "id": "rational-profile-path",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 104592.0,
+        "rhino_ns_per_iteration": 166633606.0,
+        "rhino_to_viboceros_ratio": 1593.1773558207128,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "polyline-rational-path",
+      "comparison": {
+        "id": "polyline-rational-path",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 100448.0,
+        "rhino_ns_per_iteration": 156814575.0,
+        "rhino_to_viboceros_ratio": 1561.1517899808857,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "reversed-path",
+      "comparison": {
+        "id": "reversed-path",
+        "passed": true,
+        "max_absolute_error": 1.3322676295501878e-15,
+        "viboceros_ns_per_iteration": 84608.0,
+        "rhino_ns_per_iteration": 160018921.0,
+        "rhino_to_viboceros_ratio": 1891.2977614409986,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-path",
+      "comparison": {
+        "id": "closed-path",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "viboceros_ns_per_iteration": 95104.0,
+        "rhino_ns_per_iteration": 169433594.0,
+        "rhino_to_viboceros_ratio": 1781.5611751345896,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "unclamped-profile-path",
+      "comparison": {
+        "id": "unclamped-profile-path",
+        "passed": false,
+        "max_absolute_error": 1.0,
+        "viboceros_ns_per_iteration": 91056.0,
+        "rhino_ns_per_iteration": 207038879.0,
+        "rhino_to_viboceros_ratio": 2273.753283693551,
+        "differences": [
+          "unclamped-profile-path.value.surfaces[0].control_points[0].point[0]: 0.42857142857142855 != 0.0952380952380949 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[0].point[1]: 0.8571428571428571 != 0.19047619047619047 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[0].point[2]: 0 != -0.66666666666666652 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[0].weight: 0.65625 != 0.875 (error 0.219, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[1].point[0]: 1 != 0.66666666666666785 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[1].point[1]: 2 != 1.3333333333333333 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[1].point[2]: 0 != -0.66666666666666663 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[1].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[2].point[0]: 3 != 2.6666666666666679 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[2].point[1]: 2 != 1.3333333333333335 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[2].point[2]: 1 != 0.33333333333333337 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[2].weight: 0.375 != 0.5 (error 0.125, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[3].point[0]: 3.6666666666666665 != 3.3333333333333357 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[3].point[1]: 0.66666666666666674 != 0 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[3].point[2]: 0.33333333333333331 != -0.33333333333333331 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[3].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[8].point[0]: 2.4285714285714253 != 3.0952380952380949 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[8].point[1]: 1.5238095238095237 != 1.1904761904761907 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[8].point[2]: 3.3333333333333335 != 4.333333333333333 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[8].weight: 0.65625 != 0.875 (error 0.219, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[9].point[0]: 2.999999999999996 != 3.6666666666666679 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[9].point[1]: 2.6666666666666665 != 2.333333333333333 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[9].point[2]: 3.333333333333333 != 4.333333333333333 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[9].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[10].point[0]: 4.9999999999999964 != 5.6666666666666679 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[10].point[1]: 2.6666666666666665 != 2.3333333333333335 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[10].point[2]: 4.333333333333333 != 5.333333333333333 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[10].weight: 0.375 != 0.5 (error 0.125, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[11].point[0]: 5.6666666666666634 != 6.3333333333333357 (error 0.667, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[11].point[1]: 1.3333333333333335 != 0.99999999999999978 (error 0.333, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[11].point[2]: 3.6666666666666665 != 4.6666666666666661 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].control_points[11].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].knots_v[0]: 0 != -1 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].knots_v[1]: 0 != -1 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].knots_v[4]: 1 != 2 (error 1, limit 1e-10)",
+          "unclamped-profile-path.value.surfaces[0].knots_v[5]: 1 != 2 (error 1, limit 1e-10)"
+        ]
+      },
+      "native_error": null,
+      "passed": false
+    },
+    {
+      "id": "negative-homogeneous-gauges",
+      "comparison": {
+        "id": "negative-homogeneous-gauges",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 85536.0,
+        "rhino_ns_per_iteration": 164161682.0,
+        "rhino_to_viboceros_ratio": 1919.2115834268611,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "cases": 7,
+  "matched": 6,
+  "native_failed": 0,
+  "mismatched": 1,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "sampled_geometry_comparison": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "line-rational-path",
+        "comparison": {
+          "id": "line-rational-path",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "viboceros_ns_per_iteration": 138016.0,
+          "rhino_ns_per_iteration": 169929504.0,
+          "rhino_to_viboceros_ratio": 1231.2304660329237,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "rational-profile-path",
+        "comparison": {
+          "id": "rational-profile-path",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 104592.0,
+          "rhino_ns_per_iteration": 166633606.0,
+          "rhino_to_viboceros_ratio": 1593.1773558207128,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "polyline-rational-path",
+        "comparison": {
+          "id": "polyline-rational-path",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 100448.0,
+          "rhino_ns_per_iteration": 156814575.0,
+          "rhino_to_viboceros_ratio": 1561.1517899808857,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "reversed-path",
+        "comparison": {
+          "id": "reversed-path",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "viboceros_ns_per_iteration": 84608.0,
+          "rhino_ns_per_iteration": 160018921.0,
+          "rhino_to_viboceros_ratio": 1891.2977614409986,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "closed-path",
+        "comparison": {
+          "id": "closed-path",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "viboceros_ns_per_iteration": 95104.0,
+          "rhino_ns_per_iteration": 169433594.0,
+          "rhino_to_viboceros_ratio": 1781.5611751345896,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "unclamped-profile-path",
+        "comparison": {
+          "id": "unclamped-profile-path",
+          "passed": true,
+          "max_absolute_error": 7.105427357601002e-15,
+          "viboceros_ns_per_iteration": 91056.0,
+          "rhino_ns_per_iteration": 207038879.0,
+          "rhino_to_viboceros_ratio": 2273.753283693551,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "negative-homogeneous-gauges",
+        "comparison": {
+          "id": "negative-homogeneous-gauges",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 85536.0,
+          "rhino_ns_per_iteration": 164161682.0,
+          "rhino_to_viboceros_ratio": 1919.2115834268611,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 7,
+    "matched": 7,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+  },
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "fixture": "tools/rhino_oracle/fixtures/curve_native_along.json",
+  "observation": "tools/rhino_oracle/observations/curve_native_along.json",
+  "native_reference": "docs/smlib-translational-sweep-native-reference.json",
+  "fixture_sha256": "a38bab55202ab3a028bf4a9c146170e89cb551f0d013c592ff55f80a8c8fb971",
+  "observation_sha256": "b8fb732f41dde1ad1d96fec0cc07d73370a93af978ff87f3ef99c714f9b26085",
+  "native_reference_sha256": "4d36b488376e56ad25c6505a381c7fddf6faa431cdc7d215b292c5c79f650790",
+  "probe_sha256": "466d98bd47f666917ab1e512cdd5863d42e89cce087ca4b444a4f5593e58526a",
+  "build_command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo build --release -p viboceros-oracle --features native-smlib",
+  "native_command": "target/release/viboceros-oracle --audit tools/rhino_oracle/fixtures/curve_native_along.json docs/smlib-translational-sweep-native-reference.json",
+  "capture_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_native_along.json --timeout 360 --scheme VibocerosOracleUsdAlongSamples20261011 --output tools/rhino_oracle/observations/curve_native_along.json",
+  "qualification": "Complete raw sheet definitions plus 9x9 normalized-parameter point grids. Rhino CreaseSplitting and SplitAtTangents are disabled. Raw differences are retained without control/parameter normalization; sampled comparisons select only the captured point grids and do not certify the continuous surface. Native audit timing fields are placeholders, not kernel performance measurements.",
+  "shared_surface_probe_replays": [
+    {
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_apex.json",
+      "cases": 3,
+      "matched": 3,
+      "passed": true
+    },
+    {
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_extrusion.json",
+      "cases": 3,
+      "matched": 3,
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/extrude_along_curve.rs": "aec047749b9a1e77dd6cacadf19f0d34316140e85154c41b5ac29586a898cff8",
+    "crates/viboceros-command/src/extrude_along_curve/native.rs": "80686051042bfc4c67e528a5a1ef6d07c43b3c2610f1896742dbd7632330b385",
+    "crates/viboceros-smlib/native/bridge.cpp": "f264486fb27dbdbfc882d8bc2cfaee59b423e0c25b260be5498c146fb189bb95",
+    "crates/viboceros-smlib/native/bridge.h": "3ea4c5ee66d391692dc7832d7b0af0a80bb2fb7fcaf52d33a15d22ec7a9109e3",
+    "crates/viboceros-smlib/src/native/construction.rs": "a0ae1b61186894d9c003300c115de11c9f8939f5a3b9d68af6b002ce7e96bee5",
+    "crates/viboceros-oracle/src/curve_native.rs": "ef832cc193af9d2db34dd189609c385b437ed07f3201843c02a0ec94a6ede3ef",
+    "tools/rhino_oracle/rhino_worker.py": "efd2423d354834a6ebb99e95b34b84252424b5d4fd38f135194045e625e007e3"
+  }
+}
