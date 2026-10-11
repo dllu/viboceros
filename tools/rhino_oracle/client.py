@@ -590,6 +590,13 @@ class OracleClient:
             validate_request(request)
             from .boolean_two_input import BooleanTwoPicker
             interaction=BooleanTwoPicker(request)
+        if any(op.get('op') == 'boolean_two_curved' for op in request.get('operations', [])):
+            from .boolean_two_curved_probe import validate_request, SPECS
+            if self.settings_scheme is None:
+                raise OracleProtocolError('Curved Boolean2Objects requires a private settings scheme')
+            validate_request(request)
+            from .boolean_two_input import BooleanTwoPicker
+            interaction=BooleanTwoPicker(request, validate_request, SPECS)
         if any(op.get('op') == 'boolean_split_topology' for op in request.get('operations', [])):
             from .boolean_split_topology_probe import validate_request
             if self.settings_scheme is None:
@@ -1207,6 +1214,9 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'boolean_two_command' for op in request.get('operations', [])):
                 for name in ('boolean_two_probe.py','join_probe.py','merge_edges_probe.py'):
+                    shutil.copyfile(worker_source.with_name(name),job_path/name)
+            if any(op.get('op') == 'boolean_two_curved' for op in request.get('operations', [])):
+                for name in ('boolean_two_curved_probe.py','boolean_two_probe.py','join_probe.py','merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name),job_path/name)
             if any(op.get('op') == 'boolean_split_topology' for op in request.get('operations', [])):
                 for name in ('boolean_split_topology_probe.py','join_probe.py','merge_edges_probe.py'):

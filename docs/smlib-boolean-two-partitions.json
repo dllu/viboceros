@@ -1,0 +1,122 @@
+[
+  {
+    "actual": [
+      10,
+      20
+    ],
+    "actual_index": 0,
+    "actual_source": 0,
+    "case": "cycle_0",
+    "native": [
+      10,
+      18
+    ],
+    "native_index": 0,
+    "native_source": 0
+  },
+  {
+    "actual": [
+      3,
+      4
+    ],
+    "actual_index": 0,
+    "actual_source": 0,
+    "case": "cycle_2",
+    "native": [
+      3,
+      3
+    ],
+    "native_index": 1,
+    "native_source": null
+  },
+  {
+    "actual": [
+      3,
+      4
+    ],
+    "actual_index": 1,
+    "actual_source": null,
+    "case": "cycle_2",
+    "native": [
+      3,
+      3
+    ],
+    "native_index": 0,
+    "native_source": 0
+  },
+  {
+    "actual": [
+      3,
+      4
+    ],
+    "actual_index": 1,
+    "actual_source": null,
+    "case": "cycle_4",
+    "native": [
+      3,
+      3
+    ],
+    "native_index": 2,
+    "native_source": null
+  },
+  {
+    "actual": [
+      3,
+      4
+    ],
+    "actual_index": 2,
+    "actual_source": null,
+    "case": "cycle_4",
+    "native": [
+      3,
+      3
+    ],
+    "native_index": 1,
+    "native_source": null
+  },
+  {
+    "actual": [
+      10,
+      20
+    ],
+    "actual_index": 0,
+    "actual_source": 0,
+    "case": "cycle_5",
+    "native": [
+      10,
+      18
+    ],
+    "native_index": 0,
+    "native_source": 0
+  },
+  {
+    "actual": [
+      3,
+      5
+    ],
+    "actual_index": 0,
+    "actual_source": 0,
+    "case": "keep",
+    "native": [
+      3,
+      3
+    ],
+    "native_index": 0,
+    "native_source": 0
+  },
+  {
+    "actual": [
+      10,
+      20
+    ],
+    "actual_index": 2,
+    "actual_source": null,
+    "case": "keep",
+    "native": [
+      10,
+      18
+    ],
+    "native_index": 2,
+    "native_source": null
+  }
+]

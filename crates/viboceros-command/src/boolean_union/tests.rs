@@ -75,6 +75,26 @@ pub(crate) fn snapshot(
     layers: &[LayerId],
     groups: &[GroupId],
 ) -> Value {
+    snapshot_with_mass(doc, ids, layers, groups, true)
+}
+
+#[cfg(feature = "native-smlib")]
+pub(crate) fn metadata_snapshot(
+    doc: &Document,
+    ids: &[ObjectId],
+    layers: &[LayerId],
+    groups: &[GroupId],
+) -> Value {
+    snapshot_with_mass(doc, ids, layers, groups, false)
+}
+
+fn snapshot_with_mass(
+    doc: &Document,
+    ids: &[ObjectId],
+    layers: &[LayerId],
+    groups: &[GroupId],
+    include_mass: bool,
+) -> Value {
     Value::Array(doc.objects().map(|o| {
         let a = o.attributes();
         let c = a.object_color();
@@ -86,12 +106,14 @@ pub(crate) fn snapshot(
             Geometry::Brep(b) => {
                 row["kind"] = json!("Brep"); row["valid"] = json!(true); row["solid"] = json!(b.is_solid());
                 row["faces"] = json!(b.faces().len()); row["edges"] = json!(b.edges().len());
+                if include_mass {
                 row["area"] = json!(b.area(doc.tolerance()).unwrap());
                 if b.is_solid() {
                     let m=b.volume_mass_properties(doc.tolerance()).unwrap();
                     row["volume"] = json!(m.signed_volume().unwrap());
                     row["centroid"] = json!(m.centroid().unwrap().to_array());
                 }else {row["volume"]=Value::Null;row["centroid"]=Value::Null;}
+                }
             }
             Geometry::Point(p) => { row["kind"]=json!("Point");row["point"]=json!(p.to_array()); }
             _ => panic!("closed recipe"),

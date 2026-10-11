@@ -36,9 +36,12 @@ Boolean2Objects Mode=Intersection DeleteInput=No
 Boolean2Objects Sources=<a-id>,<b-id> Mode=InverseIntersection
 ```
 
-The current kernel accepts certified closed polyhedral B-reps and affine planar
-sheets with linear trims. All five choices share one exact original-face
-arrangement; no rounded result becomes an operand.
+With `--features native-smlib`, closed operands enter [usd-brep directly](../smlib-boolean-two.md),
+including qualified curved solids. Each choice uses copies of the original
+operands, and the cached results share the existing preview and acceptance flow.
+Other builds accept certified closed polyhedral B-reps. Affine planar sheets
+with linear trims retain their exact original-face arrangement in either build.
+No rounded result becomes another choice's operand.
 Source-face seams remain distinct. Preparation has bounded work and cumulative
 output limits. Disjoint and strictly contained closed-solid pairs fail without
 edits. A sheet crossing a solid must cover the complete physical section; partial
@@ -111,7 +114,7 @@ not native pending-pixel comparisons.
 
 ![Identical-sheet Invalid result preview preserving both sources](../images/boolean-two-coplanar-invalid.png)
 
-Curved sources, nonplanar open polysurfaces, arbitrary compound policies,
+Broader curved sources, nonplanar open polysurfaces, arbitrary compound policies,
 trimmed-hole coplanar combinations, near contacts, restart option persistence,
 native preview pixels and relative performance remain unsupported
 or unverified. The native driver records final command geometry, not the

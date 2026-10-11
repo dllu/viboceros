@@ -8,6 +8,20 @@ fn boolean_two_replays_native_cycle_geometry_identity_metadata_and_history() {
         "../../../../tools/rhino_oracle/observations/boolean_two_command.json"
     ))
     .unwrap();
+    replay_closed_cycles(&q);
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn split_boxes_match_public_branch_order_geometry_metadata_and_history() {
+    let q: Value = serde_json::from_str(include_str!(
+        "../../../../tools/rhino_oracle/observations/boolean_two_split.json"
+    ))
+    .unwrap();
+    replay_closed_cycles(&q);
+}
+
+fn replay_closed_cycles(q: &Value) {
     for r in q["results"].as_array().unwrap() {
         let v = &r["value"];
         if v["cancel"] == true {
@@ -112,7 +126,7 @@ fn boolean_two_script_syntax_and_unsupported_geometry_fail_without_edits() {
     let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
     doc.clear_history().unwrap();
     let before = doc.objects().cloned().collect::<Vec<_>>();
-    for input in [
+    let mut invalid = vec![
         format!(
             "Boolean2Objects Sources={},{} Mode=NoSuchMode",
             ids[0], ids[1]
@@ -121,12 +135,30 @@ fn boolean_two_script_syntax_and_unsupported_geometry_fail_without_edits() {
             "Boolean2Objects Sources={},{} DeleteInput=Maybe",
             ids[0], ids[1]
         ),
-        format!("Boolean2Objects Sources={},{}", ids[0], ids[1]),
-    ] {
+    ];
+    if !cfg!(feature = "native-smlib") {
+        invalid.push(format!("Boolean2Objects Sources={},{}", ids[0], ids[1]));
+    }
+    for input in invalid {
         assert!(registry.execute(&mut doc, &input).is_err());
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
         assert!(!doc.can_undo());
     }
+    let point = doc
+        .add_geometry(Geometry::Point(Point3::try_new(0., 0., 0.).unwrap()))
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = doc.objects().cloned().collect::<Vec<_>>();
+    assert!(
+        registry
+            .execute(
+                &mut doc,
+                &format!("Boolean2Objects Sources={},{}", ids[0], point)
+            )
+            .is_err()
+    );
+    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    assert!(!doc.can_undo());
 }
 
 #[test]

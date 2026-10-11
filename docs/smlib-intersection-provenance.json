@@ -83,8 +83,10 @@
     "crates/viboceros-smlib/src/native/brep.rs": "b9bb346157996041c46f0e5f0ed447b2292a89c87e273168c7ee2e86cfce8fe4",
     "tools/rhino_oracle/common_curved_probe.py": "cebc5313c9e2032cd1763a7a975f8c62e272192a2cc44156e6811ffa4f9a8f7f",
     "tools/rhino_oracle/compound_recipe_probe.py": "cc49b7c07eda4f2503412ac32678b54444212da9e4dfa01a5bd4eb62f7fdd14a",
-    "tools/rhino_oracle/test_common_curved.py": "5da8d074227371719ef0aaac3001035fdf0cf3ce306a7217062777831c571745",
-    "tools/rhino_oracle/client.py": "dbf65b90255fe166f082c3641cabb51d961b99309b92f98904eb98d3f15ab007",
-    "tools/rhino_oracle/rhino_worker.py": "c2a1be3d16d9d2e700f462c14495efe40eef2a62a66ee3169b47fd4f08432665"
+    "tools/rhino_oracle/test_common_curved.py": "5da8d074227371719ef0aaac3001035fdf0cf3ce306a7217062777831c571745"
+  },
+  "replay_source_git_sha256": {
+    "bbb5ee0438376b3a8feb1e0e01a9c7479eee8d58:tools/rhino_oracle/client.py": "dbf65b90255fe166f082c3641cabb51d961b99309b92f98904eb98d3f15ab007",
+    "bbb5ee0438376b3a8feb1e0e01a9c7479eee8d58:tools/rhino_oracle/rhino_worker.py": "c2a1be3d16d9d2e700f462c14495efe40eef2a62a66ee3169b47fd4f08432665"
   }
 }

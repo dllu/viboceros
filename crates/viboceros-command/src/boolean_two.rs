@@ -5,6 +5,8 @@ use viboceros_geometry::{
     BrepBooleanOperation, BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan,
 };
 
+#[cfg(feature = "native-smlib")]
+mod native;
 #[cfg(test)]
 mod tests;
 
@@ -62,14 +64,30 @@ impl Candidates {
         self.values[mode.index()].clone()
     }
 }
-/// One exact arrangement, shared by every cyclic result. Output rounding never
-/// supplies operands to another choice; source-face seams remain distinct.
+/// Prepare all cyclic choices from the original operands and cache them for
+/// acceptance. Closed native operands use usd-brep; sheets retain the exact
+/// planar arrangement. Output rounding never supplies another choice's operands.
 pub fn prepare(
+    first: &Brep,
+    second: &Brep,
+    tolerance: Tolerance,
+) -> Result<Candidates, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    if first.is_solid() && second.is_solid() {
+        return native::prepare(first, second, tolerance);
+    }
+    prepare_planar(first, second, tolerance).map_err(Into::into)
+}
+
+fn prepare_planar(
     first: &Brep,
     second: &Brep,
     tolerance: Tolerance,
 ) -> Result<Candidates, GeometryError> {
     let sheets = !first.is_solid() || !second.is_solid();
+    #[cfg(feature = "native-smlib")]
+    let mut plan = BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[first, second], tolerance)?;
+    #[cfg(not(feature = "native-smlib"))]
     let mut plan = if sheets {
         BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[first, second], tolerance)?
     } else {

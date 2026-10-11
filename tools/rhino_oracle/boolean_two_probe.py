@@ -9,6 +9,8 @@ SPECS['disjoint'] = dict(bounds=[CUBE(0.,2.),CUBE(4.,5.)],cycles=0)
 SPECS['contained'] = dict(bounds=[CUBE(0.,3.),CUBE(1.,2.)],cycles=0)
 SPECS['contained_cycle_3'] = dict(SPECS['contained'],cycles=3)
 CASES = tuple(SPECS)
+SPECS['split_ab'] = dict(bounds=[((-2.,2.),(-2.,2.),(0.,10.)),((-3.,3.),(-3.,3.),(4.,6.))],cycles=2)
+SPECS['split_inverse'] = dict(SPECS['split_ab'],cycles=4)
 
 
 def request():
@@ -34,6 +36,11 @@ def validate_request(q):
 
 def run(op, host):
     validate_request(dict(protocol_version=1,operations=[op]))
+    return run_recipe(op, host, SPECS[op['case']], validate_request)
+
+
+def run_recipe(op, host, spec, validator, geometry_factory=None):
+    validator(dict(protocol_version=1,operations=[op]))
     Rhino, System = host['Rhino'], host['System']
     G, doc = Rhino.Geometry, Rhino.RhinoDoc.ActiveDoc
     if Rhino.Commands.Command.InCommand():
@@ -47,7 +54,6 @@ def run(op, host):
     ids, layers, groups = [], [], []
     saved_layer, saved_tolerance = doc.Layers.CurrentLayerIndex, doc.ModelAbsoluteTolerance
     doc.ModelAbsoluteTolerance = 1e-7
-    spec = SPECS[op['case']]
     first = spec.get('first',[0]); second = spec.get('second',list(range(1,len(spec['bounds']))))
 
     def box(bounds):
@@ -93,7 +99,11 @@ def run(op, host):
             layer=Rhino.DocObjects.Layer();layer.Name='Viboceros Boolean2Objects '+str(System.Guid.NewGuid())
             try:layers.append(doc.Layers.Add(layer))
             finally:layer.Dispose()
-            g=box(bounds);a=Rhino.DocObjects.ObjectAttributes()
+            g=geometry_factory(i,G) if geometry_factory is not None else box(bounds)
+            if not g.IsValid or not g.IsSolid:
+                g.Dispose()
+                raise ValueError('Boolean2Objects requires valid closed sources')
+            a=Rhino.DocObjects.ObjectAttributes()
             try:
                 a.LayerIndex,a.Name=layers[i],'source-'+str(i)
                 a.ObjectColor=System.Drawing.Color.FromArgb(20+i,40,60)

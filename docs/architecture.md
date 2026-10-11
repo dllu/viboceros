@@ -16,6 +16,8 @@ the Rust path. Common Intersection enters SMLib directly; two-set Intersection
 does the same when all inputs are closed. Open/sheet modeling still retains Rust
 adapters, and removing those remaining duplicate routes is ongoing. Command contact, shell participation and history policies stay
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
+Closed [Boolean2Objects](smlib-boolean-two.md) choices also enter usd-brep directly
+and reuse the same preview and document acceptance flow.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,
@@ -96,8 +98,8 @@ patches alongside exact region masks, preserving holes and supporting-face
 ownership through later cuts. [Trimmed sheets and compound inputs](boolean-split-topology.md)
 separate complete solid caps from open boundary output and keep command shell
 participation and geometry metadata outside material-region classification.
-[Boolean2Objects](commands/boolean-two-objects.md) prepares five choices with one
-exact arrangement, caches readonly preview scenes and accepts in one transaction
+[Boolean2Objects](commands/boolean-two-objects.md) prepares five choices from
+original operands, caches readonly preview scenes and accepts in one transaction
 while preserving the first source identity and metadata. Its planar-sheet path
 uses exact oriented half-spaces and finite physical patches, with separate
 coplanar seam and uncut-sheet policies from native commands. Common/exclusive

@@ -2,6 +2,111 @@ use super::boolean_intersection::{enter, pick};
 use super::*;
 use serde_json::Value;
 use viboceros_command::boolean_two::Mode;
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn curved_cycles_reuse_preview_geometry_and_accept_or_cancel_without_source_edits() {
+    for cancel in [true, false] {
+        let mut app = test_app();
+        let frame = viboceros_command::CommandContext::default().construction_plane;
+        let tolerance = app.document.tolerance();
+        let shapes = [
+            viboceros_geometry::Brep::try_cylinder(frame, 2., 0., 10., tolerance).unwrap(),
+            viboceros_geometry::Brep::try_box(frame, [[-3., 3.], [-3., 3.], [4., 6.]], tolerance)
+                .unwrap(),
+        ];
+        for shape in shapes {
+            app.document.add_geometry(Geometry::Brep(shape)).unwrap();
+        }
+        let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        app.document
+            .set_object_geometry_user_text([ids[0]], "Code", Some("source"))
+            .unwrap();
+        app.document
+            .select_command_results(ids.iter().copied())
+            .unwrap();
+        app.document.clear_history().unwrap();
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        enter(&mut app, "Boolean2Objects");
+        let geometry = app
+            .boolean_two_prompt
+            .as_ref()
+            .unwrap()
+            .scene()
+            .unwrap()
+            .objects()
+            .next()
+            .unwrap()
+            .geometry_snapshot()
+            .clone();
+        for _ in 0..5 {
+            assert!(app.cycle_boolean_two());
+        }
+        assert!(
+            geometry.shares_storage_with(
+                app.boolean_two_prompt
+                    .as_ref()
+                    .unwrap()
+                    .scene()
+                    .unwrap()
+                    .objects()
+                    .next()
+                    .unwrap()
+                    .geometry_snapshot()
+            )
+        );
+        for _ in 0..4 {
+            assert!(app.cycle_boolean_two());
+        }
+        assert_eq!(
+            app.boolean_two_prompt.as_ref().unwrap().mode,
+            Mode::InverseIntersection
+        );
+        assert_eq!(
+            app.boolean_two_prompt
+                .as_ref()
+                .unwrap()
+                .scene()
+                .unwrap()
+                .objects()
+                .count(),
+            3
+        );
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!app.document.can_undo());
+        if cancel {
+            enter(&mut app, "Cancel");
+            assert!(app.boolean_two_prompt.is_none());
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            assert!(!app.document.can_undo());
+        } else {
+            enter(&mut app, "");
+            assert!(app.boolean_two_prompt.is_none());
+            assert_eq!(app.document.objects().count(), 3);
+            assert!(app.document.object(ids[1]).is_none());
+            assert_eq!(
+                app.document
+                    .object(ids[0])
+                    .unwrap()
+                    .geometry_user_text()
+                    .get("Code")
+                    .map(String::as_str),
+                Some("source")
+            );
+            assert!(
+                app.document
+                    .objects()
+                    .filter(|o| o.id() != ids[0])
+                    .all(|o| o.geometry_user_text().is_empty())
+            );
+            enter(&mut app, "Undo");
+            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+            enter(&mut app, "Redo");
+            assert_eq!(app.document.objects().count(), 3);
+        }
+    }
+}
+
 #[test]
 fn boolean_two_cycles_native_results_without_source_edits_or_preview_history() {
     let q: Value = serde_json::from_str(include_str!(

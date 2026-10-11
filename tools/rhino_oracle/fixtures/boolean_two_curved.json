@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_0",
+      "case": "cycle_0"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_1",
+      "case": "cycle_1"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_2",
+      "case": "cycle_2"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_3",
+      "case": "cycle_3"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_4",
+      "case": "cycle_4"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cycle_5",
+      "case": "cycle_5"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_keep",
+      "case": "keep"
+    },
+    {
+      "op": "boolean_two_curved",
+      "id": "boolean_two_curved_cancel",
+      "case": "cancel"
+    }
+  ]
+}

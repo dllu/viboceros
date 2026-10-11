@@ -4,9 +4,9 @@ from .group_picking import IdlePicker
 from .boolean_two_probe import validate_request,SPECS
 from .client import OracleProtocolError
 class BooleanTwoPicker(IdlePicker):
-    def __init__(self,request):
-        validate_request(request);super().__init__()
-        self.cases={'@boolean-two:'+o['id']:SPECS[o['case']] for o in request['operations']}
+    def __init__(self,request,validator=validate_request,specs=SPECS):
+        validator(request);super().__init__()
+        self.cases={'@boolean-two:'+o['id']:specs[o['case']] for o in request['operations']}
         self.state={}
     def __call__(self,job,pids):
         self.job=job;super().__call__(job,pids)

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-11",
+  "base_commit": "bbb5ee0438376b3a8feb1e0e01a9c7479eee8d58",
+  "kernel_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Direct closed-solid Boolean2Objects preparation through copied usd-brep operands; existing cached preview and transactional acceptance",
+  "capture": {
+    "engine": "Licensed Rhino 8 public commands",
+    "engine_version": "8.32.26160.13001",
+    "private_xvfb": true,
+    "schemes": [
+      "VibocerosOracleBooleanTwoCurved20261011",
+      "VibocerosOracleBooleanTwoSplit20261011"
+    ],
+    "curved_cases": 8,
+    "curved_successes": 7,
+    "curved_cancellations": 1,
+    "box_split_cases": 2,
+    "box_split_successes": 2,
+    "real_bounded_viewport_clicks": true,
+    "public_command_history_retained": true
+  },
+  "qualification": {
+    "independent_curved_volume_area_epsilon": 1e-08,
+    "independent_curved_edge_and_lifted_trim_epsilon": 1e-08,
+    "recorded_rhino_scalar_comparison_epsilon": 2e-06,
+    "centroid_epsilon": 1e-08,
+    "full_curved_boundary_equivalence_proven": false,
+    "full_command_parity_proven": false,
+    "known_differences": [
+      "Cylinder/split edge partitions differ from Rhino and are gated by the representation ledger",
+      "Cylinder Difference assigns the first source ID to the lower body; Rhino assigns it to the upper body",
+      "Cylinder inverse body order differs; box split order and ID association match",
+      "Rhino captured cylinder scalar integrals differ from analytic values; independent Rust results qualify at a tighter epsilon"
+    ],
+    "geometry_pairing": "Curved bodies paired by qualified volume and centroid; source-ID association and runtime order differences recorded separately from other metadata"
+  },
+  "validation": {
+    "native_command_suite": {
+      "passed": 1300,
+      "failed": 0,
+      "ignored": 2,
+      "profile": "release"
+    },
+    "native_application_boolean_two": {
+      "passed": 5,
+      "failed": 0
+    },
+    "default_command_boolean_two": {
+      "passed": 5,
+      "failed": 0
+    },
+    "python_full_discovery": {
+      "passed": 1095,
+      "failed": 0
+    },
+    "rust_fmt": "passed",
+    "clippy": "native-smlib and default command all-targets passed -D warnings",
+    "final_focused_boolean_two": {
+      "passed": 9,
+      "failed": 0,
+      "profile": "release"
+    },
+    "commands": [
+      "cargo test -p viboceros-command --release --features native-smlib --lib",
+      "cargo test -p viboceros-command --release --features native-smlib --lib boolean_two",
+      "cargo test -p viboceros --features native-smlib boolean_two",
+      "cargo test -p viboceros-command --no-default-features --lib boolean_two",
+      "python3 -m unittest discover -s tools -t ."
+    ],
+    "final_focused_python": {
+      "passed": 14,
+      "failed": 0
+    }
+  },
+  "source_policy": "Artifact hashes identify retained capture/replay evidence. Replay source hashes identify final tested sources and do not assert byte-for-byte identity with scripts at capture time.",
+  "artifact_sha256": {
+    "tools/rhino_oracle/fixtures/boolean_two_curved.json": "a5c01d2d2ecc42c7f3917ac91d6b6a04785956eae37f2f7753817d1bad19468f",
+    "tools/rhino_oracle/observations/boolean_two_curved.json": "539869f8e57210f9872efebe025ae9a0f6afc00a6f636e099245368f68b3e6e3",
+    "tools/rhino_oracle/fixtures/boolean_two_split.json": "4c0b62d170059a11c50b7c3f71435ab6e5ce38af184ded7a59f0e09e7c25b9f9",
+    "tools/rhino_oracle/observations/boolean_two_split.json": "f34245cac8174a9136b753c2772783a4d4ffd0203468a7029bde0d23c3f81a54",
+    "docs/smlib-boolean-two-partitions.json": "a7498909228f3a7bb785a3c46997c430f3bad1e56004c5c694296a9295898663"
+  },
+  "replay_source_sha256": {
+    "crates/viboceros-command/src/boolean_two.rs": "db0c92acccaf7e5a3a6567e6b4e729e9fdf2c21a124c3fa496daa6433113e406",
+    "crates/viboceros-command/src/boolean_two/native.rs": "001c8c577a9df64e835d010a1363ce21701d559e45537a023dd1942a0beda7b3",
+    "crates/viboceros-command/src/boolean_two/native/tests.rs": "a5e106b9dc4eb916f3f1fb9f025dbc52941017be54976ae559c36e970d034eb4",
+    "crates/viboceros-command/src/boolean_two/tests.rs": "28d8aaca2acf4992bb56ac617cb310628159c92276e6633a1783a1c543ededb4",
+    "crates/viboceros-command/src/boolean_union/tests.rs": "3b89315f451428d7ca86bceb2a5acffd6ba7faf4b858f9005977749e000cd4a0",
+    "src/app/tests/boolean_two.rs": "53b1bafcd0387ee597dfacf29d5b5b61d4b18b8aab6bab962653b1b79d94ed45",
+    "tools/rhino_oracle/boolean_two_probe.py": "3e221c9e789ef40db20715054ab45e94111552110714b76e7844af764c09f31e",
+    "tools/rhino_oracle/boolean_two_curved_probe.py": "729bcdd034cfa41033263d06d5220de55a40ab4bcfe2db0e803d5bec36dbccfc",
+    "tools/rhino_oracle/boolean_two_input.py": "c7ce8fb89cdec8142fabfd7c4b69e1138d668f83e7ee6d61a10d0566ef19d34c",
+    "tools/rhino_oracle/test_boolean_two_curved.py": "5406a0d5f7c9c216fd72cdbefa07c969ea3c51525754ad8d51aba0b569781f49",
+    "tools/rhino_oracle/client.py": "bd9cac844dd26e0373e5f62853b5d35240e03bae5809a9f9d8f1aeec4a56cea1",
+    "tools/rhino_oracle/rhino_worker.py": "5c3357f76f70e543adeedc71377930ce543849bc5530e47a258744bb91afc317"
+  }
+}
