@@ -43,6 +43,18 @@ on copies and returns a new solid. Both inputs survive success and failure.
 relative integration accuracy. `tessellate` produces a validated Viboceros
 `TriangleMesh` from a complete triangular mesh, with explicit quality controls.
 
+`Solid::volume` queries the kernel's public precise-property integrator directly,
+accepts relative accuracy from 1e-12 to 0.1 and returns zero for empty Boolean
+results. It requests only volume from each material boundary face, using native
+region ownership to retain cavity contributions. The higher-level SM_API volume
+query clamps accuracy to 1e-8. Union/intersection ownership stages use the native
+query at 1e-8; split conservation uses 1e-11. Both avoid repeated B-rep export and
+Rust integration for intermediate solids.
+Imports, material-part transfer and dimensional tolerances are shared between
+the native Boolean adapters. Final editable outputs still pass Rust validation;
+split and difference retain their independent exported-volume checks. Integration
+accuracy is a numerical control, not a certified bound for arbitrary geometry.
+
 `KernelCurve::from_nurbs` and `to_nurbs` transfer degree, Euclidean control
 points, weights and full knot vectors without fitting. Positive-weight clamped
 curves up to degree 64 are supported; negative weights, unclamped curves and

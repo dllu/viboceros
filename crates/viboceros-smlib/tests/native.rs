@@ -1,5 +1,5 @@
 #![cfg(feature = "native")]
-use viboceros_geometry::{NurbsCurve, Point3, Tolerance, WeightedPoint3};
+use viboceros_geometry::{Brep, Frame3, NurbsCurve, Point3, Tolerance, Vector3, WeightedPoint3};
 use viboceros_smlib::{BooleanOperation, KernelCurve, Solid, Tessellation};
 
 fn p(x: f64, y: f64, z: f64) -> Point3 {
@@ -10,6 +10,77 @@ fn relative(actual: f64, expected: f64, epsilon: f64) {
         (actual - expected).abs() <= expected.abs() * epsilon,
         "{actual} != {expected}"
     );
+}
+
+#[test]
+fn kernel_volume_conserves_curved_partitions_and_handles_empty_results() {
+    let tolerance = Tolerance::DEFAULT;
+    let frame = Frame3::try_from_normal(
+        p(0., 0., 0.),
+        Vector3::try_new(0., 0., 1.).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let cylinder = Solid::from_brep(
+        &Brep::try_cylinder(frame, 2., 0., 10., tolerance).unwrap(),
+        tolerance,
+    )
+    .unwrap();
+    let slab = Solid::box_solid(p(-3., -3., 4.), [6., 6., 2.]).unwrap();
+    let before = cylinder.properties(1e-8).unwrap();
+    let inside = cylinder
+        .boolean(&slab, BooleanOperation::Intersection)
+        .unwrap();
+    let outside = cylinder
+        .boolean(&slab, BooleanOperation::Difference)
+        .unwrap();
+    let epsilon = tolerance.absolute() * 132.; // squared bounding-box diagonal
+    for (solid, expected) in [
+        (&cylinder, 40. * std::f64::consts::PI),
+        (&inside, 8. * std::f64::consts::PI),
+        (&outside, 32. * std::f64::consts::PI),
+    ] {
+        let actual = solid.volume(1e-11).unwrap();
+        assert!(
+            (actual - expected).abs() < epsilon,
+            "{actual:.15} != {expected:.15}"
+        );
+    }
+    assert!(
+        (inside.volume(1e-11).unwrap() + outside.volume(1e-11).unwrap()
+            - cylinder.volume(1e-11).unwrap())
+        .abs()
+            < epsilon
+    );
+    assert_eq!(outside.material_parts().unwrap().len(), 2);
+    let remote = Solid::box_solid(p(30., 0., 0.), [2.; 3]).unwrap();
+    let disjoint = cylinder
+        .boolean(&remote, BooleanOperation::Intersection)
+        .unwrap();
+    let removed = cylinder
+        .boolean(&cylinder, BooleanOperation::Difference)
+        .unwrap();
+    for empty in [&disjoint, &removed] {
+        assert!(empty.is_empty().unwrap());
+        assert_eq!(empty.volume(1e-11).unwrap(), 0.);
+        assert!(empty.volume(f64::NAN).is_err());
+    }
+    for accuracy in [0., -1., 1e-13, 1., f64::NAN, f64::INFINITY] {
+        assert!(cylinder.volume(accuracy).is_err());
+    }
+    assert_eq!(cylinder.properties(1e-8).unwrap(), before);
+}
+
+#[test]
+fn kernel_volume_retains_enclosed_voids() {
+    let source = Solid::box_solid(p(0., 0., 0.), [10.; 3]).unwrap();
+    let cavity = Solid::sphere(p(5., 5., 5.), 2.).unwrap();
+    let result = source
+        .boolean(&cavity, BooleanOperation::Difference)
+        .unwrap();
+    let expected = 1000. - 32. * std::f64::consts::PI / 3.;
+    assert!((result.volume(1e-11).unwrap() - expected).abs() < 3e-7);
+    assert_eq!(result.material_parts().unwrap().len(), 1);
 }
 
 #[test]

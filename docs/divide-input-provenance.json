@@ -63,8 +63,10 @@
     "docs/divide-preferences-prior-source/crates/viboceros-command/src/divide/prompt.rs": "5b9716f60f84e3365c010a10d943ab3775432a252f8493a185693ecc08416b99",
     "docs/divide-preferences-prior-source/src/app/object_selection/divide.rs": "985165a2e2794755bc08512a6826648f12743f1efafd710eded895a2f2b196d6",
     "docs/divide-preferences-prior-source/src/app/tests/object_selection.rs": "b8f4116936d5c94559085da13e93429304b28eb5f7a0c1142a6d1fde6cecbe3b",
-    "docs/divide-preferences-prior-source/docs/divide-input.md": "063dc6ed58a91766ad16783a1d838cc9470a1a380accd8e63bb58e92fab23dba",
-    "docs/fillet-edge-prior-source/src/app.rs": "4774deb33d700123899a55d798bcf19b9be7df8db927fd4afe1c833e7d377d23",
-    "docs/fillet-edge-prior-source/src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b"
+    "docs/divide-preferences-prior-source/docs/divide-input.md": "063dc6ed58a91766ad16783a1d838cc9470a1a380accd8e63bb58e92fab23dba"
+  },
+  "source_git_sha256": {
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app.rs": "4774deb33d700123899a55d798bcf19b9be7df8db927fd4afe1c833e7d377d23",
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b"
   }
 }

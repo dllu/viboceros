@@ -14,16 +14,22 @@ the whole connector image must continuously certify at the shared spatial vertex
 
 The oversized all-edge box fixture exposed a second issue: native success and
 manifold topology alone accepted a geometrically interfering result that Rhino
-rejects. The adapter now checks nonadjacent face intersections and permits
-point contacts only at shared topological vertices. Native error status is also
-checked. The result is admitted to the document only after Rust B-rep validation.
+rejects. A shared native boundary check now examines every distinct face pair
+before and after filleting, including adjacent pairs. Kernel coincidence
+intervals must cover each returned intersection curve entirely on shared trimmed
+edges; point contacts must belong to shared edges or vertices. Partial surface
+coincidence heuristics are bypassed unless equal NURBS definitions or coplanar
+support authorize them. Supplementary kernel surface intersections, clipped with
+the kernel's face classifiers, detect the qualified interior branches missed by
+the main face query. Native error status is also checked. The result is admitted
+to the document only after Rust B-rep validation.
 
 ## Exercise
 
 ```sh
 GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib \
-  --features native --test fillet_edges --release
+  --features native --test fillet_edges --test boundary_validation --release
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run -p viboceros-smlib \
   --features native --example fillet_edges --release -- \
   /tmp/viboceros-fillet-edges-owned
@@ -43,7 +49,12 @@ licensed Rhino reference uses constant-radius `RollingBall`, no setback, model
 tolerance 1e-9 and angular tolerance 1e-10. API output and command interaction
 are separate qualification scopes; full native UI parity remains unproven.
 
-General fillets, radius-law editing, open inputs, scale extremes, adjacency-aware
+Adjacent pillow faces qualify both an allowed shared perimeter and four interior
+crossing locations. Rejected sources remain unchanged. The guard limits each
+solid to 362 faces and bounds coincidence comparisons and output sizes; it does
+not certify individual-surface injectivity or exhaustive intersection discovery.
+
+General fillets, radius-law editing, open inputs, scale extremes, complete
 self-intersection certification and larger output arrangements remain further
 work. See [command use and current limits](commands/fillet-edge.md).
 

@@ -1,18 +1,14 @@
 //! Optional curved-solid subtraction, staged before document mutation.
 use super::*;
-use viboceros_smlib::{BooleanOperation, Solid};
-
-type Output = (ObjectId, Geometry, BTreeMap<String, String>);
+use crate::boolean_solids::native::{Output, imports, parts};
+use viboceros_smlib::BooleanOperation;
 pub(super) fn difference(
     breps: &[&Brep],
     objects: &[&viboceros_document::Object],
     targets: &[ObjectId],
     tolerance: Tolerance,
 ) -> Result<Vec<Output>, CommandError> {
-    let native = breps
-        .iter()
-        .map(|b| Solid::from_brep(b, tolerance))
-        .collect::<Result<Vec<_>, _>>()?;
+    let native = imports(breps, tolerance)?;
     let mut outputs = Vec::new();
     let mut changed = false;
     for (index, &id) in targets.iter().enumerate() {
@@ -38,11 +34,7 @@ pub(super) fn difference(
             changed = true;
             continue;
         }
-        let parts = result
-            .material_parts()?
-            .into_iter()
-            .map(|part| part.to_brep(tolerance))
-            .collect::<Result<Vec<_>, _>>()?;
+        let parts = parts(&result, tolerance)?;
         let volume = parts
             .iter()
             .map(|part| part.signed_volume(tolerance))

@@ -57,6 +57,13 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+    fn vb_solid_volume(
+        solid: *const NativeSolid,
+        accuracy: f64,
+        volume: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_solid_free(solid: *mut NativeSolid);
     fn vb_solid_mesh(
         solid: *const NativeSolid,
@@ -216,6 +223,24 @@ impl Solid {
             handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
             _thread_local: PhantomData,
         })
+    }
+
+    /// Compute material volume in the kernel without exporting geometry or integrating moments.
+    /// Empty Boolean results have zero volume. The requested relative accuracy
+    /// must be between 1e-12 and 0.1; it controls numerical integration rather
+    /// than providing a certified error bound.
+    pub fn volume(&self, relative_accuracy: f64) -> Result<f64, Error> {
+        let mut volume = 0.;
+        call(|error, capacity| unsafe {
+            vb_solid_volume(
+                self.handle.as_ptr(),
+                relative_accuracy,
+                &mut volume,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(volume)
     }
 
     pub fn properties(&self, relative_accuracy: f64) -> Result<SolidProperties, Error> {

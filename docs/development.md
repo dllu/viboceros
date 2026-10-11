@@ -74,3 +74,16 @@ Keep the root README limited to a project overview, basic setup, and documentati
 links. Put command syntax, behavior, examples, and limitations in
 [`docs/commands/`](commands/README.md), and implementation or testing details in
 the relevant page under `docs/`.
+
+Historical usd-brep integration sources are retained through immutable Git
+references instead of copied `*-prior-source` trees. Provenance maps named
+`git_sha256` or ending in `_git_sha256` use `commit:path` keys, with the full
+commit ID and the SHA-256 of the original bytes. Existing local maps retain
+captured artifacts and other file hashes. A full clone contains the required
+history; shallow clones must fetch the referenced commits.
+
+```sh
+python3 tools/verify_provenance.py docs/smlib-bridge-provenance.json \
+  docs/smlib-import-provenance.json docs/fillet-edge-provenance.json
+git show COMMIT:PATH
+```

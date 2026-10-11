@@ -19,6 +19,14 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
+For curved solid Booleans, edge fillets and STEP material regions on Linux,
+install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
+
+```sh
+GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep
+CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
+```
+
 ## Documentation
 
 - [Command reference and examples](docs/commands/README.md)

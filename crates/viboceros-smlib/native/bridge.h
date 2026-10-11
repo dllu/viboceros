@@ -20,6 +20,8 @@ int vb_solid_boolean(const VbSolid *a, const VbSolid *b, int operation, VbSolid 
                      size_t capacity);
 int vb_solid_properties(const VbSolid *solid, double accuracy, double *volume, double bounds[6],
                         int *manifold, char *error, size_t capacity);
+int vb_solid_volume(const VbSolid *solid, double accuracy, double *volume, char *error,
+                    size_t capacity);
 void vb_solid_free(VbSolid *solid);
 int vb_solid_copy(const VbSolid *solid, VbSolid **out, char *error, size_t capacity);
 int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity);
@@ -37,6 +39,7 @@ int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, c
                   size_t capacity);
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                    double radius, double accuracy, char *error, size_t capacity);
+int vb_solid_validate_boundary(const VbSolid *solid, double tolerance, char *error, size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);
 int vb_mesh_copy(const VbMesh *mesh, double *vertices, size_t vertex_count, uint32_t *triangles,
                  size_t triangle_count);

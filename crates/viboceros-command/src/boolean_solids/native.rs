@@ -10,20 +10,17 @@ pub(crate) struct UnionOutput {
 fn unsupported(context: &str) -> CommandError {
     viboceros_smlib::Error::Kernel(context.into()).into()
 }
-fn volume(solid: &Solid, tolerance: Tolerance) -> Result<f64, CommandError> {
-    if solid.is_empty()? {
-        return Ok(0.);
-    }
-    Ok(solid.to_brep(tolerance)?.signed_volume(tolerance)?)
+pub(crate) fn volume(solid: &Solid) -> Result<f64, CommandError> {
+    Ok(solid.volume(1e-8)?)
 }
-fn epsilon(breps: &[&Brep], tolerance: Tolerance) -> Result<f64, CommandError> {
+pub(crate) fn epsilon(breps: &[&Brep], tolerance: Tolerance) -> Result<f64, CommandError> {
     let mut scale = 0_f64;
     for b in breps {
         scale = scale.max(b.bounds().min().distance_to(b.bounds().max())?);
     }
     Ok(tolerance.absolute() * scale * scale + tolerance.relative() * scale * scale * scale)
 }
-fn imports(breps: &[&Brep], tolerance: Tolerance) -> Result<Vec<Solid>, CommandError> {
+pub(crate) fn imports(breps: &[&Brep], tolerance: Tolerance) -> Result<Vec<Solid>, CommandError> {
     if breps.len() > 128 {
         return Err(GeometryError::BrepBooleanWorkLimit.into());
     }
@@ -32,7 +29,7 @@ fn imports(breps: &[&Brep], tolerance: Tolerance) -> Result<Vec<Solid>, CommandE
         .map(|b| Solid::from_brep(b, tolerance))
         .collect::<Result<_, _>>()?)
 }
-fn parts(solid: &Solid, tolerance: Tolerance) -> Result<Vec<Brep>, CommandError> {
+pub(crate) fn parts(solid: &Solid, tolerance: Tolerance) -> Result<Vec<Brep>, CommandError> {
     Ok(solid
         .material_parts()?
         .into_iter()
@@ -54,17 +51,14 @@ pub(crate) fn union(
 ) -> Result<UnionOutput, CommandError> {
     let native = imports(breps, tolerance)?;
     let eps = epsilon(breps, tolerance)?;
-    let volumes = breps
-        .iter()
-        .map(|b| b.signed_volume(tolerance))
-        .collect::<Result<Vec<_>, _>>()?;
+    let volumes = native.iter().map(volume).collect::<Result<Vec<_>, _>>()?;
     let mut parents = (0..breps.len()).collect::<Vec<_>>();
     let mut contacts = Vec::new();
     let mut equal = vec![vec![false; breps.len()]; breps.len()];
     for a in 0..breps.len() {
         for b in a + 1..breps.len() {
             let overlap = native[a].boolean(&native[b], BooleanOperation::Intersection)?;
-            let size = volume(&overlap, tolerance)?;
+            let size = volume(&overlap)?;
             let covered_a = (volumes[a] - size).abs() <= eps;
             let covered_b = (volumes[b] - size).abs() <= eps;
             if covered_a && covered_b {
@@ -118,10 +112,7 @@ pub(crate) fn union(
                 });
             }
             let exposed = if let Some(others) = others {
-                volume(
-                    &native[i].boolean(&others, BooleanOperation::Difference)?,
-                    tolerance,
-                )? > eps
+                volume(&native[i].boolean(&others, BooleanOperation::Difference)?)? > eps
             } else {
                 true
             };
@@ -174,17 +165,17 @@ pub(crate) fn intersection(
         let mut current = native[0].try_clone()?;
         let mut owner = 0;
         let mut last = 0;
-        for i in 1..native.len() {
-            let before = volume(&current, tolerance)?;
-            let mut next = current.boolean(&native[i], BooleanOperation::Intersection)?;
-            let after = volume(&next, tolerance)?;
+        for (i, input) in native.iter().enumerate().skip(1) {
+            let before = volume(&current)?;
+            let mut next = current.boolean(input, BooleanOperation::Intersection)?;
+            let after = volume(&next)?;
             if after <= eps {
                 return Err(CommandError::NothingIntersected);
             }
             if (after - before).abs() > eps {
-                if (after - breps[i].signed_volume(tolerance)?).abs() <= eps {
+                if (after - volume(input)?).abs() <= eps {
                     owner = i;
-                    next = native[i].try_clone()?;
+                    next = input.try_clone()?;
                 }
                 last = i;
             }
@@ -207,7 +198,7 @@ pub(crate) fn intersection(
     for a in 0..first {
         for b in first..native.len() {
             let region = native[a].boolean(&native[b], BooleanOperation::Intersection)?;
-            let region_volume = volume(&region, tolerance)?;
+            let region_volume = volume(&region)?;
             if region_volume > eps {
                 if regions.len() >= 128 {
                     return Err(GeometryError::BrepBooleanWorkLimit.into());
@@ -228,11 +219,7 @@ pub(crate) fn intersection(
     for body in merged.material_parts()? {
         let mut contributors = Vec::new();
         for (index, (region, pair)) in regions.iter().enumerate() {
-            if volume(
-                &region.boolean(&body, BooleanOperation::Intersection)?,
-                tolerance,
-            )? <= eps
-            {
+            if volume(&region.boolean(&body, BooleanOperation::Intersection)?)? <= eps {
                 continue;
             }
             let mut covered = false;
@@ -241,7 +228,7 @@ pub(crate) fn intersection(
                     continue;
                 }
                 let outside = region.boolean(container, BooleanOperation::Difference)?;
-                if volume(&outside, tolerance)? <= eps
+                if volume(&outside)? <= eps
                     && (region_volumes[other] > region_volumes[index] + eps || other < index)
                 {
                     covered = true;

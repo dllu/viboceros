@@ -8,6 +8,9 @@
 #include <SmBSplineCurve.h>
 #include <SmBrep.h>
 #include <SmFace.h>
+#include <SmFaceuse.h>
+#include <SmRegion.h>
+#include <SmShell.h>
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
 #include <SmPoly.h>
@@ -159,6 +162,47 @@ extern "C" int vb_solid_properties(const VbSolid *solid, double accuracy, double
     });
 }
 
+extern "C" int vb_solid_volume(const VbSolid *solid, double accuracy, double *volume,
+                               char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(solid && volume && std::isfinite(accuracy) && accuracy >= 1e-12 && accuracy <= 0.1,
+                "Invalid volume query");
+        double result = 0;
+        SmTArray<SmFace *> faces;
+        solid->value->GetFaces(faces);
+        if (faces.GetSize() != 0) {
+            require(solid->value->IsManifoldSolid(), "Volume requires a manifold solid");
+            // SM_API clamps accuracy to 1e-8, which is too coarse for branch
+            // conservation at the document tolerance. Use the public kernel
+            // integration entry directly, with the same local computation origin.
+            SmExtent3d bounds;
+            check(solid->value->CalculateBoundingBox(bounds), "volume origin");
+            const auto size = bounds.GetSize();
+            const double scale = std::max({size.x, size.y, size.z});
+            const double estimated_area = scale * scale / 100.0;
+            // Request only volume from the upstream face integrator. The B-rep
+            // property query also integrates area and 24 moment components.
+            // Region flags supply material/void ownership, including cavities.
+            for (ULONG i = 0; i < faces.GetSize(); ++i) {
+                auto *first = faces[i]->GetUpwardFaceuse();
+                auto *second = first->GetMate();
+                const bool first_void = first->GetShell()->GetRegion()->IsVoid();
+                const bool second_void = second->GetShell()->GetRegion()->IsVoid();
+                if (first_void == second_void) continue;
+                const auto *material = first_void ? second : first;
+                double area = 0, delta = 0;
+                SmTArray<SmVector3d> moments;
+                check(faces[i]->ComputePreciseProperties(material->GetOrientation(), accuracy,
+                      bounds.GetMid(), estimated_area, 0.0, area, delta, moments, SM_PPF_VOLUME),
+                      "volume");
+                result += delta;
+            }
+        }
+        require(std::isfinite(result), "Nonfinite volume");
+        *volume = result;
+    });
+}
+
 extern "C" void vb_solid_free(VbSolid *solid) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete solid;
@@ -236,6 +280,7 @@ extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indi
                 edges.Add(solid->source_edges[indices[i]]);
             }
         }
+        vb_validate_boundary_intersections(*solid->value,10*accuracy);
         solid->source_edges.clear();
         SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
         check(executive.SetFilletParameters(solid->value.get(), edges, SM_FSG_CIRCULAR,
@@ -247,45 +292,15 @@ extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indi
                 "Fillet executive reported an incomplete or failed operation");
         check(solid->value->StitchAndOrient(), "orient fillet output");
         require(solid->value->IsManifoldSolid(), "Fillet output is not a manifold solid");
-        SmTArray<SmFace *> faces;
-        solid->value->GetFaces(faces);
-        require(faces.GetSize() <= 362, "Fillet boundary intersection work limit");
-        for (ULONG a = 0; a < faces.GetSize(); ++a) {
-            SmTArray<SmEdge *> first_edges;
-            SmTArray<SmVertex *> first_vertices;
-            faces[a]->GetEdges(first_edges);
-            faces[a]->GetVertices(first_vertices);
-            for (ULONG b = a + 1; b < faces.GetSize(); ++b) {
-                SmTArray<SmEdge *> second_edges;
-                faces[b]->GetEdges(second_edges);
-                bool adjacent = false;
-                for (ULONG i = 0; i < first_edges.GetSize(); ++i)
-                    for (ULONG j = 0; j < second_edges.GetSize(); ++j)
-                        adjacent |= first_edges[i] == second_edges[j];
-                if (adjacent) continue;
-                SmTArray<SmCurve *> curves;
-                SmTArray<SmPoint3d> points;
-                const auto status = SmApiIntersectFaces(faces[a], faces[b], curves, &points);
-                const bool crossed = curves.GetSize() != 0;
-                for (ULONG i = 0; i < curves.GetSize(); ++i) delete curves[i];
-                check(status, "check fillet boundary intersections");
-                require(!crossed, "Fillet boundary has intersecting nonadjacent faces");
-                SmTArray<SmVertex *> second_vertices;
-                faces[b]->GetVertices(second_vertices);
-                for (ULONG p = 0; p < points.GetSize(); ++p) {
-                    bool shared = false;
-                    for (ULONG i = 0; i < first_vertices.GetSize(); ++i)
-                        for (ULONG j = 0; j < second_vertices.GetSize(); ++j)
-                            if (first_vertices[i] == second_vertices[j]) {
-                                const auto vertex = first_vertices[i]->GetPoint();
-                                const double dx = vertex.x-points[p].x, dy = vertex.y-points[p].y,
-                                             dz = vertex.z-points[p].z;
-                                shared |= std::hypot(dx,dy,dz) <= 10*accuracy;
-                            }
-                    require(shared, "Fillet boundary has non-topological face contacts");
-                }
-            }
-        }
+        vb_validate_boundary_intersections(*solid->value,10*accuracy);
+    });
+}
+
+extern "C" int vb_solid_validate_boundary(const VbSolid *solid, double tolerance,
+                                           char *error, size_t capacity) {
+    return guarded(error,capacity,[&] {
+        require(solid,"Invalid boundary validation handle");
+        vb_validate_boundary_intersections(*solid->value,tolerance);
     });
 }
 

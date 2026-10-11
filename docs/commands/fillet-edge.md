@@ -23,16 +23,20 @@ The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage
 fails. The adapter imports fresh native solids with original Rust edge-index
 correspondence; it never guesses native edge numbers from topology enumeration.
-It tightens circular cross-section generation and validates closed output,
-nonadjacent face intersections and unexpected face contacts before conversion.
+It tightens circular cross-section generation and validates closed input and
+output, boundary face intersections and unexpected contacts before conversion.
 Pole connectors require a continuous surface-image certificate at their vertex.
 
 This checkpoint supports one constant radius, closed B-reps and Linux native
 builds. Variable-radius handles, dynamic preview, open polysurfaces, alternative
 rail types, chained selection, editing old fillets and broader failure cases
-remain work. The intersection guard bounds output to 362 faces and does not
-fully certify individual-surface self-intersections or additional intersections
-between adjacent faces. Cases outside the qualified fixtures remain unproven.
+remain work. The intersection guard bounds input and output to 362 faces. Kernel
+intersection curves must lie entirely on shared trimmed topological edges, and
+isolated contacts must lie on shared edges or vertices. Adjacent faces are
+checked too, with supplementary kernel searches for interior branches. The
+check does not certify individual-surface injectivity or exhaustive intersection
+discovery for arbitrary surfaces. Cases outside the qualified fixtures remain
+unproven.
 
 [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/filletedge.htm)
 documents the full handle and rail workflow. The independent fixture capture uses

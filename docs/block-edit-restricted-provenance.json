@@ -68,8 +68,7 @@
     "tools/rhino_oracle/test_block_workflow_probe.py": "96c22672c71874ae07ab5299b65e064ee3d7955ba98c9500e6dbb84cb9e4cffd",
     "docs/block-edit-restricted-comparison.json": "f9460b1defcee84626b5df7ec80b14b8e7c328ba9c03eadc86c6d6fd6e6ec53f",
     "docs/section-prior-source/tools/rhino_oracle/client.py": "10e41f3cff194d797b2e05e5705a394e416cf4923d6a8cac6582646e82ccd80c",
-    "docs/section-prior-source/src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4",
-    "docs/fillet-edge-prior-source/src/app/block_edit.rs": "984c6c03c534436314a5f4680a5789431af921f345a6fb64e4eecbfe94468d7f"
+    "docs/section-prior-source/src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4"
   },
   "remaining_scope": [
     "Layer-level restrictions and native choices during context switches",
@@ -80,5 +79,8 @@
   "source_snapshot_paths": {
     "tools/rhino_oracle/client.py": "docs/section-prior-source/tools/rhino_oracle/client.py",
     "src/app/tests/blocks.rs": "docs/section-prior-source/src/app/tests/blocks.rs"
+  },
+  "git_sha256": {
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/block_edit.rs": "984c6c03c534436314a5f4680a5789431af921f345a6fb64e4eecbfe94468d7f"
   }
 }

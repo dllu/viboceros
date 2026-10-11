@@ -113,8 +113,10 @@
     "docs/edge-analysis-prior-source/src/app.rs": "41a0b5afcdceb72dc3fbdd57a447a75e7a785eef5f381378b0310edf0ea64b11",
     "docs/edge-analysis-native-prior-source/crates/viboceros-oracle/src/lib.rs": "1a37ce2ffa046b1cbe4a1f14f329f0590c8505f2a33046af62b18a8b82089ce1",
     "docs/edge-analysis-native-prior-source/tools/rhino_oracle/client.py": "1f19b6b80652397fd7bd3e7b57df831e35afed36e6024f70d746e0b53691340f",
-    "docs/edge-input-prior-source/src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710",
-    "docs/smlib-bridge-prior-source/Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
-    "docs/smlib-import-prior-source/crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3"
+    "docs/edge-input-prior-source/src/app/object_selection.rs": "8ef7810c69d223a8167e1049ff358fe9cf49f2697e4be7b248207e7fefa57710"
+  },
+  "git_sha256": {
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/smlib-bridge-prior-source/Cargo.lock": "c3069bfd048046b21d232c9ad72021a57a20ee93ece3df88a15c06de98c36ed1",
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/smlib-import-prior-source/crates/viboceros-command/Cargo.toml": "5987620566b8dbf962ec7624f524f6881a44d28239bd7c37dc0e8fcc6faa5bd3"
   }
 }

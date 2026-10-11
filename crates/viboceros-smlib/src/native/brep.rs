@@ -112,6 +112,12 @@ struct NativeParts {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vb_solid_validate_boundary(
+        solid: *const NativeSolid,
+        tolerance: f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_imported_solid_fillet_edges(
         solid: *mut NativeSolid,
         indices: *const usize,
@@ -508,6 +514,15 @@ impl NurbsData {
 }
 
 impl Solid {
+    /// Checks every pair of distinct boundary faces, including adjacent faces.
+    /// Kernel-classified coincidence intervals must cover each returned curve
+    /// entirely on shared trimmed edges. Contacts must be topological. This is
+    /// not an individual-surface injectivity certificate.
+    pub fn validate_boundary_intersections(&self, tolerance: Tolerance) -> Result<(), Error> {
+        call(|error, capacity| unsafe {
+            vb_solid_validate_boundary(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
+        })
+    }
     /// Fillets original Rust edge indices on a freshly imported temporary solid.
     /// The input B-rep is never mutated. Repeated indices select the edge once.
     pub fn fillet_brep_edges(

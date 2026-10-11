@@ -1,7 +1,7 @@
 //! Optional closed curved partitions, preserving target metadata and branch lineage.
 use super::*;
+use crate::boolean_solids::native::{Output, epsilon, imports};
 use viboceros_smlib::{BooleanOperation, Solid};
-type Output = (ObjectId, Geometry, BTreeMap<String, String>);
 type Staged = (Vec<Output>, Vec<ObjectId>);
 struct Piece {
     solid: Solid,
@@ -9,16 +9,6 @@ struct Piece {
 }
 fn error(message: &str) -> CommandError {
     viboceros_smlib::Error::Kernel(message.into()).into()
-}
-fn volume(solid: &Solid, tolerance: Tolerance) -> Result<f64, CommandError> {
-    if solid.is_empty()? {
-        return Ok(0.);
-    }
-    Ok(solid.to_brep(tolerance)?.signed_volume(tolerance)?)
-}
-fn dimensional_epsilon(brep: &Brep, tolerance: Tolerance) -> Result<f64, CommandError> {
-    let scale = brep.bounds().min().distance_to(brep.bounds().max())?;
-    Ok(tolerance.absolute() * scale * scale + tolerance.relative() * scale * scale * scale)
 }
 pub(super) fn split(
     breps: &[&Brep],
@@ -28,10 +18,7 @@ pub(super) fn split(
     second: &[ObjectId],
     tolerance: Tolerance,
 ) -> Result<Staged, CommandError> {
-    let native = breps
-        .iter()
-        .map(|b| Solid::from_brep(b, tolerance))
-        .collect::<Result<Vec<_>, _>>()?;
+    let native = imports(breps, tolerance)?;
     let indices = ids
         .iter()
         .enumerate()
@@ -41,8 +28,8 @@ pub(super) fn split(
     let mut changed = Vec::new();
     for &target in first {
         let index = indices[&target];
-        let original = breps[index].signed_volume(tolerance)?;
-        let epsilon = dimensional_epsilon(breps[index], tolerance)?;
+        let original = native[index].volume(1e-11)?;
+        let epsilon = epsilon(&[breps[index]], tolerance)?;
         if original <= epsilon {
             return Err(error("Split target has no positive material volume"));
         }
@@ -50,7 +37,7 @@ pub(super) fn split(
         let mut active_target: Option<Solid> = None;
         let mut expected = 0.;
         for body in native[index].material_parts()? {
-            let body_volume = volume(&body, tolerance)?;
+            let body_volume = body.volume(1e-11)?;
             let mut crosses = false;
             for &id in second {
                 let cutter = indices[&id];
@@ -58,7 +45,7 @@ pub(super) fn split(
                     continue;
                 }
                 let inside = body.boolean(&native[cutter], BooleanOperation::Intersection)?;
-                let amount = volume(&inside, tolerance)?;
+                let amount = inside.volume(1e-11)?;
                 if amount > epsilon
                     && body_volume - amount > epsilon
                     && body.boundary_contact(&native[cutter], tolerance)?
@@ -93,11 +80,11 @@ pub(super) fn split(
         for cutter in active {
             let mut next = Vec::new();
             for piece in pieces {
-                let before = volume(&piece.solid, tolerance)?;
+                let before = piece.solid.volume(1e-11)?;
                 let inside = piece
                     .solid
                     .boolean(&native[cutter], BooleanOperation::Intersection)?;
-                let amount = volume(&inside, tolerance)?;
+                let amount = inside.volume(1e-11)?;
                 if amount <= epsilon || (before - amount).abs() <= epsilon {
                     next.push(piece);
                     continue;
@@ -105,7 +92,7 @@ pub(super) fn split(
                 let outside = piece
                     .solid
                     .boolean(&native[cutter], BooleanOperation::Difference)?;
-                let remainder = volume(&outside, tolerance)?;
+                let remainder = outside.volume(1e-11)?;
                 if remainder <= epsilon {
                     return Err(error("Split branches disagree about material coverage"));
                 }
