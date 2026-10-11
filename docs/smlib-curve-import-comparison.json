@@ -1,0 +1,584 @@
+{
+  "protocol_version": 1,
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "cases": 23,
+  "raw_matched": 22,
+  "native_failed": 0,
+  "fixtures": [
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "extrude-native-polyline-default",
+          "comparison": {
+            "id": "extrude-native-polyline-default",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 216800.0,
+            "rhino_ns_per_iteration": 80360413.0,
+            "rhino_to_viboceros_ratio": 370.66611162361625,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "extrude-native-polyline-domain",
+          "comparison": {
+            "id": "extrude-native-polyline-domain",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 187280.0,
+            "rhino_ns_per_iteration": 57609558.0,
+            "rhino_to_viboceros_ratio": 307.6119073045707,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "extrude-native-line-domain",
+          "comparison": {
+            "id": "extrude-native-line-domain",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 173936.0,
+            "rhino_ns_per_iteration": 56152344.0,
+            "rhino_to_viboceros_ratio": 322.83336399595254,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 3,
+      "matched": 3,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_extrusion.json",
+      "observation": "tools/rhino_oracle/observations/curve_native_extrusion.json",
+      "fixture_sha256": "7a752f677fbeb9908829eb0f4e5d33215e418e23703f7a486c273493c661493e",
+      "observation_sha256": "1508b66fd4659a2dcd29b88fbe7865953985f47b8d0bba3077c1986e2ec8dde2"
+    },
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "line",
+          "comparison": {
+            "id": "line",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 207872.0,
+            "rhino_ns_per_iteration": 71884155.0,
+            "rhino_to_viboceros_ratio": 345.8097050107759,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "polyline",
+          "comparison": {
+            "id": "polyline",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 172816.0,
+            "rhino_ns_per_iteration": 63568115.0,
+            "rhino_to_viboceros_ratio": 367.836976900287,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "negative-height",
+          "comparison": {
+            "id": "negative-height",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 168881.0,
+            "rhino_ns_per_iteration": 80619812.0,
+            "rhino_to_viboceros_ratio": 477.37644850516045,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 3,
+      "matched": 3,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_apex.json",
+      "observation": "tools/rhino_oracle/observations/curve_native_apex.json",
+      "fixture_sha256": "d3ec486292d73d00d7a2f1e8bbc914239a67a60a31ae78f9a37031243951fa43",
+      "observation_sha256": "2762fcc49b15fc80587717456bdaeea3816cd99e7cdff62c5556ad22bed175d0"
+    },
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "line-full",
+          "comparison": {
+            "id": "line-full",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-16,
+            "viboceros_ns_per_iteration": 235136.0,
+            "rhino_ns_per_iteration": 80703735.0,
+            "rhino_to_viboceros_ratio": 343.2215186105063,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-partial",
+          "comparison": {
+            "id": "line-partial",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-16,
+            "viboceros_ns_per_iteration": 198529.0,
+            "rhino_ns_per_iteration": 64590454.0,
+            "rhino_to_viboceros_ratio": 325.34518382704795,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-negative",
+          "comparison": {
+            "id": "line-negative",
+            "passed": true,
+            "max_absolute_error": 1.1102230246251565e-15,
+            "viboceros_ns_per_iteration": 194560.0,
+            "rhino_ns_per_iteration": 108245850.0,
+            "rhino_to_viboceros_ratio": 556.3623046875,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "kinked-full",
+          "comparison": {
+            "id": "kinked-full",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 225360.0,
+            "rhino_ns_per_iteration": 61210632.0,
+            "rhino_to_viboceros_ratio": 271.61267305644304,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_revolution.json",
+      "observation": "tools/rhino_oracle/observations/curve_native_revolution.json",
+      "fixture_sha256": "a23b79750737f4b421999a3fa7efd528b1b8199c01a30a091cba03b61d9b9ed1",
+      "observation_sha256": "da5f6acfba986cddeed066365df238a875c39f0510f16f7cde2a40e381863b26"
+    },
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "line-rational-path",
+          "comparison": {
+            "id": "line-rational-path",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 138545.0,
+            "rhino_ns_per_iteration": 169929504.0,
+            "rhino_to_viboceros_ratio": 1226.529315384893,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-profile-path",
+          "comparison": {
+            "id": "rational-profile-path",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 112384.0,
+            "rhino_ns_per_iteration": 166633606.0,
+            "rhino_to_viboceros_ratio": 1482.7164542995445,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "polyline-rational-path",
+          "comparison": {
+            "id": "polyline-rational-path",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 96656.0,
+            "rhino_ns_per_iteration": 156814575.0,
+            "rhino_to_viboceros_ratio": 1622.3987646912763,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "reversed-path",
+          "comparison": {
+            "id": "reversed-path",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 88400.0,
+            "rhino_ns_per_iteration": 160018921.0,
+            "rhino_to_viboceros_ratio": 1810.1687895927603,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-path",
+          "comparison": {
+            "id": "closed-path",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 101504.0,
+            "rhino_ns_per_iteration": 169433594.0,
+            "rhino_to_viboceros_ratio": 1669.2307101197982,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "unclamped-profile-path",
+          "comparison": {
+            "id": "unclamped-profile-path",
+            "passed": false,
+            "max_absolute_error": 1.0,
+            "viboceros_ns_per_iteration": 96160.0,
+            "rhino_ns_per_iteration": 207038879.0,
+            "rhino_to_viboceros_ratio": 2153.0665453410984,
+            "differences": [
+              "unclamped-profile-path.value.surfaces[0].control_points[0].point[0]: 0.42857142857142855 != 0.0952380952380949 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[0].point[1]: 0.8571428571428571 != 0.19047619047619047 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[0].point[2]: 0 != -0.66666666666666652 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[0].weight: 0.65625 != 0.875 (error 0.219, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[1].point[0]: 1 != 0.66666666666666785 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[1].point[1]: 2 != 1.3333333333333333 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[1].point[2]: 0 != -0.66666666666666663 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[1].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[2].point[0]: 3 != 2.6666666666666679 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[2].point[1]: 2 != 1.3333333333333335 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[2].point[2]: 1 != 0.33333333333333337 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[2].weight: 0.375 != 0.5 (error 0.125, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[3].point[0]: 3.6666666666666665 != 3.3333333333333357 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[3].point[1]: 0.66666666666666663 != 0 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[3].point[2]: 0.33333333333333331 != -0.33333333333333331 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[3].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[8].point[0]: 2.4285714285714284 != 3.0952380952380949 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[8].point[1]: 1.5238095238095237 != 1.1904761904761907 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[8].point[2]: 3.3333333333333335 != 4.333333333333333 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[8].weight: 0.65625 != 0.875 (error 0.219, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[9].point[0]: 2.9999999999999996 != 3.6666666666666679 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[9].point[1]: 2.6666666666666665 != 2.333333333333333 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[9].point[2]: 3.333333333333333 != 4.333333333333333 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[9].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[10].point[0]: 5 != 5.6666666666666679 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[10].point[1]: 2.6666666666666665 != 2.3333333333333335 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[10].point[2]: 4.333333333333333 != 5.333333333333333 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[10].weight: 0.375 != 0.5 (error 0.125, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[11].point[0]: 5.666666666666667 != 6.3333333333333357 (error 0.667, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[11].point[1]: 1.3333333333333333 != 0.99999999999999978 (error 0.333, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[11].point[2]: 3.6666666666666665 != 4.6666666666666661 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].control_points[11].weight: 0.5625 != 0.75 (error 0.188, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].knots_v[0]: 0 != -1 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].knots_v[1]: 0 != -1 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].knots_v[4]: 1 != 2 (error 1, limit 1e-10)",
+              "unclamped-profile-path.value.surfaces[0].knots_v[5]: 1 != 2 (error 1, limit 1e-10)"
+            ]
+          },
+          "native_error": null,
+          "passed": false
+        },
+        {
+          "id": "negative-homogeneous-gauges",
+          "comparison": {
+            "id": "negative-homogeneous-gauges",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 88784.0,
+            "rhino_ns_per_iteration": 164161682.0,
+            "rhino_to_viboceros_ratio": 1849.000743377185,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": false,
+      "cases": 7,
+      "matched": 6,
+      "native_failed": 0,
+      "mismatched": 1,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/curve_native_along.json",
+      "observation": "tools/rhino_oracle/observations/curve_native_along.json",
+      "fixture_sha256": "a38bab55202ab3a028bf4a9c146170e89cb551f0d013c592ff55f80a8c8fb971",
+      "observation_sha256": "b8fb732f41dde1ad1d96fec0cc07d73370a93af978ff87f3ef99c714f9b26085",
+      "sampled_geometry_comparison": {
+        "protocol_version": 1,
+        "absolute_epsilon": 1e-10,
+        "relative_epsilon": 1e-12,
+        "operations": [
+          {
+            "id": "line-rational-path",
+            "comparison": {
+              "id": "line-rational-path",
+              "passed": true,
+              "max_absolute_error": 1.3322676295501878e-15,
+              "viboceros_ns_per_iteration": 138545.0,
+              "rhino_ns_per_iteration": 169929504.0,
+              "rhino_to_viboceros_ratio": 1226.529315384893,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "rational-profile-path",
+            "comparison": {
+              "id": "rational-profile-path",
+              "passed": true,
+              "max_absolute_error": 1.7763568394002505e-15,
+              "viboceros_ns_per_iteration": 112384.0,
+              "rhino_ns_per_iteration": 166633606.0,
+              "rhino_to_viboceros_ratio": 1482.7164542995445,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "polyline-rational-path",
+            "comparison": {
+              "id": "polyline-rational-path",
+              "passed": true,
+              "max_absolute_error": 1.7763568394002505e-15,
+              "viboceros_ns_per_iteration": 96656.0,
+              "rhino_ns_per_iteration": 156814575.0,
+              "rhino_to_viboceros_ratio": 1622.3987646912763,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "reversed-path",
+            "comparison": {
+              "id": "reversed-path",
+              "passed": true,
+              "max_absolute_error": 1.3322676295501878e-15,
+              "viboceros_ns_per_iteration": 88400.0,
+              "rhino_ns_per_iteration": 160018921.0,
+              "rhino_to_viboceros_ratio": 1810.1687895927603,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "closed-path",
+            "comparison": {
+              "id": "closed-path",
+              "passed": true,
+              "max_absolute_error": 1.3322676295501878e-15,
+              "viboceros_ns_per_iteration": 101504.0,
+              "rhino_ns_per_iteration": 169433594.0,
+              "rhino_to_viboceros_ratio": 1669.2307101197982,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "unclamped-profile-path",
+            "comparison": {
+              "id": "unclamped-profile-path",
+              "passed": true,
+              "max_absolute_error": 5.329070518200751e-15,
+              "viboceros_ns_per_iteration": 96160.0,
+              "rhino_ns_per_iteration": 207038879.0,
+              "rhino_to_viboceros_ratio": 2153.0665453410984,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          },
+          {
+            "id": "negative-homogeneous-gauges",
+            "comparison": {
+              "id": "negative-homogeneous-gauges",
+              "passed": true,
+              "max_absolute_error": 1.7763568394002505e-15,
+              "viboceros_ns_per_iteration": 88784.0,
+              "rhino_ns_per_iteration": 164161682.0,
+              "rhino_to_viboceros_ratio": 1849.000743377185,
+              "differences": []
+            },
+            "native_error": null,
+            "passed": true
+          }
+        ],
+        "passed": true,
+        "cases": 7,
+        "matched": 7,
+        "native_failed": 0,
+        "mismatched": 0,
+        "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison."
+      }
+    },
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "nested-keep",
+          "comparison": {
+            "id": "nested-keep",
+            "passed": true,
+            "max_absolute_error": 2.842170943040401e-14,
+            "viboceros_ns_per_iteration": 2367749.0,
+            "rhino_ns_per_iteration": 66650391.0,
+            "rhino_to_viboceros_ratio": 28.1492637099625,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "nested-delete",
+          "comparison": {
+            "id": "nested-delete",
+            "passed": true,
+            "max_absolute_error": 2.842170943040401e-14,
+            "viboceros_ns_per_iteration": 2342996.0,
+            "rhino_ns_per_iteration": 40618896.0,
+            "rhino_to_viboceros_ratio": 17.33630616526874,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "overlapping-keep",
+          "comparison": {
+            "id": "overlapping-keep",
+            "passed": true,
+            "max_absolute_error": 5.684341886080802e-14,
+            "viboceros_ns_per_iteration": 2933765.0,
+            "rhino_ns_per_iteration": 35545349.0,
+            "rhino_to_viboceros_ratio": 12.11594964150162,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "overlapping-delete",
+          "comparison": {
+            "id": "overlapping-delete",
+            "passed": true,
+            "max_absolute_error": 5.684341886080802e-14,
+            "viboceros_ns_per_iteration": 2900565.0,
+            "rhino_ns_per_iteration": 50720215.0,
+            "rhino_to_viboceros_ratio": 17.48632249234201,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-planes-keep",
+          "comparison": {
+            "id": "two-planes-keep",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1813668.0,
+            "rhino_ns_per_iteration": 37956238.0,
+            "rhino_to_viboceros_ratio": 20.92788647095279,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-planes-delete",
+          "comparison": {
+            "id": "two-planes-delete",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 871330.0,
+            "rhino_ns_per_iteration": 35179138.0,
+            "rhino_to_viboceros_ratio": 40.37406952589719,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 6,
+      "matched": 6,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/planar_surface_native.json",
+      "observation": "tools/rhino_oracle/observations/planar_surface_native.json",
+      "fixture_sha256": "79c5c638439dd35e3395d7cf40bd4668e0c9f8a4bceb57b6ab24c822525d03f1",
+      "observation_sha256": "aa6f15248f551e82a156d15dd2caf546c8ae2747edf289147cff090f2e77a3d7"
+    }
+  ],
+  "native_reference": "docs/smlib-curve-import-native-reference.json",
+  "native_reference_sha256": "97b7a99d84d9749898b39ecc6c480fb63308109062700b4e56b211c842436aa5",
+  "probe_sha256": "57726bf7fdda5fc0e6e4cb8fd426b671f2252f33a8ee336b00f7eabece68778d",
+  "source_sha256": {
+    "crates/viboceros-geometry/src/nurbs.rs": "7fd3c43d63ca91f5485d0ccaedcfd171e1cc8c4642812827bb668e26e438188e",
+    "crates/viboceros-smlib/native/bridge.cpp": "3eef827784f9dd947d201cd57c28da04df454f5b63f4d1e68eb44fed6db33380",
+    "crates/viboceros-smlib/native/brep_export.cpp": "207391a5735975bcf39c75b4e14d415ad01d2c1d40724c8169f81ec41b6ee3dd",
+    "crates/viboceros-smlib/src/native.rs": "a561e99354e7268922cbc817c4303b35c844e186e52ec80261d04b956058ecca",
+    "crates/viboceros-smlib/src/native/construction.rs": "8de3b0c29c6aff895435598426ccf4b5472db26874be7ae5e6f1d3f345a93ed9",
+    "crates/viboceros-smlib/tests/curve_import.rs": "cabce70337cb2399e2cbcd6da7f5a2a2d0b3446a625a4c59a8dee1431bfd0fb8",
+    "crates/viboceros-oracle/src/curve_native.rs": "ef832cc193af9d2db34dd189609c385b437ed07f3201843c02a0ec94a6ede3ef"
+  },
+  "validation": {
+    "native_tests_passed": 1374,
+    "native_tests_failed": 0,
+    "native_tests_ignored": 3,
+    "test_command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-command -p viboceros-smlib --features viboceros-command/native-smlib"
+  },
+  "build_command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo build --release -p viboceros-oracle --features native-smlib",
+  "qualification": "Existing complete sheet NURBS and planar-region property records. Raw differences are retained without normalization. The unclamped-path raw difference remains, while its 9x9 sampled geometry grids match. Native audit times are placeholders and cannot establish kernel performance. Curve ingress precision regressions do not qualify arbitrary downstream tiny-chart modeling."
+}

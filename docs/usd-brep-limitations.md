@@ -8,6 +8,52 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Curve constructors modify nearby knots without adjusting controls.**
+  `sm_FixupKnotVector` coalesces knots below scaled zero and spreads other near
+  knots. It collapsed the tested `2^-360` active interval during canonical
+  creation. The importer now checks the exact clamped basis and restores it
+  using existing `SetExpert` around native-generated controls. A short-span
+  regression also retains a ten-unit control bulge between nearby knot groups.
+  Other constructors/copies can repeat the fixup; downstream small-chart
+  modeling remains unqualified. Source:
+  [SmNurbsCrv.cpp](../third_party/usd-brep/source/SMLib/src/SmNurbsCrv.cpp) and
+  [qualification](smlib-curve-import.md).
+- **Unique-knot queries are tolerance grouped, not exact serialization.**
+  `sm_GetKnots` combines neighbors satisfying `SM_IS_ZERO`. After restoring
+  a tiny chart, expanding those multiplicities still failed to recover the
+  actual knot vector. The adapter now reads `GetKnotsAll` for curves and copies
+  the full surface knot arrays, removing its manual expansion helper. Source:
+  [SmNurbsCrv.cpp](../third_party/usd-brep/source/SMLib/src/SmNurbsCrv.cpp).
+- **Point evaluation can reject tiny native parameter charts.** An imported
+  curve with restored exact knots at `2^-360` returned `SM_ERR` (1001) on native
+  evaluation. Its normalized native query chart matches the original curve
+  samples while the exported definition retains the source interval. This
+  qualifies the retained fixtures, not all extreme knot-spacing ratios.
+  See [curve import](smlib-curve-import.md).
+- **Canonical curve construction clamps the active interval automatically.**
+  Although the header asks for clamped end multiplicities, `CreateCanonical`
+  passes full knot data to the existing `N_Iges126Crv` import routine, which
+  clamps its active interval. Direct polynomial, rational, partially clamped
+  and periodic imports now pass native evaluation checks. The bridge no longer
+  rejects these inputs or duplicates the endpoint extraction in Rust. Source:
+  [SmBSplineCurve.cpp](../third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp)
+  and [qualification](smlib-curve-import.md).
+- **Canonical curve degree limit is lower than its header claims.** The header
+  allows degrees through 32, but the pinned NLib `NL_MAXDEG` and default
+  `NL_DMAX` are 17. A degree-32 construction returned `SM_ERR` (1001) during
+  integration; the boundary regression qualifies degree 17 and rejects higher
+  inputs. The previous bridge documentation's degree-64 claim was incorrect.
+  The adapter now uses the kernel build constant. Source:
+  [NL_Nurbsdef.h](../third_party/usd-brep/source/SMLib/inc/NL_Nurbsdef.h).
+- **Canonical import validates explicit weights before clamping.** Default
+  `NL_WMIN=0.001` and `NL_WMAX=100` reject unequal weights outside that range,
+  including weights on inactive source controls. Explicit equal weights also
+  encounter those checks before their irrelevant gauge is removed. The adapter
+  now uses the existing optional unweighted form for polynomial curves, covering
+  positive/negative common gauges between `1e-308` and `1e308`. General rational
+  gauge conditioning remains open. Source:
+  [NL_Iges.cpp](../third_party/usd-brep/source/SMLib/src/NL_Iges.cpp) and
+  [regression](../crates/viboceros-smlib/tests/curve_import.rs).
 - **Public sweep wrapper selects rotation and a fixed approximation tolerance
   (source audit).** `SmApiCreateSweep` calls `CreateSweepSurface` with
   `bDoTranslationalSweep=False` and `1e-5`. This is unsuitable for Rhino's
@@ -154,10 +200,10 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
-- **Clamped modeling imports change curve-path extrusion representation.**
+- **Canonical modeling imports change curve-path extrusion representation.**
   The live unclamped profile/path fixture retains an unclamped path knot vector
-  in Rhino, while our existing curve importer requires clamping the active
-  interval. Six of seven complete raw sheet definitions match; this one has
+  in Rhino, while native canonical creation clamps the active interval.
+  The earlier duplicate Rust clamp has been removed. Six of seven complete raw sheet definitions match; this one has
   different outer knots and controls. All seven captured 9×9 parameter grids
   match, with maximum point-coordinate error `7.11e-15`. Independent native
   grids also check preparation against the original unclamped curves. This is

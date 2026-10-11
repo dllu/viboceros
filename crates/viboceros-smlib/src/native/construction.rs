@@ -127,25 +127,24 @@ impl KernelCurve {
         })?;
         Ok(plane != 0)
     }
-    /// Import a modeling profile with an equivalent clamped active interval.
+    /// Import a modeling profile using native active-interval clamping.
     /// Uniformly negative weights are flipped as one homogeneous gauge.
     /// Mixed signs retain the strict importer rejection; source data is unchanged.
     pub fn from_nurbs_for_modeling(curve: &NurbsCurve) -> Result<Self, Error> {
-        let clamped = curve.try_clamped_to_active_domain()?;
-        let prepared = if clamped.control_points().iter().all(|p| p.weight() < 0.) {
-            NurbsCurve::try_new_rational(
-                clamped.degree(),
-                clamped
+        if curve.control_points().iter().all(|p| p.weight() < 0.) {
+            let prepared = NurbsCurve::try_new_rational(
+                curve.degree(),
+                curve
                     .control_points()
                     .iter()
                     .map(|p| WeightedPoint3::try_new(p.point(), -p.weight()))
                     .collect::<Result<Vec<_>, _>>()?,
-                clamped.knots().to_vec(),
-            )?
+                curve.knots().to_vec(),
+            )?;
+            Self::from_nurbs(&prepared)
         } else {
-            clamped
-        };
-        Self::from_nurbs(&prepared)
+            Self::from_nurbs(curve)
+        }
     }
 
     /// Create a complete native revolution tensor, circular U and profile V.

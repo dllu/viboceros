@@ -70,10 +70,16 @@ split and difference retain their independent exported-volume checks. Integratio
 accuracy is a numerical control, not a certified bound for arbitrary geometry.
 
 `KernelCurve::from_nurbs` and `to_nurbs` transfer degree, Euclidean control
-points, weights and full knot vectors without fitting. Positive-weight clamped
-curves up to degree 64 are supported; negative weights, unclamped curves and
-discontinuous interior knots fail explicitly. Native evaluation can be compared
-against the original Rust curve over the unchanged parameter domain.
+points, weights and full knot vectors without fitting. The native canonical
+constructor clamps unclamped active intervals; it replaces the separate Rust
+preparation step. The pinned kernel's default curve degree limit is 17 and
+unequal canonical input weights must lie in `[0.001, 100]`. Equal-weight polynomial
+imports omit the irrelevant gauge using the existing optional-weight API form.
+Direct negative weights and
+discontinuous active interior knots fail explicitly; modeling import can flip
+a uniformly negative homogeneous gauge. Native evaluation can be compared
+against the original Rust curve over the unchanged parameter domain. See
+[native curve import](smlib-curve-import.md) for qualification and restrictions.
 Polynomial exports supply unit weights when SMLib omits an explicit weight array.
 
 Handles use Rust RAII and are neither Send nor Sync. A process-wide native mutex

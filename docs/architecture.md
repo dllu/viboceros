@@ -32,6 +32,8 @@ region construction to usd-brep, excluding the portable containment adapter.
 transfer, using ruled surfaces and native base-cap/stitch operations.
 [ExtrudeCrvAlongCrv](smlib-translational-sweep.md) uses the exact translational
 sweep constructor and shares native cap construction with apex extrusion.
+[Modeling curve imports](smlib-curve-import.md) now delegate active-interval
+clamping to usd-brep's canonical constructor, removing the Rust preparation step.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

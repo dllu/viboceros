@@ -20,6 +20,8 @@ regions, plus [native surface joining](smlib-joining.md) and
 [exact curve-path extrusion](smlib-translational-sweep.md).
 Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
+Standalone [modeling curve import](smlib-curve-import.md) now uses native
+active-interval clamping rather than the Rust endpoint extractor.
 
 ## Reproduce the native trial
 

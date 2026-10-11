@@ -377,6 +377,9 @@ impl Drop for OwnedMesh {
 }
 
 /// Native clamped NURBS with positive weights, transferred without fitting.
+/// Canonical import accepts full unclamped data and clamps its active interval.
+/// The pinned kernel supports degree 17 and unequal canonical weights in
+/// [0.001, 100]. Polynomial imports omit irrelevant equal-weight gauges.
 pub struct KernelCurve {
     handle: NonNull<NativeCurve>,
     _thread_local: PhantomData<Rc<()>>,

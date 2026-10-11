@@ -42,23 +42,18 @@ struct NurbsPayload {
         }
     }
 };
-std::vector<double> full_knots(const SmTArray<double> &unique,
-                               const SmTArray<ULONG> &multiplicities) {
-    require(unique.GetSize() == multiplicities.GetSize(), "Invalid native knot multiplicities");
-    std::vector<double> knots;
-    for (ULONG i = 0; i < unique.GetSize(); ++i) {
-        require(std::isfinite(unique[i]) && multiplicities[i] <= 65 &&
-                    knots.size() + multiplicities[i] <= limit,
+std::vector<double> copy_knots(const double *source, size_t count) {
+    require(source && count && count <= limit + 65, "Invalid native knot count");
+    std::vector<double> knots(source, source + count);
+    for (size_t i = 0; i < knots.size(); ++i)
+        require(std::isfinite(knots[i]) && (!i || knots[i] >= knots[i - 1]),
                 "Invalid native knots");
-        knots.insert(knots.end(), multiplicities[i], unique[i]);
-    }
     return knots;
 }
 std::unique_ptr<NurbsPayload> curve_payload(const SmBSplineCurve &curve) {
     auto data = std::make_unique<NurbsPayload>();
     SmTArray<SmPoint3d> points;
     SmTArray<double> weights, knots;
-    SmTArray<ULONG> multiplicities;
     check(curve.GetControlPolygon(points, weights), "export curve controls");
     require(points.GetSize() <= limit &&
                 (weights.GetSize() == 0 || points.GetSize() == weights.GetSize()),
@@ -68,8 +63,8 @@ std::unique_ptr<NurbsPayload> curve_payload(const SmBSplineCurve &curve) {
         data->points.insert(data->points.end(),
                             {p.x, p.y, p.z, weights.GetSize() ? weights[i] : 1.});
     }
-    check(curve.GetKnots(knots, &multiplicities), "export curve knots");
-    data->knots[0] = full_knots(knots, multiplicities);
+    check(curve.GetKnotsAll(knots), "export full curve knots");
+    data->knots[0] = copy_knots(knots.GetDataArray(), knots.GetSize());
     data->view.degree[0] = curve.GetDegree();
     data->view.count[0] = points.GetSize();
     data->view.count[1] = 1;
@@ -93,12 +88,13 @@ std::unique_ptr<NurbsPayload> surface_payload(const SmBSplineSurface &surface) {
             data->points.insert(data->points.end(),
                                 {p.x, p.y, p.z, weights.GetSize() ? weights[index] : 1.});
         }
+    ULONG knot_counts[2] = {0, 0};
+    double *knot_arrays[2] = {nullptr, nullptr};
+    check(surface.GetKnotsPointers(knot_counts[0], knot_counts[1], knot_arrays[0], knot_arrays[1]),
+          "export full surface knots");
     for (int d = 0; d < 2; ++d) {
         const auto direction = d == 0 ? SM_SP_U : SM_SP_V;
-        SmTArray<double> knots;
-        SmTArray<ULONG> multiplicities;
-        check(surface.GetKnots(direction, knots, &multiplicities), "export surface knots");
-        data->knots[d] = full_knots(knots, multiplicities);
+        data->knots[d] = copy_knots(knot_arrays[d], knot_counts[d]);
         data->view.degree[d] = surface.GetDegree(direction);
     }
     data->view.count[0] = nu;

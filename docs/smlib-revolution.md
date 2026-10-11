@@ -12,8 +12,9 @@ and rational spans. The higher-level wrapper can return only the first surface
 after splitting a profile. Native reparameterization sets circular U and profile
 V; the constructor's UV flag is inverted relative to its pinned header text.
 
-Profile preparation is shared with ExtrudeCrv: existing de Boor extraction
-clamps active ends, and a uniformly negative homogeneous gauge is normalized.
+Profile preparation is shared with ExtrudeCrv: the
+[native canonical constructor](smlib-curve-import.md) clamps active ends, and a
+uniformly negative homogeneous gauge is normalized.
 Original objects and native input curves remain unchanged. Mixed-sign weights
 and discontinuous interior knots remain adapter restrictions.
 

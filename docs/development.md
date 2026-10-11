@@ -22,6 +22,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Native planar surfaces, region nesting, contacts and ownership](smlib-planar-surfaces.md)
 - [Native apex extrusion, collapsed boundaries, caps and ownership](smlib-apex.md)
 - [Native curve-path extrusion, exact translational sweeps and shared caps](smlib-translational-sweep.md)
+- [Native curve import, active intervals, periodic inputs and constructor limits](smlib-curve-import.md)
 - [Circular edge fillets, source indices and native qualification](fillet-edge.md)
 - [Native SMLib B-rep export, CAD interchange and STEP seam selection](smlib-brep-transfer.md)
 - [Certified STEP pole trims and native Rhino import evidence](step-poles.md)

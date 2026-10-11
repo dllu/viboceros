@@ -8,6 +8,7 @@
 #include <SmApiSurfaces.h>
 #include <SmBSplineCurve.h>
 #include <SmBSplineSurface.h>
+#include <NL_Nurbsdef.h>
 #include <SmAxis2Placement.h>
 #include <SmBrep.h>
 #include <SmFace.h>
@@ -41,6 +42,9 @@ struct VbParts {
 };
 struct VbCurve {
     std::unique_ptr<SmBSplineCurve> value;
+    // The evaluator rejects some tiny charts even after exact knot restoration.
+    // A normalized native query chart retains the same imported controls.
+    std::unique_ptr<SmBSplineCurve> evaluation;
     size_t degree;
     std::vector<double> points, knots;
 };
@@ -591,18 +595,20 @@ extern "C" int vb_curve_create(size_t degree, const double *points_xyzw, size_t 
     if (out)
         *out = nullptr;
     return guarded(error, capacity, [&] {
-        require(out && points_xyzw && knots && degree > 0 && degree <= 64 && point_count > degree &&
+        require(out && points_xyzw && knots && degree > 0 && degree <= NL_MAXDEG && point_count > degree &&
                     point_count <= limit && knot_count == point_count + degree + 1,
                 "Invalid NURBS dimensions");
         SmTArray<SmPoint3d> points;
         SmTArray<double> weights, unique;
         SmTArray<ULONG> multiplicities;
+        bool rational = false;
         for (size_t i = 0; i < point_count; ++i) {
             const auto *p = points_xyzw + i * 4;
             require(finite3(p) && std::isfinite(p[3]) && p[3] > 0,
                     "Native NURBS require positive finite weights");
             points.Add(SmPoint3d(p[0], p[1], p[2]));
             weights.Add(p[3]);
+            rational = rational || p[3] != points_xyzw[3];
         }
         for (size_t i = 0; i < knot_count; ++i) {
             require(std::isfinite(knots[i]) && (i == 0 || knots[i] >= knots[i - 1]),
@@ -613,37 +619,102 @@ extern "C" int vb_curve_create(size_t degree, const double *points_xyzw, size_t 
             } else
                 ++multiplicities[multiplicities.GetSize() - 1];
         }
-        require(unique.GetSize() >= 2 && multiplicities[0] == degree + 1 &&
-                    multiplicities[multiplicities.GetSize() - 1] == degree + 1,
-                "Native bridge currently requires clamped NURBS");
-        for (ULONG i = 1; i + 1 < multiplicities.GetSize(); ++i)
-            require(multiplicities[i] <= degree,
-                    "Native bridge does not support discontinuous interior knots");
+        const double start = knots[degree], end = knots[point_count];
+        require(start < end, "Empty active NURBS interval");
+        for (ULONG i = 0; i < unique.GetSize(); ++i)
+            if (unique[i] > start && unique[i] < end)
+                require(multiplicities[i] <= degree,
+                        "Native bridge does not support discontinuous interior knots");
         auto owner = std::make_unique<VbCurve>();
         SmBSplineCurve *raw = nullptr;
-        const auto status = SmApiCreateCanonicalCurve(points, unique, multiplicities, &weights,
+        // A common weight is an irrelevant polynomial gauge. The existing
+        // optional-weight form avoids the IGES validator's explicit-weight limits.
+        const auto status = SmApiCreateCanonicalCurve(points, unique, multiplicities,
+                                                      rational ? &weights : nullptr,
                                                       degree, SM_CF_UNSPECIFIED, raw);
         owner->value.reset(raw);
         check(status, "create canonical curve");
         require(raw, "Missing NURBS result");
+        // CreateCanonical's existing IGES routine clamps the supplied full
+        // NURBS to its active interval. Do not duplicate that operation in Rust.
         owner->degree = raw->GetDegree();
         SmTArray<SmPoint3d> exported_points;
         SmTArray<double> exported_weights, exported_knots;
-        SmTArray<ULONG> exported_multiplicities;
         check(raw->GetControlPolygon(exported_points, exported_weights), "control polygon");
-        check(raw->GetKnots(exported_knots, &exported_multiplicities), "knots");
+        check(raw->GetKnotsAll(exported_knots), "full knots");
+        require(exported_knots.GetDataArray() && exported_knots.GetSize() > degree + 1 &&
+                    exported_knots.GetSize() <= limit + 65, "Invalid full canonical knots");
         const bool polynomial = exported_weights.GetSize() == 0 && !raw->IsRational();
         require(polynomial || exported_points.GetSize() == exported_weights.GetSize(),
                 "Invalid exported weights");
-        require(exported_knots.GetSize() == exported_multiplicities.GetSize(),
-                "Invalid exported knot multiplicities");
+        const std::vector<double> actual_knots(exported_knots.GetDataArray(),
+            exported_knots.GetDataArray() + exported_knots.GetSize());
+        std::vector<double> expected_knots(degree + 1, start);
+        for (size_t i = 0; i < knot_count; ++i)
+            if (knots[i] > start && knots[i] < end) expected_knots.push_back(knots[i]);
+        expected_knots.insert(expected_knots.end(), degree + 1, end);
+        require(owner->degree == degree &&
+                    expected_knots.size() == exported_points.GetSize() + degree + 1,
+                "Unexpected canonical clamping layout");
+        if (actual_knots != expected_knots) {
+            // The SmBSplineCurve constructor's knot fixup can merge or spread
+            // knots after native clamping. Keep the native-generated controls
+            // and reload the exact clamped basis with the existing expert API.
+            std::vector<double> controls;
+            for (ULONG i = 0; i < exported_points.GetSize(); ++i) {
+                const auto &p = exported_points[i];
+                const double w = polynomial ? 1. : exported_weights[i];
+                require(std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) &&
+                            std::isfinite(w) && w > 0, "Invalid canonical clamping controls");
+                controls.insert(controls.end(), {p.x, p.y, p.z, w});
+            }
+            check(raw->SetExpert(3, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
+                                expected_knots.size(), expected_knots.data(),
+                                polynomial ? SM_CP_NON_RATIONAL : SM_CP_EUCLIDIAN_RATIONAL,
+                                4, controls.data()), "restore exact canonical knot data");
+            std::vector<double> normalized_knots;
+            const long double width = static_cast<long double>(end) - start;
+            bool representable = true;
+            for (const double k : expected_knots) {
+                const double mapped = static_cast<double>((static_cast<long double>(k) - start) / width);
+                require(std::isfinite(mapped), "Invalid normalized canonical knot");
+                if (!normalized_knots.empty() && k > expected_knots[normalized_knots.size() - 1])
+                    representable = representable && mapped > normalized_knots.back();
+                normalized_knots.push_back(mapped);
+            }
+            if (representable) {
+                owner->evaluation.reset(new (*SmApiGetOrCreateContext()) SmBSplineCurve(3));
+                check(owner->evaluation->SetExpert(3, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
+                                normalized_knots.size(), normalized_knots.data(),
+                                polynomial ? SM_CP_NON_RATIONAL : SM_CP_EUCLIDIAN_RATIONAL,
+                                4, controls.data()), "create normalized native query chart");
+            }
+            exported_points.ReSet();
+            exported_weights.ReSet();
+            exported_knots.ReSet();
+            check(raw->GetControlPolygon(exported_points, exported_weights),
+                  "read restored canonical controls");
+            check(raw->GetKnotsAll(exported_knots),
+                  "read restored canonical knots");
+        }
+        const auto domain = raw->GetNaturalInterval();
+        require(domain.GetMin() == start && domain.GetMax() == end,
+                "Canonical creation changed the active NURBS interval");
+        require(exported_points.GetSize() && exported_points.GetSize() <= limit &&
+                    (polynomial || exported_points.GetSize() == exported_weights.GetSize()) &&
+                    exported_knots.GetSize() == expected_knots.size(),
+                "Invalid restored canonical data");
         for (ULONG i = 0; i < exported_points.GetSize(); ++i) {
             const auto &p = exported_points[i];
+            const double w = polynomial ? 1.0 : exported_weights[i];
+            require(std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) &&
+                        std::isfinite(w) && w > 0, "Invalid canonical controls");
             owner->points.insert(owner->points.end(),
-                                 {p.x, p.y, p.z, polynomial ? 1.0 : exported_weights[i]});
+                                 {p.x, p.y, p.z, w});
         }
-        for (ULONG i = 0; i < exported_knots.GetSize(); ++i)
-            owner->knots.insert(owner->knots.end(), exported_multiplicities[i], exported_knots[i]);
+        owner->knots.assign(exported_knots.GetDataArray(),
+                            exported_knots.GetDataArray() + exported_knots.GetSize());
+        require(owner->knots == expected_knots, "Canonical creation changed the active knot data");
         *out = owner.release();
     });
 }
@@ -658,7 +729,12 @@ extern "C" int vb_curve_evaluate(const VbCurve *curve, double parameter, double 
         SmVector3d *result_pointer = &result;
         SmVector3d *derivative = nullptr;
         SmVector3d *second_derivative = nullptr;
-        check(SmApiEvaluateCurve(curve->value.get(), parameter, result_pointer, derivative,
+        auto *evaluator = curve->evaluation ? curve->evaluation.get() : curve->value.get();
+        const double evaluated_parameter = curve->evaluation
+            ? static_cast<double>((static_cast<long double>(parameter) - curve->knots[curve->degree]) /
+                (static_cast<long double>(curve->knots[curve->knots.size() - curve->degree - 1]) -
+                 curve->knots[curve->degree])) : parameter;
+        check(SmApiEvaluateCurve(evaluator, evaluated_parameter, result_pointer, derivative,
                                  second_derivative),
               "evaluate curve");
         require(std::isfinite(result.x) && std::isfinite(result.y) && std::isfinite(result.z),

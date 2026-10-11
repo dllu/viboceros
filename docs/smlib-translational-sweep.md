@@ -24,7 +24,7 @@ requested. Constant paths are rejected before native tensor construction.
 The native path is imported once per command batch. Each profile is built
 relative to its start point and restored with the existing affine transform.
 Native input curves remain owned and usable. Profile and path preparation
-reuse active-interval clamping and uniform negative-gauge handling; mixed-sign
+reuse [native active-interval clamping](smlib-curve-import.md) and uniform negative-gauge handling; mixed-sign
 weights and discontinuous interior knots retain importer restrictions. Native
 construction checks the existing one-million-control transfer limit before
 allocating the tensor product.
@@ -45,7 +45,7 @@ raw NURBS sheet definitions. See the
 The [raw observations](../tools/rhino_oracle/observations/curve_native_along.json)
 and [comparison](smlib-translational-sweep-comparison.json) retain six complete
 raw matches out of seven, without normalization. The unclamped-path case has
-different outer knots and controls because the adapter clamps its active
+different outer knots and controls because canonical import clamps its active
 interval. All seven captured 9×9 point grids match at `1e-10` absolute / `1e-12`
 relative epsilon; maximum point-coordinate error is `7.11e-15`. Grid agreement
 does not certify the continuous surface. The same rebuilt probe also matches

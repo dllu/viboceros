@@ -324,7 +324,7 @@ fn polynomial_curve_transfer_handles_unit_weights_and_nonuniform_cubic_knots() {
 }
 
 #[test]
-fn unsupported_negative_weights_and_unclamped_curves_fail_explicitly() {
+fn direct_negative_weight_import_fails_explicitly() {
     let negative = NurbsCurve::try_new_rational(
         1,
         vec![
@@ -335,16 +335,6 @@ fn unsupported_negative_weights_and_unclamped_curves_fail_explicitly() {
     )
     .unwrap();
     assert!(KernelCurve::from_nurbs(&negative).is_err());
-    let unclamped = NurbsCurve::try_new_rational(
-        1,
-        vec![
-            WeightedPoint3::try_new(p(0., 0., 0.), 1.).unwrap(),
-            WeightedPoint3::try_new(p(2., 0., 0.), 1.).unwrap(),
-        ],
-        vec![-1., 0., 1., 2.],
-    )
-    .unwrap();
-    assert!(KernelCurve::from_nurbs(&unclamped).is_err());
 }
 
 #[test]

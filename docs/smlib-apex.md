@@ -20,7 +20,8 @@ B-rep. Native singular topology and the existing pole connector transfer retain
 the collapsed apex. Input native curves remain owned and usable.
 
 Profile preparation is shared with the straight extrusion and revolution
-adapters, including active-interval clamping and uniform negative-gauge handling.
+adapters, including [native active-interval clamping](smlib-curve-import.md) and
+uniform negative-gauge handling.
 Existing affine transforms move construction to the apex origin and restore
 world placement afterward. This is not qualification of all scale/aspect-ratio
 extremes. Mixed-sign weights and discontinuous interior knots remain restricted.

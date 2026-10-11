@@ -21,8 +21,8 @@ a native manifold solid, followed by the shared Rust B-rep validation.
 The bridge also exposes multiple-profile sweeps, tested with an annular solid;
 the command continues to create independent outputs for independent objects.
 
-Unclamped profiles use the existing de Boor endpoint extraction to clamp their
-active interval without changing its parameterization. A uniformly negative
+Unclamped profiles use the [native canonical constructor](smlib-curve-import.md)
+to clamp their active interval without changing its parameterization. A uniformly negative
 weight gauge is flipped as one homogeneous gauge before native import. Original
 objects remain unchanged. Mixed-sign weights and discontinuous interior knots
 remain adapter restrictions. Changes to parameterization or topology in capped
