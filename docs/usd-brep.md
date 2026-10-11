@@ -2,6 +2,8 @@
 
 [Project overview](../README.md)
 
+[Limitations and bugs found during integration](usd-brep-limitations.md)
+
 NVIDIA's [USD BRep](https://github.com/NVIDIA-Omniverse/usd-brep) is pinned as
 `third_party/usd-brep` at release 1.0.0, commit
 `c9c5979f04cea8c38213004d4f04df0dcfb40d05`. The Apache-2.0 SMLib kernel offers
@@ -12,7 +14,7 @@ native solids, copied-operand booleans, native mass queries, mesh output and
 [validated NURBS B-rep transfer](smlib-brep-transfer.md). Application builds with
 `--features native-smlib` use the kernel directly for [BooleanDifference](smlib-import.md),
 and also enable curved union/intersection, split, edge fillets and STEP material
-regions. Broader arbitrary-input qualification remains open. The kernel can be
+regions, plus [native surface joining](smlib-joining.md). Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
 
 ## Reproduce the native trial

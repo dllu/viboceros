@@ -7,6 +7,12 @@ conversion, preserves shared vertex/edge identity, face flips, outer/inner loops
 edge domains and native vertex/edge tolerances, and releases the native snapshot
 after constructing Rust geometry. No kernel pointers enter the document model.
 
+Tolerance snapshots follow native UV-trim creation, which can update them.
+Tiny UV controls outside natural boundaries use native knot snapping within a
+roundoff allowance; every changed trim must pass the existing continuous
+surface-image certificate. See [native joining](smlib-joining.md) for the gap and
+rational-sheet regressions that exposed these transfer issues.
+
 ## Conversion and poles
 
 The C boundary snapshots typed arrays of topology and NURBS data under the

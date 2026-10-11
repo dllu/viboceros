@@ -17,6 +17,12 @@ mesh option. Mixed-family and SubD joining remain unimplemented. Surface joining
 uses [certified boundary assembly](../brep-edge-joining.md) with the coverage and
 Rhino differences described below.
 
+With `--features native-smlib`, surface joining instead uses
+[usd-brep stitching](../smlib-joining.md), including partial circular overlaps.
+It retains the command's selection, metadata and history policy. Kernel gap
+admission, vertex placement and face parameterization can differ; the historical
+Rhino comparison scores below apply to builds without this feature.
+
 `JoinCopy` retains all original objects, including their exact geometry, IDs,
 attributes, and groups. Outputs inherit their seed's attributes and memberships.
 Preselection leaves originals and outputs selected. Command-first surface/mesh copying
@@ -29,7 +35,7 @@ produce fresh copies. Both commands use the same staged geometry/document path.
 
 ## Surfaces and polysurfaces
 
-Open inputs use a certified distance strictly below 1.8 times the document
+In builds without `native-smlib`, open inputs use a certified distance strictly below 1.8 times the document
 tolerance for preselection, or 2.1 times for command-first selection. These
 [measured command policies](../join-selection-distance.md) do not change the
 explicit kernel assembly API's distance argument; exact-cutoff endpoint behavior

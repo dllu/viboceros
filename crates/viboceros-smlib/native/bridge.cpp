@@ -11,6 +11,7 @@
 #include <SmFaceuse.h>
 #include <SmRegion.h>
 #include <SmShell.h>
+#include <SmStitch.h>
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
 #include <SmPoly.h>
@@ -305,6 +306,66 @@ extern "C" int vb_shape_offset(const VbSolid *shape, double distance, int wall, 
             check(status, "offset boundary representation");
         }
         require(owner->value != nullptr, "Missing offset result");
+        *out = owner.release();
+    });
+}
+
+extern "C" int vb_shape_face_count(const VbSolid *shape, size_t *count, char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(shape && count, "Invalid face count query");
+        SmTArray<SmFace *> faces;
+        shape->value->GetFaces(faces);
+        *count = faces.GetSize();
+    });
+}
+
+extern "C" int vb_shape_stitch(const VbSolid *shape, double distance, size_t *face_origins,
+                                size_t face_capacity, size_t *face_count,
+                                size_t *stitched_edges, double gaps[2], VbSolid **out,
+                                char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(shape && out && face_origins && face_count && stitched_edges && gaps &&
+                    std::isfinite(distance) && distance > 0,
+                "Invalid stitching arguments");
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(vb_copy_brep(*shape->value));
+        SmTArray<SmFace *> original, faces;
+        owner->value->GetFaces(original);
+        require(original.GetSize() <= face_capacity, "Insufficient stitching face buffer");
+        for (ULONG i = 0; i < original.GetSize(); ++i)
+            original[i]->SetUserIndex1(i + 1);
+        ULONG stitched = 0, lamina = 0;
+        double vertex_gap = 0, edge_gap = 0;
+        SmStitchCallback callback;
+        // Join accepts open sheets and coincident lamina faces. Region nesting
+        // during edge gluing can fail on those inputs; let the orientation pass
+        // handle the resulting connected sheets and closed shells instead.
+        SmStitch executive(callback, distance, FALSE);
+        executive.m_bSqueezeSmallEdges = FALSE;
+        executive.m_bSplitEdgesWithVertices = TRUE;
+        executive.m_bMakingManifoldSolid = TRUE;
+        executive.m_bRemoveLaminarSlivers = FALSE;
+        executive.m_bFastEdgeCompare = FALSE;
+        executive.m_bIgnoreProblems = TRUE;
+        check(executive.DoStitching(owner->value.get(), nullptr, nullptr, stitched, lamina,
+                                    vertex_gap, edge_gap), "stitch boundaries");
+        SmBoolean maybe_open = FALSE;
+        check(owner->value->OrientTrimmedSurfaces(TRUE, maybe_open, lamina > 0),
+              "orient stitched boundaries");
+        owner->value->GetFaces(faces);
+        require(faces.GetSize() <= face_capacity, "Stitching exceeded face buffer");
+        for (ULONG i = 0; i < faces.GetSize(); ++i) {
+            const auto index = faces[i]->GetUserIndex1();
+            require(index > 0 && index <= original.GetSize(), "Stitching lost source face identity");
+            face_origins[i] = index - 1;
+        }
+        require(std::isfinite(vertex_gap) && std::isfinite(edge_gap), "Invalid stitching gaps");
+        *face_count = faces.GetSize();
+        *stitched_edges = stitched;
+        gaps[0] = vertex_gap;
+        gaps[1] = edge_gap;
         *out = owner.release();
     });
 }

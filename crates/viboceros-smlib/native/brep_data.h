@@ -20,7 +20,7 @@ typedef struct {
 } VbEdgeData;
 typedef struct {
     size_t vertices[2], edge;
-    int reversed;
+    int reversed, uv_snapped;
     VbNurbsData curve;
 } VbTrimData;
 typedef struct {

@@ -63,6 +63,9 @@ fn extreme_scale_join_and_copy_normalize_without_mass_and_keep_atomic_history() 
                             joined.solid_orientation().unwrap(),
                             BrepSolidOrientation::Outward
                         );
+                        // Native orientation may encode the same outward
+                        // normal with a face flip or a swapped UV chart.
+                        #[cfg(not(feature = "native-smlib"))]
                         assert!(joined.faces().iter().all(|f| !f.is_reversed()));
                         for id in &ids {
                             assert_eq!(document.object(*id).is_some(), copy);
@@ -87,5 +90,57 @@ fn extreme_scale_join_and_copy_normalize_without_mass_and_keep_atomic_history() 
                 }
             }
         }
+    }
+}
+
+#[test]
+fn newly_closed_inward_component_is_oriented_outward_when_an_unrelated_sheet_remains() {
+    for copy in [false, true] {
+        let mut document = Document::default();
+        let mut ids = (0..6)
+            .map(|f| {
+                let Geometry::Brep(brep) = faces(&[f], 5.) else {
+                    unreachable!()
+                };
+                document
+                    .add_geometry(Geometry::Brep(brep.reversed()))
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let Geometry::Brep(sheet) = faces(&[0], 5.) else {
+            unreachable!()
+        };
+        let sheet = sheet
+            .transformed(
+                AffineTransform3::from_translation(Vector3::try_new(20., 0., 0.).unwrap()),
+                document.tolerance(),
+            )
+            .unwrap();
+        ids.push(document.add_geometry(Geometry::Brep(sheet)).unwrap());
+        document
+            .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let registry = CommandRegistry::with_builtins();
+        execute(&registry, &mut document, copy, false).unwrap();
+        let outputs = document
+            .objects()
+            .filter(|o| !ids.contains(&o.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let Geometry::Brep(closed) = outputs[0].geometry() else {
+            panic!("B-rep")
+        };
+        assert_eq!(
+            closed.solid_orientation().unwrap(),
+            BrepSolidOrientation::Outward
+        );
+        assert!((closed.signed_volume(document.tolerance()).unwrap() - 30.).abs() < 1e-10);
+        assert!(matches!(outputs[1].geometry(),Geometry::Brep(b) if !b.is_solid()));
+        let after = document.objects().cloned().collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
     }
 }

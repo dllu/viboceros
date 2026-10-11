@@ -96,7 +96,16 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
         .unwrap();
     let before = document.objects().cloned().collect::<Vec<_>>();
     let before_members = document.group(group).unwrap().members().collect::<Vec<_>>();
-    let joined = ratio < if post { 2.1 } else { 1.8 };
+    // Native stitching also admits the sum of the stored entity tolerances.
+    // This fixture's exact edges inherit one model tolerance each.
+    let cutoff = if post {
+        2.1
+    } else if cfg!(feature = "native-smlib") {
+        2.
+    } else {
+        1.8
+    };
+    let joined = ratio < cutoff;
     let result = execute(&registry, &mut document, copy, post);
     if post && !joined {
         assert!(matches!(result, Err(CommandError::NothingJoined)));
@@ -138,6 +147,7 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
                 assert_eq!(face.surface(), original.faces()[0].surface());
             }
             let seam = origin + gap * 0.5;
+            #[cfg(not(feature = "native-smlib"))]
             assert_eq!(
                 brep.vertices()
                     .iter()
@@ -145,8 +155,42 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
                     .count(),
                 2
             );
+            #[cfg(feature = "native-smlib")]
+            {
+                // SMLib retains a candidate vertex rather than averaging the
+                // two boundaries. Both seam vertices stay inside the gap.
+                let vertices = brep
+                    .vertices()
+                    .iter()
+                    .filter(|v| (v.point().y() - seam).abs() <= gap * 0.5 + 1e-12)
+                    .collect::<Vec<_>>();
+                assert_eq!(vertices.len(), 2);
+                assert!(vertices.iter().all(|v| v.tolerance() >= gap * 0.5));
+            }
         } else {
+            #[cfg(not(feature = "native-smlib"))]
             assert_eq!(output.geometry(), &originals[index]);
+            #[cfg(feature = "native-smlib")]
+            {
+                // Native import/export gives untouched outputs model-sized
+                // uncertainty and edge-aligned UV parameter domains. Their
+                // spatial definitions must still be exactly unchanged.
+                let Geometry::Brep(original) = &originals[index] else {
+                    unreachable!()
+                };
+                assert_eq!(brep.vertices().len(), original.vertices().len());
+                for (vertex, before) in brep.vertices().iter().zip(original.vertices()) {
+                    assert_eq!(vertex.point(), before.point());
+                    assert!(vertex.tolerance() >= before.tolerance());
+                }
+                assert_eq!(brep.edges().len(), original.edges().len());
+                for (edge, before) in brep.edges().iter().zip(original.edges()) {
+                    assert_eq!(edge.vertices(), before.vertices());
+                    assert_eq!(edge.curve(), before.curve());
+                    assert!(edge.tolerance() >= before.tolerance());
+                }
+                assert_eq!(brep.faces()[0].surface(), original.faces()[0].surface());
+            }
         }
     }
     for (index, id) in ids.into_iter().enumerate() {

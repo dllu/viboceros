@@ -20,6 +20,8 @@ Closed [Boolean2Objects](smlib-boolean-two.md) choices also enter usd-brep direc
 and reuse the same preview and document acceptance flow.
 [OffsetSrf](smlib-offset-surfaces.md) now shares native sheet/solid transfer and
 offset/shell operations; the planar offset adapter is excluded from native builds.
+[Join and JoinCopy](smlib-joining.md) also use native sheet stitching and edge
+splitting; their command selection and document mutation policies remain in Rust.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

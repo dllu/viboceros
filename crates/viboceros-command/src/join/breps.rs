@@ -1,7 +1,12 @@
 //! Surface joining policy, separated from edge matching and document mutation.
 use super::*;
 use std::borrow::Cow;
+#[cfg(not(feature = "native-smlib"))]
 use viboceros_geometry::{join_breps, join_breps_with_report};
+#[cfg(feature = "native-smlib")]
+mod native;
+#[cfg(feature = "native-smlib")]
+use native::{join_breps, join_breps_with_report};
 
 pub(super) fn accepts(geometry: &Geometry) -> bool {
     matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))

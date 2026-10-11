@@ -19,7 +19,7 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-For solid Booleans, general surface offsets, edge fillets and STEP material regions on Linux,
+For solid Booleans, surface joining and offsets, edge fillets and STEP material regions on Linux,
 install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 
 ```sh
@@ -36,4 +36,5 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Architecture and implementation status](docs/architecture.md)
 - [Development and testing](docs/development.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
+- [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)

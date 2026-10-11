@@ -1,5 +1,6 @@
 //! Copy native topology and NURBS payloads into the validated Rust B-rep model.
 use super::*;
+use std::borrow::Cow;
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     NurbsCurve2, NurbsSurface, Point2, SurfaceIso, WeightedPoint2,
@@ -78,6 +79,7 @@ struct TrimData {
     vertices: [usize; 2],
     edge: usize,
     reversed: c_int,
+    uv_snapped: c_int,
     curve: NurbsData,
 }
 #[repr(C)]
@@ -531,6 +533,7 @@ impl NurbsData {
 
 fn with_brep_view<T>(
     brep: &Brep,
+    normalize_domains: bool,
     operation: impl FnOnce(&BrepView) -> Result<T, Error>,
 ) -> Result<T, Error> {
     let vertices = brep
@@ -541,18 +544,28 @@ fn with_brep_view<T>(
             tolerance: v.tolerance(),
         })
         .collect::<Vec<_>>();
-    let edge_geometry = brep
+    let edge_curves = brep
         .edges()
         .iter()
-        .map(|e| Payload::curve(e.curve()))
+        .map(|e| {
+            if normalize_domains {
+                e.curve().try_reparameterized(0. ..=1.).map(Cow::Owned)
+            } else {
+                Ok(Cow::Borrowed(e.curve()))
+            }
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let edge_geometry = edge_curves
+        .iter()
+        .map(|c| Payload::curve(c))
         .collect::<Vec<_>>();
     let edges = brep
         .edges()
         .iter()
-        .zip(&edge_geometry)
-        .map(|(e, g)| EdgeData {
+        .zip(edge_geometry.iter().zip(&edge_curves))
+        .map(|(e, (g, curve))| EdgeData {
             vertices: e.vertices(),
-            interval: [*e.curve().domain().start(), *e.curve().domain().end()],
+            interval: [*curve.domain().start(), *curve.domain().end()],
             tolerance: e.tolerance(),
             curve: g.view(),
         })
@@ -560,20 +573,31 @@ fn with_brep_view<T>(
     let surface_geometry = brep
         .faces()
         .iter()
-        .map(|f| Payload::surface(f.surface()))
-        .collect::<Vec<_>>();
+        .map(|f| {
+            if normalize_domains {
+                Ok(Payload::surface(
+                    &f.surface().try_reparameterized(0. ..=1., 0. ..=1.)?,
+                ))
+            } else {
+                Ok(Payload::surface(f.surface()))
+            }
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
     let trim_geometry = brep
         .faces()
         .iter()
-        .flat_map(|f| f.loops())
-        .flat_map(|l| l.trims())
-        .map(|t| {
+        .flat_map(|f| {
+            f.loops()
+                .iter()
+                .flat_map(move |l| l.trims().iter().map(move |t| (f, t)))
+        })
+        .map(|(face, t)| {
             let curve = if t.is_reversed_3d() {
                 t.curve().reversed()?
             } else {
                 t.curve().clone()
             };
-            if let Some(edge) = t.edge() {
+            let mut payload = if let Some(edge) = t.edge() {
                 let lifted = NurbsCurve::try_new_rational(
                     curve.degree(),
                     curve
@@ -588,11 +612,21 @@ fn with_brep_view<T>(
                         .collect::<Result<Vec<_>, GeometryError>>()?,
                     curve.knots().to_vec(),
                 )?;
-                let aligned = lifted.try_reparameterized(brep.edges()[edge].curve().domain())?;
-                Ok(Payload::curve(&aligned))
+                let aligned = lifted.try_reparameterized(edge_curves[edge].domain())?;
+                Payload::curve(&aligned)
             } else {
-                Ok(Payload::uv(&curve))
+                Payload::uv(&curve)
+            };
+            if normalize_domains {
+                let domains = [face.surface().domain_u(), face.surface().domain_v()];
+                for point in payload.points.chunks_exact_mut(4) {
+                    for d in 0..2 {
+                        point[d] = (point[d] - domains[d].start())
+                            / (domains[d].end() - domains[d].start());
+                    }
+                }
             }
+            Ok(payload)
         })
         .collect::<Result<Vec<_>, Error>>()?;
     let mut faces = Vec::new();
@@ -607,6 +641,7 @@ fn with_brep_view<T>(
                     vertices: trim.vertices(),
                     edge: trim.edge().unwrap_or(usize::MAX),
                     reversed: c_int::from(trim.is_reversed_3d()),
+                    uv_snapped: 0,
                     curve: trim_geometry[trims.len()].view(),
                 });
             }
@@ -638,7 +673,11 @@ fn with_brep_view<T>(
     operation(&view)
 }
 
-pub(super) fn import_sheet(brep: &Brep, tolerance: Tolerance) -> Result<Solid, Error> {
+pub(super) fn import_sheet(
+    brep: &Brep,
+    tolerance: Tolerance,
+    normalize_domains: bool,
+) -> Result<Solid, Error> {
     if brep.edge_use_counts().iter().any(|&n| n == 0 || n > 2) {
         return Err(Error::Kernel(
             "Sheet import requires manifold edge incidence".into(),
@@ -664,7 +703,7 @@ pub(super) fn import_sheet(brep: &Brep, tolerance: Tolerance) -> Result<Solid, E
         }
     }
     let mut pointer = std::ptr::null_mut();
-    with_brep_view(brep, |view| {
+    with_brep_view(brep, normalize_domains, |view| {
         call(|error, capacity| unsafe {
             vb_sheet_from_brep(
                 view,
@@ -838,7 +877,7 @@ impl Solid {
         let mut pointer = std::ptr::null_mut();
         let mut parents = vec![usize::MAX; parts.len()];
         // Payload arrays remain live through the shared synchronous importer.
-        with_brep_view(brep, |view| {
+        with_brep_view(brep, false, |view| {
             call(|error, capacity| unsafe {
                 vb_solid_from_brep_plan(
                     view,
@@ -972,6 +1011,19 @@ impl Solid {
                         Ok(curve) => curve,
                         Err(_) => trim.curve.uv_curve(&owner)?,
                     };
+                    if trim.uv_snapped != 0
+                        && surface
+                            .parameter_curve_deviation_bound(
+                                &curve,
+                                edges[trim.edge].curve(),
+                                tolerance.absolute().max(edges[trim.edge].tolerance()),
+                            )?
+                            .is_none()
+                    {
+                        return Err(Error::Kernel(
+                            "Snapped native UV boundary is not continuously certified".into(),
+                        ));
+                    }
                     let curve = if trim.reversed != 0 {
                         curve.reversed()?
                     } else {

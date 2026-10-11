@@ -2,6 +2,24 @@ use super::*;
 use viboceros_geometry::Brep;
 
 unsafe extern "C" {
+    fn vb_shape_face_count(
+        shape: *const NativeSolid,
+        count: *mut usize,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_stitch(
+        shape: *const NativeSolid,
+        distance: f64,
+        face_origins: *mut usize,
+        face_capacity: usize,
+        face_count: *mut usize,
+        stitched_edges: *mut usize,
+        gaps: *mut f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_offset(
         shape: *const NativeSolid,
         distance: f64,
@@ -13,7 +31,87 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
+/// Copied-operand stitching result with original face indices and native gaps.
+pub struct StitchResult {
+    pub shape: Shape,
+    /// Input face index for each face in the exported output order.
+    pub face_origins: Vec<usize>,
+    pub stitched_edges: usize,
+    /// Largest candidate gaps considered by SMLib, including rejected pairs.
+    /// These are diagnostics, not bounds on the final boundary deviation.
+    pub maximum_vertex_gap: f64,
+    pub maximum_edge_gap: f64,
+}
+
 impl Shape {
+    /// Stitch a private copy using SMLib's manifold edge-pair mode.
+    /// The effective radius is the larger of `distance` and the sum of each
+    /// candidate pair's stored tolerances. Individual glue failures are skipped;
+    /// remaining open boundaries are retained. Source geometry is preserved.
+    pub fn stitch(&self, distance: f64) -> Result<StitchResult, Error> {
+        if !distance.is_finite() || distance <= 0. {
+            return Err(Error::Kernel(
+                "Stitch distance must be finite and positive".into(),
+            ));
+        }
+        let mut face_capacity = 0;
+        call(|error, capacity| unsafe {
+            vb_shape_face_count(
+                self.model.handle.as_ptr(),
+                &mut face_capacity,
+                error,
+                capacity,
+            )
+        })?;
+        if face_capacity == 0 || face_capacity > 1_000_000 {
+            return Err(Error::InvalidOutput);
+        }
+        let mut face_origins = vec![usize::MAX; face_capacity];
+        let (mut face_count, mut stitched_edges) = (0, 0);
+        let mut gaps = [0.; 2];
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_stitch(
+                self.model.handle.as_ptr(),
+                distance,
+                face_origins.as_mut_ptr(),
+                face_capacity,
+                &mut face_count,
+                &mut stitched_edges,
+                gaps.as_mut_ptr(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        let shape = Shape {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        };
+        if face_count != face_capacity
+            || face_origins[..face_count]
+                .iter()
+                .any(|&i| i >= face_capacity)
+        {
+            return Err(Error::InvalidOutput);
+        }
+        let mut seen = vec![false; face_count];
+        for &origin in &face_origins {
+            if std::mem::replace(&mut seen[origin], true) {
+                return Err(Error::InvalidOutput);
+            }
+        }
+        face_origins.truncate(face_count);
+        Ok(StitchResult {
+            shape,
+            face_origins,
+            stitched_edges,
+            maximum_vertex_gap: gaps[0],
+            maximum_edge_gap: gaps[1],
+        })
+    }
     /// Import manifold sheets or closed solids through the shared NURBS payload.
     /// Mixed open/closed components and nonmanifold sheets are rejected.
     pub fn from_brep(brep: &Brep, tolerance: Tolerance) -> Result<Self, Error> {
@@ -21,8 +119,22 @@ impl Shape {
             model: if brep.is_solid() {
                 Solid::from_brep(brep, tolerance)?
             } else {
-                brep::import_sheet(brep, tolerance)?
+                brep::import_sheet(brep, tolerance, false)?
             },
+        })
+    }
+
+    /// Import open manifold sheets with unit edge and surface parameter domains.
+    /// Spatial geometry and tolerances are preserved. UV trim coordinates are
+    /// mapped with their surface, and trim parameters with their spatial edge.
+    /// Use after spatial normalization when extreme knot intervals would exceed
+    /// the native solvers' numerical range. Source geometry is unchanged.
+    pub fn from_sheet_with_normalized_domains(
+        brep: &Brep,
+        tolerance: Tolerance,
+    ) -> Result<Self, Error> {
+        Ok(Self {
+            model: brep::import_sheet(brep, tolerance, true)?,
         })
     }
 

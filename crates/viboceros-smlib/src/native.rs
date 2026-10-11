@@ -9,6 +9,7 @@ use viboceros_geometry::{
 };
 mod brep;
 mod shape;
+pub use shape::StitchResult;
 
 /// A native manifold sheet or solid, owned independently of a document.
 /// Sheet handles cannot be passed to the closed-solid Boolean interface.

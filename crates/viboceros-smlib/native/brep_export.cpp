@@ -14,6 +14,7 @@
 #include <SmVertexuse.h>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -105,6 +106,31 @@ std::unique_ptr<NurbsPayload> surface_payload(const SmBSplineSurface &surface) {
     data->finish();
     return data;
 }
+std::unique_ptr<NurbsPayload> uv_payload(const SmBSplineCurve &curve,
+                                         const SmSurface &surface, bool &snapped) {
+    auto data = curve_payload(curve);
+    const auto domain = surface.GetNaturalUVDomain();
+    const auto lo = domain.GetMin(), hi = domain.GetMax();
+    const double minimum[2] = {lo.x, lo.y}, maximum[2] = {hi.x, hi.y};
+    for (size_t i = 0; i < data->points.size(); i += 4) {
+        auto *p = data->points.data() + i;
+        for (int d = 0; d < 2; ++d) {
+            const double boundary = std::clamp(p[d], minimum[d], maximum[d]);
+            const double epsilon = 32 * std::numeric_limits<double>::epsilon() *
+                std::max({std::abs(minimum[d]), std::abs(maximum[d]), maximum[d] - minimum[d]});
+            if (p[d] == boundary || std::abs(p[d] - boundary) > epsilon) continue;
+            SmPoint2d point;
+            check(surface.SnapToKnots(SmPoint2d(p[0], p[1]), epsilon, point),
+                  "snap native UV boundary roundoff");
+            const double value = d == 0 ? point.x : point.y;
+            if (value == boundary) {
+                p[d] = value;
+                snapped = true;
+            }
+        }
+    }
+    return data;
+}
 } // namespace
 
 struct VbBrep {
@@ -157,21 +183,10 @@ VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
     auto result = std::make_unique<VbBrep>();
     std::unordered_map<const SmVertex *, size_t> vertex_index;
     std::unordered_map<const SmEdge *, size_t> edge_index;
-    for (ULONG i = 0; i < vertices.GetSize(); ++i) {
+    for (ULONG i = 0; i < vertices.GetSize(); ++i)
         vertex_index.emplace(vertices[i], i);
-        const auto p = vertices[i]->GetPoint();
-        result->vertices.push_back({{p.x, p.y, p.z}, vertices[i]->GetTolerance()});
-    }
-    for (ULONG i = 0; i < edges.GetSize(); ++i) {
-        const auto *edge = edges[i];
-        edge_index.emplace(edge, i);
-        const auto interval = edge->GetInterval();
-        result->edges.push_back(
-            {{vertex_index.at(edge->GetStartVertex()), vertex_index.at(edge->GetEndVertex())},
-             {interval.GetMin(), interval.GetMax()},
-             edge->GetTolerance(),
-             result->keep(curve_payload(*static_cast<SmBSplineCurve *>(edge->GetCurve())))});
-    }
+    for (ULONG i = 0; i < edges.GetSize(); ++i)
+        edge_index.emplace(edges[i], i);
     for (ULONG i = 0; i < faces.GetSize(); ++i) {
         auto *face = faces[i];
         SmFaceuse *positive = nullptr;
@@ -205,12 +220,15 @@ VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
                 check(use->GetOrCreateUVTrimCurve(uv), "create UV trim after NURBS conversion");
                 require(uv, "Missing UV trim curve");
                 const bool reversed = use->GetOrientation() == SM_OT_OPPOSITE;
+                bool snapped = false;
+                auto payload = uv_payload(*uv, *face->GetSurface(), snapped);
                 const auto a = vertex_index.at(edge->GetStartVertex()),
                            b = vertex_index.at(edge->GetEndVertex());
                 result->trims.push_back({{reversed ? b : a, reversed ? a : b},
                                          edge_index.at(edge),
                                          reversed,
-                                         result->keep(curve_payload(*uv))});
+                                         snapped,
+                                         result->keep(std::move(payload))});
                 require(result->trims.size() <= limit, "Trim resource limit");
                 ++loop_record.trim_count;
             }
@@ -219,6 +237,22 @@ VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
             ++record.loop_count;
         }
         result->faces.push_back(record);
+    }
+    // GetOrCreateUVTrimCurve can increase edge and vertex tolerances. Snapshot
+    // them after every face trim has been created, so geometry and uncertainty
+    // come from the same native state. Source geometry remains on a private copy.
+    for (ULONG i = 0; i < vertices.GetSize(); ++i) {
+        const auto p = vertices[i]->GetPoint();
+        result->vertices.push_back({{p.x, p.y, p.z}, vertices[i]->GetTolerance()});
+    }
+    for (ULONG i = 0; i < edges.GetSize(); ++i) {
+        const auto *edge = edges[i];
+        const auto interval = edge->GetInterval();
+        result->edges.push_back(
+            {{vertex_index.at(edge->GetStartVertex()), vertex_index.at(edge->GetEndVertex())},
+             {interval.GetMin(), interval.GetMax()},
+             edge->GetTolerance(),
+             result->keep(curve_payload(*static_cast<SmBSplineCurve *>(edge->GetCurve())))});
     }
     return result.release();
 }
