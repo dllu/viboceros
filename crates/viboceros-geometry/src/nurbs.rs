@@ -4137,6 +4137,13 @@ impl NurbsCurve {
         self
     }
 
+    /// Clamps the active interval without changing its parameterization or locus.
+    /// Exterior knots and controls are removed using the existing de Boor
+    /// endpoint extraction. The source is unchanged.
+    pub fn try_clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
+        self.clamped_to_active_domain()
+    }
+
     pub(crate) fn clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
         let start = *self.domain().start();
         let end = *self.domain().end();

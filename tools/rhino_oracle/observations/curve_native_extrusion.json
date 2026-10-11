@@ -1,0 +1,258 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 80360413,
+      "id": "extrude-native-polyline-default",
+      "value": {
+        "surfaces": [
+          {
+            "control_count": [
+              3,
+              2
+            ],
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  4.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  1.0,
+                  5.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  1.0,
+                  5.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  4.0,
+                  5.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": [
+              1,
+              1
+            ],
+            "domain_u": [
+              0.0,
+              2.0
+            ],
+            "domain_v": [
+              0.0,
+              5.0
+            ],
+            "knots_u": [
+              0.0,
+              0.0,
+              1.0,
+              2.0,
+              2.0
+            ],
+            "knots_v": [
+              0.0,
+              0.0,
+              5.0,
+              5.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 57609558,
+      "id": "extrude-native-polyline-domain",
+      "value": {
+        "surfaces": [
+          {
+            "control_count": [
+              3,
+              2
+            ],
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  1.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  4.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  1.0,
+                  5.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  1.0,
+                  5.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  2.0,
+                  4.0,
+                  5.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": [
+              1,
+              1
+            ],
+            "domain_u": [
+              -7.0,
+              13.0
+            ],
+            "domain_v": [
+              0.0,
+              5.0
+            ],
+            "knots_u": [
+              -7.0,
+              -7.0,
+              3.0,
+              13.0,
+              13.0
+            ],
+            "knots_v": [
+              0.0,
+              0.0,
+              5.0,
+              5.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 56152344,
+      "id": "extrude-native-line-domain",
+      "value": {
+        "surfaces": [
+          {
+            "control_count": [
+              2,
+              2
+            ],
+            "control_points": [
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.0,
+                  0.0,
+                  5.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  4.0,
+                  0.0,
+                  5.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": [
+              1,
+              1
+            ],
+            "domain_u": [
+              -7.0,
+              13.0
+            ],
+            "domain_v": [
+              0.0,
+              5.0
+            ],
+            "knots_u": [
+              -7.0,
+              -7.0,
+              13.0,
+              13.0
+            ],
+            "knots_v": [
+              0.0,
+              0.0,
+              5.0,
+              5.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

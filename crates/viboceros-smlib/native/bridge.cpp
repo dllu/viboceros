@@ -5,7 +5,9 @@
 #include <SmApiIntersectors.h>
 #include <SmApiPrimitives.h>
 #include <SmApiQueries.h>
+#include <SmApiSurfaces.h>
 #include <SmBSplineCurve.h>
+#include <SmBSplineSurface.h>
 #include <SmBrep.h>
 #include <SmFace.h>
 #include <SmFaceuse.h>
@@ -15,6 +17,7 @@
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
 #include <SmPoly.h>
+#include <SmPrimitiveCreation.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -597,6 +600,79 @@ extern "C" int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t p
 extern "C" void vb_curve_free(VbCurve *curve) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete curve;
+}
+
+extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[3],
+                                VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curve && out && finite3(displacement), "Invalid extrusion arguments");
+        const SmVector3d vector(displacement[0], displacement[1], displacement[2]);
+        require(std::isfinite(vector.Length()) && vector.Length() > 0,
+                "Invalid extrusion displacement");
+        SmSurface *raw = nullptr;
+        const auto status = SmApiCreateExtrude(curve->value.get(), vector, raw);
+        std::unique_ptr<SmSurface> owner(raw);
+        check(status, "extrude curve surface");
+        require(raw && raw->IsKindOf(SmBSplineSurface_TYPE), "Missing NURBS extrusion surface");
+        auto *surface = static_cast<SmBSplineSurface *>(raw);
+        // Native extrusion is linear in U. The application uses profile U and
+        // physical-distance V, so use the native chart operations to align it.
+        check(surface->SwapUV(), "align extrusion parameter directions");
+        const auto domain = surface->GetNaturalUVDomain();
+        check(surface->Reparameterize(SmExtent2d(domain.GetMin().x, 0,
+                                                domain.GetMax().x, vector.Length())),
+              "set extrusion distance domain");
+        *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
+                                      const double displacement[3], int cap_ends, double tolerance,
+                                      VbSolid **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(curves && count && count <= 128 && out && finite3(displacement) &&
+                    (cap_ends == 0 || cap_ends == 1) && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid linear sweep arguments");
+        auto *context = SmApiGetOrCreateContext();
+        SmTArray<SmCurve *> profiles;
+        std::vector<std::unique_ptr<SmCurve>> copies;
+        for (size_t i = 0; i < count; ++i) {
+            require(curves[i] && curves[i]->value, "Missing linear sweep profile");
+            SmCurve *copy = nullptr;
+            const auto status = curves[i]->value->Copy(*context, copy);
+            copies.emplace_back(copy);
+            check(status, "copy linear sweep profile");
+            require(copy, "Missing copied linear sweep profile");
+            profiles.Add(copy);
+        }
+        SmVector3d vector(displacement[0], displacement[1], displacement[2]);
+        const double distance = vector.Length();
+        require(std::isfinite(distance) && distance > 0, "Invalid linear sweep displacement");
+        check(vector.Unitize(), "normalize linear sweep direction");
+        if (cap_ends) {
+            SmVector3d normal;
+            require(profiles[0]->AreCoPlanar(profiles, tolerance, nullptr, &normal),
+                    "Capped sweep requires coplanar profiles");
+            require(std::abs(vector.Dot(normal)) * distance > tolerance,
+                    "A capped sweep must cross the profile plane");
+        }
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(new (*context) SmBrep());
+        owner->value->SetTolerance(tolerance, FALSE);
+        // SM_API has no creation-tolerance argument. Invoke the same upstream
+        // producer on an explicitly configured B-rep. It consumes the private
+        // profile copies, including its failure path; originals stay owned.
+        SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(), 0, TRUE);
+        for (auto &copy : copies) copy.release();
+        check(producer.CreateLinearSweep(profiles, vector, distance, 1, cap_ends),
+              "create linear sweep");
+        require(!cap_ends || owner->value->IsManifoldSolid(),
+                "Capped sweep did not produce a manifold solid");
+        check(SmApiTurnToNurbs(owner->value.get()), "convert exact linear sweep to NURBS");
+        *out = owner.release();
+    });
 }
 
 extern "C" int vb_solid_empty(const VbSolid *solid, int *empty, char *error, size_t capacity) {

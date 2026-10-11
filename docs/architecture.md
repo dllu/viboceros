@@ -22,6 +22,8 @@ and reuse the same preview and document acceptance flow.
 offset/shell operations; the planar offset adapter is excluded from native builds.
 [Join and JoinCopy](smlib-joining.md) also use native sheet stitching and edge
 splitting; their command selection and document mutation policies remain in Rust.
+[ExtrudeCrv](smlib-extrusion.md) uses native surface and capped-sweep producers,
+sharing NURBS transfer while retaining the command's existing document policy.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

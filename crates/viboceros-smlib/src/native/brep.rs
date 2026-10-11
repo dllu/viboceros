@@ -11,6 +11,34 @@ struct NativeBrep {
     _private: [u8; 0],
 }
 
+#[repr(C)]
+pub(super) struct NativeSurfaceData {
+    _private: [u8; 0],
+}
+unsafe extern "C" {
+    fn vb_surface_data_view(surface: *const NativeSurfaceData, view: *mut NurbsData) -> c_int;
+    fn vb_surface_data_free(surface: *mut NativeSurfaceData);
+}
+struct OwnedSurfaceData(NonNull<NativeSurfaceData>);
+impl Drop for OwnedSurfaceData {
+    fn drop(&mut self) {
+        unsafe { vb_surface_data_free(self.0.as_ptr()) };
+    }
+}
+// Only these immutable native snapshots own the buffers read by this module.
+trait SnapshotOwner {}
+impl SnapshotOwner for OwnedSurfaceData {}
+impl SnapshotOwner for OwnedBrep {}
+
+pub(super) fn surface_from_native(pointer: *mut NativeSurfaceData) -> Result<NurbsSurface, Error> {
+    let owner = OwnedSurfaceData(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
+    let mut view = std::mem::MaybeUninit::uninit();
+    if unsafe { vb_surface_data_view(owner.0.as_ptr(), view.as_mut_ptr()) } != 0 {
+        return Err(Error::InvalidOutput);
+    }
+    unsafe { view.assume_init() }.surface(&owner)
+}
+
 #[cfg(test)]
 mod plan_tests {
     use super::*;
@@ -271,14 +299,18 @@ impl Drop for OwnedBrep {
     }
 }
 
-fn copied<T: Copy>(_: &OwnedBrep, pointer: *const T, count: usize) -> Result<Vec<T>, Error> {
+fn copied<T: Copy>(
+    _: &impl SnapshotOwner,
+    pointer: *const T,
+    count: usize,
+) -> Result<Vec<T>, Error> {
     if count > 4_000_000 || (count != 0 && pointer.is_null()) {
         return Err(Error::InvalidOutput);
     }
     if count == 0 {
         return Ok(Vec::new());
     }
-    // The immutable native snapshot owns every view buffer until OwnedBrep drops.
+    // The immutable native snapshot owns every view buffer until its owner drops.
     Ok(unsafe { std::slice::from_raw_parts(pointer, count) }.to_vec())
 }
 fn borrowed<T>(_: &OwnedBrep, pointer: *const T, count: usize) -> Result<&[T], Error> {
@@ -475,7 +507,7 @@ fn close_pole_gaps(
     Ok(completed)
 }
 impl NurbsData {
-    fn points(self, owner: &OwnedBrep) -> Result<Vec<WeightedPoint3>, Error> {
+    fn points(self, owner: &impl SnapshotOwner) -> Result<Vec<WeightedPoint3>, Error> {
         let count = self.count[0]
             .checked_mul(self.count[1])
             .filter(|n| *n <= 1_000_000)
@@ -518,7 +550,7 @@ impl NurbsData {
             curve.knots().to_vec(),
         )?)
     }
-    fn surface(self, owner: &OwnedBrep) -> Result<NurbsSurface, Error> {
+    fn surface(self, owner: &impl SnapshotOwner) -> Result<NurbsSurface, Error> {
         Ok(NurbsSurface::try_new_rational(
             self.degree[0],
             self.degree[1],

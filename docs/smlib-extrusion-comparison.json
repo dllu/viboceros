@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "extrude-native-polyline-default",
+      "comparison": {
+        "id": "extrude-native-polyline-default",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 214592.0,
+        "rhino_ns_per_iteration": 80360413.0,
+        "rhino_to_viboceros_ratio": 374.480003914405,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "extrude-native-polyline-domain",
+      "comparison": {
+        "id": "extrude-native-polyline-domain",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 182272.0,
+        "rhino_ns_per_iteration": 57609558.0,
+        "rhino_to_viboceros_ratio": 316.06367406952245,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "extrude-native-line-domain",
+      "comparison": {
+        "id": "extrude-native-line-domain",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 199504.0,
+        "rhino_ns_per_iteration": 56152344.0,
+        "rhino_to_viboceros_ratio": 281.45974015558585,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 3,
+  "matched": 3,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "fixture": "tools/rhino_oracle/fixtures/curve_native_extrusion.json",
+  "fixture_sha256": "7a752f677fbeb9908829eb0f4e5d33215e418e23703f7a486c273493c661493e",
+  "observation": "tools/rhino_oracle/observations/curve_native_extrusion.json",
+  "observation_sha256": "1508b66fd4659a2dcd29b88fbe7865953985f47b8d0bba3077c1986e2ec8dde2",
+  "native_reference": "docs/smlib-extrusion-native-reference.json",
+  "native_reference_sha256": "f169c749a8d110f134698ec72ebc9a80d56fe98229fb2b96a1f41d8622c91ce7",
+  "build_command": "CMAKE_BUILD_PARALLEL_LEVEL=10 cargo build --release -p viboceros-oracle --features viboceros-command/native-smlib",
+  "native_command": "target/release/viboceros-oracle --audit tools/rhino_oracle/fixtures/curve_native_extrusion.json docs/smlib-extrusion-native-reference.json",
+  "capture_command": "tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/curve_native_extrusion.json --timeout 360 --scheme VibocerosOracleUsdExtrude20261011 --output tools/rhino_oracle/observations/curve_native_extrusion.json",
+  "qualification": "Complete raw sheet NURBS definitions only, with Rhino CreaseSplitting disabled. No topology/domain/control normalization. Native audit timings are placeholders and cannot establish speed parity.",
+  "probe_sha256": "9aa7f0ffcf732dcb3173718e02f02f147c11f1f163a6c437a5445d18747e3bb9",
+  "source_sha256": {
+    "crates/viboceros-command/src/extrude_curve.rs": "2bf3ca1db946d82e1f0fdeb9cc6e34dfca9f82b22dc7df4f014ccaced4c3078e",
+    "crates/viboceros-command/src/extrude_curve/native.rs": "cae15b007ce87d3de1135cca82a4185e63a458d91c32188ff5117201802d4d2f",
+    "crates/viboceros-geometry/src/nurbs.rs": "470727e72973e6f1de1568703723a4e2341d5f224ebb6be79c1cbabab25f1599",
+    "crates/viboceros-smlib/native/bridge.cpp": "efa5965879a648a12884a17841f170c70ec4576a9d4f7928cfaee452909bd2c7",
+    "crates/viboceros-smlib/native/bridge.h": "eec0a05e01f7596b8be63fde618c89cd900d139a2d7825eac48b4565c9aa7976",
+    "crates/viboceros-smlib/native/brep_data.h": "03f0410ca3f234d91d1908bb1a63741e339665f7dfd39549029660b130b5901c",
+    "crates/viboceros-smlib/native/brep_export.cpp": "db24c195ccb48bb162004b5fdf12a1b524b84e1c7b40edcf27d1f43612230656",
+    "crates/viboceros-smlib/src/native/construction.rs": "c0575d32b9abc6ffd0f049179d12a0630ec871a23292aaf6f5700c21fd6752f5",
+    "crates/viboceros-smlib/src/native/brep.rs": "df3ba7a901c99b85f05e61925ff4eedd6db7b69ebd216c622ce9238d62382202",
+    "crates/viboceros-command/src/lib.rs": "ab7b34d84ca8b3b3c8771076b97cdbad0642b18c5bc196c2a1bf0f52e2a073f9",
+    "crates/viboceros-smlib/src/lib.rs": "b5245b4e42fd0242c25d21c82b6fd37fde7de95576980fff8440592170072079",
+    "crates/viboceros-smlib/src/native.rs": "7b5511b6368d0705b5b8e02507e892c007a6bb6318db760211c654a3d8e3e56b"
+  }
+}

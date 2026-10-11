@@ -5,9 +5,11 @@ use std::{
     rc::Rc,
 };
 use viboceros_geometry::{
-    GeometryError, NurbsCurve, Point3, Tolerance, TriangleMesh, WeightedPoint3,
+    GeometryError, NurbsCurve, NurbsSurface, Point3, Tolerance, TriangleMesh, Vector3,
+    WeightedPoint3,
 };
 mod brep;
+mod construction;
 mod shape;
 pub use shape::StitchResult;
 

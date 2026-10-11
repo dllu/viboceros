@@ -133,6 +133,23 @@ std::unique_ptr<NurbsPayload> uv_payload(const SmBSplineCurve &curve,
 }
 } // namespace
 
+struct VbSurfaceData {
+    std::unique_ptr<NurbsPayload> geometry;
+};
+VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface) {
+    auto result = std::make_unique<VbSurfaceData>();
+    result->geometry = surface_payload(surface);
+    return result.release();
+}
+extern "C" int vb_surface_data_view(const VbSurfaceData *surface, VbNurbsData *view) {
+    if (!surface || !view) return 1;
+    *view = surface->geometry->view;
+    return 0;
+}
+extern "C" void vb_surface_data_free(VbSurfaceData *surface) {
+    delete surface;
+}
+
 struct VbBrep {
     std::vector<VbVertexData> vertices;
     std::vector<VbEdgeData> edges;

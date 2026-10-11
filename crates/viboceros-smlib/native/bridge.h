@@ -63,6 +63,11 @@ int vb_curve_sizes(const VbCurve *curve, size_t *degree, size_t *points, size_t 
 int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count, double *knots,
                   size_t knot_count);
 void vb_curve_free(VbCurve *curve);
+int vb_curve_extrude(const VbCurve *curve, const double displacement[3], VbSurfaceData **out,
+                     char *error, size_t capacity);
+int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
+                          const double displacement[3], int cap_ends, double tolerance,
+                          VbSolid **out, char *error, size_t capacity);
 #ifdef __cplusplus
 }
 #endif

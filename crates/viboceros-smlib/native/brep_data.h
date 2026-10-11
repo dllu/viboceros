@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 typedef struct VbBrep VbBrep;
+typedef struct VbSurfaceData VbSurfaceData;
 typedef struct {
     size_t degree[2], count[2], knot_count[2];
     const double *knots[2];
@@ -42,12 +43,16 @@ typedef struct {
 } VbBrepView;
 int vb_brep_view(const VbBrep *brep, VbBrepView *view);
 void vb_brep_free(VbBrep *brep);
+int vb_surface_data_view(const VbSurfaceData *surface, VbNurbsData *view);
+void vb_surface_data_free(VbSurfaceData *surface);
 #ifdef __cplusplus
 }
 class SmBrep;
 class SmEdge;
+class SmBSplineSurface;
 #include <vector>
 VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0);
+VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface);
 SmBrep *vb_copy_brep(const SmBrep &source);
 void vb_validate_boundary_intersections(SmBrep &solid, double tolerance);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,

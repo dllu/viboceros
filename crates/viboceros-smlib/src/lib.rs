@@ -4,7 +4,8 @@
 //! Boolean operations copy their operands before mutation. Native solids can
 //! import and export owned NURBS topology with validated Rust B-reps. The optional
 //! application feature uses this adapter for closed curved BooleanDifference,
-//! BooleanUnion, BooleanIntersection and BooleanSplit.
+//! BooleanUnion, BooleanIntersection and BooleanSplit, surface joining/offsets,
+//! and native curve extrusion.
 #[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]

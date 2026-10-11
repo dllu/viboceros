@@ -8,6 +8,25 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Linear-sweep wrapper lacks explicit creation tolerance.**
+  `SmApiCreateLinearSweep` constructs a new B-rep with its default tolerance.
+  The native ExtrudeCrv adapter invokes the same existing producer on a private
+  B-rep configured with the document tolerance. The pinned old tolerance model's
+  `SmBrep::SetTolerance` changes that B-rep, despite header commentary describing
+  a context-wide change; setting a temporary unrelated B-rep does not configure
+  the wrapper's output. See [extrusion integration](smlib-extrusion.md).
+- **Extrusion parameter axes differ from Rhino's convention.**
+  `SmApiCreateExtrude` creates the linear direction in U and profile in V, with a
+  unit extrusion interval. Native `SwapUV` and `Reparameterize` align the command
+  output to profile U and physical-distance V without another extrusion builder.
+  Signed/oblique sheet tests and three complete raw Rhino captures qualify this.
+- **Linear-sweep final stitching status is unchecked (source audit).**
+  The analytic/simple sweep paths call `StitchAndOrient` without checking its
+  return value before reporting success. This is not a validity certificate.
+  The bridge rejects coplanar capped offsets, requires a native manifold solid
+  for caps, and validates exported B-reps. No fixture inducing an ignored stitch
+  failure has been retained. Source:
+  [SmPrimitiveCreation.cpp](../third_party/usd-brep/source/SMLib/src/SmPrimitiveCreation.cpp).
 - **Stitch distance includes entity tolerances.** `SmStitch::DoStitching` uses
   `max(vertex/edge tolerance sums, requested distance)`. An explicit distance
   alone does not impose a strict command gap cutoff. Its manifold option limits
