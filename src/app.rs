@@ -9732,6 +9732,8 @@ mod tests {
     mod named_view;
     mod nurbs_selection;
     mod object_selection;
+    #[cfg(feature = "native-smlib")]
+    mod offset_surface;
     mod planar_boolean;
     mod plane_arrays;
     mod point_grid;

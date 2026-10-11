@@ -69,7 +69,6 @@
     "crates/viboceros-smlib/examples/export_breps.rs": "5730f23dfee698d4a07db72d5cc123b56c483ac13169f1d46563c9709b089690",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
     "crates/viboceros-smlib/examples/reference.rs": "e000e34301d30c6b65d0fd7ea26033d040fa94e64c245ec9f46bdafdc55baeef",
-    "crates/viboceros-smlib/native/brep_export.cpp": "20c3433e43c1446a320a573c6d16a703df7081fb5df88e693185081734e7df1c",
     "crates/viboceros-smlib/tests/rhino_reference.rs": "5fc069aa154f59c32c1154c497e8ffae5d1c8cb1d7994112468992ed51c260d1",
     "docs/smlib-brep-comparison.json": "2080bea158e6da9a6cd7adb4d82f06ce4a3442a700886708874dfbe565739338",
     "docs/smlib-brep-diagnostics/cad/box.3dm": "3320ef46cca681c94cdba7fa0dde9826373dd4daafccf3aca57b89497ca49bb6",
@@ -129,6 +128,7 @@
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-poles-prior-source/tools/rhino_oracle/rhino_worker.py": "dd64c610482a1a77eb10ed1dcfd35499f8d8d2cea2d60b8cc6cec1918972fe7f",
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-poles-prior-source/crates/viboceros-smlib/tests/brep_transfer.rs": "0ced9fd68ce70a9a25dd1496fb6b58b2c22df86ce2e9b2cfd127b36bd68b8846",
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/step-poles-prior-source/docs/smlib-brep-transfer.md": "5dd50e3b8505e8131c76f9d4cdace06b530e02cda05b308102eeb57adc3c7c32",
-    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df"
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/crates/viboceros-smlib/Cargo.toml": "2e9b8c227422c719279294e0360d724b4c60502647313bc65ca65e39911ae5df",
+    "6885d332c18167eff168f7f626a80de5380b7957:crates/viboceros-smlib/native/brep_export.cpp": "20c3433e43c1446a320a573c6d16a703df7081fb5df88e693185081734e7df1c"
   }
 }

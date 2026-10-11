@@ -8,4 +8,6 @@
 #[cfg(feature = "native")]
 mod native;
 #[cfg(feature = "native")]
-pub use native::{BooleanOperation, Error, KernelCurve, Solid, SolidProperties, Tessellation};
+pub use native::{
+    BooleanOperation, Error, KernelCurve, Shape, Solid, SolidProperties, Tessellation,
+};

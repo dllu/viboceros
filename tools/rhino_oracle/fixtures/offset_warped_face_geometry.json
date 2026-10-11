@@ -1,0 +1,151 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "warped_positive",
+      "corners": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          1
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "distance": 0.25,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "warped_negative",
+      "corners": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          1
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "distance": -0.25,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "warped_two_sides",
+      "corners": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          1
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "distance": 0.25,
+      "solid": false,
+      "both_sides": true
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "warped_wall",
+      "corners": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          1
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "distance": 0.25,
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "warped_two_side_wall",
+      "corners": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0
+        ],
+        [
+          4,
+          3,
+          1
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ],
+      "distance": 0.25,
+      "solid": true,
+      "both_sides": true
+    }
+  ]
+}

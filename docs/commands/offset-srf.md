@@ -2,6 +2,11 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/offsetsrf.htm)
 
+Linux builds with `--features native-smlib` also use [usd-brep](../smlib-offset-surfaces.md)
+for planar/trimmed sheets, free-form surfaces and polysurfaces. Canonical analytic
+surfaces retain their qualified exact fast paths. General native offsets and
+wall construction replace the Rust planar adapter in that build.
+
 Select one or more planar surfaces, exact canonical spheres, cylinders, cones,
 or tori, or supported single-face B-reps. Run `OffsetSrf 2` or
 `OffsetSrf Distance=2`. Planar outputs are translated along the face normal.
@@ -22,7 +27,7 @@ One Undo restores the prior document. The command stages all outputs before
 editing the document, so unsupported selections
 leave it unchanged.
 
-Planar offsets are exact translations. The current solver rejects nonplanar
+Planar offsets are exact translations. Builds without the native feature reject nonplanar
 surfaces other than canonical spheres, cylinders, cones, and tori, multi-face B-reps,
 and solid planar offsets with multiple boundary loops. Canonical spheres use their exact
 rational control net: single-sided offsets change the radius, two-sided open

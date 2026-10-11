@@ -8,6 +8,13 @@ use viboceros_geometry::{
     GeometryError, NurbsCurve, Point3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 mod brep;
+mod shape;
+
+/// A native manifold sheet or solid, owned independently of a document.
+/// Sheet handles cannot be passed to the closed-solid Boolean interface.
+pub struct Shape {
+    model: Solid,
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

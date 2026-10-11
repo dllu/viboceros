@@ -1056,7 +1056,14 @@ def _nurbs_surface_from_definition(definition):
 
 
 def _offset_surface_face_geometry(operation, iterations, tolerance):
-    if "sphere" in operation:
+    if "box" in operation:
+        definition = operation["box"]
+        minimum, maximum = _point(definition["min"]), _point(definition["max"])
+        if any(a >= b for a, b in zip(_xyz(minimum), _xyz(maximum))):
+            raise ValueError("invalid offset box bounds")
+        source = Rhino.Geometry.BoundingBox(minimum, maximum).ToBrep()
+        surface = None
+    elif "sphere" in operation:
         definition = operation["sphere"]
         radius = _finite(definition["radius"], "sphere radius")
         if radius <= 0.0:
@@ -1111,12 +1118,30 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
         if surface is None or not surface.IsValid:
             raise ValueError("invalid source surface")
         source = Rhino.Geometry.Brep.CreateFromSurface(surface)
-    if source is None or not source.IsValid or source.Faces.Count != 1:
+    if source is None or not source.IsValid or ("box" not in operation and source.Faces.Count != 1):
         raise ValueError("invalid source face")
     distance = _finite(operation["distance"], "offset distance")
     both_sides = bool(operation.get("both_sides", False))
     solid = bool(operation.get("solid", False))
+    class BoxResults(object):
+        def __init__(self, bodies):
+            self.bodies = bodies
+        def Dispose(self):
+            for body in self.bodies:
+                body.Dispose()
     def create():
+        if "box" in operation:
+            if both_sides:
+                raise ValueError("box SDK probe records one-sided offsets only")
+            bodies, blends, walls = Rhino.Geometry.Brep.CreateOffsetBrep(
+                source, distance, solid, True, tolerance["absolute"])
+            for auxiliary in list(blends or []) + list(walls or []):
+                auxiliary.Dispose()
+            if bodies is not None and len(bodies) > 8:
+                for body in bodies or []:
+                    body.Dispose()
+                raise ValueError("box SDK probe requires bounded output bodies")
+            return BoxResults(bodies or [])
         result = Rhino.Geometry.Brep.CreateFromOffsetFace(
             source.Faces[0], distance, tolerance["absolute"], both_sides, solid
         )
@@ -1124,7 +1149,7 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
             raise ValueError("Rhino could not offset the source face")
         return result
     try:
-        def record(result):
+        def record_brep(result):
             bounds = result.GetBoundingBox(True)
             face_samples = []
             for face in result.Faces:
@@ -1196,6 +1221,10 @@ def _offset_surface_face_geometry(operation, iterations, tolerance):
                     ],
                 }
             return value
+        def record(result):
+            if isinstance(result, BoxResults):
+                return dict(created=bool(result.bodies), bodies=[record_brep(body) for body in result.bodies])
+            return record_brep(result)
         return _measure_disposable(iterations, create, record)
     finally:
         source.Dispose()

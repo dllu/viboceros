@@ -234,6 +234,17 @@ extern "C" int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, si
     });
 }
 
+extern "C" int vb_shape_brep(const VbSolid *shape, double approximation, VbBrep **out,
+                              char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(shape && out && std::isfinite(approximation) && approximation > 0,
+                "Invalid shape export");
+        *out = vb_export_brep(*shape->value, approximation);
+    });
+}
+
 extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
                                   const size_t *components, size_t component_count,
                                   const int *inward, VbSolid **out, char *error, size_t capacity) {
@@ -243,6 +254,57 @@ extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
         require(view && out, "Invalid B-rep import");
         auto owner = std::make_unique<VbSolid>();
         owner->value.reset(vb_import_brep(*view, tolerance, components, component_count, inward));
+        *out = owner.release();
+    });
+}
+
+extern "C" int vb_sheet_from_brep(const VbBrepView *view, double tolerance,
+                                  const size_t *components, size_t component_count,
+                                  VbSolid **out, char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(view && out && component_count && component_count <= 128,
+                "Invalid sheet import");
+        std::vector<int> inward(component_count, 0);
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(vb_import_brep(*view, tolerance, components, component_count,
+                                         inward.data(), nullptr, nullptr, true));
+        *out = owner.release();
+    });
+}
+
+extern "C" int vb_shape_offset(const VbSolid *shape, double distance, int wall, double accuracy,
+                                VbSolid **out, char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(shape && out && std::isfinite(distance) && distance != 0 &&
+                    (wall == 0 || wall == 1) && std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
+                "Invalid shape offset or accuracy");
+        auto owner = std::make_unique<VbSolid>();
+        std::unique_ptr<SmBrep> working(vb_copy_brep(*shape->value));
+        const auto previous_tolerance = working->GetTolerance();
+        working->SetTolerance(accuracy);
+        struct RestoreTolerance {
+            SmBrep *brep;
+            double previous;
+            ~RestoreTolerance() { brep->SetTolerance(previous); }
+        } restore{working.get(), previous_tolerance};
+        SmBrep *raw = nullptr;
+        if (wall) {
+            SmTArray<const SmFace *> faces;
+            const auto status = SmApiShellBrepFull(working.get(), distance,
+                                                  TRUE, TRUE, TRUE, faces, raw);
+            owner->value.reset(raw);
+            check(status, "shell boundary representation");
+        } else {
+            const auto status = SmApiOffsetBrepFull(working.get(), distance, TRUE, TRUE, raw);
+            require(raw != working.get(), "Offset returned its input instead of a new result");
+            owner->value.reset(raw);
+            check(status, "offset boundary representation");
+        }
+        require(owner->value != nullptr, "Missing offset result");
         *out = owner.release();
     });
 }

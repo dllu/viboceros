@@ -542,6 +542,7 @@ impl VibocerosApp {
             let command_override = (matches!(
                 description.command,
                 "TweenSurfaces"
+                    | "OffsetSrf"
                     | "Rebuild"
                     | "ShowEdges"
                     | "ZoomNaked"

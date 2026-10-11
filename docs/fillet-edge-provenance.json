@@ -79,7 +79,6 @@
     "crates/viboceros-io/src/three_dm_geometry.rs": "279ed1a5858009efa745d9f64344f83edd01faf759e0e565c430f0245f8f19ef",
     "crates/viboceros-smlib/Cargo.toml": "cd428268be3df677a67451bf1dc4b1aeabeccd80521a1740b1cf7c85847a3e0f",
     "crates/viboceros-smlib/examples/fillet_edges.rs": "866f360ebb6a019ab33e8d0667025efeb74e5c25f4193f6b38f8cf39e121ebf7",
-    "crates/viboceros-smlib/native/brep_import.cpp": "953e898f39f643710761ae132e3069d3adef52309ff7c8ce45166c2d0332445c",
     "crates/viboceros-smlib/tests/fillet_edges.rs": "89fa2fdf768e4c53299c04b3612b7ab78dde6334799d433ce58c8618fc0bb067",
     "docs/commands/README.md": "d5d5e9558a701125cdb5005ba249d368596f8bf15b02df1db5c3ea3516704467",
     "docs/fillet-edge-comparison.json": "23391853b1a5f2012416000c175c89da1a90888f324127f146e888ca492fc4b0",
@@ -118,12 +117,10 @@
     "docs/fillet-edge-diagnostics/workspace-final.log": "1eba5e09b709aff891346942db729a27e1bf29cde19aaedd896900a102c8bd9c",
     "docs/fillet-edge-interchange-reference.json": "4919bf844e391efd3b7742181a124f5dd72d1845732e08b817ba7b7725f42979",
     "docs/fillet-edge-native-reference.json": "0877eddfb20c6bfd9b30dc14c4ee9557b0368a45a7d875639f2f104db9741937",
-    "src/app.rs": "598a8c83c098c023ce0455c85f2e0412ba823448d0c2eec0a166868c823f61fa",
     "src/app/block_edit.rs": "870df3b352e932f1fe61e4b59d399b1fb00baaffd2a58d351cba1997347b4cf0",
     "src/app/command_line.rs": "439d418faab4519b968c5e08e96cee5cbd7590e7ee0f18455128445e95fe2c4b",
     "src/app/component_selection.rs": "ce2ce65e9d5767965f104f063831b655bc322ea375a3973c9253bf54697a73e3",
     "src/app/edge_fillet.rs": "bb3a5753fd90f0d119330fe52a28f6746718021a14518bbcbdae8e8b32b5ee38",
-    "src/app/object_selection.rs": "7331b6ab848746374a6ec0955be3d894997eca3b1eb1730a1203f058ee3ad7ba",
     "src/app/tests/edge_fillet.rs": "aaa71f0a5042614b7b4a937fc7e9ee25922dde8e3e7188142acbeb59dc35afcc",
     "tools/rhino_oracle/fillet_edge_probe.py": "c6e48f6cae339e84fd27b08193ce99c22076cccc7e5bb425d8afd0be1fcb94fa",
     "tools/rhino_oracle/test_fillet_edge_probe.py": "52f9ff4239150e273653f0b5e98e3f12b36c469e40af635aeefe9a1240fb0a15",
@@ -155,6 +152,9 @@
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge.md": "6598cf8062c5bf735830a2c8f1d08d446aa6a8f522d4cddb94371f9f843d5490",
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/smlib-bridge.md": "702a6956265bc12e10768c404c99fe67073ffb0b91482b3a2980c77ff2734934",
     "1ca3325bcb15d16c2cb18b329eeac83606e55b41:tools/rhino_oracle/client.py": "01eeb0f2fd56d39d76506c495930057b5e088ce31a7b109d1c9971ae4925435a",
-    "1ca3325bcb15d16c2cb18b329eeac83606e55b41:tools/rhino_oracle/rhino_worker.py": "8ba4b0197e97eb3c9b5ec3e59f65561ffad26d11f34bd81b8ba2083857298135"
+    "1ca3325bcb15d16c2cb18b329eeac83606e55b41:tools/rhino_oracle/rhino_worker.py": "8ba4b0197e97eb3c9b5ec3e59f65561ffad26d11f34bd81b8ba2083857298135",
+    "6885d332c18167eff168f7f626a80de5380b7957:crates/viboceros-smlib/native/brep_import.cpp": "953e898f39f643710761ae132e3069d3adef52309ff7c8ce45166c2d0332445c",
+    "6885d332c18167eff168f7f626a80de5380b7957:src/app.rs": "598a8c83c098c023ce0455c85f2e0412ba823448d0c2eec0a166868c823f61fa",
+    "6885d332c18167eff168f7f626a80de5380b7957:src/app/object_selection.rs": "7331b6ab848746374a6ec0955be3d894997eca3b1eb1730a1203f058ee3ad7ba"
   }
 }

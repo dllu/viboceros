@@ -29,6 +29,12 @@ int vb_solid_boundary_contact(const VbSolid *a, const VbSolid *b, double toleran
                               char *error, size_t capacity);
 int vb_solid_census(const VbSolid *solid, size_t counts[2], char *error, size_t capacity);
 int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity);
+int vb_sheet_from_brep(const VbBrepView *view, double tolerance, const size_t *components,
+                       size_t component_count, VbSolid **out, char *error, size_t capacity);
+int vb_shape_offset(const VbSolid *shape, double distance, int wall, double accuracy,
+                     VbSolid **out, char *error, size_t capacity);
+int vb_shape_brep(const VbSolid *shape, double approximation, VbBrep **out,
+                  char *error, size_t capacity);
 int vb_solid_from_brep(const VbBrepView *view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward, VbSolid **out, char *error,
                        size_t capacity);

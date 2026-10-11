@@ -71,7 +71,6 @@
   ],
   "source_sha256": {
     "crates/viboceros-command/examples/curved_split.rs": "56b547afcfbbf52b916a7d8c3c6532d315aefddd1a0f47e31820eeb2a84e8a25",
-    "crates/viboceros-smlib/src/lib.rs": "3a4f4e4d786ee311f168733d75c7c3886e071863571e97b47ef41adb4a7e5420",
     "docs/smlib-split-comparison.json": "b996219e4ee636a4363a529ecef856cbe8f0b98ea88017a738ac4064f70e967a",
     "docs/smlib-split-diagnostics/example-initial.log": "22e029c3cdbf44745601ed033ade21e1d7e4f162d85a7829c37a7b2922e6a096",
     "docs/smlib-split-diagnostics/initial-conservative-range-properties.json": "6387905745fc249a3bba0c69008bfd65750568faf8bcf1684c674f6b2656b1cf",
@@ -106,6 +105,7 @@
     "24a35e1c47fd7f9aac7836b70fbec380d4763486:docs/smlib-set-booleans.md": "b0dc0cd758b1c0dc6ab8602c7ed2d717855bc601a39bd30f181be24823e85f31",
     "fb9485fb5156f43b045576b1177d8ba1ad5b77c4:crates/viboceros-command/src/boolean_split.rs": "7f8bbff0254227e03691198a086d09a96990957963f2f9c350814e6544d71a49",
     "fb9485fb5156f43b045576b1177d8ba1ad5b77c4:docs/commands/boolean-split.md": "f7b02709fa5f641c46ec78f05484d74ed2d382bb4f82a84491ed8bb5a88b6546",
-    "fb9485fb5156f43b045576b1177d8ba1ad5b77c4:docs/smlib-boolean-split.md": "088eda31825010e342b0de5bf094cbab5e07751e175b69034526b788f249d7d2"
+    "fb9485fb5156f43b045576b1177d8ba1ad5b77c4:docs/smlib-boolean-split.md": "088eda31825010e342b0de5bf094cbab5e07751e175b69034526b788f249d7d2",
+    "6885d332c18167eff168f7f626a80de5380b7957:crates/viboceros-smlib/src/lib.rs": "3a4f4e4d786ee311f168733d75c7c3886e071863571e97b47ef41adb4a7e5420"
   }
 }

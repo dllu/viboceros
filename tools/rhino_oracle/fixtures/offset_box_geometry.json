@@ -1,0 +1,82 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "box_positive",
+      "box": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          2,
+          2,
+          2
+        ]
+      },
+      "distance": 0.25,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "box_negative",
+      "box": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          2,
+          2,
+          2
+        ]
+      },
+      "distance": -0.25,
+      "solid": false,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "box_wall",
+      "box": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          2,
+          2,
+          2
+        ]
+      },
+      "distance": 0.25,
+      "solid": true,
+      "both_sides": false
+    },
+    {
+      "op": "offset_surface_face_geometry",
+      "id": "box_negative_wall",
+      "box": {
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          2,
+          2,
+          2
+        ]
+      },
+      "distance": -0.25,
+      "solid": true,
+      "both_sides": false
+    }
+  ]
+}

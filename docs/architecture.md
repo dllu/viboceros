@@ -18,6 +18,8 @@ adapters, and removing those remaining duplicate routes is ongoing. Command cont
 outside the kernel's geometric operations. See [the native integration](smlib-import.md).
 Closed [Boolean2Objects](smlib-boolean-two.md) choices also enter usd-brep directly
 and reuse the same preview and document acceptance flow.
+[OffsetSrf](smlib-offset-surfaces.md) now shares native sheet/solid transfer and
+offset/shell operations; the planar offset adapter is excluded from native builds.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

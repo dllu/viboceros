@@ -8,6 +8,12 @@ see [difference/import](smlib-import.md), [union/intersection](smlib-set-boolean
 and [split](smlib-boolean-split.md).
 The same application feature enables [curved STEP material regions](step-regions.md)
 and [circular edge fillets](fillet-edge.md).
+Native [surface offsets](smlib-offset-surfaces.md) use a separate `Shape` handle
+for manifold sheets or solids, sharing payload transfer with strict `Solid`
+imports. Reversed sheets use native UV swapping to preserve physical normals.
+`Shape::offset_with_accuracy` restores shared tolerance after copied-operand
+offset/shell operations. Its explicitly approximated NURBS export checks the
+kernel's achieved bound; `Solid::to_brep` retains exact-transfer requirements.
 
 ## Build and exercise
 

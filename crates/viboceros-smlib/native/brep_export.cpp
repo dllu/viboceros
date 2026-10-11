@@ -121,11 +121,24 @@ struct VbBrep {
     }
 };
 
-VbBrep *vb_export_brep(const SmBrep &source) {
+SmBrep *vb_copy_brep(const SmBrep &source) {
     SmBrep *raw = nullptr;
     const auto status = SmApiBrepCopy(&source, raw);
     std::unique_ptr<SmBrep> copy(raw);
-    check(status, "copy for B-rep export");
+    check(status, "copy boundary representation");
+    require(copy != nullptr, "Missing copied boundary representation");
+    return copy.release();
+}
+
+VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
+    std::unique_ptr<SmBrep> copy(vb_copy_brep(source));
+    if (approximation > 0) {
+        require(std::isfinite(approximation), "Invalid export approximation tolerance");
+        double achieved = 0;
+        check(copy->ApproximateWithBSplines(approximation, achieved), "approximate native offset geometry");
+        require(std::isfinite(achieved) && achieved <= approximation,
+                "Native approximation exceeded requested tolerance");
+    }
     SmTArray<SmFace *> faces;
     SmTArray<SmEdge *> edges;
     SmTArray<SmVertex *> vertices;
@@ -164,15 +177,17 @@ VbBrep *vb_export_brep(const SmBrep &source) {
         SmFaceuse *positive = nullptr;
         SmFaceuse *negative = nullptr;
         face->GetFaceuses(positive, negative);
+        const bool sheet_reversed = positive->GetOrientation() != SM_OT_SAME;
         if (positive->GetOrientation() != SM_OT_SAME)
             std::swap(positive, negative);
         require(positive->GetRegion() && negative->GetRegion(), "Missing face region");
-        require(positive->GetRegion()->IsVoid() != negative->GetRegion()->IsVoid(),
-                "Export requires a material boundary");
+        const bool sheet = positive->GetRegion() == negative->GetRegion();
+        require(sheet || positive->GetRegion()->IsVoid() != negative->GetRegion()->IsVoid(),
+                "Export requires a material boundary or sheet");
         // Loops follow the positive surface side; the face flip follows the void side.
         VbFaceData record{
             result->keep(surface_payload(*static_cast<SmBSplineSurface *>(face->GetSurface()))),
-            result->loops.size(), 0, !positive->GetRegion()->IsVoid()};
+            result->loops.size(), 0, sheet ? sheet_reversed : !positive->GetRegion()->IsVoid()};
         SmTArray<SmLoopuse *> loops;
         positive->GetLoopuses(loops);
         for (ULONG j = 0; j < loops.GetSize(); ++j) {

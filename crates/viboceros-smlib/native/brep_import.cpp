@@ -101,7 +101,8 @@ SmSurface *import_surface(const VbNurbsData &data) {
 
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
-                       std::vector<size_t> *parents, std::vector<SmEdge *> *source_edges) {
+                       std::vector<size_t> *parents, std::vector<SmEdge *> *source_edges,
+                       bool sheet) {
     require(std::isfinite(tolerance) && tolerance > 0, "Invalid import tolerance");
     require(view.vertex_count && view.edge_count && view.face_count && view.vertices &&
                 view.edges && view.faces && view.loops && view.trims,
@@ -116,27 +117,37 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
     require(component_count <= 128, "B-rep component nesting work limit");
     for (size_t f = 0; f < view.face_count; ++f)
         require(components[f] < component_count, "Invalid face component index");
-    data.m_lNumRegions = component_count + 1;
+    // One manifold region is interpreted as an implied solid by SMLib.
+    // A temporary empty region selects its explicit-region topology loader.
+    data.m_lNumRegions = sheet ? 2 : component_count + 1;
     data.m_lHealerVersion = SM_HEALER_VERSION;
-    data.m_vRegions.SetSize(component_count + 1);
-    data.m_vShells.SetSize(component_count * 2);
+    data.m_vRegions.SetSize(data.m_lNumRegions);
+    data.m_vShells.SetSize(component_count * (sheet ? 1 : 2));
     data.m_vRegions[0].m_lStartShell = 0;
     data.m_vRegions[0].m_lNumShells = component_count;
     data.m_vRegions[0].m_bIsVoidFlag = TRUE;
+    if (sheet) {
+        data.m_vRegions[1].m_lStartShell = 0;
+        data.m_vRegions[1].m_lNumShells = 0;
+        data.m_vRegions[1].m_bIsVoidFlag = TRUE;
+    }
     for (size_t c = 0; c < component_count; ++c) {
-        auto &region = data.m_vRegions[c + 1];
-        region.m_lStartShell = component_count + c;
-        region.m_lNumShells = 1;
-        region.m_bIsVoidFlag = FALSE;
+        if (!sheet) {
+            auto &region = data.m_vRegions[c + 1];
+            region.m_lStartShell = component_count + c;
+            region.m_lNumShells = 1;
+            region.m_bIsVoidFlag = FALSE;
+        }
         for (size_t side = 0; side < 2; ++side) {
-            auto &shell = data.m_vShells[c + side * component_count];
+            auto &shell = data.m_vShells[c + (sheet ? 0 : side * component_count)];
             shell.m_lShellType = 0;
-            shell.m_lFaceuseStart = data.m_vFaceuses.GetSize();
+            if (!sheet || side == 0)
+                shell.m_lFaceuseStart = data.m_vFaceuses.GetSize();
             for (size_t f = 0; f < view.face_count; ++f)
                 if (components[f] == c) {
                     SmFaceuseData faceuse;
                     faceuse.m_lFace = f;
-                    faceuse.m_bOrientation =
+                    faceuse.m_bOrientation = sheet ? side == 0 :
                         ((side == 0) != bool(view.faces[f].reversed)) != bool(inward[c]);
                     data.m_vFaceuses.Add(faceuse);
                     ++shell.m_lNumFaceuses;
@@ -240,7 +251,11 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
                 std::all_of(seen_trims.begin(), seen_trims.end(), [](bool v) { return v; }),
             "Unowned imported loop or trim");
     for (size_t i = 0; i < uses.size(); ++i) {
-        require(uses[i].size() == 2, "Import requires closed manifold edges");
+        require(uses[i].size() == 2 || (sheet && uses[i].size() == 1),
+                "Import requires manifold edge incidence");
+        data.m_vEdges[i].m_lPrimEU = uses[i][0];
+        if (uses[i].size() == 1)
+            continue;
         const auto a = uses[i][0], b = uses[i][1];
         require(components[trim_faces[a]] == components[trim_faces[b]],
                 "Edge crosses component map");
@@ -248,7 +263,6 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
         const bool second =
             bool(view.trims[b].reversed) != bool(view.faces[trim_faces[b]].reversed);
         require(first != second, "Invalid directed manifold edge incidence");
-        data.m_vEdges[i].m_lPrimEU = uses[i][0];
     }
     for (ULONG i = 0; i < data.m_vRegions.GetSize(); ++i)
         data.m_vRegions[i].m_lFlags = 0;
@@ -270,9 +284,18 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
     SmTArray<SmAttribute *> attributes;
     check(result->MakeTopologyFromData(&data, attributes, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE),
           "build imported topology");
-    require(result->IsManifoldSolid(), "Imported topology is not a manifold solid");
+    if (sheet) {
+        auto *empty = data.m_vRegions[1].m_pRegion;
+        check(result->Remove(empty), "remove temporary empty sheet region");
+        delete static_cast<SmObject *>(empty);
+        for (size_t f = 0; f < view.face_count; ++f) {
+            if (view.faces[f].reversed)
+                check(data.m_vFaces[f].m_pFace->SwapUV(), "encode reversed sheet normal");
+        }
+    }
+    require(sheet || result->IsManifoldSolid(), "Imported topology is not a manifold solid");
     std::vector<size_t> shell_parents(component_count, SIZE_MAX);
-    if (component_count > 1) {
+    if (!sheet && component_count > 1) {
         std::vector<std::unique_ptr<SmBrep>> parts;
         std::vector<SmRegion *> regions(component_count);
         for (size_t c = 0; c < component_count; ++c) {

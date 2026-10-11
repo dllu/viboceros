@@ -1,6 +1,8 @@
 //! Exact normal offsets of planar and canonical analytic surfaces.
 
 use super::*;
+#[cfg(feature = "native-smlib")]
+mod native;
 
 const USAGE: &str = "OffsetSrf distance [Solid=Yes|No] [BothSides=Yes|No] [DeleteInput=Yes|No]";
 
@@ -46,60 +48,70 @@ impl Command for OffsetSurfaceCommand {
                 staged.push((*id, offset));
                 continue;
             }
-            let normal = planar_normal(geometry, document.tolerance())?;
-            if options.solid {
-                let solid = if let Some(box_solid) = rectangular_solid(
-                    geometry,
-                    normal,
-                    options.distance,
-                    options.both_sides,
-                    document.tolerance(),
-                )? {
-                    box_solid
-                } else {
-                    let profile = solid_profile(geometry, document.tolerance())?;
-                    Brep::try_extruded_curve(
-                        &profile,
-                        normal.scaled(if options.both_sides {
-                            -options.distance
-                        } else {
-                            0.0
-                        })?,
-                        normal.scaled(options.distance)?,
-                        document.tolerance(),
-                    )?
-                };
-                staged.push((*id, Geometry::Brep(solid)));
-                continue;
-            }
-            if options.both_sides {
-                let mut parts = Vec::with_capacity(2);
-                for signed_distance in [options.distance, -options.distance] {
-                    let offset = normal.scaled(signed_distance)?;
-                    let moved = geometry.transformed(
-                        AffineTransform3::from_translation(offset),
-                        document.tolerance(),
-                    )?;
-                    parts.push(match moved {
-                        Geometry::NurbsSurface(surface) => {
-                            Brep::try_surface_face(surface, document.tolerance())?
-                        }
-                        Geometry::Brep(brep) => brep,
-                        _ => unreachable!("only surface geometry reaches an offset"),
-                    });
-                }
+            #[cfg(feature = "native-smlib")]
+            {
                 staged.push((
                     *id,
-                    Geometry::Brep(Brep::try_disjoint_union(parts, document.tolerance())?),
+                    native::offset(geometry, options, document.tolerance())?,
                 ));
-                continue;
             }
-            let offset = normal.scaled(options.distance)?;
-            let result = geometry.transformed(
-                AffineTransform3::from_translation(offset),
-                document.tolerance(),
-            )?;
-            staged.push((*id, result));
+            #[cfg(not(feature = "native-smlib"))]
+            {
+                let normal = planar_normal(geometry, document.tolerance())?;
+                if options.solid {
+                    let solid = if let Some(box_solid) = rectangular_solid(
+                        geometry,
+                        normal,
+                        options.distance,
+                        options.both_sides,
+                        document.tolerance(),
+                    )? {
+                        box_solid
+                    } else {
+                        let profile = solid_profile(geometry, document.tolerance())?;
+                        Brep::try_extruded_curve(
+                            &profile,
+                            normal.scaled(if options.both_sides {
+                                -options.distance
+                            } else {
+                                0.0
+                            })?,
+                            normal.scaled(options.distance)?,
+                            document.tolerance(),
+                        )?
+                    };
+                    staged.push((*id, Geometry::Brep(solid)));
+                    continue;
+                }
+                if options.both_sides {
+                    let mut parts = Vec::with_capacity(2);
+                    for signed_distance in [options.distance, -options.distance] {
+                        let offset = normal.scaled(signed_distance)?;
+                        let moved = geometry.transformed(
+                            AffineTransform3::from_translation(offset),
+                            document.tolerance(),
+                        )?;
+                        parts.push(match moved {
+                            Geometry::NurbsSurface(surface) => {
+                                Brep::try_surface_face(surface, document.tolerance())?
+                            }
+                            Geometry::Brep(brep) => brep,
+                            _ => unreachable!("only surface geometry reaches an offset"),
+                        });
+                    }
+                    staged.push((
+                        *id,
+                        Geometry::Brep(Brep::try_disjoint_union(parts, document.tolerance())?),
+                    ));
+                    continue;
+                }
+                let offset = normal.scaled(options.distance)?;
+                let result = geometry.transformed(
+                    AffineTransform3::from_translation(offset),
+                    document.tolerance(),
+                )?;
+                staged.push((*id, result));
+            }
         }
         let output_ids = document.copy_object_pieces_into_source_groups(staged)?;
         if options.delete_input {
@@ -118,7 +130,11 @@ impl Command for OffsetSurfaceCommand {
         parse(arguments, Tolerance::NUMERICAL_VALIDATION)?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
-            filter: ObjectSelectionFilter::Surfaces,
+            filter: if cfg!(feature = "native-smlib") {
+                ObjectSelectionFilter::SurfaceComponents
+            } else {
+                ObjectSelectionFilter::Surfaces
+            },
             workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
             menus: vec![],
             choices: vec![],
@@ -167,6 +183,7 @@ fn parse(arguments: &[&str], tolerance: Tolerance) -> Result<Options, CommandErr
     })
 }
 
+#[cfg(any(not(feature = "native-smlib"), test))]
 fn planar_normal(geometry: &Geometry, tolerance: Tolerance) -> Result<Vector3, CommandError> {
     let (surface, reversed) = match geometry {
         Geometry::NurbsSurface(surface) => (surface, false),
@@ -532,6 +549,7 @@ fn conical_offset(
     }
 }
 
+#[cfg(not(feature = "native-smlib"))]
 fn solid_profile(geometry: &Geometry, tolerance: Tolerance) -> Result<NurbsCurve, CommandError> {
     let loops = match geometry {
         Geometry::NurbsSurface(surface) => surface.natural_boundary_curve_loops()?,
@@ -546,6 +564,7 @@ fn solid_profile(geometry: &Geometry, tolerance: Tolerance) -> Result<NurbsCurve
         .ok_or(CommandError::OffsetSurfaceSolidRequiresOneLoop)
 }
 
+#[cfg(not(feature = "native-smlib"))]
 fn rectangular_solid(
     geometry: &Geometry,
     normal: Vector3,
@@ -1464,10 +1483,22 @@ mod tests {
             .unwrap();
         registry.execute(&mut warped, "SelAll").unwrap();
         let before = warped.objects().cloned().collect::<Vec<_>>();
+        let result = registry.execute(&mut warped, "OffsetSrf 2 Solid=Yes");
+        #[cfg(not(feature = "native-smlib"))]
         assert!(matches!(
-            registry.execute(&mut warped, "OffsetSrf 2 Solid=Yes"),
+            result,
             Err(CommandError::OffsetSurfaceRequiresPlanarFaces)
         ));
+        #[cfg(feature = "native-smlib")]
+        {
+            result.unwrap();
+            let Geometry::Brep(offset) = warped.selected_objects().next().unwrap().geometry()
+            else {
+                panic!("native offset wall")
+            };
+            assert!(offset.is_solid());
+            registry.execute(&mut warped, "Undo").unwrap();
+        }
         assert_eq!(warped.objects().cloned().collect::<Vec<_>>(), before);
     }
 }

@@ -112,6 +112,15 @@ struct NativeParts {
     _private: [u8; 0],
 }
 unsafe extern "C" {
+    fn vb_sheet_from_brep(
+        view: *const BrepView,
+        tolerance: f64,
+        components: *const usize,
+        component_count: usize,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_solid_validate_boundary(
         solid: *const NativeSolid,
         tolerance: f64,
@@ -176,6 +185,13 @@ unsafe extern "C" {
     ) -> c_int;
     fn vb_solid_brep(
         solid: *const NativeSolid,
+        out: *mut *mut NativeBrep,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_brep(
+        shape: *const NativeSolid,
+        approximation: f64,
         out: *mut *mut NativeBrep,
         error: *mut c_char,
         capacity: usize,
@@ -513,6 +529,160 @@ impl NurbsData {
     }
 }
 
+fn with_brep_view<T>(
+    brep: &Brep,
+    operation: impl FnOnce(&BrepView) -> Result<T, Error>,
+) -> Result<T, Error> {
+    let vertices = brep
+        .vertices()
+        .iter()
+        .map(|v| VertexData {
+            point: v.point().to_array(),
+            tolerance: v.tolerance(),
+        })
+        .collect::<Vec<_>>();
+    let edge_geometry = brep
+        .edges()
+        .iter()
+        .map(|e| Payload::curve(e.curve()))
+        .collect::<Vec<_>>();
+    let edges = brep
+        .edges()
+        .iter()
+        .zip(&edge_geometry)
+        .map(|(e, g)| EdgeData {
+            vertices: e.vertices(),
+            interval: [*e.curve().domain().start(), *e.curve().domain().end()],
+            tolerance: e.tolerance(),
+            curve: g.view(),
+        })
+        .collect::<Vec<_>>();
+    let surface_geometry = brep
+        .faces()
+        .iter()
+        .map(|f| Payload::surface(f.surface()))
+        .collect::<Vec<_>>();
+    let trim_geometry = brep
+        .faces()
+        .iter()
+        .flat_map(|f| f.loops())
+        .flat_map(|l| l.trims())
+        .map(|t| {
+            let curve = if t.is_reversed_3d() {
+                t.curve().reversed()?
+            } else {
+                t.curve().clone()
+            };
+            if let Some(edge) = t.edge() {
+                let lifted = NurbsCurve::try_new_rational(
+                    curve.degree(),
+                    curve
+                        .control_points()
+                        .iter()
+                        .map(|p| {
+                            WeightedPoint3::try_new(
+                                Point3::try_new(p.point().x(), p.point().y(), 0.)?,
+                                p.weight(),
+                            )
+                        })
+                        .collect::<Result<Vec<_>, GeometryError>>()?,
+                    curve.knots().to_vec(),
+                )?;
+                let aligned = lifted.try_reparameterized(brep.edges()[edge].curve().domain())?;
+                Ok(Payload::curve(&aligned))
+            } else {
+                Ok(Payload::uv(&curve))
+            }
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
+    let mut faces = Vec::new();
+    let mut loops = Vec::new();
+    let mut trims = Vec::new();
+    for (face, g) in brep.faces().iter().zip(&surface_geometry) {
+        let first_loop = loops.len();
+        for boundary in face.loops() {
+            let first_trim = trims.len();
+            for trim in boundary.trims() {
+                trims.push(TrimData {
+                    vertices: trim.vertices(),
+                    edge: trim.edge().unwrap_or(usize::MAX),
+                    reversed: c_int::from(trim.is_reversed_3d()),
+                    curve: trim_geometry[trims.len()].view(),
+                });
+            }
+            loops.push(LoopData {
+                first_trim,
+                trim_count: trims.len() - first_trim,
+                inner: c_int::from(boundary.loop_type() == BrepLoopType::Inner),
+            });
+        }
+        faces.push(FaceData {
+            surface: g.view(),
+            first_loop,
+            loop_count: loops.len() - first_loop,
+            reversed: c_int::from(face.is_reversed()),
+        });
+    }
+    let view = BrepView {
+        vertex_count: vertices.len(),
+        edge_count: edges.len(),
+        trim_count: trims.len(),
+        loop_count: loops.len(),
+        face_count: faces.len(),
+        vertices: vertices.as_ptr(),
+        edges: edges.as_ptr(),
+        trims: trims.as_ptr(),
+        loops: loops.as_ptr(),
+        faces: faces.as_ptr(),
+    };
+    operation(&view)
+}
+
+pub(super) fn import_sheet(brep: &Brep, tolerance: Tolerance) -> Result<Solid, Error> {
+    if brep.edge_use_counts().iter().any(|&n| n == 0 || n > 2) {
+        return Err(Error::Kernel(
+            "Sheet import requires manifold edge incidence".into(),
+        ));
+    }
+    let parts = brep.edge_connected_face_components();
+    if parts.len() > 128 {
+        return Err(Error::Kernel(
+            "Sheet import requires open manifold components".into(),
+        ));
+    }
+    for faces in &parts {
+        if brep.sub_brep(faces, tolerance)?.is_solid() {
+            return Err(Error::Kernel(
+                "Sheet import requires open manifold components".into(),
+            ));
+        }
+    }
+    let mut components = vec![0; brep.faces().len()];
+    for (index, faces) in parts.iter().enumerate() {
+        for &face in faces {
+            components[face] = index;
+        }
+    }
+    let mut pointer = std::ptr::null_mut();
+    with_brep_view(brep, |view| {
+        call(|error, capacity| unsafe {
+            vb_sheet_from_brep(
+                view,
+                tolerance.absolute(),
+                components.as_ptr(),
+                parts.len(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })
+    })?;
+    Ok(Solid {
+        handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+        _thread_local: PhantomData,
+    })
+}
+
 impl Solid {
     /// Checks every pair of distinct boundary faces, including adjacent faces.
     /// Kernel-classified coincidence intervals must cover each returned curve
@@ -665,125 +835,24 @@ impl Solid {
                 components[face] = index;
             }
         }
-        let vertices = brep
-            .vertices()
-            .iter()
-            .map(|v| VertexData {
-                point: v.point().to_array(),
-                tolerance: v.tolerance(),
-            })
-            .collect::<Vec<_>>();
-        let edge_geometry = brep
-            .edges()
-            .iter()
-            .map(|e| Payload::curve(e.curve()))
-            .collect::<Vec<_>>();
-        let edges = brep
-            .edges()
-            .iter()
-            .zip(&edge_geometry)
-            .map(|(e, g)| EdgeData {
-                vertices: e.vertices(),
-                interval: [*e.curve().domain().start(), *e.curve().domain().end()],
-                tolerance: e.tolerance(),
-                curve: g.view(),
-            })
-            .collect::<Vec<_>>();
-        let surface_geometry = brep
-            .faces()
-            .iter()
-            .map(|f| Payload::surface(f.surface()))
-            .collect::<Vec<_>>();
-        let trim_geometry = brep
-            .faces()
-            .iter()
-            .flat_map(|f| f.loops())
-            .flat_map(|l| l.trims())
-            .map(|t| {
-                let curve = if t.is_reversed_3d() {
-                    t.curve().reversed()?
-                } else {
-                    t.curve().clone()
-                };
-                if let Some(edge) = t.edge() {
-                    let lifted = NurbsCurve::try_new_rational(
-                        curve.degree(),
-                        curve
-                            .control_points()
-                            .iter()
-                            .map(|p| {
-                                WeightedPoint3::try_new(
-                                    Point3::try_new(p.point().x(), p.point().y(), 0.)?,
-                                    p.weight(),
-                                )
-                            })
-                            .collect::<Result<Vec<_>, GeometryError>>()?,
-                        curve.knots().to_vec(),
-                    )?;
-                    let aligned =
-                        lifted.try_reparameterized(brep.edges()[edge].curve().domain())?;
-                    Ok(Payload::curve(&aligned))
-                } else {
-                    Ok(Payload::uv(&curve))
-                }
-            })
-            .collect::<Result<Vec<_>, Error>>()?;
-        let mut faces = Vec::new();
-        let mut loops = Vec::new();
-        let mut trims = Vec::new();
-        for (face, g) in brep.faces().iter().zip(&surface_geometry) {
-            let first_loop = loops.len();
-            for boundary in face.loops() {
-                let first_trim = trims.len();
-                for trim in boundary.trims() {
-                    trims.push(TrimData {
-                        vertices: trim.vertices(),
-                        edge: trim.edge().unwrap_or(usize::MAX),
-                        reversed: c_int::from(trim.is_reversed_3d()),
-                        curve: trim_geometry[trims.len()].view(),
-                    });
-                }
-                loops.push(LoopData {
-                    first_trim,
-                    trim_count: trims.len() - first_trim,
-                    inner: c_int::from(boundary.loop_type() == BrepLoopType::Inner),
-                });
-            }
-            faces.push(FaceData {
-                surface: g.view(),
-                first_loop,
-                loop_count: loops.len() - first_loop,
-                reversed: c_int::from(face.is_reversed()),
-            });
-        }
-        let view = BrepView {
-            vertex_count: vertices.len(),
-            edge_count: edges.len(),
-            trim_count: trims.len(),
-            loop_count: loops.len(),
-            face_count: faces.len(),
-            vertices: vertices.as_ptr(),
-            edges: edges.as_ptr(),
-            trims: trims.as_ptr(),
-            loops: loops.as_ptr(),
-            faces: faces.as_ptr(),
-        };
         let mut pointer = std::ptr::null_mut();
         let mut parents = vec![usize::MAX; parts.len()];
-        // All view arrays and owned NURBS buffers remain live throughout native construction.
-        call(|error, capacity| unsafe {
-            vb_solid_from_brep_plan(
-                &view,
-                tolerance.absolute(),
-                components.as_ptr(),
-                parts.len(),
-                inward.as_ptr(),
-                parents.as_mut_ptr(),
-                parents.len(),
-                &mut pointer,
-                error,
-                capacity,
-            )
+        // Payload arrays remain live through the shared synchronous importer.
+        with_brep_view(brep, |view| {
+            call(|error, capacity| unsafe {
+                vb_solid_from_brep_plan(
+                    view,
+                    tolerance.absolute(),
+                    components.as_ptr(),
+                    parts.len(),
+                    inward.as_ptr(),
+                    parents.as_mut_ptr(),
+                    parents.len(),
+                    &mut pointer,
+                    error,
+                    capacity,
+                )
+            })
         })?;
         let solid = Self {
             handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
@@ -826,9 +895,22 @@ impl Solid {
 
     /// Export owned NURBS geometry and shared topology into a validated Rust B-rep.
     pub fn to_brep(&self, tolerance: Tolerance) -> Result<Brep, Error> {
+        self.to_brep_with_approximation(tolerance, None)
+    }
+
+    pub(super) fn to_brep_with_approximation(
+        &self,
+        tolerance: Tolerance,
+        approximation: Option<f64>,
+    ) -> Result<Brep, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
-            vb_solid_brep(self.handle.as_ptr(), &mut pointer, error, capacity)
+            match approximation {
+                Some(value) => {
+                    vb_shape_brep(self.handle.as_ptr(), value, &mut pointer, error, capacity)
+                }
+                None => vb_solid_brep(self.handle.as_ptr(), &mut pointer, error, capacity),
+            }
         })?;
         let owner = OwnedBrep(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
         let mut view = std::mem::MaybeUninit::<BrepView>::uninit();

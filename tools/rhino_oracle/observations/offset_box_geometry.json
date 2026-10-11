@@ -1,0 +1,338 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 137519836,
+      "id": "box_positive",
+      "value": {
+        "bodies": [
+          {
+            "admitted_volume": 15.624999999999977,
+            "bbox_max": [
+              2.25,
+              2.25,
+              2.25
+            ],
+            "bbox_min": [
+              -0.2500000000000002,
+              -0.2500000000000002,
+              -0.25
+            ],
+            "created": true,
+            "edges": 36,
+            "face_samples": [
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "point": [
+                  1.0,
+                  -0.25,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "point": [
+                  2.25,
+                  1.0,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  0.0,
+                  1.0,
+                  -0.0
+                ],
+                "point": [
+                  1.0,
+                  2.25,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                "point": [
+                  -0.25,
+                  1.0,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "point": [
+                  1.0,
+                  1.0,
+                  -0.25
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  -0.25,
+                  2.25
+                ],
+                "domain_v": [
+                  -0.25,
+                  2.25
+                ],
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "point": [
+                  1.0,
+                  1.0,
+                  2.25
+                ],
+                "reversed": false
+              }
+            ],
+            "faces": 6,
+            "solid": true,
+            "valid": true,
+            "vertices": 32,
+            "volume": 15.624999999999977
+          }
+        ],
+        "created": true
+      }
+    },
+    {
+      "elapsed_ns": 62133789,
+      "id": "box_negative",
+      "value": {
+        "bodies": [
+          {
+            "admitted_volume": 3.375,
+            "bbox_max": [
+              1.75,
+              1.75,
+              1.75
+            ],
+            "bbox_min": [
+              0.25,
+              0.25,
+              0.25
+            ],
+            "created": true,
+            "edges": 12,
+            "face_samples": [
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "point": [
+                  1.0,
+                  0.25,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "point": [
+                  1.75,
+                  1.0,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  0.0,
+                  1.0,
+                  -0.0
+                ],
+                "point": [
+                  1.0,
+                  1.75,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                "point": [
+                  0.25,
+                  1.0,
+                  1.0
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "point": [
+                  1.0,
+                  1.0,
+                  0.25
+                ],
+                "reversed": false
+              },
+              {
+                "domain_u": [
+                  0.0,
+                  2.0
+                ],
+                "domain_v": [
+                  0.0,
+                  2.0
+                ],
+                "normal": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "point": [
+                  1.0,
+                  1.0,
+                  1.75
+                ],
+                "reversed": false
+              }
+            ],
+            "faces": 6,
+            "solid": true,
+            "valid": true,
+            "vertices": 8,
+            "volume": 3.375
+          }
+        ],
+        "created": true
+      }
+    },
+    {
+      "elapsed_ns": 136177063,
+      "id": "box_wall",
+      "value": {
+        "bodies": [],
+        "created": false
+      }
+    },
+    {
+      "elapsed_ns": 66764832,
+      "id": "box_negative_wall",
+      "value": {
+        "bodies": [],
+        "created": false
+      }
+    }
+  ]
+}

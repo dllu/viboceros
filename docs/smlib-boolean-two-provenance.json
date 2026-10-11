@@ -92,7 +92,9 @@
     "tools/rhino_oracle/boolean_two_curved_probe.py": "729bcdd034cfa41033263d06d5220de55a40ab4bcfe2db0e803d5bec36dbccfc",
     "tools/rhino_oracle/boolean_two_input.py": "c7ce8fb89cdec8142fabfd7c4b69e1138d668f83e7ee6d61a10d0566ef19d34c",
     "tools/rhino_oracle/test_boolean_two_curved.py": "5406a0d5f7c9c216fd72cdbefa07c969ea3c51525754ad8d51aba0b569781f49",
-    "tools/rhino_oracle/client.py": "bd9cac844dd26e0373e5f62853b5d35240e03bae5809a9f9d8f1aeec4a56cea1",
-    "tools/rhino_oracle/rhino_worker.py": "5c3357f76f70e543adeedc71377930ce543849bc5530e47a258744bb91afc317"
+    "tools/rhino_oracle/client.py": "bd9cac844dd26e0373e5f62853b5d35240e03bae5809a9f9d8f1aeec4a56cea1"
+  },
+  "replay_source_git_sha256": {
+    "6885d332c18167eff168f7f626a80de5380b7957:tools/rhino_oracle/rhino_worker.py": "5c3357f76f70e543adeedc71377930ce543849bc5530e47a258744bb91afc317"
   }
 }

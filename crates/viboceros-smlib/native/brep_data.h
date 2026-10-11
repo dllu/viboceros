@@ -47,11 +47,12 @@ void vb_brep_free(VbBrep *brep);
 class SmBrep;
 class SmEdge;
 #include <vector>
-VbBrep *vb_export_brep(const SmBrep &solid);
+VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0);
+SmBrep *vb_copy_brep(const SmBrep &source);
 void vb_validate_boundary_intersections(SmBrep &solid, double tolerance);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
                        std::vector<size_t> *parents = nullptr,
-                       std::vector<SmEdge *> *source_edges = nullptr);
+                       std::vector<SmEdge *> *source_edges = nullptr, bool sheet = false);
 #endif
 #endif
