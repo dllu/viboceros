@@ -44,6 +44,8 @@ native curve decomposer for curves, directional strips and tensor patches.
 producer for intersection overlaps and surface-cut clipping.
 [Directed segments and parameter splits](smlib-directed-segments.md) reuse it
 with shared curve reversal, closed-seam and composite-leaf policies.
+[Numeric-length and midpoint SubCrv](smlib-length-segments.md) also use the shared
+extractor for anchor-relative preparation and final NURBS intervals.
 
 ## Reproduce the native trial
 

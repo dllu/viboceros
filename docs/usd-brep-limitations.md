@@ -428,6 +428,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Numeric-length extraction retains the existing sampler's accuracy policy.**
+  Native SubCrv length/midpoint extraction uses usd-brep trimming, while length
+  inversion and closed-seam preparation retain the shared policy. All 20 signed
+  SDK records match at the prior `1e-6` comparison ceiling; five differ at a
+  stricter `1e-8` ceiling, with residuals up to `7.99e-8`. Native versus portable
+  piece tests retain the same endpoints and geometry. The raw diagnostic is
+  preserved separately, rather than attributed to an upstream trimming bug.
+  General length inversion is not continuously certified. See
+  [qualification](smlib-length-segments.md).
 - **Native Bezier decomposition uses bounded gauges and resources.**
   ConvertToBeziers and ConvertToSingleSpans accept degrees through 17, with
   one million input/aggregate output controls. Directional strips normalize

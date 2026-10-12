@@ -5,7 +5,7 @@
   "protocol_version": 1,
   "results": [
     {
-      "elapsed_ns": 11810303,
+      "elapsed_ns": 7354736,
       "id": "signed_length_line_forward",
       "value": {
         "available": true,
@@ -213,7 +213,7 @@
       }
     },
     {
-      "elapsed_ns": 1670837,
+      "elapsed_ns": 2441406,
       "id": "signed_length_line_backward",
       "value": {
         "available": true,
@@ -421,7 +421,7 @@
       }
     },
     {
-      "elapsed_ns": 244141,
+      "elapsed_ns": 381470,
       "id": "signed_length_line_zero",
       "value": {
         "available": false,
@@ -430,7 +430,7 @@
       }
     },
     {
-      "elapsed_ns": 297546,
+      "elapsed_ns": 213623,
       "id": "signed_length_line_unavailable",
       "value": {
         "available": false,
@@ -439,7 +439,7 @@
       }
     },
     {
-      "elapsed_ns": 251770,
+      "elapsed_ns": 282288,
       "id": "signed_length_line_tail",
       "value": {
         "available": false,
@@ -448,7 +448,7 @@
       }
     },
     {
-      "elapsed_ns": 1411438,
+      "elapsed_ns": 755310,
       "id": "signed_length_quadratic_forward",
       "value": {
         "available": true,
@@ -666,7 +666,7 @@
       }
     },
     {
-      "elapsed_ns": 1792908,
+      "elapsed_ns": 2708435,
       "id": "signed_length_quadratic_backward",
       "value": {
         "available": true,
@@ -884,7 +884,7 @@
       }
     },
     {
-      "elapsed_ns": 1701355,
+      "elapsed_ns": 1457214,
       "id": "signed_length_polyline_forward",
       "value": {
         "available": true,
@@ -1101,7 +1101,7 @@
       }
     },
     {
-      "elapsed_ns": 2609253,
+      "elapsed_ns": 1121521,
       "id": "signed_length_polyline_backward",
       "value": {
         "available": true,
@@ -1327,7 +1327,7 @@
       }
     },
     {
-      "elapsed_ns": 968933,
+      "elapsed_ns": 1609802,
       "id": "signed_length_polyline_full",
       "value": {
         "available": true,
@@ -1571,7 +1571,7 @@
       }
     },
     {
-      "elapsed_ns": 549316,
+      "elapsed_ns": 305176,
       "id": "signed_length_polyline_over",
       "value": {
         "available": false,
@@ -1580,7 +1580,7 @@
       }
     },
     {
-      "elapsed_ns": 1098633,
+      "elapsed_ns": 823975,
       "id": "signed_length_circle_forward",
       "value": {
         "available": true,
@@ -1816,7 +1816,7 @@
       }
     },
     {
-      "elapsed_ns": 885010,
+      "elapsed_ns": 869751,
       "id": "signed_length_circle_backward",
       "value": {
         "available": true,
@@ -2052,7 +2052,7 @@
       }
     },
     {
-      "elapsed_ns": 946045,
+      "elapsed_ns": 991821,
       "id": "signed_length_ellipse_forward",
       "value": {
         "available": true,
@@ -2270,7 +2270,7 @@
       }
     },
     {
-      "elapsed_ns": 869751,
+      "elapsed_ns": 831604,
       "id": "signed_length_ellipse_backward",
       "value": {
         "available": true,
@@ -2488,7 +2488,7 @@
       }
     },
     {
-      "elapsed_ns": 671387,
+      "elapsed_ns": 640869,
       "id": "signed_length_arc",
       "value": {
         "available": true,
@@ -2724,7 +2724,7 @@
       }
     },
     {
-      "elapsed_ns": 3311157,
+      "elapsed_ns": 2304077,
       "id": "signed_length_piecewise",
       "value": {
         "available": true,
@@ -2960,7 +2960,7 @@
       }
     },
     {
-      "elapsed_ns": 1457214,
+      "elapsed_ns": 2136230,
       "id": "signed_length_cubic_forward",
       "value": {
         "available": true,
@@ -3188,7 +3188,7 @@
       }
     },
     {
-      "elapsed_ns": 717163,
+      "elapsed_ns": 816345,
       "id": "signed_length_cubic_backward",
       "value": {
         "available": true,
@@ -3416,7 +3416,7 @@
       }
     },
     {
-      "elapsed_ns": 892639,
+      "elapsed_ns": 640869,
       "id": "signed_length_singular",
       "value": {
         "available": true,

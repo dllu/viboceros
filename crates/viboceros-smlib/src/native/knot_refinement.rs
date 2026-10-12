@@ -87,6 +87,17 @@ pub fn subcurve(source: &NurbsCurve, start: f64, end: f64) -> Result<NurbsCurve,
     source.try_subcurve_with_extractor(start, end, &mut trim_curve)
 }
 
+/// Anchor-relative signed-length extraction using the shared sampler and
+/// native NURBS trimming, retaining analytic and composite leaf classes.
+pub fn subcurve_at_arc_length(
+    source: &viboceros_geometry::Curve3,
+    anchor: f64,
+    length: f64,
+    tolerance: Tolerance,
+) -> Result<Option<(viboceros_geometry::Curve3, f64)>, Error> {
+    source.try_subcurve_at_arc_length_with_nurbs(anchor, length, tolerance, &mut trim_curve)
+}
+
 /// Split once into the two clamped parameter intervals with native extraction.
 pub fn split_curve(source: &NurbsCurve, parameter: f64) -> Result<(NurbsCurve, NurbsCurve), Error> {
     if !parameter.is_finite() {

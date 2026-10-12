@@ -200,3 +200,39 @@ fn original_endpoint_parameters_survive_closed_seams_and_self_crossings() {
         .unwrap();
     assert!(end < 1.);
 }
+
+#[test]
+fn external_extractor_is_used_for_anchor_preparation_and_final_piece_without_mutating_source() {
+    let source = Curve3::NurbsCurve(
+        crate::NurbsCurve::try_new(
+            2,
+            vec![p(0., 0.), p(2., 4.), p(5., 0.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap(),
+    );
+    let before = source.clone();
+    let mut intervals = Vec::new();
+    let actual = source
+        .try_subcurve_at_arc_length_with_nurbs(0.25, 1., tol(), &mut |c, range| {
+            intervals.push(range.clone());
+            c.try_trimmed(range)
+        })
+        .unwrap()
+        .unwrap();
+    assert_eq!(intervals.len(), 2);
+    assert_eq!(intervals[0], 0.25..=1.0);
+    assert_eq!(*intervals[1].start(), 0.25);
+    assert_eq!(*intervals[1].end(), actual.1);
+    assert_eq!(source, before);
+    let mut reject = |_: &crate::NurbsCurve, _| -> Result<crate::NurbsCurve, GeometryError> {
+        panic!("invalid request entered backend")
+    };
+    for (anchor, length) in [(0.25, 0.), (-1., 1.), (0.25, Real::NAN)] {
+        assert!(
+            source
+                .try_subcurve_at_arc_length_with_nurbs(anchor, length, tol(), &mut reject)
+                .is_err()
+        );
+    }
+}

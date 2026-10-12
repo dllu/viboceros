@@ -7,6 +7,15 @@ pub fn directed(curve: &Curve3, start: Real, end: Real) -> Result<Curve3, Comman
     curve.try_subcurve_with_nurbs(start, end, &mut trim)
 }
 
+pub(super) fn length_with_endpoint(
+    curve: &Curve3,
+    anchor: Real,
+    length: Real,
+    tolerance: Tolerance,
+) -> Result<Option<(Curve3, Real)>, CommandError> {
+    curve.try_subcurve_at_arc_length_with_nurbs(anchor, length, tolerance, &mut trim)
+}
+
 pub(super) fn split(curve: &Curve3, parameters: &[Real]) -> Result<Vec<Curve3>, CommandError> {
     curve.try_split_at_parameters_with_nurbs(parameters, &mut trim)
 }

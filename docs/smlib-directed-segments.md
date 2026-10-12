@@ -4,8 +4,8 @@ Linux `native-smlib` builds reuse the checked usd-brep segment extractor for
 point/parameter `Split` and directed point/parameter `SubCrv` extraction. The
 SubCrv point/parameter preview uses the same preparation backend as acceptance.
 Source identity, attributes, groups, selection, option parsing, and undo remain
-with the existing command policies. Numeric-length and midpoint preparation
-retain their existing sampling path in this integration step.
+with the existing command policies. [Numeric-length and midpoint preparation](smlib-length-segments.md)
+now share the extraction backend while retaining their sampling policies.
 
 The geometry layer now accepts an exact NURBS extraction callback while sharing
 its existing interval validation, reversal, cyclic ordering and seam assembly.

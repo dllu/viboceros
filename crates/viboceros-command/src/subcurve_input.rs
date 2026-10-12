@@ -1,4 +1,5 @@
 //! Numeric getter orientation and open-end clamping, separate from length math.
+use crate::{CommandError, curve_segments};
 use std::sync::{Arc, Mutex};
 use viboceros_geometry::{Curve3, CurveRef, GeometryError, Real, Tolerance};
 
@@ -67,22 +68,30 @@ pub fn piece(
     confirmation: Real,
     length: Real,
     tolerance: Tolerance,
-) -> Result<Option<Curve3>, GeometryError> {
+) -> Result<Option<Curve3>, CommandError> {
     if length == 0. {
         return Ok(None);
     }
     if !length.is_finite() || length.abs() > curve.length(tolerance)? {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     if curve.is_closed()? && length.abs() == curve.length(tolerance)? {
-        return curve
-            .to_owned()
-            .try_subcurve_at_arc_length(anchor, length.abs(), tolerance);
+        return Ok(curve_segments::length_with_endpoint(
+            &curve.to_owned(),
+            anchor,
+            length.abs(),
+            tolerance,
+        )?
+        .map(|(piece, _)| piece));
     }
     let Some([start, end]) = interval(curve, anchor, confirmation, length.abs(), tolerance)? else {
         return Ok(None);
     };
-    Ok(Some(curve.to_owned().try_subcurve(start, end)?))
+    Ok(Some(curve_segments::directed(
+        &curve.to_owned(),
+        start,
+        end,
+    )?))
 }
 
 pub fn interval(
@@ -91,7 +100,7 @@ pub fn interval(
     confirmation: Real,
     length: Real,
     tolerance: Tolerance,
-) -> Result<Option<[Real; 2]>, GeometryError> {
+) -> Result<Option<[Real; 2]>, CommandError> {
     let closed = curve.is_closed()?;
     if closed && length == curve.length(tolerance)? {
         return Ok(None);
@@ -110,27 +119,35 @@ pub fn locked_piece(
     length: Real,
     forward: bool,
     tolerance: Tolerance,
-) -> Result<Option<Curve3>, GeometryError> {
+) -> Result<Option<Curve3>, CommandError> {
     if !curve.domain().contains(&anchor) {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     if length == 0. {
         return Ok(None);
     }
     if !length.is_finite() || length.abs() > curve.length(tolerance)? {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     if curve.is_closed()? && length.abs() == curve.length(tolerance)? {
-        return curve
-            .to_owned()
-            .try_subcurve_at_arc_length(anchor, length.abs(), tolerance);
+        return Ok(curve_segments::length_with_endpoint(
+            &curve.to_owned(),
+            anchor,
+            length.abs(),
+            tolerance,
+        )?
+        .map(|(piece, _)| piece));
     }
     let Some([start, end]) =
         interval_in_direction(curve, anchor, length.abs(), forward, tolerance)?
     else {
         return Ok(None);
     };
-    Ok(Some(curve.to_owned().try_subcurve(start, end)?))
+    Ok(Some(curve_segments::directed(
+        &curve.to_owned(),
+        start,
+        end,
+    )?))
 }
 
 /// The locked cursor side follows the current native parameter chart.
@@ -179,9 +196,9 @@ pub fn locked_numeric_requires_confirmation(
     length: Real,
     forward: bool,
     tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
+) -> Result<bool, CommandError> {
     if !curve.domain().contains(&anchor) || !length.is_finite() || length < 0. {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     if length == 0. {
         return Ok(false);
@@ -208,7 +225,7 @@ fn confirmed_closed_interval(
     confirmation: Real,
     length: Real,
     tolerance: Tolerance,
-) -> Result<Option<[Real; 2]>, GeometryError> {
+) -> Result<Option<[Real; 2]>, CommandError> {
     let point = curve.evaluate(confirmation)?;
     let forward = endpoint_interval(curve, anchor, length, true, tolerance)?
         .ok_or(GeometryError::InvalidCurveTrimInterval)?;
@@ -229,12 +246,10 @@ pub fn forward(
     anchor: Real,
     confirmation: Real,
     tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
+) -> Result<bool, CommandError> {
     Ok(if curve.is_closed()? {
         confirmation != anchor
-            && curve
-                .to_owned()
-                .try_subcurve(anchor, confirmation)?
+            && curve_segments::directed(&curve.to_owned(), anchor, confirmation)?
                 .as_ref()
                 .length(tolerance)?
                 <= curve.length(tolerance)? * 0.5
@@ -250,7 +265,7 @@ pub fn interval_in_direction(
     length: Real,
     forward: bool,
     tolerance: Tolerance,
-) -> Result<Option<[Real; 2]>, GeometryError> {
+) -> Result<Option<[Real; 2]>, CommandError> {
     if curve.is_closed()? && length == curve.length(tolerance)? {
         return Ok(None);
     }
@@ -263,12 +278,11 @@ fn endpoint_interval(
     length: Real,
     forward: bool,
     tolerance: Tolerance,
-) -> Result<Option<[Real; 2]>, GeometryError> {
+) -> Result<Option<[Real; 2]>, CommandError> {
     let domain = curve.domain();
     let signed = if forward { length } else { -length };
-    let result = curve
-        .to_owned()
-        .try_subcurve_at_arc_length_with_endpoint(anchor, signed, tolerance)?;
+    let result =
+        curve_segments::length_with_endpoint(&curve.to_owned(), anchor, signed, tolerance)?;
     let endpoint = if let Some((_, endpoint)) = result {
         endpoint
     } else if forward {
@@ -290,16 +304,16 @@ pub fn midpoint_piece(
     center: Real,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<Option<Curve3>, GeometryError> {
+) -> Result<Option<Curve3>, CommandError> {
     if !center.is_finite() || !curve.domain().contains(&center) {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     if radius == 0. {
         return Ok(None);
     }
     let radius = radius.abs();
     if !radius.is_finite() || radius > curve.length(tolerance)? {
-        return Err(GeometryError::InvalidCurveTrimInterval);
+        return Err(GeometryError::InvalidCurveTrimInterval.into());
     }
     let source = curve.to_owned();
     let domain = curve.domain();
@@ -309,18 +323,16 @@ pub fn midpoint_piece(
             return Ok(None);
         }
     }
-    let left = source
-        .try_subcurve_at_arc_length_with_endpoint(center, -radius, tolerance)?
+    let left = curve_segments::length_with_endpoint(&source, center, -radius, tolerance)?
         .map(|(_, t)| t)
         .unwrap_or(*domain.start());
-    let right = source
-        .try_subcurve_at_arc_length_with_endpoint(center, radius, tolerance)?
+    let right = curve_segments::length_with_endpoint(&source, center, radius, tolerance)?
         .map(|(_, t)| t)
         .unwrap_or(*domain.end());
     if left == right {
         return Ok(None);
     }
-    Ok(Some(source.try_subcurve(left, right)?))
+    Ok(Some(curve_segments::directed(&source, left, right)?))
 }
 
 pub fn midpoint_radius(
@@ -328,13 +340,11 @@ pub fn midpoint_radius(
     center: Real,
     end: Real,
     tolerance: Tolerance,
-) -> Result<Real, GeometryError> {
+) -> Result<Real, CommandError> {
     if center == end {
         return Ok(0.);
     }
-    let length = curve
-        .to_owned()
-        .try_subcurve(center, end)?
+    let length = curve_segments::directed(&curve.to_owned(), center, end)?
         .as_ref()
         .length(tolerance)?;
     Ok(if curve.is_closed()? {

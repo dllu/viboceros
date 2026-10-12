@@ -14,11 +14,17 @@ pub(super) fn run(
     let original = nurbs_curve_from_definition(definition)?;
     let before = nurbs_curve_definition_value(&original);
     let source = Curve3::NurbsCurve(original);
-    measure(iterations, || {
+    measure_probe(iterations, || {
         let result = if length == 0. && source.as_ref().domain().contains(&start) {
             None
         } else {
-            source.try_subcurve_at_arc_length(start, length, tolerance)?
+            #[cfg(feature = "native-smlib")]
+            let result = viboceros_smlib::subcurve_at_arc_length(&source, start, length, tolerance)
+                .map_err(CommandError::from)?
+                .map(|(curve, _)| curve);
+            #[cfg(not(feature = "native-smlib"))]
+            let result = source.try_subcurve_at_arc_length(start, length, tolerance)?;
+            result
         };
         let curve = if let Some(result) = result {
             let curve = result.as_ref().to_nurbs()?;
@@ -31,7 +37,7 @@ pub(super) fn run(
         let Curve3::NurbsCurve(original) = &source else {
             unreachable!()
         };
-        Ok(
+        Ok::<_, ProbeError>(
             json!({"available":curve.is_some(),"curve":curve,"source_unchanged":nurbs_curve_definition_value(original)==before}),
         )
     })
