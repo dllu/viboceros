@@ -1,6 +1,51 @@
 use super::*;
 
 #[test]
+fn surface_edge_domains_restore_original_axes_and_reversed_sides_losslessly() {
+    let source = NurbsSurface::try_bilinear([
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Point3::try_new(4., 0., 0.).unwrap(),
+        Point3::try_new(4., 6., 0.).unwrap(),
+        Point3::try_new(0., 6., 0.).unwrap(),
+    ])
+    .unwrap();
+    for (u, v) in [
+        (2.0..=12.0, -3.0..=7.0),
+        (1e12..=1e12 + 10., -2e12..=-2e12 + 10.),
+    ] {
+        let source = source.try_reparameterized(u.clone(), v.clone()).unwrap();
+        let local = Brep::try_rectangular_surface_face_with_orientation(
+            source.clone(),
+            u.clone(),
+            v.clone(),
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let restored = Brep::try_rectangular_surface_face_with_surface_edge_domains(
+            source,
+            u.clone(),
+            v.clone(),
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let expected = [
+            u.clone(),
+            v.clone(),
+            -*u.end()..=-*u.start(),
+            -*v.end()..=-*v.start(),
+        ];
+        for (i, (a, b)) in restored.edges.iter().zip(local.edges.iter()).enumerate() {
+            assert_eq!(a.curve.domain(), expected[i]);
+            assert_eq!(a.curve.control_points(), b.curve.control_points());
+        }
+        assert_eq!(restored.vertices, local.vertices);
+        assert_eq!(restored.faces, local.faces);
+    }
+}
+
+#[test]
 fn natural_trim_parameter_domains_follow_surface_axes_without_reversing_north_or_west() {
     let surface = NurbsSurface::try_bilinear([
         Point3::try_new(2., -2., 0.).unwrap(),

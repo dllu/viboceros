@@ -1,0 +1,5900 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 192771912,
+      "id": "split-surface-u-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                3.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                3.0,
+                3.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      6.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              12.0,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                3.0,
+                3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    -3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  10.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              12.0,
+              3.0,
+              7.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 179191589,
+      "id": "split-surface-v-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                6.000000000000001
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                6.000000000000001,
+                6.000000000000001
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.000000000000001
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.000000000000001,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  10.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.000000000000001,
+              -3.0,
+              7.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.000000000000002,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000002,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                6.000000000000001,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                6.000000000000001,
+                6.000000000000001,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.000000000000001,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.000000000000001
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      4.000000000000002,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000002,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.000000000000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  10.0,
+                  0.0
+                ],
+                [
+                  4.000000000000002,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.000000000000001,
+              12.0,
+              -3.0,
+              7.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 191093445,
+      "id": "split-surface-both-isocurves",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                6.000000000000001
+              ],
+              "domain_v": [
+                -3.0,
+                3.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                6.000000000000001,
+                6.000000000000001
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                3.0,
+                3.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.000000000000001
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.000000000000001,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      6.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.000000000000001,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000001,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                6.000000000000001
+              ],
+              "domain_v": [
+                3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                6.000000000000001,
+                6.000000000000001
+              ],
+              "knots_v": [
+                3.0,
+                3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.000000000000001
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.000000000000001,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    -3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000001,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  10.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.000000000000001,
+              3.0,
+              7.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.000000000000002,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000002,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                6.000000000000001,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                3.0
+              ],
+              "knots_u": [
+                6.000000000000001,
+                6.000000000000001,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                3.0,
+                3.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.000000000000001,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.000000000000001
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      4.000000000000002,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000002,
+                      6.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.000000000000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000002,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.000000000000001,
+              12.0,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    4.000000000000002,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    6.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    4.000000000000002,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                6.000000000000001,
+                12.0
+              ],
+              "domain_v": [
+                3.0,
+                7.0
+              ],
+              "knots_u": [
+                6.000000000000001,
+                6.000000000000001,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                3.0,
+                3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.000000000000001,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.000000000000001
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    -3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      4.000000000000002,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      6.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      4.000000000000002,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.000000000000002,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  10.0,
+                  0.0
+                ],
+                [
+                  4.000000000000002,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.000000000000001,
+              12.0,
+              3.0,
+              7.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 210853577,
+      "id": "split-surface-both-isocurves-without-shrinking",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.000000000000001
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.000000000000001,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.000000000000001,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.000000000000001
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.000000000000001,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    -3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000001,
+                  10.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.000000000000001,
+              3.0,
+              7.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.000000000000001,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.000000000000001
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.000000000000001,
+                            -3.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.000000000000002,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.000000000000002,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.000000000000001,
+              12.0,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.000000000000001,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    3.0,
+                    7.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.000000000000001
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -7.0,
+                    -3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            7.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.000000000000001,
+                            3.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.000000000000001,
+                            7.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.000000000000002,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  10.0,
+                  0.0
+                ],
+                [
+                  4.000000000000002,
+                  10.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.000000000000001,
+              12.0,
+              3.0,
+              7.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 419281006,
+      "id": "resplit-rectangular-face-v-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    2.0,
+                    6.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.0,
+                    -2.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.0,
+                            3.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            2.0,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            6.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            2.0,
+                            -3.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              2.0,
+              6.0,
+              -3.0,
+              3.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    10.0,
+                    10.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                1
+              ],
+              "domain_u": [
+                2.0,
+                12.0
+              ],
+              "domain_v": [
+                -3.0,
+                7.0
+              ],
+              "knots_u": [
+                2.0,
+                2.0,
+                12.0,
+                12.0
+              ],
+              "knots_v": [
+                -3.0,
+                -3.0,
+                7.0,
+                7.0
+              ]
+            },
+            "topology": {
+              "edge_count": 4,
+              "edges": [
+                {
+                  "domain": [
+                    6.0,
+                    12.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    1,
+                    2
+                  ]
+                },
+                {
+                  "domain": [
+                    -12.0,
+                    -6.0
+                  ],
+                  "vertices": [
+                    2,
+                    3
+                  ]
+                },
+                {
+                  "domain": [
+                    -3.0,
+                    3.0
+                  ],
+                  "vertices": [
+                    3,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      10.0,
+                      10.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      10.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            12.0,
+                            -3.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            6.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            12.0,
+                            3.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            -3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            6.0,
+                            3.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            12.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 3,
+                          "end": [
+                            6.0,
+                            -3.0
+                          ],
+                          "iso": "X",
+                          "reversed": false,
+                          "start": [
+                            6.0,
+                            3.0
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 4,
+              "vertices": [
+                [
+                  4.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  10.0,
+                  6.0,
+                  0.0
+                ],
+                [
+                  4.0,
+                  6.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              6.0,
+              12.0,
+              -3.0,
+              3.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 172309875,
+      "id": "split-cylinder-u-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                9,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                2,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                6.283185307179586
+              ],
+              "domain_v": [
+                0.0,
+                1.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ]
+            },
+            "topology": {
+              "edge_count": 3,
+              "edges": [
+                {
+                  "domain": [
+                    0.0,
+                    6.283185307179586
+                  ],
+                  "vertices": [
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.283185307179586,
+                    -0.0
+                  ],
+                  "vertices": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "degree": [
+                    2,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            0.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.283185307179586,
+                            1.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            0.0,
+                            1.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            1.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": "West",
+                          "reversed": true,
+                          "start": [
+                            0.0,
+                            1.0
+                          ],
+                          "type": "Seam"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              0.0,
+              6.283185307179586,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                9,
+                2
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    2.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    2.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                2,
+                1
+              ],
+              "domain_u": [
+                0.0,
+                6.283185307179586
+              ],
+              "domain_v": [
+                1.0,
+                2.0
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ],
+              "knots_v": [
+                1.0,
+                1.0,
+                2.0,
+                2.0
+              ]
+            },
+            "topology": {
+              "edge_count": 3,
+              "edges": [
+                {
+                  "domain": [
+                    0.0,
+                    6.283185307179586
+                  ],
+                  "vertices": [
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "domain": [
+                    1.0,
+                    2.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.283185307179586,
+                    -0.0
+                  ],
+                  "vertices": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      1.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      2.0
+                    ],
+                    [
+                      1.0,
+                      0.0,
+                      2.0
+                    ]
+                  ],
+                  "degree": [
+                    2,
+                    1
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.283185307179586,
+                            1.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            1.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.283185307179586,
+                            2.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            1.0
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            0.0,
+                            2.0
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            2.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            0.0,
+                            1.0
+                          ],
+                          "iso": "West",
+                          "reversed": true,
+                          "start": [
+                            0.0,
+                            2.0
+                          ],
+                          "type": "Seam"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  1.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  2.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              0.0,
+              6.283185307179586,
+              1.0,
+              2.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 210746765,
+      "id": "split-transposed-cylinder-v-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                9
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                2
+              ],
+              "domain_u": [
+                0.0,
+                1.0
+              ],
+              "domain_v": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "topology": {
+              "edge_count": 3,
+              "edges": [
+                {
+                  "domain": [
+                    0.0,
+                    1.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    0.0,
+                    6.283185307179586
+                  ],
+                  "vertices": [
+                    1,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.283185307179586,
+                    -0.0
+                  ],
+                  "vertices": [
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      0.0,
+                      1.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    2
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            1.0,
+                            0.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            0.0
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            1.0,
+                            6.283185307179586
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            1.0,
+                            0.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 0,
+                          "end": [
+                            0.0,
+                            6.283185307179586
+                          ],
+                          "iso": "North",
+                          "reversed": true,
+                          "start": [
+                            1.0,
+                            6.283185307179586
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            6.283185307179586
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              0.0,
+              1.0,
+              0.0,
+              6.283185307179586
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                2,
+                9
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    2.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    2.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                1,
+                2
+              ],
+              "domain_u": [
+                1.0,
+                2.0
+              ],
+              "domain_v": [
+                0.0,
+                6.283185307179586
+              ],
+              "knots_u": [
+                1.0,
+                1.0,
+                2.0,
+                2.0
+              ],
+              "knots_v": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ]
+            },
+            "topology": {
+              "edge_count": 3,
+              "edges": [
+                {
+                  "domain": [
+                    1.0,
+                    2.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    0.0,
+                    6.283185307179586
+                  ],
+                  "vertices": [
+                    1,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.283185307179586,
+                    -0.0
+                  ],
+                  "vertices": [
+                    0,
+                    0
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      2.0,
+                      1.0,
+                      0.0
+                    ],
+                    [
+                      1.0,
+                      1.0,
+                      0.0
+                    ]
+                  ],
+                  "degree": [
+                    1,
+                    2
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            2.0,
+                            0.0
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            1.0,
+                            0.0
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            2.0,
+                            6.283185307179586
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            2.0,
+                            0.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 0,
+                          "end": [
+                            1.0,
+                            6.283185307179586
+                          ],
+                          "iso": "North",
+                          "reversed": true,
+                          "start": [
+                            2.0,
+                            6.283185307179586
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 2,
+                          "end": [
+                            1.0,
+                            0.0
+                          ],
+                          "iso": "West",
+                          "reversed": false,
+                          "start": [
+                            1.0,
+                            6.283185307179586
+                          ],
+                          "type": "Boundary"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  1.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  2.0,
+                  1.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              1.0,
+              2.0,
+              0.0,
+              6.283185307179586
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 177520752,
+      "id": "split-sphere-u-isocurve",
+      "value": {
+        "command_succeeded": true,
+        "objects": [
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                9,
+                5
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                2,
+                2
+              ],
+              "domain_u": [
+                0.0,
+                6.283185307179586
+              ],
+              "domain_v": [
+                -1.5707963267948966,
+                1.5707963267948966
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ],
+              "knots_v": [
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                1.5707963267948966
+              ]
+            },
+            "topology": {
+              "edge_count": 2,
+              "edges": [
+                {
+                  "domain": [
+                    -1.5707963267948966,
+                    0.0
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                },
+                {
+                  "domain": [
+                    -6.283185307179586,
+                    -0.0
+                  ],
+                  "vertices": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      -1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      -1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "degree": [
+                    2,
+                    2
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": null,
+                          "end": [
+                            6.283185307179586,
+                            -1.5707963267948966
+                          ],
+                          "iso": "South",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            -1.5707963267948966
+                          ],
+                          "type": "Singular"
+                        },
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            -1.5707963267948966
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 0,
+                          "end": [
+                            0.0,
+                            -1.5707963267948966
+                          ],
+                          "iso": "West",
+                          "reversed": true,
+                          "start": [
+                            0.0,
+                            0.0
+                          ],
+                          "type": "Seam"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              0.0,
+              6.283185307179586,
+              -1.5707963267948966,
+              0.0
+            ]
+          },
+          {
+            "attributes_match_source": true,
+            "in_source_group": true,
+            "object_kind": "brep",
+            "original_id": false,
+            "selected": true,
+            "surface": {
+              "control_count": [
+                9,
+                5
+              ],
+              "control_points": [
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    -1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    -1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    0.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    0.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    -1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    -1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    0.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    1.0,
+                    -1.0,
+                    1.0
+                  ],
+                  "weight": 0.5
+                },
+                {
+                  "point": [
+                    1.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 0.7071067811865476
+                },
+                {
+                  "point": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "weight": 1.0
+                }
+              ],
+              "degree": [
+                2,
+                2
+              ],
+              "domain_u": [
+                0.0,
+                6.283185307179586
+              ],
+              "domain_v": [
+                -1.5707963267948966,
+                1.5707963267948966
+              ],
+              "knots_u": [
+                0.0,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                3.141592653589793,
+                3.141592653589793,
+                4.71238898038469,
+                4.71238898038469,
+                6.283185307179586,
+                6.283185307179586,
+                6.283185307179586
+              ],
+              "knots_v": [
+                -1.5707963267948966,
+                -1.5707963267948966,
+                -1.5707963267948966,
+                0.0,
+                0.0,
+                1.5707963267948966,
+                1.5707963267948966,
+                1.5707963267948966
+              ]
+            },
+            "topology": {
+              "edge_count": 2,
+              "edges": [
+                {
+                  "domain": [
+                    0.0,
+                    6.283185307179586
+                  ],
+                  "vertices": [
+                    0,
+                    0
+                  ]
+                },
+                {
+                  "domain": [
+                    0.0,
+                    1.5707963267948966
+                  ],
+                  "vertices": [
+                    0,
+                    1
+                  ]
+                }
+              ],
+              "faces": [
+                {
+                  "corners": [
+                    [
+                      0.0,
+                      0.0,
+                      -1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      -1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ],
+                    [
+                      0.0,
+                      0.0,
+                      1.0
+                    ]
+                  ],
+                  "degree": [
+                    2,
+                    2
+                  ],
+                  "loops": [
+                    {
+                      "trims": [
+                        {
+                          "edge": 0,
+                          "end": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "iso": "Y",
+                          "reversed": false,
+                          "start": [
+                            0.0,
+                            0.0
+                          ],
+                          "type": "Boundary"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            6.283185307179586,
+                            1.5707963267948966
+                          ],
+                          "iso": "East",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            0.0
+                          ],
+                          "type": "Seam"
+                        },
+                        {
+                          "edge": null,
+                          "end": [
+                            0.0,
+                            1.5707963267948966
+                          ],
+                          "iso": "North",
+                          "reversed": false,
+                          "start": [
+                            6.283185307179586,
+                            1.5707963267948966
+                          ],
+                          "type": "Singular"
+                        },
+                        {
+                          "edge": 1,
+                          "end": [
+                            0.0,
+                            0.0
+                          ],
+                          "iso": "West",
+                          "reversed": true,
+                          "start": [
+                            0.0,
+                            1.5707963267948966
+                          ],
+                          "type": "Seam"
+                        }
+                      ],
+                      "type": "Outer"
+                    }
+                  ],
+                  "reversed": false
+                }
+              ],
+              "is_solid": false,
+              "vertex_count": 2,
+              "vertices": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            },
+            "trim_bounds": [
+              0.0,
+              6.283185307179586,
+              0.0,
+              1.5707963267948966
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

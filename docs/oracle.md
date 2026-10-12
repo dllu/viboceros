@@ -2,6 +2,12 @@
 
 [Project overview](../README.md)
 
+The `surface_trim_geometry` operation accepts a complete `surface` definition
+and increasing `u` and `v` intervals. It compares direct Rhino SDK rectangular
+trimming against the selected portable or usd-brep backend, including complete
+surface definitions. See [surface extraction qualification](smlib-surface-segments.md)
+for the retained whole-domain padding discrepancy and command captures.
+
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using
 stable numeric handles through the Python and Rust oracle APIs.
@@ -1767,6 +1773,13 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_split_isocurve_command.json
+
+# Direct rectangular SDK trimming; one unused outer-knot padding discrepancy
+# is deliberately retained by native whole-domain no-ops.
+tools/rhino_oracle/run_headless.sh rhino \
+  tools/rhino_oracle/fixtures/surface_trim_geometry.json \
+  --scheme VibocerosOracleSmlibBridgeFinal20261010 --timeout 240 \
+  --output tools/rhino_oracle/observations/surface_trim_geometry.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_split_cutting_command.json

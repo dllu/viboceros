@@ -1465,9 +1465,9 @@ fn round_cap_surface(
         0.5 * (low + high)
     };
     let trimmed = if start {
-        sphere.try_trimmed_v(-half_pi..=cut)?
+        surface_segments::trimmed_direction(&sphere, SurfaceKnotDirection::V, -half_pi..=cut)?
     } else {
-        sphere.try_trimmed_v(cut..=half_pi)?
+        surface_segments::trimmed_direction(&sphere, SurfaceKnotDirection::V, cut..=half_pi)?
     };
     Ok(Brep::try_surface_grid(&trimmed, &[], &[], tolerance)?)
 }

@@ -444,6 +444,36 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Fixed: isocurve Split edges kept local charts in public output.**
+  Seven of eight fresh Split command captures differed only in their 3D edge
+  domains: our rectangular-face builder intentionally used lossless local
+  edge charts, while Rhino retained the original surface-axis intervals.
+  Isocurve Split now uses a constructor variant that translates every edge knot
+  back exactly, including reversed sides, while still evaluating in the local
+  frame. Geometry, UV trims and tolerances are unchanged. The general builder
+  retains its existing policy. This was command output metadata, not a usd-brep
+  geometry defect. See [surface extraction](smlib-surface-segments.md).
+- **Whole-domain surface trimming retains unused full outer knots.**
+  The deliberate whole-domain trim preserves the original full U/V vectors
+  `[-2,-1,0,0.8,2,3,4]`. Rhino reconstructs their artificial outer slots as
+  `[-1,-1,0,0.8,2,3,3]`. Every stored knot and control matches, and independent
+  9×9 evaluation grids match within `1e-10`. The complete raw definition
+  discrepancy is retained in the surface extraction comparison, extending the
+  already documented curve no-op padding difference. No comparison-time
+  normalization hides it. See [surface extraction](smlib-surface-segments.md).
+- **Fixed: exporting untouched trim endpoints rounded exact pole controls.**
+  Checked native extraction copied clamped natural endpoint controls unchanged,
+  but our conditioned homogeneous-to-Euclidean export projected them again.
+  Independent surface columns could then differ by an ULP at a repeated pole.
+  The surface-grid constructor correctly uses exact control equality for an
+  exact singular side; that rounded pole gained a tiny boundary ring and the
+  tapered Global round Pipe cap failed to close. Export now retains the complete
+  original endpoint payload whenever the requested boundary is an unchanged,
+  fully clamped natural end. It changes neither tolerances nor genuinely
+  modified controls. The pole-payload regression and Local/Global Pipe volume
+  test reproduce the fix. See
+  [surface extraction tests](../crates/viboceros-smlib/tests/surface_segments.rs)
+  and [Pipe tests](../crates/viboceros-command/src/pipe.rs).
 - **Surface seam closure retains its existing homogeneous tolerance policy.**
   Both backends reject the tested periodic cubic surface after a common weight
   scale of `1e-300`: its homogeneous interior samples are indistinguishable

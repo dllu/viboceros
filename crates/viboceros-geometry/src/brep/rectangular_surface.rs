@@ -41,6 +41,30 @@ impl Brep {
         reversed: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::rectangular_surface_face(surface, u, v, reversed, tolerance, false)
+    }
+
+    /// Construct a rectangular face with spatial edge charts retained from
+    /// the surface axes. Local evaluation still uses the lossless frame; edge
+    /// knots are translated back exactly for SDK-compatible isocurve outputs.
+    pub fn try_rectangular_surface_face_with_surface_edge_domains(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::rectangular_surface_face(surface, u, v, reversed, tolerance, true)
+    }
+
+    fn rectangular_surface_face(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        reversed: bool,
+        tolerance: Tolerance,
+        restore_edge_domains: bool,
+    ) -> Result<Self, GeometryError> {
         require_finite(
             [*u.start(), *u.end(), *v.start(), *v.end()],
             "rectangular surface-face trim bounds",
@@ -61,7 +85,7 @@ impl Brep {
             local.evaluate(local_bounds[0][1], local_bounds[1][1])?,
             local.evaluate(local_bounds[0][0], local_bounds[1][1])?,
         ];
-        let side_curves = [
+        let mut side_curves = [
             local
                 .isocurve_u(local_bounds[1][0])?
                 .try_trimmed(local_bounds[0][0]..=local_bounds[0][1])?,
@@ -77,6 +101,32 @@ impl Brep {
                 .try_trimmed(local_bounds[1][0]..=local_bounds[1][1])?
                 .reversed()?,
         ];
+        if restore_edge_domains {
+            for (side, curve) in side_curves.iter_mut().enumerate() {
+                let origin = frame.origin[side % 2] * if side < 2 { 1. } else { -1. };
+                if origin == 0. {
+                    continue;
+                }
+                let knots = curve
+                    .knots()
+                    .iter()
+                    .map(|&knot| {
+                        let shifted = knot + origin;
+                        if crate::parameter::exact_difference(shifted, origin) != Some(knot) {
+                            return Err(GeometryError::InvalidKnotVector {
+                                context: "surface edge chart restoration loses knot precision",
+                            });
+                        }
+                        Ok(shifted)
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                *curve = NurbsCurve::try_new_rational(
+                    curve.degree(),
+                    curve.control_points().to_vec(),
+                    knots,
+                )?;
+            }
+        }
         let singular = side_curves.each_ref().map(|curve| {
             let first = curve.control_points()[0].point();
             curve

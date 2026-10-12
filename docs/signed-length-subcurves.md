@@ -36,13 +36,16 @@ probe reports zero as unavailable; the kernel and document adapters reject zero.
 
 The [20 SDK fixtures](../tools/rhino_oracle/fixtures/signed_length_subcurves.json)
 ran on private Xvfb under `VibocerosOracleSignedLengthFinal20261007`.
-[Raw native records](../tools/rhino_oracle/observations/signed_length_subcurves.json)
+[Original SDK records](signed-length-subcurves-sdk-20261007.json)
 and [local results](signed-length-subcurves-local.json) retain untouched inputs
 and outputs. They cover line, quadratic, cubic, stationary-endpoint, piecewise,
 polyline, rational circle, ellipse and arc definitions, with 16 returned curves
 and four unavailable cases. Replay checks every native station and directed
 endpoint within `1e-6`; these finite cases do not certify arbitrary-curve length
 inversion. See [provenance](signed-length-subcurves-provenance.json).
+The original capture is archived above; the subsequently refreshed SDK records
+and their current hashes are retained in the
+[native extraction qualification](smlib-length-segments.md).
 
 The [inline numeric getter follow-up](subcurve-length-confirmation.md) establishes
 the required confirmation pick. Historical

@@ -10,6 +10,7 @@ mod grips;
 mod parameter_frame;
 mod parameters;
 mod seam;
+mod segments;
 mod smoothing;
 mod wires;
 pub use evaluate::SurfaceJet2;
@@ -2677,32 +2678,48 @@ impl NurbsSurface {
     /// Both results preserve V data and source parameter values and are
     /// clamped in U at every active end.
     pub fn try_split_u(&self, u: Real) -> Result<(Self, Self), GeometryError> {
-        let left = self.map_u_control_curves(|curve| Ok(curve.try_split(u)?.0))?;
-        let right = self.map_u_control_curves(|curve| Ok(curve.try_split(u)?.1))?;
-        Ok((left, right))
+        self.try_split_direction_with_extractor(
+            SurfaceKnotDirection::U,
+            u,
+            &mut |surface, direction, parameter| {
+                surface.split_direction_control_curves(direction, parameter)
+            },
+        )
     }
 
     /// Splits this tensor surface at a parameter strictly inside its V domain.
     /// Both results preserve U data and source parameter values and are
     /// clamped in V at every active end.
     pub fn try_split_v(&self, v: Real) -> Result<(Self, Self), GeometryError> {
-        let low = self.map_v_control_curves(|curve| Ok(curve.try_split(v)?.0))?;
-        let high = self.map_v_control_curves(|curve| Ok(curve.try_split(v)?.1))?;
-        Ok((low, high))
+        self.try_split_direction_with_extractor(
+            SurfaceKnotDirection::V,
+            v,
+            &mut |surface, direction, parameter| {
+                surface.split_direction_control_curves(direction, parameter)
+            },
+        )
     }
 
     /// Restricts the active U domain without changing surface parameterization
     /// or the retained geometric image. A full-domain trim is a no-op and
     /// therefore preserves periodic form.
     pub fn try_trimmed_u(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
-        self.map_u_control_curves(|curve| curve.try_trimmed(interval.clone()))
+        self.try_trimmed_direction_with_nurbs(
+            SurfaceKnotDirection::U,
+            interval,
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
     }
 
     /// Restricts the active V domain without changing surface parameterization
     /// or the retained geometric image. A full-domain trim is a no-op and
     /// therefore preserves periodic form.
     pub fn try_trimmed_v(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
-        self.map_v_control_curves(|curve| curve.try_trimmed(interval.clone()))
+        self.try_trimmed_direction_with_nurbs(
+            SurfaceKnotDirection::V,
+            interval,
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
     }
 
     /// Extracts an exact rectangular subdomain of this tensor surface.
@@ -2711,7 +2728,11 @@ impl NurbsSurface {
         u: RangeInclusive<Real>,
         v: RangeInclusive<Real>,
     ) -> Result<Self, GeometryError> {
-        self.try_trimmed_u(u)?.try_trimmed_v(v)
+        self.try_trimmed_with_extractor(u, v, &mut |surface, direction, interval| match direction {
+            SurfaceKnotDirection::U => surface.try_trimmed_u(interval),
+            SurfaceKnotDirection::V => surface.try_trimmed_v(interval),
+            SurfaceKnotDirection::Both => unreachable!("one extraction direction at a time"),
+        })
     }
 
     /// Naturally extends the open U direction to include the requested
@@ -3960,10 +3981,10 @@ impl NurbsSurface {
         TriangleMesh::try_new_faces(vertices, faces, tolerance)
     }
 
-    fn map_u_control_curves(
+    fn map_u_control_curves<E: From<GeometryError>>(
         &self,
-        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
-    ) -> Result<Self, GeometryError> {
+        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         let mut controls = Vec::new();
         let mut output_knots = None;
         let mut output_count = None;
@@ -3983,7 +4004,8 @@ impl NurbsSurface {
             {
                 return Err(GeometryError::InvalidControlNet {
                     context: "U control curves produced inconsistent mapped layouts",
-                });
+                }
+                .into());
             }
             output_degree.get_or_insert(mapped.degree());
             if output_count.is_none() {
@@ -4013,7 +4035,7 @@ impl NurbsSurface {
         let knots_u = output_knots.ok_or(GeometryError::InvalidControlNet {
             context: "a surface has no U control-curve knot vector",
         })?;
-        Self::try_new_rational(
+        Ok(Self::try_new_rational(
             degree_u,
             self.degree_v,
             control_point_count_u,
@@ -4021,7 +4043,7 @@ impl NurbsSurface {
             controls,
             knots_u,
             self.knots_v.clone(),
-        )
+        )?)
     }
 
     fn extension_interval_by_length(
@@ -4114,10 +4136,10 @@ impl NurbsSurface {
         Ok(rms)
     }
 
-    fn map_v_control_curves(
+    fn map_v_control_curves<E: From<GeometryError>>(
         &self,
-        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
-    ) -> Result<Self, GeometryError> {
+        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         let mut columns = Vec::with_capacity(self.control_point_count_u);
         let mut output_knots = None;
         let mut output_count = None;
@@ -4137,7 +4159,8 @@ impl NurbsSurface {
             {
                 return Err(GeometryError::InvalidControlNet {
                     context: "V control curves produced inconsistent mapped layouts",
-                });
+                }
+                .into());
             }
             output_degree.get_or_insert(mapped.degree());
             output_count.get_or_insert(mapped.control_points().len());
@@ -4170,7 +4193,7 @@ impl NurbsSurface {
                 controls.push(column[v]);
             }
         }
-        Self::try_new_rational(
+        Ok(Self::try_new_rational(
             self.degree_u,
             degree_v,
             self.control_point_count_u,
@@ -4178,7 +4201,7 @@ impl NurbsSurface {
             controls,
             self.knots_u.clone(),
             knots_v,
-        )
+        )?)
     }
 
     #[inline]

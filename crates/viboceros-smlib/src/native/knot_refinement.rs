@@ -143,8 +143,66 @@ pub fn change_surface_seam(
                 SurfaceKnotDirection::Both => unreachable!("one seam direction at a time"),
             };
             Ok((
-                trim_surface_axis(surface, axis, *domain.start(), parameter)?,
-                trim_surface_axis(surface, axis, parameter, *domain.end())?,
+                trim_surface_direction(surface, axis, *domain.start()..=parameter)?,
+                trim_surface_direction(surface, axis, parameter..=*domain.end())?,
+            ))
+        },
+    )
+}
+
+/// Restrict one surface axis, retaining the complete unselected basis and
+/// exact whole-domain no-ops. Two-control lines reuse the shared exact affine
+/// path; rational lines and other control curves use native extraction.
+pub fn trim_surface_direction(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    interval: std::ops::RangeInclusive<f64>,
+) -> Result<NurbsSurface, Error> {
+    source.try_trimmed_direction_with_extractor(
+        direction,
+        interval,
+        &mut |surface, direction, range| {
+            let (degree, width) = match direction {
+                SurfaceKnotDirection::U => (surface.degree_u(), surface.control_point_count_u()),
+                SurfaceKnotDirection::V => (surface.degree_v(), surface.control_point_count_v()),
+                SurfaceKnotDirection::Both => unreachable!("direction was validated"),
+            };
+            if degree == 1 && width == 2 {
+                surface.try_trimmed_direction_with_nurbs(direction, range, &mut trim_curve)
+            } else {
+                trim_surface_axis(surface, direction, *range.start(), *range.end())
+            }
+        },
+    )
+}
+
+/// Extract a rectangular subdomain in U then V with native directional strips.
+pub fn trim_surface(
+    source: &NurbsSurface,
+    u: std::ops::RangeInclusive<f64>,
+    v: std::ops::RangeInclusive<f64>,
+) -> Result<NurbsSurface, Error> {
+    source.try_trimmed_with_extractor(u, v, &mut trim_surface_direction)
+}
+
+/// Split one surface axis into two clamped intervals using checked extraction.
+pub fn split_surface(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: f64,
+) -> Result<(NurbsSurface, NurbsSurface), Error> {
+    source.try_split_direction_with_extractor(
+        direction,
+        parameter,
+        &mut |surface, direction, parameter| {
+            let domain = match direction {
+                SurfaceKnotDirection::U => surface.domain_u(),
+                SurfaceKnotDirection::V => surface.domain_v(),
+                SurfaceKnotDirection::Both => unreachable!("direction was validated"),
+            };
+            Ok((
+                trim_surface_direction(surface, direction, *domain.start()..=parameter)?,
+                trim_surface_direction(surface, direction, parameter..=*domain.end())?,
             ))
         },
     )

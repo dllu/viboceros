@@ -50,6 +50,9 @@ extractor for anchor-relative preparation and final NURBS intervals.
 segment extraction for CrvSeam, numeric SubCrv preparation and cutting Split/Trim.
 [Surface seams](smlib-surface-seams.md) use native tensor refinement and batched
 directional extraction, retaining the complete unselected knot basis.
+[Surface splitting and trimming](smlib-surface-segments.md) reuse that checked
+extractor for isocurve Split, visible-face preparation, separate ExtendSrf output
+and round Pipe caps.
 
 ## Reproduce the native trial
 

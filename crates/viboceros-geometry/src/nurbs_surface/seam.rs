@@ -55,7 +55,7 @@ impl NurbsSurface {
                 })?;
             } else if periodic && multiplicity <= 1 {
                 let refined = refine(&result, axis, parameter, 1)?;
-                result.check_seam_layout(&refined, axis)?;
+                result.check_directional_layout(&refined, axis)?;
                 if refined.seam_control_curve(axis, 0)?.domain() != domain {
                     return Err(GeometryError::InvalidControlNet {
                         context: "seam refinement changed the active domain",
@@ -72,8 +72,8 @@ impl NurbsSurface {
                 })?;
             } else {
                 let (left, right) = split(&result, axis, parameter, periodic)?;
-                result.check_seam_layout(&left, axis)?;
-                result.check_seam_layout(&right, axis)?;
+                result.check_directional_layout(&left, axis)?;
+                result.check_directional_layout(&right, axis)?;
                 if left.seam_control_curve(axis, 0)?.domain() != (*domain.start()..=parameter)
                     || right.seam_control_curve(axis, 0)?.domain() != (parameter..=*domain.end())
                 {
@@ -98,7 +98,7 @@ impl NurbsSurface {
         Ok(result)
     }
 
-    fn check_seam_layout(
+    pub(super) fn check_directional_layout(
         &self,
         other: &Self,
         axis: SurfaceKnotDirection,
@@ -116,7 +116,7 @@ impl NurbsSurface {
         };
         if !retained || self.degree_u != other.degree_u || self.degree_v != other.degree_v {
             return Err(GeometryError::InvalidControlNet {
-                context: "seam operation changed degrees or the unselected basis",
+                context: "surface operation changed degrees or the unselected basis",
             });
         }
         Ok(())

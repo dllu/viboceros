@@ -76,6 +76,7 @@ mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod curve_segments;
+mod surface_segments;
 pub use curve_segments::directed as prepare_directed_subcurve;
 mod extrude_curve;
 mod knot_refinement;
@@ -10443,20 +10444,28 @@ fn separate_surface_extension(
     source: &NurbsSurface,
     extended: &NurbsSurface,
     edge: SurfaceExtensionEdge,
-) -> Result<NurbsSurface, GeometryError> {
+) -> Result<NurbsSurface, CommandError> {
     match edge {
-        SurfaceExtensionEdge::West => {
-            extended.try_trimmed_u(*extended.domain_u().start()..=*source.domain_u().start())
-        }
-        SurfaceExtensionEdge::East => {
-            extended.try_trimmed_u(*source.domain_u().end()..=*extended.domain_u().end())
-        }
-        SurfaceExtensionEdge::South => {
-            extended.try_trimmed_v(*extended.domain_v().start()..=*source.domain_v().start())
-        }
-        SurfaceExtensionEdge::North => {
-            extended.try_trimmed_v(*source.domain_v().end()..=*extended.domain_v().end())
-        }
+        SurfaceExtensionEdge::West => surface_segments::trimmed_direction(
+            extended,
+            SurfaceKnotDirection::U,
+            *extended.domain_u().start()..=*source.domain_u().start(),
+        ),
+        SurfaceExtensionEdge::East => surface_segments::trimmed_direction(
+            extended,
+            SurfaceKnotDirection::U,
+            *source.domain_u().end()..=*extended.domain_u().end(),
+        ),
+        SurfaceExtensionEdge::South => surface_segments::trimmed_direction(
+            extended,
+            SurfaceKnotDirection::V,
+            *extended.domain_v().start()..=*source.domain_v().start(),
+        ),
+        SurfaceExtensionEdge::North => surface_segments::trimmed_direction(
+            extended,
+            SurfaceKnotDirection::V,
+            *source.domain_v().end()..=*extended.domain_v().end(),
+        ),
     }
 }
 
@@ -10762,7 +10771,8 @@ fn split_surface_at_isocurve(
         ] {
         surface.clone()
     } else {
-        surface.try_trimmed(
+        surface_segments::trimmed(
+            &surface,
             source_bounds[0][0]..=source_bounds[0][1],
             source_bounds[1][0]..=source_bounds[1][1],
         )?
@@ -10771,17 +10781,22 @@ fn split_surface_at_isocurve(
     // isocurve is constant in V, and therefore splits the V parameter domain.
     let surface_pieces = match options.direction {
         SurfaceKnotDirection::U => {
-            let (south, north) = visible_surface.try_split_v(v)?;
+            let (south, north) =
+                surface_segments::split(&visible_surface, SurfaceKnotDirection::V, v)?;
             vec![south, north]
         }
         SurfaceKnotDirection::V => {
-            let (west, east) = visible_surface.try_split_u(u)?;
+            let (west, east) =
+                surface_segments::split(&visible_surface, SurfaceKnotDirection::U, u)?;
             vec![west, east]
         }
         SurfaceKnotDirection::Both => {
-            let (west, east) = visible_surface.try_split_u(u)?;
-            let (southwest, northwest) = west.try_split_v(v)?;
-            let (southeast, northeast) = east.try_split_v(v)?;
+            let (west, east) =
+                surface_segments::split(&visible_surface, SurfaceKnotDirection::U, u)?;
+            let (southwest, northwest) =
+                surface_segments::split(&west, SurfaceKnotDirection::V, v)?;
+            let (southeast, northeast) =
+                surface_segments::split(&east, SurfaceKnotDirection::V, v)?;
             vec![southwest, northwest, southeast, northeast]
         }
     };
@@ -10795,7 +10810,7 @@ fn split_surface_at_isocurve(
                     [*domain_u.start(), *domain_u.end()],
                     [*domain_v.start(), *domain_v.end()],
                 ];
-                Brep::try_rectangular_surface_face_with_orientation(
+                Brep::try_rectangular_surface_face_with_surface_edge_domains(
                     surface,
                     bounds[0][0]..=bounds[0][1],
                     bounds[1][0]..=bounds[1][1],
@@ -10824,7 +10839,7 @@ fn split_surface_at_isocurve(
         rectangles
             .into_iter()
             .map(|(u, v)| {
-                Brep::try_rectangular_surface_face_with_orientation(
+                Brep::try_rectangular_surface_face_with_surface_edge_domains(
                     surface.clone(),
                     u[0]..=u[1],
                     v[0]..=v[1],

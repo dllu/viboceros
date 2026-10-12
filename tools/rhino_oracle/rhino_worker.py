@@ -14677,6 +14677,36 @@ def _execute(operation, iterations, tolerance):
             for cutter in cutters:
                 cutter.Dispose()
 
+    if kind == "surface_trim_geometry":
+        source = _nurbs_surface_from_definition(operation["surface"])
+        try:
+            u = operation["u"]
+            v = operation["v"]
+            if len(u) != 2 or len(v) != 2:
+                raise ValueError("surface trimming requires two increasing intervals")
+            u = Rhino.Geometry.Interval(_finite(u[0], "surface trim U start"),
+                                        _finite(u[1], "surface trim U end"))
+            v = Rhino.Geometry.Interval(_finite(v[0], "surface trim V start"),
+                                        _finite(v[1], "surface trim V end"))
+            if not u.IsIncreasing or not v.IsIncreasing:
+                raise ValueError("surface trimming requires increasing intervals")
+
+            def trim_surface():
+                result = source.Trim(u, v)
+                if result is None:
+                    raise ValueError("Rhino rectangular surface trimming failed")
+                try:
+                    definition = _nurbs_surface_definition(result)
+                    definition["periodic_u"] = bool(result.IsPeriodic(0))
+                    definition["periodic_v"] = bool(result.IsPeriodic(1))
+                    return definition
+                finally:
+                    result.Dispose()
+
+            return _measure(iterations, trim_surface)
+        finally:
+            source.Dispose()
+
     if kind == "surface_split_isocurve_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_surface_from_definition(operation["surface"])

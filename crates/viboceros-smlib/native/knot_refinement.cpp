@@ -143,7 +143,8 @@ void validate(const VbNurbsData &data) {
 
 int controls(const VbNurbsData &, std::vector<NL_CPOINT> &);
 VbSurfaceData *snapshot(VbNurbsData, const std::vector<NL_CPOINT> &, int,
-                        const std::array<double,3> &origin={0,0,0});
+                        const std::array<double,3> &origin={0,0,0},
+                        const double *exact_first=nullptr,const double *exact_last=nullptr);
 
 VbSurfaceData *basis_nurbs(const VbNurbsData &data, int axis, size_t target,
                               bool exact_elevation, const double *target_knots, size_t knot_count) {
@@ -237,10 +238,20 @@ int conditioned_controls(const VbNurbsData &data,std::vector<NL_CPOINT> &points,
 }
 
 VbSurfaceData *snapshot(VbNurbsData data, const std::vector<NL_CPOINT> &points, int exponent,
-                        const std::array<double,3> &origin) {
+                        const std::array<double,3> &origin,const double *exact_first,
+                        const double *exact_last) {
     std::vector<double> euclidean;
     euclidean.reserve(points.size()*4);
-    for (const auto &p : points) {
+    for (size_t i=0;i<points.size();++i) {
+        // Controls copied unchanged by extraction must retain their exact
+        // Euclidean payload. Projecting a repeated pole through independently
+        // conditioned rows can otherwise turn it into a tiny open boundary.
+        const double *exact=i==0?exact_first:(i+1==points.size()?exact_last:nullptr);
+        if(exact) {
+            euclidean.insert(euclidean.end(),exact,exact+4);
+            continue;
+        }
+        const auto &p=points[i];
         if(p.w==0 || !std::isfinite(p.w))
             throw VbUnrepresentableNurbsControl("Native refinement has no finite Euclidean control");
         const double values[4] = {p.x/p.w+origin[0], p.y/p.w+origin[1], p.z/p.w+origin[2], std::ldexp(p.w, exponent)};
@@ -622,7 +633,13 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     VbNurbsData output=data;
     output.count[0]=result.pol->n+1;output.knots[0]=expected.data();output.knot_count[0]=expected.size();
     points.assign(result.pol->Pw,result.pol->Pw+output.count[0]);
-    return snapshot(output,points,exponent,origin);
+    const bool exact_start=start==active_start && std::all_of(full,full+degree+1,
+        [active_start](double knot){return knot==active_start;});
+    const bool exact_end=end==active_end && std::all_of(full+count,full+data.knot_count[0],
+        [active_end](double knot){return knot==active_end;});
+    return snapshot(output,points,exponent,origin,
+                    exact_start?data.points_xyzw:nullptr,
+                    exact_end?data.points_xyzw+4*(count-1):nullptr);
 }
 
 VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,double start,double end) {

@@ -1,0 +1,1705 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-interior",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0.25,
+        1.6
+      ],
+      "v": [
+        0.2,
+        1.7
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-u-only",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0.25,
+        1.6
+      ],
+      "v": [
+        0,
+        2
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-v-only",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0,
+        2
+      ],
+      "v": [
+        0.2,
+        1.7
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-active-start",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0,
+        1.6
+      ],
+      "v": [
+        0,
+        1.7
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-active-end",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0.25,
+        2
+      ],
+      "v": [
+        0.2,
+        2
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-near-knot",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0.800000001,
+        1.6
+      ],
+      "v": [
+        0.2,
+        1.7
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-rational-whole",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ]
+      },
+      "u": [
+        0,
+        2
+      ],
+      "v": [
+        0,
+        2
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-bilinear-near-start",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ]
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "u": [
+        1e-09,
+        0.75
+      ],
+      "v": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-periodic-u",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 1,
+        "control_point_count_u": 7,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ]
+          },
+          {
+            "point": [
+              0,
+              2,
+              3
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              3
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              3
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ]
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          8
+        ],
+        "knots_v": [
+          10,
+          10,
+          17,
+          17
+        ]
+      },
+      "u": [
+        2.5,
+        5.5
+      ],
+      "v": [
+        10,
+        17
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-reparameterized-rational",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "knots_v": [
+          -1,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          3
+        ],
+        "domain_u": [
+          100,
+          180
+        ],
+        "domain_v": [
+          -40,
+          20
+        ]
+      },
+      "u": [
+        110,
+        170
+      ],
+      "v": [
+        -25,
+        5
+      ]
+    },
+    {
+      "op": "surface_trim_geometry",
+      "id": "trim-whole-inactive-padding",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 4,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.0,
+              1,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.0,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.0,
+              0,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.25,
+              3,
+              0.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.25,
+              4,
+              1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.25,
+              2,
+              -1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              3.5,
+              5,
+              1.0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              6.5,
+              6,
+              0.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              9.5,
+              4,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              0.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              3.75,
+              7,
+              -1.0
+            ],
+            "weight": 2.25
+          },
+          {
+            "point": [
+              6.75,
+              8,
+              -1.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.75,
+              6,
+              -1.0
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots_u": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ],
+        "knots_v": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "u": [
+        0,
+        2
+      ],
+      "v": [
+        0,
+        2
+      ]
+    }
+  ]
+}

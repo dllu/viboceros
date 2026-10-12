@@ -1,0 +1,303 @@
+{
+  "surface_trim_geometry": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "trim-rational-interior",
+        "comparison": {
+          "id": "trim-rational-interior",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4448.0,
+          "rhino_ns_per_iteration": 6561279.0,
+          "rhino_to_viboceros_ratio": 1475.1076888489208,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-u-only",
+        "comparison": {
+          "id": "trim-rational-u-only",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 2176.0,
+          "rhino_ns_per_iteration": 2372742.0,
+          "rhino_to_viboceros_ratio": 1090.4145220588234,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-v-only",
+        "comparison": {
+          "id": "trim-rational-v-only",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 2128.0,
+          "rhino_ns_per_iteration": 793457.0,
+          "rhino_to_viboceros_ratio": 372.86513157894734,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-active-start",
+        "comparison": {
+          "id": "trim-rational-active-start",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4016.0,
+          "rhino_ns_per_iteration": 679016.0,
+          "rhino_to_viboceros_ratio": 169.0776892430279,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-active-end",
+        "comparison": {
+          "id": "trim-rational-active-end",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 7216.0,
+          "rhino_ns_per_iteration": 892639.0,
+          "rhino_to_viboceros_ratio": 123.70274390243902,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-near-knot",
+        "comparison": {
+          "id": "trim-rational-near-knot",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3744.0,
+          "rhino_ns_per_iteration": 679016.0,
+          "rhino_to_viboceros_ratio": 181.36111111111111,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-whole",
+        "comparison": {
+          "id": "trim-rational-whole",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 160.0,
+          "rhino_ns_per_iteration": 1098633.0,
+          "rhino_to_viboceros_ratio": 6866.45625,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-bilinear-near-start",
+        "comparison": {
+          "id": "trim-bilinear-near-start",
+          "passed": true,
+          "max_absolute_error": 5.263559100779585e-19,
+          "viboceros_ns_per_iteration": 20816.0,
+          "rhino_ns_per_iteration": 289917.0,
+          "rhino_to_viboceros_ratio": 13.92760376633359,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-periodic-u",
+        "comparison": {
+          "id": "trim-periodic-u",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 1696.0,
+          "rhino_ns_per_iteration": 465393.0,
+          "rhino_to_viboceros_ratio": 274.40625,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-reparameterized-rational",
+        "comparison": {
+          "id": "trim-reparameterized-rational",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4400.0,
+          "rhino_ns_per_iteration": 465393.0,
+          "rhino_to_viboceros_ratio": 105.77113636363636,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-whole-inactive-padding",
+        "comparison": {
+          "id": "trim-whole-inactive-padding",
+          "passed": false,
+          "max_absolute_error": 1.0,
+          "viboceros_ns_per_iteration": 128.0,
+          "rhino_ns_per_iteration": 556946.0,
+          "rhino_to_viboceros_ratio": 4351.140625,
+          "differences": [
+            "trim-whole-inactive-padding.value.knots_u[0]: -2 != -1 (error 1, limit 1e-10)",
+            "trim-whole-inactive-padding.value.knots_u[6]: 4 != 3 (error 1, limit 1e-10)",
+            "trim-whole-inactive-padding.value.knots_v[0]: -2 != -1 (error 1, limit 1e-10)",
+            "trim-whole-inactive-padding.value.knots_v[6]: 4 != 3 (error 1, limit 1e-10)"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      }
+    ],
+    "passed": false,
+    "cases": 11,
+    "matched": 10,
+    "native_failed": 0,
+    "mismatched": 1,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "51afe9a945fbd4532eddf48e8ad9a62791779bd30ce71d786f7b771577ab09d0",
+    "observation_sha256": "08da87b2006c74a04d312e63497ca4bb1e072de948447a6de5219a26a0bf5c0f"
+  },
+  "surface_split_isocurve_command": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "split-surface-u-isocurve",
+        "comparison": {
+          "id": "split-surface-u-isocurve",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 197169.0,
+          "rhino_ns_per_iteration": 192771912.0,
+          "rhino_to_viboceros_ratio": 977.6988877561888,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-surface-v-isocurve",
+        "comparison": {
+          "id": "split-surface-v-isocurve",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 169281.0,
+          "rhino_ns_per_iteration": 179191589.0,
+          "rhino_to_viboceros_ratio": 1058.5451940855737,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-surface-both-isocurves",
+        "comparison": {
+          "id": "split-surface-both-isocurves",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 236353.0,
+          "rhino_ns_per_iteration": 191093445.0,
+          "rhino_to_viboceros_ratio": 808.5086501969512,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-surface-both-isocurves-without-shrinking",
+        "comparison": {
+          "id": "split-surface-both-isocurves-without-shrinking",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 303682.0,
+          "rhino_ns_per_iteration": 210853577.0,
+          "rhino_to_viboceros_ratio": 694.3235917835104,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "resplit-rectangular-face-v-isocurve",
+        "comparison": {
+          "id": "resplit-rectangular-face-v-isocurve",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 275842.0,
+          "rhino_ns_per_iteration": 419281006.0,
+          "rhino_to_viboceros_ratio": 1520.0042270575184,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-cylinder-u-isocurve",
+        "comparison": {
+          "id": "split-cylinder-u-isocurve",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 281121.0,
+          "rhino_ns_per_iteration": 172309875.0,
+          "rhino_to_viboceros_ratio": 612.9384677772205,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-transposed-cylinder-v-isocurve",
+        "comparison": {
+          "id": "split-transposed-cylinder-v-isocurve",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 299393.0,
+          "rhino_ns_per_iteration": 210746765.0,
+          "rhino_to_viboceros_ratio": 703.9134682507607,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-sphere-u-isocurve",
+        "comparison": {
+          "id": "split-sphere-u-isocurve",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 258034.0,
+          "rhino_ns_per_iteration": 177520752.0,
+          "rhino_to_viboceros_ratio": 687.9742669570677,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 8,
+    "matched": 8,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "d57efb0aab27728c2217000c31e2a26fbb86c7c0cabd1030747135e6dfce455f",
+    "observation_sha256": "7bf53afc8c4629198d258b217300b773f759a51214a605c2bd2263af0344e9c7"
+  }
+}
