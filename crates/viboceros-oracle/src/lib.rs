@@ -5240,8 +5240,13 @@ fn execute(
             curve, start, end, ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_subcurve(black_box(*start), black_box(*end))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::subcurve(&source, black_box(*start), black_box(*end))
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_subcurve(black_box(*start), black_box(*end));
+                result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -5255,8 +5260,14 @@ fn execute(
             curve, parameter, ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let ((left, right), elapsed) =
-                measure(iterations, || source.try_split(black_box(*parameter)))?;
+            let ((left, right), elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::split_curve(&source, black_box(*parameter))
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_split(black_box(*parameter));
+                result.map_err(ProbeError::from)
+            })?;
             (
                 json!([
                     rebuilt_curve_definition_value(&left)?,
@@ -5269,8 +5280,14 @@ fn execute(
             curve, parameters, ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (pieces, elapsed) = measure(iterations, || {
-                source.try_split_at_parameters(black_box(parameters))
+            let (pieces, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result =
+                    viboceros_smlib::split_curve_at_parameters(&source, black_box(parameters))
+                        .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_split_at_parameters(black_box(parameters));
+                result.map_err(ProbeError::from)
             })?;
             (
                 Value::Array(

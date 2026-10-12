@@ -1,0 +1,341 @@
+{
+  "curve_split": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "open-rational-between-knots",
+        "comparison": {
+          "id": "open-rational-between-knots",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 4224.0,
+          "rhino_ns_per_iteration": 11497498.0,
+          "rhino_to_viboceros_ratio": 2721.945549242424,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "open-rational-at-knot",
+        "comparison": {
+          "id": "open-rational-at-knot",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 3120.0,
+          "rhino_ns_per_iteration": 1701355.0,
+          "rhino_to_viboceros_ratio": 545.3060897435897,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "open-rational-multiple",
+        "comparison": {
+          "id": "open-rational-multiple",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 5856.0,
+          "rhino_ns_per_iteration": 1495361.0,
+          "rhino_to_viboceros_ratio": 255.35536202185793,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic",
+        "comparison": {
+          "id": "periodic-cubic",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "viboceros_ns_per_iteration": 4224.0,
+          "rhino_ns_per_iteration": 488281.0,
+          "rhino_to_viboceros_ratio": 115.59682765151516,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-multiple",
+        "comparison": {
+          "id": "periodic-cubic-multiple",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 7120.0,
+          "rhino_ns_per_iteration": 1014709.0,
+          "rhino_to_viboceros_ratio": 142.51530898876405,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-single-point-collection",
+        "comparison": {
+          "id": "periodic-cubic-single-point-collection",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "viboceros_ns_per_iteration": 5424.0,
+          "rhino_ns_per_iteration": 923157.0,
+          "rhino_to_viboceros_ratio": 170.19856194690266,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "closed-rational",
+        "comparison": {
+          "id": "closed-rational",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 2512.0,
+          "rhino_ns_per_iteration": 320435.0,
+          "rhino_to_viboceros_ratio": 127.56170382165605,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 7,
+    "matched": 7,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "b96c1b890d66774cbc514024af3ceb3fde8dd06ce09726d9c524a2ba4890c70d",
+    "observation_sha256": "4cfc45bfab9b9d7ec7226e46194cee86e6066ac33e3931e9dd086a1e298c7e00"
+  },
+  "curve_subcurve": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "open-rational-forward",
+        "comparison": {
+          "id": "open-rational-forward",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 2000.0,
+          "rhino_ns_per_iteration": 9101868.0,
+          "rhino_to_viboceros_ratio": 4550.934,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "open-rational-reversed",
+        "comparison": {
+          "id": "open-rational-reversed",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 1792.0,
+          "rhino_ns_per_iteration": 1747131.0,
+          "rhino_to_viboceros_ratio": 974.9614955357143,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-forward",
+        "comparison": {
+          "id": "periodic-cubic-forward",
+          "passed": true,
+          "max_absolute_error": 1.1102230246251565e-16,
+          "viboceros_ns_per_iteration": 1904.0,
+          "rhino_ns_per_iteration": 617981.0,
+          "rhino_to_viboceros_ratio": 324.56985294117646,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-across-seam",
+        "comparison": {
+          "id": "periodic-cubic-across-seam",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 4928.0,
+          "rhino_ns_per_iteration": 495911.0,
+          "rhino_to_viboceros_ratio": 100.63129058441558,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-tail",
+        "comparison": {
+          "id": "periodic-cubic-tail",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 2208.0,
+          "rhino_ns_per_iteration": 228882.0,
+          "rhino_to_viboceros_ratio": 103.66032608695652,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-head",
+        "comparison": {
+          "id": "periodic-cubic-head",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 1232.0,
+          "rhino_ns_per_iteration": 251770.0,
+          "rhino_to_viboceros_ratio": 204.35876623376623,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-from-end-seam",
+        "comparison": {
+          "id": "periodic-cubic-from-end-seam",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 1280.0,
+          "rhino_ns_per_iteration": 846863.0,
+          "rhino_to_viboceros_ratio": 661.61171875,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "periodic-cubic-to-start-seam",
+        "comparison": {
+          "id": "periodic-cubic-to-start-seam",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 2240.0,
+          "rhino_ns_per_iteration": 236511.0,
+          "rhino_to_viboceros_ratio": 105.58526785714285,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "closed-rational-across-seam",
+        "comparison": {
+          "id": "closed-rational-across-seam",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 3008.0,
+          "rhino_ns_per_iteration": 244141.0,
+          "rhino_to_viboceros_ratio": 81.16389627659575,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 9,
+    "matched": 9,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "c2c2ab72092be3dd1d0847ac30e467aaa0fa3b32f929e5041fed108e7d339b6a",
+    "observation_sha256": "beca3ae10079380ea782a460052753c8d556761cfd53975e5f3f4d324c8a0b96"
+  },
+  "curve_split_command": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "split-line-with-curves",
+        "comparison": {
+          "id": "split-line-with-curves",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4864021.0,
+          "rhino_ns_per_iteration": 153282166.0,
+          "rhino_to_viboceros_ratio": 31.513467149915677,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-line-with-surface",
+        "comparison": {
+          "id": "split-line-with-surface",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 177216.0,
+          "rhino_ns_per_iteration": 107635498.0,
+          "rhino_to_viboceros_ratio": 607.3689621704586,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-line-with-box",
+        "comparison": {
+          "id": "split-line-with-box",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 491105.0,
+          "rhino_ns_per_iteration": 132453918.0,
+          "rhino_to_viboceros_ratio": 269.70590403274247,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-line-with-holed-face",
+        "comparison": {
+          "id": "split-line-with-holed-face",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 9489945.0,
+          "rhino_ns_per_iteration": 116233826.0,
+          "rhino_to_viboceros_ratio": 12.248103229260023,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "split-line-with-view-aligned-no-hit",
+        "comparison": {
+          "id": "split-line-with-view-aligned-no-hit",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 88161.0,
+          "rhino_ns_per_iteration": 99266052.0,
+          "rhino_to_viboceros_ratio": 1125.9633171130092,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 5,
+    "matched": 5,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "0e96ccd742bd8444c6e563059586ed0ea091538a3ed02c09ce5db951601a475c",
+    "observation_sha256": "206ea6e502e67e9546a6553bad3ee6e29b488d01b24d64e082b1947f9f85f775"
+  }
+}

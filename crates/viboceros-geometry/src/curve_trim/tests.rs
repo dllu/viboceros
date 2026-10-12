@@ -286,3 +286,88 @@ fn native_edits_reject_invalid_intervals_and_split_lists() {
         Err(GeometryError::CurveSeamMustBeClosed)
     ));
 }
+
+#[test]
+fn external_nurbs_extractor_preserves_native_leaves_and_composite_local_domains() {
+    let curve = crate::NurbsCurve::try_new(
+        2,
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1., 2., 0.).unwrap(),
+            Point3::try_new(2., 0., 0.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let line = crate::LineSegment::try_new(
+        Point3::try_new(-1., 0., 0.).unwrap(),
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let composite = PolyCurve3::try_with_segment_domains(
+        vec![
+            CurveSegment3::Line(line),
+            CurveSegment3::NurbsCurve(curve.clone()),
+        ],
+        vec![-2., 0., 4.],
+    )
+    .unwrap();
+    let source = Curve3::PolyCurve(composite);
+    let before = source.clone();
+    let mut intervals = Vec::new();
+    let actual = source
+        .try_subcurve_with_nurbs(-1., 2., &mut |curve, interval| {
+            intervals.push(interval.clone());
+            curve.try_trimmed(interval)
+        })
+        .unwrap();
+    assert_eq!(intervals, vec![0.0..=0.5]);
+    assert_eq!(actual, source.try_subcurve(-1., 2.).unwrap());
+    let Curve3::PolyCurve(piece) = actual else {
+        panic!()
+    };
+    assert!(matches!(piece.segments()[0], CurveSegment3::Line(_)));
+    assert!(matches!(piece.segments()[1], CurveSegment3::NurbsCurve(_)));
+    assert_eq!(source, before);
+}
+
+#[test]
+fn invalid_split_trim_and_subcurve_requests_do_not_invoke_external_extraction() {
+    let curve = crate::NurbsCurve::try_new(
+        2,
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1., 2., 0.).unwrap(),
+            Point3::try_new(2., 0., 0.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let source = Curve3::NurbsCurve(curve.clone());
+    let mut trim = |_: &crate::NurbsCurve, _| -> Result<crate::NurbsCurve, GeometryError> {
+        panic!("invalid request entered the backend")
+    };
+    assert!(
+        source
+            .try_trimmed_with_nurbs(-1.0..=0.5, &mut trim)
+            .is_err()
+    );
+    assert!(source.try_subcurve_with_nurbs(0.5, 0.5, &mut trim).is_err());
+    for cuts in [vec![], vec![0.], vec![1.], vec![0.5, 0.5], vec![f64::NAN]] {
+        assert!(
+            source
+                .try_split_at_parameters_with_nurbs(&cuts, &mut trim)
+                .is_err()
+        );
+        assert!(
+            curve
+                .try_split_at_parameters_with_extractor(&cuts, &mut trim)
+                .is_err()
+        );
+    }
+    assert_eq!(
+        source.try_trimmed_with_nurbs(0.0..=1.0, &mut trim).unwrap(),
+        source
+    );
+}

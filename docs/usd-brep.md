@@ -42,6 +42,8 @@ ordered group collapse and U-then-V tensor edits with shared crease selection.
 native curve decomposer for curves, directional strips and tensor patches.
 [Curve segment extraction](smlib-curve-segments.md) uses the native segment
 producer for intersection overlaps and surface-cut clipping.
+[Directed segments and parameter splits](smlib-directed-segments.md) reuse it
+with shared curve reversal, closed-seam and composite-leaf policies.
 
 ## Reproduce the native trial
 

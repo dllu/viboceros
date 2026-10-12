@@ -212,7 +212,11 @@ impl Command for SubcurveCommand {
                         document.clear_selection();
                         return Ok("No subcurve created on the locked side".into());
                     };
-                    (Geometry::from(curve.try_subcurve(start, end)?), start, end)
+                    (
+                        Geometry::from(curve_segments::directed(&curve, start, end)?),
+                        start,
+                        end,
+                    )
                 }
             }
         };

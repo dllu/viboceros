@@ -3,7 +3,7 @@ use super::*;
 use std::sync::Arc;
 use viboceros_command::subcurve_input;
 use viboceros_document::GeometrySnapshot;
-use viboceros_geometry::{CurveRef, GeometryError, NurbsCurve, Tolerance};
+use viboceros_geometry::{CurveRef, NurbsCurve, Tolerance};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Parameters {
@@ -148,7 +148,7 @@ fn resolve(
     curve: CurveRef<'_>,
     p: Parameters,
     tolerance: Tolerance,
-) -> Result<Option<PreviewGeometry>, GeometryError> {
+) -> Result<Option<PreviewGeometry>, viboceros_command::CommandError> {
     let piece = if p.midpoint {
         let radius = match p.length {
             Some(length) => length,
@@ -167,7 +167,11 @@ fn resolve(
         else {
             return Ok(None);
         };
-        Some(curve.to_owned().try_subcurve(start, end)?)
+        Some(viboceros_command::prepare_directed_subcurve(
+            &curve.to_owned(),
+            start,
+            end,
+        )?)
     };
     let Some(piece) = piece else { return Ok(None) };
     let curve = piece.as_ref();

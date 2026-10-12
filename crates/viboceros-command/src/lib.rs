@@ -76,6 +76,7 @@ mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod curve_segments;
+pub use curve_segments::directed as prepare_directed_subcurve;
 mod extrude_curve;
 mod knot_refinement;
 use extrude_apex::ExtrudeCurveToPointCommand;
@@ -10551,7 +10552,7 @@ fn split_curve_at_parameters(
     if parameters.len() >= MAX_SPAN_OUTPUT_OBJECTS {
         return Err(too_many_span_outputs("Split"));
     }
-    let pieces = curve.to_owned().try_split_at_parameters(&parameters)?;
+    let pieces = curve_segments::split(&curve.to_owned(), &parameters)?;
     replace_curve_split_pieces(document, id, pieces, parameters.len(), replacement)
 }
 
@@ -23667,6 +23668,36 @@ mod tests {
             .unwrap();
         let parameter = curve.parameter_at(0.4).unwrap();
         let (expected_left, expected_right) = curve.try_split(parameter).unwrap();
+        let check_piece = |actual: &Geometry, expected: &NurbsCurve| {
+            let Geometry::NurbsCurve(actual) = actual else {
+                panic!("split must preserve NURBS type")
+            };
+            assert_eq!(actual.degree(), expected.degree());
+            assert_eq!(actual.knots(), expected.knots());
+            assert_eq!(
+                actual.control_points().len(),
+                expected.control_points().len()
+            );
+            for (a, e) in actual
+                .control_points()
+                .iter()
+                .zip(expected.control_points())
+            {
+                assert_eq!(a.weight(), e.weight());
+                assert!(a.point().distance_to(e.point()).unwrap() < 1e-12);
+            }
+            for i in 0..=64 {
+                let t = actual.parameter_at(i as Real / 64.).unwrap();
+                assert!(
+                    actual
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(expected.evaluate(t).unwrap())
+                        .unwrap()
+                        < 1e-10
+                );
+            }
+        };
 
         assert_eq!(
             registry
@@ -23676,14 +23707,14 @@ mod tests {
         );
         assert_eq!(document.objects().count(), 2);
         let left = document.object(source_id).unwrap();
-        assert_eq!(left.geometry(), &Geometry::NurbsCurve(expected_left));
+        check_piece(left.geometry(), &expected_left);
         assert_eq!(left.attributes(), source.attributes());
         let right = document
             .objects()
             .find(|object| object.id() != source_id)
             .unwrap();
         let right_id = right.id();
-        assert_eq!(right.geometry(), &Geometry::NurbsCurve(expected_right));
+        check_piece(right.geometry(), &expected_right);
         assert_eq!(right.attributes(), source.attributes());
         assert!(document.is_selected(source_id));
         assert!(document.is_selected(right_id));

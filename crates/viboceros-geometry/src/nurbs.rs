@@ -2424,18 +2424,7 @@ impl NurbsCurve {
     /// run cyclically between sorted parameters, crossing the original seam
     /// for the final piece.
     pub fn try_split_at_parameters(&self, parameters: &[Real]) -> Result<Vec<Self>, GeometryError> {
-        if parameters.is_empty() {
-            return Err(GeometryError::InvalidCurveSplitParameter);
-        }
-        let mut parameters = parameters.to_vec();
-        parameters.sort_by(Real::total_cmp);
-        let domain = self.domain();
-        if parameters.iter().any(|parameter| {
-            !parameter.is_finite() || *parameter <= *domain.start() || *parameter >= *domain.end()
-        }) || parameters.windows(2).any(|pair| pair[0] == pair[1])
-        {
-            return Err(GeometryError::InvalidCurveSplitParameter);
-        }
+        let parameters = self.checked_split_parameters(parameters)?;
 
         if self.is_closed()? {
             if let [parameter] = parameters.as_slice() {
@@ -2467,6 +2456,56 @@ impl NurbsCurve {
         }
         pieces.push(remainder);
         Ok(pieces)
+    }
+
+    fn checked_split_parameters(&self, parameters: &[Real]) -> Result<Vec<Real>, GeometryError> {
+        if parameters.is_empty() {
+            return Err(GeometryError::InvalidCurveSplitParameter);
+        }
+        let mut parameters = parameters.to_vec();
+        parameters.sort_by(Real::total_cmp);
+        let domain = self.domain();
+        if parameters.iter().any(|parameter| {
+            !parameter.is_finite() || *parameter <= *domain.start() || *parameter >= *domain.end()
+        }) || parameters.windows(2).any(|pair| pair[0] == pair[1])
+        {
+            return Err(GeometryError::InvalidCurveSplitParameter);
+        }
+
+        Ok(parameters)
+    }
+
+    /// Use the existing cut validation and cyclic ordering with an external
+    /// exact interval extractor. Closed seam pieces retain the shared append policy.
+    pub fn try_split_at_parameters_with_extractor<E: From<GeometryError>>(
+        &self,
+        parameters: &[Real],
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Vec<Self>, E> {
+        let cuts = self.checked_split_parameters(parameters)?;
+        let domain = self.domain();
+        if self.is_closed()? {
+            if cuts.len() == 1 {
+                return Ok(vec![self.try_closed_subcurve_across_seam_with_extractor(
+                    cuts[0], cuts[0], trim,
+                )?]);
+            }
+            let mut pieces = cuts
+                .windows(2)
+                .map(|pair| self.try_subcurve_with_extractor(pair[0], pair[1], trim))
+                .collect::<Result<Vec<_>, E>>()?;
+            pieces.push(self.try_subcurve_with_extractor(*cuts.last().unwrap(), cuts[0], trim)?);
+            Ok(pieces)
+        } else {
+            let mut bounds = Vec::with_capacity(cuts.len() + 2);
+            bounds.push(*domain.start());
+            bounds.extend(cuts);
+            bounds.push(*domain.end());
+            bounds
+                .windows(2)
+                .map(|pair| trim(self, pair[0]..=pair[1]))
+                .collect()
+        }
     }
 
     fn try_split_with_periodic_topology(
@@ -3949,29 +3988,42 @@ impl NurbsCurve {
     /// forward portion that crosses the existing seam, matching Rhino's
     /// directed `SubCrv` selection behavior.
     pub fn try_subcurve(&self, start: Real, end: Real) -> Result<Self, GeometryError> {
+        self.try_subcurve_with_extractor(start, end, &mut |curve, interval| {
+            curve.try_trimmed(interval)
+        })
+    }
+
+    /// Retain directed/reversed and closed-seam policies while delegating
+    /// increasing intervals to a caller-supplied exact segment extractor.
+    pub fn try_subcurve_with_extractor<E: From<GeometryError>>(
+        &self,
+        start: Real,
+        end: Real,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         if !start.is_finite() || !end.is_finite() || start == end {
-            return Err(GeometryError::InvalidCurveTrimInterval);
+            return Err(GeometryError::InvalidCurveTrimInterval.into());
         }
         let domain = self.domain();
         let domain_start = *domain.start();
         let domain_end = *domain.end();
         if start < domain_start || start > domain_end || end < domain_start || end > domain_end {
-            return Err(GeometryError::InvalidCurveTrimInterval);
+            return Err(GeometryError::InvalidCurveTrimInterval.into());
         }
         if start < end {
-            return self.try_trimmed(start..=end);
+            return trim(self, start..=end);
         }
         if !self.is_closed()? {
-            return self.try_trimmed(end..=start)?.reversed();
+            return Ok(trim(self, end..=start)?.reversed()?);
         }
         if start == domain_end {
-            return self.try_trimmed(domain_start..=end);
+            return trim(self, domain_start..=end);
         }
         if end == domain_start {
-            return self.try_trimmed(start..=domain_end);
+            return trim(self, start..=domain_end);
         }
 
-        self.try_closed_subcurve_across_seam(start, end)
+        self.try_closed_subcurve_across_seam_with_extractor(start, end, trim)
     }
 
     fn try_closed_subcurve_across_seam(
@@ -3979,15 +4031,25 @@ impl NurbsCurve {
         start: Real,
         end: Real,
     ) -> Result<Self, GeometryError> {
+        self.try_closed_subcurve_across_seam_with_extractor(start, end, &mut |curve, interval| {
+            curve.try_trimmed(interval)
+        })
+    }
+
+    fn try_closed_subcurve_across_seam_with_extractor<E: From<GeometryError>>(
+        &self,
+        start: Real,
+        end: Real,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         let domain = self.domain();
         let domain_start = *domain.start();
         let domain_end = *domain.end();
-        let left = self.try_trimmed(start..=domain_end)?;
+        let left = trim(self, start..=domain_end)?;
         let wrapped_end = translate_curve_parameter(end, domain_start, domain_end, 1)?;
-        let right = self
-            .try_trimmed(domain_start..=end)?
-            .try_reparameterized(domain_end..=wrapped_end)?;
-        left.try_append_clamped(&right)
+        let right =
+            trim(self, domain_start..=end)?.try_reparameterized(domain_end..=wrapped_end)?;
+        Ok(left.try_append_clamped(&right)?)
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {

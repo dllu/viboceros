@@ -566,6 +566,19 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     const double active_start=full[degree],active_end=full[count];
     require(start>=active_start && end<=active_end,"Native trim interval outside active domain");
     if(start==active_start && end==active_end) return vb_copy_nurbs_payload(data);
+    if(std::count(full,full+data.knot_count[0],start)==static_cast<ptrdiff_t>(degree+1)
+       && std::count(full,full+data.knot_count[0],end)==static_cast<ptrdiff_t>(degree+1)) {
+        // Full-order boundaries already isolate independent control blocks.
+        // Copy them exactly, retaining arbitrary gauges without an unnecessary
+        // Euclidean/homogeneous round trip or native interpolation.
+        const size_t first=std::lower_bound(full,full+data.knot_count[0],start)-full;
+        const size_t after=std::lower_bound(full,full+data.knot_count[0],end)-full;
+        require(after>first+degree && after<=count,"Invalid isolated curve segment");
+        VbNurbsData output=data;
+        output.count[0]=after-first;output.knot_count[0]=output.count[0]+degree+1;
+        output.knots[0]=full+first;output.points_xyzw=data.points_xyzw+4*first;
+        return vb_copy_nurbs_payload(output);
+    }
     const BinaryChart chart(full,data.knot_count[0]);
     std::vector<double> basis(full,full+data.knot_count[0]);
     chart.scale(basis);

@@ -76,8 +76,22 @@ impl Curve3 {
     /// Extracts an increasing native interval without rationalizing analytic
     /// leaves. Ellipses use their parameter-equivalent rational representation.
     pub fn try_trimmed(&self, domain: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.try_trimmed_with_nurbs(domain, &mut |curve, interval| curve.try_trimmed(interval))
+    }
+
+    /// Retain native leaf types and composite domains while delegating NURBS
+    /// control extraction to a caller-supplied geometry backend.
+    pub fn try_trimmed_with_nurbs<E: From<GeometryError>>(
+        &self,
+        domain: RangeInclusive<Real>,
+        trim: &mut impl FnMut(&crate::NurbsCurve, RangeInclusive<Real>) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         if let Self::NurbsCurve(c) = self {
-            return Ok(Self::NurbsCurve(c.try_trimmed(domain)?));
+            crate::parameter::check_trim_interval(&domain, c.domain())?;
+            if domain == c.domain() {
+                return Ok(self.clone());
+            }
+            return Ok(Self::NurbsCurve(trim(c, domain)?));
         }
         validate_trim(&domain, self.as_ref().domain())?;
         if domain == self.as_ref().domain() {
@@ -89,8 +103,8 @@ impl Curve3 {
                     .try_reparameterized(c.domain())?
                     .try_trimmed(domain)?,
             ),
-            Self::Ellipse(c) => Self::NurbsCurve(c.to_nurbs()?.try_trimmed(domain)?),
-            Self::PolyCurve(c) => Self::PolyCurve(c.try_trimmed(domain)?),
+            Self::Ellipse(c) => Self::NurbsCurve(trim(&c.to_nurbs()?, domain)?),
+            Self::PolyCurve(c) => Self::PolyCurve(c.try_trimmed_with_nurbs(domain, trim)?),
             _ => CurveSegment3::try_from_curve(self)?
                 .try_trimmed(domain)?
                 .into_curve(),
@@ -100,6 +114,19 @@ impl Curve3 {
     /// Directed native subcurve: reverse decreasing open intervals, and wrap
     /// decreasing closed intervals forward across the existing seam.
     pub fn try_subcurve(&self, start: Real, end: Real) -> Result<Self, GeometryError> {
+        self.try_subcurve_with_nurbs(start, end, &mut |curve, interval| {
+            curve.try_trimmed(interval)
+        })
+    }
+
+    /// Apply the same directed interval and closed-seam policy with an external
+    /// NURBS segment extractor. Analytic leaves retain their native classes.
+    pub fn try_subcurve_with_nurbs<E: From<GeometryError>>(
+        &self,
+        start: Real,
+        end: Real,
+        trim: &mut impl FnMut(&crate::NurbsCurve, RangeInclusive<Real>) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         let domain = self.as_ref().domain();
         if !start.is_finite()
             || !end.is_finite()
@@ -107,26 +134,40 @@ impl Curve3 {
             || !domain.contains(&start)
             || !domain.contains(&end)
         {
-            return Err(GeometryError::InvalidCurveTrimInterval);
+            return Err(GeometryError::InvalidCurveTrimInterval.into());
         }
         if start < end {
-            return self.try_trimmed(start..=end);
+            return self.try_trimmed_with_nurbs(start..=end, trim);
         }
         if !self.as_ref().is_closed()? {
-            return self.try_trimmed(end..=start)?.reversed(validation());
+            return Ok(self
+                .try_trimmed_with_nurbs(end..=start, trim)?
+                .reversed(validation())?);
         }
         if start == *domain.end() {
-            return self.try_trimmed(*domain.start()..=end);
+            return self.try_trimmed_with_nurbs(*domain.start()..=end, trim);
         }
         if end == *domain.start() {
-            return self.try_trimmed(start..=*domain.end());
+            return self.try_trimmed_with_nurbs(start..=*domain.end(), trim);
         }
-        self.closed_subcurve_across_seam(start, end)
+        self.closed_subcurve_across_seam_with_nurbs(start, end, trim)
     }
 
     /// Splits at distinct interior native parameters. Closed results traverse
     /// the sorted stations cyclically; one station relocates the closed seam.
     pub fn try_split_at_parameters(&self, parameters: &[Real]) -> Result<Vec<Self>, GeometryError> {
+        self.try_split_at_parameters_with_nurbs(parameters, &mut |curve, interval| {
+            curve.try_trimmed(interval)
+        })
+    }
+
+    /// Split with the existing ordering/seam rules and an external NURBS
+    /// extractor, including NURBS leaves in flat polycurves.
+    pub fn try_split_at_parameters_with_nurbs<E: From<GeometryError>>(
+        &self,
+        parameters: &[Real],
+        trim: &mut impl FnMut(&crate::NurbsCurve, RangeInclusive<Real>) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Vec<Self>, E> {
         let domain = self.as_ref().domain();
         let mut cuts = parameters.to_vec();
         cuts.sort_by(Real::total_cmp);
@@ -136,31 +177,42 @@ impl Curve3 {
                 .any(|t| !t.is_finite() || *t <= *domain.start() || *t >= *domain.end())
             || cuts.windows(2).any(|p| p[0] == p[1])
         {
-            return Err(GeometryError::InvalidCurveSplitParameter);
+            return Err(GeometryError::InvalidCurveSplitParameter.into());
         }
         if self.as_ref().is_closed()? {
             if cuts.len() == 1 {
-                return Ok(vec![self.closed_subcurve_across_seam(cuts[0], cuts[0])?]);
+                return Ok(vec![
+                    self.closed_subcurve_across_seam_with_nurbs(cuts[0], cuts[0], trim)?,
+                ]);
             }
             let mut pieces = cuts
                 .windows(2)
-                .map(|p| self.try_subcurve(p[0], p[1]))
+                .map(|p| self.try_subcurve_with_nurbs(p[0], p[1], trim))
                 .collect::<Result<Vec<_>, _>>()?;
-            pieces.push(self.try_subcurve(*cuts.last().unwrap(), cuts[0])?);
+            pieces.push(self.try_subcurve_with_nurbs(*cuts.last().unwrap(), cuts[0], trim)?);
             Ok(pieces)
         } else {
             cuts.insert(0, *domain.start());
             cuts.push(*domain.end());
             cuts.windows(2)
-                .map(|p| self.try_trimmed(p[0]..=p[1]))
+                .map(|p| self.try_trimmed_with_nurbs(p[0]..=p[1], trim))
                 .collect()
         }
     }
 
-    fn closed_subcurve_across_seam(&self, start: Real, end: Real) -> Result<Self, GeometryError> {
+    fn closed_subcurve_across_seam_with_nurbs<E: From<GeometryError>>(
+        &self,
+        start: Real,
+        end: Real,
+        trim: &mut impl FnMut(&crate::NurbsCurve, RangeInclusive<Real>) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         let domain = self.as_ref().domain();
-        let left = self.try_trimmed(start..=*domain.end())?.to_polycurve()?;
-        let right = self.try_trimmed(*domain.start()..=end)?.to_polycurve()?;
+        let left = self
+            .try_trimmed_with_nurbs(start..=*domain.end(), trim)?
+            .to_polycurve()?;
+        let right = self
+            .try_trimmed_with_nurbs(*domain.start()..=end, trim)?
+            .to_polycurve()?;
         Ok(Self::PolyCurve(PolyCurve3::concatenate(&[left, right])?))
     }
 

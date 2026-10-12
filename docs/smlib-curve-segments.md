@@ -4,8 +4,9 @@ Linux `native-smlib` builds use usd-brep's `N_CrvExtractCrvSeg` for partial NURB
 segments in intersection-overlap outputs and surface-cut clipping. These paths
 share one command backend helper. Parsing, intersection classification, surface
 arrangement, attributes, source identity, grouping, selection and atomic history
-keep their existing policies. This does not migrate the complete Trim/SubCrv
-commands or their closed-seam and normalized-end-weight policies.
+keep their existing policies. [Directed segments and parameter splits](smlib-directed-segments.md)
+now reuse the same producer with shared seam policies. Normalized-end-weight
+and numeric/midpoint sampling paths remain separate qualification work.
 
 The adapter accepts the complete original curve definition, retains its degree,
 parameter interval, interior knots and common weight gauge, and copies the native

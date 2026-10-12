@@ -82,6 +82,37 @@ pub fn trim_curve(
     brep::curve_from_native(pointer)
 }
 
+/// Extract a directed NURBS subcurve, reusing the shared reversal/seam policy.
+pub fn subcurve(source: &NurbsCurve, start: f64, end: f64) -> Result<NurbsCurve, Error> {
+    source.try_subcurve_with_extractor(start, end, &mut trim_curve)
+}
+
+/// Split once into the two clamped parameter intervals with native extraction.
+pub fn split_curve(source: &NurbsCurve, parameter: f64) -> Result<(NurbsCurve, NurbsCurve), Error> {
+    if !parameter.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "NURBS curve split parameter",
+        }
+        .into());
+    }
+    let domain = source.domain();
+    if parameter <= *domain.start() || parameter >= *domain.end() {
+        return Err(GeometryError::InvalidCurveSplitParameter.into());
+    }
+    Ok((
+        trim_curve(source, *domain.start()..=parameter)?,
+        trim_curve(source, parameter..=*domain.end())?,
+    ))
+}
+
+/// Split at sorted distinct interior parameters, retaining closed cyclic order.
+pub fn split_curve_at_parameters(
+    source: &NurbsCurve,
+    parameters: &[f64],
+) -> Result<Vec<NurbsCurve>, Error> {
+    source.try_split_at_parameters_with_extractor(parameters, &mut trim_curve)
+}
+
 fn decompose(
     input: NurbsInput<'_>,
     direction: c_int,

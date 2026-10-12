@@ -8,6 +8,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Interior full-order curve splitting shares the control-buffer underflow
+  (source audit).** With degree two and full knots
+  `[0,0,0,0.5,0.5,0.5,1,1,1]`, `N_CrvSplit` at `0.5` obtains span `5` and
+  multiplicity `3`. It allocates three left controls but copies four, and its
+  right copy starts at index `-1`. The same indexing defect was reproduced
+  at a shifted active-start group during endpoint integration. This interior
+  call was audited, not executed. Native single-parameter splits now extract
+  two checked intervals with `N_CrvExtractCrvSeg`; full-order sides keep their
+  independent controls. See [directed segments](smlib-directed-segments.md),
+  [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
+  [regressions](../crates/viboceros-smlib/tests/directed_segments.rs).
 - **Segment extraction assumes a clamped active end.** For the rational
   quadratic with knots `[-2,-1,0,0.8,2,3,4]`, `N_CrvExtractCrvSeg(0.25,2)`
   retains the last source control as its endpoint `[8,3,2]`, rather than the

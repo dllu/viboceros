@@ -395,6 +395,15 @@ impl PolyCurve3 {
     /// Trims only the first and last retained segments, leaving complete
     /// interior segments untouched and retaining the outer parameter domain.
     pub fn try_trimmed(&self, domain: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.try_trimmed_with_nurbs(domain, &mut |curve, interval| curve.try_trimmed(interval))
+    }
+
+    /// Preserve local leaf domains while delegating partial NURBS leaves.
+    pub fn try_trimmed_with_nurbs<E: From<GeometryError>>(
+        &self,
+        domain: RangeInclusive<Real>,
+        trim: &mut impl FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E>,
+    ) -> Result<Self, E> {
         check_interval(*domain.start(), *domain.end())?;
         checked_parameter(*domain.start(), self.domain())?;
         checked_parameter(*domain.end(), self.domain())?;
@@ -411,11 +420,16 @@ impl PolyCurve3 {
             segments.push(if local == source.domain() {
                 source.clone()
             } else {
-                source.try_trimmed(local)?
+                match source {
+                    CurveSegment3::NurbsCurve(curve) => {
+                        CurveSegment3::NurbsCurve(trim(curve, local)?)
+                    }
+                    _ => source.try_trimmed(local)?,
+                }
             });
             parameters.push(end);
         }
-        Self::try_with_segment_domains(segments, parameters)
+        Ok(Self::try_with_segment_domains(segments, parameters)?)
     }
 
     pub fn try_split(&self, parameter: Real) -> Result<(Self, Self), GeometryError> {
