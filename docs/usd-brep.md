@@ -32,6 +32,8 @@ including native compatibility, degree elevation and sheet topology.
 and endpoint splitting with the complete original NURBS definitions.
 [MakeNonPeriodic](smlib-nonperiodic.md) reuses that endpoint path for periodic
 curves and tensor directions, including the existing split/reversal workarounds.
+[ChangeDegree](smlib-degree-change.md) shares the same clamping adapter and
+uses native exact elevation or homogeneous interpolation for all command modes.
 
 ## Reproduce the native trial
 

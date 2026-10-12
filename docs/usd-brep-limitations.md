@@ -8,6 +8,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Greville averages can overflow on finite knot vectors.**
+  `N_CrvGetGrevilleAbscissa` sums the degree's knots before dividing and returns
+  `NL_NO` even when the result is infinity. A cubic-to-quintic deformable
+  ChangeDegree on `[0, 2^1022]` reproduced this, despite every knot and its
+  mathematical mean being finite. With station overflow removed, native point
+  evaluation also rejected this unscaled chart. The adapter now evaluates and
+  interpolates in one privately binary-scaled source/target chart, restoring
+  every original target knot around native-fitted controls. Every scaled knot
+  must round-trip exactly. The rational interpolation regression covers this
+  chart alongside degree reduction and extreme common weight gauges. Source:
+  [NL_CrvNurb.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp) and
+  [qualification](smlib-degree-change.md).
 - **Unclamped active-end splitting can overwrite native buffers.**
   `N_BasisFindSpanAndMult` with `NL_LEFT` reports multiplicity `degree + 1`
   whenever the query equals `U[m - degree]`, even for an unclamped vector.
@@ -297,6 +309,24 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Native raw NURBS edits have bounded input and output resources.**
+  InsertKnot, MakeNonPeriodic and ChangeDegree use NLib directly, with the
+  pinned degree-17 limit and a one-million-control cap. A common binary weight
+  scale conditions homogeneous inputs; every exported Euclidean coordinate
+  and restored weight must be finite and every weight nonzero. Extreme weight
+  ratios can still fail, and degree reduction/deformable interpolation has no
+  certified deviation bound. No-op conversions preserve the original payload.
+  These are adapter limits, not evidence that the upstream mathematics is
+  invalid. See [refinement](smlib-knot-refinement.md),
+  [degree changes](smlib-degree-change.md) and their native regressions.
+- **Exact degree elevation rejects the tested full-order interior break.**
+  `N_CrvElevateDegree` failed on a degree-two curve with six controls and knots
+  `[0, 0, 0, 0.5, 0.5, 0.5, 1, 1, 1]` when raised to degree four. The native
+  adapter returns an error without changing the source; the regression retains
+  the complete input. This is an observed native operation limitation, not
+  evidence that its accepted output is mathematically invalid. General
+  discontinuous degree elevation remains unsupported by this adapter. See
+  [degree-change regressions](../crates/viboceros-smlib/tests/degree_change.rs).
 - **Fixed: whole-chart pole certification rejected a valid mixed-sign interior.**
   The rational triangular EdgeSrf has a positive-weight collapsed natural
   boundary while unrelated interior controls have mixed signs. The general

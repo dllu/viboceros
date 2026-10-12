@@ -48,6 +48,9 @@ and outer-knot conventions with the portable backend.
 [MakeNonPeriodic](smlib-nonperiodic.md) shares that native endpoint-split path,
 clamping periodic curves and requested tensor directions without the Rust
 endpoint control solver in native command or oracle construction.
+[ChangeDegree](smlib-degree-change.md) shares endpoint preparation and target-knot
+policy, delegating exact elevation and homogeneous interpolation to NLib for
+curves and tensor control rows/columns.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

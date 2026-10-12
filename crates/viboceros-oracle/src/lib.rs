@@ -5112,8 +5112,17 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_change_degree(black_box(*degree), black_box(*deformable))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::change_curve_degree(
+                    &source,
+                    black_box(*degree),
+                    black_box(*deformable),
+                )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_change_degree(black_box(*degree), black_box(*deformable));
+                result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -5672,12 +5681,22 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
-                source.try_change_degree(
+            let (surface, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::change_surface_degree(
+                    &source,
                     black_box(*desired_degree_u),
                     black_box(*desired_degree_v),
                     black_box(*deformable),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_change_degree(
+                    black_box(*desired_degree_u),
+                    black_box(*desired_degree_v),
+                    black_box(*deformable),
+                );
+                result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

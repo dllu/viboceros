@@ -16,6 +16,9 @@ the source in homogeneous space at the new Greville abscissae. Degree changes
 support values 1 through 11 and can turn periodic directions into clamped
 ones, matching Rhino.
 
+Linux `native-smlib` builds use native elevation and homogeneous interpolation
+for every mode; see [qualification and limits](../smlib-degree-change.md).
+
 `MakeUniform` replaces selected curves and untrimmed NURBS surfaces in place
 with the same degree, control locations, and rational weights but
 Rhino-compatible unit-spaced knots. Start and end clamping are retained

@@ -302,6 +302,16 @@ extern "C" int vb_nurbs_insert_knot(const VbNurbsData *source, int axis, double 
     });
 }
 
+extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree,
+                                       int deformable, const double *knots, size_t knot_count,
+                                       VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out && (deformable==0 || deformable==1), "Invalid degree-change payload");
+        *out=vb_degree_nurbs(*source,axis,degree,deformable!=0,knots,knot_count);
+    });
+}
+
 extern "C" int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
                                       VbSolid **out, char *error, size_t capacity) {
     if (out) *out = nullptr;

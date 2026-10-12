@@ -991,7 +991,7 @@ impl NurbsCurve {
         }
 
         let source = self.clamped_to_active_domain()?;
-        let knots = changed_degree_knots(source.degree, desired_degree, deformable, &source.knots)?;
+        let knots = degree_change_knots(source.degree, desired_degree, deformable, &source.knots)?;
         source.interpolate_homogeneous_in_basis(
             desired_degree,
             knots,
@@ -4577,16 +4577,41 @@ fn periodic_control_point_curve(
     NurbsCurve::try_new(degree, control_points, knots)
 }
 
-fn changed_degree_knots(
+/// Shared target-basis policy for degree changes on a clamped active interval.
+/// This chooses knot structure only; geometry construction belongs to a backend.
+pub fn degree_change_knots(
     source_degree: usize,
     desired_degree: usize,
     deformable: bool,
     source_knots: &[Real],
 ) -> Result<Vec<Real>, GeometryError> {
-    debug_assert!(source_degree >= 1 && desired_degree >= 1);
-    debug_assert!(source_knots.len() >= 2 * (source_degree + 1));
+    if source_degree == 0 || desired_degree == 0 {
+        return Err(GeometryError::InvalidDegree);
+    }
+    let minimum = source_degree
+        .checked_add(1)
+        .and_then(|n| n.checked_mul(2))
+        .ok_or(GeometryError::InvalidDegree)?;
+    if source_knots.len() < minimum
+        || source_knots.iter().any(|k| !k.is_finite())
+        || source_knots.windows(2).any(|k| k[0] > k[1])
+    {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "invalid degree-change source basis",
+        });
+    }
     let start = source_knots[source_degree];
     let end = source_knots[source_knots.len() - source_degree - 1];
+    if start >= end
+        || source_knots[..=source_degree].iter().any(|k| *k != start)
+        || source_knots[source_knots.len() - source_degree - 1..]
+            .iter()
+            .any(|k| *k != end)
+    {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "degree-change basis must be clamped",
+        });
+    }
     let interior = &source_knots[source_degree + 1..source_knots.len() - source_degree - 1];
     let exact_elevation = desired_degree > source_degree && !deformable;
     let degree_delta = desired_degree.saturating_sub(source_degree);

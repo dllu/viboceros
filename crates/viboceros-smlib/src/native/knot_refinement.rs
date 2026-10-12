@@ -1,8 +1,19 @@
-//! Exact NLib refinement with the original unclamped/periodic definition.
+//! NLib refinement and degree changes with complete source definitions.
 use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
 unsafe extern "C" {
+    fn vb_nurbs_change_degree(
+        source: *const brep::NurbsData,
+        axis: c_int,
+        degree: usize,
+        deformable: c_int,
+        knots: *const f64,
+        knot_count: usize,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_insert_knot(
         source: *const brep::NurbsData,
         axis: c_int,
@@ -12,6 +23,162 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+struct NurbsInput<'a> {
+    degree: [usize; 2],
+    count: [usize; 2],
+    knots: [&'a [f64]; 2],
+    points: Vec<f64>,
+}
+impl<'a> NurbsInput<'a> {
+    fn new(
+        degree: [usize; 2],
+        count: [usize; 2],
+        knots: [&'a [f64]; 2],
+        controls: &[WeightedPoint3],
+    ) -> Self {
+        Self {
+            degree,
+            count,
+            knots,
+            points: controls
+                .iter()
+                .flat_map(|p| {
+                    let [x, y, z] = p.point().to_array();
+                    [x, y, z, p.weight()]
+                })
+                .collect(),
+        }
+    }
+    fn curve(source: &'a NurbsCurve) -> Self {
+        Self::new(
+            [source.degree(), 0],
+            [source.control_points().len(), 1],
+            [source.knots(), &[]],
+            source.control_points(),
+        )
+    }
+    fn surface(source: &'a NurbsSurface) -> Self {
+        Self::new(
+            [source.degree_u(), source.degree_v()],
+            [
+                source.control_point_count_u(),
+                source.control_point_count_v(),
+            ],
+            [source.knots_u(), source.knots_v()],
+            source.control_points(),
+        )
+    }
+    fn view(&self) -> brep::NurbsData {
+        brep::NurbsData {
+            degree: self.degree,
+            count: self.count,
+            knot_count: self.knots.map(|k| k.len()),
+            knots: self.knots.map(|k| k.as_ptr()),
+            points: self.points.as_ptr(),
+        }
+    }
+}
+
+/// Native exact elevation or homogeneous interpolation in the existing
+/// application target basis. Degree changes clamp the active source interval.
+pub fn change_curve_degree(
+    source: &NurbsCurve,
+    degree: usize,
+    deformable: bool,
+) -> Result<NurbsCurve, Error> {
+    if degree == 0 {
+        return Err(GeometryError::InvalidDegree.into());
+    }
+    if degree == source.degree() {
+        return Ok(source.clone());
+    }
+    let domain = source.domain();
+    let target = source.degree() + 1;
+    let clamped = insert_curve_knot(source, *domain.start(), target)?;
+    let clamped = insert_curve_knot(&clamped, *domain.end(), target)?;
+    let knots = viboceros_geometry::degree_change_knots(
+        clamped.degree(),
+        degree,
+        deformable,
+        clamped.knots(),
+    )?;
+    let input = NurbsInput::curve(&clamped);
+    let view = input.view();
+    let mut pointer = std::ptr::null_mut();
+    call(|error, capacity| unsafe {
+        vb_nurbs_change_degree(
+            &view,
+            0,
+            degree,
+            c_int::from(deformable),
+            knots.as_ptr(),
+            knots.len(),
+            &mut pointer,
+            error,
+            capacity,
+        )
+    })?;
+    brep::curve_from_native(pointer)
+}
+
+pub fn change_surface_degree(
+    source: &NurbsSurface,
+    u: usize,
+    v: usize,
+    deformable: bool,
+) -> Result<NurbsSurface, Error> {
+    if u == 0 || v == 0 {
+        return Err(GeometryError::InvalidDegree.into());
+    }
+    let mut result = source.clone();
+    for (axis, degree) in [(0, u), (1, v)] {
+        let old = if axis == 0 {
+            result.degree_u()
+        } else {
+            result.degree_v()
+        };
+        if old == degree {
+            continue;
+        }
+        let direction = if axis == 0 {
+            SurfaceKnotDirection::U
+        } else {
+            SurfaceKnotDirection::V
+        };
+        let domain = if axis == 0 {
+            result.domain_u()
+        } else {
+            result.domain_v()
+        };
+        result = insert_surface_knot(&result, direction, *domain.start(), old + 1)?;
+        result = insert_surface_knot(&result, direction, *domain.end(), old + 1)?;
+        let before = if axis == 0 {
+            result.knots_u()
+        } else {
+            result.knots_v()
+        };
+        let knots = viboceros_geometry::degree_change_knots(old, degree, deformable, before)?;
+        let input = NurbsInput::surface(&result);
+        let view = input.view();
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_nurbs_change_degree(
+                &view,
+                axis,
+                degree,
+                c_int::from(deformable),
+                knots.as_ptr(),
+                knots.len(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        result = brep::surface_from_native(pointer)?;
+    }
+    Ok(result)
 }
 
 /// Clamp a periodic curve at both active endpoints using the shared native
@@ -68,21 +235,8 @@ pub fn insert_curve_knot(
     parameter: f64,
     target: usize,
 ) -> Result<NurbsCurve, Error> {
-    let points = source
-        .control_points()
-        .iter()
-        .flat_map(|p| {
-            let [x, y, z] = p.point().to_array();
-            [x, y, z, p.weight()]
-        })
-        .collect::<Vec<_>>();
-    let view = brep::NurbsData {
-        degree: [source.degree(), 0],
-        count: [source.control_points().len(), 1],
-        knot_count: [source.knots().len(), 0],
-        knots: [source.knots().as_ptr(), std::ptr::null()],
-        points: points.as_ptr(),
-    };
+    let input = NurbsInput::curve(source);
+    let view = input.view();
     let mut pointer = std::ptr::null_mut();
     call(|error, capacity| unsafe {
         vb_nurbs_insert_knot(&view, 0, parameter, target, &mut pointer, error, capacity)
@@ -109,24 +263,8 @@ pub fn insert_surface_knot(
             ));
         }
     };
-    let points = source
-        .control_points()
-        .iter()
-        .flat_map(|p| {
-            let [x, y, z] = p.point().to_array();
-            [x, y, z, p.weight()]
-        })
-        .collect::<Vec<_>>();
-    let view = brep::NurbsData {
-        degree: [source.degree_u(), source.degree_v()],
-        count: [
-            source.control_point_count_u(),
-            source.control_point_count_v(),
-        ],
-        knot_count: [source.knots_u().len(), source.knots_v().len()],
-        knots: [source.knots_u().as_ptr(), source.knots_v().as_ptr()],
-        points: points.as_ptr(),
-    };
+    let input = NurbsInput::surface(source);
+    let view = input.view();
     let mut pointer = std::ptr::null_mut();
     call(|error, capacity| unsafe {
         vb_nurbs_insert_knot(

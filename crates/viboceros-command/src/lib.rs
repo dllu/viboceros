@@ -3133,7 +3133,8 @@ impl Command for ChangeDegreeCommand {
                         || surface.degree_v() != options.degree_v =>
                 {
                     surface_count += 1;
-                    Geometry::NurbsSurface(surface.try_change_degree(
+                    Geometry::NurbsSurface(knot_refinement::surface_degree(
+                        surface,
                         options.degree_u,
                         options.degree_v,
                         options.deformable,
@@ -3148,9 +3149,11 @@ impl Command for ChangeDegreeCommand {
                         continue;
                     }
                     curve_count += 1;
-                    Geometry::NurbsCurve(
-                        curve.try_change_degree(options.degree_u, options.deformable)?,
-                    )
+                    Geometry::NurbsCurve(knot_refinement::curve_degree(
+                        &curve,
+                        options.degree_u,
+                        options.deformable,
+                    )?)
                 }
             };
             replacements.push((object.id(), geometry));

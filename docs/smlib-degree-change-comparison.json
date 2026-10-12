@@ -1,0 +1,181 @@
+{
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "fixtures": [
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "linear-to-cubic-exact",
+          "comparison": {
+            "id": "linear-to-cubic-exact",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 2976.0,
+            "rhino_ns_per_iteration": 46745300.0,
+            "rhino_to_viboceros_ratio": 15707.426075268817,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-to-quintic-exact",
+          "comparison": {
+            "id": "cubic-to-quintic-exact",
+            "passed": true,
+            "max_absolute_error": 7.993605777301127e-15,
+            "viboceros_ns_per_iteration": 4160.0,
+            "rhino_ns_per_iteration": 37284851.0,
+            "rhino_to_viboceros_ratio": 8962.704567307692,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-quadratic-to-quartic-exact",
+          "comparison": {
+            "id": "rational-quadratic-to-quartic-exact",
+            "passed": true,
+            "max_absolute_error": 1.9539925233402755e-14,
+            "viboceros_ns_per_iteration": 2784.0,
+            "rhino_ns_per_iteration": 56282043.0,
+            "rhino_to_viboceros_ratio": 20216.251077586207,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-to-quadratic-approximate",
+          "comparison": {
+            "id": "cubic-to-quadratic-approximate",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 3856.0,
+            "rhino_ns_per_iteration": 34507751.0,
+            "rhino_to_viboceros_ratio": 8949.105549792532,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-to-quintic-deformable",
+          "comparison": {
+            "id": "cubic-to-quintic-deformable",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 4592.0,
+            "rhino_ns_per_iteration": 31097412.0,
+            "rhino_to_viboceros_ratio": 6772.0844947735195,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 5,
+      "matched": 5,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/curve_change_degree.json",
+      "observation": "tools/rhino_oracle/observations/curve_change_degree.json",
+      "fixture_sha256": "2922c0b73bb871c6b649248cfd3bee1d99d74e8131db980ba62db0937999745e",
+      "observation_sha256": "6c7d7196d03dab1edb75778a98815503495f3f4cab0741c5463508270bb1c2f6"
+    },
+    {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-10,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "quadratic-linear-to-quartic-cubic-exact",
+          "comparison": {
+            "id": "quadratic-linear-to-quartic-cubic-exact",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "viboceros_ns_per_iteration": 29760.0,
+            "rhino_ns_per_iteration": 44082642.0,
+            "rhino_to_viboceros_ratio": 1481.2715725806452,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "bicubic-quadratic-to-quadratic-linear",
+          "comparison": {
+            "id": "bicubic-quadratic-to-quadratic-linear",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 13600.0,
+            "rhino_ns_per_iteration": 28221130.0,
+            "rhino_to_viboceros_ratio": 2075.0830882352943,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-linear-to-quartic-cubic-deformable",
+          "comparison": {
+            "id": "quadratic-linear-to-quartic-cubic-deformable",
+            "passed": true,
+            "max_absolute_error": 2.1538326677728037e-14,
+            "viboceros_ns_per_iteration": 27056.0,
+            "rhino_ns_per_iteration": 30410767.0,
+            "rhino_to_viboceros_ratio": 1123.99345801301,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "retain-u-and-elevate-v",
+          "comparison": {
+            "id": "retain-u-and-elevate-v",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 9888.0,
+            "rhino_ns_per_iteration": 32142639.0,
+            "rhino_to_viboceros_ratio": 3250.6714199029125,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "periodic-u-elevation-clamps-seam",
+          "comparison": {
+            "id": "periodic-u-elevation-clamps-seam",
+            "passed": true,
+            "max_absolute_error": 3.1086244689504383e-15,
+            "viboceros_ns_per_iteration": 9152.0,
+            "rhino_ns_per_iteration": 29403687.0,
+            "rhino_to_viboceros_ratio": 3212.8154501748254,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 5,
+      "matched": 5,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "fixture": "tools/rhino_oracle/fixtures/surface_change_degree.json",
+      "observation": "tools/rhino_oracle/observations/surface_change_degree.json",
+      "fixture_sha256": "b6019ad9c9a9b15b3b683b762e3ed7d771c2caac85270076ae2dfb3a3ccee61a",
+      "observation_sha256": "53c37cef371e452a424e4e7c2b656576e64816457dc1da9227511702e1da2cca"
+    }
+  ],
+  "scope": "Complete raw curve and surface definitions from actual ChangeDegree commands. No comparison-time coefficient filtering or chart normalization. Harness timings do not establish kernel speedups."
+}

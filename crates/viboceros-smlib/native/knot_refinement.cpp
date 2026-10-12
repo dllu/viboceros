@@ -29,6 +29,60 @@ void reverse_surface(NL_SURFACE &source, NL_FLAG direction, NL_SURFACE &result, 
     for (NL_INDEX i=0; i<=before->m; ++i) after->U[i] = -before->U[before->m-i];
 }
 
+void degree_curve(NL_CURVE &source, NL_CURVE &result, size_t target, bool deformable,
+                  const double *knots, size_t knot_count, NL_STACKS &stack) {
+    if (target > static_cast<size_t>(source.p) && !deformable) {
+        check(N_CrvElevateDegree(&source, target-source.p, &result, &stack, &stack),
+              "Elevate native curve degree failed");
+        return;
+    }
+    const size_t count = knot_count-target-1;
+    std::vector<double> parameters(count), basis(knots,knots+knot_count);
+    // The native Greville helper sums before dividing and can overflow on
+    // finite charts; native point evaluation can also reject those charts.
+    // Use one exact binary scale for the private source and target bases,
+    // then restore every original target knot around native-fitted controls.
+    double maximum=0;
+    for (double value:basis) maximum=std::max(maximum,std::abs(value));
+    int exponent;
+    std::frexp(maximum,&exponent);
+    auto scale_basis=[exponent](std::vector<double> &values) {
+        for(double &value:values) {
+            const double original=value;
+            value=std::ldexp(value,-exponent);
+            require(std::ldexp(value,exponent)==original,
+                    "Native degree-change chart scaling loses knot precision");
+        }
+    };
+    scale_basis(basis);
+    std::vector<double> source_basis(source.knt->U,source.knt->U+source.knt->m+1);
+    scale_basis(source_basis);
+    NL_CURVE query;
+    N_CrvInitArrays(&query);
+    check(N_CrvFromCPtsAndKnots(&query,source.pol->Pw,source.pol->n,source.p,
+          source_basis.data(),source.knt->m,&stack),
+          "Build native degree-change query curve failed");
+    std::vector<NL_CPOINT> samples(count);
+    for (size_t i=0; i<count; ++i) {
+        check(N_CrvGetGrevilleAbscissa(basis.data(), basis.size(), target, i, &parameters[i]),
+              "Compute native degree-change stations failed");
+        require(std::isfinite(parameters[i]), "Native degree-change station exceeds finite range");
+        check(N_CrvEvalPt(&query, parameters[i], NL_LEFT, &samples[i]),
+              "Evaluate native homogeneous degree-change sample failed");
+    }
+    NL_KNOTVECTOR target_basis = {static_cast<NL_INDEX>(knot_count-1),basis.data()};
+    check(N_FitCrvInterpGivenParams(samples.data(), count-1, NL_HPOINT, parameters.data(),
+                                    &target_basis, target, &result, &stack),
+          "Interpolate native degree-change curve failed");
+    require(static_cast<size_t>(result.knt->m+1)==knot_count &&
+              std::equal(basis.begin(),basis.end(),result.knt->U),
+            "Native degree-change fitted basis differs");
+    std::copy(knots,knots+knot_count,result.knt->U);
+    // The command pins endpoints to the supplied clamped controls.
+    result.pol->Pw[0]=source.pol->Pw[0];
+    result.pol->Pw[count-1]=source.pol->Pw[source.pol->n];
+}
+
 void validate(const VbNurbsData &data) {
     require(data.points_xyzw && data.count[0] && data.count[1] &&
             data.count[0] <= limit / data.count[1], "Knot refinement control resource limit");
@@ -47,6 +101,51 @@ void validate(const VbNurbsData &data) {
         require(data.knots[d][data.degree[d]] < data.knots[d][data.count[d]],
                 "Empty knot refinement active interval");
     }
+}
+
+int controls(const VbNurbsData &, std::vector<NL_CPOINT> &);
+VbSurfaceData *snapshot(VbNurbsData, const std::vector<NL_CPOINT> &, int);
+
+VbSurfaceData *degree_nurbs(const VbNurbsData &data, int axis, size_t target,
+                              bool deformable, const double *target_knots, size_t knot_count) {
+    validate(data);
+    require(axis>=0 && axis<=1 && data.degree[axis] && target>0 && target<=NL_MAXDEG &&
+              target_knots && knot_count>2*target+1 && knot_count<=limit+65,
+            "Invalid native degree-change request");
+    const size_t new_count=knot_count-target-1;
+    require(new_count<=limit/data.count[1-axis], "Native degree-change output resource limit");
+    for(size_t i=0;i<knot_count;++i)
+        require(std::isfinite(target_knots[i]) && (!i || target_knots[i]>=target_knots[i-1]),
+                "Invalid native degree-change target knots");
+    const double start=data.knots[axis][data.degree[axis]],end=data.knots[axis][data.count[axis]];
+    require(target_knots[target]==start && target_knots[new_count]==end,
+            "Native degree-change target domain differs");
+    std::vector<NL_CPOINT> input;
+    const int exponent=controls(data,input);
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    VbNurbsData output=data;
+    output.degree[axis]=target;output.count[axis]=new_count;
+    output.knots[axis]=target_knots;output.knot_count[axis]=knot_count;
+    std::vector<NL_CPOINT> changed(output.count[0]*output.count[1]);
+    const size_t width=data.count[axis],other=data.count[1-axis];
+    for(size_t row=0;row<other;++row) {
+        std::vector<NL_CPOINT> controls(width);
+        for(size_t i=0;i<width;++i) controls[i]=input[axis==0?row*data.count[0]+i:i*data.count[0]+row];
+        NL_CURVE curve,result;
+        N_CrvInitArrays(&curve);N_CrvInitArrays(&result);
+        check(N_CrvFromCPtsAndKnots(&curve,controls.data(),width-1,data.degree[axis],
+              const_cast<double *>(data.knots[axis]),data.knot_count[axis]-1,&stack),
+              "Build native degree-change control curve failed");
+        degree_curve(curve,result,target,deformable,target_knots,knot_count,stack);
+        require(static_cast<size_t>(result.pol->n+1)==new_count && result.p==static_cast<NL_DEGREE>(target),
+                "Native degree-change output layout differs");
+        require(static_cast<size_t>(result.knt->m+1)==knot_count &&
+                  std::equal(target_knots,target_knots+knot_count,result.knt->U),
+                "Native degree-change output basis differs");
+        for(size_t i=0;i<new_count;++i) changed[axis==0?row*new_count+i:i*output.count[0]+row]=result.pol->Pw[i];
+    }
+    return snapshot(output,changed,exponent);
 }
 
 int controls(const VbNurbsData &data, std::vector<NL_CPOINT> &points) {
@@ -176,4 +275,9 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
         for (NL_INDEX j=0; j<=m; ++j) for (NL_INDEX i=0; i<=n; ++i) points.push_back(vertices[i][j]);
     }
     return snapshot(output, points, exponent);
+}
+
+VbSurfaceData *vb_degree_nurbs(const VbNurbsData &source, int axis, size_t degree,
+                              bool deformable, const double *knots, size_t knot_count) {
+    return degree_nurbs(source,axis,degree,deformable,knots,knot_count);
 }

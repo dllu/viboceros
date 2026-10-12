@@ -12,6 +12,8 @@ typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
 int vb_nurbs_insert_knot(const VbNurbsData *source, int axis, double parameter, size_t target,
                         VbSurfaceData **out, char *error, size_t capacity);
+int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree, int deformable,
+                          const double *knots, size_t knot_count, VbSurfaceData **out, char *error, size_t capacity);
 int vb_curves_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
                           VbSurfaceData **out, char *error, size_t capacity);
 int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
