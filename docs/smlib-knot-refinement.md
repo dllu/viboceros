@@ -22,12 +22,19 @@ periodicity predicate; a single row cannot decide whether a rational tensor
 with unequal seam weights is periodic. This policy changes representation
 around the active interval without another geometric refinement.
 
-The [limitations ledger](usd-brep-limitations.md) records two upstream findings:
+The [limitations ledger](usd-brep-limitations.md) records upstream findings:
 unclamped active-end splits can corrupt native buffers, and NLib reversal only
 updates interior knots under a clamped-padding assumption. The adapter avoids
 the end-split path through native reversal and active-start splitting, with the
 full reversed chart supplied explicitly. Clamped/no-op endpoints return copied
 definitions, and one-sided clamping retains the opposite end's original data.
+An endpoint group with full multiplicity can still have inactive controls and
+exterior padding. Splitting that active start also corrupts native buffers.
+For this case, the adapter copies the remaining controls and full knots exactly,
+removing only the inactive prefix or suffix. The shared outer-knot policy retains
+an exterior entry when duplicating its neighbor would exceed full multiplicity.
+These arbitrary full vectors need not be representable by OpenNURBS' omitted
+outer entries; independent qualification covers them without a Rhino parity claim.
 
 Fresh Rhino 8.32 responses retain eight curve and five surface API operations.
 All thirteen complete raw definitions match at absolute `1e-10`, relative
@@ -44,6 +51,11 @@ These are bounded fixture checks, not a continuous parity certificate for all
 possible input definitions. The command regressions also cover Both/symmetry,
 analytic conversion, selection, attributes, source identity, Undo and atomic
 invalid-input rejection.
+The inactive-control regressions additionally check retained controls exactly,
+valid complete basis reconstruction, repeated clamping, both tensor axes,
+degree elevation/reduction and deformable fitting. The portable insertion
+path uses its existing endpoint extraction before treating a full-order request
+as a multiplicity no-op.
 
 The pinned NLib degree limit remains 17 and the payload limit is one million
 controls. Refinement that creates a zero-weight homogeneous control with no
@@ -62,7 +74,10 @@ Both live captures ran on isolated displays with private profile
 `VibocerosOracleSmlibBridgeFinal20261010`. Comparison timings include the probe
 harness and do not establish kernel speedups.
 
-Verification passed 3,519 native-feature tests across geometry, command and
-bridge crates (11 ignored), all 1,095 Python oracle tests, portable command and
-oracle knot checks, and workspace clippy in both feature configurations with
-warnings denied. Workspace formatting also passed.
+Latest verification passed 3,543 native-feature tests across geometry, command
+and bridge crates (11 ignored), all 43 retained raw Rhino cases across native
+knot/degree/nonperiodic editing, portable endpoint regressions, and workspace
+clippy in both feature configurations with warnings denied. Workspace formatting
+also passed.
+Earlier integration qualification passed all 1,095 Python oracle tests and
+portable command and oracle knot checks.

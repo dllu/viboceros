@@ -8,6 +8,28 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Full-order active-start splitting writes outside both control buffers.**
+  A valid quadratic with five controls and full knots
+  `[-2, 0, 0, 0, 0.5, 1, 2, 3]` has active interval `[0, 1]` and an inactive
+  first control. `N_CrvSplit` at `0` obtains span `3`, multiplicity `3`.
+  It allocates one left control but copies two, then copies the inactive control
+  into right index `-1`. Before the workaround, forcing that split aborted with
+  `free(): invalid size`; gdb located the abort in native stack cleanup.
+  The previous adapter skipped this split because the endpoint already had
+  full multiplicity, then its outer-knot rewrite produced an invalid fourth
+  zero. Full multiplicity and fully clamped padding are now checked separately.
+  The adapter slices off the inactive prefix or suffix and corresponding full
+  knots exactly, preserving every retained Euclidean control and weight; no
+  interpolation is required. Other endpoint extraction still uses NLib.
+  The shared portable representation policy also avoids adding a repetition
+  to an already full-order group beside an outer knot. Regression coverage
+  includes both ends, both tensor axes, insertion/no-ops, exact elevation,
+  homogeneous degree fitting, degrees through 17, binary chart scales and
+  common weight gauges.
+  These arbitrary full vectors are qualified independently, rather than
+  claimed as OpenNURBS/Rhino serialization parity cases. Source:
+  [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp) and
+  [regression](../crates/viboceros-smlib/tests/inactive_endpoint_controls.rs).
 - **Repeated endpoint averages can round outside the source interval.**
   For a cubic fit, `N_CrvGetGrevilleAbscissa` averages three copies of `0.8`
   into `0.8000000000000002`. `N_CrvEvalPt` then rejects the sample. Native

@@ -2377,11 +2377,16 @@ impl NurbsCurve {
             });
         }
 
+        let domain = self.domain();
+        // A full-order endpoint group can be shifted into exterior padding,
+        // leaving inactive controls. Its multiplicity alone does not mean the
+        // active endpoint is clamped.
         let current_multiplicity = self.knot_multiplicity_unchecked(parameter);
-        if current_multiplicity >= target_multiplicity {
+        let full_endpoint = target_multiplicity == maximum
+            && (parameter == *domain.start() || parameter == *domain.end());
+        if current_multiplicity >= target_multiplicity && !full_endpoint {
             return Ok(self.clone().with_opennurbs_outer_knots());
         }
-        let domain = self.domain();
         if parameter == *domain.start() {
             return self
                 .clamped_at_start(parameter)
@@ -4127,9 +4132,30 @@ impl NurbsCurve {
     }
 
     fn with_opennurbs_outer_knots(mut self) -> Self {
-        self.knots[0] = self.knots[1];
+        // Arbitrary full vectors may already have a full-order group next to
+        // an outer entry. Duplicating it would create an invalid multiplicity.
+        // Preserve that exterior entry when the short OpenNURBS convention
+        // cannot represent the complete basis.
+        let first = self.knots[1];
+        if self.knots[1..]
+            .iter()
+            .take_while(|knot| **knot == first)
+            .count()
+            <= self.degree
+        {
+            self.knots[0] = first;
+        }
         let last = self.knots.len() - 1;
-        self.knots[last] = self.knots[last - 1];
+        let end = self.knots[last - 1];
+        if self.knots[..last]
+            .iter()
+            .rev()
+            .take_while(|knot| **knot == end)
+            .count()
+            <= self.degree
+        {
+            self.knots[last] = end;
+        }
         self
     }
 
@@ -9217,6 +9243,61 @@ mod tests {
         .unwrap();
         assert_eq!(periodic.try_make_periodic(false).unwrap(), periodic);
         assert_eq!(periodic.try_make_periodic(true).unwrap(), periodic);
+    }
+
+    #[test]
+    fn endpoint_refinement_extracts_inactive_controls_at_full_order_groups() {
+        let controls = vec![
+            point(99.0, 99.0),
+            point(0.0, 0.0),
+            point(1.0, 3.0),
+            point(4.0, -1.0),
+            point(6.0, 2.0),
+        ];
+        let original =
+            NurbsCurve::try_new(2, controls, vec![-2.0, 0.0, 0.0, 0.0, 0.5, 1.0, 2.0, 3.0])
+                .unwrap();
+        for source in [original.clone(), original.reversed().unwrap()] {
+            let before = source.clone();
+            for (parameter, target) in [
+                (*source.domain().start(), 3),
+                (*source.domain().end(), 3),
+                (*source.domain().start(), 1),
+                (*source.domain().end(), 1),
+                (source.parameter_at(0.5).unwrap(), 1),
+                (source.parameter_at(0.25).unwrap(), 2),
+            ] {
+                let result = source.try_insert_knot(parameter, target).unwrap();
+                // Revalidate the complete representation, including exterior
+                // knot multiplicities that evaluation alone would not expose.
+                assert_eq!(
+                    NurbsCurve::try_new_rational(
+                        result.degree(),
+                        result.control_points().to_vec(),
+                        result.knots().to_vec(),
+                    )
+                    .unwrap(),
+                    result
+                );
+                assert_eq!(result.domain(), source.domain());
+                for i in 0..=32 {
+                    let parameter = source.parameter_at(i as Real / 32.0).unwrap();
+                    assert_point_near(
+                        result.evaluate(parameter).unwrap(),
+                        source.evaluate(parameter).unwrap(),
+                    );
+                }
+            }
+            let endpoint = if source.knot_multiplicity(*source.domain().start()).unwrap() == 3 {
+                *source.domain().start()
+            } else {
+                *source.domain().end()
+            };
+            let clamped = source.try_insert_knot(endpoint, 3).unwrap();
+            assert_eq!(clamped.control_points().len(), 4);
+            assert_eq!(clamped.try_insert_knot(endpoint, 3).unwrap(), clamped);
+            assert_eq!(source, before);
+        }
     }
 
     #[test]

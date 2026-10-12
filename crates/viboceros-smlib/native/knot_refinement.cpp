@@ -218,12 +218,37 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
     const double start = knots[degree], end = knots[count];
     require(parameter >= start && parameter <= end, "Knot refinement parameter outside active interval");
     const size_t current = std::count(knots, knots + data.knot_count[axis], parameter);
-    if (current >= target) return vb_copy_nurbs_payload(data);
+    const bool clamp_start=parameter==start,clamp_end=parameter==end;
+    const bool full_clamp=target==degree+1 &&
+        ((clamp_start && !std::all_of(knots,knots+degree+1,[start](double k){return k==start;})) ||
+         (clamp_end && !std::all_of(knots+count,knots+data.knot_count[axis],[end](double k){return k==end;})));
+    if (current >= target && !full_clamp) return vb_copy_nurbs_payload(data);
+    if (full_clamp && current == degree+1) {
+        // A full-order group shifted into the active interval has inactive
+        // controls outside it. N_CrvSplit writes before its right polygon for
+        // this case. No interpolation is needed: retain the active suffix or
+        // prefix and the corresponding complete knot vector exactly.
+        const size_t first = std::lower_bound(knots,knots+data.knot_count[axis],parameter)-knots;
+        const size_t removed = clamp_start ? first : count-first;
+        require(removed && removed<count-degree,"Invalid inactive endpoint controls");
+        VbNurbsData output=data;
+        output.count[axis]-=removed;
+        output.knot_count[axis]-=removed;
+        output.knots[axis]+=clamp_start?removed:0;
+        std::vector<double> retained(output.count[0]*output.count[1]*4);
+        for(size_t j=0;j<output.count[1];++j) for(size_t i=0;i<output.count[0];++i) {
+            const size_t u=i+(axis==0 && clamp_start?removed:0);
+            const size_t v=j+(axis==1 && clamp_start?removed:0);
+            std::copy_n(data.points_xyzw+4*(v*data.count[0]+u),4,
+                        retained.data()+4*(j*output.count[0]+i));
+        }
+        output.points_xyzw=retained.data();
+        return vb_copy_nurbs_payload(output);
+    }
     require(count <= limit - target && (count + target) <= limit / data.count[1-axis],
             "Inserted knot control resource limit");
     std::vector<NL_CPOINT> points;
     const int exponent = controls(data, points);
-    const bool clamp_start=parameter==start,clamp_end=parameter==end;
     const BinaryChart chart(knots,data.knot_count[axis]);
     std::vector<double> query_knots(knots,knots+data.knot_count[axis]);
     chart.scale(query_knots);
