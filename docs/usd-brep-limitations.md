@@ -8,14 +8,31 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Surface-control getter stride documentation is reversed.**
+  `GetControlPointsExpert` documents U as the inner dimension, but validates
+  U stride against the full V row and enumerates V inside U. Following the
+  header returned `SM_ERR_INVALID_INPUT` (1007) in all four new sheet fixtures.
+  The adapter follows the implementation for both getter and setter; nonsquare
+  extrusion, apex and revolution grids check the arrangement. Source:
+  [SmBSplineSurface.cpp](../third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp)
+  and [qualification](smlib-modeling-basis.md).
+- **Canonical reconstruction can lose short-span control rows.**
+  Revolution reads `GetCanonical`, and surface `SwapUV` reconstructs through
+  it. Their unique-knot grouping can turn close groups into an overmultiple
+  interior knot; native IGES sanitation can then average/drop controls or fail.
+  Extrusion's swap returned `SM_ERR` (1001) on the tiny-chart regression before
+  a working chart was used. A private binary-expanded parameter chart preserves
+  those groups through the existing producers, followed by exact output basis
+  restoration. See [modeling bases](smlib-modeling-basis.md).
 - **Curve constructors modify nearby knots without adjusting controls.**
   `sm_FixupKnotVector` coalesces knots below scaled zero and spreads other near
   knots. It collapsed the tested `2^-360` active interval during canonical
   creation. The importer now checks the exact clamped basis and restores it
   using existing `SetExpert` around native-generated controls. A short-span
   regression also retains a ten-unit control bulge between nearby knot groups.
-  Other constructors/copies can repeat the fixup; downstream small-chart
-  modeling remains unqualified. Source:
+  Direct input copies and four standalone sheet producers now share the
+  preservation adapter. General capped and downstream small-chart modeling
+  remains unqualified. Source:
   [SmNurbsCrv.cpp](../third_party/usd-brep/source/SMLib/src/SmNurbsCrv.cpp) and
   [qualification](smlib-curve-import.md).
 - **Unique-knot queries are tolerance grouped, not exact serialization.**
@@ -177,6 +194,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Numeric extrusion direction is still an application policy difference.**
+  The live short-span XZ profile is extruded along positive Y by Rhino, while
+  the application's numeric ExtrudeCrv path uses global Z. The low-level native
+  sheet producer passes explicit-vector interpolation checks. This is an app
+  command-default gap, not a demonstrated usd-brep geometry bug. See
+  [new modeling observations](smlib-modeling-basis.md).
+- **Short-span revolution has a different V domain.** The new live command
+  uses V `[0, 10.837476096278881]` in Rhino and `[0, 1]` in Viboceros. The tensor
+  controls, weights, U basis and full-degree V knot-group multiplicities match,
+  describing the same rational Bezier patch images. Raw V differences remain
+  in the primary comparison; parameter/derivative parity is not claimed. See
+  [retained comparison](smlib-modeling-basis-comparison.json).
 - **Portable planar overlap policy differs from current Rhino.** The live
   fixture with an outer rectangle, two competing inner rectangles and a separate
   inner hole produces areas 83 and 16 in both Rhino and usd-brep. The previous

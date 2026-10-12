@@ -32,8 +32,9 @@ source geometry, exact active domains and complete clamped output ends.
 They also cover parameter scales `2^-360`, `1` and `2^360`, and three targeted
 queries on a short parameter span with a ten-unit control bulge. The bulge case
 guards against losing geometry while coalescing its two nearby knot groups.
-Other native constructors and copies can apply the same knot fixup; this ingress
-repair does not qualify arbitrary downstream small-chart modeling.
+[Sheet construction and direct input copies](smlib-modeling-basis.md) now share
+the preservation adapter. Arbitrary downstream small-chart modeling remains
+unqualified.
 
 The pinned NLib fast evaluator limits canonical curves to degree 17 despite the
 constructor header's stated upper bound of 32. The adapter now uses the existing

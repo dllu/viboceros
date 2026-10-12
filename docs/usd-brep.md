@@ -22,6 +22,8 @@ Broader arbitrary-input qualification remains open. The kernel can be
 built without the USD scene-format layer.
 Standalone [modeling curve import](smlib-curve-import.md) now uses native
 active-interval clamping rather than the Rust endpoint extractor.
+[Exact modeling bases](smlib-modeling-basis.md) carry those knots through native
+copies and standalone surface construction.
 
 ## Reproduce the native trial
 

@@ -1,4 +1,5 @@
 #include "bridge.h"
+#include "basis_preservation.h"
 #include <SmApiBrep.h>
 #include <SmApiCurves.h>
 #include <SmApiGeneral.h>
@@ -93,8 +94,39 @@ std::unique_ptr<SmBSplineCurve> copy_curve(const VbCurve &curve) {
     std::unique_ptr<SmCurve> copy_owner(copied);
     check(status, "copy modeling curve");
     require(copied && copied->IsKindOf(SmBSplineCurve_TYPE), "Missing NURBS curve copy");
+    vb_preserve_curve_basis(*static_cast<SmBSplineCurve *>(copied), curve.knots);
     copy_owner.release();
     return std::unique_ptr<SmBSplineCurve>(static_cast<SmBSplineCurve *>(copied));
+}
+
+SmPoint3d curve_start(const VbCurve &curve) {
+    SmPoint3d result;
+    const auto *query = curve.evaluation ? curve.evaluation.get() : curve.value.get();
+    check(query->EvaluatePoint(query->GetNaturalInterval().GetMin(), result), "evaluate modeling curve start");
+    return result;
+}
+
+// GetCanonical groups knots at an absolute tolerance. Expand the chart by an
+// exact binary factor before producers that use that query; preserve the input
+// basis and controls with the existing data setter, then restore the result.
+std::unique_ptr<SmBSplineCurve> canonical_working_curve(const VbCurve &curve) {
+    long double gap = INFINITY;
+    for (size_t i = 1; i < curve.knots.size(); ++i)
+        if (curve.knots[i] > curve.knots[i - 1])
+            gap = std::min(gap, static_cast<long double>(curve.knots[i]) - curve.knots[i - 1]);
+    if (gap > 64 * SM_EFF_ZERO) return nullptr;
+    auto copy = copy_curve(curve);
+    {
+        const int shift = std::ilogb(64 * SM_EFF_ZERO) - std::ilogb(gap) + 1;
+        std::vector<double> knots;
+        for (double k : curve.knots) {
+            const double scaled = std::ldexp(k, shift);
+            require(std::isfinite(scaled), "Canonical working chart exceeds finite knot range");
+            knots.push_back(scaled);
+        }
+        vb_preserve_curve_basis(*copy, knots);
+    }
+    return copy;
 }
 
 std::unique_ptr<VbSolid> capped_surface(std::unique_ptr<SmBSplineSurface> surface,
@@ -120,9 +152,7 @@ std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, co
         for (size_t axis = 0; axis < 3; ++axis)
             nonconstant = nonconstant || path.points[i + axis] != path.points[axis];
     require(nonconstant, "Constant translational sweep path");
-    SmPoint3d start;
-    check(path.value->EvaluatePoint(path.value->GetNaturalInterval().GetMin(), start),
-          "evaluate translational sweep path start");
+    const auto start = curve_start(path);
     auto shifted = copy_curve(path);
     const SmAxis2Placement translation(SmPoint3d(-start.x, -start.y, -start.z),
                                       SmVector3d(1, 0, 0), SmVector3d(0, 1, 0));
@@ -133,6 +163,7 @@ std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, co
     std::unique_ptr<SmBSplineSurface> result(raw);
     check(status, "create exact translational sweep");
     require(raw, "Missing translational sweep surface");
+    vb_preserve_surface_basis(*raw, {profile.knots, path.knots});
     return result;
 }
 
@@ -150,14 +181,14 @@ std::unique_ptr<SmBSplineSurface> apex_surface(const VbCurve &curve, const doubl
     std::unique_ptr<SmBSplineSurface> result(raw);
     check(status, "create apex ruled surface");
     require(raw, "Missing apex ruled surface");
-    SmPoint3d start;
-    check(curve.value->EvaluatePoint(curve.value->GetNaturalInterval().GetMin(), start),
-          "evaluate apex profile start");
+    vb_preserve_surface_basis(*raw, {std::vector<double>{0, 0, 1, 1}, curve.knots});
+    const auto start = curve_start(curve);
     const double length = start.DistanceBetween(point);
     require(std::isfinite(length) && length > 0, "Apex coincides with the profile start");
     const auto domain = raw->GetNaturalUVDomain();
     check(raw->Reparameterize(SmExtent2d(0, domain.GetMin().y, length, domain.GetMax().y)),
           "set apex surface parameter domain");
+    vb_preserve_surface_basis(*raw, {std::vector<double>{0, 0, length, length}, curve.knots});
     return result;
 }
 } // namespace
@@ -638,40 +669,13 @@ extern "C" int vb_curve_create(size_t degree, const double *points_xyzw, size_t 
         // CreateCanonical's existing IGES routine clamps the supplied full
         // NURBS to its active interval. Do not duplicate that operation in Rust.
         owner->degree = raw->GetDegree();
-        SmTArray<SmPoint3d> exported_points;
-        SmTArray<double> exported_weights, exported_knots;
-        check(raw->GetControlPolygon(exported_points, exported_weights), "control polygon");
-        check(raw->GetKnotsAll(exported_knots), "full knots");
-        require(exported_knots.GetDataArray() && exported_knots.GetSize() > degree + 1 &&
-                    exported_knots.GetSize() <= limit + 65, "Invalid full canonical knots");
-        const bool polynomial = exported_weights.GetSize() == 0 && !raw->IsRational();
-        require(polynomial || exported_points.GetSize() == exported_weights.GetSize(),
-                "Invalid exported weights");
-        const std::vector<double> actual_knots(exported_knots.GetDataArray(),
-            exported_knots.GetDataArray() + exported_knots.GetSize());
         std::vector<double> expected_knots(degree + 1, start);
         for (size_t i = 0; i < knot_count; ++i)
             if (knots[i] > start && knots[i] < end) expected_knots.push_back(knots[i]);
         expected_knots.insert(expected_knots.end(), degree + 1, end);
-        require(owner->degree == degree &&
-                    expected_knots.size() == exported_points.GetSize() + degree + 1,
-                "Unexpected canonical clamping layout");
-        if (actual_knots != expected_knots) {
-            // The SmBSplineCurve constructor's knot fixup can merge or spread
-            // knots after native clamping. Keep the native-generated controls
-            // and reload the exact clamped basis with the existing expert API.
-            std::vector<double> controls;
-            for (ULONG i = 0; i < exported_points.GetSize(); ++i) {
-                const auto &p = exported_points[i];
-                const double w = polynomial ? 1. : exported_weights[i];
-                require(std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) &&
-                            std::isfinite(w) && w > 0, "Invalid canonical clamping controls");
-                controls.insert(controls.end(), {p.x, p.y, p.z, w});
-            }
-            check(raw->SetExpert(3, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
-                                expected_knots.size(), expected_knots.data(),
-                                polynomial ? SM_CP_NON_RATIONAL : SM_CP_EUCLIDIAN_RATIONAL,
-                                4, controls.data()), "restore exact canonical knot data");
+        require(owner->degree == degree, "Canonical creation changed degree");
+        const bool restored = vb_preserve_curve_basis(*raw, expected_knots);
+        if (restored) {
             std::vector<double> normalized_knots;
             const long double width = static_cast<long double>(end) - start;
             bool representable = true;
@@ -683,20 +687,19 @@ extern "C" int vb_curve_create(size_t degree, const double *points_xyzw, size_t 
                 normalized_knots.push_back(mapped);
             }
             if (representable) {
-                owner->evaluation.reset(new (*SmApiGetOrCreateContext()) SmBSplineCurve(3));
-                check(owner->evaluation->SetExpert(3, degree, SM_CF_UNSPECIFIED, SM_EK_CLAMPPED,
-                                normalized_knots.size(), normalized_knots.data(),
-                                polynomial ? SM_CP_NON_RATIONAL : SM_CP_EUCLIDIAN_RATIONAL,
-                                4, controls.data()), "create normalized native query chart");
+                SmBSplineCurve *query = nullptr;
+                const auto copied = raw->Copy(*SmApiGetOrCreateContext(), query);
+                owner->evaluation.reset(query);
+                check(copied, "copy native query curve");
+                require(query, "Missing native query copy");
+                vb_preserve_curve_basis(*query, normalized_knots);
             }
-            exported_points.ReSet();
-            exported_weights.ReSet();
-            exported_knots.ReSet();
-            check(raw->GetControlPolygon(exported_points, exported_weights),
-                  "read restored canonical controls");
-            check(raw->GetKnotsAll(exported_knots),
-                  "read restored canonical knots");
         }
+        SmTArray<SmPoint3d> exported_points;
+        SmTArray<double> exported_weights, exported_knots;
+        check(raw->GetControlPolygon(exported_points, exported_weights), "control polygon");
+        check(raw->GetKnotsAll(exported_knots), "full knots");
+        const bool polynomial = exported_weights.GetSize() == 0 && !raw->IsRational();
         const auto domain = raw->GetNaturalInterval();
         require(domain.GetMin() == start && domain.GetMax() == end,
                 "Canonical creation changed the active NURBS interval");
@@ -774,19 +777,24 @@ extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[
         const SmVector3d vector(displacement[0], displacement[1], displacement[2]);
         require(std::isfinite(vector.Length()) && vector.Length() > 0,
                 "Invalid extrusion displacement");
+        auto working = canonical_working_curve(*curve);
+        auto *profile = working ? working.get() : curve->value.get();
+        const auto working_knots = working ? vb_curve_full_knots(*profile) : curve->knots;
         SmSurface *raw = nullptr;
-        const auto status = SmApiCreateExtrude(curve->value.get(), vector, raw);
+        const auto status = SmApiCreateExtrude(profile, vector, raw);
         std::unique_ptr<SmSurface> owner(raw);
         check(status, "extrude curve surface");
         require(raw && raw->IsKindOf(SmBSplineSurface_TYPE), "Missing NURBS extrusion surface");
         auto *surface = static_cast<SmBSplineSurface *>(raw);
+        vb_preserve_surface_basis(*surface, {std::vector<double>{0, 0, 1, 1}, working_knots});
         // Native extrusion is linear in U. The application uses profile U and
         // physical-distance V, so use the native chart operations to align it.
         check(surface->SwapUV(), "align extrusion parameter directions");
-        const auto domain = surface->GetNaturalUVDomain();
-        check(surface->Reparameterize(SmExtent2d(domain.GetMin().x, 0,
-                                                domain.GetMax().x, vector.Length())),
+        vb_preserve_surface_basis(*surface, {working_knots, {0, 0, 1, 1}});
+        check(surface->Reparameterize(SmExtent2d(curve->knots.front(), 0,
+                                                curve->knots.back(), vector.Length())),
               "set extrusion distance domain");
+        vb_preserve_surface_basis(*surface, {curve->knots, {0, 0, vector.Length(), vector.Length()}});
         *out = vb_export_surface(*surface);
     });
 }
@@ -865,12 +873,9 @@ extern "C" int vb_shape_linear_sweep(const VbCurve *const *curves, size_t count,
         std::vector<std::unique_ptr<SmCurve>> copies;
         for (size_t i = 0; i < count; ++i) {
             require(curves[i] && curves[i]->value, "Missing linear sweep profile");
-            SmCurve *copy = nullptr;
-            const auto status = curves[i]->value->Copy(*context, copy);
-            copies.emplace_back(copy);
-            check(status, "copy linear sweep profile");
-            require(copy, "Missing copied linear sweep profile");
-            profiles.Add(copy);
+            auto copy = copy_curve(*curves[i]);
+            profiles.Add(copy.get());
+            copies.emplace_back(std::move(copy));
         }
         SmVector3d vector(displacement[0], displacement[1], displacement[2]);
         const double distance = vector.Length();
@@ -912,20 +917,30 @@ extern "C" int vb_curve_revolve(const VbCurve *curve, const double origin[3], co
         SmVector3d direction(axis[0], axis[1], axis[2]);
         check(direction.Unitize(), "normalize revolution axis");
         SmBSplineSurface *raw = nullptr;
+        auto working = canonical_working_curve(*curve);
+        auto *profile = working ? working.get() : curve->value.get();
         // The high-level wrapper returns only the first surface after splitting
         // profile kinks. The existing tensor constructor retains the full curve.
         // Its bSwapUV header description is inverted in the pinned release:
         // FALSE constructs circular U and profile V.
         const auto status = SmBSplineSurface::CreateSurfOfRevolution(*SmApiGetOrCreateContext(),
-            curve->value.get(), SmPoint3d(origin[0], origin[1], origin[2]), direction,
+            profile, SmPoint3d(origin[0], origin[1], origin[2]), direction,
             angle_degrees, raw, FALSE);
         std::unique_ptr<SmBSplineSurface> owner(raw);
         check(status, "create revolution surface");
         require(raw, "Missing revolution surface");
+        auto knots = vb_surface_full_knots(*raw);
+        knots[1] = vb_curve_full_knots(*profile);
+        vb_preserve_surface_basis(*raw, knots);
         const auto domain = raw->GetNaturalUVDomain();
         check(raw->Reparameterize(SmExtent2d(0, domain.GetMin().y,
                                             parameter_length, domain.GetMax().y)),
               "set revolution parameter domain");
+        knots = vb_surface_full_knots(*raw);
+        // Circular U is generated by the native circle producer. Only restore
+        // the supplied profile V basis, keeping those native circular controls.
+        knots[1] = curve->knots;
+        vb_preserve_surface_basis(*raw, knots);
         *out = vb_export_surface(*raw);
     });
 }
@@ -944,12 +959,9 @@ extern "C" int vb_shape_planar_faces(const VbCurve *const *curves, size_t count,
         std::vector<std::unique_ptr<SmCurve>> copies;
         for (size_t i = 0; i < count; ++i) {
             require(curves[i] && curves[i]->value, "Missing planar-face profile");
-            SmCurve *copy = nullptr;
-            const auto status = curves[i]->value->Copy(*context, copy);
-            copies.emplace_back(copy);
-            check(status, "copy planar-face profile");
-            require(copy, "Missing copied planar-face profile");
-            profiles.Add(copy);
+            auto copy = copy_curve(*curves[i]);
+            profiles.Add(copy.get());
+            copies.emplace_back(std::move(copy));
         }
         SmTArray<SmFace *> faces;
         const auto status = owner->value->CreatePlanarFacesWith3DCurves(

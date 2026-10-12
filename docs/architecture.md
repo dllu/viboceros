@@ -34,6 +34,8 @@ transfer, using ruled surfaces and native base-cap/stitch operations.
 sweep constructor and shares native cap construction with apex extrusion.
 [Modeling curve imports](smlib-curve-import.md) now delegate active-interval
 clamping to usd-brep's canonical constructor, removing the Rust preparation step.
+[Native modeling bases](smlib-modeling-basis.md) share exact knot preservation
+through curve copies and sheet producers, retaining kernel-generated controls.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,
