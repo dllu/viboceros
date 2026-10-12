@@ -56,6 +56,9 @@ and round Pipe caps.
 [Isocurve extraction](smlib-isocurves.md) uses the native tensor producer with
 checked endpoint preparation for ExtractIsocurve, trim-aware face portions,
 Contour boundaries and UV rectangle sizing.
+[Loft, Sweep1 and Pipe section matching](smlib-section-bases.md) reuses native
+clamping, degree elevation and knot refinement with shared section-weight and
+interpolation policies.
 
 ## Reproduce the native trial
 

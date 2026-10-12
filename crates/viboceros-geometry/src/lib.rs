@@ -183,7 +183,10 @@ pub use intersection::{
     transformed_curve_brep_intersection_events,
 };
 pub use line::LineSegment;
-pub use loft::{LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS, try_loft_nurbs_curves};
+pub use loft::{
+    LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS, prepare_loft_sections_with_operations,
+    try_loft_nurbs_curves, try_loft_nurbs_curves_with_preparation,
+};
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
@@ -218,6 +221,10 @@ pub use point_projection::{MAX_PLANE_FIT_POINTS, PointProjection3};
 pub use point2::Point2;
 pub use polycurve::{MAX_POLYCURVE_SEGMENTS, PolyCurve3};
 pub use polyline::{JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, join_polylines};
+pub use section_basis::{
+    WeightScale as SectionWeightScale,
+    prepare_with_operations as prepare_nurbs_sections_with_operations,
+};
 pub use spiral::{
     DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, MAX_SPIRAL_CONTROL_POINTS,
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN,

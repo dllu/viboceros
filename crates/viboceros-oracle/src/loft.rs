@@ -18,7 +18,6 @@ pub(super) fn run(
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    use viboceros_geometry::try_loft_nurbs_curves;
     let curves = fixture
         .curves
         .iter()
@@ -28,10 +27,10 @@ pub(super) fn run(
     if fixture.command {
         return command(fixture, &curves, iterations, tolerance);
     }
-    let mut surface = try_loft_nurbs_curves(&curves, style, fixture.closed)?;
+    let mut surface = surface(&curves, style, fixture.closed)?;
     let started = Instant::now();
     for _ in 0..iterations {
-        surface = black_box(try_loft_nurbs_curves(&curves, style, fixture.closed)?);
+        surface = black_box(self::surface(&curves, style, fixture.closed)?);
     }
     let elapsed =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
@@ -39,6 +38,25 @@ pub(super) fn run(
         json!([surface_record(&surface, fixture.sample_geometry)?]),
         elapsed,
     ))
+}
+
+fn surface(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+) -> Result<NurbsSurface, ProbeError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::loft_surface(curves, style, closed)
+            .map_err(CommandError::from)
+            .map_err(ProbeError::from)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_loft_nurbs_curves(
+            curves, style, closed,
+        )?)
+    }
 }
 
 fn surface_record(surface: &NurbsSurface, samples: bool) -> Result<Value, ProbeError> {
@@ -80,12 +98,13 @@ pub(super) fn build_brep(fixture: &LoftFixture, tolerance: Tolerance) -> Result<
         .iter()
         .map(nurbs_curve_from_definition)
         .collect::<Result<Vec<_>, _>>()?;
-    Ok(Brep::try_loft(
+    Brep::try_loft_with_surface(
         &curves,
         parse_style(&fixture.style)?,
         fixture.closed,
         tolerance,
-    )?)
+        &mut surface,
+    )
 }
 
 fn command(

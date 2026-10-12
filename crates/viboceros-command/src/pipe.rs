@@ -3,7 +3,7 @@
 use super::*;
 use viboceros_geometry::{
     Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3, SurfaceIso,
-    Sweep1, SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
+    SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
 };
 
 const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
@@ -1144,7 +1144,7 @@ fn segmented_station_wall(
         .zip(&frames)
         .map(|(&(parameter, radius), &frame)| circular_section(parameter, frame, radius, tolerance))
         .collect::<Result<Vec<_>, _>>()?;
-    let sweep = Sweep1::try_new(
+    let sweep = crate::sweep::model(
         rail,
         &sections,
         SweepFrameStyle::Freeform,
@@ -1204,7 +1204,8 @@ fn station_pipe(
                 circular_section(parameter, frame, radius, tolerance)
             })
             .collect::<Result<Vec<_>, _>>()?;
-        let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
+        let sweep =
+            crate::sweep::model(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
         if matches!(source, Geometry::Arc(_)) {
             Ok(sweep.fit_model_surface()?)
         } else {
@@ -1363,7 +1364,7 @@ fn swept_wall_with_frames(
             tolerance,
         )?);
     }
-    let sweep = Sweep1::try_new(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
+    let sweep = crate::sweep::model(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
     // Rhino refits even a constant-radius cubic NURBS rail. Retaining its
     // four-control Bézier basis changes the measured flat Pipe volume.
     let surface = if radii[0] == radii[1] && !matches!(rail, CurveRef::NurbsCurve(_)) {

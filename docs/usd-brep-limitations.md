@@ -458,6 +458,19 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Loft section matching uses native edits, while interpolation retains Rhino
+  policy.** The existing `N_CreateSkinSrfParams` open path sets its loft control
+  index to `k` for `k+1` input profiles and requires that control count's knot
+  length. Rhino's open cubic Loft policy instead uses two extra controls for
+  automatic end handles. Its closed skin path also derives matching end
+  derivatives from a rotated/chord-parameterized profile set, rather than our
+  periodic interpolation policy. These are producer/representation differences,
+  not demonstrated upstream geometry defects. Loft, Sweep1 and Pipe now reuse
+  native clamping, exact degree elevation and knot refinement for common section
+  bases, retaining their existing weight, frame and interpolation policies.
+  General native skin replacement is not qualified. Source:
+  [NL_SrfAdv.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp) and
+  [section matching](smlib-section-bases.md).
 - **Fixed: isocurve chart conditioning rejected subnormal near-boundary queries.**
   Planar trimmed-face closest-point and density paths can supply nonzero
   subnormal parameters or knots next to zero. Scaling a moderate fixed-axis

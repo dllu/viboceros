@@ -43,11 +43,12 @@ impl Command for LoftCommand {
                     .ok_or(CommandError::LoftRequiresCurves)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let brep = Brep::try_loft(
+        let brep = Brep::try_loft_with_surface(
             &profiles,
             style.unwrap_or_default(),
             closed.unwrap_or(false),
             document.tolerance(),
+            &mut surface,
         )?;
         let faces = brep.faces().len();
         document.add_geometry(Geometry::Brep(brep))?;
@@ -55,6 +56,24 @@ impl Command for LoftCommand {
             "Lofted {} curve sections into one BRep with {faces} faces",
             profiles.len(),
         ))
+    }
+}
+
+pub(super) fn surface(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    closed: bool,
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::loft_surface(curves, style, closed)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_loft_nurbs_curves(
+            curves, style, closed,
+        )?)
     }
 }
 

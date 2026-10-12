@@ -16,6 +16,18 @@ impl Brep {
         closed: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::try_loft_with_surface(curves, style, closed, tolerance, &mut try_loft_nurbs_curves)
+    }
+
+    /// Keep section ordering, orientation and crease topology while delegating
+    /// the ordered tensor surface to the caller's construction backend.
+    pub fn try_loft_with_surface<E: From<GeometryError>>(
+        curves: &[NurbsCurve],
+        style: LoftStyle,
+        closed: bool,
+        tolerance: Tolerance,
+        loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, bool) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
         crate::loft::validate_count(curves.len(), closed)?;
         if curves
             .iter()
@@ -24,18 +36,19 @@ impl Brep {
             return Err(GeometryError::LoftResourceLimit {
                 context: "section controls",
                 maximum: MAX_LOFT_SECTION_CONTROLS,
-            });
+            }
+            .into());
         }
         let mut profiles = curves.to_vec();
         let oriented = orient_parallel_profiles(&mut profiles, tolerance)?;
-        let mut surface = try_loft_nurbs_curves(&profiles, style, closed)?;
+        let mut surface = loft(&profiles, style, closed)?;
         // Rhino's straight polyline branch retains its bilinear patch direction;
         // curved profiles and the smooth loft styles reverse the V direction.
         if oriented && !(style == LoftStyle::Straight && profiles.iter().all(|c| c.degree() == 1)) {
             surface = surface.try_reversed_v()?;
         }
         let [u, v] = surface.sampled_kink_parameters(0.1_f64.to_radians())?;
-        Self::try_surface_grid(&surface, &u, &v, tolerance)
+        Ok(Self::try_surface_grid(&surface, &u, &v, tolerance)?)
     }
 }
 

@@ -26,6 +26,9 @@ every possible input.
 degree elevation and knot insertion. It then normalizes endpoint weights through
 the shared [projective normalizer](nurbs-numerics.md#endpoint-weight-normalization),
 without Rhino's near-equal-weight approximation.
+Linux `native-smlib` builds now delegate those exact section edits to usd-brep
+while sharing the same weight and interpolation policy. See
+[native section matching](smlib-section-bases.md).
 **Unequal endpoint-weight ratios can move later profiles:**
 after normalization, the first section's knots are reused for all sections.
 Consequently this policy is not unconditional interpolation of the original

@@ -65,8 +65,35 @@ impl Sweep1 {
         blend: SweepBlend,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::try_new_with_section_preparation(
+            rail,
+            sections,
+            style,
+            blend,
+            tolerance,
+            &mut |curves, maximum, limit| {
+                crate::section_basis::prepare(
+                    curves,
+                    maximum,
+                    limit,
+                    crate::section_basis::WeightScale::Common,
+                )
+            },
+        )
+    }
+
+    /// Retain rail/frame/blending policy while delegating exact common-basis
+    /// section preparation. The callback receives the current resource limit.
+    pub fn try_new_with_section_preparation<E: From<GeometryError>>(
+        rail: CurveRef<'_>,
+        sections: &[SweepSection],
+        style: SweepFrameStyle,
+        blend: SweepBlend,
+        tolerance: Tolerance,
+        prepare: &mut impl FnMut(&[NurbsCurve], usize, GeometryError) -> Result<Vec<NurbsCurve>, E>,
+    ) -> Result<Self, E> {
         if sections.is_empty() || sections.len() > MAX_SECTIONS {
-            return Err(invalid("expected 1 to 256 sections"));
+            return Err(invalid("expected 1 to 256 sections").into());
         }
         // Analytic rail domains are computed lengths. A serialized endpoint
         // can differ by a few ulps after reconstructing the same rail. Snap
@@ -105,9 +132,9 @@ impl Sweep1 {
                 .windows(2)
                 .any(|p| p[0].parameter >= p[1].parameter)
         {
-            return Err(invalid(
-                "section rail parameters must be finite and strictly increasing",
-            ));
+            return Err(
+                invalid("section rail parameters must be finite and strictly increasing").into(),
+            );
         }
         let start = sections[0].parameter;
         let end = if sections.len() == 1 {
@@ -116,7 +143,7 @@ impl Sweep1 {
             sections.last().unwrap().parameter
         };
         if start >= end {
-            return Err(invalid("empty swept rail interval"));
+            return Err(invalid("empty swept rail interval").into());
         }
         // A rail kink needs a miter construction, not an interpolated jump of
         // transported profiles. Reject it until that topology is constructed.
@@ -126,16 +153,14 @@ impl Sweep1 {
             .to_nurbs()?
             .has_full_multiplicity_kink(tolerance)?
         {
-            return Err(invalid("rail corners require sweep miter construction"));
+            return Err(invalid("rail corners require sweep miter construction").into());
         }
         let closed_rail = trimmed.as_ref().is_closed()?;
         if closed_rail {
             let first = trimmed.as_ref().evaluate_with_tangent(start)?.tangent();
             let last = trimmed.as_ref().evaluate_with_tangent(end)?.tangent();
             if first.as_vector().angle_to(last.as_vector())? > tolerance.angular() {
-                return Err(invalid(
-                    "rail seam corner requires sweep miter construction",
-                ));
+                return Err(invalid("rail seam corner requires sweep miter construction").into());
             }
         }
         let curves = sections.iter().map(|s| s.curve.clone()).collect::<Vec<_>>();
@@ -144,14 +169,22 @@ impl Sweep1 {
             .flat_map(|c| c.control_points())
             .any(|c| c.weight() <= 0.0)
         {
-            return Err(invalid("sweep sections require positive rational weights"));
+            return Err(invalid("sweep sections require positive rational weights").into());
         }
-        let curves = crate::section_basis::prepare(
+        let curves = prepare(
             &curves,
             MAX_SECTION_CONTROLS,
             invalid("section control budget exceeded"),
-            crate::section_basis::WeightScale::Common,
         )?;
+        if curves.len() != sections.len()
+            || curves.iter().any(|c| {
+                c.degree() != curves[0].degree()
+                    || c.knots() != curves[0].knots()
+                    || c.control_points().len() > MAX_SECTION_CONTROLS
+            })
+        {
+            return Err(invalid("section preparation produced inconsistent bases").into());
+        }
         let mut radius: Real = tolerance.absolute();
         for section in sections {
             let origin = rail.evaluate(section.parameter)?;

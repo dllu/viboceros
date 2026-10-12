@@ -2,8 +2,11 @@
 
 use crate::{GeometryError, NurbsCurve, Real, WeightedPoint3};
 
+#[cfg(test)]
+mod tests;
+
 #[derive(Clone, Copy)]
-pub(crate) enum WeightScale {
+pub enum WeightScale {
     PerSection,
     Common,
 }
@@ -14,6 +17,28 @@ pub(crate) fn prepare(
     limit: GeometryError,
     weight_scale: WeightScale,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
+    prepare_with_operations(
+        curves,
+        maximum,
+        limit,
+        weight_scale,
+        &mut |curve| curve.clamped_to_active_domain(),
+        &mut |curve, degree| curve.try_change_degree(degree, false),
+        &mut |curve, knot, target| curve.try_insert_knot(knot, target),
+    )
+}
+
+/// Prepare a shared normalized section basis while delegating exact clamping,
+/// degree elevation and refinement to the caller's geometry backend.
+pub fn prepare_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    maximum: usize,
+    limit: GeometryError,
+    weight_scale: WeightScale,
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+    elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
+    refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
     let degree = curves
         .iter()
         .map(NurbsCurve::degree)
@@ -35,7 +60,7 @@ pub(crate) fn prepare(
                 .map(|g| degree - curve.degree() + g.len())
                 .sum::<usize>();
         if count > maximum {
-            return Err(limit);
+            return Err(limit.into());
         }
         let scale = match weight_scale {
             WeightScale::Common => common_scale,
@@ -54,12 +79,21 @@ pub(crate) fn prepare(
                 .collect::<Result<Vec<_>, _>>()?,
             curve.knots().to_vec(),
         )?;
-        sections.push(
-            normalized
-                .clamped_to_active_domain()?
-                .try_change_degree(degree, false)?
-                .try_reparameterized(0.0..=1.0)?,
-        );
+        let clamped = clamp(&normalized)?;
+        if clamped.degree() != curve.degree() || clamped.domain() != curve.domain() {
+            return Err(GeometryError::InvalidControlNet {
+                context: "section clamping changed degree or active domain",
+            }
+            .into());
+        }
+        let elevated = elevate(&clamped, degree)?;
+        if elevated.degree() != degree || elevated.domain() != clamped.domain() {
+            return Err(GeometryError::InvalidControlNet {
+                context: "section elevation changed target degree or active domain",
+            }
+            .into());
+        }
+        sections.push(elevated.try_reparameterized(0.0..=1.0)?);
     }
     let mut union = sections
         .iter()
@@ -76,12 +110,23 @@ pub(crate) fn prepare(
         .map(|g| (g[0].0, g.iter().map(|x| x.1).max().unwrap()))
         .collect::<Vec<_>>();
     if degree + 1 + union.iter().map(|x| x.1).sum::<usize>() > maximum {
-        return Err(limit);
+        return Err(limit.into());
     }
     for section in &mut sections {
         for &(knot, multiplicity) in &union {
-            *section = section.try_insert_knot(knot, multiplicity)?;
+            *section = refine(section, knot, multiplicity)?;
         }
+    }
+    if sections.iter().any(|s| {
+        s.degree() != degree
+            || s.domain() != (0.0..=1.0)
+            || s.control_points().len() > maximum
+            || s.knots() != sections[0].knots()
+    }) {
+        return Err(GeometryError::InvalidControlNet {
+            context: "section refinement produced inconsistent bases",
+        }
+        .into());
     }
     Ok(sections)
 }

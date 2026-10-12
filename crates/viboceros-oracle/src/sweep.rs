@@ -1,6 +1,8 @@
 use super::curve_join_close::CurveInput;
 use super::*;
-use viboceros_geometry::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
+#[cfg(not(feature = "native-smlib"))]
+use viboceros_geometry::Sweep1;
+use viboceros_geometry::{SweepBlend, SweepFrameStyle, SweepSection};
 
 #[cfg(test)]
 mod tests {
@@ -176,9 +178,13 @@ pub(super) fn run(
         if fixture.command {
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
-            Ok(vec![
-                Sweep1::try_new(rail.as_ref(), &sections, style, blend, tolerance)?.to_surface()?,
-            ])
+            #[cfg(feature = "native-smlib")]
+            let model =
+                viboceros_smlib::sweep_model(rail.as_ref(), &sections, style, blend, tolerance)
+                    .map_err(CommandError::from)?;
+            #[cfg(not(feature = "native-smlib"))]
+            let model = Sweep1::try_new(rail.as_ref(), &sections, style, blend, tolerance)?;
+            Ok(vec![model.to_surface()?])
         }
     };
     let mut surfaces = build()?;

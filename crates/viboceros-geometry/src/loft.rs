@@ -32,8 +32,31 @@ pub fn try_loft_nurbs_curves(
     style: LoftStyle,
     closed: bool,
 ) -> Result<NurbsSurface, GeometryError> {
+    try_loft_nurbs_curves_with_preparation(curves, style, closed, &mut compatible::prepare)
+}
+
+/// Preserve section/end-handle interpolation and size policy while delegating
+/// exact common-basis preparation to an external geometry backend.
+pub fn try_loft_nurbs_curves_with_preparation<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    closed: bool,
+    prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
+) -> Result<NurbsSurface, E> {
     validate_count(curves.len(), closed)?;
-    let sections = compatible::prepare(curves)?;
+    let sections = prepare(curves)?;
+    if sections.len() != curves.len()
+        || sections.iter().any(|s| {
+            s.degree() != sections[0].degree()
+                || s.knots() != sections[0].knots()
+                || s.control_points().len() > MAX_LOFT_SECTION_CONTROLS
+        })
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "loft preparation produced inconsistent section layouts",
+        }
+        .into());
+    }
     let (degree, knots, controls) = interpolate::loft(&sections, style, closed)?;
     let count_v = sections[0].control_points().len();
     let count_u = controls.len() / count_v;
@@ -47,7 +70,17 @@ pub fn try_loft_nurbs_curves(
         sections[0].knots().to_vec(),
     )?;
     let [u, v] = surface.estimated_size()?;
-    surface.try_reparameterized(0.0..=u, 0.0..=v)
+    Ok(surface.try_reparameterized(0.0..=u, 0.0..=v)?)
+}
+
+/// Shared Loft weight and basis policy with exact caller-supplied operations.
+pub fn prepare_loft_sections_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+    elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
+    refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
+    compatible::prepare_with_operations(curves, clamp, elevate, refine)
 }
 
 pub(crate) fn validate_count(count: usize, closed: bool) -> Result<(), GeometryError> {

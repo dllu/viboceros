@@ -2,15 +2,32 @@ use super::*;
 
 /// Exact degree/knot matching, followed by Rhino's common-basis end-weight policy.
 pub(super) fn prepare(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, GeometryError> {
+    prepare_with_operations(
+        curves,
+        &mut |curve| curve.clamped_to_active_domain(),
+        &mut |curve, degree| curve.try_change_degree(degree, false),
+        &mut |curve, knot, target| curve.try_insert_knot(knot, target),
+    )
+}
+
+pub(super) fn prepare_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    clamp: &mut impl FnMut(&NurbsCurve) -> Result<NurbsCurve, E>,
+    elevate: &mut impl FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E>,
+    refine: &mut impl FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
     let limit = GeometryError::LoftResourceLimit {
         context: "compatible section controls",
         maximum: MAX_LOFT_SECTION_CONTROLS,
     };
-    let sections = crate::section_basis::prepare(
+    let sections = crate::section_basis::prepare_with_operations(
         curves,
         MAX_LOFT_SECTION_CONTROLS,
         limit,
         crate::section_basis::WeightScale::PerSection,
+        clamp,
+        elevate,
+        refine,
     )?;
-    crate::section_basis::normalized_end_weights(&sections)
+    Ok(crate::section_basis::normalized_end_weights(&sections)?)
 }

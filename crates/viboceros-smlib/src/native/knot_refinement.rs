@@ -2,6 +2,61 @@
 use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
+/// Match section degree, knots and endpoint-weight policy using the existing
+/// native clamping, exact elevation and refinement operations.
+pub fn prepare_loft_sections(curves: &[NurbsCurve]) -> Result<Vec<NurbsCurve>, Error> {
+    viboceros_geometry::prepare_loft_sections_with_operations(
+        curves,
+        &mut clamp_curve,
+        &mut |curve, degree| change_curve_degree(curve, degree, false),
+        &mut insert_curve_knot,
+    )
+}
+
+/// Build the existing one-rail frame/blending model with native section
+/// clamping, elevation and knot matching under the shared common weight gauge.
+pub fn sweep_model(
+    rail: viboceros_geometry::CurveRef<'_>,
+    sections: &[viboceros_geometry::SweepSection],
+    style: viboceros_geometry::SweepFrameStyle,
+    blend: viboceros_geometry::SweepBlend,
+    tolerance: Tolerance,
+) -> Result<viboceros_geometry::Sweep1, Error> {
+    viboceros_geometry::Sweep1::try_new_with_section_preparation(
+        rail,
+        sections,
+        style,
+        blend,
+        tolerance,
+        &mut |curves, maximum, limit| {
+            viboceros_geometry::prepare_nurbs_sections_with_operations(
+                curves,
+                maximum,
+                limit,
+                viboceros_geometry::SectionWeightScale::Common,
+                &mut clamp_curve,
+                &mut |curve, degree| change_curve_degree(curve, degree, false),
+                &mut insert_curve_knot,
+            )
+        },
+    )
+}
+
+/// Ordered Loft surface with native common-basis preparation and the shared
+/// section spacing, homogeneous interpolation and endpoint-weight policies.
+pub fn loft_surface(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+) -> Result<NurbsSurface, Error> {
+    viboceros_geometry::try_loft_nurbs_curves_with_preparation(
+        curves,
+        style,
+        closed,
+        &mut prepare_loft_sections,
+    )
+}
+
 unsafe extern "C" {
     fn vb_nurbs_surface_isocurve(
         source: *const brep::NurbsData,

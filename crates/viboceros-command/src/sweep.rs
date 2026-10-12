@@ -3,6 +3,24 @@ use viboceros_geometry::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
 
 const USAGE: &str = "Sweep1 Parameters=native-rail-parameters [RailName=name] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No]";
 
+pub(super) fn model(
+    rail: CurveRef<'_>,
+    sections: &[SweepSection],
+    style: SweepFrameStyle,
+    blend: SweepBlend,
+    tolerance: Tolerance,
+) -> Result<Sweep1, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::sweep_model(rail, sections, style, blend, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(Sweep1::try_new(rail, sections, style, blend, tolerance)?)
+    }
+}
+
 pub(super) struct SweepCommand;
 
 impl Command for SweepCommand {
@@ -94,7 +112,7 @@ impl Command for SweepCommand {
         } else {
             SweepBlend::Local
         };
-        let sweep = Sweep1::try_new(rail, &sections, style, blend, document.tolerance())?;
+        let sweep = model(rail, &sections, style, blend, document.tolerance())?;
         let surface = if refit.unwrap_or(false) {
             sweep.to_surface()?
         } else {
