@@ -42,6 +42,9 @@ the equivalent clamped form in place. It preserves the active domains,
 parameterization, shape, object identity, attributes, and selection; surfaces
 are clamped in every periodic direction.
 
+Linux `native-smlib` builds share the native endpoint-split adapter for this
+conversion; see [qualification and limits](../smlib-nonperiodic.md).
+
 `InsertControlPoint point Direction=U|V|Both Midpoint=Yes|No` requires exactly
 one selected curve or untrimmed NURBS surface. The model-space point is
 projected to the object, then a unit-weight control is inserted between the

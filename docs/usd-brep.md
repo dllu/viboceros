@@ -30,6 +30,8 @@ kernel point-set classifier rather than adding a command-specific plane fitter.
 including native compatibility, degree elevation and sheet topology.
 [InsertKnot](smlib-knot-refinement.md) uses exact native curve/tensor refinement
 and endpoint splitting with the complete original NURBS definitions.
+[MakeNonPeriodic](smlib-nonperiodic.md) reuses that endpoint path for periodic
+curves and tensor directions, including the existing split/reversal workarounds.
 
 ## Reproduce the native trial
 

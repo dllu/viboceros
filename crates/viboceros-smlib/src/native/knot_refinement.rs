@@ -14,6 +14,55 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
+/// Clamp a periodic curve at both active endpoints using the shared native
+/// split path. Non-periodic definitions are returned unchanged.
+pub fn make_curve_non_periodic(source: &NurbsCurve) -> Result<NurbsCurve, Error> {
+    if !source.is_periodic() {
+        return Ok(source.clone());
+    }
+    let domain = source.domain();
+    let target = source.degree() + 1;
+    let start = insert_curve_knot(source, *domain.start(), target)?;
+    insert_curve_knot(&start, *domain.end(), target)
+}
+
+/// Clamp only periodic tensor directions selected by the caller. Determine
+/// both flags before editing either axis, matching the portable policy.
+pub fn make_surface_non_periodic(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+) -> Result<NurbsSurface, Error> {
+    let clamp_u = matches!(
+        direction,
+        SurfaceKnotDirection::U | SurfaceKnotDirection::Both
+    ) && source.is_periodic_u();
+    let clamp_v = matches!(
+        direction,
+        SurfaceKnotDirection::V | SurfaceKnotDirection::Both
+    ) && source.is_periodic_v();
+    let mut result = source.clone();
+    for (axis, clamp, domain, target) in [
+        (
+            SurfaceKnotDirection::U,
+            clamp_u,
+            source.domain_u(),
+            source.degree_u() + 1,
+        ),
+        (
+            SurfaceKnotDirection::V,
+            clamp_v,
+            source.domain_v(),
+            source.degree_v() + 1,
+        ),
+    ] {
+        if clamp {
+            result = insert_surface_knot(&result, axis, *domain.start(), target)?;
+            result = insert_surface_knot(&result, axis, *domain.end(), target)?;
+        }
+    }
+    Ok(result)
+}
+
 pub fn insert_curve_knot(
     source: &NurbsCurve,
     parameter: f64,

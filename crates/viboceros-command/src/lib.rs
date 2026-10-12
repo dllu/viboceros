@@ -3436,15 +3436,13 @@ impl Command for MakeNonPeriodicCommand {
             let geometry = match object.geometry() {
                 Geometry::NurbsCurve(curve) if curve.is_periodic() => {
                     curve_count += 1;
-                    Geometry::NurbsCurve(curve.try_make_non_periodic()?)
+                    Geometry::NurbsCurve(knot_refinement::non_periodic_curve(curve)?)
                 }
                 Geometry::NurbsSurface(surface)
                     if surface.is_periodic_u() || surface.is_periodic_v() =>
                 {
                     surface_count += 1;
-                    Geometry::NurbsSurface(
-                        surface.try_make_non_periodic(SurfaceKnotDirection::Both)?,
-                    )
+                    Geometry::NurbsSurface(knot_refinement::non_periodic_surface(surface)?)
                 }
                 _ => continue,
             };

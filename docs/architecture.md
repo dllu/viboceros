@@ -45,6 +45,9 @@ exclude its custom tensor builder from command and oracle construction.
 [InsertKnot](smlib-knot-refinement.md) also delegates curve and tensor refinement
 to NLib, preserving full unclamped input definitions and sharing periodic-padding
 and outer-knot conventions with the portable backend.
+[MakeNonPeriodic](smlib-nonperiodic.md) shares that native endpoint-split path,
+clamping periodic curves and requested tensor directions without the Rust
+endpoint control solver in native command or oracle construction.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

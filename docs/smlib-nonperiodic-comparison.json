@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "periodic-cubic-curve",
+      "comparison": {
+        "id": "periodic-cubic-curve",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 2048.0,
+        "rhino_ns_per_iteration": 44448853.0,
+        "rhino_to_viboceros_ratio": 21703.54150390625,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-rational-quadratic-curve",
+      "comparison": {
+        "id": "periodic-rational-quadratic-curve",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1456.0,
+        "rhino_ns_per_iteration": 63041687.0,
+        "rhino_to_viboceros_ratio": 43297.86195054945,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-cubic-u-surface",
+      "comparison": {
+        "id": "periodic-cubic-u-surface",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 4368.0,
+        "rhino_ns_per_iteration": 61874390.0,
+        "rhino_to_viboceros_ratio": 14165.382326007326,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-rational-both-surface",
+      "comparison": {
+        "id": "periodic-rational-both-surface",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 10096.0,
+        "rhino_ns_per_iteration": 42831421.0,
+        "rhino_to_viboceros_ratio": 4242.4149167987325,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 4,
+  "matched": 4,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "fixture": "tools/rhino_oracle/fixtures/make_non_periodic.json",
+  "observation": "tools/rhino_oracle/observations/make_non_periodic.json",
+  "fixture_sha256": "586984aac6bb3d46493f08d85ede7450f7bc1d7c0463b08340850ffc76070a4e",
+  "observation_sha256": "5edfc003e284c1d5a8db5d48c8f9d9bff0910ac24bc33f13748da46a0c1e6bd7",
+  "scope": "Complete raw curve and surface definitions from actual MakeNonPeriodic commands. Harness timings do not establish kernel speedups."
+}

@@ -5615,7 +5615,14 @@ fn execute(
         }
         Operation::CurveMakeNonPeriodicGeometry { curve, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || source.try_make_non_periodic())?;
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result =
+                    viboceros_smlib::make_curve_non_periodic(&source).map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_make_non_periodic();
+                result
+            })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::SurfaceMakeUniformGeometry {
@@ -6058,8 +6065,14 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
-                source.try_make_non_periodic(SurfaceKnotDirection::Both)
+            let (surface, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result =
+                    viboceros_smlib::make_surface_non_periodic(&source, SurfaceKnotDirection::Both)
+                        .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_make_non_periodic(SurfaceKnotDirection::Both);
+                result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

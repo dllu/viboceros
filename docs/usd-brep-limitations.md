@@ -21,6 +21,8 @@ issues reported by NVIDIA that have not all been reproduced here.
   The tensor splitter shares the same span query. Regression coverage includes
   both endpoints in both tensor axes. See [knot refinement](smlib-knot-refinement.md)
   and [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).
+  [MakeNonPeriodic](smlib-nonperiodic.md) now shares this checked endpoint path;
+  it does not call the failing active-end split directly.
 - **NLib reversal assumes clamped endpoint padding.** `N_CrvReverse` and
   `N_SrfReverse` retain endpoint knot blocks and reverse only interior knots
   using the sum of the outermost values. On a partially clamped vector

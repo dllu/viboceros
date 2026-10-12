@@ -11,7 +11,9 @@ use viboceros_geometry::{
 mod brep;
 mod construction;
 mod knot_refinement;
-pub use knot_refinement::{insert_curve_knot, insert_surface_knot};
+pub use knot_refinement::{
+    insert_curve_knot, insert_surface_knot, make_curve_non_periodic, make_surface_non_periodic,
+};
 mod shape;
 pub use shape::StitchResult;
 
