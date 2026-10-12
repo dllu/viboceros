@@ -38,6 +38,10 @@ clamping to usd-brep's canonical constructor, removing the Rust preparation step
 through curve copies and sheet producers, retaining kernel-generated controls.
 [Numeric extrusion direction](smlib-extrusion-direction.md) reuses native
 point-set classification, with shared batch policy and active CPlane fallback.
+[EdgeSrf](smlib-edge-surfaces.md) delegates degree/knot synchronization, endpoint
+weight normalization, ruled/Coons construction and face topology to usd-brep.
+The shared boundary-order policy remains in the geometry crate; native builds
+exclude its custom tensor builder from command and oracle construction.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

@@ -15,14 +15,18 @@ dimension; the pinned getter header's stride description is reversed relative
 to its implementation. Planar and capped linear-sweep input copies share the
 same curve-copy preservation helper.
 
-Two producers require an additional parameter-chart choice. Revolution's
-`GetCanonical` and extrusion's `SwapUV` use tolerance-grouped unique knots.
-For close spans, a private curve uses an exact power-of-two expansion before
-these calls, separating distinct groups above the absolute query tolerance.
+Revolution requires an additional parameter-chart choice. Its `GetCanonical`
+uses tolerance-grouped unique knots. For close spans, a private curve uses an
+exact power-of-two expansion before that call, separating distinct groups above
+the absolute query tolerance.
 The existing constructors still compute every surface control. Their output
 bases are checked before and after chart changes and restored to the supplied
 profile knots. Ordinary inputs borrow their native profile without an extra
 working copy. A working chart that overflows finite knot values is rejected.
+
+Extrusion now uses existing NLib copy/transpose operations instead of the public
+canonical `SwapUV`, removing its expanded working chart. The same operation
+supports mixed-sign Coons controls in [native edge surfaces](smlib-edge-surfaces.md).
 
 Independent regressions cover all four sheet producers with a rational profile
 containing a ten-unit control bulge over a `1e-14` parameter span, at chart scales

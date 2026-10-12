@@ -1,6 +1,7 @@
 //! Whole-curve certificates: exact binary64 predicates and rational span bounds.
 use super::*;
-use crate::binary_accumulator::{add_product, decompose};
+use crate::binary_accumulator::pair_products::Products;
+pub(super) use crate::point::point_bound;
 use std::cmp::Ordering;
 mod product;
 mod refine;
@@ -28,50 +29,6 @@ pub(super) fn whole_curve_bound(
         return Ok(Some(bound));
     }
     product::bound(a, b, reversed, limit, false, &mut charge)
-}
-
-// At most twenty-four products, including repeated products: 66 limbs at 2^-2148
-// cover the entire finite binary64 range and all carries.
-struct Products {
-    positive: [u64; 66],
-    negative: [u64; 66],
-}
-impl Default for Products {
-    fn default() -> Self {
-        Self {
-            positive: [0; 66],
-            negative: [0; 66],
-        }
-    }
-}
-impl Products {
-    fn add(&mut self, a: Real, b: Real, subtract: bool) {
-        let (a_bits, a_shift) = decompose(a);
-        let (b_bits, b_shift) = decompose(b);
-        let target = if a.is_sign_negative() ^ b.is_sign_negative() ^ subtract {
-            &mut self.negative
-        } else {
-            &mut self.positive
-        };
-        add_product(
-            target,
-            u128::from(a_bits) * u128::from(b_bits),
-            a_shift + b_shift,
-        );
-    }
-    fn order(&self) -> Ordering {
-        self.positive.iter().rev().cmp(self.negative.iter().rev())
-    }
-    fn compare_square(&self, distance: Real) -> Ordering {
-        let mut negative = self.negative;
-        let (bits, shift) = decompose(distance);
-        add_product(
-            &mut negative,
-            u128::from(bits) * u128::from(bits),
-            2 * shift,
-        );
-        self.positive.iter().rev().cmp(negative.iter().rev())
-    }
 }
 
 fn proportional(a: Real, b: Real, a0: Real, b0: Real) -> bool {
@@ -104,34 +61,6 @@ fn same_fraction(a: Real, a0: Real, a1: Real, b: Real, b0: Real, b1: Real) -> bo
         products.add(x, y, subtract);
     }
     products.order() == Ordering::Equal
-}
-
-/// An outward distance bound, or None when the exact distance exceeds limit.
-/// The acceptance predicate is independent of libm accuracy and coordinate
-/// scale. A rounded hypot is only a candidate upper bound, checked exactly.
-pub(super) fn point_bound(a: Point3, b: Point3, limit: Real) -> Option<Real> {
-    if a == b {
-        return Some(0.);
-    }
-    let mut squared = Products::default();
-    for (a, b) in a.to_array().into_iter().zip(b.to_array()) {
-        squared.add(a, a, false);
-        squared.add(b, b, false);
-        squared.add(a, b, true);
-        squared.add(a, b, true);
-    }
-    if squared.compare_square(limit) == Ordering::Greater {
-        return None;
-    }
-    let mut bound = a.distance_to(b).unwrap_or(limit).min(limit);
-    for _ in 0..4 {
-        if squared.compare_square(bound) != Ordering::Greater {
-            return Some(bound);
-        }
-        bound = bound.next_up().min(limit);
-    }
-    // Even an inaccurate platform hypot cannot invalidate the certificate.
-    Some(limit)
 }
 
 /// Compare two independent point-pair distances, not distances from a shared

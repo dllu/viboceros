@@ -8,6 +8,24 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Public surface UV swapping rejects valid mixed-sign control weights.**
+  `SmBSplineSurface::SwapUV` reloads through `SetCanonical`, whose IGES importer
+  restricts weights. It returned `SM_ERR` (1001) for the captured rational
+  triangle and quadrilaterals with middle boundary weights `0.2` and `0.1`.
+  Their finite surface images agree with Rhino. The adapter uses existing
+  NLib `N_SrfCopy` and `N_SwapUV`, then owned construction with full knot
+  preservation. Extrusion now shares that path, removing its expanded working
+  chart. See [edge surfaces](smlib-edge-surfaces.md).
+- **Default ruled/Coons knot matching averages nearby parameter knots.**
+  `N_CrvsMakeCompatible` uses domain length divided by 1,000 as its default
+  threshold. `N_GetCompatibleKnotVectorToTol` limits it by neighboring knot gaps
+  and averages matching groups across curves. This is a parameter-space policy,
+  independent of model tolerance; it is not exact knot union. The edge adapter
+  first uses existing `N_CrvsMakeCompatibleAdjKnots` with explicit tolerance
+  `1e-300`, so subsequent tensor construction sees identical pair bases.
+  General charts near that threshold and extreme finite offsets remain unqualified.
+  Source: [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp)
+  and [NL_BasisBasic.cpp](../third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp).
 - **Point-set normal queries can replace a previous classification (source audit).**
   `SmPointSet3d::IsPlanar` uses its sequential classifier, while `GetNormal`
   calls `SetUpAxes`, which reruns best-fit classification and replaces the
@@ -29,10 +47,10 @@ issues reported by NVIDIA that have not all been reproduced here.
   Revolution reads `GetCanonical`, and surface `SwapUV` reconstructs through
   it. Their unique-knot grouping can turn close groups into an overmultiple
   interior knot; native IGES sanitation can then average/drop controls or fail.
-  Extrusion's swap returned `SM_ERR` (1001) on the tiny-chart regression before
-  a working chart was used. A private binary-expanded parameter chart preserves
-  those groups through the existing producers, followed by exact output basis
-  restoration. See [modeling bases](smlib-modeling-basis.md).
+  Extrusion's public swap returned `SM_ERR` (1001) on the tiny-chart regression.
+  It now uses the existing NLib transpose without canonical reconstruction.
+  Revolution retains a private binary-expanded parameter chart, followed by
+  exact output basis restoration. See [modeling bases](smlib-modeling-basis.md).
 - **Curve constructors modify nearby knots without adjusting controls.**
   `sm_FixupKnotVector` coalesces knots below scaled zero and spreads other near
   knots. It collapsed the tested `2^-360` active interval during canonical
@@ -135,7 +153,7 @@ issues reported by NVIDIA that have not all been reproduced here.
   the wrapper's output. See [extrusion integration](smlib-extrusion.md).
 - **Extrusion parameter axes differ from Rhino's convention.**
   `SmApiCreateExtrude` creates the linear direction in U and profile in V, with a
-  unit extrusion interval. Native `SwapUV` and `Reparameterize` align the command
+  unit extrusion interval. Native NLib transpose and `Reparameterize` align the command
   output to profile U and physical-distance V without another extrusion builder.
   Signed/oblique sheet tests and three complete raw Rhino captures qualify this.
 - **Linear-sweep final stitching status is unchecked (source audit).**
@@ -203,6 +221,14 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Native edge-surface exact matching retains a near-knot distinction.**
+  In the two-multispan ruled fixture, domain mapping produces knots `0.3` and
+  `0.30000000000000004`. The native adapter retains both, giving five profile
+  controls versus Rhino's four. All captured 13×13 surface coordinates agree
+  within absolute `2e-12`, relative `1e-14`. The complete raw difference remains
+  in [edge-surface qualification](smlib-edge-surfaces-comparison.json); no
+  comparison-time knot merging or coefficient filtering is applied.
+  This is an adapter representation policy, not an established upstream geometry bug.
 - **Fixed: numeric extrusion direction was an application policy difference.**
   The live short-span XZ profile is extruded along positive Y by Rhino, while
   the application's numeric ExtrudeCrv path used global Z. The command now uses
@@ -239,6 +265,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Fixed: whole-chart pole certification rejected a valid mixed-sign interior.**
+  The rational triangular EdgeSrf has a positive-weight collapsed natural
+  boundary while unrelated interior controls have mixed signs. The general
+  surface-image certificate cannot handle that chart and previously rejected
+  its missing pole connector. For clamped natural boundaries, export now proves
+  the complete stored row/column lies within the vertex tolerance using the
+  existing exact distance predicate and rational convex-hull property.
+  Nonclamped boundaries retain the general certificate. No sampled acceptance
+  or blanket tolerance inflation is added. See the native edge regression.
 - **Canonical modeling imports change curve-path extrusion representation.**
   The live unclamped profile/path fixture retains an unclamped path knot vector
   in Rhino, while native canonical creation clamps the active interval.

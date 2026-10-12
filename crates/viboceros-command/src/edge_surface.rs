@@ -27,7 +27,11 @@ impl Command for EdgeSurfaceCommand {
                     .ok_or(CommandError::Usage(USAGE))
             })
             .collect::<Result<Vec<_>, _>>()?;
+        #[cfg(not(feature = "native-smlib"))]
         let brep = Brep::try_edge_surface(&curves, document.tolerance())?;
+        #[cfg(feature = "native-smlib")]
+        let brep = viboceros_smlib::Shape::from_edge_curves(&curves, document.tolerance())?
+            .to_brep(document.tolerance())?;
         document.add_geometry(Geometry::Brep(brep))?;
         Ok(format!(
             "Created edge surface from {} boundary curves",

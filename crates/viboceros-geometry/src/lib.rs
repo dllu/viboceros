@@ -48,6 +48,7 @@ pub use surface_tween::{
     try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_sampled,
 };
 mod edge_surface;
+pub use edge_surface::arrange_edge_surface_curves;
 mod ellipse;
 mod error;
 mod exact_scalar;

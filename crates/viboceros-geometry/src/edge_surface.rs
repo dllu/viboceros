@@ -12,6 +12,29 @@ mod tests;
 
 const MAX_EDGE_CONTROLS: usize = 512;
 
+/// Validate and orient the selected EdgeSrf boundaries without constructing a
+/// surface. Both modeling backends share this command ordering policy.
+pub fn arrange_edge_surface_curves(
+    curves: &[NurbsCurve],
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    if !(2..=4).contains(&curves.len()) {
+        return Err(GeometryError::InvalidEdgeSurfaceBoundaries);
+    }
+    for curve in curves {
+        basis::check_count(curve, curve.degree())?;
+        if curve.is_closed()?
+            || curve
+                .interior_knot_groups()
+                .iter()
+                .any(|(_, m)| *m > curve.degree())
+        {
+            return Err(GeometryError::InvalidEdgeSurfaceBoundaries);
+        }
+    }
+    arrange::curves(curves, tolerance)
+}
+
 impl Brep {
     /// Constructs one Coons face from two, three, or four open curves. Two
     /// curves form a ruled patch; three form a triangle with a collapsed side.
@@ -32,21 +55,7 @@ impl NurbsSurface {
         curves: &[NurbsCurve],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        if !(2..=4).contains(&curves.len()) {
-            return Err(GeometryError::InvalidEdgeSurfaceBoundaries);
-        }
-        for curve in curves {
-            basis::check_count(curve, curve.degree())?;
-            if curve.is_closed()?
-                || curve
-                    .interior_knot_groups()
-                    .iter()
-                    .any(|(_, m)| *m > curve.degree())
-            {
-                return Err(GeometryError::InvalidEdgeSurfaceBoundaries);
-            }
-        }
-        let curves = arrange::curves(curves, tolerance)?;
+        let curves = arrange_edge_surface_curves(curves, tolerance)?;
         if curves.len() == 2 {
             let [a, b] = basis::compatible(&curves[0], &curves[1])?;
             let controls = a

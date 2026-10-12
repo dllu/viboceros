@@ -18,6 +18,12 @@ and public [Brep.CreateEdgeSurface API](https://developer.rhino3d.com/api/rhinoc
 
 ## Construction
 
+Linux `native-smlib` builds use usd-brep's existing ruled and Coons producers,
+degree/knot synchronization, endpoint-weight normalization, degree elevation
+and face construction. Only the shared boundary-order policy remains in the
+command adapter. See [native qualification](smlib-edge-surfaces.md). The
+construction below describes the portable backend.
+
 `edge_surface/arrange` searches the bounded set of curve permutations and
 directions. It retains the first input's direction, then places the largest
 endpoint gap at the loop closure for disconnected boundaries. Existing closed

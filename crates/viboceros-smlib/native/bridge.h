@@ -10,6 +10,10 @@ typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
+int vb_curves_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
+                          VbSurfaceData **out, char *error, size_t capacity);
+int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
+                         VbSolid **out, char *error, size_t capacity);
 int vb_solid_parts(const VbSolid *solid, VbParts **out, char *error, size_t capacity);
 size_t vb_parts_count(const VbParts *parts);
 VbSolid *vb_parts_take(VbParts *parts, size_t index);

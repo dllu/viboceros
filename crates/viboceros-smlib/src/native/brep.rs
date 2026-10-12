@@ -353,6 +353,39 @@ fn classify_iso(surface: &NurbsSurface, curve: &NurbsCurve2) -> SurfaceIso {
     }
 }
 
+// At a clamped natural boundary, these are the surface's stored row/column,
+// without the rounded homogeneous evaluation of a general extracted isocurve.
+fn natural_boundary_controls(
+    surface: &NurbsSurface,
+    iso: SurfaceIso,
+) -> Option<Vec<WeightedPoint3>> {
+    let nu = surface.control_point_count_u();
+    let nv = surface.control_point_count_v();
+    let (knots, degree, count, end) = match iso {
+        SurfaceIso::South => (surface.knots_v(), surface.degree_v(), nv, false),
+        SurfaceIso::North => (surface.knots_v(), surface.degree_v(), nv, true),
+        SurfaceIso::West => (surface.knots_u(), surface.degree_u(), nu, false),
+        SurfaceIso::East => (surface.knots_u(), surface.degree_u(), nu, true),
+        _ => return None,
+    };
+    let clamp = if end {
+        &knots[count..]
+    } else {
+        &knots[..=degree]
+    };
+    if clamp.iter().any(|k| *k != clamp[0]) {
+        return None;
+    }
+    let controls = surface.control_points();
+    Some(match iso {
+        SurfaceIso::South => controls[..nu].to_vec(),
+        SurfaceIso::North => controls[(nv - 1) * nu..].to_vec(),
+        SurfaceIso::West => (0..nv).map(|j| controls[j * nu]).collect(),
+        SurfaceIso::East => (0..nv).map(|j| controls[j * nu + nu - 1]).collect(),
+        _ => unreachable!(),
+    })
+}
+
 fn close_pole_gaps(
     surface: &NurbsSurface,
     vertices: &[BrepVertex],
@@ -469,22 +502,41 @@ fn close_pole_gaps(
             ],
             vec![0., 0., 1., 1.],
         )?;
-        // Near-boundary coordinates only propose a connector. The complete UV
-        // segment must continuously certify at the same spatial vertex.
+        // The segment lies exactly on a natural boundary. A single-signed
+        // clamped row/column lies in the convex hull of its stored Euclidean
+        // controls. Reuse the exact distance bound for that complete hull;
+        // unrelated mixed-sign interior weights do not affect this proof.
+        let iso = classify_iso(surface, &curve);
+        let mut hull_certified = false;
+        if let Some(controls) = natural_boundary_controls(surface, iso) {
+            let sign = controls[0].weight().is_sign_positive();
+            hull_certified = true;
+            for control in controls {
+                if control.weight().is_sign_positive() != sign
+                    || control
+                        .point()
+                        .distance_bound_to(vertex.point(), epsilon)?
+                        .is_none()
+                {
+                    hull_certified = false;
+                    break;
+                }
+            }
+        }
         let support = NurbsCurve::try_new_rational(
             1,
             vec![WeightedPoint3::try_new(vertex.point(), 1.)?; 2],
             vec![0., 0., 1., 1.],
         )?;
-        if surface
-            .parameter_curve_deviation_bound(&curve, &support, epsilon)?
-            .is_none()
+        if !hull_certified
+            && surface
+                .parameter_curve_deviation_bound(&curve, &support, epsilon)?
+                .is_none()
         {
-            return Err(Error::Kernel(
-                "Pole connector surface image is not certified".into(),
-            ));
+            return Err(Error::Kernel(format!(
+                "Pole connector surface image is not certified: {end:?} to {start:?}, tolerance {epsilon}"
+            )));
         }
-        let iso = classify_iso(surface, &curve);
         let index = trim.vertices()[1];
         gaps.push(Some(BrepTrim::try_new(
             [index, index],

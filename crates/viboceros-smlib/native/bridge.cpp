@@ -192,7 +192,125 @@ std::unique_ptr<SmBSplineSurface> apex_surface(const VbCurve &curve, const doubl
     vb_preserve_surface_basis(*raw, {std::vector<double>{0, 0, length, length}, curve.knots});
     return result;
 }
+
+// Inputs are already oriented by the shared command policy. NLib compatibility
+// and Coons construction can mutate curve caches, so always use private copies.
+std::unique_ptr<SmBSplineSurface> edge_surface(const VbCurve *const *curves, size_t count,
+                                              double tolerance) {
+    require(curves && count >= 2 && count <= 4 && std::isfinite(tolerance) && tolerance > 0,
+            "Invalid edge surface inputs");
+    std::vector<std::unique_ptr<SmBSplineCurve>> copies;
+    for (size_t i = 0; i < count; ++i) {
+        require(curves[i], "Missing edge surface boundary");
+        require(curves[i]->points.size() / 4 <= 512, "Edge boundary control resource limit");
+        copies.push_back(copy_curve(*curves[i]));
+    }
+    auto reverse = [&](size_t i) {
+        const auto original = copies[i]->GetNaturalInterval();
+        SmExtent1d interval;
+        check(copies[i]->ReverseParameterization(original, interval),
+              "reverse edge surface boundary");
+        // Native reversal retains its interval. Rhino's boundary convention
+        // negates the chart, including the domain chosen for opposite pairs.
+        check(copies[i]->ScaleKnotVector(-original.GetMax(), -original.GetMin()),
+              "set reversed edge boundary parameter domain");
+    };
+    auto match_domains = [&](SmBSplineCurve &a, SmBSplineCurve &b) {
+        const auto x = a.GetNaturalInterval(), y = b.GetNaturalInterval();
+        const auto target = x.GetMax() - x.GetMin() >= y.GetMax() - y.GetMin() ? x : y;
+        check(a.ScaleKnotVector(target.GetMin(), target.GetMax()), "align edge boundary domain");
+        check(b.ScaleKnotVector(target.GetMin(), target.GetMax()), "align edge boundary domain");
+    };
+    std::unique_ptr<SmBSplineSurface> result;
+    if (count == 2) {
+        match_domains(*copies[0], *copies[1]);
+        result = vb_ruled_surface(*copies[0], *copies[1]);
+    } else {
+        SmBSplineCurve *west, *east, *south, *north;
+        std::unique_ptr<SmBSplineCurve> collapsed;
+        if (count == 3) {
+            reverse(1);
+            west = copies[2].get(); east = copies[1].get(); north = copies[0].get();
+            collapsed = copy_curve(*curves[0]);
+            const auto apex = curve_start(*curves[2]);
+            for (size_t i = 0; i < curves[0]->points.size() / 4; ++i)
+                check(collapsed->SetControlPoint(SM_CP_EUCLIDIAN_RATIONAL, i, apex,
+                                                curves[0]->points[4 * i + 3]),
+                      "collapse triangular edge surface boundary");
+            south = collapsed.get();
+        } else {
+            reverse(2); reverse(3);
+            west = copies[0].get(); east = copies[2].get();
+            north = copies[1].get(); south = copies[3].get();
+        }
+        match_domains(*west, *east);
+        match_domains(*north, *south);
+        result = vb_coons_surface({west, east, south, north});
+    }
+    auto *raw = result.get();
+    require(raw, "Missing native edge surface");
+    if (count > 2) {
+        // The shared payload stores finite Euclidean controls. Coons blending
+        // can create a valid homogeneous control at infinity; native degree
+        // elevation can supply an equivalent finite-control representation.
+        for (int attempt = 0;; ++attempt) {
+            if (!raw->IsRational()) break;
+            const auto knots = vb_surface_full_knots(*raw);
+            const auto nu = knots[0].size() - raw->GetDegree(SM_SP_U) - 1;
+            const auto nv = knots[1].size() - raw->GetDegree(SM_SP_V) - 1;
+            require(nu && nv && nu <= limit / nv, "Edge surface control-net resource limit");
+            std::vector<double> controls(nu * nv * 4);
+            check(raw->GetControlPointsExpert(SM_CP_HOMOGENEOUS_RATIONAL, 0, nu - 1,
+                                              0, nv - 1, nv * 4, 4, controls.data()),
+                  "inspect native edge surface homogeneous controls");
+            bool has_infinite_control = false;
+            for (size_t i = 0; i < controls.size(); i += 4) {
+                require(std::isfinite(controls[i]) && std::isfinite(controls[i + 1]) &&
+                            std::isfinite(controls[i + 2]) && std::isfinite(controls[i + 3]),
+                        "Nonfinite edge surface homogeneous control");
+                has_infinite_control = has_infinite_control || controls[i + 3] == 0;
+            }
+            if (!has_infinite_control) break;
+            require(attempt < 4 && raw->GetDegree(SM_SP_V) < NL_MAXDEG,
+                    "No finite-control native edge surface representation");
+            check(raw->DegreeElevate(SM_SP_V, raw->GetDegree(SM_SP_V) + 1),
+                  "elevate native edge surface projective controls");
+        }
+        result = vb_swapped_surface_uv(*raw);
+    }
+    return result;
+}
 } // namespace
+
+extern "C" int vb_curves_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
+                                       VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(out, "Missing edge surface output");
+        auto surface = edge_surface(curves, count, tolerance);
+        *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
+                                      VbSolid **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(out, "Missing edge surface shape output");
+        auto surface = edge_surface(curves, count, tolerance);
+        auto owner = std::make_unique<VbSolid>();
+        owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
+        owner->value->SetTolerance(tolerance, FALSE);
+        auto *raw = surface.release();
+        SmFace *face = nullptr;
+        const auto status = owner->value->CreateFaceFromSurface(raw, raw->GetNaturalUVDomain(), face);
+        if (status != SM_SUCCESS && !raw->GetOwner()) surface.reset(raw);
+        check(status, "create native edge surface face");
+        require(face, "Missing native edge surface face");
+        check(SmApiTurnToNurbs(owner->value.get()), "convert native edge surface topology");
+        *out = owner.release();
+    });
+}
 
 extern "C" int vb_solid_primitive(int kind, const double origin[3], const double size[3],
                                   VbSolid **out, char *error, size_t capacity) {
@@ -778,20 +896,18 @@ extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[
         const SmVector3d vector(displacement[0], displacement[1], displacement[2]);
         require(std::isfinite(vector.Length()) && vector.Length() > 0,
                 "Invalid extrusion displacement");
-        auto working = canonical_working_curve(*curve);
-        auto *profile = working ? working.get() : curve->value.get();
-        const auto working_knots = working ? vb_curve_full_knots(*profile) : curve->knots;
         SmSurface *raw = nullptr;
-        const auto status = SmApiCreateExtrude(profile, vector, raw);
+        const auto status = SmApiCreateExtrude(curve->value.get(), vector, raw);
         std::unique_ptr<SmSurface> owner(raw);
         check(status, "extrude curve surface");
         require(raw && raw->IsKindOf(SmBSplineSurface_TYPE), "Missing NURBS extrusion surface");
         auto *surface = static_cast<SmBSplineSurface *>(raw);
-        vb_preserve_surface_basis(*surface, {std::vector<double>{0, 0, 1, 1}, working_knots});
+        vb_preserve_surface_basis(*surface, {std::vector<double>{0, 0, 1, 1}, curve->knots});
         // Native extrusion is linear in U. The application uses profile U and
         // physical-distance V, so use the native chart operations to align it.
-        check(surface->SwapUV(), "align extrusion parameter directions");
-        vb_preserve_surface_basis(*surface, {working_knots, {0, 0, 1, 1}});
+        auto swapped = vb_swapped_surface_uv(*surface);
+        surface = swapped.get();
+        owner.reset(swapped.release());
         check(surface->Reparameterize(SmExtent2d(curve->knots.front(), 0,
                                                 curve->knots.back(), vector.Length())),
               "set extrusion distance domain");

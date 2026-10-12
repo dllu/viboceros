@@ -1,6 +1,8 @@
 #include "basis_preservation.h"
 #include <SmBSplineCurve.h>
 #include <SmBSplineSurface.h>
+#include <SmNurbsCrv.h>
+#include <nurbs.h>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -27,10 +29,90 @@ void validate_controls(const std::vector<double> &controls, bool rational) {
         require(std::isfinite(controls[i]) && std::isfinite(controls[i + 1]) &&
                     std::isfinite(controls[i + 2]), "Invalid preserved controls");
         if (rational)
-            require(std::isfinite(controls[i + 3]) && controls[i + 3] > 0,
+            require(std::isfinite(controls[i + 3]) && controls[i + 3] != 0,
                     "Invalid preserved control weights");
     }
 }
+
+std::unique_ptr<SmBSplineSurface> surface_from_nlib(const SmContext &context, NL_SURFACE &surface) {
+    NL_INDEX n, m, ku, kv;
+    NL_DEGREE pu, pv;
+    NL_CPOINT **controls;
+    NL_REAL *u, *v;
+    N_SrfGetCPtsDegreesAndKnots(&surface, &n, &m, &controls, &pu, &pv, &ku, &kv, &u, &v);
+    require(n >= 0 && m >= 0 && n < 512 && m < 512, "Edge surface control-net resource limit");
+    const std::array<std::vector<double>, 2> knots = {
+        std::vector<double>(u, u + ku + 1), std::vector<double>(v, v + kv + 1)};
+    std::unique_ptr<SmBSplineSurface> result(new (context) SmBSplineSurface(&surface));
+    vb_preserve_surface_basis(*result, knots);
+    return result;
+}
+
+void copy_curve_to_nlib(SmBSplineCurve &source, NL_CURVE &copy, NL_STACKS &stack) {
+    N_CrvInitArrays(&copy);
+    require(N_CrvCopy(source.GetOrCreateGwNurbPointer(), &copy, &stack) == NL_NO,
+            "Copy native edge boundary failed");
+}
+
+void synchronize_edge_pair(NL_CURVE &a, NL_CURVE &b, NL_STACKS &stack) {
+    NL_CURVE *curves[2] = {&a, &b};
+    // The producer's default matcher averages near knots at domain/1000.
+    // Synchronize via its existing explicit-tolerance operation first so
+    // the tensor producer receives identical bases and preserves short spans.
+    require(N_CrvsMakeCompatibleAdjKnots(curves, 1, 1e-300, &stack) == NL_NO,
+            "Synchronize native edge boundary bases failed");
+    require(a.pol->n < 512 && b.pol->n < 512, "Edge surface compatible control limit");
+}
+
+} // namespace
+
+std::unique_ptr<SmBSplineSurface> vb_ruled_surface(SmBSplineCurve &first, SmBSplineCurve &second) {
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_CURVE a, b;
+    copy_curve_to_nlib(first, a, stack);
+    copy_curve_to_nlib(second, b, stack);
+    synchronize_edge_pair(a, b, stack);
+    NL_SURFACE surface;
+    N_SrfInitArrays(&surface);
+    require(N_CreateRuledSrf(&a, &b, NL_UDIR, &surface, &stack, &stack) == NL_NO,
+            "Native ruled surface creation failed");
+    return surface_from_nlib(*first.GetContext(), surface);
+}
+
+std::unique_ptr<SmBSplineSurface> vb_coons_surface(const std::array<SmBSplineCurve *, 4> &boundaries) {
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_CURVE curves[4];
+    for (size_t i = 0; i < 4; ++i) {
+        copy_curve_to_nlib(*boundaries[i], curves[i], stack);
+        const auto interval = boundaries[i]->GetNaturalInterval();
+        require(N_CrvReparamWeights(&curves[i], 1., interval.GetMin(), interval.GetMax()) == NL_NO,
+                "Normalize native edge boundary end weights failed");
+    }
+    synchronize_edge_pair(curves[0], curves[1], stack);
+    synchronize_edge_pair(curves[2], curves[3], stack);
+    NL_CURVE *u[2] = {&curves[0], &curves[1]}, *v[2] = {&curves[2], &curves[3]};
+    NL_SURFACE surface;
+    N_SrfInitArrays(&surface);
+    require(N_CreateCoonsSrf(u, v, &surface, &stack, &stack) == NL_NO,
+            "Native Coons surface creation failed");
+    return surface_from_nlib(*boundaries[0]->GetContext(), surface);
+}
+
+std::unique_ptr<SmBSplineSurface> vb_swapped_surface_uv(SmBSplineSurface &surface) {
+    require(surface.GetOwner() == nullptr, "Parameter swap requires an unowned surface");
+    const auto knots = vb_surface_full_knots(surface);
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_SURFACE copy;
+    N_SrfInitArrays(&copy);
+    require(N_SrfCopy(surface.GetOrCreateGwNurbPointer(), &copy, &stack) == NL_NO,
+            "Copy native surface for parameter swap failed");
+    require(N_SwapUV(&copy, &stack) == NL_NO, "Native surface parameter swap failed");
+    std::unique_ptr<SmBSplineSurface> result(new (*surface.GetContext()) SmBSplineSurface(&copy));
+    vb_preserve_surface_basis(*result, {knots[1], knots[0]});
+    return result;
 }
 
 std::vector<double> vb_curve_full_knots(const SmBSplineCurve &curve) {

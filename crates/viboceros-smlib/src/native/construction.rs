@@ -2,6 +2,22 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curves_edge_surface(
+        curves: *const *const NativeCurve,
+        count: usize,
+        tolerance: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_shape_edge_surface(
+        curves: *const *const NativeCurve,
+        count: usize,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curves_plane_normal(
         curves: *const *const NativeCurve,
         count: usize,
@@ -87,6 +103,27 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Native ruled or Coons tensor from two to four ordered open boundaries.
+    /// Use the shared EdgeSrf arrangement policy before importing the curves.
+    /// Native compatibility and blending operate on private copies.
+    pub fn edge_surface(curves: &[&Self], tolerance: Tolerance) -> Result<NurbsSurface, Error> {
+        let handles = curves
+            .iter()
+            .map(|curve| curve.handle.as_ptr().cast_const())
+            .collect::<Vec<_>>();
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_curves_edge_surface(
+                handles.as_ptr(),
+                handles.len(),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        brep::surface_from_native(pointer)
+    }
     /// Native model-tolerance parallel-plane normal for curve control directions.
     /// Individual origins are removed. Parallel linear directions use their
     /// original positions to resolve a plane; a single line and incompatible
@@ -230,6 +267,41 @@ impl KernelCurve {
 }
 
 impl Shape {
+    /// Import and arrange EdgeSrf selections, then delegate surface and face
+    /// construction to the existing native producers. Inputs remain unchanged.
+    pub fn from_edge_curves(curves: &[NurbsCurve], tolerance: Tolerance) -> Result<Self, Error> {
+        let ordered = viboceros_geometry::arrange_edge_surface_curves(curves, tolerance)?;
+        let profiles = ordered
+            .iter()
+            .map(KernelCurve::from_nurbs_for_modeling)
+            .collect::<Result<Vec<_>, _>>()?;
+        Self::edge_surface(&profiles.iter().collect::<Vec<_>>(), tolerance)
+    }
+    /// Construct one native EdgeSrf sheet face from ordered open boundaries.
+    /// The kernel owns the surface and builds its spatial/parameter topology.
+    pub fn edge_surface(curves: &[&KernelCurve], tolerance: Tolerance) -> Result<Self, Error> {
+        let handles = curves
+            .iter()
+            .map(|curve| curve.handle.as_ptr().cast_const())
+            .collect::<Vec<_>>();
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_edge_surface(
+                handles.as_ptr(),
+                handles.len(),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
     /// Cap and stitch the native exact sweep of a closed planar profile along
     /// an open path. The path endpoint displacement must leave the profile plane.
     pub fn translational_sweep(

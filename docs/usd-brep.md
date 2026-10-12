@@ -26,6 +26,8 @@ active-interval clamping rather than the Rust endpoint extractor.
 copies and standalone surface construction.
 [Numeric extrusion directions](smlib-extrusion-direction.md) also use the existing
 kernel point-set classifier rather than adding a command-specific plane fitter.
+[EdgeSrf](smlib-edge-surfaces.md) now uses the existing ruled and Coons producers,
+including native compatibility, degree elevation and sheet topology.
 
 ## Reproduce the native trial
 

@@ -5,7 +5,7 @@ geometric construction. The command's parser and document policy live in the
 separate `extrude_curve` module. Native builds exclude the previous direct Rust
 extrusion constructors from this command; other builds retain them.
 
-Sheets use `SmApiCreateExtrude`, with the existing native `SwapUV` and
+Sheets use `SmApiCreateExtrude`, with the existing native NLib transpose and
 `Reparameterize` operations to retain profile U and physical-distance V.
 Standalone surfaces reuse the B-rep bridge's NURBS payload writer and decoder,
 with a separate owned surface snapshot. No native pointer enters document data.

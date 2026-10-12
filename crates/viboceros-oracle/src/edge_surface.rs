@@ -23,10 +23,10 @@ pub(super) fn run(
     if fixture.command {
         return command(fixture, &curves, iterations, tolerance);
     }
-    let mut brep = Brep::try_edge_surface(&curves, tolerance);
+    let mut brep = construct(&curves, tolerance);
     let start = Instant::now();
     for _ in 0..iterations {
-        brep = black_box(Brep::try_edge_surface(&curves, tolerance));
+        brep = black_box(construct(&curves, tolerance));
     }
     let elapsed =
         u64::try_from(start.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
@@ -145,7 +145,17 @@ pub(super) fn build_brep(
         .iter()
         .map(nurbs_curve_from_definition)
         .collect::<Result<Vec<_>, _>>()?;
-    Ok(Brep::try_edge_surface(&curves, tolerance)?)
+    construct(&curves, tolerance)
+}
+
+fn construct(curves: &[NurbsCurve], tolerance: Tolerance) -> Result<Brep, ProbeError> {
+    #[cfg(not(feature = "native-smlib"))]
+    let brep = Brep::try_edge_surface(curves, tolerance)?;
+    #[cfg(feature = "native-smlib")]
+    let brep = viboceros_smlib::Shape::from_edge_curves(curves, tolerance)
+        .and_then(|shape| shape.to_brep(tolerance))
+        .map_err(CommandError::from)?;
+    Ok(brep)
 }
 
 #[cfg(test)]

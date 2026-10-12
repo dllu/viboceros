@@ -3,6 +3,7 @@
 //! Compact windows carry their own exact binary exponent origin.
 
 pub(crate) mod monomials;
+pub(crate) mod pair_products;
 pub(crate) mod products;
 #[cfg(test)]
 mod tests;

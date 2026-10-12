@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 #include <vector>
 class SmBSplineCurve;
 class SmBSplineSurface;
@@ -10,3 +11,9 @@ std::array<std::vector<double>, 2> vb_surface_full_knots(const SmBSplineSurface 
 bool vb_preserve_curve_basis(SmBSplineCurve &curve, const std::vector<double> &knots);
 bool vb_preserve_surface_basis(SmBSplineSurface &surface,
                               const std::array<std::vector<double>, 2> &knots);
+// Existing NLib copy/transpose operations avoid canonical knot grouping and
+// canonical-import weight restrictions. The returned surface is independently owned.
+std::unique_ptr<SmBSplineSurface> vb_swapped_surface_uv(SmBSplineSurface &surface);
+// NLib producers with full output knot arrays retained before construction.
+std::unique_ptr<SmBSplineSurface> vb_ruled_surface(SmBSplineCurve &first, SmBSplineCurve &second);
+std::unique_ptr<SmBSplineSurface> vb_coons_surface(const std::array<SmBSplineCurve *, 4> &boundaries);
