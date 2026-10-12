@@ -28,6 +28,8 @@ copies and standalone surface construction.
 kernel point-set classifier rather than adding a command-specific plane fitter.
 [EdgeSrf](smlib-edge-surfaces.md) now uses the existing ruled and Coons producers,
 including native compatibility, degree elevation and sheet topology.
+[InsertKnot](smlib-knot-refinement.md) uses exact native curve/tensor refinement
+and endpoint splitting with the complete original NURBS definitions.
 
 ## Reproduce the native trial
 

@@ -2334,6 +2334,54 @@ impl NurbsCurve {
         )
     }
 
+    /// Restore the existing periodic padding and OpenNURBS outer-knot
+    /// convention after an external exact refinement. No controls are blended.
+    pub fn restore_knot_insertion_topology(
+        &self,
+        refined: Self,
+        parameter: Real,
+        target: usize,
+    ) -> Result<Self, GeometryError> {
+        self.restore_knot_insertion_topology_with_periodic(
+            refined,
+            parameter,
+            target,
+            self.is_periodic(),
+        )
+    }
+
+    pub(crate) fn restore_knot_insertion_topology_with_periodic(
+        &self,
+        mut refined: Self,
+        parameter: Real,
+        target: usize,
+        periodic: bool,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        if refined.degree != self.degree || refined.domain() != self.domain() {
+            return Err(GeometryError::InvalidControlNet {
+                context: "refinement changed curve degree or active domain",
+            });
+        }
+        if target == 0 || target > self.degree + 1 {
+            return Err(GeometryError::InvalidKnotMultiplicity {
+                actual: target,
+                maximum: self.degree + 1,
+            });
+        }
+        let domain = self.domain();
+        if self.knot_multiplicity_unchecked(parameter) < target
+            && periodic
+            && target <= self.degree
+            && parameter > *domain.start()
+            && parameter < *domain.end()
+        {
+            refined = refined
+                .restore_periodic_after_knot_insertion(self.find_span(parameter) - self.degree)?;
+        }
+        Ok(refined.with_opennurbs_outer_knots())
+    }
+
     /// Internal refinement entry point used when a surface direction has been
     /// flattened into OpenNURBS' single high-dimensional control curve. The
     /// caller supplies that entire curve's periodic state instead of letting
@@ -2372,16 +2420,16 @@ impl NurbsCurve {
                 .map(Self::with_opennurbs_outer_knots);
         }
 
-        let periodic_span = (restore_periodic_topology && target_multiplicity <= self.degree)
-            .then(|| self.find_span(parameter) - self.degree);
         let mut refined = self.clone();
         while refined.knot_multiplicity_unchecked(parameter) < target_multiplicity {
             refined = refined.insert_knot_once(parameter)?;
         }
-        if let Some(span_index) = periodic_span {
-            refined = refined.restore_periodic_after_knot_insertion(span_index)?;
-        }
-        Ok(refined.with_opennurbs_outer_knots())
+        self.restore_knot_insertion_topology_with_periodic(
+            refined,
+            parameter,
+            target_multiplicity,
+            restore_periodic_topology,
+        )
     }
 
     /// Splits at a parameter strictly inside the active domain.

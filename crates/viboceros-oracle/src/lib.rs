@@ -5563,8 +5563,18 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_insert_knot(black_box(*parameter), black_box(*multiplicity))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::insert_curve_knot(
+                    &source,
+                    black_box(*parameter),
+                    black_box(*multiplicity),
+                )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result =
+                    source.try_insert_knot(black_box(*parameter), black_box(*multiplicity));
+                result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -5911,12 +5921,34 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || match direction {
+            let (surface, elapsed) = measure_probe(iterations, || match direction {
                 SurfaceKnotAxis::U => {
-                    source.try_insert_knot_u(black_box(*parameter), black_box(*multiplicity))
+                    #[cfg(feature = "native-smlib")]
+                    let result = viboceros_smlib::insert_surface_knot(
+                        &source,
+                        viboceros_geometry::SurfaceKnotDirection::U,
+                        black_box(*parameter),
+                        black_box(*multiplicity),
+                    )
+                    .map_err(CommandError::from);
+                    #[cfg(not(feature = "native-smlib"))]
+                    let result =
+                        source.try_insert_knot_u(black_box(*parameter), black_box(*multiplicity));
+                    result
                 }
                 SurfaceKnotAxis::V => {
-                    source.try_insert_knot_v(black_box(*parameter), black_box(*multiplicity))
+                    #[cfg(feature = "native-smlib")]
+                    let result = viboceros_smlib::insert_surface_knot(
+                        &source,
+                        viboceros_geometry::SurfaceKnotDirection::V,
+                        black_box(*parameter),
+                        black_box(*multiplicity),
+                    )
+                    .map_err(CommandError::from);
+                    #[cfg(not(feature = "native-smlib"))]
+                    let result =
+                        source.try_insert_knot_v(black_box(*parameter), black_box(*multiplicity));
+                    result
                 }
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -10854,13 +10886,20 @@ fn compare_point_lists(left: &[[f64; 3]], right: &[[f64; 3]]) -> std::cmp::Order
 
 fn measure<T>(
     iterations: u32,
-    mut operation: impl FnMut() -> Result<T, GeometryError>,
+    operation: impl FnMut() -> Result<T, GeometryError>,
+) -> Result<(T, u64), ProbeError> {
+    measure_probe(iterations, operation)
+}
+
+fn measure_probe<T, E: Into<ProbeError>>(
+    iterations: u32,
+    mut operation: impl FnMut() -> Result<T, E>,
 ) -> Result<(T, u64), ProbeError> {
     // Keep one-time dispatch and lazy initialization out of the timed loop.
-    let mut value = black_box(operation()?);
+    let mut value = black_box(operation().map_err(Into::into)?);
     let started = Instant::now();
     for _ in 0..iterations {
-        value = black_box(operation()?);
+        value = black_box(operation().map_err(Into::into)?);
     }
     let elapsed_ns =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
@@ -10869,16 +10908,9 @@ fn measure<T>(
 
 fn measure_document<T>(
     iterations: u32,
-    mut operation: impl FnMut() -> Result<T, DocumentError>,
+    operation: impl FnMut() -> Result<T, DocumentError>,
 ) -> Result<(T, u64), ProbeError> {
-    let mut value = black_box(operation()?);
-    let started = Instant::now();
-    for _ in 0..iterations {
-        value = black_box(operation()?);
-    }
-    let elapsed_ns =
-        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
-    Ok((value, elapsed_ns))
+    measure_probe(iterations, operation)
 }
 
 const fn default_iterations() -> u32 {

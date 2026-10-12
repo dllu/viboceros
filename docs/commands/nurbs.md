@@ -62,6 +62,9 @@ mirrored across the active domain. Rational refinement and periodic repair
 follow Rhino/OpenNURBS behavior; identity, attributes, selection, and undo are
 preserved.
 
+Linux `native-smlib` builds use usd-brep for curve/tensor knot refinement.
+See [native behavior, qualification and limits](../smlib-knot-refinement.md).
+
 `RemoveKnot parameter|u,v Direction=U|V` requires exactly one selected curve
 or untrimmed NURBS surface and removes one knot in place. On curves, the
 parameter identifies a curve point and the knot with the nearest model-space

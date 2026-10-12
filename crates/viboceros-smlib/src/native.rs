@@ -10,6 +10,8 @@ use viboceros_geometry::{
 };
 mod brep;
 mod construction;
+mod knot_refinement;
+pub use knot_refinement::{insert_curve_knot, insert_surface_knot};
 mod shape;
 pub use shape::StitchResult;
 

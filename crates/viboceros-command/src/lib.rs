@@ -76,6 +76,7 @@ mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod extrude_curve;
+mod knot_refinement;
 use extrude_apex::ExtrudeCurveToPointCommand;
 mod planar_surface;
 mod revolve;
@@ -3738,7 +3739,7 @@ fn insert_curve_knots(
         curve.degree(),
         multiplicity,
     )?;
-    curve = curve.try_insert_knot(parameter, multiplicity)?;
+    curve = knot_refinement::curve(&curve, parameter, multiplicity)?;
     if symmetrical {
         let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
         if mirrored != parameter {
@@ -3749,7 +3750,7 @@ fn insert_curve_knots(
                 curve.degree(),
                 multiplicity,
             )?;
-            curve = curve.try_insert_knot(mirrored, multiplicity)?;
+            curve = knot_refinement::curve(&curve, mirrored, multiplicity)?;
         }
     }
     Ok(curve)
@@ -3784,11 +3785,21 @@ fn insert_surface_knots(
             degree,
             options.multiplicity,
         )?;
-        surface = surface.try_insert_knot_u(parameter, options.multiplicity)?;
+        surface = knot_refinement::surface(
+            &surface,
+            SurfaceKnotDirection::U,
+            parameter,
+            options.multiplicity,
+        )?;
         if options.symmetrical {
             let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
             if mirrored != parameter {
-                surface = surface.try_insert_knot_u(mirrored, options.multiplicity)?;
+                surface = knot_refinement::surface(
+                    &surface,
+                    SurfaceKnotDirection::U,
+                    mirrored,
+                    options.multiplicity,
+                )?;
             }
         }
     }
@@ -3802,11 +3813,21 @@ fn insert_surface_knots(
             degree,
             options.multiplicity,
         )?;
-        surface = surface.try_insert_knot_v(parameter, options.multiplicity)?;
+        surface = knot_refinement::surface(
+            &surface,
+            SurfaceKnotDirection::V,
+            parameter,
+            options.multiplicity,
+        )?;
         if options.symmetrical {
             let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
             if mirrored != parameter {
-                surface = surface.try_insert_knot_v(mirrored, options.multiplicity)?;
+                surface = knot_refinement::surface(
+                    &surface,
+                    SurfaceKnotDirection::V,
+                    mirrored,
+                    options.multiplicity,
+                )?;
             }
         }
     }

@@ -132,6 +132,19 @@ std::unique_ptr<NurbsPayload> uv_payload(const SmBSplineCurve &curve,
 struct VbSurfaceData {
     std::unique_ptr<NurbsPayload> geometry;
 };
+VbSurfaceData *vb_copy_nurbs_payload(const VbNurbsData &data) {
+    auto result = std::make_unique<VbSurfaceData>();
+    result->geometry = std::make_unique<NurbsPayload>();
+    auto &payload = *result->geometry;
+    require(data.count[0] && data.count[1] && data.count[0] <= limit / data.count[1],
+            "NURBS snapshot resource limit");
+    payload.view = data;
+    payload.points.assign(data.points_xyzw, data.points_xyzw + 4 * data.count[0] * data.count[1]);
+    for (size_t d = 0; d < 2; ++d)
+        if (data.knot_count[d]) payload.knots[d] = copy_knots(data.knots[d], data.knot_count[d]);
+    payload.finish();
+    return result.release();
+}
 VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface) {
     auto result = std::make_unique<VbSurfaceData>();
     result->geometry = surface_payload(surface);

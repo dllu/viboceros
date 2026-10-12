@@ -42,6 +42,9 @@ point-set classification, with shared batch policy and active CPlane fallback.
 weight normalization, ruled/Coons construction and face topology to usd-brep.
 The shared boundary-order policy remains in the geometry crate; native builds
 exclude its custom tensor builder from command and oracle construction.
+[InsertKnot](smlib-knot-refinement.md) also delegates curve and tensor refinement
+to NLib, preserving full unclamped input definitions and sharing periodic-padding
+and outer-knot conventions with the portable backend.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

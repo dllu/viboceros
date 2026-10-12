@@ -1,5 +1,6 @@
 #include "bridge.h"
 #include "basis_preservation.h"
+#include "knot_refinement.h"
 #include <SmApiBrep.h>
 #include <SmApiCurves.h>
 #include <SmApiGeneral.h>
@@ -289,6 +290,15 @@ extern "C" int vb_curves_edge_surface(const VbCurve *const *curves, size_t count
         require(out, "Missing edge surface output");
         auto surface = edge_surface(curves, count, tolerance);
         *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_nurbs_insert_knot(const VbNurbsData *source, int axis, double parameter,
+                                     size_t target, VbSurfaceData **out, char *error, size_t capacity) {
+    if (out) *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(source && out, "Missing knot refinement payload");
+        *out = vb_refine_nurbs(*source, axis, parameter, target);
     });
 }
 

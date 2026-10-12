@@ -39,6 +39,15 @@ pub(super) fn surface_from_native(pointer: *mut NativeSurfaceData) -> Result<Nur
     unsafe { view.assume_init() }.surface(&owner)
 }
 
+pub(super) fn curve_from_native(pointer: *mut NativeSurfaceData) -> Result<NurbsCurve, Error> {
+    let owner = OwnedSurfaceData(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
+    let mut view = std::mem::MaybeUninit::uninit();
+    if unsafe { vb_surface_data_view(owner.0.as_ptr(), view.as_mut_ptr()) } != 0 {
+        return Err(Error::InvalidOutput);
+    }
+    unsafe { view.assume_init() }.curve(&owner)
+}
+
 #[cfg(test)]
 mod plan_tests {
     use super::*;
@@ -83,12 +92,12 @@ mod plan_tests {
 }
 #[repr(C)]
 #[derive(Clone, Copy)]
-struct NurbsData {
-    degree: [usize; 2],
-    count: [usize; 2],
-    knot_count: [usize; 2],
-    knots: [*const f64; 2],
-    points: *const f64,
+pub(super) struct NurbsData {
+    pub(super) degree: [usize; 2],
+    pub(super) count: [usize; 2],
+    pub(super) knot_count: [usize; 2],
+    pub(super) knots: [*const f64; 2],
+    pub(super) points: *const f64,
 }
 #[repr(C)]
 struct VertexData {
@@ -573,7 +582,7 @@ impl NurbsData {
             })
             .collect()
     }
-    fn curve(self, owner: &OwnedBrep) -> Result<NurbsCurve, Error> {
+    fn curve(self, owner: &impl SnapshotOwner) -> Result<NurbsCurve, Error> {
         if self.count[1] != 1 || self.degree[1] != 0 {
             return Err(Error::InvalidOutput);
         }

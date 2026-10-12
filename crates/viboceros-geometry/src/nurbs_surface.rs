@@ -2008,6 +2008,69 @@ impl NurbsSurface {
         )
     }
 
+    /// Apply the shared periodic/outer-knot representation policy after an
+    /// external tensor refinement. The tensor's geometry is already computed.
+    pub fn restore_knot_insertion_topology(
+        &self,
+        refined: Self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+        target: usize,
+    ) -> Result<Self, GeometryError> {
+        if refined.degree_u != self.degree_u
+            || refined.degree_v != self.degree_v
+            || refined.domain_u() != self.domain_u()
+            || refined.domain_v() != self.domain_v()
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "refinement changed surface degree or active domain",
+            });
+        }
+        let mut index = 0;
+        match direction {
+            SurfaceKnotDirection::U => {
+                let periodic = self.insertion_curve_is_periodic_u();
+                refined.map_u_control_curves(|row| {
+                    let first = index * self.control_point_count_u;
+                    index += 1;
+                    let before = NurbsCurve::try_new_rational(
+                        self.degree_u,
+                        self.control_points[first..first + self.control_point_count_u].to_vec(),
+                        self.knots_u.clone(),
+                    )?;
+                    before.restore_knot_insertion_topology_with_periodic(
+                        row.clone(),
+                        parameter,
+                        target,
+                        periodic,
+                    )
+                })
+            }
+            SurfaceKnotDirection::V => {
+                let periodic = self.insertion_curve_is_periodic_v();
+                refined.map_v_control_curves(|column| {
+                    let before = NurbsCurve::try_new_rational(
+                        self.degree_v,
+                        (0..self.control_point_count_v)
+                            .map(|j| self.control_points[j * self.control_point_count_u + index])
+                            .collect(),
+                        self.knots_v.clone(),
+                    )?;
+                    index += 1;
+                    before.restore_knot_insertion_topology_with_periodic(
+                        column.clone(),
+                        parameter,
+                        target,
+                        periodic,
+                    )
+                })
+            }
+            SurfaceKnotDirection::Both => Err(GeometryError::InvalidControlNet {
+                context: "refinement needs one parameter direction",
+            }),
+        }
+    }
+
     /// Inserts a V-direction knot to a target multiplicity without changing
     /// the surface locus or parameterization.
     ///

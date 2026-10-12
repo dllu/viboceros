@@ -8,6 +8,36 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Unclamped active-end splitting can overwrite native buffers.**
+  `N_BasisFindSpanAndMult` with `NL_LEFT` reports multiplicity `degree + 1`
+  whenever the query equals `U[m - degree]`, even for an unclamped vector.
+  `N_CrvSplit` uses that value to size its output polygons but copies more
+  controls into the left polygon. The quadratic fixture with knots
+  `[-2,-1,0,0.8,2,3,4]`, split at active end `2`, aborted with heap corruption
+  during `N_EndNurbs`. The debugger located the abort in stack cleanup; source
+  inspection identified the undersized left-output polygon in this split path.
+  The refinement adapter never takes that path: it reverses the private native
+  curve/tensor, splits at its active start, then restores direction.
+  The tensor splitter shares the same span query. Regression coverage includes
+  both endpoints in both tensor axes. See [knot refinement](smlib-knot-refinement.md)
+  and [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).
+- **NLib reversal assumes clamped endpoint padding.** `N_CrvReverse` and
+  `N_SrfReverse` retain endpoint knot blocks and reverse only interior knots
+  using the sum of the outermost values. On a partially clamped vector
+  `[0,0,0,1.2,2,3,4]`, this produced nonmonotone interior value `2.8` before
+  active end `2`. The adapter retains the existing native control reversal
+  and supplies the complete negated/reversed parameter chart, matching the
+  existing application convention. This affects definition-based editing;
+  modeling imports already clamp their active intervals. See
+  [NL_CrvNurb.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp)
+  and [qualification](smlib-knot-refinement.md).
+- **Interior insertion and endpoint clamping are different native operations.**
+  The NLib insertion entry points reject the outermost knot values. Unclamped
+  active endpoints can be split to perform one-sided clamping; already-clamped
+  target multiplicities are no-ops. The adapter uses these existing operations
+  rather than canonical import, which would clamp both active ends before the edit.
+  Periodic padding and the two unstored OpenNURBS outer knots are restored by
+  the shared application representation policy. See the same qualification.
 - **Public surface UV swapping rejects valid mixed-sign control weights.**
   `SmBSplineSurface::SwapUV` reloads through `SetCanonical`, whose IGES importer
   restricts weights. It returned `SM_ERR` (1001) for the captured rational

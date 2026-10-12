@@ -10,5 +10,6 @@
 mod native;
 #[cfg(feature = "native")]
 pub use native::{
-    BooleanOperation, Error, KernelCurve, Shape, Solid, SolidProperties, StitchResult, Tessellation,
+    BooleanOperation, Error, KernelCurve, Shape, Solid, SolidProperties, StitchResult,
+    Tessellation, insert_curve_knot, insert_surface_knot,
 };
