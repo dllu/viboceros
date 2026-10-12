@@ -9,6 +9,7 @@ mod evaluate;
 mod grips;
 mod parameter_frame;
 mod parameters;
+mod seam;
 mod smoothing;
 mod wires;
 pub use evaluate::SurfaceJet2;
@@ -1688,26 +1689,19 @@ impl NurbsSurface {
         parameter_u: Real,
         parameter_v: Real,
     ) -> Result<Self, GeometryError> {
-        let mut result = self.clone();
-        if direction.includes_u() {
-            if !result.homogeneous_control_curve_is_closed_u()? {
-                return Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "U" });
-            }
-            let periodic = result.insertion_curve_is_periodic_u();
-            result = result.map_u_control_curves(|curve| {
-                curve.try_change_closed_seam_with_periodic_topology(parameter_u, periodic)
-            })?;
-        }
-        if direction.includes_v() {
-            if !result.homogeneous_control_curve_is_closed_v()? {
-                return Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "V" });
-            }
-            let periodic = result.insertion_curve_is_periodic_v();
-            result = result.map_v_control_curves(|curve| {
-                curve.try_change_closed_seam_with_periodic_topology(parameter_v, periodic)
-            })?;
-        }
-        Ok(result)
+        self.try_change_closed_seam_with_operations(
+            direction,
+            parameter_u,
+            parameter_v,
+            &mut |surface, direction, parameter, target| match direction {
+                SurfaceKnotDirection::U => surface.try_insert_knot_u(parameter, target),
+                SurfaceKnotDirection::V => surface.try_insert_knot_v(parameter, target),
+                SurfaceKnotDirection::Both => unreachable!("seams edit one direction at a time"),
+            },
+            &mut |surface, direction, parameter, periodic| {
+                surface.split_seam_control_curves(direction, parameter, periodic)
+            },
+        )
     }
 
     /// Replaces the selected knot direction(s) with Rhino-compatible unit

@@ -21,7 +21,7 @@ Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
 For solid Booleans, curve extrusion and revolution, planar and edge surfaces, surface
 joining and offsets, NURBS knot/degree editing, Bezier/span decomposition,
-segment extraction and closed-curve seams, edge fillets and STEP material regions on Linux,
+segment extraction and curve/surface seams, edge fillets and STEP material regions on Linux,
 install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 
 ```sh

@@ -11,8 +11,9 @@ before cyclic control rotation and knot translation. Multiple periodic knots,
 clamped curves and wrapped parameters use two checked native segment extractions
 before the existing homogeneous append. Endpoint no-ops and period translations
 remain exact. The adapter adds no refinement, evaluation or interpolation solver.
-The supplied split callback receives the periodic topology policy; surface seam
-control rows continue using their existing portable operations.
+The supplied split callback receives the periodic topology policy.
+[Surface seams](smlib-surface-seams.md) now share the rotation and append helpers
+after validating closure and periodic topology for the complete control net.
 
 The native entrypoint is `viboceros_smlib::change_curve_seam`. Command preparation
 propagates native errors through the same typed conversion used by knot edits and
@@ -49,8 +50,8 @@ full seam knot vectors and history snapshots retain exact comparisons.
 Native refinement and extraction retain their existing
 [limits and workarounds](usd-brep-limitations.md), including endpoint conditioning
 and the full-order split defect. These finite cases do not certify arbitrary
-weight ratios, chart ratios or continuous parity. Surface seams are not migrated
-by this change.
+weight ratios, chart ratios or continuous parity. Tensor seam qualification is
+documented separately.
 
 ```sh
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \

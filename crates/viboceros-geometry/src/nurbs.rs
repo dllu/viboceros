@@ -1816,13 +1816,12 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, self.control_points.clone(), knots)
     }
 
-    fn periodic_seam_from_refined(
+    pub(crate) fn periodic_seam_from_refined(
         refined: Self,
         parameter: Real,
         domain_start: Real,
         domain_end: Real,
     ) -> Result<Self, GeometryError> {
-        debug_assert!(refined.is_periodic());
         let degree = refined.degree;
         let control_count = refined.control_points.len();
         let unique_count = control_count - degree;
@@ -1922,9 +1921,20 @@ impl NurbsCurve {
         split: &mut impl FnMut(&Self, Real, bool) -> Result<(Self, Self), E>,
     ) -> Result<Self, E> {
         let (left, right) = split(self, parameter, refine_periodic_topology)?;
+        Ok(Self::closed_seam_from_split(
+            left, right, old_start, old_end,
+        )?)
+    }
+
+    pub(crate) fn closed_seam_from_split(
+        left: Self,
+        right: Self,
+        old_start: Real,
+        old_end: Real,
+    ) -> Result<Self, GeometryError> {
         let shifted_left = left.translate_parameterization_by_period(old_start, old_end, 1)?;
         let join = right.control_points[right.control_points.len() - 1].point;
-        Ok(right.try_append_clamped_at_join(&shifted_left, join)?)
+        right.try_append_clamped_at_join(&shifted_left, join)
     }
 
     /// Returns the exact full-knot-vector multiplicity of `parameter`.
@@ -2543,7 +2553,7 @@ impl NurbsCurve {
         }
     }
 
-    fn try_split_with_periodic_topology(
+    pub(crate) fn try_split_with_periodic_topology(
         &self,
         parameter: Real,
         restore_periodic_topology: bool,

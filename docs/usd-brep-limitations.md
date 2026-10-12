@@ -8,6 +8,20 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Patch extraction snaps near knots and changes the geometric restriction.**
+  `N_SrfExtractPatch` snaps all four boundaries using a fixed `1e-8` parameter
+  tolerance, then reparameterizes the output to the originally requested box.
+  On the exact bilinear surface `S(u,v)=(u,v,0)`, requesting U `[1e-9,0.75]`
+  produces a left boundary at X `0` while reporting U start `1e-9`.
+  The [direct probe](../tools/usd_brep/patch_extraction_probe.cpp) reads the
+  extracted controls and compares against the independent bilinear definition;
+  [retained output](smlib-surface-seams-probe.json) records the discrepancy.
+  The producer also clamps both axes even when the other direction is kept
+  whole, and its active-end branches share the clamped-padding assumptions
+  of curve extraction (source audit). SrfSeam therefore uses native tensor
+  refinement or batches the existing checked curve extractor per control
+  row/column, preserving the complete unselected basis. Source:
+  [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
 - **Interior full-order curve splitting shares the control-buffer underflow
   (source audit).** With degree two and full knots
   `[0,0,0,0.5,0.5,0.5,1,1,1]`, `N_CrvSplit` at `0.5` obtains span `5` and
@@ -430,6 +444,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Surface seam closure retains its existing homogeneous tolerance policy.**
+  Both backends reject the tested periodic cubic surface after a common weight
+  scale of `1e-300`: its homogeneous interior samples are indistinguishable
+  under the inherited absolute coincidence tolerance. This happens before
+  native refinement or extraction. The new adapter retains that validation,
+  including rejecting nets that close only projectively. This is a shared
+  closure-policy restriction, not evidence of a usd-brep arithmetic defect.
+  The native regressions qualify common scales `1`, `1e100` and `-1e100`; wider
+  gauges are not certified by surface seam integration. See
+  [surface seam regressions](../crates/viboceros-smlib/tests/surface_seams.rs).
 - **Numeric-length extraction retains the existing sampler's accuracy policy.**
   Native SubCrv length/midpoint extraction uses usd-brep trimming, while length
   inversion and closed-seam preparation retain the shared policy. All 20 signed

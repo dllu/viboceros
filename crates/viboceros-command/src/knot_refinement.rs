@@ -1,6 +1,22 @@
 //! Delegate NURBS editing math while keeping command input and history policies.
 use super::*;
 
+pub(super) fn surface_seam(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    u: Real,
+    v: Real,
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::change_surface_seam(source, direction, u, v).map_err(native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(source.try_change_closed_seam(direction, u, v)?)
+    }
+}
+
 #[cfg(feature = "native-smlib")]
 pub(super) fn native_geometry_error(error: viboceros_smlib::Error) -> CommandError {
     match error {

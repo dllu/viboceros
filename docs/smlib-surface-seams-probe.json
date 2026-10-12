@@ -1,0 +1,8 @@
+{
+  "requested_start": 1e-09,
+  "reported_start": 1e-09,
+  "expected_boundary_x": 1e-09,
+  "unchecked_boundary_x": 0,
+  "usd_brep_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "probe": "tools/usd_brep/patch_extraction_probe.cpp"
+}

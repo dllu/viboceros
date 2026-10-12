@@ -9578,7 +9578,7 @@ impl Command for SurfaceSeamCommand {
                 }
             },
         };
-        let relocated = surface.try_change_closed_seam(direction, u, v)?;
+        let relocated = knot_refinement::surface_seam(&surface, direction, u, v)?;
         document.replace_object_geometries([(id, Geometry::NurbsSurface(relocated))])?;
         let description = match direction {
             SurfaceKnotDirection::U => format!("U at parameter {u}"),
@@ -22162,7 +22162,26 @@ mod tests {
             "Set the selected NURBS surface seam in U at 5 and V at 1"
         );
         let object = document.object(id).unwrap();
-        assert_eq!(object.geometry(), &Geometry::NurbsSurface(expected.clone()));
+        let Geometry::NurbsSurface(actual) = object.geometry() else {
+            panic!("surface seam relocation must retain its native class");
+        };
+        assert_eq!(actual.degree_u(), expected.degree_u());
+        assert_eq!(actual.degree_v(), expected.degree_v());
+        assert_eq!(actual.knots_u(), expected.knots_u());
+        assert_eq!(actual.knots_v(), expected.knots_v());
+        assert_eq!(
+            actual.control_points().len(),
+            expected.control_points().len()
+        );
+        for (a, e) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(a.point().distance_to(e.point()).unwrap() < 1e-10);
+            assert!((a.weight() - e.weight()).abs() < 1e-12);
+        }
+        let relocated_geometry = object.geometry().clone();
         assert_eq!(object.attributes(), before.attributes());
         assert!(document.is_selected(id));
         assert!(
@@ -22177,10 +22196,7 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.object(id).unwrap(), &before);
         registry.execute(&mut document, "Redo").unwrap();
-        assert_eq!(
-            document.object(id).unwrap().geometry(),
-            &Geometry::NurbsSurface(expected)
-        );
+        assert_eq!(document.object(id).unwrap().geometry(), &relocated_geometry);
     }
 
     #[test]

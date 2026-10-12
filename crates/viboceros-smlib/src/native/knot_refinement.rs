@@ -3,6 +3,15 @@ use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
 unsafe extern "C" {
+    fn vb_nurbs_trim_surface_axis(
+        source: *const brep::NurbsData,
+        axis: c_int,
+        start: f64,
+        end: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_trim_curve(
         source: *const brep::NurbsData,
         start: f64,
@@ -112,6 +121,53 @@ pub fn change_curve_seam(source: &NurbsCurve, parameter: f64) -> Result<NurbsCur
         &mut insert_curve_knot,
         &mut |curve, parameter, _periodic| split_curve(curve, parameter),
     )
+}
+
+/// Relocate closed tensor seams in U then V using native whole-net refinement
+/// or checked directional extraction and shared homogeneous seam assembly.
+pub fn change_surface_seam(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter_u: f64,
+    parameter_v: f64,
+) -> Result<NurbsSurface, Error> {
+    source.try_change_closed_seam_with_operations(
+        direction,
+        parameter_u,
+        parameter_v,
+        &mut insert_surface_knot,
+        &mut |surface, axis, parameter, _periodic| {
+            let domain = match axis {
+                SurfaceKnotDirection::U => surface.domain_u(),
+                SurfaceKnotDirection::V => surface.domain_v(),
+                SurfaceKnotDirection::Both => unreachable!("one seam direction at a time"),
+            };
+            Ok((
+                trim_surface_axis(surface, axis, *domain.start(), parameter)?,
+                trim_surface_axis(surface, axis, parameter, *domain.end())?,
+            ))
+        },
+    )
+}
+
+fn trim_surface_axis(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    start: f64,
+    end: f64,
+) -> Result<NurbsSurface, Error> {
+    let axis = match direction {
+        SurfaceKnotDirection::U => 0,
+        SurfaceKnotDirection::V => 1,
+        SurfaceKnotDirection::Both => unreachable!("one seam direction at a time"),
+    };
+    let input = NurbsInput::surface(source);
+    let view = input.view();
+    let mut pointer = std::ptr::null_mut();
+    call(|error, capacity| unsafe {
+        vb_nurbs_trim_surface_axis(&view, axis, start, end, &mut pointer, error, capacity)
+    })?;
+    brep::surface_from_native(pointer)
 }
 
 /// Split once into the two clamped parameter intervals with native extraction.

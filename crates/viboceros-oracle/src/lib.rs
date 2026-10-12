@@ -5864,12 +5864,22 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
-                source.try_change_closed_seam(
+            let (surface, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::change_surface_seam(
+                    &source,
                     direction.geometry(),
                     black_box(parameter[0]),
                     black_box(parameter[1]),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_change_closed_seam(
+                    direction.geometry(),
+                    black_box(parameter[0]),
+                    black_box(parameter[1]),
+                );
+                result.map_err(ProbeError::from)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

@@ -48,6 +48,8 @@ with shared curve reversal, closed-seam and composite-leaf policies.
 extractor for anchor-relative preparation and final NURBS intervals.
 [Closed-curve seams](smlib-curve-seams.md) use native knot refinement or checked
 segment extraction for CrvSeam, numeric SubCrv preparation and cutting Split/Trim.
+[Surface seams](smlib-surface-seams.md) use native tensor refinement and batched
+directional extraction, retaining the complete unselected knot basis.
 
 ## Reproduce the native trial
 

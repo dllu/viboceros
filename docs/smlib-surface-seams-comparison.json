@@ -1,0 +1,127 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "periodic-cubic-u-between-knots",
+      "comparison": {
+        "id": "periodic-cubic-u-between-knots",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 4800.0,
+        "rhino_ns_per_iteration": 9948730.0,
+        "rhino_to_viboceros_ratio": 2072.6520833333334,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-cubic-v-at-knot",
+      "comparison": {
+        "id": "periodic-cubic-v-at-knot",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 3152.0,
+        "rhino_ns_per_iteration": 7575989.0,
+        "rhino_to_viboceros_ratio": 2403.54980964467,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-rational-u",
+      "comparison": {
+        "id": "closed-rational-u",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 4240.0,
+        "rhino_ns_per_iteration": 1510620.0,
+        "rhino_to_viboceros_ratio": 356.27830188679246,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-both-directions",
+      "comparison": {
+        "id": "periodic-both-directions",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 14864.0,
+        "rhino_ns_per_iteration": 4875183.0,
+        "rhino_to_viboceros_ratio": 327.985939181916,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-u-near-domain-end",
+      "comparison": {
+        "id": "periodic-u-near-domain-end",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 3536.0,
+        "rhino_ns_per_iteration": 1876831.0,
+        "rhino_to_viboceros_ratio": 530.7779977375566,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-u-reparameterized-domain",
+      "comparison": {
+        "id": "periodic-u-reparameterized-domain",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 3472.0,
+        "rhino_ns_per_iteration": 5477905.0,
+        "rhino_to_viboceros_ratio": 1577.7376152073732,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-rational-u-at-multiple-knot",
+      "comparison": {
+        "id": "periodic-rational-u-at-multiple-knot",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 6368.0,
+        "rhino_ns_per_iteration": 1129150.0,
+        "rhino_to_viboceros_ratio": 177.3162688442211,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-degree-one-u-between-knots",
+      "comparison": {
+        "id": "closed-degree-one-u-between-knots",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 3744.0,
+        "rhino_ns_per_iteration": 984192.0,
+        "rhino_to_viboceros_ratio": 262.87179487179486,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 8,
+  "matched": 8,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "fixture_sha256": "594a4a689363f293b5352056dcb769d40c6d11efcf1f37378c469dfda204819f",
+  "observation_sha256": "9cb8504a6b89fa080c9df3043d56a0bd58022b7f9a2d8eae19ca5618cbcb70fd"
+}

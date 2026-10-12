@@ -624,3 +624,41 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
     points.assign(result.pol->Pw,result.pol->Pw+output.count[0]);
     return snapshot(output,points,exponent,origin);
 }
+
+VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,double start,double end) {
+    validate(data);
+    require(data.degree[1]>0 && (axis==0 || axis==1),"Invalid native surface strip direction");
+    const size_t width=data.count[axis],lines=data.count[1-axis];
+    VbNurbsData output=data;
+    std::vector<double> controls_out,knots_out,row(4*width);
+    for(size_t line=0;line<lines;++line) {
+        for(size_t i=0;i<width;++i) {
+            const size_t source=axis==0?line*width+i:i*lines+line;
+            std::copy_n(data.points_xyzw+4*source,4,row.data()+4*i);
+        }
+        VbNurbsData curve={{data.degree[axis],0},{width,1},
+                           {data.knot_count[axis],0},{data.knots[axis],nullptr},row.data()};
+        // Reuse checked curve extraction; the tensor convenience producer
+        // snaps near knots and clamps the unselected direction as well.
+        std::unique_ptr<VbSurfaceData,decltype(&vb_surface_data_free)> segment(
+            vb_trim_nurbs_curve(curve,start,end),vb_surface_data_free);
+        VbNurbsData view;
+        require(vb_surface_data_view(segment.get(),&view)==0,"Read native strip control curve failed");
+        if(line==0) {
+            require(view.count[0]<=limit/lines,"Native strip output resource limit");
+            output.count[axis]=view.count[0];output.knot_count[axis]=view.knot_count[0];
+            knots_out.assign(view.knots[0],view.knots[0]+view.knot_count[0]);
+            controls_out.resize(4*output.count[0]*output.count[1]);
+        } else {
+            require(view.count[0]==output.count[axis] && view.knot_count[0]==knots_out.size()
+                    && std::equal(knots_out.begin(),knots_out.end(),view.knots[0]),
+                    "Native strip control curves produced inconsistent bases");
+        }
+        for(size_t i=0;i<view.count[0];++i) {
+            const size_t target=axis==0?line*view.count[0]+i:i*lines+line;
+            std::copy_n(view.points_xyzw+4*i,4,controls_out.data()+4*target);
+        }
+    }
+    output.knots[axis]=knots_out.data();output.points_xyzw=controls_out.data();
+    return vb_copy_nurbs_payload(output);
+}

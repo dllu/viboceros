@@ -311,6 +311,15 @@ extern "C" int vb_nurbs_trim_curve(const VbNurbsData *source,double start,double
     });
 }
 
+extern "C" int vb_nurbs_trim_surface_axis(const VbNurbsData *source,int axis,double start,double end,
+                                          VbSurfaceData **out,char *error,size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out,"Missing surface strip payload");
+        *out=vb_trim_nurbs_surface_axis(*source,axis,start,end);
+    });
+}
+
 extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree,
                                        int deformable, const double *knots, size_t knot_count,
                                        VbSurfaceData **out, char *error, size_t capacity) {
