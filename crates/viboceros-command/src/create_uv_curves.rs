@@ -113,10 +113,7 @@ impl Command for CreateUvCurvesCommand {
     }
 }
 
-fn rectangle_size(
-    surface: &NurbsSurface,
-    tolerance: Tolerance,
-) -> Result<[Real; 2], GeometryError> {
+fn rectangle_size(surface: &NurbsSurface, tolerance: Tolerance) -> Result<[Real; 2], CommandError> {
     let mut size = [0_f64; 2];
     // Public-command observations use eight interior stations, excluding the
     // natural end. Use accuracy-controlled length rather than Rhino's coarse
@@ -124,20 +121,27 @@ fn rectangle_size(
     for i in 0..8 {
         let t = i as Real / 8.;
         size[0] = size[0].max(
-            surface
-                .isocurve_u(surface.parameter_at_v(t)?)?
-                .length(tolerance)?,
+            surface_segments::isocurve(
+                surface,
+                SurfaceKnotDirection::U,
+                surface.parameter_at_v(t)?,
+            )?
+            .length(tolerance)?,
         );
         size[1] = size[1].max(
-            surface
-                .isocurve_v(surface.parameter_at_u(t)?)?
-                .length(tolerance)?,
+            surface_segments::isocurve(
+                surface,
+                SurfaceKnotDirection::V,
+                surface.parameter_at_u(t)?,
+            )?
+            .length(tolerance)?,
         );
     }
     if size.iter().any(|x| *x <= 0.) {
         return Err(GeometryError::Degenerate {
             context: "UV rectangle size",
-        });
+        }
+        .into());
     }
     Ok(size)
 }

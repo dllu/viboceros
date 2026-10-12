@@ -3,6 +3,14 @@ use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
 unsafe extern "C" {
+    fn vb_nurbs_surface_isocurve(
+        source: *const brep::NurbsData,
+        varying: c_int,
+        parameter: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_trim_surface_axis(
         source: *const brep::NurbsData,
         axis: c_int,
@@ -58,6 +66,32 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+/// Extract an exact isocurve with the complete varying-axis basis and gauge.
+pub fn surface_isocurve(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: f64,
+) -> Result<NurbsCurve, Error> {
+    source.isocurve_with_extractor(
+        direction,
+        parameter,
+        &mut |surface, direction, parameter| {
+            let input = NurbsInput::surface(surface);
+            let view = input.view();
+            let mut pointer = std::ptr::null_mut();
+            let varying = if direction == SurfaceKnotDirection::U {
+                0
+            } else {
+                1
+            };
+            call(|error, capacity| unsafe {
+                vb_nurbs_surface_isocurve(&view, varying, parameter, &mut pointer, error, capacity)
+            })?;
+            brep::curve_from_native(pointer)
+        },
+    )
 }
 
 /// Trim an exact parameter interval, retaining the original chart and gauge.

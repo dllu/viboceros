@@ -1497,6 +1497,12 @@ pub enum Operation {
         u: [f64; 2],
         v: [f64; 2],
     },
+    SurfaceIsocurveGeometry {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        direction: SurfaceUniformDirection,
+        parameter: f64,
+    },
     SurfaceSplitCuttingCommand {
         id: String,
         surface: NurbsSurfaceDefinition,
@@ -2428,6 +2434,7 @@ impl Operation {
             | Self::CurveSplitCommand { id, .. }
             | Self::SurfaceSplitIsocurveCommand { id, .. }
             | Self::SurfaceTrimGeometry { id, .. }
+            | Self::SurfaceIsocurveGeometry { id, .. }
             | Self::SurfaceSplitCuttingCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
@@ -5317,6 +5324,35 @@ fn execute(
             source_pick,
             ..
         } => curve_split_command(iterations, curve, cutters, *source_pick, tolerance)?,
+        Operation::SurfaceIsocurveGeometry {
+            surface,
+            direction,
+            parameter,
+            ..
+        } => {
+            let source = nurbs_surface_from_definition(surface)?;
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::surface_isocurve(
+                    &source,
+                    direction.geometry(),
+                    black_box(*parameter),
+                )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.isocurve_with_extractor(
+                    direction.geometry(),
+                    black_box(*parameter),
+                    &mut |s, d, p| match d {
+                        SurfaceKnotDirection::U => s.isocurve_u(p),
+                        SurfaceKnotDirection::V => s.isocurve_v(p),
+                        SurfaceKnotDirection::Both => unreachable!(),
+                    },
+                );
+                result.map_err(ProbeError::from)
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::SurfaceTrimGeometry { surface, u, v, .. } => {
             let source = nurbs_surface_from_definition(surface)?;
             let (surface, elapsed) = measure_probe(iterations, || {

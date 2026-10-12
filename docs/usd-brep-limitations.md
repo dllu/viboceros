@@ -8,6 +8,20 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Isocurve extraction copies unclamped boundary rows and rejects full-order
+  fixed-axis breaks.** `N_SrfExtractIsoCrv` at V end `2` on a surface with
+  V degree two, Y control coordinates `[0,1,2,3]` and knots
+  `[-2,-1,0,0.8,2,3,4]` returns Y `3`; the independent de Boor endpoint limit
+  is `28/11`. With V knots `[0,0,0,0.5,0.5,0.5,1,1,1]`, extraction at `0.5`
+  instead returns an error because multiplicity exceeds the degree.
+  The [direct probe](../tools/usd_brep/isocurve_probe.cpp) reproduces both
+  behaviors without relying on the native endpoint evaluator;
+  [retained output](smlib-isocurves-probe.json) records them. The adapter reuses
+  checked one-sided clamping at an unclamped endpoint, and directly selects the
+  exact separated row/column at full-order knots (right limit inside/at start,
+  left limit at the active end). Interior extraction uses the existing producer,
+  with exact span/multiplicity and varying-basis checks. Source:
+  [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
 - **Patch extraction snaps near knots and changes the geometric restriction.**
   `N_SrfExtractPatch` snaps all four boundaries using a fixed `1e-8` parameter
   tolerance, then reparameterizes the output to the originally requested box.
@@ -444,6 +458,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Fixed: isocurve chart conditioning rejected subnormal near-boundary queries.**
+  Planar trimmed-face closest-point and density paths can supply nonzero
+  subnormal parameters or knots next to zero. Scaling a moderate fixed-axis
+  chart downward by its maximum knot then lost those exact values and rejected
+  two ExtractIsocurve hole regressions. The isocurve adapter now chooses a
+  smaller reversible binary scale that includes both knots and the requested
+  parameter. This changes no source coordinates, spans or tolerances. Native
+  subnormal tests and both picked/density hole regressions pass with the repair;
+  arbitrary extreme span/weight ratios remain unqualified. See
+  [native isocurve tests](../crates/viboceros-smlib/tests/isocurves.rs).
 - **Fixed: isocurve Split edges kept local charts in public output.**
   Seven of eight fresh Split command captures differed only in their 3D edge
   domains: our rectangular-face builder intentionally used lossless local

@@ -53,6 +53,9 @@ directional extraction, retaining the complete unselected knot basis.
 [Surface splitting and trimming](smlib-surface-segments.md) reuse that checked
 extractor for isocurve Split, visible-face preparation, separate ExtendSrf output
 and round Pipe caps.
+[Isocurve extraction](smlib-isocurves.md) uses the native tensor producer with
+checked endpoint preparation for ExtractIsocurve, trim-aware face portions,
+Contour boundaries and UV rectangle sizing.
 
 ## Reproduce the native trial
 

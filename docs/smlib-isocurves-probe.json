@@ -1,0 +1,8 @@
+{
+  "expected_endpoint_y": 2.5454545454545454,
+  "unchecked_endpoint_y": 3,
+  "full_order_expected_y": 3,
+  "full_order_native_failed": true,
+  "usd_brep_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "probe": "tools/usd_brep/isocurve_probe.cpp"
+}

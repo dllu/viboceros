@@ -13,12 +13,20 @@ pub(super) fn cut(
         return Ok(result);
     };
     let boundaries = [
-        surface.isocurve_u(*surface.domain_v().start())?,
-        surface.isocurve_v(*surface.domain_u().end())?,
-        surface.isocurve_u(*surface.domain_v().end())?.reversed()?,
-        surface
-            .isocurve_v(*surface.domain_u().start())?
+        surface_segments::isocurve(
+            surface,
+            SurfaceKnotDirection::U,
+            *surface.domain_v().start(),
+        )?,
+        surface_segments::isocurve(surface, SurfaceKnotDirection::V, *surface.domain_u().end())?,
+        surface_segments::isocurve(surface, SurfaceKnotDirection::U, *surface.domain_v().end())?
             .reversed()?,
+        surface_segments::isocurve(
+            surface,
+            SurfaceKnotDirection::V,
+            *surface.domain_u().start(),
+        )?
+        .reversed()?,
     ];
     let iso_curves = bilinear_isocurves(surface, frame)?;
     let planar = surface.plane(tolerance)?.is_some();
@@ -159,7 +167,7 @@ fn matching(
 fn bilinear_isocurves(
     surface: &NurbsSurface,
     frame: Frame3,
-) -> Result<Vec<(NurbsCurve, f64)>, GeometryError> {
+) -> Result<Vec<(NurbsCurve, f64)>, CommandError> {
     if surface.degree_u() != 1
         || surface.degree_v() != 1
         || surface.control_point_count_u() != 2
@@ -209,9 +217,9 @@ fn bilinear_isocurves(
                 context: "Contour isocurve parameter",
             })?;
             let curve = if axis == 0 {
-                surface.isocurve_v(parameter)?
+                surface_segments::isocurve(surface, SurfaceKnotDirection::V, parameter)?
             } else {
-                surface.isocurve_u(parameter)?
+                surface_segments::isocurve(surface, SurfaceKnotDirection::U, parameter)?
             };
             result.push((curve, parameter));
         }

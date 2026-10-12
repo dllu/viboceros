@@ -10,6 +10,8 @@ typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
+int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double parameter,
+                              VbSurfaceData **out,char *error,size_t capacity);
 int vb_nurbs_trim_curve(const VbNurbsData *source,double start,double end,VbSurfaceData **out,
                         char *error,size_t capacity);
 int vb_nurbs_trim_surface_axis(const VbNurbsData *source,int axis,double start,double end,

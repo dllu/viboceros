@@ -14677,6 +14677,30 @@ def _execute(operation, iterations, tolerance):
             for cutter in cutters:
                 cutter.Dispose()
 
+    if kind == "surface_isocurve_geometry":
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("isocurve extraction requires one varying axis")
+        parameter = _finite(operation["parameter"], "surface isocurve parameter")
+        source = _nurbs_surface_from_definition(operation["surface"])
+
+        def extract_surface_isocurve():
+            curve = source.IsoCurve(0 if direction == "u" else 1, parameter)
+            if curve is None:
+                raise ValueError("Rhino surface isocurve extraction failed")
+            try:
+                definition = _nurbs_curve_definition(curve)
+                definition["closed"] = bool(curve.IsClosed)
+                definition["periodic"] = bool(curve.IsPeriodic)
+                return definition
+            finally:
+                curve.Dispose()
+
+        try:
+            return _measure(iterations, extract_surface_isocurve)
+        finally:
+            source.Dispose()
+
     if kind == "surface_trim_geometry":
         source = _nurbs_surface_from_definition(operation["surface"])
         try:

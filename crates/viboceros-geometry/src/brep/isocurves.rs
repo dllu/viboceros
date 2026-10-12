@@ -1,6 +1,7 @@
 //! Trimmed isocurve extraction and display wires in a local UV frame.
 use super::parameter_frame::ParameterFrame;
 use super::*;
+use crate::SurfaceKnotDirection;
 
 #[cfg(test)]
 mod tests;
@@ -54,6 +55,30 @@ impl BrepFace {
         wire_density: i32,
         tolerance: Tolerance,
     ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        self.isocurve_segments_at_density_with_extractors(
+            if varying == 0 {
+                SurfaceKnotDirection::U
+            } else {
+                SurfaceKnotDirection::V
+            },
+            wire_density,
+            tolerance,
+            &mut portable_isocurve,
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Apply density stations and trim/local-domain policies using external
+    /// isocurve and curve-interval producers.
+    pub fn isocurve_segments_at_density_with_extractors<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        wire_density: i32,
+        tolerance: Tolerance,
+        extract: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+        trim: &mut impl FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E>,
+    ) -> Result<Vec<NurbsCurve>, E> {
+        let varying = varying_axis(direction)?;
         let frame = self.local_parameter_frame()?;
         let parameters = if varying == 0 {
             frame.face.surface.wire_parameters_v(wire_density)?
@@ -62,7 +87,9 @@ impl BrepFace {
         };
         let mut curves = Vec::new();
         for fixed in parameters {
-            for curve in frame.isocurve_segments(varying, fixed, true, tolerance)? {
+            for curve in frame
+                .isocurve_segments_with_extractors(varying, fixed, true, tolerance, extract, trim)?
+            {
                 push_brep_wire(&mut curves, curve)?;
             }
         }
@@ -75,6 +102,30 @@ impl BrepFace {
         fixed: Real,
         tolerance: Tolerance,
     ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        self.isocurve_segments_with_extractors(
+            if varying == 0 {
+                SurfaceKnotDirection::U
+            } else {
+                SurfaceKnotDirection::V
+            },
+            fixed,
+            tolerance,
+            &mut portable_isocurve,
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Keep native parameter validation, trim intersections and lossless domain
+    /// restoration while delegating the two NURBS geometry operations.
+    pub fn isocurve_segments_with_extractors<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        fixed: Real,
+        tolerance: Tolerance,
+        extract: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+        trim: &mut impl FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E>,
+    ) -> Result<Vec<NurbsCurve>, E> {
+        let varying = varying_axis(direction)?;
         let domain = if varying == 0 {
             self.surface.domain_v()
         } else {
@@ -83,7 +134,14 @@ impl BrepFace {
         // Errors retain the caller's native coordinate and native domain.
         crate::parameter::checked_parameter(fixed, domain)?;
         let frame = self.local_parameter_frame()?;
-        frame.isocurve_segments(varying, fixed - frame.origin[1 - varying], true, tolerance)
+        frame.isocurve_segments_with_extractors(
+            varying,
+            fixed - frame.origin[1 - varying],
+            true,
+            tolerance,
+            extract,
+            trim,
+        )
     }
 }
 
@@ -95,21 +153,65 @@ impl ParameterFrame<'_> {
         restore_domain: bool,
         tolerance: Tolerance,
     ) -> Result<Vec<NurbsCurve>, GeometryError> {
-        let curve = if varying == 0 {
-            self.face.surface.isocurve_u(fixed)?
+        self.isocurve_segments_with_extractors(
+            varying,
+            fixed,
+            restore_domain,
+            tolerance,
+            &mut portable_isocurve,
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    fn isocurve_segments_with_extractors<E: From<GeometryError>>(
+        &self,
+        varying: usize,
+        fixed: Real,
+        restore_domain: bool,
+        tolerance: Tolerance,
+        extract: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+        trim: &mut impl FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E>,
+    ) -> Result<Vec<NurbsCurve>, E> {
+        let direction = if varying == 0 {
+            SurfaceKnotDirection::U
         } else {
-            self.face.surface.isocurve_v(fixed)?
+            SurfaceKnotDirection::V
         };
+        let curve = self
+            .face
+            .surface
+            .isocurve_with_extractor(direction, fixed, extract)?;
         let intervals = trimmed_isocurve_intervals(&self.face, varying, fixed, tolerance)?;
-        let curves = trim_isocurve_to_intervals(curve, intervals)?;
+        let curves = trim_isocurve_to_intervals_with_extractor(curve, intervals, trim)?;
         if restore_domain {
             curves
                 .into_iter()
-                .map(|curve| self.restore_curve_parameter_origin(curve, varying))
+                .map(|curve| Ok(self.restore_curve_parameter_origin(curve, varying)?))
                 .collect()
         } else {
             Ok(curves)
         }
+    }
+}
+
+fn varying_axis(direction: SurfaceKnotDirection) -> Result<usize, GeometryError> {
+    match direction {
+        SurfaceKnotDirection::U => Ok(0),
+        SurfaceKnotDirection::V => Ok(1),
+        SurfaceKnotDirection::Both => Err(GeometryError::InvalidControlNet {
+            context: "isocurve extraction requires one varying axis",
+        }),
+    }
+}
+fn portable_isocurve(
+    surface: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    fixed: Real,
+) -> Result<NurbsCurve, GeometryError> {
+    match direction {
+        SurfaceKnotDirection::U => surface.isocurve_u(fixed),
+        SurfaceKnotDirection::V => surface.isocurve_v(fixed),
+        SurfaceKnotDirection::Both => unreachable!(),
     }
 }
 

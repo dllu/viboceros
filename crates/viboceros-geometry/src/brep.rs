@@ -8031,6 +8031,16 @@ fn trim_isocurve_to_intervals(
     curve: NurbsCurve,
     intervals: Vec<[Real; 2]>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
+    trim_isocurve_to_intervals_with_extractor(curve, intervals, &mut |curve, interval| {
+        curve.try_trimmed(interval)
+    })
+}
+
+fn trim_isocurve_to_intervals_with_extractor<E: From<GeometryError>>(
+    curve: NurbsCurve,
+    intervals: Vec<[Real; 2]>,
+    trim: &mut impl FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
     let domain = curve.domain();
     intervals
         .into_iter()
@@ -8039,7 +8049,7 @@ fn trim_isocurve_to_intervals(
             if interval[0] == *domain.start() && interval[1] == *domain.end() {
                 Ok(curve.clone())
             } else {
-                curve.try_trimmed(interval[0]..=interval[1])
+                trim(&curve, interval[0]..=interval[1])
             }
         })
         .filter_map(|result| match result {

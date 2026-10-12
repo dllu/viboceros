@@ -2674,6 +2674,53 @@ impl NurbsSurface {
         crate::NurbsCurve::try_new_rational(self.degree_v, controls, self.knots_v.clone())
     }
 
+    /// Delegate an isocurve's control calculation while retaining selected
+    /// parameter validation and the complete varying-axis NURBS definition.
+    pub fn isocurve_with_extractor<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+        extract: &mut impl FnMut(&Self, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+    ) -> Result<NurbsCurve, E> {
+        let (degree, count, knots) = match direction {
+            SurfaceKnotDirection::U => {
+                checked_span(
+                    self.degree_v,
+                    self.control_point_count_v,
+                    &self.knots_v,
+                    parameter,
+                )?;
+                (self.degree_u, self.control_point_count_u, &self.knots_u)
+            }
+            SurfaceKnotDirection::V => {
+                checked_span(
+                    self.degree_u,
+                    self.control_point_count_u,
+                    &self.knots_u,
+                    parameter,
+                )?;
+                (self.degree_v, self.control_point_count_v, &self.knots_v)
+            }
+            SurfaceKnotDirection::Both => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "isocurve extraction requires one varying axis",
+                }
+                .into());
+            }
+        };
+        let curve = extract(self, direction, parameter)?;
+        if curve.degree() != degree
+            || curve.control_points().len() != count
+            || curve.knots() != knots
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "isocurve extraction changed the varying basis",
+            }
+            .into());
+        }
+        Ok(curve)
+    }
+
     /// Splits this tensor surface at a parameter strictly inside its U domain.
     /// Both results preserve V data and source parameter values and are
     /// clamped in U at every active end.

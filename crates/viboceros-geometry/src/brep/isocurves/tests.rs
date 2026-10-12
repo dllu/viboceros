@@ -7,6 +7,65 @@ fn annulus() -> Brep {
 }
 
 #[test]
+fn external_isocurve_and_trim_producers_share_hole_intervals_and_local_domain_restoration() {
+    let source = annulus();
+    for offset in [[0., 0.], [1e12, -2e12]] {
+        let face = translated_face(&source.faces[0], offset);
+        let before = face.clone();
+        let mut iso_calls = 0;
+        let mut trim_calls = 0;
+        let actual = face
+            .isocurve_segments_with_extractors(
+                SurfaceKnotDirection::U,
+                offset[1] + 0.125,
+                Tolerance::DEFAULT,
+                &mut |surface, direction, p| {
+                    iso_calls += 1;
+                    assert_eq!(direction, SurfaceKnotDirection::U);
+                    surface.isocurve_u(p)
+                },
+                &mut |curve, interval| {
+                    trim_calls += 1;
+                    curve.try_trimmed(interval)
+                },
+            )
+            .unwrap();
+        assert_eq!(iso_calls, 1);
+        assert_eq!(trim_calls, 2);
+        assert_eq!(
+            actual,
+            face.isocurve_u_segments(offset[1] + 0.125, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert_eq!(face, before);
+        let invalid = face.isocurve_segments_with_extractors(
+            SurfaceKnotDirection::U,
+            Real::NAN,
+            Tolerance::DEFAULT,
+            &mut |_, _, _| -> Result<_, GeometryError> {
+                panic!("invalid parameter entered isocurve backend")
+            },
+            &mut |_, _| -> Result<_, GeometryError> {
+                panic!("invalid parameter entered trimming backend")
+            },
+        );
+        assert!(invalid.is_err());
+    }
+}
+
+#[test]
+fn external_isocurve_layout_must_retain_the_complete_varying_basis() {
+    let surface = annulus().faces[0].surface.clone();
+    let wrong = surface.isocurve_with_extractor(SurfaceKnotDirection::U, 0.125, &mut |s, _, p| {
+        s.isocurve_u(p)?.try_reparameterized(20.0..=30.0)
+    });
+    assert!(matches!(
+        wrong,
+        Err(GeometryError::InvalidControlNet { .. })
+    ));
+}
+
+#[test]
 fn homogeneous_trimmed_bounds_already_preserve_large_uv_translations() {
     let source = annulus();
     for offset in [[0., 0.], [1e12, -2e12], [-1e12, 2e12]] {

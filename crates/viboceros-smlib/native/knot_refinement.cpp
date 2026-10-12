@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <memory>
+#include <initializer_list>
 #include <stdexcept>
 #include <vector>
 
@@ -17,10 +18,21 @@ void check(NL_FLAG status, const char *message) { require(status == NL_NO, messa
 
 struct BinaryChart {
     int exponent;
-    BinaryChart(const double *knots,size_t count) {
+    BinaryChart(const double *knots,size_t count,std::initializer_list<double> parameters={}) {
         double maximum=0;
         for(size_t i=0;i<count;++i) maximum=std::max(maximum,std::abs(knots[i]));
         std::frexp(maximum,&exponent);
+        if(parameters.size()) {
+            // A valid closest-parameter query can be subnormal beside zero.
+            // Do not force a downward scale that loses that exact coordinate
+            // (or a source knot); retain a smaller reversible binary scale.
+            const auto reversible=[&](double value) {
+                return std::ldexp(std::ldexp(value,-exponent),exponent)==value;
+            };
+            while(exponent>0 &&
+                  (!std::all_of(knots,knots+count,reversible) ||
+                   !std::all_of(parameters.begin(),parameters.end(),reversible))) --exponent;
+        }
     }
     double scaled(double value) const {
         const double result=std::ldexp(value,-exponent);
@@ -678,4 +690,78 @@ VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,doubl
     }
     output.knots[axis]=knots_out.data();output.points_xyzw=controls_out.data();
     return vb_copy_nurbs_payload(output);
+}
+
+VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double parameter) {
+    validate(data);
+    require(data.degree[1]>0 && (varying==0 || varying==1) && std::isfinite(parameter),
+            "Invalid native isocurve request");
+    const int fixed=1-varying;
+    const size_t degree=data.degree[fixed],width=data.count[fixed],count=data.count[varying];
+    const double *knots=data.knots[fixed];
+    const double start=knots[degree],end=knots[width];
+    require(parameter>=start && parameter<=end,"Native isocurve parameter outside active domain");
+    const size_t multiplicity=std::count(knots,knots+data.knot_count[fixed],parameter);
+    VbNurbsData output={{data.degree[varying],0},{count,1},
+        {data.knot_count[varying],0},{data.knots[varying],nullptr},nullptr};
+    if(multiplicity==degree+1) {
+        // Full-order knots isolate a control row exactly. Interior/start
+        // queries use the right limit; the active end uses its left limit.
+        const size_t first=std::lower_bound(knots,knots+data.knot_count[fixed],parameter)-knots;
+        require(parameter!=end || first>0,"Invalid full-order endpoint group");
+        const size_t row=parameter==end?first-1:first;
+        require(row<width,"Invalid full-order isocurve control row");
+        std::vector<double> points(4*count);
+        for(size_t i=0;i<count;++i) {
+            const size_t source=varying==0?row*count+i:i*width+row;
+            std::copy_n(data.points_xyzw+4*source,4,points.data()+4*i);
+        }
+        output.points_xyzw=points.data();
+        return vb_copy_nurbs_payload(output);
+    }
+    if(parameter==start || parameter==end) {
+        // Native boundary extraction assumes clamped padding. Reuse checked
+        // one-sided endpoint preparation, including reverse/start/end repair.
+        std::unique_ptr<VbSurfaceData,decltype(&vb_surface_data_free)> prepared(
+            vb_refine_nurbs(data,fixed,parameter,degree+1),vb_surface_data_free);
+        VbNurbsData view;
+        require(vb_surface_data_view(prepared.get(),&view)==0,"Read clamped isocurve source failed");
+        return vb_surface_isocurve(view,varying,parameter);
+    }
+    const BinaryChart chart(knots,data.knot_count[fixed],{parameter});
+    std::vector<double> basis(knots,knots+data.knot_count[fixed]);
+    chart.scale(basis);
+    std::vector<NL_CPOINT> points;
+    std::array<double,3> origin;
+    const int exponent=conditioned_controls(data,points,origin);
+    std::vector<NL_CPOINT> transposed(points.size());
+    std::vector<NL_CPOINT *> rows(data.count[0]);
+    for(size_t u=0;u<data.count[0];++u) {
+        rows[u]=transposed.data()+u*data.count[1];
+        for(size_t v=0;v<data.count[1];++v) rows[u][v]=points[v*data.count[0]+u];
+    }
+    VbNurbsData query=data;query.knots[fixed]=basis.data();
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_SURFACE surface;
+    NL_CURVE curve;
+    N_SrfInitArrays(&surface);N_CrvInitArrays(&curve);
+    check(N_SrfFromCPtsAndKnots(&surface,rows.data(),data.count[0]-1,data.count[1]-1,
+        data.degree[0],data.degree[1],const_cast<double *>(query.knots[0]),const_cast<double *>(query.knots[1]),
+        data.knot_count[0]-1,data.knot_count[1]-1,&stack),"Build native isocurve surface failed");
+    NL_INDEX span,mult;
+    const auto *fixed_basis=fixed==0?surface.knu:surface.knv;
+    const double query_parameter=chart.scaled(parameter);
+    check(N_BasisFindSpanAndMult(const_cast<NL_KNOTVECTOR *>(fixed_basis),degree,query_parameter,NL_LEFT,&span,&mult),
+          "Locate native isocurve span failed");
+    require(span==static_cast<NL_INDEX>(std::upper_bound(basis.begin(),basis.end(),query_parameter)-basis.begin()-1)
+            && mult==static_cast<NL_INDEX>(multiplicity),"Native isocurve span differs from the exact source chart");
+    check(N_SrfExtractIsoCrv(&surface,chart.scaled(parameter),varying==0?NL_UDIR:NL_VDIR,&curve,&stack),
+          "Extract native surface isocurve failed");
+    require(curve.p==static_cast<NL_DEGREE>(output.degree[0]) && curve.pol->n+1==static_cast<NL_INDEX>(count)
+        && curve.knt->m+1==static_cast<NL_INDEX>(output.knot_count[0])
+        && std::equal(output.knots[0],output.knots[0]+output.knot_count[0],curve.knt->U),
+        "Native isocurve changed the varying basis");
+    points.assign(curve.pol->Pw,curve.pol->Pw+count);
+    return snapshot(output,points,exponent,origin);
 }

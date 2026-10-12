@@ -161,13 +161,27 @@ fn append_surface_isocurves_at(
         direction,
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
-        append_extractable_isocurves(curves, [surface.isocurve_u(v)?])?;
+        append_extractable_isocurves(
+            curves,
+            [surface_segments::isocurve(
+                surface,
+                SurfaceKnotDirection::U,
+                v,
+            )?],
+        )?;
     }
     if matches!(
         direction,
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
-        append_extractable_isocurves(curves, [surface.isocurve_v(u)?])?;
+        append_extractable_isocurves(
+            curves,
+            [surface_segments::isocurve(
+                surface,
+                SurfaceKnotDirection::V,
+                u,
+            )?],
+        )?;
     }
     Ok(())
 }
@@ -186,9 +200,25 @@ fn append_face_isocurves_at(
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
         if ignore_trims {
-            append_extractable_isocurves(curves, [face.surface().isocurve_u(v)?])?;
+            append_extractable_isocurves(
+                curves,
+                [surface_segments::isocurve(
+                    face.surface(),
+                    SurfaceKnotDirection::U,
+                    v,
+                )?],
+            )?;
         } else {
-            append_extractable_isocurves(curves, face.isocurve_u_segments(v, tolerance)?)?;
+            append_extractable_isocurves(
+                curves,
+                face.isocurve_segments_with_extractors(
+                    SurfaceKnotDirection::U,
+                    v,
+                    tolerance,
+                    &mut surface_segments::isocurve,
+                    &mut curve_segments::trim,
+                )?,
+            )?;
         }
     }
     if matches!(
@@ -196,9 +226,25 @@ fn append_face_isocurves_at(
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
         if ignore_trims {
-            append_extractable_isocurves(curves, [face.surface().isocurve_v(u)?])?;
+            append_extractable_isocurves(
+                curves,
+                [surface_segments::isocurve(
+                    face.surface(),
+                    SurfaceKnotDirection::V,
+                    u,
+                )?],
+            )?;
         } else {
-            append_extractable_isocurves(curves, face.isocurve_v_segments(u, tolerance)?)?;
+            append_extractable_isocurves(
+                curves,
+                face.isocurve_segments_with_extractors(
+                    SurfaceKnotDirection::V,
+                    u,
+                    tolerance,
+                    &mut surface_segments::isocurve,
+                    &mut curve_segments::trim,
+                )?,
+            )?;
         }
     }
     Ok(())
@@ -214,13 +260,27 @@ fn append_all_surface_isocurves(
         direction,
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
-        append_extractable_isocurves(curves, surface.isocurves_u_at_density(wire_density)?)?;
+        append_extractable_isocurves(
+            curves,
+            surface.isocurves_at_density_with_extractor(
+                SurfaceKnotDirection::U,
+                wire_density,
+                &mut surface_segments::isocurve,
+            )?,
+        )?;
     }
     if matches!(
         direction,
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
-        append_extractable_isocurves(curves, surface.isocurves_v_at_density(wire_density)?)?;
+        append_extractable_isocurves(
+            curves,
+            surface.isocurves_at_density_with_extractor(
+                SurfaceKnotDirection::V,
+                wire_density,
+                &mut surface_segments::isocurve,
+            )?,
+        )?;
     }
     Ok(())
 }
@@ -242,7 +302,13 @@ fn append_all_face_isocurves(
     ) {
         append_extractable_isocurves(
             curves,
-            face.isocurve_u_segments_at_density(wire_density, tolerance)?,
+            face.isocurve_segments_at_density_with_extractors(
+                SurfaceKnotDirection::U,
+                wire_density,
+                tolerance,
+                &mut surface_segments::isocurve,
+                &mut curve_segments::trim,
+            )?,
         )?;
     }
     if matches!(
@@ -251,7 +317,13 @@ fn append_all_face_isocurves(
     ) {
         append_extractable_isocurves(
             curves,
-            face.isocurve_v_segments_at_density(wire_density, tolerance)?,
+            face.isocurve_segments_at_density_with_extractors(
+                SurfaceKnotDirection::V,
+                wire_density,
+                tolerance,
+                &mut surface_segments::isocurve,
+                &mut curve_segments::trim,
+            )?,
         )?;
     }
     Ok(())

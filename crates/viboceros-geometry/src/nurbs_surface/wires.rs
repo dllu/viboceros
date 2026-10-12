@@ -88,20 +88,44 @@ impl NurbsSurface {
         varying: usize,
         wire_density: i32,
     ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        self.isocurves_at_density_with_extractor(
+            if varying == 0 {
+                SurfaceKnotDirection::U
+            } else {
+                SurfaceKnotDirection::V
+            },
+            wire_density,
+            &mut |surface, direction, fixed| match direction {
+                SurfaceKnotDirection::U => surface.isocurve_u(fixed),
+                SurfaceKnotDirection::V => surface.isocurve_v(fixed),
+                SurfaceKnotDirection::Both => unreachable!(),
+            },
+        )
+    }
+
+    /// Keep density stations, local charts and extent/resource filtering while
+    /// delegating control calculation to an external isocurve producer.
+    pub fn isocurves_at_density_with_extractor<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        wire_density: i32,
+        extract: &mut impl FnMut(&Self, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+    ) -> Result<Vec<NurbsCurve>, E> {
         let frame = self.local_parameter_frame(std::iter::empty())?;
         let surface = &frame.surface;
-        let parameters = if varying == 0 {
-            surface.wire_parameters_v(wire_density)?
-        } else {
-            surface.wire_parameters_u(wire_density)?
+        let parameters = match direction {
+            SurfaceKnotDirection::U => surface.wire_parameters_v(wire_density)?,
+            SurfaceKnotDirection::V => surface.wire_parameters_u(wire_density)?,
+            SurfaceKnotDirection::Both => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "isocurve extraction requires one varying axis",
+                }
+                .into());
+            }
         };
         let mut curves = Vec::new();
         for fixed in parameters {
-            let curve = if varying == 0 {
-                surface.isocurve_u(fixed)?
-            } else {
-                surface.isocurve_v(fixed)?
-            };
+            let curve = surface.isocurve_with_extractor(direction, fixed, extract)?;
             push_surface_wire(&mut curves, curve)?;
         }
         Ok(curves)

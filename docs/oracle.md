@@ -7,6 +7,9 @@ and increasing `u` and `v` intervals. It compares direct Rhino SDK rectangular
 trimming against the selected portable or usd-brep backend, including complete
 surface definitions. See [surface extraction qualification](smlib-surface-segments.md)
 for the retained whole-domain padding discrepancy and command captures.
+The `surface_isocurve_geometry` operation accepts a complete `surface`, a single
+varying `direction` (`u` or `v`) and a fixed `parameter`. Its native producer and
+current SDK-capture status are described in [isocurve qualification](smlib-isocurves.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

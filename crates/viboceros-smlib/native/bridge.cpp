@@ -320,6 +320,15 @@ extern "C" int vb_nurbs_trim_surface_axis(const VbNurbsData *source,int axis,dou
     });
 }
 
+extern "C" int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double parameter,
+                                         VbSurfaceData **out,char *error,size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out,"Missing isocurve payload");
+        *out=vb_surface_isocurve(*source,varying,parameter);
+    });
+}
+
 extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree,
                                        int deformable, const double *knots, size_t knot_count,
                                        VbSurfaceData **out, char *error, size_t capacity) {

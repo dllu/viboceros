@@ -2,6 +2,30 @@
 use super::*;
 use std::ops::RangeInclusive;
 
+pub(super) fn isocurve(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: Real,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::surface_isocurve(source, direction, parameter)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(source.isocurve_with_extractor(
+            direction,
+            parameter,
+            &mut |surface, direction, fixed| match direction {
+                SurfaceKnotDirection::U => surface.isocurve_u(fixed),
+                SurfaceKnotDirection::V => surface.isocurve_v(fixed),
+                SurfaceKnotDirection::Both => unreachable!(),
+            },
+        )?)
+    }
+}
+
 pub(super) fn trimmed_direction(
     source: &NurbsSurface,
     direction: SurfaceKnotDirection,
