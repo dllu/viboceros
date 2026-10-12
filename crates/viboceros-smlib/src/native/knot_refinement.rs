@@ -3,6 +3,15 @@ use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
 unsafe extern "C" {
+    fn vb_nurbs_bezier(
+        source: *const brep::NurbsData,
+        direction: c_int,
+        out: *mut *mut brep::NativeSurfaceData,
+        count: usize,
+        control_error: *mut c_int,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_fit_basis(
         source: *const brep::NurbsData,
         axis: c_int,
@@ -32,6 +41,79 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+fn decompose(
+    input: NurbsInput<'_>,
+    direction: c_int,
+    count: usize,
+    output_controls: usize,
+) -> Result<Vec<*mut brep::NativeSurfaceData>, Error> {
+    if output_controls > viboceros_geometry::MAX_BEZIER_CONTROL_POINTS {
+        return Err(GeometryError::BezierDecompositionLimit.into());
+    }
+    let view = input.view();
+    let mut pointers = vec![std::ptr::null_mut(); count];
+    let mut control_error = 0;
+    let result = call(|error, capacity| unsafe {
+        vb_nurbs_bezier(
+            &view,
+            direction,
+            pointers.as_mut_ptr(),
+            count,
+            &mut control_error,
+            error,
+            capacity,
+        )
+    });
+    if control_error != 0 {
+        return Err(GeometryError::UnrepresentableBezierControl.into());
+    }
+    result?;
+    Ok(pointers)
+}
+
+/// Extract exact clamped Bezier curves with the original active span domains.
+pub fn curve_bezier_spans(source: &NurbsCurve) -> Result<Vec<NurbsCurve>, Error> {
+    let count = source.spans().count();
+    let controls = count.saturating_mul(source.degree().saturating_add(1));
+    brep::curves_from_native_batch(decompose(NurbsInput::curve(source), 0, count, controls)?)
+}
+
+/// Extract single-axis strips or U-outer/V-inner tensor Bezier patches.
+/// The unselected direction retains its complete source basis.
+pub fn surface_single_span_patches(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+) -> Result<Vec<NurbsSurface>, Error> {
+    let u = direction != SurfaceKnotDirection::V;
+    let v = direction != SurfaceKnotDirection::U;
+    let count = (if u { source.spans_u().count() } else { 1 }).saturating_mul(if v {
+        source.spans_v().count()
+    } else {
+        1
+    });
+    let controls = count
+        .saturating_mul(if u {
+            source.degree_u().saturating_add(1)
+        } else {
+            source.control_point_count_u()
+        })
+        .saturating_mul(if v {
+            source.degree_v().saturating_add(1)
+        } else {
+            source.control_point_count_v()
+        });
+    brep::surfaces_from_native_batch(decompose(
+        NurbsInput::surface(source),
+        match direction {
+            SurfaceKnotDirection::U => 0,
+            SurfaceKnotDirection::V => 1,
+            SurfaceKnotDirection::Both => 2,
+        },
+        count,
+        controls,
+    )?)
 }
 
 fn clamp_curve(source: &NurbsCurve) -> Result<NurbsCurve, Error> {

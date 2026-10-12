@@ -2,7 +2,9 @@
 #include <SmNurbsCrv.h>
 #include <nurbs.h>
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -50,6 +52,23 @@ void reverse_surface(NL_SURFACE &source, NL_FLAG direction, NL_SURFACE &result, 
     const auto *before = direction == NL_UDIR ? source.knu : source.knv;
     auto *after = direction == NL_UDIR ? result.knu : result.knv;
     for (NL_INDEX i=0; i<=before->m; ++i) after->U[i] = -before->U[before->m-i];
+}
+
+void clamp_curve_endpoint(NL_CURVE &input,bool end,NL_CURVE &result,NL_STACKS &stack) {
+    NL_CURVE left,right;
+    N_CrvInitArrays(&left);N_CrvInitArrays(&right);
+    if(end) {
+        NL_CURVE reversed;
+        N_CrvInitArrays(&reversed);
+        reverse_curve(input,reversed,stack);
+        check(N_CrvSplit(&reversed,reversed.knt->U[reversed.p],&left,&right,&stack),
+              "Clamp reversed native endpoint failed");
+        reverse_curve(right,result,stack);
+    } else {
+        check(N_CrvSplit(&input,input.knt->U[input.p],&left,&right,&stack),
+              "Clamp native curve endpoint failed");
+        result=right;
+    }
 }
 
 void edit_curve_basis(NL_CURVE &source, NL_CURVE &result, size_t target, bool exact_elevation,
@@ -123,7 +142,8 @@ void validate(const VbNurbsData &data) {
 }
 
 int controls(const VbNurbsData &, std::vector<NL_CPOINT> &);
-VbSurfaceData *snapshot(VbNurbsData, const std::vector<NL_CPOINT> &, int);
+VbSurfaceData *snapshot(VbNurbsData, const std::vector<NL_CPOINT> &, int,
+                        const std::array<double,3> &origin={0,0,0});
 
 VbSurfaceData *basis_nurbs(const VbNurbsData &data, int axis, size_t target,
                               bool exact_elevation, const double *target_knots, size_t knot_count) {
@@ -195,13 +215,17 @@ int controls(const VbNurbsData &data, std::vector<NL_CPOINT> &points) {
     return exponent;
 }
 
-VbSurfaceData *snapshot(VbNurbsData data, const std::vector<NL_CPOINT> &points, int exponent) {
+VbSurfaceData *snapshot(VbNurbsData data, const std::vector<NL_CPOINT> &points, int exponent,
+                        const std::array<double,3> &origin) {
     std::vector<double> euclidean;
     euclidean.reserve(points.size()*4);
     for (const auto &p : points) {
-        require(p.w != 0 && std::isfinite(p.w), "Native refinement has no finite Euclidean control");
-        const double values[4] = {p.x/p.w, p.y/p.w, p.z/p.w, std::ldexp(p.w, exponent)};
-        for (double value : values) require(std::isfinite(value), "Native refinement control exceeds finite range");
+        if(p.w==0 || !std::isfinite(p.w))
+            throw VbUnrepresentableNurbsControl("Native refinement has no finite Euclidean control");
+        const double values[4] = {p.x/p.w+origin[0], p.y/p.w+origin[1], p.z/p.w+origin[2], std::ldexp(p.w, exponent)};
+        for (double value : values) if(!std::isfinite(value))
+            throw VbUnrepresentableNurbsControl("Native refinement control exceeds finite range");
+        if(values[3]==0) throw VbUnrepresentableNurbsControl("Native refinement control weight underflows");
         euclidean.insert(euclidean.end(), values, values + 4);
     }
     data.points_xyzw = euclidean.data();
@@ -265,22 +289,9 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
         check(N_CrvFromCPtsAndKnots(&input, points.data(), count-1, degree,
               const_cast<double *>(knots), data.knot_count[0]-1, &stack), "Build native refinement curve failed");
         if (clamp_start || clamp_end) {
-            NL_CURVE left, right;
-            N_CrvInitArrays(&left); N_CrvInitArrays(&right);
-            if (clamp_end) {
-                // The NL_LEFT span/multiplicity query assumes a clamped end
-                // and can corrupt split buffers for an unclamped active end.
-                // Reverse with the existing native operation and clamp its start.
-                NL_CURVE reversed;
-                N_CrvInitArrays(&reversed);
-                reverse_curve(input, reversed, stack);
-                const double at = reversed.knt->U[reversed.p];
-                check(N_CrvSplit(&reversed, at, &left, &right, &stack), "Clamp reversed native endpoint failed");
-                reverse_curve(right, refined, stack);
-            } else {
-                check(N_CrvSplit(&input, parameter, &left, &right, &stack), "Clamp native curve endpoint failed");
-                refined = right;
-            }
+            // End splitting uses reverse/start-clamp/reverse to avoid the
+            // upstream unclamped active-end span/multiplicity buffer bug.
+            clamp_curve_endpoint(input,clamp_end,refined,stack);
         } else {
             std::vector<double> added(target-current, parameter);
             NL_KNOTVECTOR additions = {static_cast<NL_INDEX>(added.size()-1), added.data()};
@@ -360,4 +371,182 @@ VbSurfaceData *vb_fit_nurbs(const VbNurbsData &source, int axis,
                           const double *knots, size_t knot_count) {
     require(axis>=0 && axis<=1,"Invalid basis-fitting direction");
     return basis_nurbs(source,axis,source.degree[axis],false,knots,knot_count);
+}
+
+namespace {
+struct ControlNet {
+    std::array<size_t,2> degree,count;
+    std::array<std::vector<double>,2> knots;
+    std::vector<NL_CPOINT> points;
+};
+
+std::vector<ControlNet> decompose_axis(const ControlNet &source,int axis) {
+    const size_t degree=source.degree[axis],width=source.count[axis],other=source.count[1-axis];
+    const auto &knots=source.knots[axis];
+    std::vector<std::array<double,2>> intervals;
+    for(size_t i=degree;i<width;++i) if(knots[i]<knots[i+1]) intervals.push_back({knots[i],knots[i+1]});
+    require(!intervals.empty() && intervals.size()<=limit/((degree+1)*other),
+            "Bezier decomposition output resource limit");
+    const BinaryChart chart(knots.data(),knots.size());
+    std::vector<double> basis=knots;
+    chart.scale(basis);
+    const double start=basis[degree],end=basis[width];
+    // Full-order endpoint groups can have inactive prefix/suffix controls.
+    // Trim those exact entries before calling the native splitter.
+    const size_t start_first=std::lower_bound(basis.begin(),basis.end(),start)-basis.begin();
+    const size_t start_mult=std::count(basis.begin(),basis.end(),start);
+    const size_t end_first=std::lower_bound(basis.begin(),basis.end(),end)-basis.begin();
+    const size_t end_mult=std::count(basis.begin(),basis.end(),end);
+    const size_t prefix=start_mult==degree+1?start_first:0;
+    const size_t suffix=end_mult==degree+1?width-end_first:0;
+    require(prefix+suffix<width-degree,"Invalid Bezier active controls");
+    const size_t active_width=width-prefix-suffix;
+    basis=std::vector<double>(basis.begin()+prefix,basis.end()-suffix);
+    std::vector<ControlNet> results(intervals.size());
+    for(size_t span=0;span<results.size();++span) {
+        auto &net=results[span];
+        net.degree=source.degree;net.count=source.count;net.count[axis]=degree+1;
+        net.knots=source.knots;
+        net.knots[axis].assign(degree+1,intervals[span][0]);
+        net.knots[axis].insert(net.knots[axis].end(),degree+1,intervals[span][1]);
+        net.points.resize(net.count[0]*net.count[1]);
+    }
+    for(size_t row=0;row<other;++row) {
+        NL_STACKS stack;
+        SmStackHandler cleanup(&stack);
+        std::vector<NL_CPOINT> controls(active_width);
+        for(size_t i=0;i<active_width;++i) {
+            const size_t index=i+prefix;
+            controls[i]=source.points[axis==0?row*width+index:index*source.count[0]+row];
+        }
+        NL_CURVE curve;
+        N_CrvInitArrays(&curve);
+        check(N_CrvFromCPtsAndKnots(&curve,controls.data(),active_width-1,degree,
+              basis.data(),basis.size()-1,&stack),"Build native Bezier control curve failed");
+        for(bool at_end:{false,true}) {
+            const auto *u=curve.knt->U;
+            const size_t count=curve.pol->n+1;
+            const double endpoint=u[at_end?count:degree];
+            const auto *first=u+(at_end?count:0);
+            if(std::all_of(first,first+degree+1,[endpoint](double value){return value==endpoint;})) continue;
+            NL_CURVE clamped;
+            N_CrvInitArrays(&clamped);
+            clamp_curve_endpoint(curve,at_end,clamped,stack);
+            curve=clamped;
+        }
+        NL_CURVE **pieces=nullptr;
+        NL_INDEX last=-1;
+        check(N_CrvDecomposeBez(&curve,&pieces,&last,&stack),"Decompose native Bezier curve failed");
+        require(last>=0 && static_cast<size_t>(last+1)==intervals.size(),"Native Bezier span count differs");
+        for(size_t span=0;span<results.size();++span) {
+            const auto &piece=*pieces[span];
+            require(piece.p==static_cast<NL_DEGREE>(degree) && piece.pol->n==static_cast<NL_INDEX>(degree)
+                    && piece.knt->m==static_cast<NL_INDEX>(2*degree+1),"Native Bezier layout differs");
+            for(size_t i=0;i<2*degree+2;++i)
+                require(piece.knt->U[i]==chart.scaled(intervals[span][i<=degree?0:1]),
+                        "Native Bezier interval differs");
+            auto &net=results[span];
+            for(size_t i=0;i<=degree;++i)
+                net.points[axis==0?row*(degree+1)+i:i*net.count[0]+row]=piece.pol->Pw[i];
+        }
+    }
+    return results;
+}
+}
+
+void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **output,size_t count) {
+    validate(data);
+    require(direction>=0 && direction<=2 && (data.degree[1] || direction==0),
+            "Invalid Bezier decomposition direction");
+    const size_t width=direction==1?data.count[0]:data.degree[0]+1;
+    const size_t height=direction==0?data.count[1]:data.degree[1]+1;
+    require(count && width<=limit/height && count<=limit/(width*height),
+            "Bezier decomposition aggregate resource limit");
+    using Owner=std::unique_ptr<VbSurfaceData,decltype(&vb_surface_data_free)>;
+    if(data.degree[1] && direction!=2) {
+        // Independent control lines can have vastly different common gauges.
+        // Decompose each through the same curve producer and retain its exact
+        // gauge when assembling strips; the unselected axis is never fitted.
+        const size_t axis=direction,other=data.count[1-axis];
+        std::vector<std::vector<double>> points(count,std::vector<double>(width*height*4));
+        std::vector<std::array<double,2>> intervals;
+        for(size_t i=data.degree[axis];i<data.count[axis];++i)
+            if(data.knots[axis][i]<data.knots[axis][i+1])
+                intervals.push_back({data.knots[axis][i],data.knots[axis][i+1]});
+        require(intervals.size()==count,"Native strip count differs");
+        for(size_t row=0;row<other;++row) {
+            std::vector<double> controls(data.count[axis]*4);
+            for(size_t i=0;i<data.count[axis];++i)
+                std::copy_n(data.points_xyzw+4*(axis==0?row*data.count[0]+i:i*data.count[0]+row),
+                            4,controls.data()+4*i);
+            VbNurbsData curve={};
+            curve.degree[0]=data.degree[axis];curve.count[0]=data.count[axis];curve.count[1]=1;
+            curve.knots[0]=data.knots[axis];curve.knot_count[0]=data.knot_count[axis];
+            curve.points_xyzw=controls.data();
+            std::vector<VbSurfaceData *> raw(count,nullptr);
+            std::vector<Owner> owners;owners.reserve(count);
+            vb_bezier_nurbs(curve,0,raw.data(),count);
+            for(auto *pointer:raw) owners.emplace_back(pointer,&vb_surface_data_free);
+            for(size_t span=0;span<count;++span) {
+                VbNurbsData view;
+                require(vb_surface_data_view(owners[span].get(),&view)==0,"Invalid native Bezier snapshot");
+                for(size_t i=0;i<=data.degree[axis];++i)
+                    std::copy_n(view.points_xyzw+4*i,4,
+                                points[span].data()+4*(axis==0?row*width+i:i*width+row));
+            }
+        }
+        std::vector<Owner> snapshots;snapshots.reserve(count);
+        for(size_t span=0;span<count;++span) {
+            VbNurbsData view=data;view.count[0]=width;view.count[1]=height;
+            std::vector<double> basis(data.degree[axis]+1,intervals[span][0]);
+            basis.insert(basis.end(),data.degree[axis]+1,intervals[span][1]);
+            view.knots[axis]=basis.data();view.knot_count[axis]=basis.size();
+            view.points_xyzw=points[span].data();
+            snapshots.emplace_back(vb_copy_nurbs_payload(view),&vb_surface_data_free);
+        }
+        for(size_t i=0;i<count;++i) output[i]=snapshots[i].release();
+        return;
+    }
+    ControlNet source;
+    for(size_t axis=0;axis<2;++axis) {
+        source.degree[axis]=data.degree[axis];source.count[axis]=data.count[axis];
+        if(data.knot_count[axis]) source.knots[axis].assign(data.knots[axis],data.knots[axis]+data.knot_count[axis]);
+    }
+    // Exterior controls with support ending at the active start must not
+    // choose the coordinate origin: their positions can be arbitrarily far
+    // from the complete active image.
+    std::array<size_t,2> leading={0,0};
+    for(size_t axis=0;axis<2;++axis) if(data.degree[axis])
+        leading[axis]=std::upper_bound(data.knots[axis],data.knots[axis]+data.knot_count[axis],
+                       data.knots[axis][data.degree[axis]])-data.knots[axis]-data.degree[axis]-1;
+    const auto *anchor=data.points_xyzw+4*(leading[1]*data.count[0]+leading[0]);
+    std::array<double,3> origin={anchor[0],anchor[1],anchor[2]};
+    for(size_t i=0;i<data.count[0]*data.count[1];++i) for(size_t d=0;d<3;++d) {
+        const double coordinate=data.points_xyzw[4*i+d],local=coordinate-origin[d];
+        if(!std::isfinite(local) || local+origin[d]!=coordinate) origin[d]=0;
+    }
+    std::vector<double> local(data.points_xyzw,data.points_xyzw+4*data.count[0]*data.count[1]);
+    for(size_t i=0;i<local.size()/4;++i) for(size_t d=0;d<3;++d) local[4*i+d]-=origin[d];
+    VbNurbsData query=data;query.points_xyzw=local.data();
+    const int exponent=controls(query,source.points);
+    auto first=decompose_axis(source,direction==1?1:0);
+    std::vector<Owner> snapshots;snapshots.reserve(count);
+    auto save=[&](const ControlNet &net) {
+        require(snapshots.size()<count,"Native Bezier output count exceeds capacity");
+        VbNurbsData view=data;
+        for(size_t axis=0;axis<2;++axis) {
+            view.count[axis]=net.count[axis];view.knots[axis]=net.knots[axis].data();
+            view.knot_count[axis]=net.knots[axis].size();
+        }
+        snapshots.emplace_back(snapshot(view,net.points,exponent,origin),&vb_surface_data_free);
+    };
+    // Keep all intermediate controls homogeneous. In particular an intermediate
+    // zero weight need not produce a final control at infinity.
+    for(const auto &strip:first) {
+        if(direction==2) {
+            for(const auto &patch:decompose_axis(strip,1)) save(patch);
+        } else save(strip);
+    }
+    require(snapshots.size()==count,"Native Bezier output count differs");
+    for(size_t i=0;i<count;++i) output[i]=snapshots[i].release();
 }

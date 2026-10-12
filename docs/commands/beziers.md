@@ -51,6 +51,10 @@ selection, but keeps preselection. See [object-selection controls](../object-sel
 
 ## Geometry and limits
 
+Linux `native-smlib` builds use [usd-brep's existing decomposition
+producer](../smlib-bezier.md), including checked native endpoint extraction.
+The following portable geometry API remains available for other builds and bounds.
+
 The geometry crate's `NurbsCurve::try_bezier_spans` and
 `NurbsSurface::try_bezier_patches` retain original span domains; unit-domain
 reparameterization belongs to the command layer. Local homogeneous blossoming is

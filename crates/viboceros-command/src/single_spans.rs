@@ -152,7 +152,7 @@ impl ConvertToSingleSpansCommand {
             if count == 1 {
                 continue;
             }
-            for patch in surface.try_single_span_patches(options.direction)? {
+            for patch in bezier::single_span_pieces(surface, options.direction)? {
                 controls = controls.saturating_add(patch.control_points().len());
                 if controls > MAX_BEZIER_CONTROL_POINTS {
                     return Err(GeometryError::BezierDecompositionLimit.into());

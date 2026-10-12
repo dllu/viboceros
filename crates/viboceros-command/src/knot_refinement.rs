@@ -2,7 +2,7 @@
 use super::*;
 
 #[cfg(feature = "native-smlib")]
-fn removal_error(error: viboceros_smlib::Error) -> CommandError {
+pub(super) fn native_geometry_error(error: viboceros_smlib::Error) -> CommandError {
     match error {
         viboceros_smlib::Error::Geometry(error) => error.into(),
         error => error.into(),
@@ -16,7 +16,7 @@ pub(super) fn remove_multiple_curve(
 ) -> Result<(NurbsCurve, usize), CommandError> {
     #[cfg(feature = "native-smlib")]
     let result = viboceros_smlib::remove_curve_multiple_knots(source, fully, angle)
-        .map_err(removal_error)?;
+        .map_err(native_geometry_error)?;
     #[cfg(not(feature = "native-smlib"))]
     let result = source.try_remove_multiple_knots(fully, angle)?;
     Ok(result)
@@ -30,7 +30,7 @@ pub(super) fn remove_multiple_surface(
 ) -> Result<(NurbsSurface, usize), CommandError> {
     #[cfg(feature = "native-smlib")]
     let result = viboceros_smlib::remove_surface_multiple_knots(source, direction, fully, angle)
-        .map_err(removal_error)?;
+        .map_err(native_geometry_error)?;
     #[cfg(not(feature = "native-smlib"))]
     let result = source.try_remove_multiple_knots(direction, fully, angle)?;
     Ok(result)
@@ -41,7 +41,8 @@ pub(super) fn remove_curve(
     parameter: Real,
 ) -> Result<NurbsCurve, CommandError> {
     #[cfg(feature = "native-smlib")]
-    let result = viboceros_smlib::remove_curve_knot(source, parameter).map_err(removal_error)?;
+    let result =
+        viboceros_smlib::remove_curve_knot(source, parameter).map_err(native_geometry_error)?;
     #[cfg(not(feature = "native-smlib"))]
     let result = source.try_remove_knot_near(parameter)?;
     Ok(result)
@@ -54,7 +55,7 @@ pub(super) fn remove_surface(
 ) -> Result<NurbsSurface, CommandError> {
     #[cfg(feature = "native-smlib")]
     let result = viboceros_smlib::remove_surface_knot(source, direction, parameter)
-        .map_err(removal_error)?;
+        .map_err(native_geometry_error)?;
     #[cfg(not(feature = "native-smlib"))]
     let result = match direction {
         SurfaceKnotDirection::U => source.try_remove_knot_u_near(parameter)?,

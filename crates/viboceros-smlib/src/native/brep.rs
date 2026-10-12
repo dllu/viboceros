@@ -48,6 +48,38 @@ pub(super) fn curve_from_native(pointer: *mut NativeSurfaceData) -> Result<Nurbs
     unsafe { view.assume_init() }.curve(&owner)
 }
 
+fn decode_batch<T>(
+    pointers: Vec<*mut NativeSurfaceData>,
+    decode: fn(*mut NativeSurfaceData) -> Result<T, Error>,
+) -> Result<Vec<T>, Error> {
+    struct Batch(Vec<*mut NativeSurfaceData>);
+    impl Drop for Batch {
+        fn drop(&mut self) {
+            for pointer in &self.0 {
+                unsafe { vb_surface_data_free(*pointer) };
+            }
+        }
+    }
+    let mut batch = Batch(pointers);
+    batch
+        .0
+        .iter_mut()
+        .map(|pointer| decode(std::mem::replace(pointer, std::ptr::null_mut())))
+        .collect()
+}
+
+pub(super) fn curves_from_native_batch(
+    pointers: Vec<*mut NativeSurfaceData>,
+) -> Result<Vec<NurbsCurve>, Error> {
+    decode_batch(pointers, curve_from_native)
+}
+
+pub(super) fn surfaces_from_native_batch(
+    pointers: Vec<*mut NativeSurfaceData>,
+) -> Result<Vec<NurbsSurface>, Error> {
+    decode_batch(pointers, surface_from_native)
+}
+
 #[cfg(test)]
 mod plan_tests {
     use super::*;

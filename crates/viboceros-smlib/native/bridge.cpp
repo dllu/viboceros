@@ -321,6 +321,17 @@ extern "C" int vb_nurbs_fit_basis(const VbNurbsData *source, int axis, const dou
     });
 }
 
+extern "C" int vb_nurbs_bezier(const VbNurbsData *source,int direction,VbSurfaceData **out,
+                                size_t count,int *control_error,char *error,size_t capacity) {
+    if(control_error) *control_error=0;
+    return guarded(error,capacity,[&] {
+        require(source && out && control_error && count && count<=1'000'000,"Invalid Bezier output buffers");
+        std::fill_n(out,count,nullptr);
+        try { vb_bezier_nurbs(*source,direction,out,count); }
+        catch(const VbUnrepresentableNurbsControl &) { *control_error=1;throw; }
+    });
+}
+
 extern "C" int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
                                       VbSolid **out, char *error, size_t capacity) {
     if (out) *out = nullptr;

@@ -38,6 +38,8 @@ uses native exact elevation or homogeneous interpolation for all command modes.
 and shared selection policy, including exact chart preservation through clamping.
 [RemoveMultiKnot](smlib-multiple-knot-removal.md) reuses that native fitter for
 ordered group collapse and U-then-V tensor edits with shared crease selection.
+[ConvertToBeziers and ConvertToSingleSpans](smlib-bezier.md) compose the existing
+native curve decomposer for curves, directional strips and tensor patches.
 
 ## Reproduce the native trial
 

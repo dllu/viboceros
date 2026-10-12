@@ -8,6 +8,29 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Some declared fitting producers are absent from the default kernel build.**
+  `NL_CrvFit.h` declares `N_FitCrvClosedDerivsParamsKnots` and
+  `N_FitPeriodicCubic`, but their implementation blocks are guarded by
+  `#if NLIB_UNUSED`. The default release archive exports neither symbol;
+  `nm --defined-only` confirms this while finding `N_FitCrvInterpGivenParams`
+  and `N_FitCrvLstSqEnds`. A header declaration alone is therefore insufficient
+  to select a usable fitting API. Enabling the unused implementation blocks
+  has not been qualified. Source:
+  [NL_CrvFit.h](../third_party/usd-brep/source/SMLib/inc/NL_CrvFit.h) and
+  [NL_CrvFit.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp).
+- **Tensor Bezier decomposition uses negative control indices at full-order
+  interior breaks (source audit).** `N_SrfDecomposeToBez` sets `ru = p - mlu`
+  and `rv = q - mlv`. At an interior multiplicity `degree + 1`, those values
+  are `-1`; subsequent copies index `NBw[-1]` or `NQw[k][-1]`. The corresponding
+  curve producer `N_CrvDecomposeBez` explicitly raises negative `r` to zero
+  before its copy loop. Native Bezier/single-span conversion therefore composes
+  the existing curve producer in U then V, retaining homogeneous intermediate
+  controls until final projection. A quadratic 6×6 tensor with full-order `0.5`
+  breaks in both axes is retained as an adapter regression. The unsafe tensor
+  call itself was not executed. Source:
+  [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp),
+  [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
+  [regression](../crates/viboceros-smlib/tests/bezier.rs).
 - **Full-order active-start splitting writes outside both control buffers.**
   A valid quadratic with five controls and full knots
   `[-2, 0, 0, 0, 0.5, 1, 2, 3]` has active interval `[0, 1]` and an inactive
@@ -363,6 +386,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Native Bezier decomposition uses bounded gauges and resources.**
+  ConvertToBeziers and ConvertToSingleSpans accept degrees through 17, with
+  one million input/aggregate output controls. Directional strips normalize
+  each independent control line, preserving gauges such as `1e-280` and
+  `1e280` on different rows. Both keeps intermediate controls homogeneous
+  under one common binary gauge; wider overall weight ratios remain unsupported.
+  Final controls at infinity, nonfinite coordinates and underflowed restored
+  weights return the existing typed unrepresentable-control error. These are
+  adapter restrictions, rather than established upstream geometry defects.
+  See [qualification](smlib-bezier.md).
 - **Multiple-knot removal uses ordered refits and sampled crease selection.**
   RemoveMultiKnot shares native homogeneous fitting with RemoveKnot rather than
   adding another control solver. Groups are refitted in descending parameter

@@ -116,9 +116,7 @@ impl ConvertToBeziersCommand {
                     let Some(curve) = geometry.curve_ref() else {
                         continue;
                     };
-                    curve
-                        .to_nurbs()?
-                        .try_bezier_spans()?
+                    curve_pieces(&curve.to_nurbs()?)?
                         .into_iter()
                         .map(|piece| {
                             Ok(Geometry::NurbsCurve(piece.try_reparameterized(0.0..=1.0)?))
@@ -154,16 +152,41 @@ impl ConvertToBeziersCommand {
     }
 }
 
-fn surface_pieces(surface: &NurbsSurface) -> Result<Vec<Geometry>, GeometryError> {
-    surface
-        .try_bezier_patches()?
+fn curve_pieces(curve: &NurbsCurve) -> Result<Vec<NurbsCurve>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::curve_bezier_spans(curve).map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(curve.try_bezier_spans()?)
+    }
+}
+
+pub(super) fn single_span_pieces(
+    surface: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+) -> Result<Vec<NurbsSurface>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::surface_single_span_patches(surface, direction)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(surface.try_single_span_patches(direction)?)
+    }
+}
+
+fn surface_pieces(surface: &NurbsSurface) -> Result<Vec<Geometry>, CommandError> {
+    Ok(single_span_pieces(surface, SurfaceKnotDirection::Both)?
         .into_iter()
         .map(|piece| {
             Ok(Geometry::NurbsSurface(
                 piece.try_reparameterized(0.0..=1.0, 0.0..=1.0)?,
             ))
         })
-        .collect()
+        .collect::<Result<Vec<_>, GeometryError>>()?)
 }
 
 fn append_bounded(
