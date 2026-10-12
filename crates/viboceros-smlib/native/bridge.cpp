@@ -329,6 +329,13 @@ extern "C" int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,d
     });
 }
 
+extern "C" int vb_loft_solve(const VbLoftSystem *input,double *output,size_t output_count,char *error,size_t capacity) {
+    return guarded(error,capacity,[&] {
+        require(input && output,"Missing Loft interpolation payload");
+        vb_solve_loft(*input,output,output_count);
+    });
+}
+
 extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree,
                                        int deformable, const double *knots, size_t knot_count,
                                        VbSurfaceData **out, char *error, size_t capacity) {

@@ -35,8 +35,10 @@ Consequently this policy is not unconditional interpolation of the original
 curves, even for interpolating loft styles. Tests explicitly demonstrate this
 displacement instead of assuming shape preservation.
 
-`loft/interpolate` solves all homogeneous control channels together with faer's
-full-pivot LU. U runs through sections; V follows each compatible section.
+`loft/interpolate` shares the homogeneous targets and section policy across
+backends. Portable builds use faer's full-pivot LU; `native-smlib` uses
+[usd-brep basis evaluation and pivoted LU](smlib-loft-interpolation.md), factoring
+once for all channels. U runs through sections; V follows each compatible section.
 
 | Style | Section spacing | U construction |
 | --- | --- | --- |

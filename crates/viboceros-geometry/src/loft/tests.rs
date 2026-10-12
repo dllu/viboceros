@@ -16,6 +16,70 @@ fn circle(radius: Real, z: Real) -> NurbsCurve {
     .unwrap()
 }
 
+#[test]
+fn external_loft_solver_receives_shared_targets_and_loose_straight_skip_the_solver() {
+    let source = [
+        circle(1., 0.),
+        circle(2., 1.),
+        circle(1., 3.),
+        circle(1.5, 5.),
+    ];
+    let before = source.clone();
+    for style in [
+        LoftStyle::Normal,
+        LoftStyle::Tight,
+        LoftStyle::Uniform,
+        LoftStyle::Loose,
+        LoftStyle::Straight,
+    ] {
+        for closed in [false, true] {
+            let mut calls = 0;
+            let actual = try_loft_nurbs_curves_with_operations(
+                &source,
+                style,
+                closed,
+                &mut compatible::prepare,
+                &mut |input| {
+                    calls += 1;
+                    assert_eq!(input.closed, closed);
+                    assert_eq!(input.columns, source[0].control_points().len() * 4);
+                    assert_eq!(
+                        input.targets.len(),
+                        (source.len() + if closed { 0 } else { 2 }) * input.columns
+                    );
+                    interpolate::solve_portable::<GeometryError>(input)
+                },
+            )
+            .unwrap();
+            assert_eq!(
+                calls,
+                usize::from(!matches!(style, LoftStyle::Loose | LoftStyle::Straight))
+            );
+            assert_eq!(
+                actual,
+                try_loft_nurbs_curves(&source, style, closed).unwrap()
+            );
+            assert_eq!(source, before);
+        }
+    }
+}
+
+#[test]
+fn external_loft_solver_layout_failure_propagates_without_mutating_sections() {
+    let source = [circle(1., 0.), circle(1.5, 1.), circle(1., 3.)];
+    let result = try_loft_nurbs_curves_with_operations(
+        &source,
+        LoftStyle::Normal,
+        false,
+        &mut compatible::prepare,
+        &mut |_| -> Result<Vec<Real>, GeometryError> { Ok(Vec::new()) },
+    );
+    assert!(matches!(
+        result,
+        Err(GeometryError::InvalidControlNet { .. })
+    ));
+}
+
 fn check_sections(source: &[NurbsCurve], fitted: &NurbsSurface, closed: bool) {
     let prepared = compatible::prepare(source).unwrap();
     let degree = fitted.degree_u();

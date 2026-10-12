@@ -1,0 +1,449 @@
+{
+  "reference": "pre-change portable Loft oracle built at 20f7e87d",
+  "reference_sha256": "31c96a2f8305ed6ead9a3f64dcbdd86a3b2e9017f5c9087457bec394290ee515",
+  "native_sha256": "0c9f3daf1543beaa6c71c6407ab9d06ddfd3b14004e45290e2b26a414d8ef3c5",
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "cases": 72,
+  "matched": 72,
+  "operations": [
+    {
+      "id": "loft:varying-lines-normal",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:varying-lines-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:varying-lines-tight",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:varying-lines-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:varying-lines-uniform",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:circles-normal",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:circles-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:circles-tight",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:circles-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:circles-uniform",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:rational-normal",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:rational-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:rational-tight",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:rational-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:rational-uniform",
+      "passed": true,
+      "max_absolute_error": 5.551115123125783e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:mixed-degree-normal",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:mixed-degree-loose",
+      "passed": true,
+      "max_absolute_error": 5.551115123125783e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:mixed-degree-tight",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:mixed-degree-straight",
+      "passed": true,
+      "max_absolute_error": 5.551115123125783e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:mixed-degree-uniform",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:different-knots-normal",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:different-knots-loose",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:different-knots-tight",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:different-knots-straight",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:different-knots-uniform",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:closed-3-normal",
+      "passed": true,
+      "max_absolute_error": 6.661338147750939e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:closed-3-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:closed-3-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:scaled-10000000000-normal",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "differences": []
+    },
+    {
+      "id": "loft:scaled-10000000000-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:polyline-normal",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:polyline-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft:unequal-ends-false-normal",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-16,
+      "differences": []
+    },
+    {
+      "id": "loft:unequal-ends-true-loose",
+      "passed": true,
+      "max_absolute_error": 3.3306690738754696e-16,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-lines-normal",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-lines-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-lines-tight",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-lines-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-lines-uniform",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-reversed-order",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-closed",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-down",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-clockwise",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-tilted",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-straight-angle-0",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-straight-angle-0.001",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-straight-angle-0.1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.25",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.5",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.75",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-1.25",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-polyline-normal",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-polyline-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-order-2031",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-order-0213",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-order-10",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-order-01",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.05",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.09",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.11",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-angle-degrees-0.15",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-loose",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-tight",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-straight",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_command:command-circles-uniform",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "loft_end_weights:end-weights-equal",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_end_weights:end-weights-ordinary",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_end_weights_diagnostics:end-weights-positive",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_end_weights_diagnostics:end-weights-negative",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "loft_end_weights_diagnostics:end-weights-near-unit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    }
+  ],
+  "fixtures_sha256": {
+    "tools/rhino_oracle/fixtures/loft.json": "709c140d538d1d6b6400ead31c67bb9755f8a011ded3d7057c5c994b0fc99913",
+    "tools/rhino_oracle/fixtures/loft_command.json": "2bd5840af35289911a5027e2b71ed070470cbbc2c4baf00ae492e7c7e9c6e663",
+    "tools/rhino_oracle/fixtures/loft_end_weights.json": "0fabe2d3936ad653e7255a7cfb7fbb35204bbd83ff55cf3e5a9cd7aec7145dd4",
+    "tools/rhino_oracle/fixtures/loft_end_weights_diagnostics.json": "6766f99122017bba33d952e54730307797eb0c5267fb9300e6732a776dea024a"
+  }
+}

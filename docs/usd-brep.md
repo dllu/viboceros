@@ -59,6 +59,9 @@ Contour boundaries and UV rectangle sizing.
 [Loft, Sweep1 and Pipe section matching](smlib-section-bases.md) reuses native
 clamping, degree elevation and knot refinement with shared section-weight and
 interpolation policies.
+[Loft interpolation](smlib-loft-interpolation.md) now uses native basis evaluation
+and one pivoted factorization for all homogeneous channels, including periodic
+closed systems.
 
 ## Reproduce the native trial
 

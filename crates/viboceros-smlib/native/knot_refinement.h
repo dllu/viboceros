@@ -15,3 +15,9 @@ void vb_bezier_nurbs(const VbNurbsData &source,int direction,VbSurfaceData **out
 VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &source,double start,double end);
 VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &source,int axis,double start,double end);
 VbSurfaceData *vb_surface_isocurve(const VbNurbsData &source,int varying,double parameter);
+struct VbLoftSystem {
+    const double *knots,*parameters,*targets;
+    size_t knot_count,parameter_count,columns,target_count;
+    int closed;
+};
+void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count);

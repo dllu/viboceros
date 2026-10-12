@@ -18,7 +18,9 @@ profiles. Sweep1 keeps its common weight scale and positive-weight requirement.
 Section ordering, seam/orientation policy, rail frames, local/global blending,
 automatic Loft end handles, periodic interpolation, adaptive sweep fitting,
 crease topology and final domains retain their existing implementations.
-The faer interpolation solvers remain in use. No new fitting solver is added.
+Sweep fitting retains its existing solver. Loft now delegates its interpolation
+to [native basis and matrix routines](smlib-loft-interpolation.md); portable builds
+retain faer. No new fitting solver is added.
 
 The native skin convenience producer has different open control counts and
 closed end-condition policy, so replacing the complete Loft with it would not

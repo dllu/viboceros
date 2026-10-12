@@ -6,11 +6,12 @@ use crate::{
 };
 use faer::{Mat, prelude::*};
 
-pub(super) fn loft(
+pub(super) fn loft_with_solver<E: From<GeometryError>>(
     sections: &[NurbsCurve],
     style: LoftStyle,
     closed: bool,
-) -> Result<(usize, Vec<Real>, Vec<WeightedPoint3>), GeometryError> {
+    solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+) -> Result<(usize, Vec<Real>, Vec<WeightedPoint3>), E> {
     let n = sections.len();
     let width = sections[0].control_points().len();
     let intervals = section_intervals(sections, style, closed)?;
@@ -60,19 +61,6 @@ pub(super) fn loft(
     };
     let unknowns = n + if closed { 0 } else { 2 };
     let count = n + if closed { 3 } else { 2 };
-    let mut matrix = Mat::zeros(unknowns, unknowns);
-    for i in 0..n {
-        for (j, value) in bspline_basis_values(&knots, 3, count, parameters[i])?
-            .into_iter()
-            .enumerate()
-        {
-            matrix[(i, if closed { j % n } else { j })] += value;
-        }
-    }
-    if !closed {
-        matrix[(n, 1)] = 1.0;
-        matrix[(n + 1, count - 2)] = 1.0;
-    }
     let weight_scale = sections
         .iter()
         .flat_map(|c| c.control_points())
@@ -117,7 +105,23 @@ pub(super) fn loft(
             .map(|(i, j)| rhs[(i, j)]),
         "loft interpolation targets",
     )?;
-    let solution = matrix.full_piv_lu().solve(&rhs);
+    let targets = (0..unknowns)
+        .flat_map(|i| (0..width * 4).map(move |j| (i, j)))
+        .map(|(i, j)| rhs[(i, j)])
+        .collect::<Vec<_>>();
+    let solution = solve(&LoftInterpolation {
+        knots: &knots,
+        parameters: &parameters,
+        closed,
+        columns: width * 4,
+        targets: &targets,
+    })?;
+    if solution.len() != unknowns * width * 4 {
+        return Err(GeometryError::InvalidControlNet {
+            context: "loft solver returned an inconsistent layout",
+        }
+        .into());
+    }
     let mut controls = Vec::with_capacity(count * width);
     for v in 0..width {
         // A constant homogeneous channel is exactly representable. Retaining
@@ -134,7 +138,8 @@ pub(super) fn loft(
                 continue;
             }
             let c: [Real; 4] = std::array::from_fn(|j| {
-                fixed[j].unwrap_or(solution[(if closed { u % n } else { u }, v * 4 + j)])
+                fixed[j]
+                    .unwrap_or(solution[(if closed { u % n } else { u }) * width * 4 + v * 4 + j])
             });
             require_finite(c, "loft homogeneous controls")?;
             let point = Point3::try_from(std::array::from_fn(|j| c[j] / c[3] + origin[v][j]))?;
@@ -142,6 +147,35 @@ pub(super) fn loft(
         }
     }
     Ok((3, knots, controls))
+}
+
+pub(super) fn solve_portable<E: From<GeometryError>>(
+    input: &LoftInterpolation<'_>,
+) -> Result<Vec<Real>, E> {
+    let n = input.parameters.len() - usize::from(input.closed);
+    let unknowns = n + if input.closed { 0 } else { 2 };
+    let count = n + if input.closed { 3 } else { 2 };
+    let mut matrix = Mat::zeros(unknowns, unknowns);
+    for i in 0..n {
+        for (j, value) in bspline_basis_values(input.knots, 3, count, input.parameters[i])?
+            .into_iter()
+            .enumerate()
+        {
+            matrix[(i, if input.closed { j % n } else { j })] += value;
+        }
+    }
+    if !input.closed {
+        matrix[(n, 1)] = 1.;
+        matrix[(n + 1, count - 2)] = 1.;
+    }
+    let rhs = Mat::from_fn(unknowns, input.columns, |i, j| {
+        input.targets[i * input.columns + j]
+    });
+    let solution = matrix.full_piv_lu().solve(&rhs);
+    Ok((0..unknowns)
+        .flat_map(|i| (0..input.columns).map(move |j| (i, j)))
+        .map(|(i, j)| solution[(i, j)])
+        .collect())
 }
 
 fn section_intervals(

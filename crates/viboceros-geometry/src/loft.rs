@@ -22,6 +22,16 @@ pub enum LoftStyle {
     Uniform,
 }
 
+/// Shared homogeneous interpolation targets and section parameter policy.
+/// Targets use row-major order; open systems append two control-handle rows.
+pub struct LoftInterpolation<'a> {
+    pub knots: &'a [Real],
+    pub parameters: &'a [Real],
+    pub closed: bool,
+    pub columns: usize,
+    pub targets: &'a [Real],
+}
+
 /// Lofts ordered profiles without reordering, reversing or relocating seams.
 /// U runs through the sections; V follows each section's normalized parameter.
 /// Matching follows Rhino's common-basis endpoint-weight policy. With unequal
@@ -43,6 +53,24 @@ pub fn try_loft_nurbs_curves_with_preparation<E: From<GeometryError>>(
     closed: bool,
     prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
 ) -> Result<NurbsSurface, E> {
+    try_loft_nurbs_curves_with_operations(
+        curves,
+        style,
+        closed,
+        prepare,
+        &mut interpolate::solve_portable,
+    )
+}
+
+/// Preserve Loft policy while delegating common-basis edits and the homogeneous
+/// interpolation solve to the caller's backend. Loose/Straight bypass solving.
+pub fn try_loft_nurbs_curves_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    closed: bool,
+    prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
+    solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsSurface, E> {
     validate_count(curves.len(), closed)?;
     let sections = prepare(curves)?;
     if sections.len() != curves.len()
@@ -57,7 +85,7 @@ pub fn try_loft_nurbs_curves_with_preparation<E: From<GeometryError>>(
         }
         .into());
     }
-    let (degree, knots, controls) = interpolate::loft(&sections, style, closed)?;
+    let (degree, knots, controls) = interpolate::loft_with_solver(&sections, style, closed, solve)?;
     let count_v = sections[0].control_points().len();
     let count_u = controls.len() / count_v;
     let surface = NurbsSurface::try_new_rational(

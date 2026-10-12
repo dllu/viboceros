@@ -8,6 +8,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **The real-vector pivot solver skips small nonzero RHS values.**
+  `N_RealMatrixForBackPivot` advances its first active row only when the RHS
+  exceeds `NL_LUDT`. For `[[2,1],[1,2]]` and RHS `[1e-18,0]`, it returns
+  `[5e-19,0]` instead of the independent inverse solution
+  `[2e-18/3,-1e-18/3]`. The
+  [direct probe](../tools/usd_brep/loft_solver_probe.cpp) reproduces this;
+  [retained output](smlib-loft-interpolation-probe.json) records both results.
+  Native Loft instead applies the LU row permutation to homogeneous targets,
+  then uses `N_RealMatrixForBack`, which does not skip small channels. The
+  factorization is shared across all control rows, and normalized residual
+  checks retain every input constraint. Kernel tolerances are unchanged.
+  Source: [NL_Math.cpp](../third_party/usd-brep/source/SMLib/src/NL_Math.cpp).
 - **Isocurve extraction copies unclamped boundary rows and rejects full-order
   fixed-axis breaks.** `N_SrfExtractIsoCrv` at V end `2` on a surface with
   V degree two, Y control coordinates `[0,1,2,3]` and knots

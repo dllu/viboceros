@@ -1,0 +1,20 @@
+{
+  "rhs": [
+    1e-18,
+    0
+  ],
+  "expected": [
+    6.666666666666667e-19,
+    -3.3333333333333334e-19
+  ],
+  "real_pivot_solver": [
+    5e-19,
+    0
+  ],
+  "permuted_homogeneous_solver": [
+    6.666666666666667e-19,
+    -3.3333333333333334e-19
+  ],
+  "usd_brep_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "probe": "tools/usd_brep/loft_solver_probe.cpp"
+}

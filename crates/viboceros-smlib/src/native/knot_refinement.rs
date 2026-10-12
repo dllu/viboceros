@@ -49,15 +49,53 @@ pub fn loft_surface(
     style: viboceros_geometry::LoftStyle,
     closed: bool,
 ) -> Result<NurbsSurface, Error> {
-    viboceros_geometry::try_loft_nurbs_curves_with_preparation(
+    viboceros_geometry::try_loft_nurbs_curves_with_operations(
         curves,
         style,
         closed,
         &mut prepare_loft_sections,
+        &mut solve_loft_system,
     )
 }
 
+#[repr(C)]
+struct LoftSystem {
+    knots: *const f64,
+    parameters: *const f64,
+    targets: *const f64,
+    knot_count: usize,
+    parameter_count: usize,
+    columns: usize,
+    target_count: usize,
+    closed: c_int,
+}
+
+fn solve_loft_system(input: &viboceros_geometry::LoftInterpolation<'_>) -> Result<Vec<f64>, Error> {
+    let view = LoftSystem {
+        knots: input.knots.as_ptr(),
+        parameters: input.parameters.as_ptr(),
+        targets: input.targets.as_ptr(),
+        knot_count: input.knots.len(),
+        parameter_count: input.parameters.len(),
+        columns: input.columns,
+        target_count: input.targets.len(),
+        closed: c_int::from(input.closed),
+    };
+    let mut output = vec![0.; input.targets.len()];
+    call(|error, capacity| unsafe {
+        vb_loft_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+    })?;
+    Ok(output)
+}
+
 unsafe extern "C" {
+    fn vb_loft_solve(
+        input: *const LoftSystem,
+        output: *mut f64,
+        output_count: usize,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_surface_isocurve(
         source: *const brep::NurbsData,
         varying: c_int,

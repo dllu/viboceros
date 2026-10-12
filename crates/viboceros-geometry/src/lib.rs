@@ -184,8 +184,9 @@ pub use intersection::{
 };
 pub use line::LineSegment;
 pub use loft::{
-    LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS, prepare_loft_sections_with_operations,
-    try_loft_nurbs_curves, try_loft_nurbs_curves_with_preparation,
+    LoftInterpolation, LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS,
+    prepare_loft_sections_with_operations, try_loft_nurbs_curves,
+    try_loft_nurbs_curves_with_operations, try_loft_nurbs_curves_with_preparation,
 };
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,

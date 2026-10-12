@@ -122,6 +122,35 @@ fn common_weight_gauges_and_binary_profile_charts_leave_loft_geometry_unchanged(
 }
 
 #[test]
+fn native_interpolation_preserves_tiny_channels_across_open_and_closed_systems() {
+    use viboceros_geometry::Point3;
+    for tiny in [1e-18, 1e-180, 1e-280] {
+        let curves = [(0., 0.), (0.5, 1.), (1.7, -2.), (4., 3.)].map(|(x, z)| {
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    Point3::try_new(x, 0., z * tiny).unwrap(),
+                    Point3::try_new(x + 1., 1., z * tiny).unwrap(),
+                ],
+                vec![0., 0., 1., 1.],
+            )
+            .unwrap()
+        });
+        for closed in [false, true] {
+            let actual = loft_surface(&curves, LoftStyle::Normal, closed).unwrap();
+            let expected = try_loft_nurbs_curves(&curves, LoftStyle::Normal, closed).unwrap();
+            for (a, e) in actual
+                .control_points()
+                .iter()
+                .zip(expected.control_points())
+            {
+                assert!((a.point().z() / tiny - e.point().z() / tiny).abs() < 1e-10);
+            }
+        }
+    }
+}
+
+#[test]
 fn native_preparation_creates_one_basis_without_mutating_original_profiles() {
     let fixture: Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/loft.json"
