@@ -1,0 +1,537 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-open-rational-forward",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0.25,
+      "end": 1.6
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-periodic-cubic-forward",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          8
+        ]
+      },
+      "start": 2.5,
+      "end": 5.2
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-periodic-cubic-tail",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          8
+        ]
+      },
+      "start": 5.2,
+      "end": 6
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-periodic-cubic-head",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              2,
+              2,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          8
+        ]
+      },
+      "start": 2,
+      "end": 2.5
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-rational-active-start",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0,
+      "end": 1.6
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-rational-active-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0.25,
+      "end": 2
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-rational-one-span",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0.25,
+      "end": 0.6
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-rational-at-knot",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0.8,
+      "end": 1.6
+    },
+    {
+      "op": "curve_trim_geometry",
+      "id": "trim-rational-whole",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              -2,
+              1,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              4,
+              1
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              -2,
+              -1
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              8,
+              3,
+              2
+            ],
+            "weight": 1.25
+          }
+        ],
+        "knots": [
+          -2,
+          -1,
+          0,
+          0.8,
+          2,
+          3,
+          4
+        ]
+      },
+      "start": 0,
+      "end": 2
+    }
+  ]
+}

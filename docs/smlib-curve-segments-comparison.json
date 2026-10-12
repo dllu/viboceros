@@ -1,0 +1,1872 @@
+{
+  "curve_trim_geometry": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-10,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "trim-open-rational-forward",
+        "comparison": {
+          "id": "trim-open-rational-forward",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 1040.0,
+          "rhino_ns_per_iteration": 20004272.0,
+          "rhino_to_viboceros_ratio": 19234.876923076925,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-periodic-cubic-forward",
+        "comparison": {
+          "id": "trim-periodic-cubic-forward",
+          "passed": true,
+          "max_absolute_error": 1.1102230246251565e-16,
+          "viboceros_ns_per_iteration": 1040.0,
+          "rhino_ns_per_iteration": 2128601.0,
+          "rhino_to_viboceros_ratio": 2046.7317307692308,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-periodic-cubic-tail",
+        "comparison": {
+          "id": "trim-periodic-cubic-tail",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 1392.0,
+          "rhino_ns_per_iteration": 2571106.0,
+          "rhino_to_viboceros_ratio": 1847.058908045977,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-periodic-cubic-head",
+        "comparison": {
+          "id": "trim-periodic-cubic-head",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 752.0,
+          "rhino_ns_per_iteration": 335693.0,
+          "rhino_to_viboceros_ratio": 446.40026595744683,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-active-start",
+        "comparison": {
+          "id": "trim-rational-active-start",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 592.0,
+          "rhino_ns_per_iteration": 297546.0,
+          "rhino_to_viboceros_ratio": 502.6114864864865,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-active-end",
+        "comparison": {
+          "id": "trim-rational-active-end",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 1056.0,
+          "rhino_ns_per_iteration": 320435.0,
+          "rhino_to_viboceros_ratio": 303.4422348484849,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-one-span",
+        "comparison": {
+          "id": "trim-rational-one-span",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 592.0,
+          "rhino_ns_per_iteration": 381470.0,
+          "rhino_to_viboceros_ratio": 644.375,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-at-knot",
+        "comparison": {
+          "id": "trim-rational-at-knot",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 544.0,
+          "rhino_ns_per_iteration": 267029.0,
+          "rhino_to_viboceros_ratio": 490.86213235294116,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "trim-rational-whole",
+        "comparison": {
+          "id": "trim-rational-whole",
+          "passed": false,
+          "max_absolute_error": 1.0,
+          "viboceros_ns_per_iteration": 80.0,
+          "rhino_ns_per_iteration": 228882.0,
+          "rhino_to_viboceros_ratio": 2861.025,
+          "differences": [
+            "trim-rational-whole.value.knots[0]: -2 != -1 (error 1, limit 1e-10)",
+            "trim-rational-whole.value.knots[6]: 4 != 3 (error 1, limit 1e-10)"
+          ]
+        },
+        "native_error": null,
+        "passed": false
+      }
+    ],
+    "passed": false,
+    "cases": 9,
+    "matched": 8,
+    "native_failed": 0,
+    "mismatched": 1,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "d95bc9038eabfad11a6194de2d9c1179d23128f04024b252c1dff0fdc2334e64",
+    "observation_sha256": "a8b192e3cb319744d53a9d7167e456725083f8916ca5039e70e11ffe82854390"
+  },
+  "native_curve_segment_commands": {
+    "protocol_version": 1,
+    "absolute_epsilon": 1e-08,
+    "relative_epsilon": 1e-12,
+    "operations": [
+      {
+        "id": "curve_intersect_command-intersect-crossing-lines",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-crossing-lines",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 2467777.0,
+          "rhino_ns_per_iteration": 126396179.0,
+          "rhino_to_viboceros_ratio": 51.21863888025539,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-quadratic-tangent",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-quadratic-tangent",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 2740689.0,
+          "rhino_ns_per_iteration": 107757568.0,
+          "rhino_to_viboceros_ratio": 39.317692740767015,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-circle-twice",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-circle-twice",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 6716338.0,
+          "rhino_ns_per_iteration": 106369019.0,
+          "rhino_to_viboceros_ratio": 15.83735348042341,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-collinear-overlap",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-collinear-overlap",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 224304.0,
+          "rhino_ns_per_iteration": 105598450.0,
+          "rhino_to_viboceros_ratio": 470.7827323632213,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-partial-overlap",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-partial-overlap",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 217904.0,
+          "rhino_ns_per_iteration": 99990845.0,
+          "rhino_to_viboceros_ratio": 458.87567460900215,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-reversed-contained-overlap",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-reversed-contained-overlap",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 213008.0,
+          "rhino_ns_per_iteration": 108543396.0,
+          "rhino_to_viboceros_ratio": 509.5742695110043,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-identical-different-domains",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-identical-different-domains",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 176864.0,
+          "rhino_ns_per_iteration": 105766296.0,
+          "rhino_to_viboceros_ratio": 598.00918219649,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-endpoint-contact",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-endpoint-contact",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 1209329.0,
+          "rhino_ns_per_iteration": 102752686.0,
+          "rhino_to_viboceros_ratio": 84.96669310005797,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-no-hit",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-no-hit",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 54064.0,
+          "rhino_ns_per_iteration": 98358154.0,
+          "rhino_to_viboceros_ratio": 1819.2910994377035,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_intersect_command-intersect-three-curves-at-one-point",
+        "comparison": {
+          "id": "curve_intersect_command-intersect-three-curves-at-one-point",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 7464627.0,
+          "rhino_ns_per_iteration": 103767395.0,
+          "rhino_to_viboceros_ratio": 13.90121636352359,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-curve-surface-transverse",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-curve-surface-transverse",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 65536.0,
+          "rhino_ns_per_iteration": 101928711.0,
+          "rhino_to_viboceros_ratio": 1555.3087005615234,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-curve-surface-tangent",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-curve-surface-tangent",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 114192.0,
+          "rhino_ns_per_iteration": 104133606.0,
+          "rhino_to_viboceros_ratio": 911.9168242959227,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-coplanar-through-surface",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-coplanar-through-surface",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "viboceros_ns_per_iteration": 125728.0,
+          "rhino_ns_per_iteration": 102554321.0,
+          "rhino_to_viboceros_ratio": 815.6840242428099,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-coplanar-curve-inside-surface",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-coplanar-curve-inside-surface",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 64433.0,
+          "rhino_ns_per_iteration": 103408813.0,
+          "rhino_to_viboceros_ratio": 1604.9045209752767,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-coplanar-surface-boundary",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-coplanar-surface-boundary",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "viboceros_ns_per_iteration": 2582625.0,
+          "rhino_ns_per_iteration": 113151550.0,
+          "rhino_to_viboceros_ratio": 43.812613135859834,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_surface_intersect_command-intersect-curve-surface-no-hit",
+        "comparison": {
+          "id": "curve_surface_intersect_command-intersect-curve-surface-no-hit",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 59072.0,
+          "rhino_ns_per_iteration": 108154297.0,
+          "rhino_to_viboceros_ratio": 1830.8893722914408,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-through-box",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-through-box",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 400064.0,
+          "rhino_ns_per_iteration": 109687805.0,
+          "rhino_to_viboceros_ratio": 274.1756443968965,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-tangent-to-box",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-tangent-to-box",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 491953.0,
+          "rhino_ns_per_iteration": 98136902.0,
+          "rhino_to_viboceros_ratio": 199.48430439493202,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-on-box-face",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-on-box-face",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "viboceros_ns_per_iteration": 14234246.0,
+          "rhino_ns_per_iteration": 101730347.0,
+          "rhino_to_viboceros_ratio": 7.146872900749361,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-on-box-edge",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-on-box-edge",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "viboceros_ns_per_iteration": 26429835.0,
+          "rhino_ns_per_iteration": 114112854.0,
+          "rhino_to_viboceros_ratio": 4.317577237996378,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-inside-box",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-inside-box",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 179408.0,
+          "rhino_ns_per_iteration": 101928711.0,
+          "rhino_to_viboceros_ratio": 568.1391632480157,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "curve_brep_intersect_command-intersect-curve-through-box-vertices",
+        "comparison": {
+          "id": "curve_brep_intersect_command-intersect-curve-through-box-vertices",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 623233.0,
+          "rhino_ns_per_iteration": 107536316.0,
+          "rhino_to_viboceros_ratio": 172.54592744607555,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-isoparametric-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-isoparametric-cutter",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 3024385.0,
+          "rhino_ns_per_iteration": 193908691.0,
+          "rhino_to_viboceros_ratio": 64.11508157856886,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-perpendicular-isoparametric-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-perpendicular-isoparametric-cutter",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 2979026.0,
+          "rhino_ns_per_iteration": 190551758.0,
+          "rhino_to_viboceros_ratio": 63.964449454284726,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-diagonal-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-diagonal-cutter",
+          "passed": true,
+          "max_absolute_error": 1.0658141036401503e-14,
+          "viboceros_ns_per_iteration": 3228561.0,
+          "rhino_ns_per_iteration": 186408997.0,
+          "rhino_to_viboceros_ratio": 57.73748645294297,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-transposed-diagonal-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-transposed-diagonal-cutter",
+          "passed": true,
+          "max_absolute_error": 1.0658141036401503e-14,
+          "viboceros_ns_per_iteration": 3246482.0,
+          "rhino_ns_per_iteration": 185523987.0,
+          "rhino_to_viboceros_ratio": 57.14616221497609,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-south-east-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-south-east-cutter",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "viboceros_ns_per_iteration": 3211121.0,
+          "rhino_ns_per_iteration": 250724792.0,
+          "rhino_to_viboceros_ratio": 78.08014459747858,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-east-north-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-east-north-cutter",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "viboceros_ns_per_iteration": 3156417.0,
+          "rhino_ns_per_iteration": 216552734.0,
+          "rhino_to_viboceros_ratio": 68.60713714315948,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-north-west-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-north-west-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3128689.0,
+          "rhino_ns_per_iteration": 220932007.0,
+          "rhino_to_viboceros_ratio": 70.61488278317212,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-west-south-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-west-south-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3152369.0,
+          "rhino_ns_per_iteration": 216979980.0,
+          "rhino_to_viboceros_ratio": 68.83076822542031,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-opposite-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-opposite-side-cutter",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-15,
+          "viboceros_ns_per_iteration": 6991746.0,
+          "rhino_ns_per_iteration": 398010254.0,
+          "rhino_to_viboceros_ratio": 56.925731283716544,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-adjacent-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-adjacent-side-cutter",
+          "passed": true,
+          "max_absolute_error": 1.0658141036401503e-14,
+          "viboceros_ns_per_iteration": 6874883.0,
+          "rhino_ns_per_iteration": 362380981.0,
+          "rhino_to_viboceros_ratio": 52.71085791569107,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-between-opposite-corners",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-between-opposite-corners",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 5487682.0,
+          "rhino_ns_per_iteration": 184066772.0,
+          "rhino_to_viboceros_ratio": 33.54180726944455,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-south-west-corner-to-east",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-south-west-corner-to-east",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4425618.0,
+          "rhino_ns_per_iteration": 187545776.0,
+          "rhino_to_viboceros_ratio": 42.37730775679238,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-south-west-corner-to-north",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-south-west-corner-to-north",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 4489906.0,
+          "rhino_ns_per_iteration": 208343506.0,
+          "rhino_to_viboceros_ratio": 46.40264317337601,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-south-east-corner-to-north",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-south-east-corner-to-north",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4371954.0,
+          "rhino_ns_per_iteration": 184524536.0,
+          "rhino_to_viboceros_ratio": 42.20642211697562,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-south-east-corner-to-west",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-south-east-corner-to-west",
+          "passed": true,
+          "max_absolute_error": 2.6645352591003757e-15,
+          "viboceros_ns_per_iteration": 4408738.0,
+          "rhino_ns_per_iteration": 180366516.0,
+          "rhino_to_viboceros_ratio": 40.91114418683986,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-north-east-corner-to-west",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-north-east-corner-to-west",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4292545.0,
+          "rhino_ns_per_iteration": 195785522.0,
+          "rhino_to_viboceros_ratio": 45.610592783535175,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-north-east-corner-to-south",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-north-east-corner-to-south",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 4323394.0,
+          "rhino_ns_per_iteration": 256904602.0,
+          "rhino_to_viboceros_ratio": 59.42197310723936,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-north-west-corner-to-south",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-north-west-corner-to-south",
+          "passed": true,
+          "max_absolute_error": 2.6645352591003757e-15,
+          "viboceros_ns_per_iteration": 4425537.0,
+          "rhino_ns_per_iteration": 185226440.0,
+          "rhino_to_viboceros_ratio": 41.85400325429434,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-north-west-corner-to-east",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-north-west-corner-to-east",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 4380786.0,
+          "rhino_ns_per_iteration": 181655884.0,
+          "rhino_to_viboceros_ratio": 41.46650486921753,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-between-other-opposite-corners",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-between-other-opposite-corners",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 5415506.0,
+          "rhino_ns_per_iteration": 195610046.0,
+          "rhino_to_viboceros_ratio": 36.1203636373037,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-curved-opposite-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-curved-opposite-side-cutter",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 3555825.0,
+          "rhino_ns_per_iteration": 182594299.0,
+          "rhino_to_viboceros_ratio": 51.350755169334825,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-curved-adjacent-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-curved-adjacent-side-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3528690.0,
+          "rhino_ns_per_iteration": 188529968.0,
+          "rhino_to_viboceros_ratio": 53.42775024159107,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-corner-with-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-corner-with-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 5461330.0,
+          "rhino_ns_per_iteration": 190132141.0,
+          "rhino_to_viboceros_ratio": 34.81425605118167,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-curved-opposite-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-curved-opposite-side-cutter",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "viboceros_ns_per_iteration": 8232676.0,
+          "rhino_ns_per_iteration": 329551697.0,
+          "rhino_to_viboceros_ratio": 40.02971779771243,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-curved-adjacent-side-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-curved-adjacent-side-cutter",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "viboceros_ns_per_iteration": 8472851.0,
+          "rhino_ns_per_iteration": 345878601.0,
+          "rhino_to_viboceros_ratio": 40.821985539460094,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-multispan-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-clipped-multispan-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 7861827.0,
+          "rhino_ns_per_iteration": 358070374.0,
+          "rhino_to_viboceros_ratio": 45.5454405191058,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-parallel-diagonal-cutters",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-parallel-diagonal-cutters",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 5715202.0,
+          "rhino_ns_per_iteration": 215782166.0,
+          "rhino_to_viboceros_ratio": 37.75582490347673,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-crossing-diagonal-cutters",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-crossing-diagonal-cutters",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 10776645.0,
+          "rhino_ns_per_iteration": 198593140.0,
+          "rhino_to_viboceros_ratio": 18.428104479640925,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-diagonal-and-isoparametric-cutters",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-diagonal-and-isoparametric-cutters",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 10830516.0,
+          "rhino_ns_per_iteration": 221488953.0,
+          "rhino_to_viboceros_ratio": 20.450452499216105,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-crossing-curved-cutters",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-crossing-curved-cutters",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 55174246.0,
+          "rhino_ns_per_iteration": 215911865.0,
+          "rhino_to_viboceros_ratio": 3.9132725982336036,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-nonmonotone-cubic-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-nonmonotone-cubic-cutter",
+          "passed": true,
+          "max_absolute_error": 2.6645352591003757e-15,
+          "viboceros_ns_per_iteration": 7442387.0,
+          "rhino_ns_per_iteration": 362182617.0,
+          "rhino_to_viboceros_ratio": 48.66484596944502,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-pretrimmed-surface-with-multiple-interval-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-pretrimmed-surface-with-multiple-interval-cutter",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 7761219.0,
+          "rhino_ns_per_iteration": 334960938.0,
+          "rhino_to_viboceros_ratio": 43.15828969650257,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-west-west-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-west-west-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 2073552.0,
+          "rhino_ns_per_iteration": 171173096.0,
+          "rhino_to_viboceros_ratio": 82.55066475304213,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-south-south-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-south-south-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 2097425.0,
+          "rhino_ns_per_iteration": 185653687.0,
+          "rhino_to_viboceros_ratio": 88.51505393518242,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-east-east-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-east-east-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 2085825.0,
+          "rhino_ns_per_iteration": 175949097.0,
+          "rhino_to_viboceros_ratio": 84.35467836467585,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-north-north-curved-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-north-north-curved-cutter",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 2084401.0,
+          "rhino_ns_per_iteration": 203033447.0,
+          "rhino_to_viboceros_ratio": 97.40613586349268,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-rational-west-west-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-rational-west-west-cutter",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 2185537.0,
+          "rhino_ns_per_iteration": 171478271.0,
+          "rhino_to_viboceros_ratio": 78.46047493133267,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-corner-to-incident-west-side",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-corner-to-incident-west-side",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 3445778.0,
+          "rhino_ns_per_iteration": 173797607.0,
+          "rhino_to_viboceros_ratio": 50.437842194128585,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-between-adjacent-south-corners",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-between-adjacent-south-corners",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 5131266.0,
+          "rhino_ns_per_iteration": 169754028.0,
+          "rhino_to_viboceros_ratio": 33.08228963378628,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-from-corner-to-incident-east-side",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-from-corner-to-incident-east-side",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 3386769.0,
+          "rhino_ns_per_iteration": 182121277.0,
+          "rhino_to_viboceros_ratio": 53.77434274377733,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-between-adjacent-north-corners",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-between-adjacent-north-corners",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "viboceros_ns_per_iteration": 4889410.0,
+          "rhino_ns_per_iteration": 179664612.0,
+          "rhino_to_viboceros_ratio": 36.745662973651214,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-closed-interior-polyline",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-closed-interior-polyline",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 4965506.0,
+          "rhino_ns_per_iteration": 172378540.0,
+          "rhino_to_viboceros_ratio": 34.71520123024723,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-closed-interior-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-closed-interior-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 10963812.0,
+          "rhino_ns_per_iteration": 180503845.0,
+          "rhino_to_viboceros_ratio": 16.463602714092506,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-closed-rational-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-closed-rational-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 10914421.0,
+          "rhino_ns_per_iteration": 173637390.0,
+          "rhino_to_viboceros_ratio": 15.908987751159682,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 9902547.0,
+          "rhino_ns_per_iteration": 207687378.0,
+          "rhino_to_viboceros_ratio": 20.97312721666456,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-nested-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-nested-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 9818660.0,
+          "rhino_ns_per_iteration": 212928772.0,
+          "rhino_to_viboceros_ratio": 21.68613354571805,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-externally-touching-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-externally-touching-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 18946919.0,
+          "rhino_ns_per_iteration": 205726624.0,
+          "rhino_to_viboceros_ratio": 10.858051591395942,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-internally-touching-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-internally-touching-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 17598871.0,
+          "rhino_ns_per_iteration": 220787048.0,
+          "rhino_to_viboceros_ratio": 12.545523403177397,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-closed-polygon-crossed-by-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-closed-polygon-crossed-by-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 17179127.0,
+          "rhino_ns_per_iteration": 207450867.0,
+          "rhino_to_viboceros_ratio": 12.075751404596986,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-intersecting-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-intersecting-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 19115096.0,
+          "rhino_ns_per_iteration": 219390869.0,
+          "rhino_to_viboceros_ratio": 11.477361609902456,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-rational-circles",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-rational-circles",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 21896985.0,
+          "rhino_ns_per_iteration": 197563171.0,
+          "rhino_to_viboceros_ratio": 9.02239148448976,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-nested-rational-circles",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-nested-rational-circles",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 21925128.0,
+          "rhino_ns_per_iteration": 233985901.0,
+          "rhino_to_viboceros_ratio": 10.672042644403263,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-rational-circles",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-rational-circles",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 66783130.0,
+          "rhino_ns_per_iteration": 225868225.0,
+          "rhino_to_viboceros_ratio": 3.3821149892195828,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-rational-circles",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-rational-circles",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 74536509.0,
+          "rhino_ns_per_iteration": 218551636.0,
+          "rhino_to_viboceros_ratio": 2.9321420996521317,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-polygon-and-rational-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-polygon-and-rational-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 37360143.0,
+          "rhino_ns_per_iteration": 209251404.0,
+          "rhino_to_viboceros_ratio": 5.600926206304939,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-rational-circle-and-polygon",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-rational-circle-and-polygon",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 36220814.0,
+          "rhino_ns_per_iteration": 208152771.0,
+          "rhino_to_viboceros_ratio": 5.746772311632753,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-reversed-polygon-and-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-externally-tangent-reversed-polygon-and-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 37097743.0,
+          "rhino_ns_per_iteration": 209205627.0,
+          "rhino_to_viboceros_ratio": 5.639308757947889,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-reversed-polygon-and-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-internally-tangent-reversed-polygon-and-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 36390526.0,
+          "rhino_ns_per_iteration": 194648743.0,
+          "rhino_to_viboceros_ratio": 5.348885119165357,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-circle-then-horizontal-tangent-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-circle-then-horizontal-tangent-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 36298158.0,
+          "rhino_ns_per_iteration": 199180603.0,
+          "rhino_to_viboceros_ratio": 5.487347402036214,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-horizontal-tangent-line-then-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-horizontal-tangent-line-then-circle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 36113710.0,
+          "rhino_ns_per_iteration": 204040527.0,
+          "rhino_to_viboceros_ratio": 5.649946433085939,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-circle-and-horizontal-tangent-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-circle-and-horizontal-tangent-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 35607022.0,
+          "rhino_ns_per_iteration": 204238892.0,
+          "rhino_to_viboceros_ratio": 5.735916134744433,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-circle-seam-tangent-to-vertical-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-circle-seam-tangent-to-vertical-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 31127836.0,
+          "rhino_ns_per_iteration": 204147339.0,
+          "rhino_to_viboceros_ratio": 6.558353076648181,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-polygon-vertex-tangent-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-polygon-vertex-tangent-line",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 15295654.0,
+          "rhino_ns_per_iteration": 199836731.0,
+          "rhino_to_viboceros_ratio": 13.064935373145863,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-vertex-tangent-line-then-polygon",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-vertex-tangent-line-then-polygon",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 15307318.0,
+          "rhino_ns_per_iteration": 205902100.0,
+          "rhino_to_viboceros_ratio": 13.451219867516961,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-shared-start-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-shared-start-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 13576790.0,
+          "rhino_ns_per_iteration": 199630737.0,
+          "rhino_to_viboceros_ratio": 14.703824468081189,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-shared-middle-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-shared-middle-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 21931641.0,
+          "rhino_ns_per_iteration": 212928772.0,
+          "rhino_to_viboceros_ratio": 9.708747831500617,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-swapped-shared-start-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-swapped-shared-start-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 13564934.0,
+          "rhino_ns_per_iteration": 229568481.0,
+          "rhino_to_viboceros_ratio": 16.92367106246149,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-shared-start-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-shared-start-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 13485349.0,
+          "rhino_ns_per_iteration": 217750549.0,
+          "rhino_to_viboceros_ratio": 16.147194188300208,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-swapped-shared-middle-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-swapped-shared-middle-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 21884985.0,
+          "rhino_ns_per_iteration": 208236694.0,
+          "rhino_to_viboceros_ratio": 9.515048513855504,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-oppositely-directed-shared-middle-segment",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-oppositely-directed-shared-middle-segment",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 22034505.0,
+          "rhino_ns_per_iteration": 229286194.0,
+          "rhino_to_viboceros_ratio": 10.405779208564022,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-polygon-edge-overlapping-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-polygon-edge-overlapping-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 15308502.0,
+          "rhino_ns_per_iteration": 214897156.0,
+          "rhino_to_viboceros_ratio": 14.037765158210778,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-line-overlapping-polygon-edge",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-line-overlapping-polygon-edge",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 15275446.0,
+          "rhino_ns_per_iteration": 198478699.0,
+          "rhino_to_viboceros_ratio": 12.993316136235892,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-polygon-edge-overlapping-reversed-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-polygon-edge-overlapping-reversed-line",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 15196726.0,
+          "rhino_ns_per_iteration": 215888977.0,
+          "rhino_to_viboceros_ratio": 14.20628212945341,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-line-overlapping-reversed-polygon-edge",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-line-overlapping-reversed-polygon-edge",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 15181190.0,
+          "rhino_ns_per_iteration": 288612366.0,
+          "rhino_to_viboceros_ratio": 19.011181995614308,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-adjacent-closed-polygons-sharing-edge",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-adjacent-closed-polygons-sharing-edge",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 23992089.0,
+          "rhino_ns_per_iteration": 201736450.0,
+          "rhino_to_viboceros_ratio": 8.408457054323199,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-shared-quadratic-start-span",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-shared-quadratic-start-span",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "viboceros_ns_per_iteration": 32375437.0,
+          "rhino_ns_per_iteration": 203224182.0,
+          "rhino_to_viboceros_ratio": 6.277110081942678,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-arch-then-tangent-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-arch-then-tangent-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 18683367.0,
+          "rhino_ns_per_iteration": 232261658.0,
+          "rhino_to_viboceros_ratio": 12.431466876393317,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-tangent-line-then-arch",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-tangent-line-then-arch",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 18966535.0,
+          "rhino_ns_per_iteration": 207313538.0,
+          "rhino_to_viboceros_ratio": 10.930490888293512,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-arch-and-tangent-line",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-arch-and-tangent-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 18689031.0,
+          "rhino_ns_per_iteration": 212173462.0,
+          "rhino_to_viboceros_ratio": 11.352833755800395,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-and-forward-closed-polygons",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-and-forward-closed-polygons",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 10035860.0,
+          "rhino_ns_per_iteration": 210891724.0,
+          "rhino_to_viboceros_ratio": 21.01381685276598,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-polygon-then-rational-circle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-polygon-then-rational-circle",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 15842759.0,
+          "rhino_ns_per_iteration": 200126648.0,
+          "rhino_to_viboceros_ratio": 12.632057837905633,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-rational-circle-then-polygon",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-rational-circle-then-polygon",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 15954614.0,
+          "rhino_ns_per_iteration": 210578918.0,
+          "rhino_to_viboceros_ratio": 13.198621915892168,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-shared-corner-cutters",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-shared-corner-cutters",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 11314788.0,
+          "rhino_ns_per_iteration": 213539124.0,
+          "rhino_to_viboceros_ratio": 18.872569596531548,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-diverging-then-reversed-smooth-shared-start",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-diverging-then-reversed-smooth-shared-start",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 13658437.0,
+          "rhino_ns_per_iteration": 206344604.0,
+          "rhino_to_viboceros_ratio": 15.107482942594384,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-three-way-smooth-shared-middle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-three-way-smooth-shared-middle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 55349925.0,
+          "rhino_ns_per_iteration": 241813660.0,
+          "rhino_to_viboceros_ratio": 4.368816398576873,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-three-way-kinked-shared-middle",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-three-way-kinked-shared-middle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 55770934.0,
+          "rhino_ns_per_iteration": 245376587.0,
+          "rhino_to_viboceros_ratio": 4.3997216722244605,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-single-open-degree-one-kink",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-single-open-degree-one-kink",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3008257.0,
+          "rhino_ns_per_iteration": 175346375.0,
+          "rhino_to_viboceros_ratio": 58.28836266316342,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-single-open-curved-degree-two-kink",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-single-open-curved-degree-two-kink",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3769554.0,
+          "rhino_ns_per_iteration": 167366028.0,
+          "rhino_to_viboceros_ratio": 44.39942444119384,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-parallel-open-kinked-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-parallel-open-kinked-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 5760482.0,
+          "rhino_ns_per_iteration": 209625244.0,
+          "rhino_to_viboceros_ratio": 36.39022637341806,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-shared-spans",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-two-disjoint-shared-spans",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 36886238.0,
+          "rhino_ns_per_iteration": 209373474.0,
+          "rhino_to_viboceros_ratio": 5.676194845351266,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-swapped-two-disjoint-shared-spans",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-swapped-two-disjoint-shared-spans",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 36851998.0,
+          "rhino_ns_per_iteration": 205261230.0,
+          "rhino_to_viboceros_ratio": 5.569880634423132,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-reversed-two-disjoint-shared-spans",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-reversed-two-disjoint-shared-spans",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 36877550.0,
+          "rhino_ns_per_iteration": 220535278.0,
+          "rhino_to_viboceros_ratio": 5.980204162152854,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-opposite-two-disjoint-shared-spans",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-opposite-two-disjoint-shared-spans",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 37306111.0,
+          "rhino_ns_per_iteration": 209999084.0,
+          "rhino_to_viboceros_ratio": 5.6290800185524565,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-collinear-multispan-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-collinear-multispan-cutter",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 3032209.0,
+          "rhino_ns_per_iteration": 183952332.0,
+          "rhino_to_viboceros_ratio": 60.66611239528674,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-collinear-quadratic-multispan-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-collinear-quadratic-multispan-cutter",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 3349073.0,
+          "rhino_ns_per_iteration": 177101135.0,
+          "rhino_to_viboceros_ratio": 52.88064338997687,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-kinked-collinear-quadratic-spans",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-kinked-collinear-quadratic-spans",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3451554.0,
+          "rhino_ns_per_iteration": 172859192.0,
+          "rhino_to_viboceros_ratio": 50.08155514878226,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-degree-elevated-planar-surface-with-linear-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-degree-elevated-planar-surface-with-linear-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 8634484.0,
+          "rhino_ns_per_iteration": 167472839.0,
+          "rhino_to_viboceros_ratio": 19.39581322983516,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-rational-straight-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-rational-straight-cutter",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "viboceros_ns_per_iteration": 3794177.0,
+          "rhino_ns_per_iteration": 174316406.0,
+          "rhino_to_viboceros_ratio": 45.943140238317824,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      },
+      {
+        "id": "surface_split_cutting_command-split-planar-surface-with-rational-multispan-straight-cutter",
+        "comparison": {
+          "id": "surface_split_cutting_command-split-planar-surface-with-rational-multispan-straight-cutter",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "viboceros_ns_per_iteration": 3638177.0,
+          "rhino_ns_per_iteration": 196151733.0,
+          "rhino_to_viboceros_ratio": 53.91484059186785,
+          "differences": []
+        },
+        "native_error": null,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "cases": 121,
+    "matched": 121,
+    "native_failed": 0,
+    "mismatched": 0,
+    "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+    "fixture_sha256": "b72cad2ce49660387ede6f05a90b0ca3891aecce3e8025222dde6a961292bad1",
+    "observation_sha256": "0102bf592370b9c17af7cfc373d9d073c1f5d7a730db6d82668f1c9707d2eb8a"
+  },
+  "direct_native_extraction": {
+    "expected_endpoint": [
+      7.25,
+      1.75,
+      1.25
+    ],
+    "unchecked_source_endpoint": [
+      8,
+      3,
+      2
+    ],
+    "unchecked_segment_endpoint": [
+      8,
+      3,
+      2
+    ]
+  }
+}

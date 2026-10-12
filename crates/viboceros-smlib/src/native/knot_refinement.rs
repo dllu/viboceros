@@ -3,6 +3,14 @@ use super::*;
 use viboceros_geometry::SurfaceKnotDirection;
 
 unsafe extern "C" {
+    fn vb_nurbs_trim_curve(
+        source: *const brep::NurbsData,
+        start: f64,
+        end: f64,
+        out: *mut *mut brep::NativeSurfaceData,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_nurbs_bezier(
         source: *const brep::NurbsData,
         direction: c_int,
@@ -41,6 +49,37 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+}
+
+/// Trim an exact parameter interval, retaining the original chart and gauge.
+pub fn trim_curve(
+    source: &NurbsCurve,
+    interval: std::ops::RangeInclusive<f64>,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::validate_curve_trim_interval(&interval, source.domain())?;
+    // The shared exact affine path preserves zero crossings needed by
+    // intersection topology; a native floating ratio can round them away.
+    if interval == source.domain()
+        || (source.degree() == 1
+            && source.control_points().len() == 2
+            && source.control_points()[0].weight() == source.control_points()[1].weight())
+    {
+        return Ok(source.try_trimmed(interval)?);
+    }
+    let input = NurbsInput::curve(source);
+    let view = input.view();
+    let mut pointer = std::ptr::null_mut();
+    call(|error, capacity| unsafe {
+        vb_nurbs_trim_curve(
+            &view,
+            *interval.start(),
+            *interval.end(),
+            &mut pointer,
+            error,
+            capacity,
+        )
+    })?;
+    brep::curve_from_native(pointer)
 }
 
 fn decompose(

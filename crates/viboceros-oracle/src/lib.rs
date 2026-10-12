@@ -1453,6 +1453,12 @@ pub enum Operation {
         start: f64,
         end: f64,
     },
+    CurveTrimGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        start: f64,
+        end: f64,
+    },
     CurveSubcurveArcLength {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2409,6 +2415,7 @@ impl Operation {
             | Self::CurveExtendCommand { id, .. }
             | Self::CurveExtendBoundaryCommand { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
+            | Self::CurveTrimGeometry { id, .. }
             | Self::CurveSubcurveArcLength { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
@@ -5214,6 +5221,21 @@ fn execute(
             },
             tolerance,
         )?,
+        Operation::CurveTrimGeometry {
+            curve, start, end, ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (result, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result =
+                    viboceros_smlib::trim_curve(&source, black_box(*start)..=black_box(*end))
+                        .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_trimmed(black_box(*start)..=black_box(*end));
+                result.map_err(ProbeError::from)
+            })?;
+            (rebuilt_curve_definition_value(&result)?, elapsed)
+        }
         Operation::CurveSubcurveGeometry {
             curve, start, end, ..
         } => {

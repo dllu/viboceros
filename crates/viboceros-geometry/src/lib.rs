@@ -78,6 +78,7 @@ mod opennurbs_box_topology;
 #[path = "../../../third_party/opennurbs_rust/chord_adjust.rs"]
 mod opennurbs_chord_adjust;
 mod parameter;
+pub use parameter::check_trim_interval as validate_curve_trim_interval;
 mod plane;
 mod point;
 mod point2;

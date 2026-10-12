@@ -36,7 +36,8 @@ pub(crate) fn lossless_parameter_origin(
     }
 }
 
-pub(crate) fn check_trim_interval(
+/// Validate a finite, increasing subinterval inside an existing curve domain.
+pub fn check_trim_interval(
     interval: &RangeInclusive<Real>,
     domain: RangeInclusive<Real>,
 ) -> Result<(), GeometryError> {

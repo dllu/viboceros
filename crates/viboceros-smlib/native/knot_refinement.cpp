@@ -215,6 +215,27 @@ int controls(const VbNurbsData &data, std::vector<NL_CPOINT> &points) {
     return exponent;
 }
 
+int conditioned_controls(const VbNurbsData &data,std::vector<NL_CPOINT> &points,
+                          std::array<double,3> &origin) {
+    // Exterior controls with support ending at the active start must not
+    // choose the coordinate origin: their positions can be arbitrarily far
+    // from the complete active image.
+    std::array<size_t,2> leading={0,0};
+    for(size_t axis=0;axis<2;++axis) if(data.degree[axis])
+        leading[axis]=std::upper_bound(data.knots[axis],data.knots[axis]+data.knot_count[axis],
+                       data.knots[axis][data.degree[axis]])-data.knots[axis]-data.degree[axis]-1;
+    const auto *anchor=data.points_xyzw+4*(leading[1]*data.count[0]+leading[0]);
+    origin={anchor[0],anchor[1],anchor[2]};
+    for(size_t i=0;i<data.count[0]*data.count[1];++i) for(size_t d=0;d<3;++d) {
+        const double coordinate=data.points_xyzw[4*i+d],local=coordinate-origin[d];
+        if(!std::isfinite(local) || local+origin[d]!=coordinate) origin[d]=0;
+    }
+    std::vector<double> local(data.points_xyzw,data.points_xyzw+4*data.count[0]*data.count[1]);
+    for(size_t i=0;i<local.size()/4;++i) for(size_t d=0;d<3;++d) local[4*i+d]-=origin[d];
+    VbNurbsData query=data;query.points_xyzw=local.data();
+    return controls(query,points);
+}
+
 VbSurfaceData *snapshot(VbNurbsData data, const std::vector<NL_CPOINT> &points, int exponent,
                         const std::array<double,3> &origin) {
     std::vector<double> euclidean;
@@ -512,23 +533,8 @@ void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **outpu
         source.degree[axis]=data.degree[axis];source.count[axis]=data.count[axis];
         if(data.knot_count[axis]) source.knots[axis].assign(data.knots[axis],data.knots[axis]+data.knot_count[axis]);
     }
-    // Exterior controls with support ending at the active start must not
-    // choose the coordinate origin: their positions can be arbitrarily far
-    // from the complete active image.
-    std::array<size_t,2> leading={0,0};
-    for(size_t axis=0;axis<2;++axis) if(data.degree[axis])
-        leading[axis]=std::upper_bound(data.knots[axis],data.knots[axis]+data.knot_count[axis],
-                       data.knots[axis][data.degree[axis]])-data.knots[axis]-data.degree[axis]-1;
-    const auto *anchor=data.points_xyzw+4*(leading[1]*data.count[0]+leading[0]);
-    std::array<double,3> origin={anchor[0],anchor[1],anchor[2]};
-    for(size_t i=0;i<data.count[0]*data.count[1];++i) for(size_t d=0;d<3;++d) {
-        const double coordinate=data.points_xyzw[4*i+d],local=coordinate-origin[d];
-        if(!std::isfinite(local) || local+origin[d]!=coordinate) origin[d]=0;
-    }
-    std::vector<double> local(data.points_xyzw,data.points_xyzw+4*data.count[0]*data.count[1]);
-    for(size_t i=0;i<local.size()/4;++i) for(size_t d=0;d<3;++d) local[4*i+d]-=origin[d];
-    VbNurbsData query=data;query.points_xyzw=local.data();
-    const int exponent=controls(query,source.points);
+    std::array<double,3> origin;
+    const int exponent=conditioned_controls(data,source.points,origin);
     auto first=decompose_axis(source,direction==1?1:0);
     std::vector<Owner> snapshots;snapshots.reserve(count);
     auto save=[&](const ControlNet &net) {
@@ -549,4 +555,59 @@ void vb_bezier_nurbs(const VbNurbsData &data,int direction,VbSurfaceData **outpu
     }
     require(snapshots.size()==count,"Native Bezier output count differs");
     for(size_t i=0;i<count;++i) output[i]=snapshots[i].release();
+}
+
+VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double end) {
+    validate(data);
+    require(data.degree[1]==0 && std::isfinite(start) && std::isfinite(end) && start<end,
+            "Invalid native curve trim interval");
+    const size_t degree=data.degree[0],count=data.count[0];
+    const auto *full=data.knots[0];
+    const double active_start=full[degree],active_end=full[count];
+    require(start>=active_start && end<=active_end,"Native trim interval outside active domain");
+    if(start==active_start && end==active_end) return vb_copy_nurbs_payload(data);
+    const BinaryChart chart(full,data.knot_count[0]);
+    std::vector<double> basis(full,full+data.knot_count[0]);
+    chart.scale(basis);
+    std::vector<NL_CPOINT> points;
+    std::array<double,3> origin;
+    const int exponent=conditioned_controls(data,points,origin);
+    // ExtractCrvSeg assumes a clamped active end. A full-order group can
+    // instead have inactive suffix controls; remove those exact entries first.
+    if(end==active_end && std::count(full,full+data.knot_count[0],active_end)==static_cast<ptrdiff_t>(degree+1)) {
+        const size_t first=std::lower_bound(full,full+data.knot_count[0],active_end)-full;
+        const size_t suffix=count-first;
+        require(suffix<count-degree,"Invalid native trim inactive suffix");
+        points.resize(count-suffix);basis.resize(basis.size()-suffix);
+    }
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_CURVE input,result;
+    N_CrvInitArrays(&input);N_CrvInitArrays(&result);
+    check(N_CrvFromCPtsAndKnots(&input,points.data(),points.size()-1,degree,
+          basis.data(),basis.size()-1,&stack),"Build native trim curve failed");
+    if(end==active_end) {
+        const size_t width=input.pol->n+1;
+        const auto *padding=input.knt->U+width;
+        const double endpoint=chart.scaled(end);
+        if(!std::all_of(padding,padding+degree+1,[endpoint](double knot){return knot==endpoint;})) {
+            NL_CURVE clamped;
+            N_CrvInitArrays(&clamped);
+            clamp_curve_endpoint(input,true,clamped,stack);
+            input=clamped;
+        }
+    }
+    check(N_CrvExtractCrvSeg(&input,chart.scaled(start),chart.scaled(end),&result,&stack,&stack),
+          "Extract native curve segment failed");
+    std::vector<double> expected(degree+1,start);
+    for(size_t i=0;i<data.knot_count[0];++i) if(full[i]>start && full[i]<end) expected.push_back(full[i]);
+    expected.insert(expected.end(),degree+1,end);
+    require(result.p==static_cast<NL_DEGREE>(degree) && result.knt->m+1==static_cast<NL_INDEX>(expected.size())
+            && result.pol->n+1==static_cast<NL_INDEX>(expected.size()-degree-1),"Native trim layout differs");
+    for(size_t i=0;i<expected.size();++i)
+        require(result.knt->U[i]==chart.scaled(expected[i]),"Native trim knot basis differs");
+    VbNurbsData output=data;
+    output.count[0]=result.pol->n+1;output.knots[0]=expected.data();output.knot_count[0]=expected.size();
+    points.assign(result.pol->Pw,result.pol->Pw+output.count[0]);
+    return snapshot(output,points,exponent,origin);
 }

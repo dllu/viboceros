@@ -8,6 +8,29 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Segment extraction assumes a clamped active end.** For the rational
+  quadratic with knots `[-2,-1,0,0.8,2,3,4]`, `N_CrvExtractCrvSeg(0.25,2)`
+  retains the last source control as its endpoint `[8,3,2]`, rather than the
+  actual endpoint `[7.25,1.75,1.25]`. Its active-end branch sets the right span
+  to the full vector's last index without extracting the unclamped end.
+  The independent de Boor limit and the retained Rhino trim definition agree.
+  The adapter privately clamps only a requested active end through existing
+  reverse/split/reverse operations, or slices off an inactive full-order suffix.
+  It verifies the complete resulting interval and interior knot basis. See
+  [native segment extraction](smlib-curve-segments.md),
+  [direct probe](../tools/usd_brep/segment_extraction_probe.cpp), and
+  [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp).
+- **Endpoint evaluation assumes clamped basis coefficients.** `N_BasisEval`
+  supplies identity rows at active endpoints regardless of padding.
+  `N_CrvEvalPt` therefore returns `[8,3,2]` at the same unclamped active end,
+  and cannot independently validate the segment-extraction result above.
+  `N_SrfExtractIsoCrv` similarly copies the first/last control row at constant-axis
+  active boundaries (source audit); this requires that axis to be clamped.
+  Curve endpoint behavior is reproduced by the same direct probe; the tensor
+  convenience path was inspected, not executed as a new adapter operation.
+  Sources: [NL_BasisBasic.cpp](../third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp),
+  [NL_CrvAdv.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp), and
+  [NL_SrfTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfTool.cpp).
 - **Some declared fitting producers are absent from the default kernel build.**
   `NL_CrvFit.h` declares `N_FitCrvClosedDerivsParamsKnots` and
   `N_FitPeriodicCubic`, but their implementation blocks are guarded by
@@ -334,6 +357,14 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Whole-domain curve trims preserve source outer entries in Viboceros.**
+  The raw `trim-rational-whole` record has source outer values `-2` and `4` in
+  Viboceros and padded neighboring values `-1` and `3` in Rhino. OpenNURBS
+  omits those two full-vector slots; all stored knots and controls agree.
+  The native adapter preserves the existing exact no-op policy. The primary
+  raw comparison retains this mismatch; independent reference-definition
+  sampling checks the same active locus. No comparison-time knot normalization
+  hides it. See [qualification](smlib-curve-segments.md).
 - **Dedicated knot removal differs from Rhino's interpolation rule.**
   `N_CrvRemoveKnot` uses a tolerance-bound removal algorithm. On the retained
   cubic-middle fixture, tolerance `1e10` removes one knot but leaves a maximum

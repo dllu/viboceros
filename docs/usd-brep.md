@@ -40,6 +40,8 @@ and shared selection policy, including exact chart preservation through clamping
 ordered group collapse and U-then-V tensor edits with shared crease selection.
 [ConvertToBeziers and ConvertToSingleSpans](smlib-bezier.md) compose the existing
 native curve decomposer for curves, directional strips and tensor patches.
+[Curve segment extraction](smlib-curve-segments.md) uses the native segment
+producer for intersection overlaps and surface-cut clipping.
 
 ## Reproduce the native trial
 

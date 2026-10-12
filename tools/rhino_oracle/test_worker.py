@@ -11,6 +11,42 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curve_trim_geometry_disposes_owned_source_and_result_at_every_failure_boundary(self):
+        for failure in (None, "interval", "sdk", "record"):
+            with self.subTest(failure=failure):
+                result = SimpleNamespace(IsClosed=False, IsPeriodic=False, Dispose=Mock())
+                source = SimpleNamespace(Domain=SimpleNamespace(T0=0., T1=2.), IsClosed=False,
+                                         Trim=Mock(return_value=None if failure == "sdk" else result), Dispose=Mock())
+                with patch.object(self.worker.Rhino, "Geometry", SimpleNamespace(Interval=lambda a, b: (a, b)), create=True), \
+                     patch.object(self.worker, "_nurbs_curve_from_definition", return_value=source), \
+                     patch.object(self.worker, "_nurbs_curve_definition", return_value={"knots": [0.25, 1.6]},
+                                  side_effect=ValueError("record failure") if failure == "record" else None):
+                    operation = dict(op="curve_trim_geometry", id="owned", curve={},
+                                     start=1.6 if failure == "interval" else 0.25, end=1.6)
+                    if failure:
+                        with self.assertRaises(ValueError):
+                            self.worker._execute(operation, 1, {})
+                    else:
+                        value, _ = self.worker._execute(operation, 1, {})
+                        self.assertEqual(value, dict(knots=[0.25, 1.6], closed=False, periodic=False))
+                source.Dispose.assert_called_once()
+                if failure == "interval":
+                    source.Trim.assert_not_called()
+                else:
+                    self.assertEqual(source.Trim.call_args_list,
+                                     [unittest.mock.call((0.25, 1.6))] * (2 if failure is None else 1))
+                if failure in (None, "record"):
+                    self.assertEqual(result.Dispose.call_count, 2 if failure is None else 1)
+                else:
+                    result.Dispose.assert_not_called()
+
+    def test_nonfinite_trim_parameters_are_rejected_before_allocating_the_source(self):
+        with patch.object(self.worker, "_nurbs_curve_from_definition") as build:
+            for kind in ("curve_trim_geometry", "curve_subcurve_geometry"):
+                with self.subTest(kind=kind), self.assertRaises(ValueError):
+                    self.worker._execute(dict(op=kind, id="invalid", curve={}, start=float("nan"), end=1.), 1, {})
+            build.assert_not_called()
+
     def test_apply_uv_curves_dispatch_receives_the_closed_operation_and_host(self):
         operation = dict(op='apply_uv_curves_command', id='owned', case='rectangle')
         run = Mock(return_value=({'source':'closed'},0))

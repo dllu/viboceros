@@ -302,6 +302,15 @@ extern "C" int vb_nurbs_insert_knot(const VbNurbsData *source, int axis, double 
     });
 }
 
+extern "C" int vb_nurbs_trim_curve(const VbNurbsData *source,double start,double end,
+                                   VbSurfaceData **out,char *error,size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out,"Missing curve trim payload");
+        *out=vb_trim_nurbs_curve(*source,start,end);
+    });
+}
+
 extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_t degree,
                                        int deformable, const double *knots, size_t knot_count,
                                        VbSurfaceData **out, char *error, size_t capacity) {

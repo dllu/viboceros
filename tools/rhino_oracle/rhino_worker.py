@@ -13129,12 +13129,15 @@ def _execute(operation, iterations, tolerance):
         from curve_length_subcurve_probe import run
         return run(operation,globals(),iterations)
 
-    if kind == "curve_subcurve_geometry":
-        source = _nurbs_curve_from_definition(operation["curve"])
+    if kind in ("curve_subcurve_geometry", "curve_trim_geometry"):
         start = _finite(operation["start"], "subcurve start parameter")
         end = _finite(operation["end"], "subcurve end parameter")
+        source = _nurbs_curve_from_definition(operation["curve"])
 
         def extract_subcurve():
+            if kind == "curve_trim_geometry" and (
+                    start >= end or start < source.Domain.T0 or end > source.Domain.T1):
+                raise ValueError("invalid curve trim interval")
             if source.IsClosed or start < end:
                 result = source.Trim(Rhino.Geometry.Interval(start, end))
             else:

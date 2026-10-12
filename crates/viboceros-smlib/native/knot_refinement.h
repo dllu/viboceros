@@ -12,3 +12,4 @@ VbSurfaceData *vb_degree_nurbs(const VbNurbsData &source, int axis, size_t degre
 VbSurfaceData *vb_fit_nurbs(const VbNurbsData &source, int axis,
                           const double *knots, size_t knot_count);
 void vb_bezier_nurbs(const VbNurbsData &source,int direction,VbSurfaceData **output,size_t count);
+VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &source,double start,double end);

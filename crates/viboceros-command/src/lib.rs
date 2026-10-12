@@ -75,6 +75,7 @@ mod bezier;
 mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
+mod curve_segments;
 mod extrude_curve;
 mod knot_refinement;
 use extrude_apex::ExtrudeCurveToPointCommand;
@@ -10888,7 +10889,7 @@ fn intersect_pair(
     first: &IntersectInput,
     second: &IntersectInput,
     tolerance: Tolerance,
-) -> Result<Vec<Geometry>, GeometryError> {
+) -> Result<Vec<Geometry>, CommandError> {
     Ok(match (first, second) {
         (IntersectInput::Curve(first), IntersectInput::Curve(second)) => first
             .intersection_events_with_curve(second, tolerance)?
@@ -10898,10 +10899,10 @@ fn intersect_pair(
                     Ok(Geometry::Point(intersection.point()))
                 }
                 CurveCurveIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
-                    second.try_trimmed(overlap.second_interval())?,
+                    curve_segments::trim(second, overlap.second_interval())?,
                 )),
             })
-            .collect::<Result<Vec<_>, GeometryError>>()?,
+            .collect::<Result<Vec<_>, CommandError>>()?,
         (IntersectInput::Curve(curve), IntersectInput::Surface(surface))
         | (IntersectInput::Surface(surface), IntersectInput::Curve(curve)) => {
             curve_surface_intersection_events(curve, surface, tolerance)?
@@ -10911,10 +10912,10 @@ fn intersect_pair(
                         Ok(Geometry::Point(intersection.point()))
                     }
                     CurveSurfaceIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
-                        curve.try_trimmed(overlap.curve_interval())?,
+                        curve_segments::trim(curve, overlap.curve_interval())?,
                     )),
                 })
-                .collect::<Result<Vec<_>, GeometryError>>()?
+                .collect::<Result<Vec<_>, CommandError>>()?
         }
         (IntersectInput::Curve(curve), IntersectInput::Brep(brep))
         | (IntersectInput::Brep(brep), IntersectInput::Curve(curve)) => {
@@ -10925,10 +10926,10 @@ fn intersect_pair(
                         Ok(Geometry::Point(intersection.point()))
                     }
                     CurveBrepIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
-                        curve.try_trimmed(overlap.curve_interval())?,
+                        curve_segments::trim(curve, overlap.curve_interval())?,
                     )),
                 })
-                .collect::<Result<Vec<_>, GeometryError>>()?
+                .collect::<Result<Vec<_>, CommandError>>()?
         }
         (IntersectInput::Surface(first), IntersectInput::Surface(second)) => {
             surface_surface_intersection_events(first, second, tolerance)?
@@ -11483,7 +11484,7 @@ fn append_surface_cutter_intersection_curves(
                 if let CurveSurfaceIntersectionEvent::Overlap(overlap) = event {
                     append_surface_split_curve(
                         curves,
-                        curve.try_trimmed(overlap.curve_interval())?,
+                        curve_segments::trim(curve, overlap.curve_interval())?,
                     )?;
                 }
             }
@@ -12233,7 +12234,7 @@ fn trim_complete_surface_cut_curve(
     } else {
         curve_parameters[1]..=curve_parameters[0]
     };
-    curve.try_trimmed(interval).map_err(CommandError::from)
+    curve_segments::trim(curve, interval)
 }
 
 fn surface_split_parameter_epsilon(bounds: [Real; 2], tolerance: Tolerance) -> Real {

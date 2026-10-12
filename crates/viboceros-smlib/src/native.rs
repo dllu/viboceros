@@ -15,7 +15,7 @@ pub use knot_refinement::{
     change_curve_degree, change_surface_degree, curve_bezier_spans, insert_curve_knot,
     insert_surface_knot, make_curve_non_periodic, make_surface_non_periodic, remove_curve_knot,
     remove_curve_multiple_knots, remove_surface_knot, remove_surface_multiple_knots,
-    surface_single_span_patches,
+    surface_single_span_patches, trim_curve,
 };
 mod shape;
 pub use shape::StitchResult;
