@@ -66,6 +66,8 @@ int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count,
 void vb_curve_free(VbCurve *curve);
 int vb_curve_extrude(const VbCurve *curve, const double displacement[3], VbSurfaceData **out,
                      char *error, size_t capacity);
+int vb_curves_plane_normal(const VbCurve *const *curves, size_t count, double tolerance, int *has_plane, double normal[3],
+                           char *error, size_t capacity);
 int vb_curve_translational_sweep(const VbCurve *profile, const VbCurve *path, VbSurfaceData **out,
                                  char *error, size_t capacity);
 int vb_shape_translational_sweep(const VbCurve *profile, const VbCurve *path, double tolerance,

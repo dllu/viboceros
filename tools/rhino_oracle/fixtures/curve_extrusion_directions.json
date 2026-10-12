@@ -1,0 +1,1429 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xy",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                0
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz-reversed",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "yz",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "tilt-a",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "tilt-b",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                -3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz-negative",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": -5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz-both",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5,
+      "both_sides": true
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "line",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              2
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "nonplanar",
+      "curves": [
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-xz-yz",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-yz-xz",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-xz-nonplanar",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-line-xz",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              2
+            ]
+          }
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "nonplanar-front-cplane",
+      "curves": [
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz-back-cplane",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          -1
+        ]
+      ]
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "tilt-positive-z-dominant",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                1
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "tilt-positive-z-small",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xz-front-cplane",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "xy-upside-cplane",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                0
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5,
+      "cplane": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          -1,
+          0
+        ]
+      ]
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-parallel-offset",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                8,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                8,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                8,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "mixed-line-off-plane",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              8,
+              0
+            ],
+            "end": [
+              4,
+              8,
+              2
+            ]
+          }
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 0.75
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "two-lines-plane",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              4
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "parallel-lines-offset-xz",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              3
+            ],
+            "end": [
+              4,
+              0,
+              3
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "parallel-lines-offset-xy",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              3,
+              0
+            ],
+            "end": [
+              4,
+              3,
+              0
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "skew-lines",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              1,
+              2
+            ],
+            "end": [
+              0,
+              5,
+              2
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_direction_command",
+      "id": "three-spatial-lines",
+      "curves": [
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              4,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              4,
+              0
+            ]
+          }
+        },
+        {
+          "native": {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              4
+            ]
+          }
+        }
+      ],
+      "distance": 5
+    }
+  ]
+}

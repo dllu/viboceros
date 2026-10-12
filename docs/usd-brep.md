@@ -24,6 +24,8 @@ Standalone [modeling curve import](smlib-curve-import.md) now uses native
 active-interval clamping rather than the Rust endpoint extractor.
 [Exact modeling bases](smlib-modeling-basis.md) carry those knots through native
 copies and standalone surface construction.
+[Numeric extrusion directions](smlib-extrusion-direction.md) also use the existing
+kernel point-set classifier rather than adding a command-specific plane fitter.
 
 ## Reproduce the native trial
 

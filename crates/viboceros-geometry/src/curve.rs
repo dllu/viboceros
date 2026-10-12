@@ -766,8 +766,37 @@ fn control_polygon_is_planar_non_linear(
     start: Point3,
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {
+    Ok(control_polygon_plane(point_count, point_at, start, tolerance)?.is_some())
+}
+
+/// Plane of a nonlinear control-point collection. Collinear and nonplanar
+/// collections return None; the existing curve planarity classifier is shared.
+pub fn try_control_polygon_plane(
+    points: &[Point3],
+    tolerance: Tolerance,
+) -> Result<Option<crate::Plane>, GeometryError> {
+    if points.len() < 3 {
+        return Ok(None);
+    }
+    let start = points[0];
+    if control_polygon_is_linear(
+        points.len(),
+        |i| points[i],
+        LinearityTolerance::Absolute(tolerance.absolute()),
+    )? {
+        return Ok(None);
+    }
+    control_polygon_plane(points.len(), |i| points[i], start, tolerance)
+}
+
+fn control_polygon_plane(
+    point_count: usize,
+    point_at: impl Fn(usize) -> Point3 + Copy,
+    start: Point3,
+    tolerance: Tolerance,
+) -> Result<Option<crate::Plane>, GeometryError> {
     if point_count < 3 {
-        return Ok(false);
+        return Ok(None);
     }
 
     // This sampling stride deliberately matches OpenNURBS. All controls are
@@ -788,7 +817,7 @@ fn control_polygon_is_planar_non_linear(
         }
     }
     let Some(cross) = triangle else {
-        return Ok(false);
+        return Ok(None);
     };
     let normal = cross.normalized_nonzero()?;
     for index in 0..point_count {
@@ -797,10 +826,10 @@ fn control_polygon_is_planar_non_linear(
             .dot(normal.as_vector())?
             .abs();
         if distance > tolerance.absolute() {
-            return Ok(false);
+            return Ok(None);
         }
     }
-    Ok(true)
+    Ok(Some(crate::Plane::new(start, normal)))
 }
 
 fn require_division_capacity(point_count: usize) -> Result<(), GeometryError> {
@@ -816,6 +845,45 @@ fn require_division_capacity(point_count: usize) -> Result<(), GeometryError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn control_polygon_plane_handles_small_and_degenerate_point_sets() {
+        let origin = Point3::try_new(0., 0., 0.).unwrap();
+        let end = Point3::try_new(4., 0., 0.).unwrap();
+        for points in [
+            vec![],
+            vec![origin],
+            vec![origin, end],
+            vec![origin; 4],
+            vec![origin, end, origin, end],
+        ] {
+            assert!(
+                try_control_polygon_plane(&points, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_none()
+            );
+        }
+        let planar = [origin, end, Point3::try_new(2., 0., 3.).unwrap()];
+        let plane = try_control_polygon_plane(&planar, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        for point in planar {
+            assert_eq!(plane.signed_distance_to(point).unwrap(), 0.);
+        }
+        assert!(
+            try_control_polygon_plane(
+                &[
+                    planar[0],
+                    planar[1],
+                    planar[2],
+                    Point3::try_new(0., 2., 0.).unwrap()
+                ],
+                Tolerance::DEFAULT
+            )
+            .unwrap()
+            .is_none()
+        );
+    }
     use crate::{UnitVector3, WeightedPoint3};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {

@@ -1524,6 +1524,12 @@ for the 75 cases, numeric limits, and the separate ill-conditioned legacy Trim
 tangent comparison. Curve-cut command records sort by native domain, not rounded
 world-space endpoint coordinates.
 
+`curve_extrusion_directions.json` retains 27 actual numeric `ExtrudeCrv` commands,
+including reversed and offset planar profiles, mixed selections, skew lines,
+BothSides, signed distances and rotated CPlanes. Replay compares complete raw
+surface definitions and output order. Both portable and native builds exercise
+the fixture; see [numeric extrusion qualification](smlib-extrusion-direction.md).
+
 `curve_join_close.json` compares 39 mixed joining and closure cases, including
 full NURBS definitions, retained intervals, representation, and length. It tests
 the batch `JoinCurves` API separately from actual `Join`/`CloseCrv` commands.

@@ -2,6 +2,15 @@
 use super::*;
 
 unsafe extern "C" {
+    fn vb_curves_plane_normal(
+        curves: *const *const NativeCurve,
+        count: usize,
+        tolerance: f64,
+        has_plane: *mut c_int,
+        normal: *mut f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_curve_translational_sweep(
         profile: *const NativeCurve,
         path: *const NativeCurve,
@@ -78,6 +87,37 @@ unsafe extern "C" {
 }
 
 impl KernelCurve {
+    /// Native model-tolerance parallel-plane normal for curve control directions.
+    /// Individual origins are removed. Parallel linear directions use their
+    /// original positions to resolve a plane; a single line and incompatible
+    /// direction collections have no unique plane.
+    pub fn parallel_plane_normal(
+        curves: &[&Self],
+        tolerance: Tolerance,
+    ) -> Result<Option<Vector3>, Error> {
+        let handles = curves
+            .iter()
+            .map(|c| c.handle.as_ptr().cast_const())
+            .collect::<Vec<_>>();
+        let mut has_plane = 0;
+        let mut normal = [0.; 3];
+        call(|error, capacity| unsafe {
+            vb_curves_plane_normal(
+                handles.as_ptr(),
+                handles.len(),
+                tolerance.absolute(),
+                &mut has_plane,
+                normal.as_mut_ptr(),
+                error,
+                capacity,
+            )
+        })?;
+        if has_plane != 0 {
+            Ok(Some(Vector3::try_new(normal[0], normal[1], normal[2])?))
+        } else {
+            Ok(None)
+        }
+    }
     /// Exact fixed-orientation sweep: profile(u) + path(v) - path(start).
     /// U/V retain profile/path parameters. Both input handles remain unchanged.
     pub fn translational_sweep(&self, path: &Self) -> Result<NurbsSurface, Error> {

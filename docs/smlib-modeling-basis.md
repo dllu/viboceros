@@ -40,9 +40,10 @@ for source audits and remaining kernel restrictions.
 The [new live fixture](../tools/rhino_oracle/fixtures/curve_modeling_short_spans.json)
 and [Rhino observations](../tools/rhino_oracle/observations/curve_modeling_short_spans.json)
 retain all four command records. Apex and path extrusion match complete raw
-definitions. Extrusion exposes the application's existing numeric-direction
-policy: this XZ profile travels along global Z in Viboceros and along positive Y
-in Rhino. Revolution has matching controls, weights and full-multiplicity knot
+definitions. The original extrusion comparison exposed an application direction
+gap for its XZ profile. The [numeric-direction integration](smlib-extrusion-direction.md)
+now extrudes along positive Y and matches the complete raw extrusion record.
+Revolution has matching controls, weights and full-multiplicity knot
 groups, but Rhino rescales V to `10.837476096278881`. The secondary Bezier-image
 signature therefore agrees while the raw parameter difference remains. These
 are application compatibility differences, not established usd-brep geometry bugs.

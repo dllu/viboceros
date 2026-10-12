@@ -3,6 +3,8 @@
 #[cfg(test)]
 mod certified_surface_split_tests;
 #[cfg(test)]
+mod curve_extrusion_replay_tests;
+#[cfg(test)]
 mod fillet_corners_tests;
 #[cfg(test)]
 mod fillet_pair_tests;
@@ -710,6 +712,15 @@ pub enum Operation {
         id: String,
         curve: curve_native::CutSource,
         distance: f64,
+    },
+    CurveExtrudeDirectionCommand {
+        id: String,
+        curves: Vec<curve_native::CutSource>,
+        distance: f64,
+        #[serde(default)]
+        both_sides: bool,
+        #[serde(default)]
+        cplane: Option<[[f64; 3]; 3]>,
     },
     CurveApexCommand {
         id: String,
@@ -2291,6 +2302,7 @@ impl Operation {
             | Self::NonManifoldSelection { id, .. }
             | Self::VolumeSelection { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
+            | Self::CurveExtrudeDirectionCommand { id, .. }
             | Self::CurveApexCommand { id, .. }
             | Self::CurveAlongCommand { id, .. }
             | Self::CurveRevolveCommand { id, .. }
@@ -2935,6 +2947,20 @@ fn execute(
         Operation::CurveExtrudeCommand {
             curve, distance, ..
         } => curve_native::extrude_command(curve, *distance, iterations, tolerance)?,
+        Operation::CurveExtrudeDirectionCommand {
+            curves,
+            distance,
+            both_sides,
+            cplane,
+            ..
+        } => curve_native::extrude_direction_command(
+            curves,
+            *distance,
+            *both_sides,
+            *cplane,
+            iterations,
+            tolerance,
+        )?,
         Operation::CurveApexCommand { curve, apex, .. } => {
             curve_native::apex_command(curve, *apex, iterations, tolerance)?
         }

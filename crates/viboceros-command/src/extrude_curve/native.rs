@@ -4,21 +4,22 @@ use viboceros_smlib::{KernelCurve, Shape};
 
 pub(super) fn extrude(
     curve: &NurbsCurve,
+    profile: &KernelCurve,
     start: Vector3,
     end: Vector3,
     solid: bool,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
-    let translated = curve.transformed(AffineTransform3::from_translation(start))?;
     let displacement = Vector3::try_new(
         end.x() - start.x(),
         end.y() - start.y(),
         end.z() - start.z(),
     )?;
-    let profile = KernelCurve::from_nurbs_for_modeling(&translated)?;
+    let restore = AffineTransform3::from_translation(start);
     if solid && curve.is_closed()? && curve.is_planar(tolerance)? {
-        let result =
-            Shape::linear_sweep(&[&profile], displacement, true, tolerance)?.to_brep(tolerance)?;
+        let result = Shape::linear_sweep(&[profile], displacement, true, tolerance)?
+            .to_brep(tolerance)?
+            .transformed(restore, tolerance)?;
         if !result.is_solid() {
             return Err(viboceros_smlib::Error::Kernel(
                 "Native extrusion did not produce the requested closed solid".into(),
@@ -28,7 +29,9 @@ pub(super) fn extrude(
         Ok(Geometry::Brep(result))
     } else {
         Ok(Geometry::NurbsSurface(
-            profile.extruded_surface(displacement)?,
+            profile
+                .extruded_surface(displacement)?
+                .transformed(restore)?,
         ))
     }
 }
@@ -57,9 +60,15 @@ mod tests {
             let before = source.clone();
             let start = Vector3::try_new(0., -3., -4.).unwrap();
             let end = Vector3::try_new(0., 3., 4.).unwrap();
-            let Geometry::NurbsSurface(surface) =
-                extrude(&source, start, end, false, Tolerance::DEFAULT).unwrap()
-            else {
+            let Geometry::NurbsSurface(surface) = extrude(
+                &source,
+                &KernelCurve::from_nurbs_for_modeling(&source).unwrap(),
+                start,
+                end,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap() else {
                 panic!("surface")
             };
             assert_eq!(surface.domain_u(), source.domain());

@@ -405,6 +405,7 @@ pub(super) fn extrude_command(
         &[definition],
         &format!("ExtrudeCrv {distance} Output=Surface Solid=No"),
         false,
+        None,
         iterations,
         tolerance,
     )
@@ -423,6 +424,7 @@ pub(super) fn apex_command(
             apex[0], apex[1], apex[2]
         ),
         false,
+        None,
         iterations,
         tolerance,
     )
@@ -438,6 +440,28 @@ pub(super) fn along_command(
         &[definition, path],
         "ExtrudeCrvAlongCrv Output=Surface Solid=No SplitAtTangents=No",
         true,
+        None,
+        iterations,
+        tolerance,
+    )
+}
+
+pub(super) fn extrude_direction_command(
+    definitions: &[CutSource],
+    distance: f64,
+    both_sides: bool,
+    cplane: Option<[[f64; 3]; 3]>,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    generated_surface_command(
+        &definitions.iter().collect::<Vec<_>>(),
+        &format!(
+            "ExtrudeCrv {distance} Output=Surface Solid=No BothSides={}",
+            if both_sides { "Yes" } else { "No" }
+        ),
+        false,
+        cplane,
         iterations,
         tolerance,
     )
@@ -447,6 +471,7 @@ fn generated_surface_command(
     definitions: &[&CutSource],
     command: &str,
     record_samples: bool,
+    cplane: Option<[[f64; 3]; 3]>,
     iterations: u32,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
@@ -454,6 +479,18 @@ fn generated_surface_command(
         .iter()
         .map(|d| d.geometry(tolerance))
         .collect::<Result<Vec<_>, _>>()?;
+    let context = if let Some([o, x, y]) = cplane {
+        viboceros_command::CommandContext {
+            construction_plane: viboceros_geometry::Frame3::try_from_directions(
+                super::point(o)?,
+                Vector3::try_new(x[0], x[1], x[2])?,
+                Vector3::try_new(y[0], y[1], y[2])?,
+                tolerance,
+            )?,
+        }
+    } else {
+        viboceros_command::CommandContext::default()
+    };
     let run = || -> Result<Value, ProbeError> {
         let mut document = viboceros_document::Document::new(tolerance);
         let source_ids = sources
@@ -464,7 +501,11 @@ fn generated_surface_command(
             source_ids.iter().copied(),
             viboceros_document::SelectionMode::Replace,
         )?;
-        viboceros_command::CommandRegistry::with_builtins().execute(&mut document, command)?;
+        viboceros_command::CommandRegistry::with_builtins().execute_in_context(
+            &mut document,
+            command,
+            context,
+        )?;
         let surfaces = document
             .objects()
             .filter(|object| !source_ids.contains(&object.id()))

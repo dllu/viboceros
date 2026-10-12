@@ -176,14 +176,19 @@ the torus; the major radius must exceed the positive minor radius. Its U and V
 domains are the major- and minor-circle circumferences, matching OpenNURBS.
 
 `ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
-polyline, and NURBS curves. A numeric distance uses World Z; two points define
+polyline, and NURBS curves. A numeric distance uses the common normal of parallel
+planar profiles, oriented with its largest world-axis component positive.
+Incompatible or nonplanar profiles and a single line use the active CPlane Z.
+Parallel offset lines use their containing plane. Two points define
 an arbitrary direction; entering it without either starts the two-pick viewport
 workflow. `BothSides=Yes` sweeps equally in both directions and
-`DeleteInput=Yes` removes the profiles. Matching Rhino, outputs are unselected,
+`DeleteInput=Yes` removes profiles that produced geometry. Lines parallel to the
+extrusion direction are skipped. Matching Rhino, outputs are unselected,
 ungrouped objects with fresh attributes on the current layer. `Solid=Yes`
 turns each closed planar profile into an exact closed B-rep with a ruled wall,
 two planar trimmed caps, shared rational rim curves, and one shared wall seam;
 open and nonplanar profiles remain exact NURBS surfaces.
+See [numeric directions and qualification](../smlib-extrusion-direction.md).
 Profile parameters are retained, including native polyline vertex intervals;
 extrusion does not assign a new chord-length parameterization. The
 [native extrusion oracle](../curve-cutting.md) verifies the single-surface policy.

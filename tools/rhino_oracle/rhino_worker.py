@@ -14242,26 +14242,41 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
-    if kind in ("curve_extrude_command", "curve_revolve_command", "curve_apex_command", "curve_along_command"):
+    if kind in ("curve_extrude_command", "curve_extrude_direction_command", "curve_revolve_command", "curve_apex_command", "curve_along_command"):
         document = Rhino.RhinoDoc.ActiveDoc
-        source = _cut_source(operation["curve"])
+        sources = []
+        try:
+            for definition in (operation["curves"] if kind == "curve_extrude_direction_command" else [operation["curve"]]):
+                sources.append(_cut_source(definition))
+        except Exception:
+            for source in sources:
+                source.Dispose()
+            raise
         path = None
         if kind == "curve_along_command":
             try:
                 path = _cut_source(operation["path"])
             except Exception:
-                source.Dispose()
+                for source in sources:
+                    source.Dispose()
                 raise
         def extrude_native_curve():
             original_ids = set(item.Id for item in document.Objects)
+            viewport = document.Views.ActiveView.ActiveViewport
+            original_plane = viewport.GetConstructionPlane()
             try:
                 document.Objects.UnselectAll()
-                source_id = document.Objects.AddCurve(source)
+                source_ids = [document.Objects.AddCurve(source) for source in sources]
                 path_id = document.Objects.AddCurve(path) if path is not None else System.Guid.Empty
-                document.Objects.Select(source_id)
+                for source_id in source_ids:
+                    document.Objects.Select(source_id)
+                if operation.get("cplane") is not None:
+                    origin, x_axis, y_axis = operation["cplane"]
+                    viewport.SetConstructionPlane(Rhino.Geometry.Plane(_point(origin), _vector(x_axis), _vector(y_axis)))
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
-                if kind == "curve_extrude_command":
-                    command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                if kind in ("curve_extrude_command", "curve_extrude_direction_command"):
+                    command = "_-ExtrudeCrv _Output=_Surface _Solid=_No _BothSides=_%s %.17g" % (
+                        "Yes" if operation.get("both_sides", False) else "No", float(operation["distance"]))
                 elif kind == "curve_apex_command":
                     command = "_-ExtrudeCrvToPoint _Output=_Surface _Solid=_No _SplitAtTangents=_No %s" % (
                         ",".join("%.17g" % float(v) for v in operation["apex"]))
@@ -14281,8 +14296,8 @@ def _execute(operation, iterations, tolerance):
                     raise ValueError("native extrusion command failed")
                 surfaces = []
                 samples = []
-                for item in document.Objects:
-                    if item.Id in (source_id, path_id) or item.Id in original_ids:
+                for item in sorted(document.Objects, key=lambda obj: obj.RuntimeSerialNumber):
+                    if item.Id in source_ids or item.Id == path_id or item.Id in original_ids:
                         continue
                     geometry = item.Geometry
                     if isinstance(geometry, Rhino.Geometry.Brep) and geometry.Faces.Count == 1:
@@ -14302,6 +14317,7 @@ def _execute(operation, iterations, tolerance):
                     result["samples"] = samples
                 return result
             finally:
+                viewport.SetConstructionPlane(original_plane)
                 Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
                 document.Objects.UnselectAll()
                 for item in list(document.Objects):
@@ -14310,7 +14326,8 @@ def _execute(operation, iterations, tolerance):
         try:
             return _measure(iterations, extrude_native_curve)
         finally:
-            source.Dispose()
+            for source in sources:
+                source.Dispose()
             if path is not None:
                 path.Dispose()
 

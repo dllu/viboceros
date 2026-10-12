@@ -22,6 +22,7 @@
 #include <SmFilletExecutive.h>
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
+#include <SmPointSet.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -796,6 +797,50 @@ extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[
               "set extrusion distance domain");
         vb_preserve_surface_basis(*surface, {curve->knots, {0, 0, vector.Length(), vector.Length()}});
         *out = vb_export_surface(*surface);
+    });
+}
+
+extern "C" int vb_curves_plane_normal(const VbCurve *const *curves, size_t count, double tolerance,
+                                       int *has_plane, double normal[3], char *error, size_t capacity) {
+    if (has_plane) *has_plane = 0;
+    return guarded(error, capacity, [&] {
+        require(curves && count && count <= limit && has_plane && normal &&
+                    std::isfinite(tolerance) && tolerance > 0, "Invalid curve group plane query");
+        SmTArray<SmPoint3d> controls;
+        for (size_t i = 0; i < count; ++i) {
+            require(curves[i], "Missing curve group plane input");
+            const auto &points = curves[i]->points;
+            require(controls.GetSize() <= limit - points.size() / 4, "Curve group plane resource limit");
+            const SmPoint3d origin(points[0], points[1], points[2]);
+            for (size_t j = 0; j < points.size(); j += 4) {
+                const auto relative = SmPoint3d(points[j], points[j + 1], points[j + 2]) - origin;
+                require(std::isfinite(relative.x) && std::isfinite(relative.y) && std::isfinite(relative.z),
+                        "Curve group plane coordinates exceed finite range");
+                controls.Add(relative);
+            }
+        }
+        SmPointSet3d set(controls, tolerance);
+        if (set.IsLinear()) {
+            controls.ReSet();
+            for (size_t i = 0; i < count; ++i) {
+                const auto &points = curves[i]->points;
+                for (size_t j = 0; j < points.size(); j += 4)
+                    controls.Add(SmPoint3d(points[j], points[j + 1], points[j + 2]));
+            }
+            SmPointSet3d positions(controls, tolerance);
+            set = positions;
+        }
+        if (!set.IsPlanar()) return;
+        auto direction = set.GetNormal();
+        // GetNormal runs a different classifier through SetUpAxes and can
+        // replace the cached point-set type. Accept only its planar result.
+        if (!set.IsPlanar()) return;
+        check(direction.Unitize(), "normalize modeling curve group plane");
+        for (int i = 0; i < 3; ++i) {
+            require(std::isfinite(direction[i]), "Invalid curve group plane normal");
+            normal[i] = direction[i];
+        }
+        *has_plane = 1;
     });
 }
 

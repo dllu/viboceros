@@ -9,7 +9,9 @@ Sheets use `SmApiCreateExtrude`, with the existing native `SwapUV` and
 `Reparameterize` operations to retain profile U and physical-distance V.
 Standalone surfaces reuse the B-rep bridge's NURBS payload writer and decoder,
 with a separate owned surface snapshot. No native pointer enters document data.
-BothSides translates the profile to the start offset and sweeps to the end.
+Direction and placement now follow the shared
+[numeric batch policy](smlib-extrusion-direction.md); native curve handles are
+imported once and BothSides placement uses the owned output transform.
 Open or nonplanar profiles remain sheets when Solid is requested.
 
 Capped planar profiles use the existing `SmPrimitiveCreation` linear-sweep

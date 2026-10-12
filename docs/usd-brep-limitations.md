@@ -8,6 +8,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Point-set normal queries can replace a previous classification (source audit).**
+  `SmPointSet3d::IsPlanar` uses its sequential classifier, while `GetNormal`
+  calls `SetUpAxes`, which reruns best-fit classification and replaces the
+  cached type. `SetUpAxes` also ignores the fitter's return status. The extrusion
+  adapter rechecks the type after requesting the normal and requires a finite,
+  unitizable vector. No fixture inducing a hidden fitter failure has been retained;
+  these convenience queries are not independent geometry-validity certificates.
+  Source: [SmPointSet.cpp](../third_party/usd-brep/source/SMLib/src/SmPointSet.cpp)
+  and [numeric extrusion](smlib-extrusion-direction.md).
 - **Surface-control getter stride documentation is reversed.**
   `GetControlPointsExpert` documents U as the inner dimension, but validates
   U stride against the full V row and enumerates V inside U. Following the
@@ -194,12 +203,13 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
-- **Numeric extrusion direction is still an application policy difference.**
+- **Fixed: numeric extrusion direction was an application policy difference.**
   The live short-span XZ profile is extruded along positive Y by Rhino, while
-  the application's numeric ExtrudeCrv path uses global Z. The low-level native
-  sheet producer passes explicit-vector interpolation checks. This is an app
-  command-default gap, not a demonstrated usd-brep geometry bug. See
-  [new modeling observations](smlib-modeling-basis.md).
+  the application's numeric ExtrudeCrv path used global Z. The command now uses
+  native classification of parallel profile directions, positive dominant-axis
+  orientation and active CPlane fallback. This was an app command-default gap,
+  not a demonstrated usd-brep geometry bug. See
+  [direction qualification](smlib-extrusion-direction.md).
 - **Short-span revolution has a different V domain.** The new live command
   uses V `[0, 10.837476096278881]` in Rhino and `[0, 1]` in Viboceros. The tensor
   controls, weights, U basis and full-degree V knot-group multiplicities match,
