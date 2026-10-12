@@ -37,6 +37,8 @@ target_compile_definitions(sm_api_boolean_bounds_example PRIVATE SM_BOOLEAN_BOUN
 target_link_libraries(sm_api_boolean_bounds_example PRIVATE SM_API)
 add_executable(viboceros_usd_brep_smoke smoke.cpp)
 target_link_libraries(viboceros_usd_brep_smoke PRIVATE SM_API)
+add_executable(viboceros_usd_brep_knot_removal_probe knot_removal_probe.cpp)
+target_link_libraries(viboceros_usd_brep_knot_removal_probe PRIVATE SMLib)
 enable_testing()
 add_test(NAME upstream_boolean_bounds COMMAND sm_api_boolean_bounds_example)
 add_test(NAME native_smoke COMMAND viboceros_usd_brep_smoke)

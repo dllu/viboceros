@@ -8,6 +8,30 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Repeated endpoint averages can round outside the source interval.**
+  For a cubic fit, `N_CrvGetGrevilleAbscissa` averages three copies of `0.8`
+  into `0.8000000000000002`. `N_CrvEvalPt` then rejects the sample. Native
+  knot removal reproduced this on ordinary `[0, 0.1]` and `[-0.1, 0]` domains
+  after binary chart scaling. The shared fitting adapter supplies exact
+  clamped endpoint parameters and homogeneous controls to the native fitter,
+  retaining native Greville/evaluation calls for interior samples. This adds
+  no interpolation solver. The decimal-domain regression compares complete
+  output definitions with the portable backend.
+  The existing portable mean helper had the same repeated-value rounding
+  issue; it now preserves an identical finite knot value exactly. Source:
+  [NL_CrvNurb.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvNurb.cpp) and
+  [qualification](smlib-knot-removal.md).
+- **Boundary span search skips valid narrow spans.** `N_BasisFindSpan` uses
+  an absolute `1e-12` threshold while advancing past allegedly degenerate
+  endpoint spans. On the rational quadratic with knots
+  `[-2, -1, 0, 0.3, 0.7, 1, 2, 3] * 2^-360`, start/end splitting dropped both
+  interior breaks while returning success. Native refinement now shares an
+  exactly reversible binary chart with fitting, restores the original chart,
+  and rejects changed interior knots or domains. Independent clamping and
+  removal regressions retain the source shape across chart/weight scales.
+  Source: [NL_BasisBasic.cpp](../third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp)
+  and [qualification](smlib-knot-removal.md). Arbitrary extreme span ratios
+  remain unqualified; conditioning is not a blanket native validity certificate.
 - **Greville averages can overflow on finite knot vectors.**
   `N_CrvGetGrevilleAbscissa` sums the degree's knots before dividing and returns
   `NL_NO` even when the result is infinity. A cubic-to-quintic deformable
@@ -265,6 +289,14 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Dedicated knot removal differs from Rhino's interpolation rule.**
+  `N_CrvRemoveKnot` uses a tolerance-bound removal algorithm. On the retained
+  cubic-middle fixture, tolerance `1e10` removes one knot but leaves a maximum
+  control-coordinate difference of `3.473170830538584` from Rhino. The adapter
+  instead shares the existing native homogeneous interpolation producer with
+  ChangeDegree. This is a command compatibility difference, not an upstream
+  geometry-invalidity claim. See [qualification](smlib-knot-removal.md) and
+  [direct native probe](../tools/usd_brep/knot_removal_probe.cpp).
 - **Native edge-surface exact matching retains a near-knot distinction.**
   In the two-multispan ruled fixture, domain mapping produces knots `0.3` and
   `0.30000000000000004`. The native adapter retains both, giving five profile
@@ -310,7 +342,7 @@ issues reported by NVIDIA that have not all been reproduced here.
 ## Adapter restrictions, not established upstream bugs
 
 - **Native raw NURBS edits have bounded input and output resources.**
-  InsertKnot, MakeNonPeriodic and ChangeDegree use NLib directly, with the
+  InsertKnot, MakeNonPeriodic, ChangeDegree and RemoveKnot use NLib directly, with the
   pinned degree-17 limit and a one-million-control cap. A common binary weight
   scale conditions homogeneous inputs; every exported Euclidean coordinate
   and restored weight must be finite and every weight nonzero. Extreme weight

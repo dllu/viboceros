@@ -1,0 +1,163 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "cubic-middle",
+      "comparison": {
+        "id": "cubic-middle",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-15,
+        "viboceros_ns_per_iteration": 6144.0,
+        "rhino_ns_per_iteration": 23231506.0,
+        "rhino_to_viboceros_ratio": 3781.1695963541665,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "rational-quadratic-repeated",
+      "comparison": {
+        "id": "rational-quadratic-repeated",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 3696.0,
+        "rhino_ns_per_iteration": 1235962.0,
+        "rhino_to_viboceros_ratio": 334.405303030303,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "model-space-nearest",
+      "comparison": {
+        "id": "model-space-nearest",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-15,
+        "viboceros_ns_per_iteration": 4608.0,
+        "rhino_ns_per_iteration": 396729.0,
+        "rhino_to_viboceros_ratio": 86.095703125,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "surface-remove-u",
+      "comparison": {
+        "id": "surface-remove-u",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "viboceros_ns_per_iteration": 12288.0,
+        "rhino_ns_per_iteration": 7598877.0,
+        "rhino_to_viboceros_ratio": 618.398193359375,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "surface-remove-v",
+      "comparison": {
+        "id": "surface-remove-v",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 10400.0,
+        "rhino_ns_per_iteration": 21736145.0,
+        "rhino_to_viboceros_ratio": 2090.013942307692,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 5,
+  "matched": 5,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "fixture": "tools/rhino_oracle/fixtures/remove_knot.json",
+  "observation": "tools/rhino_oracle/observations/remove_knot.json",
+  "fixture_sha256": "1f682d698cf4d6103b899f52b7486ce934ee4b6c38f2c3ccedbcc94332ebbbcb",
+  "observation_sha256": "78946fabd1a9c677abbadda7f030b2a0c708c0c9613ea8803f4311fb7052d2ec",
+  "scope": "Complete raw Rhino SDK knot-removal definitions. No comparison-time filtering or chart normalization. Command selection, identity and history are covered separately by command tests.",
+  "direct_native_removal": {
+    "source": "tools/usd_brep/knot_removal_probe.cpp",
+    "source_sha256": "cd3c6fdad0d043a444c9bbc6b221b14f956ccc7890cdb2e28c339af61a397712",
+    "fixture_id": "cubic-middle",
+    "tolerance": 10000000000.0,
+    "max_control_coordinate_difference_from_rhino": 3.473170830538584,
+    "value": {
+      "degree": 3,
+      "control_points": [
+        {
+          "point": [
+            0,
+            0,
+            0
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            2,
+            4,
+            1
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            7,
+            -4.333333333333334,
+            2.666666666666667
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            7.800000000000001,
+            -0.5999999999999996,
+            -0.7999999999999998
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            12,
+            5,
+            2
+          ],
+          "weight": 1
+        },
+        {
+          "point": [
+            15,
+            -2,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "knots": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        5,
+        8,
+        8,
+        8,
+        8
+      ]
+    },
+    "scope": "Direct native removal exposes degree, full knots and every control/weight; it is not the application output."
+  }
+}

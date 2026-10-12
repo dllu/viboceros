@@ -18,9 +18,9 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     clamped_uniform_knots, control_polygon_length, control_polygon_range,
-    curve_coordinates_coincident, curve_points_coincident, de_boor, knot_vector_is_periodic,
-    project_homogeneous, stable_divided_difference, stable_knot_mean, uniform_knots_like,
-    validate_direction,
+    curve_coordinates_coincident, curve_points_coincident, de_boor,
+    knot_removal_candidate_by_parameter, knot_vector_is_periodic, project_homogeneous,
+    stable_divided_difference, stable_knot_mean, uniform_knots_like, validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
@@ -2150,14 +2150,8 @@ impl NurbsSurface {
     /// Midpoint ties select the higher knot value. A non-clamped U direction
     /// is clamped without changing its active domain before interpolation.
     pub fn try_remove_knot_u_near(&self, parameter: Real) -> Result<Self, GeometryError> {
-        if self.is_periodic_u() {
-            return Err(GeometryError::PeriodicKnotRemovalUnsupported {
-                direction: "surface U direction",
-            });
-        }
-        self.map_u_control_curves(|curve| {
-            curve.try_remove_knot_near_parameter_with_periodic_topology(parameter, false)
-        })
+        let knot = self.knot_removal_candidate(SurfaceKnotDirection::U, parameter)?;
+        self.map_u_control_curves(|curve| curve.try_remove_knot_value(knot))
     }
 
     /// Removes the V knot value nearest `parameter` and adjusts every fixed-U
@@ -2165,14 +2159,43 @@ impl NurbsSurface {
     /// Midpoint ties select the higher knot value. A non-clamped V direction
     /// is clamped without changing its active domain before interpolation.
     pub fn try_remove_knot_v_near(&self, parameter: Real) -> Result<Self, GeometryError> {
-        if self.is_periodic_v() {
+        let knot = self.knot_removal_candidate(SurfaceKnotDirection::V, parameter)?;
+        self.map_v_control_curves(|curve| curve.try_remove_knot_value(knot))
+    }
+
+    /// Select the removable knot by parameter distance, using the complete
+    /// tensor's periodic state and choosing the higher knot on midpoint ties.
+    /// This performs no control fitting or endpoint clamping.
+    pub fn knot_removal_candidate(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+    ) -> Result<Real, GeometryError> {
+        let (degree, knots, periodic, description) = match direction {
+            SurfaceKnotDirection::U => (
+                self.degree_u,
+                &self.knots_u,
+                self.is_periodic_u(),
+                "surface U direction",
+            ),
+            SurfaceKnotDirection::V => (
+                self.degree_v,
+                &self.knots_v,
+                self.is_periodic_v(),
+                "surface V direction",
+            ),
+            SurfaceKnotDirection::Both => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "knot removal requires one surface direction",
+                });
+            }
+        };
+        if periodic {
             return Err(GeometryError::PeriodicKnotRemovalUnsupported {
-                direction: "surface V direction",
+                direction: description,
             });
         }
-        self.map_v_control_curves(|curve| {
-            curve.try_remove_knot_near_parameter_with_periodic_topology(parameter, false)
-        })
+        knot_removal_candidate_by_parameter(degree, knots, parameter)
     }
 
     /// Inserts one control row in the requested parameter direction.

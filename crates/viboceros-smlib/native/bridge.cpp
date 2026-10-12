@@ -312,6 +312,15 @@ extern "C" int vb_nurbs_change_degree(const VbNurbsData *source, int axis, size_
     });
 }
 
+extern "C" int vb_nurbs_fit_basis(const VbNurbsData *source, int axis, const double *knots,
+                                 size_t knot_count, VbSurfaceData **out, char *error, size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out,"Invalid basis-fitting payload");
+        *out=vb_fit_nurbs(*source,axis,knots,knot_count);
+    });
+}
+
 extern "C" int vb_shape_edge_surface(const VbCurve *const *curves, size_t count, double tolerance,
                                       VbSolid **out, char *error, size_t capacity) {
     if (out) *out = nullptr;

@@ -81,6 +81,9 @@ abscissae; rational weights, object identity, attributes, selection, and undo
 are preserved. Periodic directions are rejected, while non-clamped directions
 are first clamped without changing their active domain.
 
+Linux `native-smlib` builds use the shared native homogeneous fitting adapter;
+see [qualification and limits](../smlib-knot-removal.md).
+
 `RemoveControlPoint index Direction=U|V` requires exactly one selected curve
 or untrimmed NURBS surface and removes a zero-based control-point grip in
 place. On a surface, the complete row at that index is removed in the chosen

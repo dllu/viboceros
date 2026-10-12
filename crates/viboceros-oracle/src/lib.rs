@@ -5591,8 +5591,13 @@ fn execute(
             curve, parameter, ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_remove_knot_near(black_box(*parameter))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::remove_curve_knot(&source, black_box(*parameter))
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_remove_knot_near(black_box(*parameter));
+                result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -6000,9 +6005,23 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || match direction {
-                SurfaceKnotAxis::U => source.try_remove_knot_u_near(black_box(*parameter)),
-                SurfaceKnotAxis::V => source.try_remove_knot_v_near(black_box(*parameter)),
+            let (surface, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::remove_surface_knot(
+                    &source,
+                    match direction {
+                        SurfaceKnotAxis::U => SurfaceKnotDirection::U,
+                        SurfaceKnotAxis::V => SurfaceKnotDirection::V,
+                    },
+                    black_box(*parameter),
+                )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = match direction {
+                    SurfaceKnotAxis::U => source.try_remove_knot_u_near(black_box(*parameter)),
+                    SurfaceKnotAxis::V => source.try_remove_knot_v_near(black_box(*parameter)),
+                };
+                result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

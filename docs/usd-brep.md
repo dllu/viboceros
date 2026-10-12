@@ -34,6 +34,8 @@ and endpoint splitting with the complete original NURBS definitions.
 curves and tensor directions, including the existing split/reversal workarounds.
 [ChangeDegree](smlib-degree-change.md) shares the same clamping adapter and
 uses native exact elevation or homogeneous interpolation for all command modes.
+[RemoveKnot](smlib-knot-removal.md) reuses the same homogeneous fitting producer
+and shared selection policy, including exact chart preservation through clamping.
 
 ## Reproduce the native trial
 

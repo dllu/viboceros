@@ -1912,12 +1912,19 @@ impl NurbsCurve {
     /// are shape-preservingly clamped before interpolation so the result keeps
     /// the source active domain and a valid knot vector.
     pub fn try_remove_knot_near(&self, parameter: Real) -> Result<Self, GeometryError> {
+        let knot = self.knot_removal_candidate(parameter)?;
+        self.try_remove_knot_value(knot)
+    }
+
+    /// Select the removable knot using the command's model-space distance
+    /// and tie policy, without constructing new controls.
+    pub fn knot_removal_candidate(&self, parameter: Real) -> Result<Real, GeometryError> {
         self.validate_parameter(parameter)?;
         if self.is_periodic() {
             return Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" });
         }
         let knot_index = self.closest_active_knot_index_by_curve_point(parameter)?;
-        self.try_remove_selected_knot(parameter, knot_index)
+        removable_knot_at_index(self.degree, &self.knots, knot_index, parameter)
     }
 
     /// Inserts one Rhino-style control point at a curve parameter.
@@ -2195,39 +2202,9 @@ impl NurbsCurve {
         Ok((self.try_remove_multiple_knot_groups(&removals)?, removed))
     }
 
-    pub(crate) fn try_remove_knot_near_parameter_with_periodic_topology(
-        &self,
-        parameter: Real,
-        periodic: bool,
-    ) -> Result<Self, GeometryError> {
-        self.validate_parameter(parameter)?;
-        if periodic {
-            return Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" });
-        }
-        let knot_index = self.nearest_active_knot_index_by_parameter(parameter)?;
-        self.try_remove_selected_knot(parameter, knot_index)
-    }
-
-    fn try_remove_selected_knot(
-        &self,
-        parameter: Real,
-        knot_index: usize,
-    ) -> Result<Self, GeometryError> {
-        let first_removable = self.degree + 1;
-        let last_removable = self.control_points.len() - 1;
-        if knot_index < first_removable || knot_index > last_removable {
-            return Err(GeometryError::NoRemovableKnot { parameter });
-        }
-
-        let knot = self.knots[knot_index];
+    pub(crate) fn try_remove_knot_value(&self, knot: Real) -> Result<Self, GeometryError> {
         let source = self.clamped_to_active_domain()?;
-        let first_removable = source.degree + 1;
-        let last_removable = source.control_points.len() - 1;
-        let clamped_index = (first_removable..=last_removable)
-            .find(|index| source.knots[*index] == knot)
-            .ok_or(GeometryError::NoRemovableKnot { parameter })?;
-        let mut knots = source.knots.clone();
-        knots.remove(clamped_index);
+        let knots = knot_removal_knots(source.degree, &source.knots, knot)?;
         source.interpolate_homogeneous_in_basis(
             source.degree,
             knots,
@@ -4053,31 +4030,6 @@ impl NurbsCurve {
             .ok_or(GeometryError::NoRemovableKnot { parameter })
     }
 
-    fn nearest_active_knot_index_by_parameter(
-        &self,
-        parameter: Real,
-    ) -> Result<usize, GeometryError> {
-        let first = self.degree;
-        let last = self.control_points.len();
-        let active_knots = &self.knots[first..=last];
-        let upper = active_knots.partition_point(|knot| *knot <= parameter);
-        if upper == 0 {
-            return Ok(first);
-        }
-        if upper == active_knots.len() {
-            return Ok(last);
-        }
-
-        let lower_index = first + upper - 1;
-        let upper_index = first + upper;
-        let midpoint = stable_knot_mean(&[self.knots[lower_index], self.knots[upper_index]])?;
-        Ok(if parameter < midpoint {
-            lower_index
-        } else {
-            upper_index
-        })
-    }
-
     fn validate_parameter(&self, parameter: Real) -> Result<(), GeometryError> {
         require_finite([parameter], "NURBS parameter")?;
         let domain = self.domain();
@@ -4585,33 +4537,10 @@ pub fn degree_change_knots(
     deformable: bool,
     source_knots: &[Real],
 ) -> Result<Vec<Real>, GeometryError> {
-    if source_degree == 0 || desired_degree == 0 {
+    if desired_degree == 0 {
         return Err(GeometryError::InvalidDegree);
     }
-    let minimum = source_degree
-        .checked_add(1)
-        .and_then(|n| n.checked_mul(2))
-        .ok_or(GeometryError::InvalidDegree)?;
-    if source_knots.len() < minimum
-        || source_knots.iter().any(|k| !k.is_finite())
-        || source_knots.windows(2).any(|k| k[0] > k[1])
-    {
-        return Err(GeometryError::InvalidKnotVector {
-            context: "invalid degree-change source basis",
-        });
-    }
-    let start = source_knots[source_degree];
-    let end = source_knots[source_knots.len() - source_degree - 1];
-    if start >= end
-        || source_knots[..=source_degree].iter().any(|k| *k != start)
-        || source_knots[source_knots.len() - source_degree - 1..]
-            .iter()
-            .any(|k| *k != end)
-    {
-        return Err(GeometryError::InvalidKnotVector {
-            context: "degree-change basis must be clamped",
-        });
-    }
+    let (start, end) = clamped_basis_domain(source_degree, source_knots)?;
     let interior = &source_knots[source_degree + 1..source_knots.len() - source_degree - 1];
     let exact_elevation = desired_degree > source_degree && !deformable;
     let degree_delta = desired_degree.saturating_sub(source_degree);
@@ -4662,6 +4591,116 @@ pub fn degree_change_knots(
     knots.extend(std::iter::repeat_n(end, endpoint_multiplicity));
     debug_assert_eq!(knots.len(), knot_count);
     Ok(knots)
+}
+
+/// Remove one occurrence of an interior knot from a clamped basis. This
+/// chooses knot structure only; a backend constructs the replacement controls.
+pub fn knot_removal_knots(
+    degree: usize,
+    source_knots: &[Real],
+    knot: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    let (start, end) = clamped_basis_domain(degree, source_knots)?;
+    if !knot.is_finite() || knot <= start || knot >= end {
+        return Err(GeometryError::NoRemovableKnot { parameter: knot });
+    }
+    let interior_end = source_knots.len() - degree - 1;
+    let index = (degree + 1..interior_end)
+        .find(|i| source_knots[*i] == knot)
+        .ok_or(GeometryError::NoRemovableKnot { parameter: knot })?;
+    let mut knots = source_knots.to_vec();
+    knots.remove(index);
+    Ok(knots)
+}
+
+fn removable_knot_at_index(
+    degree: usize,
+    knots: &[Real],
+    index: usize,
+    parameter: Real,
+) -> Result<Real, GeometryError> {
+    let count = knots.len() - degree - 1;
+    if index < degree + 1
+        || index >= count
+        || knots[index] <= knots[degree]
+        || knots[index] >= knots[count]
+    {
+        return Err(GeometryError::NoRemovableKnot { parameter });
+    }
+    Ok(knots[index])
+}
+
+pub(crate) fn knot_removal_candidate_by_parameter(
+    degree: usize,
+    knots: &[Real],
+    parameter: Real,
+) -> Result<Real, GeometryError> {
+    let count = knots
+        .len()
+        .checked_sub(degree)
+        .and_then(|n| n.checked_sub(1))
+        .ok_or(GeometryError::InvalidKnotVector {
+            context: "invalid knot-removal source basis",
+        })?;
+    validate_direction(degree, count, knots)?;
+    require_finite([parameter], "NURBS parameter")?;
+    let domain_start = knots[degree];
+    let domain_end = knots[count];
+    if parameter < domain_start || parameter > domain_end {
+        return Err(GeometryError::ParameterOutOfDomain {
+            parameter,
+            domain_start,
+            domain_end,
+        });
+    }
+    let active = &knots[degree..=count];
+    let upper = active.partition_point(|k| *k <= parameter);
+    let index = if upper == 0 {
+        degree
+    } else if upper == active.len() {
+        count
+    } else {
+        let lower = degree + upper - 1;
+        let next = degree + upper;
+        let midpoint = stable_knot_mean(&[knots[lower], knots[next]])?;
+        if parameter < midpoint { lower } else { next }
+    };
+    removable_knot_at_index(degree, knots, index, parameter)
+}
+
+fn clamped_basis_domain(
+    source_degree: usize,
+    source_knots: &[Real],
+) -> Result<(Real, Real), GeometryError> {
+    if source_degree == 0 {
+        return Err(GeometryError::InvalidDegree);
+    }
+    let minimum = source_degree
+        .checked_add(1)
+        .and_then(|n| n.checked_mul(2))
+        .ok_or(GeometryError::InvalidDegree)?;
+    if source_knots.len() < minimum {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "invalid clamped NURBS basis",
+        });
+    }
+    validate_direction(
+        source_degree,
+        source_knots.len() - source_degree - 1,
+        source_knots,
+    )?;
+    let start = source_knots[source_degree];
+    let end = source_knots[source_knots.len() - source_degree - 1];
+    if source_knots[..=source_degree].iter().any(|k| *k != start)
+        || source_knots[source_knots.len() - source_degree - 1..]
+            .iter()
+            .any(|k| *k != end)
+    {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "NURBS basis must be clamped",
+        });
+    }
+    Ok((start, end))
 }
 
 fn minimal_change_periodic_knots(
@@ -4819,6 +4858,12 @@ fn periodic_greville_parameters(
 }
 
 pub(crate) fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
+    if let Some(first) = knots.first()
+        && knots.iter().all(|knot| knot == first)
+    {
+        require_finite([*first], "periodic Greville abscissa")?;
+        return Ok(*first);
+    }
     let divisor = knots.len() as Real;
     let direct = knots.iter().sum::<Real>() / divisor;
     if direct.is_finite() {

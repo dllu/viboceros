@@ -3933,7 +3933,7 @@ impl Command for RemoveKnotCommand {
                     return Err(CommandError::RemoveKnotCurveRequiresParameter);
                 };
                 (
-                    Geometry::NurbsCurve(curve.try_remove_knot_near(parameter)?),
+                    Geometry::NurbsCurve(knot_refinement::remove_curve(&curve, parameter)?),
                     "curve",
                 )
             }
@@ -3948,11 +3948,19 @@ impl Command for RemoveKnotCommand {
                 };
                 let (surface, description) = match options.direction {
                     SurfaceKnotDirection::U => (
-                        surface.try_remove_knot_u_near(parameter)?,
+                        knot_refinement::remove_surface(
+                            &surface,
+                            SurfaceKnotDirection::U,
+                            parameter,
+                        )?,
                         "surface U direction",
                     ),
                     SurfaceKnotDirection::V => (
-                        surface.try_remove_knot_v_near(parameter)?,
+                        knot_refinement::remove_surface(
+                            &surface,
+                            SurfaceKnotDirection::V,
+                            parameter,
+                        )?,
                         "surface V direction",
                     ),
                     SurfaceKnotDirection::Both => unreachable!("RemoveKnot only parses U or V"),

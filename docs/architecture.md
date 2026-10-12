@@ -51,6 +51,9 @@ endpoint control solver in native command or oracle construction.
 [ChangeDegree](smlib-degree-change.md) shares endpoint preparation and target-knot
 policy, delegating exact elevation and homogeneous interpolation to NLib for
 curves and tensor control rows/columns.
+[RemoveKnot](smlib-knot-removal.md) shares that fitting producer and endpoint
+preparation. Curve model-space selection and tensor parameter selection stay
+in one geometry policy; native command/oracle edits no longer use its Rust solver.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,
