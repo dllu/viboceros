@@ -134,7 +134,7 @@ fn nonperiodic_conversion_matches_complete_recorded_rhino_definitions() {
             )
             .unwrap();
             let result = make_curve_non_periodic(&source).unwrap();
-            let actual = json!({"degree":result.degree(),"domain":[*result.domain().start(),*result.domain().end()],"knots":result.knots(),"control_points":control_values(result.control_points()),"closed":result.is_closed().unwrap(),"periodic":result.is_periodic()});
+            let actual = curve_value(&result);
             compare(&actual, expected, op["id"].as_str().unwrap());
         } else {
             let source = NurbsSurface::try_new_rational(
@@ -148,7 +148,7 @@ fn nonperiodic_conversion_matches_complete_recorded_rhino_definitions() {
             )
             .unwrap();
             let result = make_surface_non_periodic(&source, SurfaceKnotDirection::Both).unwrap();
-            let actual = json!({"degree":[result.degree_u(),result.degree_v()],"domain_u":[*result.domain_u().start(),*result.domain_u().end()],"domain_v":[*result.domain_v().start(),*result.domain_v().end()],"knots_u":result.knots_u(),"knots_v":result.knots_v(),"control_count":[result.control_point_count_u(),result.control_point_count_v()],"control_points":control_values(result.control_points()),"periodic_u":result.is_periodic_u(),"periodic_v":result.is_periodic_v()});
+            let actual = surface_value(&result);
             compare(&actual, expected, op["id"].as_str().unwrap());
         }
     }
@@ -156,7 +156,7 @@ fn nonperiodic_conversion_matches_complete_recorded_rhino_definitions() {
 
 #[path = "support/nurbs.rs"]
 mod support;
-use support::{compare, control_values, knots, points};
+use support::{compare, control_values, curve_value, knots, points, surface_value};
 
 #[test]
 fn native_curve_refinement_matches_complete_rhino_definitions_and_preserves_source() {

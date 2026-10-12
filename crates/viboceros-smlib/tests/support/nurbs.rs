@@ -1,5 +1,13 @@
 use serde_json::{Value, json};
-use viboceros_geometry::{Point3, WeightedPoint3};
+use viboceros_geometry::{NurbsCurve, NurbsSurface, Point3, WeightedPoint3};
+
+pub(super) fn curve_value(curve: &NurbsCurve) -> Value {
+    json!({"degree":curve.degree(),"domain":[*curve.domain().start(),*curve.domain().end()],"knots":curve.knots(),"control_points":control_values(curve.control_points()),"closed":curve.is_closed().unwrap(),"periodic":curve.is_periodic()})
+}
+
+pub(super) fn surface_value(surface: &NurbsSurface) -> Value {
+    json!({"degree":[surface.degree_u(),surface.degree_v()],"domain_u":[*surface.domain_u().start(),*surface.domain_u().end()],"domain_v":[*surface.domain_v().start(),*surface.domain_v().end()],"knots_u":surface.knots_u(),"knots_v":surface.knots_v(),"control_count":[surface.control_point_count_u(),surface.control_point_count_v()],"control_points":control_values(surface.control_points()),"periodic_u":surface.is_periodic_u(),"periodic_v":surface.is_periodic_v()})
+}
 pub(super) fn points(value: &Value) -> Vec<WeightedPoint3> {
     value
         .as_array()

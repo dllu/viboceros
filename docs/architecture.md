@@ -54,6 +54,9 @@ curves and tensor control rows/columns.
 [RemoveKnot](smlib-knot-removal.md) shares that fitting producer and endpoint
 preparation. Curve model-space selection and tensor parameter selection stay
 in one geometry policy; native command/oracle edits no longer use its Rust solver.
+[RemoveMultiKnot](smlib-multiple-knot-removal.md) shares group selection and
+target-basis metadata, refitting complete groups with the same native producer
+in descending parameter order and recomputing V candidates after U edits.
 
 The document's [native block catalog](block-definitions.md) retains shared geometry
 definitions and nested affine references, with atomic graph validation, history,

@@ -104,6 +104,9 @@ are preserved; periodic directions are rejected atomically. Non-clamped inputs
 are first clamped to their existing active domains so the output knot vectors
 remain valid.
 
+Linux `native-smlib` builds delegate ordered group refits to the shared native
+interpolator; see [qualification and limits](../smlib-multiple-knot-removal.md).
+
 ## Exact conversion
 
 [`ToNURBS`](to-nurbs.md) exactly converts curves and triangle/quad meshes. Copies

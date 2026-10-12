@@ -341,8 +341,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Multiple-knot removal uses ordered refits and sampled crease selection.**
+  RemoveMultiKnot shares native homogeneous fitting with RemoveKnot rather than
+  adding another control solver. Groups are refitted in descending parameter
+  order; surfaces finish U before reevaluating V candidates. Roundoff can
+  accumulate through long sequences, and the shared transverse angle samples
+  do not certify a continuous maximum. Approximation deviation is also
+  uncertified. These are adapter/command-policy qualifications, not reproduced
+  upstream geometry bugs. See [qualification](smlib-multiple-knot-removal.md).
 - **Native raw NURBS edits have bounded input and output resources.**
-  InsertKnot, MakeNonPeriodic, ChangeDegree and RemoveKnot use NLib directly, with the
+  InsertKnot, MakeNonPeriodic, ChangeDegree, RemoveKnot and RemoveMultiKnot use
+  NLib directly, with the
   pinned degree-17 limit and a one-million-control cap. A common binary weight
   scale conditions homogeneous inputs; every exported Euclidean coordinate
   and restored weight must be finite and every weight nonzero. Extreme weight

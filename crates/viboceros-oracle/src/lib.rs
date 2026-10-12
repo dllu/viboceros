@@ -5619,11 +5619,20 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let ((curve, _), elapsed) = measure(iterations, || {
-                source.try_remove_multiple_knots(
+            let ((curve, _), elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::remove_curve_multiple_knots(
+                    &source,
                     black_box(*remove_fully_multiple_knots),
                     black_box(maximum_kink_angle_degrees.to_radians()),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_remove_multiple_knots(
+                    black_box(*remove_fully_multiple_knots),
+                    black_box(maximum_kink_angle_degrees.to_radians()),
+                );
+                result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -6075,12 +6084,22 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let ((surface, _), elapsed) = measure(iterations, || {
-                source.try_remove_multiple_knots(
+            let ((surface, _), elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::remove_surface_multiple_knots(
+                    &source,
                     SurfaceKnotDirection::Both,
                     black_box(*remove_fully_multiple_knots),
                     black_box(maximum_kink_angle_degrees.to_radians()),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_remove_multiple_knots(
+                    SurfaceKnotDirection::Both,
+                    black_box(*remove_fully_multiple_knots),
+                    black_box(maximum_kink_angle_degrees.to_radians()),
+                );
+                result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

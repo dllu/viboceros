@@ -1,18 +1,10 @@
 #![cfg(feature = "native")]
-use serde_json::{Value, json};
+use serde_json::Value;
 use viboceros_geometry::{NurbsCurve, NurbsSurface, Point3, SurfaceKnotDirection, WeightedPoint3};
 use viboceros_smlib::{remove_curve_knot, remove_surface_knot};
 #[path = "support/nurbs.rs"]
 mod support;
-use support::{compare, control_values, knots, points};
-
-fn curve_value(curve: &NurbsCurve) -> Value {
-    json!({"degree":curve.degree(),"domain":[*curve.domain().start(),*curve.domain().end()],"knots":curve.knots(),"control_points":control_values(curve.control_points()),"closed":curve.is_closed().unwrap(),"periodic":curve.is_periodic()})
-}
-
-fn surface_value(surface: &NurbsSurface) -> Value {
-    json!({"degree":[surface.degree_u(),surface.degree_v()],"domain_u":[*surface.domain_u().start(),*surface.domain_u().end()],"domain_v":[*surface.domain_v().start(),*surface.domain_v().end()],"knots_u":surface.knots_u(),"knots_v":surface.knots_v(),"control_count":[surface.control_point_count_u(),surface.control_point_count_v()],"control_points":control_values(surface.control_points()),"periodic_u":surface.is_periodic_u(),"periodic_v":surface.is_periodic_v()})
-}
+use support::{compare, curve_value, knots, points, surface_value};
 
 #[test]
 fn native_removal_matches_all_raw_rhino_curve_and_tensor_cases_without_mutating_sources() {

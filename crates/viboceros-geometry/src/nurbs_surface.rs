@@ -17,8 +17,8 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
-    clamped_uniform_knots, control_polygon_length, control_polygon_range,
-    curve_coordinates_coincident, curve_points_coincident, de_boor,
+    basis_interior_knot_groups, clamped_uniform_knots, control_polygon_length,
+    control_polygon_range, curve_coordinates_coincident, curve_points_coincident, de_boor,
     knot_removal_candidate_by_parameter, knot_vector_is_periodic, project_homogeneous,
     stable_divided_difference, stable_knot_mean, uniform_knots_like, validate_direction,
 };
@@ -2294,6 +2294,45 @@ impl NurbsSurface {
         remove_fully_multiple_knots: bool,
         maximum_kink_angle_radians: Real,
     ) -> Result<(Self, usize), GeometryError> {
+        self.validate_multiple_knot_removal(direction, maximum_kink_angle_radians)?;
+        let mut result = self.clone();
+        let mut removed = 0;
+        if direction.includes_u() {
+            let removals = result.multiple_knot_removal_candidates(
+                SurfaceKnotDirection::U,
+                remove_fully_multiple_knots,
+                maximum_kink_angle_radians,
+            )?;
+            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
+            if !removals.is_empty() {
+                result = result.map_u_control_curves(|curve| {
+                    curve.try_remove_multiple_knot_groups(&removals)
+                })?;
+            }
+        }
+        if direction.includes_v() {
+            let removals = result.multiple_knot_removal_candidates(
+                SurfaceKnotDirection::V,
+                remove_fully_multiple_knots,
+                maximum_kink_angle_radians,
+            )?;
+            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
+            if !removals.is_empty() {
+                result = result.map_v_control_curves(|curve| {
+                    curve.try_remove_multiple_knot_groups(&removals)
+                })?;
+            }
+        }
+        Ok((result, removed))
+    }
+
+    /// Validate all selected periodic directions before a backend begins any
+    /// U/V editing. This preserves error priority and atomic command staging.
+    pub fn validate_multiple_knot_removal(
+        &self,
+        direction: SurfaceKnotDirection,
+        maximum_kink_angle_radians: Real,
+    ) -> Result<(), GeometryError> {
         if !maximum_kink_angle_radians.is_finite()
             || !(0.0..=std::f64::consts::PI).contains(&maximum_kink_angle_radians)
         {
@@ -2310,69 +2349,35 @@ impl NurbsSurface {
             });
         }
 
-        let mut result = self.clone();
-        let mut removed = 0;
-        if direction.includes_u() {
-            let removals = result.multiple_knot_removals(
-                SurfaceKnotDirection::U,
-                remove_fully_multiple_knots,
-                maximum_kink_angle_radians,
-            )?;
-            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
-            if !removals.is_empty() {
-                result = result.map_u_control_curves(|curve| {
-                    curve.try_remove_multiple_knot_groups(&removals)
-                })?;
-            }
-        }
-        if direction.includes_v() {
-            let removals = result.multiple_knot_removals(
-                SurfaceKnotDirection::V,
-                remove_fully_multiple_knots,
-                maximum_kink_angle_radians,
-            )?;
-            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
-            if !removals.is_empty() {
-                result = result.map_v_control_curves(|curve| {
-                    curve.try_remove_multiple_knot_groups(&removals)
-                })?;
-            }
-        }
-        Ok((result, removed))
+        Ok(())
     }
 
-    fn multiple_knot_removals(
+    /// Choose ascending groups for one axis using the current tensor's sampled
+    /// crease angles. For Both, callers process U then recompute V candidates.
+    /// Validate periodicity on the original tensor before beginning those edits.
+    pub fn multiple_knot_removal_candidates(
         &self,
         direction: SurfaceKnotDirection,
         remove_fully_multiple_knots: bool,
         maximum_kink_angle_radians: Real,
     ) -> Result<Vec<(Real, usize)>, GeometryError> {
-        let (degree, structural_curve) = match direction {
-            SurfaceKnotDirection::U => (
-                self.degree_u,
-                NurbsCurve::try_new_rational(
-                    self.degree_u,
-                    self.control_points[..self.control_point_count_u].to_vec(),
-                    self.knots_u.clone(),
-                )?,
-            ),
-            SurfaceKnotDirection::V => (
-                self.degree_v,
-                NurbsCurve::try_new_rational(
-                    self.degree_v,
-                    (0..self.control_point_count_v)
-                        .map(|v| self.control_points[self.control_index(0, v)])
-                        .collect(),
-                    self.knots_v.clone(),
-                )?,
-            ),
+        if !maximum_kink_angle_radians.is_finite()
+            || !(0.0..=std::f64::consts::PI).contains(&maximum_kink_angle_radians)
+        {
+            return Err(GeometryError::InvalidKnotRemovalAngle);
+        }
+        let (degree, knots) = match direction {
+            SurfaceKnotDirection::U => (self.degree_u, &self.knots_u),
+            SurfaceKnotDirection::V => (self.degree_v, &self.knots_v),
             SurfaceKnotDirection::Both => {
-                unreachable!("multiple-knot removals inspect one surface direction at a time")
+                return Err(GeometryError::InvalidControlNet {
+                    context: "multiple-knot candidates require one surface direction",
+                });
             }
         };
 
         let mut removals = Vec::new();
-        for (knot, multiplicity) in structural_curve.interior_knot_groups() {
+        for (knot, multiplicity) in basis_interior_knot_groups(degree, knots) {
             let eligible = if remove_fully_multiple_knots {
                 let is_multiple = multiplicity > 1 || degree == 1;
                 if !is_multiple || multiplicity > degree {

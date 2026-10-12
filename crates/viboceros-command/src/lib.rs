@@ -4143,7 +4143,8 @@ impl Command for RemoveMultiKnotCommand {
         for object in document.selected_objects() {
             let (geometry, removed) = match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
-                    let (surface, removed) = surface.try_remove_multiple_knots(
+                    let (surface, removed) = knot_refinement::remove_multiple_surface(
+                        surface,
                         SurfaceKnotDirection::Both,
                         options.remove_fully_multiple_knots,
                         options.maximum_kink_angle_radians,
@@ -4154,7 +4155,8 @@ impl Command for RemoveMultiKnotCommand {
                     let Some(curve) = geometry.nurbs_curve_representation()? else {
                         continue;
                     };
-                    let (curve, removed) = curve.try_remove_multiple_knots(
+                    let (curve, removed) = knot_refinement::remove_multiple_curve(
+                        &curve,
                         options.remove_fully_multiple_knots,
                         options.maximum_kink_angle_radians,
                     )?;

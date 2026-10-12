@@ -36,6 +36,8 @@ curves and tensor directions, including the existing split/reversal workarounds.
 uses native exact elevation or homogeneous interpolation for all command modes.
 [RemoveKnot](smlib-knot-removal.md) reuses the same homogeneous fitting producer
 and shared selection policy, including exact chart preservation through clamping.
+[RemoveMultiKnot](smlib-multiple-knot-removal.md) reuses that native fitter for
+ordered group collapse and U-then-V tensor edits with shared crease selection.
 
 ## Reproduce the native trial
 

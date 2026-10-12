@@ -2159,6 +2159,24 @@ impl NurbsCurve {
         remove_fully_multiple_knots: bool,
         maximum_kink_angle_radians: Real,
     ) -> Result<(Self, usize), GeometryError> {
+        let removals = self.multiple_knot_removal_candidates(
+            remove_fully_multiple_knots,
+            maximum_kink_angle_radians,
+        )?;
+        let removed = removals.iter().map(|(_, count)| *count).sum();
+        if removed == 0 {
+            return Ok((self.clone(), 0));
+        }
+        Ok((self.try_remove_multiple_knot_groups(&removals)?, removed))
+    }
+
+    /// Choose ascending interior knot groups and removal counts using the
+    /// command's strict angle filter, without fitting new controls.
+    pub fn multiple_knot_removal_candidates(
+        &self,
+        remove_fully_multiple_knots: bool,
+        maximum_kink_angle_radians: Real,
+    ) -> Result<Vec<(Real, usize)>, GeometryError> {
         if !maximum_kink_angle_radians.is_finite()
             || !(0.0..=std::f64::consts::PI).contains(&maximum_kink_angle_radians)
         {
@@ -2195,11 +2213,7 @@ impl NurbsCurve {
             }
         }
 
-        let removed = removals.iter().map(|(_, count)| *count).sum();
-        if removed == 0 {
-            return Ok((self.clone(), 0));
-        }
-        Ok((self.try_remove_multiple_knot_groups(&removals)?, removed))
+        Ok(removals)
     }
 
     pub(crate) fn try_remove_knot_value(&self, knot: Real) -> Result<Self, GeometryError> {
@@ -2213,18 +2227,7 @@ impl NurbsCurve {
     }
 
     pub(crate) fn interior_knot_groups(&self) -> Vec<(Real, usize)> {
-        let domain = self.domain();
-        let mut groups = Vec::new();
-        let mut index = 0;
-        while index < self.knots.len() {
-            let knot = self.knots[index];
-            let after = self.knots.partition_point(|candidate| *candidate <= knot);
-            if knot > *domain.start() && knot < *domain.end() {
-                groups.push((knot, after - index));
-            }
-            index = after;
-        }
-        groups
+        basis_interior_knot_groups(self.degree, &self.knots)
     }
 
     pub(crate) fn kink_angle_at(&self, knot: Real) -> Result<Real, GeometryError> {
@@ -2272,15 +2275,8 @@ impl NurbsCurve {
         }
         let mut result = self.clamped_to_active_domain()?;
         for (knot, removal_count) in removals.iter().rev() {
-            let first = result.knots.partition_point(|candidate| *candidate < *knot);
-            let after = result
-                .knots
-                .partition_point(|candidate| *candidate <= *knot);
-            if *removal_count == 0 || after - first < *removal_count {
-                return Err(GeometryError::KnotRemovalSolveFailed);
-            }
-            let mut knots = result.knots.clone();
-            knots.drain(after - removal_count..after);
+            let knots =
+                knot_group_removal_knots(result.degree, &result.knots, *knot, *removal_count)?;
             result = result.interpolate_homogeneous_in_basis(
                 result.degree,
                 knots,
@@ -4600,17 +4596,48 @@ pub fn knot_removal_knots(
     source_knots: &[Real],
     knot: Real,
 ) -> Result<Vec<Real>, GeometryError> {
+    knot_group_removal_knots(degree, source_knots, knot, 1)
+}
+
+/// Remove a specified number of repetitions from one interior group in a
+/// clamped basis. Backends supply replacement controls separately.
+pub fn knot_group_removal_knots(
+    degree: usize,
+    source_knots: &[Real],
+    knot: Real,
+    removal_count: usize,
+) -> Result<Vec<Real>, GeometryError> {
     let (start, end) = clamped_basis_domain(degree, source_knots)?;
     if !knot.is_finite() || knot <= start || knot >= end {
         return Err(GeometryError::NoRemovableKnot { parameter: knot });
     }
-    let interior_end = source_knots.len() - degree - 1;
-    let index = (degree + 1..interior_end)
-        .find(|i| source_knots[*i] == knot)
-        .ok_or(GeometryError::NoRemovableKnot { parameter: knot })?;
+    let first = source_knots.partition_point(|k| *k < knot);
+    let after = source_knots.partition_point(|k| *k <= knot);
+    if after == first {
+        return Err(GeometryError::NoRemovableKnot { parameter: knot });
+    }
+    if removal_count == 0 || after - first < removal_count {
+        return Err(GeometryError::KnotRemovalSolveFailed);
+    }
     let mut knots = source_knots.to_vec();
-    knots.remove(index);
+    knots.drain(after - removal_count..after);
     Ok(knots)
+}
+
+pub(crate) fn basis_interior_knot_groups(degree: usize, knots: &[Real]) -> Vec<(Real, usize)> {
+    let start = knots[degree];
+    let end = knots[knots.len() - degree - 1];
+    let mut groups = Vec::new();
+    let mut index = 0;
+    while index < knots.len() {
+        let knot = knots[index];
+        let after = knots.partition_point(|candidate| *candidate <= knot);
+        if knot > start && knot < end {
+            groups.push((knot, after - index));
+        }
+        index = after;
+    }
+    groups
 }
 
 fn removable_knot_at_index(

@@ -9,6 +9,33 @@ fn removal_error(error: viboceros_smlib::Error) -> CommandError {
     }
 }
 
+pub(super) fn remove_multiple_curve(
+    source: &NurbsCurve,
+    fully: bool,
+    angle: Real,
+) -> Result<(NurbsCurve, usize), CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let result = viboceros_smlib::remove_curve_multiple_knots(source, fully, angle)
+        .map_err(removal_error)?;
+    #[cfg(not(feature = "native-smlib"))]
+    let result = source.try_remove_multiple_knots(fully, angle)?;
+    Ok(result)
+}
+
+pub(super) fn remove_multiple_surface(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    fully: bool,
+    angle: Real,
+) -> Result<(NurbsSurface, usize), CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let result = viboceros_smlib::remove_surface_multiple_knots(source, direction, fully, angle)
+        .map_err(removal_error)?;
+    #[cfg(not(feature = "native-smlib"))]
+    let result = source.try_remove_multiple_knots(direction, fully, angle)?;
+    Ok(result)
+}
+
 pub(super) fn remove_curve(
     source: &NurbsCurve,
     parameter: Real,

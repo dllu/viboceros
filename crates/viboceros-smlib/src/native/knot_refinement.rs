@@ -106,6 +106,92 @@ pub fn remove_surface_knot(
     brep::surface_from_native(fit_basis(NurbsInput::surface(&clamped), axis, &knots)?)
 }
 
+/// Collapse the command-selected groups from higher to lower parameters,
+/// fitting each complete group once with the shared native interpolator.
+pub fn remove_curve_multiple_knots(
+    source: &NurbsCurve,
+    remove_fully_multiple_knots: bool,
+    maximum_kink_angle_radians: f64,
+) -> Result<(NurbsCurve, usize), Error> {
+    let removals = source.multiple_knot_removal_candidates(
+        remove_fully_multiple_knots,
+        maximum_kink_angle_radians,
+    )?;
+    let removed = removals.iter().map(|(_, count)| *count).sum();
+    if removals.is_empty() {
+        return Ok((source.clone(), 0));
+    }
+    let mut result = clamp_curve(source)?;
+    for (knot, count) in removals.iter().rev() {
+        let knots = viboceros_geometry::knot_group_removal_knots(
+            result.degree(),
+            result.knots(),
+            *knot,
+            *count,
+        )?;
+        result = brep::curve_from_native(fit_basis(NurbsInput::curve(&result), 0, &knots)?)?;
+    }
+    Ok((result, removed))
+}
+
+/// Collapse selected U groups, then recompute and collapse V groups on the
+/// edited tensor. Validate the original periodic flags before either edit.
+pub fn remove_surface_multiple_knots(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    remove_fully_multiple_knots: bool,
+    maximum_kink_angle_radians: f64,
+) -> Result<(NurbsSurface, usize), Error> {
+    source.validate_multiple_knot_removal(direction, maximum_kink_angle_radians)?;
+    let mut result = source.clone();
+    let mut removed = 0;
+    for (axis, selected) in [
+        (
+            SurfaceKnotDirection::U,
+            matches!(
+                direction,
+                SurfaceKnotDirection::U | SurfaceKnotDirection::Both
+            ),
+        ),
+        (
+            SurfaceKnotDirection::V,
+            matches!(
+                direction,
+                SurfaceKnotDirection::V | SurfaceKnotDirection::Both
+            ),
+        ),
+    ] {
+        if !selected {
+            continue;
+        }
+        let removals = result.multiple_knot_removal_candidates(
+            axis,
+            remove_fully_multiple_knots,
+            maximum_kink_angle_radians,
+        )?;
+        if removals.is_empty() {
+            continue;
+        }
+        result = clamp_surface_direction(&result, axis)?;
+        for (knot, count) in removals.iter().rev() {
+            let (native_axis, degree, before) = match axis {
+                SurfaceKnotDirection::U => (0, result.degree_u(), result.knots_u()),
+                SurfaceKnotDirection::V => (1, result.degree_v(), result.knots_v()),
+                SurfaceKnotDirection::Both => unreachable!("stages choose one parameter axis"),
+            };
+            let knots =
+                viboceros_geometry::knot_group_removal_knots(degree, before, *knot, *count)?;
+            result = brep::surface_from_native(fit_basis(
+                NurbsInput::surface(&result),
+                native_axis,
+                &knots,
+            )?)?;
+            removed += count;
+        }
+    }
+    Ok((result, removed))
+}
+
 struct NurbsInput<'a> {
     degree: [usize; 2],
     count: [usize; 2],

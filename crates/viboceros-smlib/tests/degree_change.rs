@@ -4,7 +4,7 @@ use viboceros_geometry::{NurbsCurve, NurbsSurface};
 use viboceros_smlib::{change_curve_degree, change_surface_degree};
 #[path = "support/nurbs.rs"]
 mod support;
-use support::{compare, control_values, knots, points};
+use support::{compare, control_values, curve_value, knots, points, surface_value};
 
 #[test]
 fn unsupported_discontinuous_elevation_returns_an_error_without_source_mutation() {
@@ -129,7 +129,7 @@ fn native_degree_changes_match_all_curve_and_surface_modes_without_source_mutati
                     deformable,
                 )
                 .unwrap();
-                let actual = json!({"degree":result.degree(),"domain":[*result.domain().start(),*result.domain().end()],"knots":result.knots(),"control_points":control_values(result.control_points()),"closed":result.is_closed().unwrap(),"periodic":result.is_periodic()});
+                let actual = curve_value(&result);
                 compare(&actual, &record["value"], op["id"].as_str().unwrap());
                 assert_eq!(source, before);
             } else {
@@ -151,7 +151,7 @@ fn native_degree_changes_match_all_curve_and_surface_modes_without_source_mutati
                     deformable,
                 )
                 .unwrap();
-                let actual = json!({"degree":[result.degree_u(),result.degree_v()],"domain_u":[*result.domain_u().start(),*result.domain_u().end()],"domain_v":[*result.domain_v().start(),*result.domain_v().end()],"knots_u":result.knots_u(),"knots_v":result.knots_v(),"control_count":[result.control_point_count_u(),result.control_point_count_v()],"control_points":control_values(result.control_points()),"periodic_u":result.is_periodic_u(),"periodic_v":result.is_periodic_v()});
+                let actual = surface_value(&result);
                 compare(&actual, &record["value"], op["id"].as_str().unwrap());
                 assert_eq!(source, before);
             }

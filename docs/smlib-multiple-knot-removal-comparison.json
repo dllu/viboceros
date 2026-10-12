@@ -1,0 +1,174 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "cubic-exclude-full",
+      "comparison": {
+        "id": "cubic-exclude-full",
+        "passed": true,
+        "max_absolute_error": 1.0658141036401503e-14,
+        "viboceros_ns_per_iteration": 3392.0,
+        "rhino_ns_per_iteration": 108604431.0,
+        "rhino_to_viboceros_ratio": 32017.81574292453,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "cubic-below-full-kink",
+      "comparison": {
+        "id": "cubic-below-full-kink",
+        "passed": true,
+        "max_absolute_error": 1.0658141036401503e-14,
+        "viboceros_ns_per_iteration": 2896.0,
+        "rhino_ns_per_iteration": 119087219.0,
+        "rhino_to_viboceros_ratio": 41121.277279005524,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "cubic-above-full-kink",
+      "comparison": {
+        "id": "cubic-above-full-kink",
+        "passed": true,
+        "max_absolute_error": 5.329070518200751e-15,
+        "viboceros_ns_per_iteration": 4560.0,
+        "rhino_ns_per_iteration": 100044250.0,
+        "rhino_to_viboceros_ratio": 21939.52850877193,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "linear-remove-interior",
+      "comparison": {
+        "id": "linear-remove-interior",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 3712.0,
+        "rhino_ns_per_iteration": 103202820.0,
+        "rhino_to_viboceros_ratio": 27802.483836206895,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "rational-cubic-exclude-full",
+      "comparison": {
+        "id": "rational-cubic-exclude-full",
+        "passed": true,
+        "max_absolute_error": 1.2434497875801753e-14,
+        "viboceros_ns_per_iteration": 2448.0,
+        "rhino_ns_per_iteration": 110839844.0,
+        "rhino_to_viboceros_ratio": 45277.714052287585,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "extrusion-exclude-full",
+      "comparison": {
+        "id": "extrusion-exclude-full",
+        "passed": true,
+        "max_absolute_error": 1.0658141036401503e-14,
+        "viboceros_ns_per_iteration": 5168.0,
+        "rhino_ns_per_iteration": 168731689.0,
+        "rhino_to_viboceros_ratio": 32649.320626934983,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "extrusion-below-full-crease",
+      "comparison": {
+        "id": "extrusion-below-full-crease",
+        "passed": true,
+        "max_absolute_error": 1.0658141036401503e-14,
+        "viboceros_ns_per_iteration": 7120.0,
+        "rhino_ns_per_iteration": 176147461.0,
+        "rhino_to_viboceros_ratio": 24739.81193820225,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "extrusion-above-full-crease",
+      "comparison": {
+        "id": "extrusion-above-full-crease",
+        "passed": true,
+        "max_absolute_error": 5.329070518200751e-15,
+        "viboceros_ns_per_iteration": 8864.0,
+        "rhino_ns_per_iteration": 181465149.0,
+        "rhino_to_viboceros_ratio": 20472.15128610108,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "varying-crease-below-maximum",
+      "comparison": {
+        "id": "varying-crease-below-maximum",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1120.0,
+        "rhino_ns_per_iteration": 131843567.0,
+        "rhino_to_viboceros_ratio": 117717.47053571428,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "varying-crease-above-maximum",
+      "comparison": {
+        "id": "varying-crease-above-maximum",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 3104.0,
+        "rhino_ns_per_iteration": 144996643.0,
+        "rhino_to_viboceros_ratio": 46712.836018041235,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "tensor-both-directions",
+      "comparison": {
+        "id": "tensor-both-directions",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "viboceros_ns_per_iteration": 19264.0,
+        "rhino_ns_per_iteration": 168968201.0,
+        "rhino_to_viboceros_ratio": 8771.189835963454,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 11,
+  "matched": 11,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "backend": "native-smlib; usd-brep 1.0.0",
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "fixture": "tools/rhino_oracle/fixtures/remove_multi_knot.json",
+  "observation": "tools/rhino_oracle/observations/remove_multi_knot.json",
+  "fixture_sha256": "f4524833971e7914e3ebf38f6606b33cb978717333f3c274f7282c2f9779983c",
+  "observation_sha256": "400869e5b78b66530dc370a650b1758e338cff419f5708d50fd2f2f09b765caa",
+  "scope": "Complete raw definitions from actual Rhino RemoveMultiKnot commands. No comparison-time filtering or chart normalization. Sampled crease selection does not certify a continuous maximum angle."
+}
