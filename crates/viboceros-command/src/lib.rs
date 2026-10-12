@@ -21970,7 +21970,27 @@ mod tests {
         );
         let object = document.object(id).unwrap();
         assert_eq!(object.attributes(), &attributes);
-        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        let Geometry::NurbsCurve(actual) = object.geometry() else {
+            panic!("seam relocation must preserve the NURBS class");
+        };
+        assert_eq!(actual.degree(), expected.degree());
+        assert_eq!(actual.knots(), expected.knots());
+        assert_eq!(actual.is_periodic(), expected.is_periodic());
+        assert_eq!(
+            actual.control_points().len(),
+            expected.control_points().len()
+        );
+        // Native refinement and projection differ from portable arithmetic by
+        // an ULP; definition geometry is compared numerically, history exactly.
+        for (a, e) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(a.point().distance_to(e.point()).unwrap() < 1e-12);
+            assert!((a.weight() - e.weight()).abs() < 1e-12);
+        }
+        let relocated_geometry = object.geometry().clone();
         assert!(document.is_selected(id));
         assert!(
             document
@@ -21987,10 +22007,7 @@ mod tests {
             &Geometry::NurbsCurve(source)
         );
         registry.execute(&mut document, "Redo").unwrap();
-        assert_eq!(
-            document.object(id).unwrap().geometry(),
-            &Geometry::NurbsCurve(expected)
-        );
+        assert_eq!(document.object(id).unwrap().geometry(), &relocated_geometry);
     }
 
     #[test]

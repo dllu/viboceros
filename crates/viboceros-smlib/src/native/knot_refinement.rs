@@ -95,7 +95,23 @@ pub fn subcurve_at_arc_length(
     length: f64,
     tolerance: Tolerance,
 ) -> Result<Option<(viboceros_geometry::Curve3, f64)>, Error> {
-    source.try_subcurve_at_arc_length_with_nurbs(anchor, length, tolerance, &mut trim_curve)
+    source.try_subcurve_at_arc_length_with_operations(
+        anchor,
+        length,
+        tolerance,
+        &mut trim_curve,
+        &mut change_curve_seam,
+    )
+}
+
+/// Relocate a closed NURBS seam using native refinement or checked segment
+/// extraction, with the shared cyclic control/knot and homogeneous join policy.
+pub fn change_curve_seam(source: &NurbsCurve, parameter: f64) -> Result<NurbsCurve, Error> {
+    source.try_change_closed_seam_with_operations(
+        parameter,
+        &mut insert_curve_knot,
+        &mut |curve, parameter, _periodic| split_curve(curve, parameter),
+    )
 }
 
 /// Split once into the two clamped parameter intervals with native extraction.

@@ -5143,8 +5143,13 @@ fn execute(
             curve, parameter, ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_change_closed_seam(black_box(*parameter))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::change_curve_seam(&source, black_box(*parameter))
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_change_closed_seam(black_box(*parameter));
+                result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }

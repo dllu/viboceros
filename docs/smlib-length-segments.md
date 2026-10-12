@@ -9,25 +9,27 @@ retain their native types and polycurve leaves retain their local domains.
 
 Length integration, inversion, confirmation-side selection, full-traversal limits,
 open-end clamping and midpoint-radius policy retain their existing implementation.
-Closed-seam preparation also retains its existing representation policy; its
-periodic refinement is not migrated by this step. The subsequent requested NURBS
-trim uses usd-brep. No new integration, inversion or interpolation solver is added.
+Closed-seam preparation retains its existing representation policy and now uses
+[native refinement and extraction](smlib-curve-seams.md). The subsequent requested
+NURBS trim also uses usd-brep. No new integration, inversion or interpolation solver is added.
 Kernel handles stay outside document history, and preparation is readonly.
 
-`Curve3::try_subcurve_at_arc_length_with_nurbs` adds the caller-supplied exact
-extractor while preserving the endpoint in the original source chart. The native
+`Curve3::try_subcurve_at_arc_length_with_operations` supplies both exact
+extraction and seam relocation while preserving the endpoint in the original source chart. The native
 adapter exposes `subcurve_at_arc_length` with that endpoint. The command helpers
 now return `CommandError`, retaining geometry errors through the existing typed
 conversion and allowing native extraction failures to propagate to previews and
 acceptance. Pure cursor/point-order helpers keep their geometry error types.
 
-The geometry/command/bridge native suite passes 3,563 tests (11 ignored).
+The geometry/command/bridge native suite passes 3,568 tests (11 ignored).
 Four native-feature SubCrv preview tests pass, including numeric/midpoint options,
 locked direction, cancellation, readonly caching and surface-edge reuse.
 Workspace lint passes in both feature configurations with warnings denied;
 workspace formatting also passes.
 Independent native tests compare signed-length pieces against the portable
 reference, including domains, source endpoints, seam crossings and source purity.
+Requested anchors remain exact; solved endpoints use the existing tight numeric
+bound because native seam arithmetic can change them by an ULP.
 A shared-policy test checks both extraction stages and invalid-request rejection
 before backend entry. The existing command regressions cover numeric direction,
 midpoint clamping, markers, option memory, selection, grouping and undo.

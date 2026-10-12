@@ -44,7 +44,7 @@ impl Command for CurveSeamCommand {
                 .closest_parameter(point, document.tolerance())?,
             CurveSeamLocation::Parameter(parameter) => parameter,
         };
-        let relocated = curve.try_change_closed_seam(parameter)?;
+        let relocated = curve_segments::seam(&curve, parameter)?;
         document.replace_object_geometries([(id, Geometry::from(relocated))])?;
         Ok(format!(
             "Set the selected closed curve seam at parameter {parameter}"

@@ -50,6 +50,28 @@ impl Curve3 {
             std::ops::RangeInclusive<Real>,
         ) -> Result<crate::NurbsCurve, E>,
     ) -> Result<Option<(Self, Real)>, E> {
+        self.try_subcurve_at_arc_length_with_operations(
+            anchor,
+            length,
+            tolerance,
+            trim,
+            &mut |curve, parameter| Ok(curve.try_change_closed_seam(parameter)?),
+        )
+    }
+
+    /// Share length sampling and endpoint mapping while delegating both NURBS
+    /// interval extraction and closed-seam preparation to the caller's backend.
+    pub fn try_subcurve_at_arc_length_with_operations<E: From<GeometryError>>(
+        &self,
+        anchor: Real,
+        length: Real,
+        tolerance: Tolerance,
+        trim: &mut impl FnMut(
+            &crate::NurbsCurve,
+            std::ops::RangeInclusive<Real>,
+        ) -> Result<crate::NurbsCurve, E>,
+        seam: &mut impl FnMut(&crate::NurbsCurve, Real) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Option<(Self, Real)>, E> {
         crate::require_finite([anchor, length], "subcurve arc length")?;
         let domain = self.as_ref().domain();
         if !domain.contains(&anchor) || length == 0. {
@@ -62,7 +84,7 @@ impl Curve3 {
             (self.clone(), anchor)
         };
         let source = if oriented.as_ref().is_closed()? {
-            oriented.try_change_closed_seam(anchor)?
+            oriented.try_change_closed_seam_with_nurbs(anchor, seam, trim)?
         } else {
             let end = *oriented.as_ref().domain().end();
             if anchor == end {

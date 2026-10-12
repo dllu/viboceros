@@ -50,19 +50,24 @@ fn native_signed_length_pieces_preserve_endpoints_seams_gauges_and_sources() {
                 "{} endpoint",
                 op["id"]
             );
-            assert_eq!(
-                a.as_ref().domain(),
-                e.as_ref().domain(),
+            assert_eq!(a.as_ref().domain().start(), e.as_ref().domain().start());
+            let (ad, ed) = (*a.as_ref().domain().end(), *e.as_ref().domain().end());
+            // Native seam arithmetic can shift the inverted endpoint by an
+            // ULP. The requested anchor remains exact; the solved end uses
+            // the same tight numeric bound as its source-chart counterpart.
+            assert!(
+                (ad - ed).abs() <= 1e-10 + 1e-12 * ad.abs().max(ed.abs()),
                 "{} domain",
                 op["id"]
             );
             for i in 0..=64 {
                 let t = a.as_ref().parameter_at(i as f64 / 64.).unwrap();
+                let et = e.as_ref().parameter_at(i as f64 / 64.).unwrap();
                 assert!(
                     a.as_ref()
                         .evaluate(t)
                         .unwrap()
-                        .distance_to(e.as_ref().evaluate(t).unwrap())
+                        .distance_to(e.as_ref().evaluate(et).unwrap())
                         .unwrap()
                         < 1e-8,
                     "{} sample {}",

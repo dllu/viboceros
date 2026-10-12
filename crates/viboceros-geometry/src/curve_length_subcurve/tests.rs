@@ -236,3 +236,48 @@ fn external_extractor_is_used_for_anchor_preparation_and_final_piece_without_mut
         );
     }
 }
+
+#[test]
+fn closed_length_preparation_uses_supplied_seam_before_extracting_the_piece() {
+    let source = Curve3::NurbsCurve(
+        crate::NurbsCurve::try_new(
+            3,
+            vec![
+                p(0., 0.),
+                p(2., 0.),
+                p(2., 2.),
+                p(0., 2.),
+                p(0., 0.),
+                p(2., 0.),
+                p(2., 2.),
+            ],
+            vec![0., 0., 1., 2., 3., 4., 5., 6., 7., 8., 8.],
+        )
+        .unwrap(),
+    );
+    let before = source.clone();
+    let calls = std::cell::RefCell::new(Vec::new());
+    let actual = source
+        .try_subcurve_at_arc_length_with_operations(
+            5.5,
+            1.,
+            tol(),
+            &mut |c, range| {
+                calls.borrow_mut().push(("trim", *range.start()));
+                c.try_trimmed(range)
+            },
+            &mut |c, parameter| {
+                calls.borrow_mut().push(("seam", parameter));
+                c.try_change_closed_seam(parameter)
+            },
+        )
+        .unwrap()
+        .unwrap();
+    assert_eq!(*calls.borrow(), vec![("seam", 5.5), ("trim", 5.5)]);
+    assert_eq!(source, before);
+    let expected = source
+        .try_subcurve_at_arc_length_with_endpoint(5.5, 1., tol())
+        .unwrap()
+        .unwrap();
+    assert_eq!(actual, expected);
+}

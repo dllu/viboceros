@@ -16,7 +16,9 @@ issues reported by NVIDIA that have not all been reproduced here.
   at a shifted active-start group during endpoint integration. This interior
   call was audited, not executed. Native single-parameter splits now extract
   two checked intervals with `N_CrvExtractCrvSeg`; full-order sides keep their
-  independent controls. See [directed segments](smlib-directed-segments.md),
+  independent controls. [Closed-curve seam preparation](smlib-curve-seams.md)
+  also reuses this checked split adapter rather than calling the unsafe splitter.
+  See [directed segments](smlib-directed-segments.md),
   [NL_CrvTool.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp), and
   [regressions](../crates/viboceros-smlib/tests/directed_segments.rs).
 - **Segment extraction assumes a clamped active end.** For the rational

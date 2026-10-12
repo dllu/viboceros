@@ -96,7 +96,7 @@ pub(super) fn split_curve_with_cutters(
         let domain = native.as_ref().domain();
         let mut start = *domain.start();
         for end in parameters.iter().copied().chain([*domain.end()]) {
-            pieces.push(native.try_trimmed(start..=end)?);
+            pieces.push(curve_segments::trimmed(&native, start..=end)?);
             start = end;
         }
     }
@@ -112,19 +112,19 @@ pub(super) fn split_curve_with_cutters(
 /// Interactive cutting commands retain the original closed representation by
 /// relocating its seam before trimming a wrapped interval. The generic Rhino
 /// Curve.Trim/Curve.Split API instead returns a two-part polycurve at the seam.
-fn curve_cut_piece(source: &Curve3, start: Real, end: Real) -> Result<Curve3, GeometryError> {
+fn curve_cut_piece(source: &Curve3, start: Real, end: Real) -> Result<Curve3, CommandError> {
     if start < end {
-        return source.try_trimmed(start..=end);
+        return curve_segments::trimmed(source, start..=end);
     }
     let domain = source.as_ref().domain();
     if end == *domain.start() && start > end {
-        return source.try_trimmed(start..=*domain.end());
+        return curve_segments::trimmed(source, start..=*domain.end());
     }
-    let moved = source.try_change_closed_seam(start)?;
+    let moved = curve_segments::seam(source, start)?;
     if start == end {
         return Ok(moved);
     }
-    moved.try_trimmed(start..=(end + (domain.end() - domain.start())))
+    curve_segments::trimmed(&moved, start..=(end + (domain.end() - domain.start())))
 }
 
 impl Command for TrimCurveCommand {
@@ -225,10 +225,10 @@ impl Command for TrimCurveCommand {
         } else {
             let mut kept = Vec::with_capacity(2);
             if let Some(previous) = next_index.checked_sub(1).map(|index| parameters[index]) {
-                kept.push(native.try_trimmed(domain_start..=previous)?);
+                kept.push(curve_segments::trimmed(&native, domain_start..=previous)?);
             }
             if let Some(next) = parameters.get(next_index).copied() {
-                kept.push(native.try_trimmed(next..=domain_end)?);
+                kept.push(curve_segments::trimmed(&native, next..=domain_end)?);
             }
             kept
         };

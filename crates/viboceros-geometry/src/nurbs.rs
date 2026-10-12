@@ -1706,9 +1706,24 @@ impl NurbsCurve {
     /// when the new seam is already a multiple knot. Non-periodic curves are
     /// split exactly and cyclically appended, retaining rational weights.
     pub fn try_change_closed_seam(&self, parameter: Real) -> Result<Self, GeometryError> {
+        self.try_change_closed_seam_with_operations(
+            parameter,
+            &mut |curve, knot, target| curve.try_insert_knot(knot, target),
+            &mut |curve, knot, periodic| curve.try_split_with_periodic_topology(knot, periodic),
+        )
+    }
+
+    /// Apply the existing seam policy with external exact refinement and split
+    /// operations. The split receives the validated periodic-topology policy.
+    pub fn try_change_closed_seam_with_operations<E: From<GeometryError>>(
+        &self,
+        parameter: Real,
+        refine: &mut impl FnMut(&Self, Real, usize) -> Result<Self, E>,
+        split: &mut impl FnMut(&Self, Real, bool) -> Result<(Self, Self), E>,
+    ) -> Result<Self, E> {
         require_finite([parameter], "curve seam parameter")?;
         if !self.is_closed()? {
-            return Err(GeometryError::CurveSeamMustBeClosed);
+            return Err(GeometryError::CurveSeamMustBeClosed.into());
         }
         let domain = self.domain();
         if !domain.contains(&parameter) {
@@ -1716,20 +1731,21 @@ impl NurbsCurve {
             // OpenNURBS' periodic seam mover receives the original parameter
             // and falls back to clamped split/append outside the old interval.
             let relocated = if wrapped > *domain.start() && wrapped < *domain.end() {
-                self.change_non_periodic_seam(
+                self.change_non_periodic_seam_with_operation(
                     wrapped,
                     *domain.start(),
                     *domain.end(),
                     self.is_periodic(),
+                    split,
                 )?
             } else {
                 self.clone()
             };
-            return relocated.try_reparameterized(
+            return Ok(relocated.try_reparameterized(
                 parameter..=crate::parameter::shifted_parameter(parameter, &domain)?,
-            );
+            )?);
         }
-        self.change_closed_seam_with_periodic_topology(parameter, self.is_periodic())
+        self.change_closed_seam_with_operations(parameter, self.is_periodic(), refine, split)
     }
 
     /// Surface seam relocation flattens an entire control-net direction into
@@ -1750,6 +1766,21 @@ impl NurbsCurve {
         parameter: Real,
         periodic: bool,
     ) -> Result<Self, GeometryError> {
+        self.change_closed_seam_with_operations(
+            parameter,
+            periodic,
+            &mut |curve, knot, target| curve.try_insert_knot(knot, target),
+            &mut |curve, knot, periodic| curve.try_split_with_periodic_topology(knot, periodic),
+        )
+    }
+
+    fn change_closed_seam_with_operations<E: From<GeometryError>>(
+        &self,
+        parameter: Real,
+        periodic: bool,
+        refine: &mut impl FnMut(&Self, Real, usize) -> Result<Self, E>,
+        split: &mut impl FnMut(&Self, Real, bool) -> Result<(Self, Self), E>,
+    ) -> Result<Self, E> {
         let domain = self.domain();
         let start = *domain.start();
         let end = *domain.end();
@@ -1757,12 +1788,17 @@ impl NurbsCurve {
             return Ok(self.clone());
         }
         if parameter == end {
-            return self.translate_parameterization_by_period(start, end, 1);
+            return Ok(self.translate_parameterization_by_period(start, end, 1)?);
         }
         if periodic && self.knot_multiplicity_unchecked(parameter) <= 1 {
-            self.change_periodic_seam(parameter, start, end)
+            Ok(Self::periodic_seam_from_refined(
+                refine(self, parameter, 1)?,
+                parameter,
+                start,
+                end,
+            )?)
         } else {
-            self.change_non_periodic_seam(parameter, start, end, periodic)
+            self.change_non_periodic_seam_with_operation(parameter, start, end, periodic, split)
         }
     }
 
@@ -1780,14 +1816,13 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, self.control_points.clone(), knots)
     }
 
-    fn change_periodic_seam(
-        &self,
+    fn periodic_seam_from_refined(
+        refined: Self,
         parameter: Real,
         domain_start: Real,
         domain_end: Real,
     ) -> Result<Self, GeometryError> {
-        debug_assert!(self.is_periodic());
-        let refined = self.try_insert_knot(parameter, 1)?;
+        debug_assert!(refined.is_periodic());
         let degree = refined.degree;
         let control_count = refined.control_points.len();
         let unique_count = control_count - degree;
@@ -1878,18 +1913,18 @@ impl NurbsCurve {
         Self::try_new_rational(degree, controls, knots)
     }
 
-    fn change_non_periodic_seam(
+    fn change_non_periodic_seam_with_operation<E: From<GeometryError>>(
         &self,
         parameter: Real,
         old_start: Real,
         old_end: Real,
         refine_periodic_topology: bool,
-    ) -> Result<Self, GeometryError> {
-        let (left, right) =
-            self.try_split_with_periodic_topology(parameter, refine_periodic_topology)?;
+        split: &mut impl FnMut(&Self, Real, bool) -> Result<(Self, Self), E>,
+    ) -> Result<Self, E> {
+        let (left, right) = split(self, parameter, refine_periodic_topology)?;
         let shifted_left = left.translate_parameterization_by_period(old_start, old_end, 1)?;
         let join = right.control_points[right.control_points.len() - 1].point;
-        right.try_append_clamped_at_join(&shifted_left, join)
+        Ok(right.try_append_clamped_at_join(&shifted_left, join)?)
     }
 
     /// Returns the exact full-knot-vector multiplicity of `parameter`.

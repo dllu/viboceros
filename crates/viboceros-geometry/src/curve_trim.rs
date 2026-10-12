@@ -219,25 +219,40 @@ impl Curve3 {
     /// Rotates a closed curve's seam while retaining native leaf classes and
     /// parameter speed. The returned interval starts at the requested parameter.
     pub fn try_change_closed_seam(&self, parameter: Real) -> Result<Self, GeometryError> {
+        self.try_change_closed_seam_with_nurbs(
+            parameter,
+            &mut |curve, parameter| curve.try_change_closed_seam(parameter),
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Preserve analytic/composite seam policy while delegating NURBS seam
+    /// relocation and partial NURBS leaves to an external geometry backend.
+    pub fn try_change_closed_seam_with_nurbs<E: From<GeometryError>>(
+        &self,
+        parameter: Real,
+        seam: &mut impl FnMut(&crate::NurbsCurve, Real) -> Result<crate::NurbsCurve, E>,
+        trim: &mut impl FnMut(&crate::NurbsCurve, RangeInclusive<Real>) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         crate::require_finite([parameter], "curve seam parameter")?;
         if !self.as_ref().is_closed()? {
-            return Err(GeometryError::CurveSeamMustBeClosed);
+            return Err(GeometryError::CurveSeamMustBeClosed.into());
         }
         if let Self::NurbsCurve(c) = self {
-            return Ok(Self::NurbsCurve(c.try_change_closed_seam(parameter)?));
+            return Ok(Self::NurbsCurve(seam(c, parameter)?));
         }
         let domain = self.as_ref().domain();
         if !domain.contains(&parameter) {
             let wrapped = wrapped_parameter(parameter, &domain)?;
-            return self
-                .try_change_closed_seam(wrapped)?
-                .try_reparameterized(parameter..=shifted_parameter(parameter, &domain)?);
+            return Ok(self
+                .try_change_closed_seam_with_nurbs(wrapped, seam, trim)?
+                .try_reparameterized(parameter..=shifted_parameter(parameter, &domain)?)?);
         }
         Ok(match self {
             Self::Circle(c) => Self::Circle(c.try_change_closed_seam(parameter)?),
             Self::Arc(c) => Self::Arc(c.try_change_closed_seam(parameter)?),
-            Self::Ellipse(c) => Self::NurbsCurve(c.to_nurbs()?.try_change_closed_seam(parameter)?),
-            Self::NurbsCurve(c) => Self::NurbsCurve(c.try_change_closed_seam(parameter)?),
+            Self::Ellipse(c) => Self::NurbsCurve(seam(&c.to_nurbs()?, parameter)?),
+            Self::NurbsCurve(c) => Self::NurbsCurve(seam(c, parameter)?),
             Self::Polyline(c) => Self::Polyline(polyline_seam(c, parameter)?),
             Self::PolyCurve(c) => {
                 let domain = c.domain();
@@ -249,15 +264,15 @@ impl Curve3 {
                     let segment = c.segments()[0]
                         .as_ref()
                         .to_owned()
-                        .try_change_closed_seam(local)?;
+                        .try_change_closed_seam_with_nurbs(local, seam, trim)?;
                     Self::PolyCurve(PolyCurve3::try_with_segment_domains(
                         vec![CurveSegment3::try_from_curve(&segment)?],
                         vec![parameter, end],
                     )?)
                 } else {
                     Self::PolyCurve(PolyCurve3::concatenate(&[
-                        c.try_trimmed(parameter..=*domain.end())?,
-                        c.try_trimmed(*domain.start()..=parameter)?,
+                        c.try_trimmed_with_nurbs(parameter..=*domain.end(), trim)?,
+                        c.try_trimmed_with_nurbs(*domain.start()..=parameter, trim)?,
                     ])?)
                 }
             }

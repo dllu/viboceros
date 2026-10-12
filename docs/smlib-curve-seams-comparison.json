@@ -1,0 +1,169 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-10,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "periodic-cubic-between-knots",
+      "comparison": {
+        "id": "periodic-cubic-between-knots",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-16,
+        "viboceros_ns_per_iteration": 4128.0,
+        "rhino_ns_per_iteration": 12733459.0,
+        "rhino_to_viboceros_ratio": 3084.655765503876,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-cubic-at-knot",
+      "comparison": {
+        "id": "periodic-cubic-at-knot",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 448.0,
+        "rhino_ns_per_iteration": 2532959.0,
+        "rhino_to_viboceros_ratio": 5653.926339285715,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-clamped-cubic-nonuniform",
+      "comparison": {
+        "id": "closed-clamped-cubic-nonuniform",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 2608.0,
+        "rhino_ns_per_iteration": 411987.0,
+        "rhino_to_viboceros_ratio": 157.97047546012269,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-rational-quadratic",
+      "comparison": {
+        "id": "closed-rational-quadratic",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "viboceros_ns_per_iteration": 1680.0,
+        "rhino_ns_per_iteration": 358582.0,
+        "rhino_to_viboceros_ratio": 213.44166666666666,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-rational-unequal-seam-weights",
+      "comparison": {
+        "id": "closed-rational-unequal-seam-weights",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1376.0,
+        "rhino_ns_per_iteration": 869751.0,
+        "rhino_to_viboceros_ratio": 632.0864825581396,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-degree-one-between-knots",
+      "comparison": {
+        "id": "closed-degree-one-between-knots",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 1568.0,
+        "rhino_ns_per_iteration": 297546.0,
+        "rhino_to_viboceros_ratio": 189.76147959183675,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-at-domain-start",
+      "comparison": {
+        "id": "periodic-at-domain-start",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 64.0,
+        "rhino_ns_per_iteration": 297546.0,
+        "rhino_to_viboceros_ratio": 4649.15625,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-at-domain-end",
+      "comparison": {
+        "id": "periodic-at-domain-end",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 144.0,
+        "rhino_ns_per_iteration": 320435.0,
+        "rhino_to_viboceros_ratio": 2225.2430555555557,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-rational-at-multiple-knot",
+      "comparison": {
+        "id": "periodic-rational-at-multiple-knot",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "viboceros_ns_per_iteration": 3056.0,
+        "rhino_ns_per_iteration": 297546.0,
+        "rhino_to_viboceros_ratio": 97.36452879581152,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "closed-clamped-at-domain-end",
+      "comparison": {
+        "id": "closed-clamped-at-domain-end",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "viboceros_ns_per_iteration": 400.0,
+        "rhino_ns_per_iteration": 228882.0,
+        "rhino_to_viboceros_ratio": 572.205,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "periodic-reparameterized-domain",
+      "comparison": {
+        "id": "periodic-reparameterized-domain",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-16,
+        "viboceros_ns_per_iteration": 1104.0,
+        "rhino_ns_per_iteration": 366211.0,
+        "rhino_to_viboceros_ratio": 331.71286231884056,
+        "differences": []
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 11,
+  "matched": 11,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+  "fixture_sha256": "9c8c6a6ece1969de29de7489110dce8b78237ff6485467fda47c0ae7606f8f6c",
+  "observation_sha256": "756773954f4e2901da67b61f4bc98362b444e1e753d7d1f4219117f132403268"
+}

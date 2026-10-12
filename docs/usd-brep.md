@@ -46,6 +46,8 @@ producer for intersection overlaps and surface-cut clipping.
 with shared curve reversal, closed-seam and composite-leaf policies.
 [Numeric-length and midpoint SubCrv](smlib-length-segments.md) also use the shared
 extractor for anchor-relative preparation and final NURBS intervals.
+[Closed-curve seams](smlib-curve-seams.md) use native knot refinement or checked
+segment extraction for CrvSeam, numeric SubCrv preparation and cutting Split/Trim.
 
 ## Reproduce the native trial
 

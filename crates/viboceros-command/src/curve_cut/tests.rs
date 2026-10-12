@@ -130,6 +130,52 @@ fn closed_seam_is_a_cut_and_wrapped_command_pieces_stay_arcs() {
 }
 
 #[test]
+fn wrapped_nurbs_cut_pieces_preserve_the_original_closed_locus_and_source() {
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let periodic = NurbsCurve::try_new(
+        3,
+        vec![
+            p(0., 0.),
+            p(2., 0.),
+            p(2., 2.),
+            p(0., 2.),
+            p(0., 0.),
+            p(2., 0.),
+            p(2., 2.),
+        ],
+        vec![0., 0., 1., 2., 3., 4., 5., 6., 7., 8., 8.],
+    )
+    .unwrap();
+    let clamped = periodic.try_make_non_periodic().unwrap();
+    for c in [periodic, clamped] {
+        let source = Curve3::NurbsCurve(c);
+        let before = source.clone();
+        let domain = source.as_ref().domain();
+        let period = domain.end() - domain.start();
+        for (start, end) in [(3.25, 5.), (5., 3.25), (5., 2.), (3.25, 3.25)] {
+            let piece = curve_cut_piece(&source, start, end).unwrap();
+            assert!(matches!(piece, Curve3::NurbsCurve(_)));
+            let expected_end = if start < end { end } else { end + period };
+            assert_eq!(piece.as_ref().domain(), start..=expected_end);
+            for i in 0..=64 {
+                let t = piece.as_ref().parameter_at(i as Real / 64.).unwrap();
+                let old_t = if t > *domain.end() { t - period } else { t };
+                assert!(
+                    piece
+                        .as_ref()
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(source.as_ref().evaluate(old_t).unwrap())
+                        .unwrap()
+                        < 1e-10
+                );
+            }
+            assert_eq!(source, before);
+        }
+    }
+}
+
+#[test]
 fn projected_circle_trim_maps_parameters_back_to_the_unprojected_source() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
