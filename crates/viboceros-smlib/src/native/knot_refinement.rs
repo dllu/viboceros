@@ -42,6 +42,44 @@ pub fn sweep_model(
     )
 }
 
+/// Refit/retained rail-basis surface through native rail fitting, clamping,
+/// refinement and homogeneous section interpolation.
+pub fn sweep_surface(
+    sweep: &viboceros_geometry::Sweep1,
+    refit: bool,
+) -> Result<NurbsSurface, Error> {
+    with_sweep_operations(|operations| {
+        if refit {
+            sweep.to_surface_with_operations(operations)
+        } else {
+            sweep.to_rail_basis_surface_with_operations(operations)
+        }
+    })
+}
+
+pub fn fit_sweep_model_surface(sweep: &viboceros_geometry::Sweep1) -> Result<NurbsSurface, Error> {
+    with_sweep_operations(|operations| sweep.fit_model_surface_with_operations(operations))
+}
+
+fn with_sweep_operations(
+    run: impl FnOnce(
+        &mut viboceros_geometry::SweepSurfaceOperations<'_, Error>,
+    ) -> Result<NurbsSurface, Error>,
+) -> Result<NurbsSurface, Error> {
+    let mut clamp = clamp_curve;
+    let mut refine = insert_curve_knot;
+    let mut fit = fit_curve;
+    let mut solve = |input: &viboceros_geometry::FixedInterpolationSystem<'_>| {
+        solve_with_fixed_rows(&input.system, Some(input.fixed_rows))
+    };
+    run(&mut viboceros_geometry::SweepSurfaceOperations {
+        clamp: &mut clamp,
+        refine: &mut refine,
+        fit: &mut fit,
+        solve: &mut solve,
+    })
+}
+
 /// Ordered Loft surface with native common-basis preparation and the shared
 /// section spacing, homogeneous interpolation and endpoint-weight policies.
 pub fn loft_surface(
@@ -1054,4 +1092,41 @@ pub fn insert_surface_knot(
         parameter,
         target,
     )?)
+}
+
+#[cfg(test)]
+mod interpolation_tests {
+    use super::*;
+
+    #[test]
+    fn equal_station_rows_require_independent_fixed_constraints() {
+        // Two separated cubic Bezier intervals represent X=6t and X=7+6t.
+        // Linear precision gives independent controls [0,1,2,3,10,11,12,13].
+        let knots = [0., 0., 0., 0., 0.5, 0.5, 0.5, 0.5, 1., 1., 1., 1.];
+        let parameters = [0., 1. / 6., 1. / 3., 0.5, 0.5, 2. / 3., 5. / 6., 1.];
+        let targets = [0., 1., 2., 3., 10., 11., 12., 13.]
+            .into_iter()
+            .flat_map(|x| [x, 0., 0., 1.])
+            .collect::<Vec<_>>();
+        let system = viboceros_geometry::NurbsInterpolationSystem {
+            degree: 3,
+            knots: &knots,
+            parameters: &parameters,
+            periodic: false,
+            columns: 4,
+            targets: &targets,
+        };
+        let mask = [1, 0, 0, 1, 1, 0, 0, 1];
+        let output = solve_with_fixed_rows(&system, Some(&mask)).unwrap();
+        for (a, b) in output.iter().zip(&targets) {
+            assert!((a - b).abs() < 1e-12);
+        }
+        let mut invalid = mask;
+        invalid[4] = 0;
+        assert!(matches!(
+            solve_with_fixed_rows(&system, Some(&invalid)),
+            Err(Error::Kernel(_))
+        ));
+        assert_eq!(system.targets, targets);
+    }
 }

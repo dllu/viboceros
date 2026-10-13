@@ -17,8 +17,8 @@ directly rather than round-tripped through the solver.
 
 Degree-one fits and fully constrained nets bypass the solver. Portable builds
 retain their existing cubic band and general-degree reduced dense solve.
-Internal Sweep1 rail fitting still uses that portable producer; this integration
-changes the standalone FitCrv command and direct API backend.
+Internal Sweep1 and Pipe rail fitting now reuse the native producer through
+[sweep operation hooks](smlib-sweep-interpolation.md).
 
 The [50-record comparison](smlib-curve-fit-comparison.json) matches the saved
 pre-change producer at absolute `1e-9`, relative `1e-12`; maximum coordinate

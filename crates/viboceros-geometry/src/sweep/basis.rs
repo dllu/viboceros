@@ -4,9 +4,17 @@ use super::*;
 use crate::spline_collocation::Axis;
 use faer::Mat;
 
-pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, GeometryError> {
+pub(super) fn rail_basis<E: From<GeometryError>>(
+    sweep: &Sweep1,
+    refit: bool,
+    operations: &mut SweepSurfaceOperations<'_, E>,
+) -> Result<NurbsSurface, E> {
     let native = sweep.rail.try_trimmed(sweep.domain())?;
-    let mut rail = native.as_ref().to_nurbs()?.clamped_to_active_domain()?;
+    let source = native.as_ref().to_nurbs()?;
+    let mut rail = (operations.clamp)(&source)?;
+    if rail.degree() != source.degree() || rail.domain() != source.domain() {
+        return Err(invalid("rail clamping changed degree or domain").into());
+    }
     let mut stations = sweep
         .sections
         .iter()
@@ -24,24 +32,27 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
             .iter()
             .map(|section| sampler.distance_at_parameter(section.parameter))
             .collect::<Result<Vec<_>, _>>()?;
-        rail = crate::try_fit_curve(
+        rail = (operations.fit)(
             native.as_ref(),
             3,
             sweep.tolerance.absolute() * 0.25,
             sweep.tolerance.angular(),
             sweep.tolerance,
         )?;
+        if rail.degree() != 3 || rail.domain() != (0. ..=sampler.total_length()) {
+            return Err(invalid("rail fit changed requested degree or arc-length domain").into());
+        }
         Some(sampler)
     } else {
         None
     };
-    rail = with_section_stations(rail, &stations)?;
+    rail = with_section_stations(rail, &stations, operations)?;
     if rail.control_points().len() > MAX_AXIS_CONTROLS
         || rail.control_points().len() * sweep.local[0].len() > MAX_SURFACE_CONTROLS
     {
-        return Err(invalid("rail basis control budget exceeded"));
+        return Err(invalid("rail basis control budget exceeded").into());
     }
-    let axis = Axis::new(rail.degree(), rail.knots().to_vec())?;
+    let axis = Axis::sites(rail.degree(), rail.knots().to_vec())?;
     let parameters = axis
         .stations
         .iter()
@@ -116,7 +127,7 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
                 .sum::<Real>())
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    let surface = interpolate_sections(axis, &sections, &weights)?;
+    let surface = interpolate_sections(axis, &sections, &weights, operations)?;
     super::weights::require_positive_denominator(&surface)?;
     // Near-equality of parameter sites is only a numerical convenience, not
     // permission to discard a profile (notably on large shifted U domains).
@@ -145,12 +156,12 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
             let b = b.weight() / b_scale;
             let relative = (a - b).abs() / a;
             if !relative.is_finite() {
-                return Err(invalid("section interpolation lost a supplied profile"));
+                return Err(invalid("section interpolation lost a supplied profile").into());
             }
             weight_error = weight_error.max(relative);
         }
         if point_error + diameter * weight_error > sweep.tolerance.absolute() {
-            return Err(invalid("section interpolation lost a supplied profile"));
+            return Err(invalid("section interpolation lost a supplied profile").into());
         }
     }
     Ok(surface)
@@ -171,11 +182,13 @@ fn is_station(rail: &NurbsCurve, t: Real) -> bool {
 /// Insert a small symmetric knot neighborhood when an interior section is
 /// not already a Greville site. Process sections in order, respecting existing
 /// knots and the next section so earlier interpolation sites remain intact.
-fn with_section_stations(
+fn with_section_stations<E: From<GeometryError>>(
     mut rail: NurbsCurve,
     stations: &[Real],
-) -> Result<NurbsCurve, GeometryError> {
+    operations: &mut SweepSurfaceOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
     let degree = rail.degree();
+    let domain = rail.domain();
     for index in 1..stations.len().saturating_sub(1) {
         let t = stations[index];
         if is_station(&rail, t) {
@@ -200,58 +213,87 @@ fn with_section_stations(
         let add_center = (degree - existing) % 2;
         let pairs = (degree - existing - add_center) / 2;
         if rail.control_points().len() + degree - existing > MAX_AXIS_CONTROLS {
-            return Err(invalid("section-station control budget exceeded"));
+            return Err(invalid("section-station control budget exceeded").into());
         }
         if add_center != 0 {
-            rail = rail.try_insert_knot(t, existing + 1)?;
+            rail = (operations.refine)(&rail, t, existing + 1)?;
         }
         for i in 1..=pairs {
             let offset = radius * (i as Real / pairs as Real);
             let a = t - offset;
             let b = t + offset;
             if !(left < a && a < t && t < b && b < right) {
-                return Err(invalid(
-                    "section-station knots exhausted parameter resolution",
-                ));
+                return Err(invalid("section-station knots exhausted parameter resolution").into());
             }
-            rail = rail.try_insert_knot(a, 1)?.try_insert_knot(b, 1)?;
+            rail = (operations.refine)(&rail, a, 1)?;
+            rail = (operations.refine)(&rail, b, 1)?;
         }
+    }
+    if rail.degree() != degree || rail.domain() != domain {
+        return Err(invalid("section refinement changed rail degree or domain").into());
     }
     Ok(rail)
 }
 
-pub(super) fn interpolate_sections(
+pub(super) fn interpolate_sections<E: From<GeometryError>>(
     axis: Axis,
     sections: &[NurbsCurve],
     weights: &[Real],
-) -> Result<NurbsSurface, GeometryError> {
+    operations: &mut SweepSurfaceOperations<'_, E>,
+) -> Result<NurbsSurface, E> {
     let count = axis.stations.len();
     let origin = sections[0].control_points()[0].point().to_array();
     let width = sections[0].control_points().len();
-    let rhs = Mat::from_fn(count, width * 4, |row, column| {
-        let c = sections[row].control_points()[column / 4];
-        if column % 4 == 3 {
-            c.weight() * weights[row]
-        } else {
-            (c.point().to_array()[column % 4] - origin[column % 4]) * c.weight() * weights[row]
-        }
-    });
-    let solution = axis.solve(rhs)?;
+    let targets = (0..count * width * 4)
+        .map(|i| {
+            let row = i / (width * 4);
+            let column = i % (width * 4);
+            let c = sections[row].control_points()[column / 4];
+            if column % 4 == 3 {
+                c.weight() * weights[row]
+            } else {
+                (c.point().to_array()[column % 4] - origin[column % 4]) * c.weight() * weights[row]
+            }
+        })
+        .collect::<Vec<_>>();
+    let parameters = axis
+        .stations
+        .iter()
+        .map(|s| s.parameter)
+        .collect::<Vec<_>>();
+    let fixed_rows = axis
+        .stations
+        .iter()
+        .map(|s| u8::from(s.fixed))
+        .collect::<Vec<_>>();
+    let input = crate::FixedInterpolationSystem {
+        system: crate::NurbsInterpolationSystem {
+            degree: axis.degree,
+            knots: &axis.knots,
+            parameters: &parameters,
+            periodic: false,
+            columns: width * 4,
+            targets: &targets,
+        },
+        fixed_rows: &fixed_rows,
+    };
+    let solution =
+        crate::surface_rebuild::checked_solve(&input.system, &mut |_| (operations.solve)(&input))?;
     let mut controls = Vec::with_capacity(count * width);
     for j in 0..width {
         for i in 0..count {
-            let weight = solution[(i, j * 4 + 3)];
+            let weight = solution[i * width * 4 + j * 4 + 3];
             let point = if axis.stations[i].fixed {
                 sections[i].control_points()[j].point()
             } else {
                 Point3::try_from(std::array::from_fn(|k| {
-                    solution[(i, j * 4 + k)] / weight + origin[k]
+                    solution[i * width * 4 + j * 4 + k] / weight + origin[k]
                 }))?
             };
             controls.push(WeightedPoint3::try_new(point, weight)?);
         }
     }
-    NurbsSurface::try_new_rational(
+    Ok(NurbsSurface::try_new_rational(
         axis.degree,
         sections[0].degree(),
         count,
@@ -259,5 +301,20 @@ pub(super) fn interpolate_sections(
         controls,
         axis.knots,
         sections[0].knots().to_vec(),
-    )
+    )?)
+}
+
+pub(super) fn portable_section_solve(
+    input: &crate::FixedInterpolationSystem<'_>,
+) -> Result<Vec<Real>, GeometryError> {
+    let system = &input.system;
+    let axis = Axis::new(system.degree, system.knots.to_vec())?;
+    let n = axis.stations.len();
+    let rhs = Mat::from_fn(n, system.columns, |i, j| {
+        system.targets[i * system.columns + j]
+    });
+    let solution = axis.solve(rhs)?;
+    Ok((0..n * system.columns)
+        .map(|i| solution[(i / system.columns, i % system.columns)])
+        .collect())
 }

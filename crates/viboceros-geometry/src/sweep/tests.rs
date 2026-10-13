@@ -8,6 +8,67 @@ fn line(a: Point3, b: Point3) -> crate::LineSegment {
 }
 
 #[test]
+fn external_sweep_producers_keep_rail_and_section_policies_and_typed_layout_errors() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.));
+    let section = SweepSection {
+        parameter: 0.,
+        curve: line(p(0., 0., 0.), p(2., 0., 0.)).to_nurbs().unwrap(),
+    };
+    let sweep = Sweep1::try_new(
+        CurveRef::Line(&rail),
+        &[section],
+        SweepFrameStyle::Freeform,
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let mut clamps = 0;
+    let mut fits = 0;
+    let mut solves = 0;
+    let mut clamp = |curve: &NurbsCurve| {
+        clamps += 1;
+        curve.clamped_to_active_domain()
+    };
+    let mut refine = |curve: &NurbsCurve, t, m| curve.try_insert_knot(t, m);
+    let mut fit = |curve: CurveRef<'_>, degree, tolerance, angle, numerical| {
+        fits += 1;
+        crate::try_fit_curve(curve, degree, tolerance, angle, numerical)
+    };
+    let mut solve = |input: &crate::FixedInterpolationSystem<'_>| {
+        solves += 1;
+        assert_eq!(input.system.columns, 8);
+        assert_eq!(input.fixed_rows[0], 1);
+        basis::portable_section_solve(input)
+    };
+    let actual = sweep
+        .to_surface_with_operations(&mut SweepSurfaceOperations {
+            clamp: &mut clamp,
+            refine: &mut refine,
+            fit: &mut fit,
+            solve: &mut solve,
+        })
+        .unwrap();
+    assert_eq!(clamps, 1);
+    assert_eq!(fits, 1);
+    assert_eq!(solves, 1);
+    assert_eq!(actual, sweep.to_surface().unwrap());
+    let bad = with_portable_operations(|_| {
+        let mut clamp = |curve: &NurbsCurve| curve.clamped_to_active_domain();
+        let mut refine = |curve: &NurbsCurve, t, m| curve.try_insert_knot(t, m);
+        let mut fit = crate::try_fit_curve;
+        let mut solve =
+            |_: &crate::FixedInterpolationSystem<'_>| Ok::<_, GeometryError>(Vec::new());
+        sweep.to_surface_with_operations(&mut SweepSurfaceOperations {
+            clamp: &mut clamp,
+            refine: &mut refine,
+            fit: &mut fit,
+            solve: &mut solve,
+        })
+    });
+    assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+}
+
+#[test]
 fn circular_closed_rail_sweep_closes_its_surface_and_brep() {
     let rail = crate::Circle3::try_new(
         p(0., 0., 0.),

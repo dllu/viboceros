@@ -87,7 +87,7 @@ fn native_common_section_matching_preserves_local_global_and_roadlike_sweep_mode
                     );
                 }
             }
-            let actual = native.to_surface().unwrap();
+            let actual = viboceros_smlib::sweep_surface(&native, true).unwrap();
             let expected = portable.to_surface().unwrap();
             assert_eq!(actual.degree_u(), expected.degree_u());
             assert_eq!(actual.degree_v(), expected.degree_v());

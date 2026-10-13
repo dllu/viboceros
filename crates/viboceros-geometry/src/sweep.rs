@@ -17,6 +17,22 @@ const MAX_SECTION_CONTROLS: usize = 512;
 const MAX_AXIS_CONTROLS: usize = 4096;
 const MAX_SURFACE_CONTROLS: usize = 262_144;
 
+type ClampCurve<'a, E> = dyn FnMut(&NurbsCurve) -> Result<NurbsCurve, E> + 'a;
+type RefineCurve<'a, E> = dyn FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E> + 'a;
+type FitCurve<'a, E> =
+    dyn FnMut(CurveRef<'_>, usize, Real, Real, Tolerance) -> Result<NurbsCurve, E> + 'a;
+type SolveSections<'a, E> =
+    dyn FnMut(&crate::FixedInterpolationSystem<'_>) -> Result<Vec<Real>, E> + 'a;
+
+/// Numerical producers for rail fitting and homogeneous section interpolation.
+/// Placement, blending, station policy and geometry audits remain shared.
+pub struct SweepSurfaceOperations<'a, E> {
+    pub clamp: &'a mut ClampCurve<'a, E>,
+    pub refine: &'a mut RefineCurve<'a, E>,
+    pub fit: &'a mut FitCurve<'a, E>,
+    pub solve: &'a mut SolveSections<'a, E>,
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub enum SweepFrameStyle {
     #[default]
@@ -354,13 +370,27 @@ impl Sweep1 {
     /// Refits the rail to a cubic arc-length parameterization, then
     /// interpolates transported profiles at its Greville stations.
     pub fn to_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        self.validate_surface_closure(basis::rail_basis(self, true)?)
+        with_portable_operations(|operations| self.to_surface_with_operations(operations))
+    }
+
+    pub fn to_surface_with_operations<E: From<GeometryError>>(
+        &self,
+        operations: &mut SweepSurfaceOperations<'_, E>,
+    ) -> Result<NurbsSurface, E> {
+        Ok(self.validate_surface_closure(basis::rail_basis(self, true, operations)?)?)
     }
 
     /// Fits the continuous frame/blending model, not Rhino's fixed-basis sweep.
     /// U follows native rail parameters. Audits are sampled and bounded.
     pub fn fit_model_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        self.validate_surface_closure(fit::fit(self)?)
+        with_portable_operations(|operations| self.fit_model_surface_with_operations(operations))
+    }
+
+    pub fn fit_model_surface_with_operations<E: From<GeometryError>>(
+        &self,
+        operations: &mut SweepSurfaceOperations<'_, E>,
+    ) -> Result<NurbsSurface, E> {
+        Ok(self.validate_surface_closure(fit::fit(self, operations)?)?)
     }
 
     /// Interpolates transported sections in the rail's existing rational
@@ -370,7 +400,16 @@ impl Sweep1 {
     /// Retained construction uses Local Euclidean control blending followed
     /// by the common-basis end-weight policy; forced refits use the refit model.
     pub fn to_rail_basis_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        self.validate_surface_closure(basis::rail_basis(self, false)?)
+        with_portable_operations(|operations| {
+            self.to_rail_basis_surface_with_operations(operations)
+        })
+    }
+
+    pub fn to_rail_basis_surface_with_operations<E: From<GeometryError>>(
+        &self,
+        operations: &mut SweepSurfaceOperations<'_, E>,
+    ) -> Result<NurbsSurface, E> {
+        Ok(self.validate_surface_closure(basis::rail_basis(self, false, operations)?)?)
     }
 
     fn validate_surface_closure(
@@ -435,4 +474,21 @@ impl Sweep1 {
 
 fn invalid(context: &'static str) -> GeometryError {
     GeometryError::InvalidSweep { context }
+}
+
+fn with_portable_operations(
+    run: impl FnOnce(
+        &mut SweepSurfaceOperations<'_, GeometryError>,
+    ) -> Result<NurbsSurface, GeometryError>,
+) -> Result<NurbsSurface, GeometryError> {
+    let mut clamp = |curve: &NurbsCurve| curve.clamped_to_active_domain();
+    let mut refine = |curve: &NurbsCurve, t, m| curve.try_insert_knot(t, m);
+    let mut fit = crate::try_fit_curve;
+    let mut solve = basis::portable_section_solve;
+    run(&mut SweepSurfaceOperations {
+        clamp: &mut clamp,
+        refine: &mut refine,
+        fit: &mut fit,
+        solve: &mut solve,
+    })
 }

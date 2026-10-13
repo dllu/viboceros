@@ -21,6 +21,33 @@ pub(super) fn model(
     }
 }
 
+pub(super) fn surface(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::sweep_surface(sweep, refit).map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(if refit {
+            sweep.to_surface()?
+        } else {
+            sweep.to_rail_basis_surface()?
+        })
+    }
+}
+
+pub(super) fn fitted_model_surface(sweep: &Sweep1) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::fit_sweep_model_surface(sweep)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(sweep.fit_model_surface()?)
+    }
+}
+
 pub(super) struct SweepCommand;
 
 impl Command for SweepCommand {
@@ -113,11 +140,7 @@ impl Command for SweepCommand {
             SweepBlend::Local
         };
         let sweep = model(rail, &sections, style, blend, document.tolerance())?;
-        let surface = if refit.unwrap_or(false) {
-            sweep.to_surface()?
-        } else {
-            sweep.to_rail_basis_surface()?
-        };
+        let surface = surface(&sweep, refit.unwrap_or(false))?;
         let [u, v] = surface.sampled_kink_parameters(document.tolerance().angular())?;
         let brep = Brep::try_surface_grid(&surface, &u, &v, document.tolerance())?;
         let count = brep.faces().len();

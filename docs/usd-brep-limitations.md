@@ -486,6 +486,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Sweep1 and Pipe retain model policy around native interpolation.**
+  Rail clamping, section-site refinement, adaptive fitting and homogeneous
+  section solving now use the existing native adapters. Equal parameter rows
+  require two fixed identity constraints; arbitrary duplicate interpolation
+  stations remain invalid. Frame transport, rational blending, rail-weight
+  queries and independent profile/seam audits stay shared. The 4,096/512-axis
+  and 262,144-surface control budgets remain in force. All 63 pre-change sweep
+  records match, including existing diagnostic and closed-circle cases;
+  broader Rhino basis/domain and off-surface query differences remain open.
+  See [native sweep interpolation](smlib-sweep-interpolation.md).
 - **FitCrv retains adaptive and fixed-handle policy around native solving.**
   Its endpoint and internal kink handles are control constraints, so the adapter
   supplies identity rows alongside native Greville basis rows. Cubic systems
@@ -494,7 +504,7 @@ issues reported by NVIDIA that have not all been reproduced here.
   while other native interpolation jobs retain their previous bounds. FitCrv
   keeps the existing 4,096/512 control budgets and sampled acceptance policy;
   no continuous error bound or arbitrary-conditioning qualification is claimed.
-  Internal Sweep1 fits remain portable. Fresh Rhino fitting captures remain
+  Internal Sweep1/Pipe fitting now shares the native producer. Fresh Rhino fitting captures remain
   pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
 - **TweenSurfaces retains measured matching policy around native operations.**
   Compatible control nets bypass rebuilding; unequal nets repeat native

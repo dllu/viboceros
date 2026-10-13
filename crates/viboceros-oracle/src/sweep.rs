@@ -184,7 +184,12 @@ pub(super) fn run(
                     .map_err(CommandError::from)?;
             #[cfg(not(feature = "native-smlib"))]
             let model = Sweep1::try_new(rail.as_ref(), &sections, style, blend, tolerance)?;
-            Ok(vec![model.to_surface()?])
+            #[cfg(feature = "native-smlib")]
+            let surface =
+                viboceros_smlib::sweep_surface(&model, true).map_err(CommandError::from)?;
+            #[cfg(not(feature = "native-smlib"))]
+            let surface = model.to_surface()?;
+            Ok(vec![surface])
         }
     };
     let mut surfaces = build()?;

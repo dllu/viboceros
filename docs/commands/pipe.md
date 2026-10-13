@@ -1,5 +1,8 @@
 # Pipe
 
+Linux `native-smlib` builds use the shared [native sweep fitting and interpolation](../smlib-sweep-interpolation.md)
+for retained/refitted rails and continuous-model wall construction.
+
 `Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`
 creates a circular-profile pipe around one selected curve. The first radius is
 required and the second defaults to the first. The source curve remains in the

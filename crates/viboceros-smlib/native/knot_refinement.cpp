@@ -786,7 +786,8 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     const BinaryChart chart(input.knots,input.knot_count);
     chart.scale(basis);
     for(size_t i=0;i<input.parameter_count;++i)
-        require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]),
+        require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]
+            || (input.fixed_rows && input.fixed_rows[i] && input.fixed_rows[i-1] && input.parameters[i]==input.parameters[i-1])),
             "Invalid interpolation stations");
     require(chart.scaled(input.parameters[0])>=basis[input.degree]
         && chart.scaled(input.parameters[input.parameter_count-1])==basis[controls]

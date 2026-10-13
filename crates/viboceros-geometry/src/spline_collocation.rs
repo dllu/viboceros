@@ -74,20 +74,9 @@ pub(crate) fn collocation_row(
     knots: &[Real],
     i: usize,
 ) -> Result<([Real; 5], Real, ParameterSide, bool), GeometryError> {
-    let fixed = knots[i + 1] == knots[i + DEGREE];
-    let t = if fixed {
-        knots[i + 1]
-    } else {
-        stable_mean3(knots[i + 1], knots[i + 2], knots[i + 3])?
-    };
-    let side = if fixed && knots[i] < t {
-        ParameterSide::Left
-    } else {
-        ParameterSide::Right
-    };
+    let (t, side, fixed) = collocation_site(knots, i)?;
     let mut row = [0.0; 5];
     if fixed {
-        // Full-order knots have independent endpoint rows at the same t.
         row[2] = 1.0;
     } else {
         let values = bspline_basis_values(knots, DEGREE, knots.len() - DEGREE - 1, t)?;
@@ -102,6 +91,24 @@ pub(crate) fn collocation_row(
         }
     }
     Ok((row, t, side, fixed))
+}
+
+pub(crate) fn collocation_site(
+    knots: &[Real],
+    i: usize,
+) -> Result<(Real, ParameterSide, bool), GeometryError> {
+    let fixed = knots[i + 1] == knots[i + DEGREE];
+    let t = if fixed {
+        knots[i + 1]
+    } else {
+        stable_mean3(knots[i + 1], knots[i + 2], knots[i + 3])?
+    };
+    let side = if fixed && knots[i] < t {
+        ParameterSide::Left
+    } else {
+        ParameterSide::Right
+    };
+    Ok((t, side, fixed))
 }
 
 fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {

@@ -49,13 +49,28 @@ impl Axis {
     }
 
     pub(crate) fn new(degree: usize, knots: Vec<Real>) -> Result<Self, GeometryError> {
+        Self::prepare(degree, knots, true)
+    }
+
+    pub(crate) fn sites(degree: usize, knots: Vec<Real>) -> Result<Self, GeometryError> {
+        Self::prepare(degree, knots, false)
+    }
+
+    fn prepare(degree: usize, knots: Vec<Real>, build_bands: bool) -> Result<Self, GeometryError> {
         let count = knots.len() - degree - 1;
         let mut stations = Vec::with_capacity(count);
-        let mut bands = (degree == DEGREE).then(|| Vec::with_capacity(count));
+        let mut bands = (build_bands && degree == DEGREE).then(|| Vec::with_capacity(count));
         for i in 0..count {
             let station = if let Some(bands) = bands.as_mut() {
                 let (row, parameter, side, fixed) = collocation_row(&knots, i)?;
                 bands.push(row);
+                Station {
+                    parameter,
+                    side,
+                    fixed,
+                }
+            } else if degree == DEGREE {
+                let (parameter, side, fixed) = collocation_site(&knots, i)?;
                 Station {
                     parameter,
                     side,

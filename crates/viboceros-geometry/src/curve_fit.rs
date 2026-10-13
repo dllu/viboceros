@@ -20,13 +20,14 @@ const MAX_DENSE_CURVE_FIT_CONTROL_POINTS: usize = 512;
 const CURVE_FIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
 const MAX_CACHED_FIT_POINTS: usize = 32_768;
 
-/// Shared adaptive fit targets. A nonzero mask row fixes that control directly;
-/// remaining rows interpolate at the supplied Greville stations. Targets use
-/// translated local homogeneous channels, with polynomial weights equal to one.
-pub struct CurveFitInterpolation<'a> {
+/// Shared fixed-row collocation. A nonzero mask row fixes that control directly;
+/// remaining rows interpolate at the supplied stations. Targets use local
+/// homogeneous channels; polynomial curve fits supply weights equal to one.
+pub struct FixedInterpolationSystem<'a> {
     pub system: crate::NurbsInterpolationSystem<'a>,
     pub fixed_rows: &'a [u8],
 }
+pub type CurveFitInterpolation<'a> = FixedInterpolationSystem<'a>;
 type FitSolver<'a, E> = dyn FnMut(&CurveFitInterpolation<'_>) -> Result<Vec<Real>, E> + 'a;
 
 #[derive(Clone, Copy, Debug)]

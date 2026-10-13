@@ -4,7 +4,10 @@ use crate::spline_collocation::{
     Axis, Break, control_count, error_fractions, knots, seed_breaks, stable_lerp,
 };
 
-pub(super) fn fit(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
+pub(super) fn fit<E: From<GeometryError>>(
+    sweep: &Sweep1,
+    operations: &mut SweepSurfaceOperations<'_, E>,
+) -> Result<NurbsSurface, E> {
     let rail = sweep
         .rail
         .as_ref()
@@ -57,9 +60,9 @@ pub(super) fn fit(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
     loop {
         let count = control_count(&breaks);
         if count > MAX_AXIS_CONTROLS || count * sweep.local[0].len() > MAX_SURFACE_CONTROLS {
-            return Err(invalid("surface fitting control budget exceeded"));
+            return Err(invalid("surface fitting control budget exceeded").into());
         }
-        let surface = interpolate(sweep, knots(&breaks))?;
+        let surface = interpolate(sweep, knots(&breaks), operations)?;
         let mut parameters = breaks
             .windows(2)
             .flat_map(|p| {
@@ -105,7 +108,7 @@ pub(super) fn fit(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
             let b = breaks[index + 1].parameter;
             let t = stable_lerp(a, b, 0.5)?;
             if !(a < t && t < b) {
-                return Err(invalid("surface fit exhausted parameter resolution"));
+                return Err(invalid("surface fit exhausted parameter resolution").into());
             }
             added.push(Break {
                 parameter: t,
@@ -117,19 +120,23 @@ pub(super) fn fit(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
     }
 }
 
-fn interpolate(sweep: &Sweep1, knots: Vec<Real>) -> Result<NurbsSurface, GeometryError> {
-    let axis = Axis::cubic(knots)?;
+fn interpolate<E: From<GeometryError>>(
+    sweep: &Sweep1,
+    knots: Vec<Real>,
+    operations: &mut SweepSurfaceOperations<'_, E>,
+) -> Result<NurbsSurface, E> {
+    let axis = Axis::sites(3, knots)?;
     let parameters = axis
         .stations
         .iter()
         .map(|s| s.parameter)
         .collect::<Vec<_>>();
     let sections = sweep.sections_at(&parameters)?;
-    let surface = interpolate_sections(axis, &sections, &vec![1.0; parameters.len()])?;
+    let surface = interpolate_sections(axis, &sections, &vec![1.0; parameters.len()], operations)?;
     // This fitter's control-error bound requires positive individual weights,
     // unlike fixed-basis construction's separate denominator validation.
     if surface.control_points().iter().any(|c| c.weight() <= 0.0) {
-        return Err(invalid("model fit produced a nonpositive rational weight"));
+        return Err(invalid("model fit produced a nonpositive rational weight").into());
     }
     Ok(surface)
 }

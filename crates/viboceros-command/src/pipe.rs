@@ -1151,7 +1151,7 @@ fn segmented_station_wall(
         SweepBlend::Local,
         tolerance,
     )?;
-    let surface = sweep.to_surface()?;
+    let surface = crate::sweep::surface(&sweep, true)?;
     let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
     Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?.reversed())
 }
@@ -1207,9 +1207,9 @@ fn station_pipe(
         let sweep =
             crate::sweep::model(rail, &sections, SweepFrameStyle::Freeform, blend, tolerance)?;
         if matches!(source, Geometry::Arc(_)) {
-            Ok(sweep.fit_model_surface()?)
+            Ok(crate::sweep::fitted_model_surface(&sweep)?)
         } else {
-            Ok(sweep.to_surface()?)
+            Ok(crate::sweep::surface(&sweep, true)?)
         }
     };
     let make_wall = |profile: &[(Real, Real)]| -> Result<Brep, CommandError> {
@@ -1368,13 +1368,13 @@ fn swept_wall_with_frames(
     // Rhino refits even a constant-radius cubic NURBS rail. Retaining its
     // four-control Bézier basis changes the measured flat Pipe volume.
     let surface = if radii[0] == radii[1] && !matches!(rail, CurveRef::NurbsCurve(_)) {
-        sweep.to_rail_basis_surface()?
+        crate::sweep::surface(&sweep, false)?
     } else if matches!(rail, CurveRef::Arc(_)) {
         // A direct continuous fit matches the measured Rhino arc Pipe volume
         // while avoiding a dense cubic rail refit.
-        sweep.fit_model_surface()?
+        crate::sweep::fitted_model_surface(&sweep)?
     } else {
-        sweep.to_surface()?
+        crate::sweep::surface(&sweep, true)?
     };
     let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
     Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?.reversed())

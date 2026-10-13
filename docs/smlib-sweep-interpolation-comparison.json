@@ -1,0 +1,489 @@
+{
+  "reference": "Saved pre-change oracle built at 8eb9fc09, using portable rail fitting and section collocation after native section matching",
+  "reference_binary_sha256": "34bd5e3134f713d95fd541c98398bb49cf319cfc1eeb30926e48944d92bfc96e",
+  "absolute_epsilon": 1e-08,
+  "relative_epsilon": 1e-12,
+  "cases": 63,
+  "matched": 63,
+  "fixtures": {
+    "sweep1": {
+      "cases": 11,
+      "successful": 11,
+      "fixture_sha256": "1932b0e897893e9541e0d83e30c2579232b8d396463824c28e3ea34bb1dfff19",
+      "reference_sha256": "94b4eb5d1d01446f03cb18846283753436af1496703704ddc4ea9cc4dd19134e",
+      "native_sha256": "d51d388a937ba9a8bad0ea90ce02721a992acea6146f4afd30319f301ba23ddd",
+      "matched": 11,
+      "operations": [
+        {
+          "id": "line-line",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "line-circle",
+          "passed": true,
+          "max_absolute_error": 5.163675043107219e-12,
+          "differences": []
+        },
+        {
+          "id": "arc-radial",
+          "passed": true,
+          "max_absolute_error": 9.962515257200266e-10,
+          "differences": []
+        },
+        {
+          "id": "arc-vertical",
+          "passed": true,
+          "max_absolute_error": 7.236620191974907e-10,
+          "differences": []
+        },
+        {
+          "id": "spatial-line",
+          "passed": true,
+          "max_absolute_error": 4.549888465987806e-09,
+          "differences": []
+        },
+        {
+          "id": "line-taper",
+          "passed": true,
+          "max_absolute_error": 2.7861885021351895e-10,
+          "differences": []
+        },
+        {
+          "id": "line-interior",
+          "passed": true,
+          "max_absolute_error": 4.0379255494826793e-11,
+          "differences": []
+        },
+        {
+          "id": "line-single-interior",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "line-twist",
+          "passed": true,
+          "max_absolute_error": 2.3952018146644605e-09,
+          "differences": []
+        },
+        {
+          "id": "spatial-roadlike",
+          "passed": true,
+          "max_absolute_error": 2.8548816644047292e-09,
+          "differences": []
+        },
+        {
+          "id": "line-taper-global",
+          "passed": true,
+          "max_absolute_error": 8.955862718096341e-10,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_command": {
+      "cases": 6,
+      "successful": 6,
+      "fixture_sha256": "dd1f3117e3848f6d5d086a2112b7c5de76892cb69297313bf78c51f433deb965",
+      "reference_sha256": "8ffe02166ed288b3539758d3280f359f6f79337a5ac85b60c093cfcb0c6a796c",
+      "native_sha256": "b86ecc5384afa38555be7365afcbcd41c738348de3fca5bd28b6b8dcb33e5268",
+      "matched": 6,
+      "operations": [
+        {
+          "id": "line-line-command-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-line-command-refit",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "arc-radial-command-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "arc-radial-command-refit",
+          "passed": true,
+          "max_absolute_error": 9.962515257200266e-10,
+          "differences": []
+        },
+        {
+          "id": "spatial-line-command-basis",
+          "passed": true,
+          "max_absolute_error": 6.585481493459611e-09,
+          "differences": []
+        },
+        {
+          "id": "spatial-line-command-refit",
+          "passed": true,
+          "max_absolute_error": 4.549888465987806e-09,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_multisection": {
+      "cases": 13,
+      "successful": 13,
+      "fixture_sha256": "d790804df59b4df153cecd495576066349374fa8e7e5d45132a340676b200d6f",
+      "reference_sha256": "aa002d66130f691df43cb9ea0543e48b947ba180b8f75b2610e00ab96860f8e1",
+      "native_sha256": "000ad5a2c68ab6bcb2893517755398f5370d9e0675b34e4d75fb833146a16bf2",
+      "matched": 13,
+      "operations": [
+        {
+          "id": "line-three-local",
+          "passed": true,
+          "max_absolute_error": 4.707922365647897e-09,
+          "differences": []
+        },
+        {
+          "id": "blend-three-0-basis",
+          "passed": true,
+          "max_absolute_error": 4.707922365647897e-09,
+          "differences": []
+        },
+        {
+          "id": "blend-three-0-refit",
+          "passed": true,
+          "max_absolute_error": 4.707922365647897e-09,
+          "differences": []
+        },
+        {
+          "id": "blend-four-0-api",
+          "passed": true,
+          "max_absolute_error": 4.431228717294289e-10,
+          "differences": []
+        },
+        {
+          "id": "blend-close-0-api",
+          "passed": true,
+          "max_absolute_error": 2.3779350155628265e-09,
+          "differences": []
+        },
+        {
+          "id": "basis-stations-0-2-2.00001-5",
+          "passed": true,
+          "max_absolute_error": 2.9457787320552598e-09,
+          "differences": []
+        },
+        {
+          "id": "basis-degree-5",
+          "passed": true,
+          "max_absolute_error": 2.1891466417400807e-10,
+          "differences": []
+        },
+        {
+          "id": "basis-arc-three",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-taper-global-command-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-taper-global-command-refit",
+          "passed": true,
+          "max_absolute_error": 8.955862718096341e-10,
+          "differences": []
+        },
+        {
+          "id": "spatial-two-local-basis",
+          "passed": true,
+          "max_absolute_error": 2.1582398090913557e-09,
+          "differences": []
+        },
+        {
+          "id": "line-rational-sections-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "blend-five-0-api",
+          "passed": true,
+          "max_absolute_error": 2.9850149019239325e-09,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_curved_blend": {
+      "cases": 2,
+      "successful": 2,
+      "fixture_sha256": "5da2507ce053bf2c0648692f7e27a32e3b47dc9b7295a5b399df819fe5350e5f",
+      "reference_sha256": "f7702854ab31ea35b2bf6541ac189a67d7f60a587f61f17ceb42f8f28afa9fb6",
+      "native_sha256": "aa6ad4ef993514468eb24438c77b95308983ac98c2fd9dfd4dcdfe8683b392fe",
+      "matched": 2,
+      "operations": [
+        {
+          "id": "arc-two-local",
+          "passed": true,
+          "max_absolute_error": 1.5025332089635413e-09,
+          "differences": []
+        },
+        {
+          "id": "spatial-two-local",
+          "passed": true,
+          "max_absolute_error": 2.70646172140232e-09,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_weights": {
+      "cases": 19,
+      "successful": 19,
+      "fixture_sha256": "652df5547f9220a4e1c64f7c44a5c73f420ab55e11659d4949db5f341936d050",
+      "reference_sha256": "0a7a818a5671d111764be07333dc93f5fd4191b312effbae4f76f05a0601f6cb",
+      "native_sha256": "f2c3a5f03385d96d2fb14ac7fdc81f736a184a399b8eb07416e200d0834e8e43",
+      "matched": 19,
+      "operations": [
+        {
+          "id": "spatial-metric-0-basis",
+          "passed": true,
+          "max_absolute_error": 2.1582398090913557e-09,
+          "differences": []
+        },
+        {
+          "id": "spatial-metric-1-basis",
+          "passed": true,
+          "max_absolute_error": 2.1582398090913557e-09,
+          "differences": []
+        },
+        {
+          "id": "spatial-metric-1-refit",
+          "passed": true,
+          "max_absolute_error": 4.365955597052107e-09,
+          "differences": []
+        },
+        {
+          "id": "elevated-arc-metric-0-basis",
+          "passed": true,
+          "max_absolute_error": 2.9908231446995615e-09,
+          "differences": []
+        },
+        {
+          "id": "elevated-arc-metric-1-basis",
+          "passed": true,
+          "max_absolute_error": 2.9908231446995615e-09,
+          "differences": []
+        },
+        {
+          "id": "elevated-arc-metric-1-refit",
+          "passed": true,
+          "max_absolute_error": 2.128940579382288e-09,
+          "differences": []
+        },
+        {
+          "id": "three-rational-forced-basis",
+          "passed": true,
+          "max_absolute_error": 1.615915623531805e-09,
+          "differences": []
+        },
+        {
+          "id": "three-rational-forced-refit",
+          "passed": true,
+          "max_absolute_error": 1.615915623531805e-09,
+          "differences": []
+        },
+        {
+          "id": "three-rational-retained-basis",
+          "passed": true,
+          "max_absolute_error": 2.729659449862698e-10,
+          "differences": []
+        },
+        {
+          "id": "multispan-rational-different-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "multispan-rational-different-refit",
+          "passed": true,
+          "max_absolute_error": 6.3815258632971e-11,
+          "differences": []
+        },
+        {
+          "id": "multispan-rational-same-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "multispan-rational-same-refit",
+          "passed": true,
+          "max_absolute_error": 4.418738708267256e-09,
+          "differences": []
+        },
+        {
+          "id": "mixed-rational-basis",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "three-rational-retained-global-basis",
+          "passed": true,
+          "max_absolute_error": 2.729659449862698e-10,
+          "differences": []
+        },
+        {
+          "id": "varying-rational-profile-0-basis",
+          "passed": true,
+          "max_absolute_error": 8.409948293319758e-09,
+          "differences": []
+        },
+        {
+          "id": "varying-rational-profile-0-refit",
+          "passed": true,
+          "max_absolute_error": 6.744969471839113e-09,
+          "differences": []
+        },
+        {
+          "id": "varying-rational-profile-1-basis",
+          "passed": true,
+          "max_absolute_error": 8.409948293319758e-09,
+          "differences": []
+        },
+        {
+          "id": "varying-rational-profile-1-refit",
+          "passed": true,
+          "max_absolute_error": 2.4767285999871547e-09,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_basis_diagnostics": {
+      "cases": 5,
+      "successful": 5,
+      "fixture_sha256": "85bf25ad4fa7ea7594e5c133af04666a40f58f9c49b247ac84c9e3488d87da69",
+      "reference_sha256": "3bdcc917c49d9873e3b7928708199367ea51bf8aed1613d54f53f499ec119661",
+      "native_sha256": "dbf8867c96cfaddb18194ebd43c97075407c4f7c606cc06754cb345e57274d01",
+      "matched": 5,
+      "operations": [
+        {
+          "id": "blend-three-1-basis",
+          "passed": true,
+          "max_absolute_error": 4.3019543483069356e-09,
+          "differences": []
+        },
+        {
+          "id": "blend-three-1-refit",
+          "passed": true,
+          "max_absolute_error": 4.3019543483069356e-09,
+          "differences": []
+        },
+        {
+          "id": "basis-degree-3",
+          "passed": true,
+          "max_absolute_error": 4.707922365647897e-09,
+          "differences": []
+        },
+        {
+          "id": "basis-degree-7",
+          "passed": true,
+          "max_absolute_error": 4.707922365647897e-09,
+          "differences": []
+        },
+        {
+          "id": "basis-stations-0-0.5-4.5-5",
+          "passed": true,
+          "max_absolute_error": 1.4277503623816301e-09,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_weights_diagnostics": {
+      "cases": 4,
+      "successful": 4,
+      "fixture_sha256": "ae2f60670a46883ac9bec03625ebae282b95a7ed5e959e89d7a1f2f34c4d439f",
+      "reference_sha256": "8b9122a2b9a753c0875f50d731de16869b688ddb1f427a2fb520328a24b34f92",
+      "native_sha256": "c7fa929d30944033f5ec4c42cb6b6069e26651cb29473fc1c726fa1fa110ec17",
+      "matched": 4,
+      "operations": [
+        {
+          "id": "spatial-metric-0-refit",
+          "passed": true,
+          "max_absolute_error": 2.70646172140232e-09,
+          "differences": []
+        },
+        {
+          "id": "elevated-arc-metric-0-refit",
+          "passed": true,
+          "max_absolute_error": 1.996401266524117e-09,
+          "differences": []
+        },
+        {
+          "id": "three-rational-retained-refit",
+          "passed": true,
+          "max_absolute_error": 1.3262346776343747e-09,
+          "differences": []
+        },
+        {
+          "id": "mixed-rational-refit",
+          "passed": true,
+          "max_absolute_error": 4.26740642822665e-10,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_closed_circle_world": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "2932a06f35e506704ac9d0fa51bb866691d631e4f7982c85427e3960709e0af1",
+      "reference_sha256": "04ceaa2b745cab0cfd1aef5d21c93731e03279474eb889604a5a0e896f4e60e9",
+      "native_sha256": "0b16d2ab5c55a0bcedc7bae95234b00fabf512c5e33696bb028eb3dd7c05a98c",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "closed-circle-line-world-queries",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_closed_circle_definition": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "f67a4c81dff3bd66083cf0ba15c383cb05d87e84afaac0421f04bc7cec8e5e16",
+      "reference_sha256": "8022b4ec1f8350bd16adb393a92960abda7083821407183896b5edadf328037a",
+      "native_sha256": "16e425b45f820e6c23c3e4378ba02bb11b0e80b6ec0586eab2337070a6f77245",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "closed-circle-line-command",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        }
+      ]
+    },
+    "sweep1_closed_circle_refit": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "fbe75269dd04d2fe1f7a2a80ac838950122d6f7104d665c5ba1fccc2210ca2fd",
+      "reference_sha256": "3eaa1cf6345b7083209482381d6cb266f5e2910eab99ad842c2185013032d553",
+      "native_sha256": "5d14d32e095e149c8688471799b557a9570290d34b083c8b1cd940d05d94d05d",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "closed-circle-line-refit-world-queries",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        }
+      ]
+    }
+  },
+  "fresh_sdk_status": "Pending Wine licensing startup; these records compare with the pre-change Viboceros producer."
+}

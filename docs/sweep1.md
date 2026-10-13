@@ -6,8 +6,10 @@
 and a command adapter. This is a partial implementation, not complete Rhino
 sweep compatibility.
 Linux `native-smlib` builds use [native section matching](smlib-section-bases.md)
-for clamping, exact degree elevation and knot refinement. Frame transport,
-blending and fitting retain their shared implementation.
+for clamping, exact degree elevation and knot refinement.
+[Rail and section interpolation](smlib-sweep-interpolation.md) also reuse native
+clamping, insertion, curve fitting and homogeneous banded solves. Frame transport,
+blending and geometry audits retain their shared implementation.
 
 ## Command workflow
 

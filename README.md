@@ -19,11 +19,8 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-For solid Booleans, curve extrusion and revolution, planar and edge surfaces, surface
-joining and offsets, NURBS knot/degree editing, point interpolation, FitCrv, curve/surface Rebuild,
-TweenSurfaces, section matching, Bezier/span decomposition, segment/isocurve extraction
-and curve/surface seams,
-edge fillets and STEP material regions on Linux,
+For native B-rep modeling, NURBS editing and fitting, Sweep1/Pipe construction,
+and STEP material regions on Linux,
 install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 
 ```sh

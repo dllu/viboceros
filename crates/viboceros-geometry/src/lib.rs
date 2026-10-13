@@ -155,8 +155,8 @@ pub use curve_fillet_pair::{
     try_fillet_curves_parts, try_fillet_curves_parts_with_styles,
 };
 pub use curve_fit::{
-    CurveFitInterpolation, MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve,
-    try_fit_curve_with_solver,
+    CurveFitInterpolation, FixedInterpolationSystem, MAX_CURVE_FIT_CONTROL_POINTS,
+    MAX_CURVE_FIT_DEGREE, try_fit_curve, try_fit_curve_with_solver,
 };
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
@@ -240,7 +240,7 @@ pub use spiral::{
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN,
 };
 pub use surface_curvature::SurfaceCurvature;
-pub use sweep::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection};
+pub use sweep::{Sweep1, SweepBlend, SweepFrameStyle, SweepSection, SweepSurfaceOperations};
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};
