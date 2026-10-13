@@ -338,7 +338,9 @@ impl ViewportRenderer {
             0,
             bytemuck::bytes_of(&scene.uniform),
         );
-        viewport.triangle_buffer.upload(device, queue, &scene.triangles);
+        viewport
+            .triangle_buffer
+            .upload(device, queue, &scene.triangles);
         viewport.line_buffer.upload(device, queue, &scene.lines);
         viewport.point_buffer.upload(device, queue, &scene.points);
         viewport.overlay_line_start = scene.overlay_line_start.min(scene.lines.len());
@@ -357,16 +359,26 @@ impl ViewportRenderer {
             } else {
                 &self.opaque_pipeline
             });
-            viewport.triangle_buffer.draw(render_pass, 0..usize::MAX, false);
+            viewport
+                .triangle_buffer
+                .draw(render_pass, 0..usize::MAX, false);
         }
         render_pass.set_pipeline(&self.line_pipeline);
-        viewport.line_buffer.draw(render_pass, 0..viewport.overlay_line_start, true);
+        viewport
+            .line_buffer
+            .draw(render_pass, 0..viewport.overlay_line_start, true);
         render_pass.set_pipeline(&self.point_pipeline);
-        viewport.point_buffer.draw(render_pass, 0..viewport.overlay_point_start, true);
+        viewport
+            .point_buffer
+            .draw(render_pass, 0..viewport.overlay_point_start, true);
         render_pass.set_pipeline(&self.overlay_line_pipeline);
-        viewport.line_buffer.draw(render_pass, viewport.overlay_line_start..usize::MAX, true);
+        viewport
+            .line_buffer
+            .draw(render_pass, viewport.overlay_line_start..usize::MAX, true);
         render_pass.set_pipeline(&self.overlay_point_pipeline);
-        viewport.point_buffer.draw(render_pass, viewport.overlay_point_start..usize::MAX, true);
+        viewport
+            .point_buffer
+            .draw(render_pass, viewport.overlay_point_start..usize::MAX, true);
     }
 }
 
@@ -426,18 +438,29 @@ struct ChunkedBuffer {
 
 impl ChunkedBuffer {
     fn new(label: &'static str, primitive_elements: usize) -> Self {
-        Self { chunks: Vec::new(), label, primitive_elements }
+        Self {
+            chunks: Vec::new(),
+            label,
+            primitive_elements,
+        }
     }
 
     fn upload<T: Pod>(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, values: &[T]) {
         let per_chunk = chunk_elements(
-            device.limits().max_buffer_size.min(DISPLAY_BUFFER_CHUNK_BYTES),
-            std::mem::size_of::<T>(), self.primitive_elements,
+            device
+                .limits()
+                .max_buffer_size
+                .min(DISPLAY_BUFFER_CHUNK_BYTES),
+            std::mem::size_of::<T>(),
+            self.primitive_elements,
         );
         // wgpu guarantees enough space for these tiny vertex records. This also
         // avoids making an invalid allocation if a future backend breaks that contract.
         if per_chunk == 0 {
-            eprintln!("Cannot display {}: device buffer limit cannot hold one primitive", self.label);
+            eprintln!(
+                "Cannot display {}: device buffer limit cannot hold one primitive",
+                self.label
+            );
             self.chunks.clear();
             return;
         }
@@ -445,7 +468,8 @@ impl ChunkedBuffer {
         self.chunks.truncate(chunk_count);
         for (index, values) in values.chunks(per_chunk).enumerate() {
             if index == self.chunks.len() {
-                self.chunks.push((GrowingBuffer::new(device, self.label), 0));
+                self.chunks
+                    .push((GrowingBuffer::new(device, self.label), 0));
             }
             let (buffer, count) = &mut self.chunks[index];
             buffer.upload(device, queue, bytemuck::cast_slice(values));
@@ -453,7 +477,12 @@ impl ChunkedBuffer {
         }
     }
 
-    fn draw(&self, pass: &mut wgpu::RenderPass<'static>, range: std::ops::Range<usize>, instanced: bool) {
+    fn draw(
+        &self,
+        pass: &mut wgpu::RenderPass<'static>,
+        range: std::ops::Range<usize>,
+        instanced: bool,
+    ) {
         let mut offset = 0;
         for (buffer, count) in &self.chunks {
             let start = range.start.saturating_sub(offset).min(*count) as u32;
@@ -478,7 +507,10 @@ fn chunk_elements(limit: u64, element_size: usize, primitive_elements: usize) ->
 
 fn buffer_capacity(required: u64, limit: u64) -> u64 {
     debug_assert!(required <= limit);
-    required.checked_next_power_of_two().unwrap_or(required).min(limit)
+    required
+        .checked_next_power_of_two()
+        .unwrap_or(required)
+        .min(limit)
 }
 
 struct GrowingBuffer {

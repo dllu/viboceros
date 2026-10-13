@@ -33,7 +33,9 @@ impl OffscreenRenderer {
         .expect("the opt-in GPU test requires an available graphics adapter");
         eprintln!("Offscreen viewport adapter: {:?}", adapter.get_info());
         let mut descriptor = wgpu::DeviceDescriptor::default();
-        if let Some(limit) = limit { descriptor.required_limits.max_buffer_size = limit; }
+        if let Some(limit) = limit {
+            descriptor.required_limits.max_buffer_size = limit;
+        }
         let (device, queue) = pollster::block_on(adapter.request_device(&descriptor))
             .expect("create offscreen test device");
         let renderer = ViewportRenderer::new(&device, format);
