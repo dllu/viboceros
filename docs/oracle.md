@@ -19,6 +19,9 @@ The existing `curve_rebuild_geometry` operation now selects the native backend
 in `native-smlib` builds. `curve_rebuild_native.json` exercises all degrees,
 odd/even closed counts and the public point limit; its portable-reference and
 SDK-capture status are recorded in [Rebuild qualification](smlib-curve-rebuild.md).
+Surface Rebuild also selects the native backend. The
+`surface_rebuild_native.json` fixture includes retained source definitions and
+additional degree/count cases; see [tensor qualification](smlib-surface-rebuild.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

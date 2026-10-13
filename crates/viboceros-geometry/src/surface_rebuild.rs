@@ -1,7 +1,19 @@
 //! Uniform surface rebuilding at midpoint-isocurve arc-length stations.
 use crate::{CurveRef, Tolerance, curve::ArcLengthSampler, nurbs::stable_knot_mean};
-use crate::{GeometryError, NurbsSurface, Point3, Real};
+use crate::{GeometryError, NurbsCurve, NurbsSurface, Point3, Real, SurfaceKnotDirection};
 use faer::{Mat, prelude::*};
+
+/// Uniform collocation shared by curve and tensor rebuild backends.
+/// Targets and returned controls are row-major homogeneous channels. Periodic
+/// parameters include the final domain endpoint without a repeated target row.
+pub struct UniformInterpolationSystem<'a> {
+    pub degree: usize,
+    pub knots: &'a [Real],
+    pub parameters: &'a [Real],
+    pub periodic: bool,
+    pub columns: usize,
+    pub targets: &'a [Real],
+}
 
 /// Rebuild a surface as a non-rational uniform tensor spline. Closed directions
 /// use periodic interpolation with `degree` repeated controls beyond the count.
@@ -12,11 +24,31 @@ pub fn try_rebuild_nurbs_surface(
     count: [usize; 2],
     degree: [usize; 2],
 ) -> Result<NurbsSurface, GeometryError> {
+    try_rebuild_nurbs_surface_with_operations(
+        source,
+        count,
+        degree,
+        &mut portable_isocurve,
+        &mut portable_solve,
+    )
+}
+
+/// Keep tensor sampling, basis, topology and pole policy while delegating
+/// isocurve production and uniform interpolation to external backends.
+pub fn try_rebuild_nurbs_surface_with_operations<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    count: [usize; 2],
+    degree: [usize; 2],
+    isocurve: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+    solve: &mut impl FnMut(&UniformInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsSurface, E> {
     rebuild(
         source,
         count,
         degree,
         [source.is_closed_u()?, source.is_closed_v()?],
+        isocurve,
+        solve,
     )
 }
 
@@ -25,26 +57,37 @@ pub(crate) fn rebuild_open(
     count: [usize; 2],
     degree: [usize; 2],
 ) -> Result<NurbsSurface, GeometryError> {
-    rebuild(source, count, degree, [false; 2])
+    rebuild(
+        source,
+        count,
+        degree,
+        [false; 2],
+        &mut portable_isocurve,
+        &mut portable_solve,
+    )
 }
 
-fn rebuild(
+fn rebuild<E: From<GeometryError>>(
     source: &NurbsSurface,
     count: [usize; 2],
     degree: [usize; 2],
     closed: [bool; 2],
-) -> Result<NurbsSurface, GeometryError> {
+    isocurve: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+    solve: &mut impl FnMut(&UniformInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsSurface, E> {
     if (0..2).any(|axis| degree[axis] == 0 || count[axis] <= degree[axis] || count[axis] > 256) {
         return Err(GeometryError::InvalidSurfaceRebuild {
             context: "requires positive degrees and degree+1..=256 controls per axis",
-        });
+        }
+        .into());
     }
     if source.control_points().iter().any(|c| c.weight() <= 0.) {
         return Err(GeometryError::InvalidSurfaceRebuild {
             context: "requires positive weights",
-        });
+        }
+        .into());
     }
-    let axis = |axis: usize| -> Result<_, GeometryError> {
+    let mut axis = |axis: usize| -> Result<_, E> {
         let n = count[axis];
         let p = degree[axis];
         let spans = if closed[axis] { n } else { n - p };
@@ -77,11 +120,12 @@ fn rebuild(
         } else {
             source.domain_u()
         };
-        let c = if axis == 0 {
-            source.isocurve_u(domain.start().midpoint(*domain.end()))?
+        let direction = if axis == 0 {
+            SurfaceKnotDirection::U
         } else {
-            source.isocurve_v(domain.start().midpoint(*domain.end()))?
+            SurfaceKnotDirection::V
         };
+        let c = isocurve(source, direction, domain.start().midpoint(*domain.end()))?;
         let mut sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&c), Tolerance::DEFAULT)?;
         sampler.prepare_budgeted_repeated_sampling(32)?;
         for (i, &t) in stations.iter().enumerate() {
@@ -101,26 +145,14 @@ fn rebuild(
             source_parameters[0] = *active.start();
             source_parameters[n - 1] = *active.end();
         }
-        let rows = stations
-            .iter()
-            .map(|&t| {
-                let basis =
-                    crate::nurbs::bspline_basis_values_extended(&knots, p, output_count, t)?;
-                let mut row = vec![0.; n];
-                for (i, b) in basis.into_iter().enumerate() {
-                    row[i % n] += b;
-                }
-                Ok(row)
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        Ok((
-            knots,
-            source_parameters,
-            Mat::from_fn(n, n, |i, j| rows[i][j]),
-        ))
+        let mut parameters = stations;
+        if closed[axis] {
+            parameters.push(spans as Real);
+        }
+        Ok((knots, source_parameters, parameters))
     };
-    let (ku, u, au) = axis(0)?;
-    let (kv, v, av) = axis(1)?;
+    let (ku, u, tu) = axis(0)?;
+    let (kv, v, tv) = axis(1)?;
     let mut points = Vec::with_capacity(count[0] * count[1]);
     for &y in &v {
         for &x in &u {
@@ -138,12 +170,52 @@ fn rebuild(
         .iter()
         .flat_map(|p| (0..3).map(move |k| (p.to_array()[k] - origin[k]).abs()))
         .fold(1., Real::max);
-    let rhs = Mat::from_fn(count[0], count[1] * 3, |i, j| {
-        (points[j / 3 * count[0] + i].to_array()[j % 3] - origin[j % 3]) / scale
-    });
-    let first = solve(&au, &rhs)?;
-    let rhs = Mat::from_fn(count[1], count[0] * 3, |i, j| first[(j / 3, i * 3 + j % 3)]);
-    let solved = solve(&av, &rhs)?;
+    let columns_u = count[1] * 4;
+    let columns_v = count[0] * 4;
+    let rhs = (0..count[0] * columns_u)
+        .map(|index| {
+            let i = index / columns_u;
+            let j = index % columns_u;
+            if j % 4 == 3 {
+                1.
+            } else {
+                (points[j / 4 * count[0] + i].to_array()[j % 4] - origin[j % 4]) / scale
+            }
+        })
+        .collect::<Vec<_>>();
+    let first = checked_solve(
+        &UniformInterpolationSystem {
+            degree: degree[0],
+            knots: &ku,
+            parameters: &tu,
+            periodic: closed[0],
+            columns: columns_u,
+            targets: &rhs,
+        },
+        solve,
+    )?;
+    let rhs = (0..count[1] * columns_v)
+        .map(|index| {
+            let i = index / columns_v;
+            let j = index % columns_v;
+            if j % 4 == 3 {
+                1.
+            } else {
+                first[j / 4 * columns_u + i * 4 + j % 4]
+            }
+        })
+        .collect::<Vec<_>>();
+    let solved = checked_solve(
+        &UniformInterpolationSystem {
+            degree: degree[1],
+            knots: &kv,
+            parameters: &tv,
+            periodic: closed[1],
+            columns: columns_v,
+            targets: &rhs,
+        },
+        solve,
+    )?;
     let output_count = std::array::from_fn::<_, 2, _>(|axis| {
         count[axis] + if closed[axis] { degree[axis] } else { 0 }
     });
@@ -151,7 +223,8 @@ fn rebuild(
     for j in 0..output_count[1] {
         for i in 0..output_count[0] {
             controls.push(Point3::try_from(std::array::from_fn(|k| {
-                solved[(j % count[1], (i % count[0]) * 3 + k)].mul_add(scale, origin[k])
+                solved[(j % count[1]) * columns_v + (i % count[0]) * 4 + k]
+                    .mul_add(scale, origin[k])
             }))?);
         }
     }
@@ -168,7 +241,7 @@ fn rebuild(
         } else {
             source.domain_v().end().to_owned()
         };
-        let curve = source.isocurve_u(side)?;
+        let curve = isocurve(source, SurfaceKnotDirection::U, side)?;
         let point = curve.control_points()[0].point();
         if !closed[1] && curve.control_points().iter().all(|p| p.point() == point) {
             let target_j = if j == 0 { 0 } else { output_count[1] - 1 };
@@ -183,7 +256,7 @@ fn rebuild(
         } else {
             source.domain_u().end().to_owned()
         };
-        let curve = source.isocurve_v(side)?;
+        let curve = isocurve(source, SurfaceKnotDirection::V, side)?;
         let point = curve.control_points()[0].point();
         if !closed[0] && curve.control_points().iter().all(|p| p.point() == point) {
             let target_i = if i == 0 { 0 } else { output_count[0] - 1 };
@@ -192,7 +265,7 @@ fn rebuild(
             }
         }
     }
-    NurbsSurface::try_new(
+    Ok(NurbsSurface::try_new(
         degree[0],
         degree[1],
         output_count[0],
@@ -200,7 +273,79 @@ fn rebuild(
         controls,
         ku,
         kv,
-    )
+    )?)
+}
+
+fn portable_isocurve(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    parameter: Real,
+) -> Result<NurbsCurve, GeometryError> {
+    match direction {
+        SurfaceKnotDirection::U => source.isocurve_u(parameter),
+        SurfaceKnotDirection::V => source.isocurve_v(parameter),
+        SurfaceKnotDirection::Both => Err(GeometryError::InvalidSurfaceRebuild {
+            context: "isocurve preparation requires one direction",
+        }),
+    }
+}
+
+fn checked_solve<E: From<GeometryError>>(
+    input: &UniformInterpolationSystem<'_>,
+    solve: &mut impl FnMut(&UniformInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<Vec<Real>, E> {
+    let mut solution = solve(input)?;
+    if solution.len() != input.targets.len() {
+        return Err(GeometryError::InvalidControlNet {
+            context: "surface rebuild solver returned an inconsistent layout",
+        }
+        .into());
+    }
+    crate::require_finite(solution.iter().copied(), "surface rebuild solution")?;
+    // Partition of unity makes a constant target channel exactly constant.
+    // Preserve it before the other tensor pass can amplify first-pass noise.
+    for column in 0..input.columns {
+        let value = input.targets[column];
+        if input
+            .targets
+            .chunks_exact(input.columns)
+            .all(|row| row[column] == value)
+        {
+            for row in solution.chunks_exact_mut(input.columns) {
+                row[column] = value;
+            }
+        }
+    }
+    Ok(solution)
+}
+
+fn portable_solve(input: &UniformInterpolationSystem<'_>) -> Result<Vec<Real>, GeometryError> {
+    let n = input.parameters.len() - usize::from(input.periodic);
+    let controls = n + if input.periodic { input.degree } else { 0 };
+    let rows = input.parameters[..n]
+        .iter()
+        .map(|&t| {
+            let basis = crate::nurbs::bspline_basis_values_extended(
+                input.knots,
+                input.degree,
+                controls,
+                t,
+            )?;
+            let mut row = vec![0.; n];
+            for (i, b) in basis.into_iter().enumerate() {
+                row[i % n] += b;
+            }
+            Ok(row)
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let matrix = Mat::from_fn(n, n, |i, j| rows[i][j]);
+    let targets = Mat::from_fn(n, input.columns, |i, j| {
+        input.targets[i * input.columns + j]
+    });
+    let solution = solve(&matrix, &targets)?;
+    Ok((0..n * input.columns)
+        .map(|i| solution[(i / input.columns, i % input.columns)])
+        .collect())
 }
 
 fn solve(matrix: &Mat<Real>, targets: &Mat<Real>) -> Result<Mat<Real>, GeometryError> {
@@ -236,6 +381,66 @@ fn solve(matrix: &Mat<Real>, targets: &Mat<Real>) -> Result<Mat<Real>, GeometryE
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn external_tensor_operations_share_layout_and_reject_bad_solver_outputs() {
+        let source = NurbsSurface::try_bilinear([
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 6., 1.).unwrap(),
+            Point3::try_new(0., 6., 0.).unwrap(),
+        ])
+        .unwrap();
+        let before = source.clone();
+        let mut iso_calls = 0;
+        let mut solve_calls = 0;
+        let result = try_rebuild_nurbs_surface_with_operations(
+            &source,
+            [5, 4],
+            [3, 2],
+            &mut |s, d, t| {
+                iso_calls += 1;
+                portable_isocurve(s, d, t)
+            },
+            &mut |input| {
+                solve_calls += 1;
+                assert_eq!(input.columns, if solve_calls == 1 { 16 } else { 20 });
+                assert!(!input.periodic);
+                assert!(input.targets.chunks_exact(4).all(|p| p[3] == 1.));
+                portable_solve(input)
+            },
+        )
+        .unwrap();
+        assert_eq!(iso_calls, 6);
+        assert_eq!(solve_calls, 2);
+        assert_eq!(
+            result,
+            try_rebuild_nurbs_surface(&source, [5, 4], [3, 2]).unwrap()
+        );
+        assert_eq!(source, before);
+        let bad = try_rebuild_nurbs_surface_with_operations(
+            &source,
+            [5, 4],
+            [3, 2],
+            &mut portable_isocurve,
+            &mut |_| -> Result<Vec<Real>, GeometryError> { Ok(Vec::new()) },
+        );
+        assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+        let invalid = try_rebuild_nurbs_surface_with_operations(
+            &source,
+            [3, 4],
+            [3, 2],
+            &mut |_, _, _| -> Result<NurbsCurve, GeometryError> {
+                panic!("invalid request entered extraction")
+            },
+            &mut |_| -> Result<Vec<Real>, GeometryError> {
+                panic!("invalid request entered solver")
+            },
+        );
+        assert!(matches!(
+            invalid,
+            Err(GeometryError::InvalidSurfaceRebuild { .. })
+        ));
+    }
     #[test]
     fn closed_primitives_preserve_periodic_controls_and_exact_poles_in_both_charts() {
         let tolerance = crate::Tolerance::DEFAULT;

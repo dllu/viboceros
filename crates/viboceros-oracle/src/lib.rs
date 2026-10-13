@@ -5074,12 +5074,21 @@ fn execute(
             ..
         } => {
             let surface = nurbs_surface_from_definition(surface)?;
-            let (rebuilt, elapsed) = measure(iterations, || {
-                viboceros_geometry::try_rebuild_nurbs_surface(
+            let (rebuilt, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::rebuild_surface(
                     &surface,
                     black_box(*point_count),
                     black_box(*degree),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = viboceros_geometry::try_rebuild_nurbs_surface(
+                    &surface,
+                    black_box(*point_count),
+                    black_box(*degree),
+                );
+                result.map_err(ProbeError::from)
             })?;
             (
                 json!({"surface":nurbs_surface_definition_value(&rebuilt)}),

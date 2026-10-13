@@ -1,6 +1,5 @@
 //! Surface branch of Rebuild, independent of curve option parsing.
 use super::*;
-use viboceros_geometry::try_rebuild_nurbs_surface;
 
 const USAGE: &str = "Rebuild UPointCount=2..256 VPointCount=2..256 UDegree=1..11 VDegree=1..11 [DeleteInput=Yes|No] [OutputLayer=Input|Current] [ReTrim=Yes|No]";
 
@@ -246,7 +245,7 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
             Geometry::Brep(_) => return Err(CommandError::UnsupportedSurfaceRebuild),
             _ => continue,
         };
-        let rebuilt = try_rebuild_nurbs_surface(source, options.count, options.degree)?;
+        let rebuilt = rebuild_backend(source, options.count, options.degree)?;
         let brep = if options.retrim {
             match object.geometry() {
                 Geometry::Brep(b) => b.try_retrimmed_single_surface(rebuilt, doc.tolerance())?,
@@ -293,6 +292,24 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
         options,
         output,
     })
+}
+
+fn rebuild_backend(
+    source: &NurbsSurface,
+    count: [usize; 2],
+    degree: [usize; 2],
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::rebuild_surface(source, count, degree)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_rebuild_nurbs_surface(
+            source, count, degree,
+        )?)
+    }
 }
 
 pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, CommandError> {

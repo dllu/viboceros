@@ -1,0 +1,528 @@
+{
+  "reference": "Pre-change surface Rebuild at d343b2ef, using portable isocurves and faer tensor interpolation",
+  "hardware": "Linux ARM64",
+  "method": "Five independent oracle requests per backend, five timed rebuilds and one untimed warmup per operation/request; elapsed_ns excludes JSON serialization. Processes ran serially; other compilation was active. Both binaries use the release profile.",
+  "qualification": "Diagnostic timings for these four cases, not a Rhino comparison or general performance guarantee.",
+  "native_binary_sha256": "f31b28fa2eaf9127a6fc0bcf18c8812da17404f9b6f8bf2ab4c29c5b37e4e716",
+  "reference_binary_sha256": "cc396008e9974ba529675a28c65da1c43697f7f274533ebc886cee80f6f8cf5d",
+  "request": {
+    "protocol_version": 1,
+    "iterations": 5,
+    "operations": [
+      {
+        "op": "surface_rebuild_geometry",
+        "id": "tensor-64-64-degree-3",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "knots_u": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                3.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                6.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "point_count": [
+          64,
+          64
+        ],
+        "degree": [
+          3,
+          3
+        ]
+      },
+      {
+        "op": "surface_rebuild_geometry",
+        "id": "tensor-64-64-degree-11",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "knots_u": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                3.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                6.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "point_count": [
+          64,
+          64
+        ],
+        "degree": [
+          11,
+          11
+        ]
+      },
+      {
+        "op": "surface_rebuild_geometry",
+        "id": "tensor-128-64-degree-3",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "knots_u": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                3.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                6.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "point_count": [
+          128,
+          64
+        ],
+        "degree": [
+          3,
+          3
+        ]
+      },
+      {
+        "op": "surface_rebuild_geometry",
+        "id": "tensor-128-64-degree-11",
+        "surface": {
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "knots_u": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "knots_v": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                3.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                3.0,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                3.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                6.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                6.0,
+                2.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.0,
+                6.0,
+                4.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        "point_count": [
+          128,
+          64
+        ],
+        "degree": [
+          11,
+          11
+        ]
+      }
+    ]
+  },
+  "operations": [
+    {
+      "id": "tensor-64-64-degree-3",
+      "native_ns_per_rebuild": [
+        4314849.6,
+        8286389.4,
+        4053943.4,
+        1964158.6,
+        4205809.2
+      ],
+      "prechange_ns_per_rebuild": [
+        8228981.0,
+        4853503.6,
+        4154609.2,
+        2391007.8,
+        5105161.8
+      ],
+      "native_median_ns": 4205809.2,
+      "prechange_median_ns": 4853503.6,
+      "observed_speed_ratio": 1.15399994845225
+    },
+    {
+      "id": "tensor-64-64-degree-11",
+      "native_ns_per_rebuild": [
+        4109012.2,
+        10371639.4,
+        5556385.4,
+        2289356.4,
+        4892204.6
+      ],
+      "prechange_ns_per_rebuild": [
+        5181533.4,
+        5152374.8,
+        4190394.8,
+        2418028.6,
+        5148890.0
+      ],
+      "native_median_ns": 4892204.6,
+      "prechange_median_ns": 5148890.0,
+      "observed_speed_ratio": 1.052468247137497
+    },
+    {
+      "id": "tensor-128-64-degree-3",
+      "native_ns_per_rebuild": [
+        7283631.4,
+        10716907.4,
+        7802788.0,
+        3595868.4,
+        7836241.0
+      ],
+      "prechange_ns_per_rebuild": [
+        19722085.8,
+        16582305.0,
+        16585293.8,
+        5694328.2,
+        16132294.2
+      ],
+      "native_median_ns": 7802788.0,
+      "prechange_median_ns": 16582305.0,
+      "observed_speed_ratio": 2.12517692394052
+    },
+    {
+      "id": "tensor-128-64-degree-11",
+      "native_ns_per_rebuild": [
+        9459288.2,
+        9507557.2,
+        9496187.6,
+        4435121.8,
+        9501765.2
+      ],
+      "prechange_ns_per_rebuild": [
+        16312128.2,
+        16709111.8,
+        16481194.2,
+        5684414.6,
+        16182204.6
+      ],
+      "native_median_ns": 9496187.6,
+      "prechange_median_ns": 16312128.2,
+      "observed_speed_ratio": 1.7177554706269704
+    }
+  ]
+}

@@ -486,6 +486,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Surface Rebuild shares native operations while retaining tensor policy.**
+  Midpoint and boundary isocurves use the checked native extractor, and each
+  direction shares one native banded factorization across all tensor rows.
+  Exactly constant target channels are preserved between passes so later
+  high-degree interpolation cannot amplify their first-pass roundoff. This
+  fixes an existing application interpolation issue, not an upstream defect.
+  Source sampling, arc-length stations, corners, poles and trim reconstruction
+  retain application policy. Command degrees remain 1–11 and counts at most
+  256 per axis; direct native calls also obey the pinned degree-17 limit.
+  Higher portable degrees, arbitrary conditioning and continuous fit error
+  are not native qualifications. See [surface Rebuild](smlib-surface-rebuild.md).
 - **Curve Rebuild retains application sampling and tangent policy.**
   The native path uses the existing derivative-basis, LU and homogeneous solve
   adapter for uniform open and periodic targets. Periodic columns are aligned

@@ -67,6 +67,8 @@ the native cubic solver, preserving point/tangent policy and using banded
 storage and solving for open systems.
 [Curve Rebuild](smlib-curve-rebuild.md) shares native basis and matrix solving
 for all degrees 1–11, including reordered periodic bands and command previews.
+[Surface Rebuild](smlib-surface-rebuild.md) reuses native station/pole isocurves
+and batches the same banded tensor interpolation across all rows of each axis.
 
 ## Reproduce the native trial
 

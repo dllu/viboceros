@@ -117,26 +117,56 @@ pub fn rebuild_curve(
                 .iter()
                 .flat_map(|p| [p[0], p[1], p[2], 1.])
                 .collect::<Vec<_>>();
-            let view = InterpolationSystem {
-                knots: input.knots.as_ptr(),
-                parameters: input.parameters.as_ptr(),
-                targets: targets.as_ptr(),
-                knot_count: input.knots.len(),
-                parameter_count: input.parameters.len(),
+            let output = solve_uniform_system(&viboceros_geometry::UniformInterpolationSystem {
+                knots: input.knots,
+                parameters: input.parameters,
+                targets: &targets,
                 columns: 4,
-                target_count: targets.len(),
                 degree: input.degree,
-                closed: c_int::from(input.periodic),
-                handles: 0,
-                uniform_periodic: c_int::from(input.periodic),
-            };
-            let mut output = vec![0.; targets.len()];
-            call(|error, capacity| unsafe {
-                vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+                periodic: input.periodic,
             })?;
             Ok(output.chunks_exact(4).map(|p| [p[0], p[1], p[2]]).collect())
         },
     )
+}
+
+/// Rebuild a uniform tensor through native station/pole isocurves and batched
+/// native banded solves, retaining shared sampling and topology policy.
+pub fn rebuild_surface(
+    source: &NurbsSurface,
+    count: [usize; 2],
+    degree: [usize; 2],
+) -> Result<NurbsSurface, Error> {
+    viboceros_geometry::try_rebuild_nurbs_surface_with_operations(
+        source,
+        count,
+        degree,
+        &mut surface_isocurve,
+        &mut solve_uniform_system,
+    )
+}
+
+fn solve_uniform_system(
+    input: &viboceros_geometry::UniformInterpolationSystem<'_>,
+) -> Result<Vec<f64>, Error> {
+    let view = InterpolationSystem {
+        knots: input.knots.as_ptr(),
+        parameters: input.parameters.as_ptr(),
+        targets: input.targets.as_ptr(),
+        knot_count: input.knots.len(),
+        parameter_count: input.parameters.len(),
+        columns: input.columns,
+        target_count: input.targets.len(),
+        degree: input.degree,
+        closed: c_int::from(input.periodic),
+        handles: 0,
+        uniform_periodic: c_int::from(input.periodic),
+    };
+    let mut output = vec![0.; input.targets.len()];
+    call(|error, capacity| unsafe {
+        vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+    })?;
+    Ok(output)
 }
 
 /// Interpolate a point set with shared SDK degree/closure policy and native

@@ -8,6 +8,10 @@ surfaces, bare `Rebuild` opens an options prompt. Starting it without selection
 asks for surfaces first; Enter then opens options. A complete inline invocation
 accepts after picking, or runs directly on preselected surfaces.
 
+Linux `native-smlib` builds use usd-brep isocurves and batched banded solving
+for both open and periodic surface Rebuild, including the command preview.
+See [native qualification](../smlib-surface-rebuild.md) for coverage and limits.
+
 ```text
 Rebuild UPointCount=5 VPointCount=4 UDegree=3 VDegree=2
 Rebuild UPointCount=7 VPointCount=5 UDegree=3 VDegree=2 DeleteInput=No OutputLayer=Current ReTrim=No

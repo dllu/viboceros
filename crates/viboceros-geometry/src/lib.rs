@@ -41,7 +41,10 @@ mod curve_through;
 mod curve_trim;
 mod curve_tween;
 mod surface_rebuild;
-pub use surface_rebuild::try_rebuild_nurbs_surface;
+pub use surface_rebuild::{
+    UniformInterpolationSystem, try_rebuild_nurbs_surface,
+    try_rebuild_nurbs_surface_with_operations,
+};
 mod surface_tween;
 pub use surface_tween::{
     MAX_SURFACE_TWEEN_CONTROLS, MAX_SURFACE_TWEEN_COUNT, try_tween_nurbs_surfaces,
