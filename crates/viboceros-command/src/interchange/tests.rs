@@ -1069,12 +1069,19 @@ fn external_assembly_open_save_as_preserves_ids_and_geometry() {
     let output = directory.path().join("roundtrip.3dm");
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    registry.execute(&mut document, &format!("Open \"{path}\"")).unwrap();
-    registry.execute(&mut document, &format!("SaveAs {}", output.display())).unwrap();
+    registry
+        .execute(&mut document, &format!("Open \"{path}\""))
+        .unwrap();
+    registry
+        .execute(&mut document, &format!("SaveAs {}", output.display()))
+        .unwrap();
     let saved = viboceros_io::read_3dm_file(&output, Tolerance::DEFAULT).unwrap();
     assert_eq!(saved.unsupported_object_count(), 0);
     assert_eq!(saved.objects, source.objects);
     assert_eq!(saved.groups, source.groups);
     assert_eq!(saved.layers, source.layers);
-    eprintln!("Preserved IDs, geometry and attributes of {} objects", source.objects.len());
+    eprintln!(
+        "Preserved IDs, geometry and attributes of {} objects",
+        source.objects.len()
+    );
 }
