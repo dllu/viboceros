@@ -146,6 +146,10 @@ B-rep still writes as one object. Subdivision uses the model tolerance and fails
 explicitly if trim correspondence cannot be resolved. The retained
 [pushup solid regression and independent OpenNURBS audit](../crates/viboceros-io/tests/fixtures/pushup/README.md)
 check closed topology and edge/trim geometry after 3DM readback.
+Import recomputes derived trim isocurve flags on a private native copy before
+validity checks. This preserves otherwise valid B-reps whose archived flags are
+stale after editing. The [display-mesh diagnostic](display-mesh-diagnostics.md)
+records the six real-model cabinet cases and provides a reusable profiling tool.
 The [rational range adapter](rational-3dm-range.md) prevents silent homogeneous
 coordinate underflow, chooses safe common weight scales when needed, and imports
 subnormal-weight curves and surfaces through direct homogeneous division.

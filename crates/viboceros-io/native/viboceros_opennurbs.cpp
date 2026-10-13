@@ -663,6 +663,12 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
   ON_Brep normalized(source);
   normalized.SetTolerancesBoxesAndFlags(true, true, true, true, false, false,
                                         false, false);
+  // Isocurve classifications are derived metadata. Older archives can retain
+  // stale boundary flags after filleting; classify the unchanged exact p-curves
+  // on this private copy before native validity checks.
+  if (!normalized.SetTrimIsoFlags()) {
+    return false;
+  }
   const ON_Brep& brep = normalized;
   ON_wString diagnostics;
   ON_TextLog log(diagnostics);

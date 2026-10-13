@@ -40,3 +40,4 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [USD BRep kernel integration](docs/usd-brep.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)
+- [Large-model display mesh diagnostics](docs/display-mesh-diagnostics.md)
