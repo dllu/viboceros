@@ -1,8 +1,12 @@
 //! Prepare unsupported full-order NURBS joins for the stricter 3DM curve model.
+//! B-rep edges are subdivided together with all incident trims, retaining the
+//! original support surfaces and independent rational segment gauges.
 
 use crate::{ThreeDmError, ThreeDmGeometry};
 use std::borrow::Cow;
-use viboceros_geometry::{CurveSegment3, MAX_POLYCURVE_SEGMENTS, NurbsCurve, PolyCurve3};
+use viboceros_geometry::{
+    CurveSegment3, MAX_POLYCURVE_SEGMENTS, NurbsCurve, PolyCurve3, Tolerance,
+};
 
 #[cfg(test)]
 mod tests;
@@ -17,8 +21,31 @@ struct Piece {
 
 pub(crate) fn prepare(
     geometry: &ThreeDmGeometry,
+    tolerance: Tolerance,
 ) -> Result<Vec<Cow<'_, ThreeDmGeometry>>, ThreeDmError> {
     let pieces = match geometry {
+        ThreeDmGeometry::Brep(brep) => {
+            let splits = brep
+                .edges()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, edge)| {
+                    let parameters = edge.curve().full_order_knots().collect::<Vec<_>>();
+                    (!parameters.is_empty()).then_some((index, parameters))
+                })
+                .collect::<Vec<_>>();
+            if splits.is_empty() {
+                return Ok(vec![Cow::Borrowed(geometry)]);
+            }
+            // A full-order knot separates independent rational control nets.
+            // Do not merge their weights or average coincident endpoints to
+            // force one OpenNURBS NURBS curve. Split each shared edge once and
+            // update every face-local trim in its own parameterization. The
+            // existing operation validates all resulting correspondence and
+            // fails explicitly if a trim cannot be resolved at model tolerance.
+            let adapted = brep.try_split_edges_at_parameters(&splits, tolerance)?;
+            return Ok(vec![Cow::Owned(ThreeDmGeometry::Brep(adapted))]);
+        }
         ThreeDmGeometry::NurbsCurve(curve) if needs_decomposition(curve) => curve
             .try_split_at_full_order_knots()?
             .into_iter()

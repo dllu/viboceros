@@ -5,6 +5,8 @@ use crate::{
 };
 use viboceros_geometry::{CurveRef, LineSegment, ParameterSide, Point3, Tolerance, WeightedPoint3};
 
+mod pushup;
+
 fn p(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
 }
@@ -210,7 +212,10 @@ fn a_closed_piece_is_not_embedded_in_an_invalid_multi_segment_polycurve() {
 #[test]
 fn valid_ordinary_curves_are_borrowed_and_keep_their_representation() {
     let source = ThreeDmGeometry::NurbsCurve(blocks(0.0).try_split(1.0).unwrap().0);
-    assert!(matches!(&prepare(&source).unwrap()[0], Cow::Borrowed(_)));
+    assert!(matches!(
+        &prepare(&source, Tolerance::DEFAULT).unwrap()[0],
+        Cow::Borrowed(_)
+    ));
     let original = model(source);
     let temporary = tempfile::tempdir().unwrap();
     let report = write_3dm_file(temporary.path().join("ordinary.3dm"), &original).unwrap();

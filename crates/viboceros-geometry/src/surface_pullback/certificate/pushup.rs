@@ -27,6 +27,13 @@ impl NurbsSurface {
     /// UV spline, retaining all original UV knots in every proof interval.
     /// No sampled-only proposal is returned. Sources remain unchanged.
     ///
+    /// Independent image segments retain full-order interior knots (multiplicity
+    /// `degree + 1`), including their separate rational gauges and one-sided
+    /// limits. Consumers requiring a stricter NURBS representation must subdivide
+    /// at [`NurbsCurve::full_order_knots`]. For a B-rep edge, every incident UV
+    /// trim must be subdivided as well; Viboceros's 3DM exporter does this without
+    /// refitting the curves or support surfaces.
+    ///
     /// The certificate's degree, weight, domain and arithmetic limits apply.
     /// Fitting has depth 20 and at most `MAX_CURVE_DIVISION_POINTS` controls.
     /// Unsupported inputs or inconclusive fits fail explicitly. This certifies

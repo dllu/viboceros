@@ -89,8 +89,11 @@ agreement; it is not an additional Rhino reader capture.
 
 ## Remaining limits
 
-This adapter handles free curves, not B-rep edges/trims or full-order surface
-knots. Those require topology-aware decomposition. A separate
+Free curves use the adapter described above. B-rep edges with full-order knots
+now use [shared-edge and incident-trim subdivision](../crates/viboceros-io/tests/fixtures/pushup/README.md)
+before export, preserving the support surfaces and the source object. Full-order
+surface knots and unrelated unsupported trim forms still require separate
+topology-aware conversion. A separate
 [numeric range adapter](rational-3dm-range.md) now chooses safe common binary
 weight scales before storing homogeneous coordinates and rejects unrecoverable
 controls. Kernel active-weight normalization limits still apply. Sampled reader agreement is bounded evidence,

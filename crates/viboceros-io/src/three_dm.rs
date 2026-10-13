@@ -526,12 +526,14 @@ pub struct ThreeDmWriteReport {
     pub source_object_count: usize,
     /// Objects actually written, including any decomposition expansion.
     pub written_object_count: usize,
-    /// Source curves whose file representation required decomposition.
+    /// Source objects whose free curves or B-rep edges required decomposition.
     pub adapted_curve_count: usize,
 }
 
 /// Writes through a staging file, replacing the destination only on success.
-/// Full-order free-curve knots are decomposed without editing the input model.
+/// Full-order free-curve knots and B-rep edges are decomposed without editing
+/// the input model. B-rep subdivision updates every incident trim and retains
+/// the support surfaces, using the model's stored tolerance.
 pub fn write_3dm_file(
     path: impl AsRef<Path>,
     model: &ThreeDmModel,
@@ -554,7 +556,7 @@ pub fn write_3dm_file(
     for (index, definition) in model.definitions.iter().enumerate() {
         let first_object = prepared.len();
         for object in &definition.members {
-            let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+            let geometries = crate::three_dm_curves::prepare(&object.geometry, model.tolerance)?;
             report.adapted_curve_count +=
                 usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
             prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
@@ -568,7 +570,7 @@ pub fn write_3dm_file(
     }
     let top_level_start = prepared.len();
     for object in &model.objects {
-        let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+        let geometries = crate::three_dm_curves::prepare(&object.geometry, model.tolerance)?;
         report.adapted_curve_count +=
             usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
         prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));

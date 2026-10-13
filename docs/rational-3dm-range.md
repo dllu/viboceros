@@ -38,8 +38,10 @@ report's `adapted_curve_count` counts structural full-order decomposition, not
 numeric weight rescaling.
 
 Independent full-order curve pieces are decomposed **before** this conversion,
-so each piece can retain or choose its own homogeneous scale. This numeric change
-does not extend full-order decomposition to B-rep topology or surface knots.
+so each piece can retain or choose its own homogeneous scale. The
+[B-rep export adapter](../crates/viboceros-io/tests/fixtures/pushup/README.md)
+also subdivides shared full-order edges and incident trims before this numeric
+conversion. Full-order support-surface knots remain outside these adapters.
 
 ## Import and signed surfaces
 
