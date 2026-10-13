@@ -24,13 +24,7 @@ pub enum LoftStyle {
 
 /// Shared homogeneous interpolation targets and section parameter policy.
 /// Targets use row-major order; open systems append two control-handle rows.
-pub struct LoftInterpolation<'a> {
-    pub knots: &'a [Real],
-    pub parameters: &'a [Real],
-    pub closed: bool,
-    pub columns: usize,
-    pub targets: &'a [Real],
-}
+pub type LoftInterpolation<'a> = crate::CubicInterpolationSystem<'a>;
 
 /// Lofts ordered profiles without reordering, reversing or relocating seams.
 /// U runs through the sections; V follows each section's normalized parameter.

@@ -160,7 +160,7 @@ pub use curve_rebuild::{
 pub use curve_segment::CurveSegment3;
 pub use curve_through::{
     CurveThroughConstruction, MAX_CURVE_THROUGH_DEGREE, sort_and_cull_points,
-    try_curve_through_points,
+    try_curve_through_points, try_curve_through_points_with_interpolation,
 };
 pub use curve_tween::{
     CurveTweenMatchMethod, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
@@ -171,8 +171,8 @@ pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use frame::Frame3;
 pub use interpolation::{
-    CurveInterpolationOptions, CurveKnotSpacing, InterpolatedCurveClosure,
-    MAX_CURVE_INTERPOLATION_POINTS,
+    CubicInterpolationSystem, CurveInterpolationOptions, CurveKnotSpacing,
+    InterpolatedCurveClosure, MAX_CURVE_INTERPOLATION_POINTS,
 };
 pub use intersection::{
     BrepBrepIntersectionEvent, CurveBrepIntersection, CurveBrepIntersectionEvent, CurveBrepOverlap,

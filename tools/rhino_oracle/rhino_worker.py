@@ -14677,6 +14677,40 @@ def _execute(operation, iterations, tolerance):
             for cutter in cutters:
                 cutter.Dispose()
 
+    if kind == "curve_interpolate_geometry":
+        points = [Rhino.Geometry.Point3d(*p) for p in operation["points"]]
+        closure = operation["closure"]
+        if closure not in ("open", "smooth", "sharp"):
+            raise ValueError("unknown interpolation closure")
+        if closure == "sharp" and points[0] != points[-1]:
+            points.append(points[0])
+        styles = {"uniform": Rhino.Geometry.CurveKnotStyle.Uniform,
+                  "chord": Rhino.Geometry.CurveKnotStyle.Chord,
+                  "sqrt_chord": Rhino.Geometry.CurveKnotStyle.ChordSquareRoot}
+        if closure == "smooth":
+            styles = {"uniform": Rhino.Geometry.CurveKnotStyle.UniformPeriodic,
+                      "chord": Rhino.Geometry.CurveKnotStyle.ChordPeriodic,
+                      "sqrt_chord": Rhino.Geometry.CurveKnotStyle.ChordSquareRootPeriodic}
+        start = operation.get("start_tangent")
+        end = operation.get("end_tangent")
+        start = Rhino.Geometry.Vector3d(*start) if start is not None else Rhino.Geometry.Vector3d.Unset
+        end = Rhino.Geometry.Vector3d(*end) if end is not None else Rhino.Geometry.Vector3d.Unset
+
+        def interpolate_curve():
+            result = Rhino.Geometry.Curve.CreateInterpolatedCurve(points, int(operation["degree"]),
+                        styles[operation["knots"]], start, end)
+            if result is None:
+                raise ValueError("Rhino curve interpolation failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        return _measure(iterations, interpolate_curve)
+
     if kind == "surface_isocurve_geometry":
         direction = str(operation["direction"]).lower()
         if direction not in ("u", "v"):

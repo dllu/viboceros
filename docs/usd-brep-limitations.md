@@ -15,8 +15,9 @@ issues reported by NVIDIA that have not all been reproduced here.
   `[2e-18/3,-1e-18/3]`. The
   [direct probe](../tools/usd_brep/loft_solver_probe.cpp) reproduces this;
   [retained output](smlib-loft-interpolation-probe.json) records both results.
-  Native Loft instead applies the LU row permutation to homogeneous targets,
-  then uses `N_RealMatrixForBack`, which does not skip small channels. The
+  Native periodic Loft and point interpolation instead apply the LU row
+  permutation to homogeneous targets, then use `N_RealMatrixForBack`, which
+  does not skip small channels. The
   factorization is shared across all control rows, and normalized residual
   checks retain every input constraint. Kernel tolerances are unchanged.
   Source: [NL_Math.cpp](../third_party/usd-brep/source/SMLib/src/NL_Math.cpp).
@@ -470,6 +471,19 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Point interpolation retains application policy around native basis and solves.**
+  The missing periodic fit exports above and the different skin handle policy
+  prevent a direct producer substitution. InterpCrv and interpolated
+  CurveThroughPt/CurveThroughPolyline now share the existing Loft constraint
+  system, native `N_BasisDerivs`, LU and homogeneous back solve. Open systems
+  use five-wide banded storage; periodic systems retain full pivoted storage.
+  Public point interpolation keeps the existing 256-point budget, knot/tangent
+  policy and exact command coincidence rule. Large internal TweenCurves sets
+  keep their portable linear-memory solver. All 43 complete point/curve-through
+  records match the portable backend; fresh Rhino interpolation capture remains
+  pending the Wine licensing startup. Extreme span ratios, continuous parity
+  and speed relative to Rhino are unqualified. See
+  [qualification and comparison](smlib-curve-interpolation.md).
 - **Loft section matching uses native edits, while interpolation retains Rhino
   policy.** The existing `N_CreateSkinSrfParams` open path sets its loft control
   index to `k` for `k+1` input profiles and requires that control count's knot

@@ -54,7 +54,7 @@ pub fn loft_surface(
         style,
         closed,
         &mut prepare_loft_sections,
-        &mut solve_loft_system,
+        &mut solve_cubic_system,
     )
 }
 
@@ -70,7 +70,9 @@ struct LoftSystem {
     closed: c_int,
 }
 
-fn solve_loft_system(input: &viboceros_geometry::LoftInterpolation<'_>) -> Result<Vec<f64>, Error> {
+fn solve_cubic_system(
+    input: &viboceros_geometry::CubicInterpolationSystem<'_>,
+) -> Result<Vec<f64>, Error> {
     let view = LoftSystem {
         knots: input.knots.as_ptr(),
         parameters: input.parameters.as_ptr(),
@@ -86,6 +88,24 @@ fn solve_loft_system(input: &viboceros_geometry::LoftInterpolation<'_>) -> Resul
         vb_loft_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
     })?;
     Ok(output)
+}
+
+/// Interpolate a point set with shared SDK degree/closure policy and native
+/// cubic basis evaluation and solving. Direct degree-one/two-point paths remain exact.
+pub fn interpolate_curve(
+    points: &[Point3],
+    options: viboceros_geometry::CurveInterpolationOptions,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    NurbsCurve::try_interpolate_with_solver(points, options, tolerance, &mut solve_cubic_system)
+}
+
+/// Preserve InterpCrv's exact coincidence and two-point cubic command behavior.
+pub fn interpolate_curve_for_command(
+    points: &[Point3],
+    options: viboceros_geometry::CurveInterpolationOptions,
+) -> Result<NurbsCurve, Error> {
+    NurbsCurve::try_interpolate_for_command_with_solver(points, options, &mut solve_cubic_system)
 }
 
 unsafe extern "C" {

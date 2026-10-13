@@ -63,11 +63,30 @@ pub fn try_curve_through_points(
     construction: CurveThroughConstruction,
     closed: bool,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_curve_through_points_with_interpolation(
+        points,
+        requested_degree,
+        construction,
+        closed,
+        &mut NurbsCurve::try_interpolate_for_curve_through,
+    )
+}
+
+/// Retain control-point and closure policy while delegating interpolated
+/// point construction to an exact command-style backend.
+pub fn try_curve_through_points_with_interpolation<E: From<GeometryError>>(
+    points: &[Point3],
+    requested_degree: usize,
+    construction: CurveThroughConstruction,
+    closed: bool,
+    interpolate: &mut impl FnMut(&[Point3], CurveInterpolationOptions) -> Result<NurbsCurve, E>,
+) -> Result<NurbsCurve, E> {
     if requested_degree == 0 || requested_degree > MAX_CURVE_THROUGH_DEGREE {
         return Err(GeometryError::InvalidCurveThroughDegree {
             actual: requested_degree,
             maximum: MAX_CURVE_THROUGH_DEGREE,
-        });
+        }
+        .into());
     }
 
     match construction {
@@ -90,7 +109,7 @@ pub fn try_curve_through_points(
                 curve.control_points().len() - curve.degree()
             };
             if curve.is_periodic() {
-                curve.try_reparameterized(0.0..=domain_length as Real)
+                Ok(curve.try_reparameterized(0.0..=domain_length as Real)?)
             } else {
                 // This construction explicitly requests integer uniform spans.
                 // Do not round-trip through the control-polygon-length domain.
@@ -98,7 +117,11 @@ pub fn try_curve_through_points(
                 let mut knots = vec![0.0; degree];
                 knots.extend((0..=domain_length).map(|i| i as Real));
                 knots.extend(std::iter::repeat_n(domain_length as Real, degree));
-                NurbsCurve::try_new_rational(degree, curve.control_points().to_vec(), knots)
+                Ok(NurbsCurve::try_new_rational(
+                    degree,
+                    curve.control_points().to_vec(),
+                    knots,
+                )?)
             }
         }
         CurveThroughConstruction::Interpolated(knot_spacing) => {
@@ -107,7 +130,7 @@ pub fn try_curve_through_points(
             } else {
                 InterpolatedCurveClosure::Open
             };
-            NurbsCurve::try_interpolate_for_curve_through(
+            interpolate(
                 points,
                 CurveInterpolationOptions::new(requested_degree, knot_spacing, closure),
             )

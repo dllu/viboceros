@@ -2,7 +2,7 @@
 
 Linux `native-smlib` builds now use usd-brep for Loft's homogeneous interpolation
 as well as its common section basis. Normal, Tight and Uniform share native basis
-evaluation and one pivoted LU factorization across all control rows. Open systems
+evaluation and one native factorization across all control rows. Open systems
 retain their two automatic control-handle constraints; closed systems fold the
 periodic control columns into the existing unique-control system. Loose and
 Straight retain direct control assembly and never enter the solver.
@@ -19,9 +19,11 @@ The native adapter uses `N_BasisDerivs` at derivative order zero: unlike
 than substituting a clamped identity row. Exact span checks surround the native
 evaluation, and binary chart scaling retains the original parameters and knots.
 The matrix is assembled from those native coefficients and the shared control
-constraints, then factored with `N_RealMatrixLuDecomposePivot`.
+constraints. Open systems order the two handle rows beside their endpoints and
+use five-wide banded storage with `N_RealMatrixLuDecompose`. Closed systems use
+the full cyclic matrix and `N_RealMatrixLuDecomposePivot`.
 
-Each homogeneous target column receives the factorization's row permutation
+Each closed-system homogeneous target column receives the factorization's row permutation
 before `N_RealMatrixForBack`. This avoids the real-vector pivot solve's tolerance
 skip for small nonzero right-hand-side values. The
 [direct probe](../tools/usd_brep/loft_solver_probe.cpp) and

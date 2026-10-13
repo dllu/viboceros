@@ -52,6 +52,7 @@ pub use interchange::{
     open_3dm_with_views_and_cplanes, parse_3dm_path, save_3dm_with_named_views,
     save_3dm_with_viewports, save_3dm_with_viewports_and_cplanes,
 };
+mod curve_interpolation;
 mod interpolation_options;
 use interpolation_options::parse_interp_curve_arguments;
 pub use interpolation_options::{
@@ -347,8 +348,8 @@ use viboceros_geometry::{
     Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, brep_brep_intersection_events,
     curve_brep_intersection_events, curve_surface_intersection_events, join_curves,
     sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
-    transformed_curve_brep_intersection_events, try_catenary, try_curve_through_points,
-    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    transformed_curve_brep_intersection_events, try_catenary, try_fit_curve, try_rebuild_curve,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -2472,8 +2473,7 @@ impl Command for InterpCurveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let (points, options) = parse_interp_curve_arguments(arguments)?;
         let point_count = points.len();
-        let curve =
-            NurbsCurve::try_interpolate_for_command(&points, options, document.tolerance())?;
+        let curve = curve_interpolation::command_curve(&points, options)?;
         let degree = curve.degree();
         let periodic = curve.is_periodic();
         let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
@@ -2595,7 +2595,7 @@ impl Command for CurveThroughPointCommand {
         if points.len() < 2 {
             return Err(CommandError::NotEnoughCurveThroughPoints);
         }
-        let curve = try_curve_through_points(
+        let curve = curve_interpolation::through_points(
             &points,
             options.degree,
             options.construction,
@@ -2635,7 +2635,7 @@ impl Command for CurveThroughPolylineCommand {
         let curves = sources
             .iter()
             .map(|(id, polyline)| {
-                try_curve_through_points(
+                curve_interpolation::through_points(
                     polyline.vertices(),
                     options.degree,
                     options.construction,

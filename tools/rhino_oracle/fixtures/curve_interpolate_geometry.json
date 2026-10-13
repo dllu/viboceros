@@ -1,0 +1,1046 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-uniform-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "uniform",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-uniform-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "uniform",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-uniform-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "uniform",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-chord-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "chord",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-chord-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "chord",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-chord-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "chord",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-sqrt_chord-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "sqrt_chord",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-sqrt_chord-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "sqrt_chord",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-1-sqrt_chord-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 1,
+      "knots": "sqrt_chord",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-uniform-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-uniform-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-uniform-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-chord-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-chord-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-chord-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-sqrt_chord-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-sqrt_chord-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-3-sqrt_chord-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "sharp"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-uniform-True-False",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-uniform-False-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "open",
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-uniform-True-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "uniform",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ],
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-chord-True-False",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-chord-False-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-chord-True-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ],
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-sqrt_chord-True-False",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-sqrt_chord-False-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "open",
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-tangents-sqrt_chord-True-True",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ],
+        [
+          4,
+          -1,
+          2
+        ],
+        [
+          4.5,
+          3,
+          -0.5
+        ],
+        [
+          10,
+          0,
+          1
+        ]
+      ],
+      "degree": 3,
+      "knots": "sqrt_chord",
+      "closure": "open",
+      "start_tangent": [
+        -1,
+        0.2,
+        0.5
+      ],
+      "end_tangent": [
+        0,
+        1,
+        -0.3
+      ]
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-two-open",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "open"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-two-smooth",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "smooth"
+    },
+    {
+      "op": "curve_interpolate_geometry",
+      "id": "interp-two-sharp",
+      "points": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          2,
+          0.5
+        ]
+      ],
+      "degree": 3,
+      "knots": "chord",
+      "closure": "sharp"
+    }
+  ]
+}

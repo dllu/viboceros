@@ -10,6 +10,11 @@ for the retained whole-domain padding discrepancy and command captures.
 The `surface_isocurve_geometry` operation accepts a complete `surface`, a single
 varying `direction` (`u` or `v`) and a fixed `parameter`. Its native producer and
 current SDK-capture status are described in [isocurve qualification](smlib-isocurves.md).
+The `curve_interpolate_geometry` operation accepts `points`, `degree`,
+`knots` (`uniform`, `chord`, `sqrt_chord`), `closure` (`open`, `smooth`, `sharp`)
+and optional `start_tangent`/`end_tangent` vectors. It compares complete SDK-style
+curve definitions; the 30-case fixture currently has portable/native evidence
+with fresh Rhino capture pending. See [point interpolation qualification](smlib-curve-interpolation.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

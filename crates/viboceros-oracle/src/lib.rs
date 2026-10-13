@@ -40,7 +40,7 @@ use viboceros_geometry::{
     NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
     TriangleMesh, UnitVector3, Vector3, WeightedPoint3, sort_and_cull_points, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -1342,6 +1342,17 @@ pub enum Operation {
         knots: CurveThroughKnotStyle,
         closed: bool,
     },
+    CurveInterpolateGeometry {
+        id: String,
+        points: Vec<[f64; 3]>,
+        degree: usize,
+        knots: CurveThroughKnotStyle,
+        closure: String,
+        #[serde(default)]
+        start_tangent: Option<[f64; 3]>,
+        #[serde(default)]
+        end_tangent: Option<[f64; 3]>,
+    },
     BrepRetrimGeometry {
         id: String,
         fixture: TrimmedBrepFixture,
@@ -2411,6 +2422,7 @@ impl Operation {
             | Self::SweptSpiral { id, .. }
             | Self::Catenary { id, .. }
             | Self::CurveThroughGeometry { id, .. }
+            | Self::CurveInterpolateGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
             | Self::SurfaceTweenSampledGeometry { id, .. }
             | Self::SurfaceRebuildGeometry { id, .. }
@@ -4921,6 +4933,53 @@ fn execute(
             };
             (value, elapsed)
         }
+        Operation::CurveInterpolateGeometry {
+            points,
+            degree,
+            knots,
+            closure,
+            start_tangent,
+            end_tangent,
+            ..
+        } => {
+            use viboceros_geometry::{CurveInterpolationOptions, InterpolatedCurveClosure};
+            let points = points
+                .iter()
+                .copied()
+                .map(point)
+                .collect::<Result<Vec<_>, _>>()?;
+            let spacing = match knots {
+                CurveThroughKnotStyle::Uniform => CurveKnotSpacing::Uniform,
+                CurveThroughKnotStyle::Chord => CurveKnotSpacing::Chord,
+                CurveThroughKnotStyle::SqrtChord => CurveKnotSpacing::SquareRootChord,
+            };
+            let closure = match closure.as_str() {
+                "open" => InterpolatedCurveClosure::Open,
+                "smooth" => InterpolatedCurveClosure::Smooth,
+                "sharp" => InterpolatedCurveClosure::Sharp,
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "unknown interpolation closure",
+                    ));
+                }
+            };
+            let mut options = CurveInterpolationOptions::new(*degree, spacing, closure);
+            if let Some(t) = start_tangent {
+                options = options.with_start_tangent(Vector3::try_from(*t)?);
+            }
+            if let Some(t) = end_tangent {
+                options = options.with_end_tangent(Vector3::try_from(*t)?);
+            }
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::interpolate_curve(&points, options, tolerance)
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = NurbsCurve::try_interpolate(&points, options, tolerance);
+                result.map_err(ProbeError::from)
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveThroughGeometry {
             source,
             point_sets,
@@ -4956,14 +5015,14 @@ fn execute(
                     "curve-through point source requires one point set",
                 ));
             }
-            let (curves, elapsed) = measure(iterations, || {
+            let (curves, elapsed) = measure_probe(iterations, || {
                 let mut curves = Vec::with_capacity(point_sets.len());
                 match source {
                     CurveThroughSource::Points => {
                         let mut points = point_sets[0].clone();
                         points.reverse();
                         let points = sort_and_cull_points(&points)?;
-                        curves.push(try_curve_through_points(
+                        curves.push(curve_through_backend(
                             &points,
                             *degree,
                             construction,
@@ -4973,7 +5032,7 @@ fn execute(
                     CurveThroughSource::Polylines => {
                         for points in &point_sets {
                             let polyline = Polyline3::try_new(points.clone(), tolerance)?;
-                            curves.push(try_curve_through_points(
+                            curves.push(curve_through_backend(
                                 polyline.vertices(),
                                 *degree,
                                 construction,
@@ -4982,7 +5041,7 @@ fn execute(
                         }
                     }
                 }
-                Ok(curves)
+                Ok::<_, ProbeError>(curves)
             })?;
             let definitions = curves
                 .iter()
@@ -10830,6 +10889,37 @@ fn rebuilt_curve_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryE
         "knots": curve.knots(),
         "periodic": curve.is_periodic(),
     }))
+}
+
+fn curve_through_backend(
+    points: &[Point3],
+    degree: usize,
+    construction: CurveThroughConstruction,
+    closed: bool,
+) -> Result<NurbsCurve, ProbeError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_geometry::try_curve_through_points_with_interpolation(
+            points,
+            degree,
+            construction,
+            closed,
+            &mut |points, options| {
+                viboceros_smlib::interpolate_curve_for_command(points, options)
+                    .map_err(CommandError::from)
+            },
+        )
+        .map_err(ProbeError::from)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_curve_through_points(
+            points,
+            degree,
+            construction,
+            closed,
+        )?)
+    }
 }
 
 fn curve_through_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {

@@ -12,8 +12,9 @@ mod native;
 pub use native::{
     BooleanOperation, Error, KernelCurve, Shape, Solid, SolidProperties, StitchResult,
     Tessellation, change_curve_degree, change_curve_seam, change_surface_degree,
-    change_surface_seam, curve_bezier_spans, insert_curve_knot, insert_surface_knot, loft_surface,
-    make_curve_non_periodic, make_surface_non_periodic, prepare_loft_sections, remove_curve_knot,
+    change_surface_seam, curve_bezier_spans, insert_curve_knot, insert_surface_knot,
+    interpolate_curve, interpolate_curve_for_command, loft_surface, make_curve_non_periodic,
+    make_surface_non_periodic, prepare_loft_sections, remove_curve_knot,
     remove_curve_multiple_knots, remove_surface_knot, remove_surface_multiple_knots, split_curve,
     split_curve_at_parameters, split_surface, subcurve, subcurve_at_arc_length, surface_isocurve,
     surface_single_span_patches, sweep_model, trim_curve, trim_surface, trim_surface_direction,

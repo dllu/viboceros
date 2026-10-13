@@ -11,6 +11,16 @@ pub const MAX_CURVE_INTERPOLATION_POINTS: usize = 256;
 const CUBIC_DEGREE: usize = 3;
 const MAX_DENSE_INTERPOLATION_CONTROL_POINTS: usize = MAX_CURVE_INTERPOLATION_POINTS + 2;
 
+/// Cubic point/control constraints shared with external interpolation backends.
+/// Targets use row-major homogeneous channels; open systems append two handles.
+pub struct CubicInterpolationSystem<'a> {
+    pub knots: &'a [Real],
+    pub parameters: &'a [Real],
+    pub closed: bool,
+    pub columns: usize,
+    pub targets: &'a [Real],
+}
+
 #[derive(Clone, Copy)]
 enum InterpolationCoincidence {
     Exact,
@@ -143,6 +153,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Within(tolerance),
             false,
             MAX_CURVE_INTERPOLATION_POINTS,
+            &mut solve_portable_interpolation,
         )
     }
 
@@ -165,6 +176,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
+            &mut solve_portable_interpolation,
         )
     }
 
@@ -180,6 +192,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
+            &mut solve_portable_interpolation,
         )
     }
 
@@ -198,35 +211,74 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             false,
             maximum_points,
+            &mut solve_portable_interpolation,
         )
     }
 
-    fn try_interpolate_impl(
+    /// Retain SDK interpolation policy while delegating the cubic control solve.
+    pub fn try_interpolate_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        tolerance: Tolerance,
+        solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Within(tolerance),
+            false,
+            MAX_CURVE_INTERPOLATION_POINTS,
+            solve,
+        )
+    }
+
+    /// Retain InterpCrv's exact coincidence and two-point degree policies while
+    /// delegating only cubic control solving to the caller's backend.
+    pub fn try_interpolate_for_command_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Exact,
+            true,
+            MAX_CURVE_INTERPOLATION_POINTS,
+            solve,
+        )
+    }
+
+    fn try_interpolate_impl<E: From<GeometryError>>(
         points: &[Point3],
         options: CurveInterpolationOptions,
         coincidence: InterpolationCoincidence,
         preserve_two_point_degree: bool,
         maximum_points: usize,
-    ) -> Result<Self, GeometryError> {
+        solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
         if !matches!(options.degree, 1 | CUBIC_DEGREE) {
             return Err(GeometryError::UnsupportedCurveInterpolationDegree {
                 actual: options.degree,
-            });
+            }
+            .into());
         }
         if points.len() < 2 {
             return Err(GeometryError::InsufficientCurveInterpolationPoints {
                 actual: points.len(),
-            });
+            }
+            .into());
         }
         if points.len() > maximum_points {
             return Err(GeometryError::TooManyCurveInterpolationPoints {
                 maximum: maximum_points,
-            });
+            }
+            .into());
         }
         if (options.start_tangent.is_some() || options.end_tangent.is_some())
             && (options.degree != CUBIC_DEGREE || options.closure != InterpolatedCurveClosure::Open)
         {
-            return Err(GeometryError::CurveInterpolationTangentsRequireOpenCubic);
+            return Err(GeometryError::CurveInterpolationTangentsRequireOpenCubic.into());
         }
 
         let mut points = points.to_vec();
@@ -250,44 +302,49 @@ impl NurbsCurve {
         if points.len() < 2 {
             return Err(GeometryError::InsufficientCurveInterpolationPoints {
                 actual: points.len(),
-            });
+            }
+            .into());
         }
         if points.len() > maximum_points {
             return Err(GeometryError::TooManyCurveInterpolationPoints {
                 maximum: maximum_points,
-            });
+            }
+            .into());
         }
         validate_adjacent_points(&points, coincidence)?;
         if options.closure == InterpolatedCurveClosure::Smooth
             && coincidence.matches(points[points.len() - 1], points[0])?
         {
-            return Err(GeometryError::CoincidentCurveInterpolationPoints { second_index: 0 });
+            return Err(
+                GeometryError::CoincidentCurveInterpolationPoints { second_index: 0 }.into(),
+            );
         }
 
         if options.degree == 1 {
             if options.closure == InterpolatedCurveClosure::Smooth {
                 points.push(points[0]);
             }
-            return interpolate_degree_one(&points, options.knot_spacing);
+            return Ok(interpolate_degree_one(&points, options.knot_spacing)?);
         }
         if options.closure == InterpolatedCurveClosure::Smooth {
-            return interpolate_periodic_cubic(&points, options.knot_spacing);
+            return interpolate_periodic_cubic_with_solver(&points, options.knot_spacing, solve);
         }
         if points.len() == 2 && options.start_tangent.is_none() && options.end_tangent.is_none() {
             if preserve_two_point_degree {
-                return interpolate_two_point_command_cubic(
+                return Ok(interpolate_two_point_command_cubic(
                     points[0],
                     points[1],
                     options.knot_spacing,
-                );
+                )?);
             }
-            return interpolate_two_point_line(points[0], points[1]);
+            return Ok(interpolate_two_point_line(points[0], points[1])?);
         }
-        interpolate_open_cubic(
+        interpolate_open_cubic_with_solver(
             &points,
             options.knot_spacing,
             options.start_tangent,
             options.end_tangent,
+            solve,
         )
     }
 }
@@ -368,12 +425,13 @@ fn interpolate_two_point_command_cubic(
     )
 }
 
-fn interpolate_open_cubic(
+fn interpolate_open_cubic_with_solver<E: From<GeometryError>>(
     points: &[Point3],
     spacing: CurveKnotSpacing,
     start_tangent: Option<Vector3>,
     end_tangent: Option<Vector3>,
-) -> Result<NurbsCurve, GeometryError> {
+    solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsCurve, E> {
     let intervals = interpolation_intervals(points, spacing, false)?;
     let parameters = cumulative_parameters(&intervals)?;
     let control_count = points.len() + 2;
@@ -424,30 +482,36 @@ fn interpolate_open_cubic(
         .collect::<Result<Vec<_>, _>>()?;
     let local_start = local_point(start_handle)?;
     let local_end = local_point(end_handle)?;
-    let controls = solve_open_cubic_tridiagonal(
-        &local_points,
-        &parameters,
-        &knots,
-        control_count,
-        local_start,
-        local_end,
-    )
-    .or_else(|error| {
-        // Keep a pivoted fallback for ordinary-size systems, without
-        // allocating a dense matrix for large internal interpolation sets.
-        if control_count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
-            solve_open_cubic_dense(
-                &local_points,
-                &parameters,
-                &knots,
-                control_count,
-                local_start,
-                local_end,
-            )
-        } else {
-            Err(error)
-        }
-    })?;
+    let controls = if points.len() > MAX_CURVE_INTERPOLATION_POINTS {
+        // Only internal TweenCurves sampling exceeds the public solve budget.
+        // Keep its original linear-memory path without packing dense job data.
+        solve_open_portable_points(
+            &local_points,
+            &parameters,
+            &knots,
+            control_count,
+            local_start,
+            local_end,
+        )?
+    } else {
+        let targets = local_points
+            .iter()
+            .copied()
+            .chain([local_start, local_end])
+            .flat_map(|p| {
+                let [x, y, z] = p.to_array();
+                [x, y, z, 1.]
+            })
+            .collect::<Vec<_>>();
+        let input = CubicInterpolationSystem {
+            knots: &knots,
+            parameters: &parameters,
+            closed: false,
+            columns: 4,
+            targets: &targets,
+        };
+        controls_from_solution(&input, solve(&input)?)?
+    };
     let mut controls = controls
         .into_iter()
         .map(|point| origin.translated(Vector3::try_from(point.to_array())?))
@@ -458,7 +522,7 @@ fn interpolate_open_cubic(
     controls[1] = start_handle;
     controls[control_count - 2] = end_handle;
     controls[control_count - 1] = points[points.len() - 1];
-    NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
+    Ok(NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)?)
 }
 
 fn solve_open_cubic_dense(
@@ -619,10 +683,11 @@ fn subtract_fixed_control(target: &mut [Real; 3], control: Point3, coefficient: 
     }
 }
 
-fn interpolate_periodic_cubic(
+fn interpolate_periodic_cubic_with_solver<E: From<GeometryError>>(
     points: &[Point3],
     spacing: CurveKnotSpacing,
-) -> Result<NurbsCurve, GeometryError> {
+    solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsCurve, E> {
     let intervals = interpolation_intervals(points, spacing, true)?;
     let parameters = cumulative_parameters(&intervals)?;
     let unique_control_count = points.len();
@@ -645,15 +710,6 @@ fn interpolate_periodic_cubic(
         knots.push(parameter);
     }
 
-    let mut rows = Vec::with_capacity(unique_control_count);
-    for parameter in &parameters[..unique_control_count] {
-        let basis = bspline_basis_values(&knots, CUBIC_DEGREE, control_count, *parameter)?;
-        let mut folded = vec![0.0; unique_control_count];
-        for (index, value) in basis.into_iter().enumerate() {
-            folded[index % unique_control_count] += value;
-        }
-        rows.push(folded);
-    }
     // Remove the common world offset from the right-hand side. In particular,
     // a constant coordinate plane must not acquire solver noise (or overflow
     // near MAX) merely because the entire curve was translated.
@@ -670,14 +726,114 @@ fn interpolate_periodic_cubic(
         .iter()
         .map(|point| Point3::try_from(origin.vector_to(*point)?.to_array()))
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    let unique_controls = solve_control_points(&rows, &local_points)?
+    let targets = local_points
+        .iter()
+        .flat_map(|p| {
+            let [x, y, z] = p.to_array();
+            [x, y, z, 1.]
+        })
+        .collect::<Vec<_>>();
+    let input = CubicInterpolationSystem {
+        knots: &knots,
+        parameters: &parameters,
+        closed: true,
+        columns: 4,
+        targets: &targets,
+    };
+    let unique_controls = controls_from_solution(&input, solve(&input)?)?
         .into_iter()
         .map(|point| origin.translated(Vector3::try_from(point.to_array())?))
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let controls = (0..control_count)
         .map(|index| unique_controls[index % unique_control_count])
         .collect();
-    NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
+    Ok(NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)?)
+}
+
+fn controls_from_solution(
+    input: &CubicInterpolationSystem<'_>,
+    solution: Vec<Real>,
+) -> Result<Vec<Point3>, GeometryError> {
+    if solution.len() != input.targets.len() {
+        return Err(GeometryError::InvalidControlNet {
+            context: "curve interpolation solver returned an inconsistent layout",
+        });
+    }
+    let fixed: [Option<Real>; 3] = std::array::from_fn(|axis| {
+        let first = input.targets[axis];
+        input
+            .targets
+            .chunks_exact(4)
+            .all(|p| p[axis] == first)
+            .then_some(first)
+    });
+    solution
+        .chunks_exact(4)
+        .map(|p| {
+            Point3::try_new(
+                fixed[0].unwrap_or(p[0]),
+                fixed[1].unwrap_or(p[1]),
+                fixed[2].unwrap_or(p[2]),
+            )
+        })
+        .collect()
+}
+
+fn solve_portable_interpolation(
+    input: &CubicInterpolationSystem<'_>,
+) -> Result<Vec<Real>, GeometryError> {
+    let points = input
+        .targets
+        .chunks_exact(4)
+        .map(|p| Point3::try_new(p[0], p[1], p[2]))
+        .collect::<Result<Vec<_>, _>>()?;
+    let n = input.parameters.len() - usize::from(input.closed);
+    let controls = if input.closed {
+        let mut rows = Vec::with_capacity(n);
+        for parameter in &input.parameters[..n] {
+            let basis =
+                bspline_basis_values(input.knots, CUBIC_DEGREE, n + CUBIC_DEGREE, *parameter)?;
+            let mut folded = vec![0.; n];
+            for (i, value) in basis.into_iter().enumerate() {
+                folded[i % n] += value;
+            }
+            rows.push(folded);
+        }
+        solve_control_points(&rows, &points)?
+    } else {
+        solve_open_portable_points(
+            &points[..n],
+            input.parameters,
+            input.knots,
+            n + 2,
+            points[n],
+            points[n + 1],
+        )?
+    };
+    Ok(controls
+        .iter()
+        .flat_map(|p| {
+            let [x, y, z] = p.to_array();
+            [x, y, z, 1.]
+        })
+        .collect())
+}
+
+fn solve_open_portable_points(
+    points: &[Point3],
+    parameters: &[Real],
+    knots: &[Real],
+    count: usize,
+    start: Point3,
+    end: Point3,
+) -> Result<Vec<Point3>, GeometryError> {
+    solve_open_cubic_tridiagonal(points, parameters, knots, count, start, end).or_else(|error| {
+        if count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
+            solve_open_cubic_dense(points, parameters, knots, count, start, end)
+        } else {
+            Err(error)
+        }
+    })
 }
 
 fn interpolation_intervals(
@@ -799,6 +955,75 @@ mod tests {
             point(4.5, 3.0, -0.5),
             point(10.0, 0.0, 1.0),
         ]
+    }
+
+    #[test]
+    fn external_curve_solver_observes_shared_constraints_and_direct_paths_bypass_it() {
+        let points = fixture_points();
+        let before = points.clone();
+        for closure in [
+            InterpolatedCurveClosure::Open,
+            InterpolatedCurveClosure::Smooth,
+            InterpolatedCurveClosure::Sharp,
+        ] {
+            let options = CurveInterpolationOptions::new(3, CurveKnotSpacing::Chord, closure);
+            let mut calls = 0;
+            let actual = NurbsCurve::try_interpolate_for_command_with_solver(
+                &points,
+                options,
+                &mut |input| {
+                    calls += 1;
+                    assert_eq!(input.columns, 4);
+                    assert_eq!(input.closed, closure == InterpolatedCurveClosure::Smooth);
+                    solve_portable_interpolation(input)
+                },
+            )
+            .unwrap();
+            assert_eq!(calls, 1);
+            assert_eq!(
+                actual,
+                NurbsCurve::try_interpolate_for_command(&points, options, Tolerance::DEFAULT)
+                    .unwrap()
+            );
+        }
+        let mut reject = |_: &CubicInterpolationSystem<'_>| -> Result<Vec<Real>, GeometryError> {
+            panic!("direct path entered solve")
+        };
+        for degree in [1, 3] {
+            NurbsCurve::try_interpolate_for_command_with_solver(
+                &points[..2],
+                CurveInterpolationOptions::new(
+                    degree,
+                    CurveKnotSpacing::Chord,
+                    InterpolatedCurveClosure::Open,
+                ),
+                &mut reject,
+            )
+            .unwrap();
+        }
+        assert_eq!(points, before);
+    }
+
+    #[test]
+    fn interpolation_validation_and_bad_solver_layout_keep_typed_geometry_errors() {
+        let points = fixture_points();
+        let bad = NurbsCurve::try_interpolate_for_command_with_solver(
+            &points,
+            CurveInterpolationOptions::default(),
+            &mut |_| -> Result<Vec<Real>, GeometryError> { Ok(Vec::new()) },
+        );
+        assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+        let invalid = NurbsCurve::try_interpolate_for_command_with_solver(
+            &[points[0], points[0]],
+            CurveInterpolationOptions::default(),
+            &mut |_| -> Result<Vec<Real>, GeometryError> {
+                panic!("invalid point set entered solve")
+            },
+        );
+        assert!(matches!(
+            invalid,
+            Err(GeometryError::CoincidentCurveInterpolationPoints { .. })
+        ));
     }
 
     fn assert_real_near(actual: Real, expected: Real) {

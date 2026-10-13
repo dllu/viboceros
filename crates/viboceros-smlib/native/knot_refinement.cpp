@@ -772,7 +772,7 @@ void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count)
         && (input.closed==0 || input.closed==1),"Invalid Loft interpolation dimensions");
     const size_t sections=input.parameter_count-input.closed;
     const size_t unknowns=sections+(input.closed?0:2),controls=sections+(input.closed?3:2);
-    require(sections>=(input.closed?3:2) && input.knot_count==controls+4
+    require(sections>=2 && input.knot_count==controls+4
         && input.target_count==unknowns*input.columns && output_count==input.target_count,
         "Invalid Loft interpolation layout");
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
@@ -789,11 +789,20 @@ void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count)
     NL_STACKS stack;
     SmStackHandler cleanup(&stack);
     NL_RMATRIX matrix;
-    check(N_SetRealMatrix(&matrix,unknowns-1,unknowns-1,NL_MT_FULL,unknowns-1,&stack),
+    const size_t matrix_width=input.closed?unknowns:5;
+    check(N_SetRealMatrix(&matrix,unknowns-1,unknowns-1,input.closed?NL_MT_FULL:NL_MT_BANDED,
+        input.closed?unknowns-1:matrix_width,&stack),
         "Allocate native Loft interpolation matrix failed");
     NL_REAL **values;
     N_GetRealMatrixPtr(&matrix,&values);
-    for(size_t i=0;i<unknowns;++i) std::fill_n(values[i],unknowns,0.0);
+    for(size_t i=0;i<unknowns;++i) std::fill_n(values[i],matrix_width,0.0);
+    const auto source_row=[&](size_t row) {
+        if(input.closed || row==0) return row;
+        if(row==1) return sections;
+        if(row+2==unknowns) return sections+1;
+        if(row+1==unknowns) return sections-1;
+        return row-1;
+    };
     NL_KNOTVECTOR knots={static_cast<NL_INDEX>(basis.size()-1),basis.data()};
     for(size_t i=0;i<sections;++i) {
         double coefficients[4],*rows[]={coefficients};
@@ -808,24 +817,31 @@ void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count)
         for(size_t j=0;j<4;++j) {
             const auto column=static_cast<size_t>(span-3)+j;
             require(column<controls && std::isfinite(coefficients[j]),"Invalid native Loft basis coefficient");
-            values[i][input.closed?column%sections:column]+=coefficients[j];
+            if(input.closed) values[i][column%sections]+=coefficients[j];
+            else if(coefficients[j]!=0) {
+                const size_t row=i==0?0:(i+1==sections?unknowns-1:i+1);
+                const auto band_column=static_cast<ptrdiff_t>(column)-static_cast<ptrdiff_t>(row)+2;
+                require(band_column>=0 && static_cast<size_t>(band_column)<matrix_width,"Native open cubic exceeded its matrix band");
+                values[row][band_column]+=coefficients[j];
+            }
         }
     }
-    if(!input.closed) {values[sections][1]=1.;values[sections+1][controls-2]=1.;}
-    std::vector<double> original(unknowns*unknowns);
-    for(size_t i=0;i<unknowns;++i) std::copy_n(values[i],unknowns,original.data()+i*unknowns);
+    if(!input.closed) {values[1][2]=1.;values[unknowns-2][2]=1.;}
+    std::vector<double> original(unknowns*matrix_width);
+    for(size_t i=0;i<unknowns;++i) std::copy_n(values[i],matrix_width,original.data()+i*matrix_width);
     std::vector<NL_INDEX> pivots(unknowns);
-    check(N_RealMatrixLuDecomposePivot(&matrix,pivots.data()),"Factor native Loft interpolation system failed");
+    check(input.closed?N_RealMatrixLuDecomposePivot(&matrix,pivots.data()):N_RealMatrixLuDecompose(&matrix),
+        "Factor native Loft interpolation system failed");
     std::vector<NL_CPOINT> targets(unknowns),solution(unknowns);
     for(size_t column=0;column<input.columns;column+=4) {
         for(size_t i=0;i<unknowns;++i) {
-            const double *p=input.targets+i*input.columns+column;
+            const double *p=input.targets+source_row(i)*input.columns+column;
             require(std::all_of(p,p+4,[](double x){return std::isfinite(x);}),"Nonfinite Loft targets");
             targets[i]={p[0],p[1],p[2],p[3]};
         }
         // Apply the LU row permutation before the native homogeneous solve.
         // This avoids the real-vector pivot solver's RHS zero-tolerance skip.
-        for(size_t i=0;i<unknowns;++i) {
+        for(size_t i=0;input.closed && i<unknowns;++i) {
             require(pivots[i]>=0 && static_cast<size_t>(pivots[i])<unknowns,"Invalid native Loft pivot");
             std::swap(targets[i],targets[pivots[i]]);
         }
@@ -844,10 +860,12 @@ void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count)
                 std::max(std::abs(input.targets[i*input.columns+column+c]),std::abs(output[i*input.columns+column+c])));
             if(magnitude==0) continue;
             for(size_t row=0;row<unknowns;++row) {
-                const double target=input.targets[row*input.columns+column+c]/magnitude;
+                const double target=input.targets[source_row(row)*input.columns+column+c]/magnitude;
                 double sum=0,scale=std::abs(target);
-                for(size_t i=0;i<unknowns;++i) {
-                    const double value=original[row*unknowns+i]*(output[i*input.columns+column+c]/magnitude);
+                const size_t first=input.closed?0:(row>2?row-2:0),last=input.closed?unknowns:std::min(unknowns,row+3);
+                for(size_t i=first;i<last;++i) {
+                    const size_t entry=input.closed?i:static_cast<ptrdiff_t>(i)-static_cast<ptrdiff_t>(row)+2;
+                    const double value=original[row*matrix_width+entry]*(output[i*input.columns+column+c]/magnitude);
                     sum+=value;scale+=std::abs(value);
                 }
                 require(std::isfinite(sum) && std::abs(sum-target)<=1e-12*scale+1e-14,

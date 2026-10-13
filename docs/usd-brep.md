@@ -60,8 +60,11 @@ Contour boundaries and UV rectangle sizing.
 clamping, degree elevation and knot refinement with shared section-weight and
 interpolation policies.
 [Loft interpolation](smlib-loft-interpolation.md) now uses native basis evaluation
-and one pivoted factorization for all homogeneous channels, including periodic
-closed systems.
+and one factorization for all homogeneous channels: banded for open systems,
+pivoted for periodic closed systems.
+[InterpCrv and curve-through interpolation](smlib-curve-interpolation.md) share
+the native cubic solver, preserving point/tangent policy and using banded
+storage and solving for open systems.
 
 ## Reproduce the native trial
 

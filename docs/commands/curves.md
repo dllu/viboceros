@@ -132,6 +132,9 @@ records match the native sampled curves and domains within `1e-10`.
 input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp
 `Close=` modes, and start/end tangent directions on open cubics.
+Linux `native-smlib` builds use usd-brep basis and matrix routines for cubic
+InterpCrv and interpolated CurveThrough construction. See
+[point interpolation](../smlib-curve-interpolation.md) for qualification and limits.
 
 `CurveThroughPt` orders selected point objects into a nearest-neighbor chain,
 ignores coincident locations, and creates one control-point or
