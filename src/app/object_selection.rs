@@ -210,6 +210,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.blend_surface_prompt.is_some() {
+            return None;
+        }
         if self.picking_block_edit_sources() {
             return Some(ObjectSelectionFilter::BlockEditSources);
         }

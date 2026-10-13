@@ -46,6 +46,11 @@ pub use surface_rebuild::{
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
 mod surface_tween;
+mod surface_blend;
+pub use surface_blend::{
+    SurfaceBlendContinuity, SurfaceBlendDiagnostics, SurfaceBlendOptions, SurfaceBlendResult,
+    try_blend_nurbs_surfaces,
+};
 pub use surface_tween::{
     MAX_SURFACE_TWEEN_CONTROLS, MAX_SURFACE_TWEEN_COUNT, try_tween_nurbs_surfaces,
     try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_refitted_with_operations,

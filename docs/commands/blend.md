@@ -1,5 +1,7 @@
 # Blend
 
+For surface edges, use [BlendSrf](blend-srf.md).
+
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/blend.htm)
 
 Select two open curves and run `Blend`. It creates a new NURBS curve
@@ -28,5 +30,6 @@ Blend Continuity1=Tangency Continuity2=Position Handle1=2.5
 Blend Bulge1=0.5 Bulge2=1.5
 ```
 
-G3 and higher continuity, surface-edge selection, interactive handle adjustment,
-trimming, and joining are pending.
+For `Blend`, G3 and higher continuity, interactive curve-handle adjustment,
+curve trimming and joining are pending. [BlendSrf](blend-srf.md) provides
+surface-edge selection, preview, rectangular trimming and joining.

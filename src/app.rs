@@ -140,6 +140,7 @@ mod circle;
 use circle::CircleSizeMode;
 mod apply_curves;
 mod bend_prompt;
+mod blend_surface;
 mod block_add;
 mod block_edit;
 mod block_manager;
@@ -2071,6 +2072,7 @@ pub struct VibocerosApp {
     boolean_two_prompt: Option<boolean_two::Prompt>,
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
     tween_surfaces_prompt: Option<tween_surfaces::Prompt>,
+    blend_surface_prompt: Option<blend_surface::Prompt>,
     rebuild_preview: Option<surface_rebuild::Preview>,
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
@@ -2175,6 +2177,7 @@ impl VibocerosApp {
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
+            blend_surface_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
@@ -2328,6 +2331,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.continue_blend_surface(&input) {
+            return;
+        }
         if self.continue_tween_surfaces(&input) {
             return;
         }
@@ -2421,7 +2427,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.start_tween_surfaces(&input)
+        if self.start_blend_surface(&input)
+            || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)
             || self.try_start_remember_copy_options(&input)
@@ -5220,6 +5227,7 @@ impl VibocerosApp {
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
+        self.blend_surface_prompt = None;
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
@@ -7922,6 +7930,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.blend_surface_prompt.is_some() {
+            return;
+        }
         if self.pick_block_edit_sources(click.object_id, click.mode) {
             return;
         }
@@ -8182,7 +8193,7 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
-        if self.tween_surfaces_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
             return;
         }
         if self
@@ -8229,7 +8240,7 @@ impl VibocerosApp {
     }
 
     fn finish_fence_selection(&mut self) {
-        if self.tween_surfaces_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
             self.fence_selection = None;
             return;
         }
@@ -8321,7 +8332,7 @@ impl VibocerosApp {
         region_mode: RectSelectionMode,
         selection_mode: SelectionMode,
     ) {
-        if self.tween_surfaces_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
             self.boundary_selection = None;
             return;
         }
@@ -8458,7 +8469,7 @@ impl VibocerosApp {
         if self.select_block_add_region(&selection) {
             return;
         }
-        if self.tween_surfaces_prompt.is_some() {
+        if self.tween_surfaces_prompt.is_some() || self.blend_surface_prompt.is_some() {
             return;
         }
         if self.end_analysis_pick.is_some() {
@@ -8647,6 +8658,8 @@ impl VibocerosApp {
                     preselection: false,
                     modifiers: egui::Modifiers::NONE,
                 });
+            } else if self.blend_surface_prompt.is_some() {
+                self.accept_blend_edges(picks);
             } else if self.hole_prompt.is_some() {
                 self.accept_hole_edges(picks);
             } else {
@@ -8720,6 +8733,7 @@ impl VibocerosApp {
             || self.boolean_two_prompt.is_some()
             || self.planar_boolean_prompt.is_some()
             || self.tween_surfaces_prompt.is_some()
+            || self.blend_surface_prompt.is_some()
         {
             self.cancel_interactive_command(false);
         }
@@ -8810,6 +8824,8 @@ impl VibocerosApp {
             // Escape dismisses the choice without changing the selection.
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
+        } else if self.blend_surface_prompt.is_some() {
+            self.blend_surface_prompt = None;
         } else if self.tween_surfaces_prompt.is_some() {
             self.cancel_tween_surfaces();
         } else if self.planar_boolean_prompt.is_some() {
@@ -8890,6 +8906,7 @@ impl eframe::App for VibocerosApp {
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
+        self.validate_blend_surface();
         self.validate_tween_surfaces();
         self.validate_boolean_two();
         self.validate_rebuild_preview();
@@ -8909,6 +8926,7 @@ impl eframe::App for VibocerosApp {
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
+            && self.blend_surface_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
             && self.edge_prompt.is_none()
@@ -9156,6 +9174,10 @@ impl eframe::App for VibocerosApp {
                 .hole_prompt
                 .as_ref()
                 .is_some_and(untrim_holes::HolePrompt::picking_edges)
+            || self
+                .blend_surface_prompt
+                .as_ref()
+                .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_subcurve_edge())
             && self.plane_prompt.is_none()
             && model_input_active
@@ -9199,6 +9221,9 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         if let Some(prompt) = &self.hole_prompt {
+            edge_highlights.extend(prompt.highlights());
+        }
+        if let Some(prompt) = &self.blend_surface_prompt {
             edge_highlights.extend(prompt.highlights());
         }
         if self.unjoin_prompt.is_none()
@@ -9294,7 +9319,10 @@ impl eframe::App for VibocerosApp {
         let document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
-            self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene()),
+            self.blend_surface_prompt
+                .as_ref()
+                .and_then(|p| p.scene())
+                .or_else(|| self.tween_surfaces_prompt.as_ref().and_then(|p| p.scene())),
             self.rebuild_preview.as_ref().and_then(|p| p.scene()),
         );
         let twist_preview = self
@@ -9691,6 +9719,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod blend_surface;
     mod block_manager;
     mod blocks;
     mod boolean_difference;
@@ -9840,6 +9869,7 @@ mod tests {
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
             tween_surfaces_prompt: None,
+            blend_surface_prompt: None,
             rebuild_preview: None,
             edge_prompt: None,
             hole_prompt: None,
