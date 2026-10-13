@@ -260,6 +260,18 @@ fn solve_uniform_system(
     solve_with_fixed_rows(input, None)
 }
 
+/// Native fixed-row interpolation for adaptive morphs and display cages.
+pub fn morph_interpolation(
+    input: &viboceros_geometry::FixedInterpolationSystem<'_>,
+) -> Result<Vec<f64>, GeometryError> {
+    solve_with_fixed_rows(&input.system, Some(input.fixed_rows)).map_err(|error| match error {
+        Error::Geometry(error) => error,
+        error => GeometryError::InterpolationBackendFailed {
+            message: error.to_string(),
+        },
+    })
+}
+
 fn solve_with_fixed_rows(
     input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
     fixed: Option<&[u8]>,

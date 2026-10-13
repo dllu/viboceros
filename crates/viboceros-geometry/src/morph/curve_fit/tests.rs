@@ -246,3 +246,40 @@ fn identity_morph_keeps_full_order_positional_jumps_and_one_sided_values() {
         );
     }
 }
+
+#[test]
+fn morph_backend_rejects_invalid_layout_and_nonfinite_results_before_returning_geometry() {
+    fn short(job: &crate::FixedInterpolationSystem<'_>) -> Result<Vec<Real>, GeometryError> {
+        Ok(vec![0.; job.system.targets.len() - 1])
+    }
+    fn nonfinite(job: &crate::FixedInterpolationSystem<'_>) -> Result<Vec<Real>, GeometryError> {
+        Ok(vec![Real::NAN; job.system.targets.len()])
+    }
+    struct Backend(crate::MorphInterpolationSolver);
+    impl PointMorph for Backend {
+        fn interpolation_solver(&self) -> Option<crate::MorphInterpolationSolver> {
+            Some(self.0)
+        }
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            Point3::try_new(p.x(), p.y(), p.z() + p.x().powi(4))
+        }
+    }
+    let source = NurbsCurve::try_new(
+        1,
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(1., 0., 0.).unwrap(),
+        ],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let before = source.clone();
+    for solver in [short as crate::MorphInterpolationSolver, nonfinite] {
+        assert!(
+            Backend(solver)
+                .morph_nurbs_curve(&source, Tolerance::NUMERICAL_VALIDATION)
+                .is_err()
+        );
+    }
+    assert_eq!(source, before);
+}

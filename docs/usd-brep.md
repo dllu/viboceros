@@ -69,6 +69,9 @@ storage and solving for open systems.
 for all degrees 1–11, including reordered periodic bands and command previews.
 [Surface Rebuild](smlib-surface-rebuild.md) reuses native station/pole isocurves
 and batches the same banded tensor interpolation across all rows of each axis.
+[Morph interpolation](smlib-morph-interpolation.md) reuses native fixed-row
+bands for adaptive Bend/Twist/Taper/Maelstrom/OrientOnSrf curves, surfaces and
+prepared preview cages, including rational degree-3/6/9 candidates.
 [SrfPtGrid](smlib-point-grid.md) batches native open-band or closed-pivot
 interpolation, including boundary-span continuation and command topology.
 [TweenSurfaces](smlib-surface-tween.md) uses native forced-open rebuilding,

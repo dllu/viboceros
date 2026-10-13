@@ -19,13 +19,18 @@ pub(super) fn candidate(
     point_at: &mut impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
     source: &NurbsCurve,
     maximum: usize,
+    solver: Option<MorphInterpolationSolver>,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
     let Some(denominator) = denominator::curve_weights(source) else {
         return Ok(None);
     };
-    let Some(axis) =
-        Axis::cubic_composition(source.degree(), source.knots(), source.domain(), maximum)
-    else {
+    let Some(axis) = Axis::cubic_composition_with_solver(
+        source.degree(),
+        source.knots(),
+        source.domain(),
+        maximum,
+        solver,
+    ) else {
         return Ok(None);
     };
     let mut weights = Vec::with_capacity(axis.stations.len());
@@ -46,13 +51,14 @@ pub(super) fn candidate(
         .collect::<Result<Vec<_>, _>>()?;
     // A failed source map is not a failed interpolation candidate. Only the
     // numerical solve and reconstruction below may fall back to polynomial fitting.
-    Ok(interpolate(axis, &targets, &weights).ok())
+    Ok(interpolate(axis, &targets, &weights, solver).ok())
 }
 
 fn interpolate(
     axis: Axis,
     targets: &[Point3],
     weights: &[Real],
+    solver: Option<MorphInterpolationSolver>,
 ) -> Result<NurbsCurve, GeometryError> {
     let candidate = targets[0].to_array();
     let origin = if targets.iter().all(|p| {
@@ -72,7 +78,7 @@ fn interpolate(
             (targets[row].to_array()[column] - origin[column]) * weights[row]
         }
     });
-    let solution = axis.solve(rhs)?;
+    let solution = axis.solve_with(rhs, 4, solver)?;
     let controls = axis
         .stations
         .iter()

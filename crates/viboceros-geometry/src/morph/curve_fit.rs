@@ -70,7 +70,8 @@ pub(super) fn fit_with_stations(
         {
             return Ok(candidate);
         }
-        if let Some(candidate) = rational::candidate(&mut point_at, source, maximum)?
+        if let Some(candidate) =
+            rational::candidate(&mut point_at, source, maximum, morph.interpolation_solver())?
             && validate::errors(
                 &mut point_at,
                 &candidate,
@@ -90,7 +91,7 @@ pub(super) fn fit_with_stations(
             return Err(GeometryError::TooManyMorphCurveControlPoints { maximum });
         }
         let knots = knots(&breaks);
-        let approximation = interpolate(&mut point_at, knots)?;
+        let approximation = interpolate(&mut point_at, knots, morph.interpolation_solver())?;
         let validate::Errors {
             deviation,
             mut refinements,
@@ -161,8 +162,9 @@ pub(super) fn fit_with_stations(
 fn interpolate(
     point_at: &mut impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
     knots: Vec<Real>,
+    solver: Option<MorphInterpolationSolver>,
 ) -> Result<NurbsCurve, GeometryError> {
-    let axis = Axis::cubic(knots)?;
+    let axis = Axis::for_solver(3, knots, solver)?;
     let count = axis.stations.len();
     let mut targets = Vec::with_capacity(count);
     for station in &axis.stations {
@@ -182,7 +184,7 @@ fn interpolate(
     let rhs = Mat::from_fn(count, 3, |row, column| {
         targets[row].to_array()[column] - origin[column]
     });
-    let solution = axis.solve(rhs)?;
+    let solution = axis.solve_with(rhs, 3, solver)?;
     let controls = (0..count)
         .map(|i| {
             if axis.stations[i].fixed {

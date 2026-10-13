@@ -20,11 +20,19 @@ pub const MAX_MORPH_SURFACE_AXIS_CONTROLS: usize = 256;
 /// Bound on cached direct point-map samples during one surface fit.
 pub const MAX_MORPH_SURFACE_SAMPLES: usize = 8_000_000;
 
+/// Optional fixed-row homogeneous interpolation producer for morph fitting.
+pub type MorphInterpolationSolver =
+    fn(&crate::FixedInterpolationSystem<'_>) -> Result<Vec<Real>, GeometryError>;
+
 /// A deterministic non-affine mapping of finite Euclidean points.
-///
-/// Meshes retain their topology; curves and surfaces use sampled,
-/// tolerance-driven spline fitting for nonlinear images.
+/// Meshes retain topology; curves and surfaces use sampled, tolerance-driven
+/// spline fitting for nonlinear images.
 pub trait PointMorph {
+    /// Select a basis/solve producer without changing mapping or fit policies.
+    fn interpolation_solver(&self) -> Option<MorphInterpolationSolver> {
+        None
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError>;
 
     fn morph_point_cloud(&self, cloud: &PointCloud3) -> Result<PointCloud3, GeometryError> {
@@ -204,10 +212,16 @@ pub struct SurfacePointMorph<'a> {
     cosine: Real,
     flip: bool,
     constrained_normal: Option<UnitVector3>,
+    interpolation_solver: Option<MorphInterpolationSolver>,
     tolerance: Tolerance,
 }
 
 impl<'a> SurfacePointMorph<'a> {
+    pub fn with_interpolation_solver(mut self, solver: MorphInterpolationSolver) -> Self {
+        self.interpolation_solver = Some(solver);
+        self
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub fn try_new(
         source: Frame3,
@@ -267,6 +281,7 @@ impl<'a> SurfacePointMorph<'a> {
             cosine,
             flip,
             constrained_normal: None,
+            interpolation_solver: None,
             tolerance,
         })
     }
@@ -285,6 +300,10 @@ impl<'a> SurfacePointMorph<'a> {
 }
 
 impl PointMorph for SurfacePointMorph<'_> {
+    fn interpolation_solver(&self) -> Option<MorphInterpolationSolver> {
+        self.interpolation_solver
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         let offset = self.source.origin().vector_to(point)?;
         let source_x = offset.dot(self.source.x_axis().as_vector())?;

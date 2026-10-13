@@ -35,6 +35,18 @@ mod rotation_policy;
 pub mod taper;
 pub mod twist;
 use rotation_policy::command_rotation;
+/// Shared producer selected for command execution and readonly morph previews.
+pub fn morph_interpolation_solver() -> Option<viboceros_geometry::MorphInterpolationSolver> {
+    #[cfg(feature = "native-smlib")]
+    {
+        Some(viboceros_smlib::morph_interpolation)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        None
+    }
+}
+
 #[cfg(test)]
 mod block_instance_tests;
 mod layout_units;
@@ -53,6 +65,7 @@ pub use interchange::{
     save_3dm_with_viewports, save_3dm_with_viewports_and_cplanes,
 };
 mod curve_interpolation;
+pub use curve_interpolation::command_curve as interpolate_command_curve;
 mod interpolation_options;
 use interpolation_options::parse_interp_curve_arguments;
 pub use interpolation_options::{
@@ -15446,6 +15459,11 @@ impl Command for OrientOnSurfaceCommand {
                 options.flip,
                 tolerance,
             )?;
+            let morph = if let Some(solver) = morph_interpolation_solver() {
+                morph.with_interpolation_solver(solver)
+            } else {
+                morph
+            };
             if options.constrain_normal {
                 // The standalone command has no viewport state yet, so its
                 // source construction-plane normal is also the placement

@@ -97,6 +97,12 @@ pub(super) fn run(
         false,
         tolerance,
     )?;
+    let morph = if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+        morph.with_interpolation_solver(solver)
+    } else {
+        morph
+    };
+
     let parameters = (0..=256)
         .map(|i| source.parameter_at(i as f64 / 256.0))
         .collect::<Result<Vec<_>, _>>()?;

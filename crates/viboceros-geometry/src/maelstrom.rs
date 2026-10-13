@@ -16,8 +16,15 @@ pub struct MaelstromPointMorph {
     near_equal: bool,
     cardinal_normal: Option<(usize, Real)>,
     preserve_structure: bool,
+    interpolation_solver: Option<crate::MorphInterpolationSolver>,
 }
 impl MaelstromPointMorph {
+    /// Use a shared interpolation producer for curve/surface fitting.
+    pub fn with_interpolation_solver(mut self, solver: crate::MorphInterpolationSolver) -> Self {
+        self.interpolation_solver = Some(solver);
+        self
+    }
+
     /// Public SDK radius validity is independent of modeling tolerance.
     /// The frame normal defines the positive rotation direction.
     pub fn try_new(
@@ -44,6 +51,7 @@ impl MaelstromPointMorph {
             near_equal: (radius1 - radius0).abs() <= EQUAL_RADIUS * radius0,
             cardinal_normal,
             preserve_structure: false,
+            interpolation_solver: None,
         })
     }
     pub fn with_preserve_structure(mut self, preserve: bool) -> Self {
@@ -211,6 +219,10 @@ impl MaelstromPointMorph {
     }
 }
 impl PointMorph for MaelstromPointMorph {
+    fn interpolation_solver(&self) -> Option<crate::MorphInterpolationSolver> {
+        self.interpolation_solver
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         if self.is_identity() {
             return Ok(point);

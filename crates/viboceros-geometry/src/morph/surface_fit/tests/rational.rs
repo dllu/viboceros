@@ -168,6 +168,7 @@ fn noncubic_map_rejects_the_composition_candidate_and_uses_adaptive_fitting() {
         &mut |[u, v], [su, sv]| Wave.morph_point(source.evaluate_on_sides(u, v, su, sv)?),
         &source,
         MAX_MORPH_SURFACE_AXIS_CONTROLS,
+        None,
     )
     .unwrap()
     .unwrap();
@@ -203,7 +204,8 @@ fn unsuitable_or_oversized_composition_spaces_do_not_sample_the_map() {
             tensor::rational_candidate(
                 &mut |_, _| panic!("not a supported candidate space"),
                 &source,
-                MAX_MORPH_SURFACE_AXIS_CONTROLS
+                MAX_MORPH_SURFACE_AXIS_CONTROLS,
+                None
             )
             .unwrap()
             .is_none()
@@ -213,7 +215,8 @@ fn unsuitable_or_oversized_composition_spaces_do_not_sample_the_map() {
         tensor::rational_candidate(
             &mut |_, _| panic!("candidate exceeds axis control limit"),
             &weighted,
-            3
+            3,
+            None
         )
         .unwrap()
         .is_none()
@@ -232,6 +235,7 @@ fn candidate_mapping_errors_propagate_without_a_retry() {
         },
         &weighted_patch([1.0, 2.0, 3.0, 5.0]),
         MAX_MORPH_SURFACE_AXIS_CONTROLS,
+        None,
     );
     assert!(matches!(
         result,
@@ -251,6 +255,7 @@ fn rational_interpolation_keeps_constant_large_coordinate_targets_exact() {
             .try_change_degree(2, 3, false)
             .unwrap(),
         MAX_MORPH_SURFACE_AXIS_CONTROLS,
+        None,
     )
     .unwrap()
     .unwrap();

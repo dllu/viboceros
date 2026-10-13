@@ -91,6 +91,11 @@ pub fn deformed_geometries(
         document.tolerance(),
     )?
     .with_preserve_structure(options.preserve_structure);
+    let morph = if let Some(solver) = crate::morph_interpolation_solver() {
+        morph.with_interpolation_solver(solver)
+    } else {
+        morph
+    };
     let fitting_tolerance = Tolerance::try_new(
         document
             .tolerance()

@@ -12,9 +12,16 @@ pub struct TwistPointMorph {
     angle: Real,
     infinite: bool,
     preserve_structure: bool,
+    interpolation_solver: Option<crate::MorphInterpolationSolver>,
 }
 
 impl TwistPointMorph {
+    /// Use a shared interpolation producer for curve/surface fitting.
+    pub fn with_interpolation_solver(mut self, solver: crate::MorphInterpolationSolver) -> Self {
+        self.interpolation_solver = Some(solver);
+        self
+    }
+
     pub fn try_new(
         start: Point3,
         end: Point3,
@@ -31,6 +38,7 @@ impl TwistPointMorph {
             angle: angle_radians,
             infinite,
             preserve_structure: false,
+            interpolation_solver: None,
         })
     }
 
@@ -84,6 +92,10 @@ impl TwistPointMorph {
 }
 
 impl PointMorph for TwistPointMorph {
+    fn interpolation_solver(&self) -> Option<crate::MorphInterpolationSolver> {
+        self.interpolation_solver
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         self.rotation_at(point)?.transform_point(point)
     }

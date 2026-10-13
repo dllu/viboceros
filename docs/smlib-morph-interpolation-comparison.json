@@ -1,0 +1,581 @@
+{
+  "baseline": "pre-change native-feature oracle; its morph producer was portable",
+  "reports": {
+    "curve_surface_morph": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "curve-morph-line",
+          "comparison": {
+            "id": "curve-morph-line",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 371142.3333333333,
+            "portable_to_native_ratio": 0.4646359056278671,
+            "native_ns_per_iteration": 798781.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-scale-rotate-line",
+          "comparison": {
+            "id": "curve-morph-scale-rotate-line",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 3503628.0,
+            "portable_to_native_ratio": 2.0571176940299676,
+            "native_ns_per_iteration": 1703173.3333333333
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-long-line",
+          "comparison": {
+            "id": "curve-morph-long-line",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 3355809.0,
+            "portable_to_native_ratio": 1.0297329292721007,
+            "native_ns_per_iteration": 3258912.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-cubic",
+          "comparison": {
+            "id": "curve-morph-cubic",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 3980829.6666666665,
+            "portable_to_native_ratio": 1.1035948717744943,
+            "native_ns_per_iteration": 3607147.6666666665
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-loose-cubic",
+          "comparison": {
+            "id": "curve-morph-loose-cubic",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 104091.0,
+            "portable_to_native_ratio": 0.9690666302549954,
+            "native_ns_per_iteration": 107413.66666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-polyline",
+          "comparison": {
+            "id": "curve-morph-polyline",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 408988.0,
+            "portable_to_native_ratio": 0.99304604566689,
+            "native_ns_per_iteration": 411852.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-warped-line",
+          "comparison": {
+            "id": "curve-morph-warped-line",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 1254996.0,
+            "portable_to_native_ratio": 1.5551889364373874,
+            "native_ns_per_iteration": 806973.3333333334
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "curve-morph-warped-cubic",
+          "comparison": {
+            "id": "curve-morph-warped-cubic",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 6307616.0,
+            "portable_to_native_ratio": 1.0972958338085923,
+            "native_ns_per_iteration": 5748327.666666667
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 8,
+      "matched": 8,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "33fbab4db50e0a7076b6c962f425fad9feb92893c5717abc2db63da1405e381b",
+      "baseline_audit_sha256": "1c99c469c262a569057babf9e9c713099587238e5ca138414fdf45b59ac86b60",
+      "native_audit_sha256": "0ffea3a4fad007272817784a8e9dbbbd5ec570858c782b0ebd30fd420e9e3c1f"
+    },
+    "curve_rational_morph": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "rational-morph-circle-cubic",
+          "comparison": {
+            "id": "rational-morph-circle-cubic",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 1049496.6666666667,
+            "portable_to_native_ratio": 3.232791504051142,
+            "native_ns_per_iteration": 324641.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-native-domain",
+          "comparison": {
+            "id": "rational-morph-native-domain",
+            "passed": true,
+            "max_absolute_error": 3.885780586188048e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 759560.0,
+            "portable_to_native_ratio": 2.301836474937875,
+            "native_ns_per_iteration": 329980.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-ellipse-rotated",
+          "comparison": {
+            "id": "rational-morph-ellipse-rotated",
+            "passed": true,
+            "max_absolute_error": 2.7755575615628914e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 324065.3333333333,
+            "portable_to_native_ratio": 1.0056936438907118,
+            "native_ns_per_iteration": 322230.6666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-open-quadratic",
+          "comparison": {
+            "id": "rational-morph-open-quadratic",
+            "passed": true,
+            "max_absolute_error": 5.551115123125783e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 79680.33333333333,
+            "portable_to_native_ratio": 0.935273726054839,
+            "native_ns_per_iteration": 85194.66666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-open-cubic",
+          "comparison": {
+            "id": "rational-morph-open-cubic",
+            "passed": true,
+            "max_absolute_error": 1.2212453270876722e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 99589.66666666667,
+            "portable_to_native_ratio": 0.9452770790818344,
+            "native_ns_per_iteration": 105355.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-affine",
+          "comparison": {
+            "id": "rational-morph-affine",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "portable_ns_per_iteration": 109765.66666666667,
+            "portable_to_native_ratio": 0.9567664312257937,
+            "native_ns_per_iteration": 114725.66666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-morph-quartic-fallback",
+          "comparison": {
+            "id": "rational-morph-quartic-fallback",
+            "passed": true,
+            "max_absolute_error": 3.3306690738754696e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 38589497.666666664,
+            "portable_to_native_ratio": 2.086689852891948,
+            "native_ns_per_iteration": 18493164.0
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 7,
+      "matched": 7,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "8a00d0de1ceff3dc03e00369a437a6fb805d7271dc201981ab706ddd74d7f2f6",
+      "baseline_audit_sha256": "cabccd5a0a8f87333e5e28f746a8af11d32912a5f52e6abdc790f986c372a032",
+      "native_audit_sha256": "32d0d20398e7af32fd28ed0412dd7300cdcac7f6d3fc13bf6eab55c74f9bc089"
+    },
+    "surface_surface_morph": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "surface-morph-bilinear",
+          "comparison": {
+            "id": "surface-morph-bilinear",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 1241748.0,
+            "portable_to_native_ratio": 0.9450913773734827,
+            "native_ns_per_iteration": 1313892.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "surface-morph-scaled-rotated",
+          "comparison": {
+            "id": "surface-morph-scaled-rotated",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 15594262.0,
+            "portable_to_native_ratio": 0.9367224970485387,
+            "native_ns_per_iteration": 16647686.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "surface-morph-rational",
+          "comparison": {
+            "id": "surface-morph-rational",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 441010.0,
+            "portable_to_native_ratio": 0.9380616809428901,
+            "native_ns_per_iteration": 470129.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "surface-morph-warped-target",
+          "comparison": {
+            "id": "surface-morph-warped-target",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "differences": [],
+            "portable_ns_per_iteration": 2252184.0,
+            "portable_to_native_ratio": 0.9479435472499887,
+            "native_ns_per_iteration": 2375863.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "surface-morph-periodic-source",
+          "comparison": {
+            "id": "surface-morph-periodic-source",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 6402854.0,
+            "portable_to_native_ratio": 0.951945787064363,
+            "native_ns_per_iteration": 6726070.0
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 5,
+      "matched": 5,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "283955d8bc3d81e088f874c66be8269bac15fb067c9b8501b8fdb30b7eedb628",
+      "baseline_audit_sha256": "d2193eae51fd3f701d50bb7d96229c48c9b486d741c42a95566d9b1f4b88fb85",
+      "native_audit_sha256": "e7d13785bb1c4f539f72385c6f50676f15f1fc9d4213a2c53b6e706391c3571e"
+    },
+    "brep_surface_morph": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "brep-morph-disk",
+          "comparison": {
+            "id": "brep-morph-disk",
+            "passed": true,
+            "max_absolute_error": 1.098676705169055e-12,
+            "differences": [],
+            "portable_ns_per_iteration": 6168149.0,
+            "portable_to_native_ratio": 1.0185827410872448,
+            "native_ns_per_iteration": 6055619.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-morph-warped-annulus",
+          "comparison": {
+            "id": "brep-morph-warped-annulus",
+            "passed": true,
+            "max_absolute_error": 1.2185807918285718e-12,
+            "differences": [],
+            "portable_ns_per_iteration": 134176844.0,
+            "portable_to_native_ratio": 1.0509409843908095,
+            "native_ns_per_iteration": 127673053.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-morph-capped-outward",
+          "comparison": {
+            "id": "brep-morph-capped-outward",
+            "passed": true,
+            "max_absolute_error": 1.098676705169055e-12,
+            "differences": [],
+            "portable_ns_per_iteration": 7645963.0,
+            "portable_to_native_ratio": 0.9563811293557393,
+            "native_ns_per_iteration": 7994682.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-morph-capped-inward",
+          "comparison": {
+            "id": "brep-morph-capped-inward",
+            "passed": true,
+            "max_absolute_error": 1.098676705169055e-12,
+            "differences": [],
+            "portable_ns_per_iteration": 16032759.0,
+            "portable_to_native_ratio": 2.006881932283459,
+            "native_ns_per_iteration": 7988890.0
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "4776bc76e56cc1a13eb9b5ec1544eb8c35aeaebeb344e5092ae8571846993f68",
+      "baseline_audit_sha256": "29b14866e20392054bcd03db3d0204e5b15a749856b6c7a6f9b2b1076859bce1",
+      "native_audit_sha256": "8408037ffdc572f553ff1bd46fff48bc0060914fca41466791cb45b2b41457e6"
+    },
+    "surface_orient": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "document-surface-orient-cycle",
+          "comparison": {
+            "id": "document-surface-orient-cycle",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 1385.989,
+            "portable_to_native_ratio": 1.837046334758624,
+            "native_ns_per_iteration": 754.466
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 1,
+      "matched": 1,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "d19cf8f81e3471bab3216bcb5a5572452b7f5bb073249029e053ab292473ea4c",
+      "baseline_audit_sha256": "80fa9f1712cd234844a19e8ead79b7df2aeea3033bc4265748dca7f26425b08e",
+      "native_audit_sha256": "a533d3aebea14923e4c6de0fcf478fc1888a223205d71d3759902775ffd0918e"
+    },
+    "brep_3dm_interchange": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-09,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "brep-3dm-disk",
+          "comparison": {
+            "id": "brep-3dm-disk",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 1518106.3333333333,
+            "portable_to_native_ratio": 2.1472842340309866,
+            "native_ns_per_iteration": 706989.0
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-warped-annulus",
+          "comparison": {
+            "id": "brep-3dm-warped-annulus",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 839592.0,
+            "portable_to_native_ratio": 0.987256245764396,
+            "native_ns_per_iteration": 850429.6666666666
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-capped-outward",
+          "comparison": {
+            "id": "brep-3dm-capped-outward",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 780370.3333333334,
+            "portable_to_native_ratio": 0.9962276210480447,
+            "native_ns_per_iteration": 783325.3333333334
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-capped-inward",
+          "comparison": {
+            "id": "brep-3dm-capped-inward",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 778445.3333333334,
+            "portable_to_native_ratio": 1.0039278668763938,
+            "native_ns_per_iteration": 775399.6666666666
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-cubic-box",
+          "comparison": {
+            "id": "brep-3dm-cubic-box",
+            "passed": true,
+            "max_absolute_error": 1.1102230246251565e-15,
+            "differences": [],
+            "portable_ns_per_iteration": 1138377.0,
+            "portable_to_native_ratio": 0.9820471979946876,
+            "native_ns_per_iteration": 1159187.6666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-cubic-cylinder",
+          "comparison": {
+            "id": "brep-3dm-cubic-cylinder",
+            "passed": true,
+            "max_absolute_error": 1.0325074129013956e-14,
+            "differences": [],
+            "portable_ns_per_iteration": 1202158.3333333333,
+            "portable_to_native_ratio": 0.9893862114297188,
+            "native_ns_per_iteration": 1215054.6666666667
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-cubic-cone",
+          "comparison": {
+            "id": "brep-3dm-cubic-cone",
+            "passed": true,
+            "max_absolute_error": 1.2656542480726785e-14,
+            "differences": [],
+            "portable_ns_per_iteration": 946547.0,
+            "portable_to_native_ratio": 0.9804543806646526,
+            "native_ns_per_iteration": 965416.6666666666
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "brep-3dm-cubic-sphere",
+          "comparison": {
+            "id": "brep-3dm-cubic-sphere",
+            "passed": true,
+            "max_absolute_error": 3.907985046680551e-13,
+            "differences": [],
+            "portable_ns_per_iteration": 842872.0,
+            "portable_to_native_ratio": 0.9967393121020715,
+            "native_ns_per_iteration": 845629.3333333334
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 8,
+      "matched": 8,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements, not a Rhino speed comparison",
+      "reference": "Saved pre-change portable morph producer; not a Rhino capture",
+      "fixture_sha256": "a413642e01a9424c43319bae466d82760d6b8c43320488b790ff629b3596cfa9",
+      "baseline_audit_sha256": "86e68885de3e8f4f5499b26a2f1390ae05342f9ba4f96c668391047282e1a3f2",
+      "native_audit_sha256": "5228b4b3883ef086b801828996ba07ecbea8ae744f9f553fd67350265033fc24"
+    }
+  },
+  "baseline_binary_sha256": "73b513157e1e2155f4c88bb9d4aaaabedd1e9f482a5d1492bb7d8702a2fe24a4",
+  "native_binary_sha256": "41edc90be3336885b9cedfd0c3c6c9083aec0f248fbfd79977af16b492588696",
+  "validation": {
+    "full_geometry_command_native_bridge_tests_passed": 3654,
+    "ignored": 11,
+    "additional_tiny_channel_regression_passed": true,
+    "viewport_preview_tests_passed": 93,
+    "viewport_preview_tests_ignored": 4,
+    "workspace_lint_native": "passed with warnings denied",
+    "workspace_lint_portable": "passed with warnings denied",
+    "format": "passed"
+  }
+}

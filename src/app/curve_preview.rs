@@ -42,16 +42,16 @@ impl CurvePreviewCache {
                         points.to_vec(),
                         closure,
                     )
+                    .ok()
                 }
-                CurvePreviewSettings::Interpolated(options, tolerance) => {
-                    NurbsCurve::try_interpolate_for_command(
+                CurvePreviewSettings::Interpolated(options, _) => {
+                    viboceros_command::interpolate_command_curve(
                         &super::curve_prompt::interpolation_prompt_points(points, options),
                         options,
-                        tolerance,
                     )
+                    .ok()
                 }
             }
-            .ok()
             .map(Arc::new);
             // Failed constructions are cached too, until their inputs change.
             self.key = Some((settings, points.to_vec()));

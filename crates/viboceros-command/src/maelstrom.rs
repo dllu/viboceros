@@ -196,6 +196,11 @@ pub fn deformed_geometries(
     context: CommandContext,
 ) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
     let morph = point_morph(center, initial, target, degrees, context)?;
+    let morph = if let Some(solver) = crate::morph_interpolation_solver() {
+        morph.with_interpolation_solver(solver)
+    } else {
+        morph
+    };
     let fitting_tolerance = Tolerance::try_new(
         document
             .tolerance()

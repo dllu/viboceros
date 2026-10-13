@@ -47,6 +47,12 @@ pub(super) fn run(
         false,
         tolerance,
     )?;
+    let morph = if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+        morph.with_interpolation_solver(solver)
+    } else {
+        morph
+    };
+
     let mut parameters = Vec::with_capacity(33 * 33);
     // An offset interior grid avoids coinciding with all dyadic Greville rows.
     let fraction = |i| match i {

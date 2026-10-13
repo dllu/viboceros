@@ -60,6 +60,12 @@ pub(super) fn run(
         false,
         tolerance,
     )?;
+    let morph = if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+        morph.with_interpolation_solver(solver)
+    } else {
+        morph
+    };
+
     let samples = plan(&source, tolerance)?;
     let exact = samples
         .iter()

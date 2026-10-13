@@ -13,6 +13,12 @@ pub struct CurvePreviewCage {
 }
 impl CurvePreviewCage {
     pub fn try_new(source: &NurbsCurve) -> Result<Self, GeometryError> {
+        Self::try_new_with_solver(source, None)
+    }
+    pub fn try_new_with_solver(
+        source: &NurbsCurve,
+        solver: Option<MorphInterpolationSolver>,
+    ) -> Result<Self, GeometryError> {
         let samples = if source.degree() < 3 && !source.is_rational() {
             if source.control_points().len() > MAX_MORPH_CURVE_CONTROL_POINTS {
                 return Err(GeometryError::TooManyMorphCurveControlPoints {
@@ -25,7 +31,7 @@ impl CurvePreviewCage {
                     maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
                 });
             }
-            let axis = Axis::new(template.degree(), template.knots().to_vec())?;
+            let axis = Axis::for_solver(template.degree(), template.knots().to_vec(), solver)?;
             let points = axis
                 .stations
                 .iter()
@@ -63,9 +69,13 @@ impl CurvePreviewCage {
         } else {
             [0.; 3]
         };
-        let solved = axis.solve(Mat::from_fn(targets.len(), 3, |i, j| {
-            targets[i].to_array()[j] - origin[j]
-        }))?;
+        let solved = axis.solve_with(
+            Mat::from_fn(targets.len(), 3, |i, j| {
+                targets[i].to_array()[j] - origin[j]
+            }),
+            3,
+            morph.interpolation_solver(),
+        )?;
         let controls = axis
             .stations
             .iter()
@@ -92,6 +102,12 @@ pub struct SurfacePreviewCage {
 }
 impl SurfacePreviewCage {
     pub fn try_new(source: &NurbsSurface) -> Result<Self, GeometryError> {
+        Self::try_new_with_solver(source, None)
+    }
+    pub fn try_new_with_solver(
+        source: &NurbsSurface,
+        solver: Option<MorphInterpolationSolver>,
+    ) -> Result<Self, GeometryError> {
         let samples = if (source.degree_u() < 3 || source.degree_v() < 3) && !source.is_rational() {
             if source.control_point_count_u() > MAX_MORPH_SURFACE_AXIS_CONTROLS
                 || source.control_point_count_v() > MAX_MORPH_SURFACE_AXIS_CONTROLS
@@ -113,8 +129,8 @@ impl SurfacePreviewCage {
                 });
             }
             Some(Grid::sample(
-                Axis::new(template.degree_u(), template.knots_u().to_vec())?,
-                Axis::new(template.degree_v(), template.knots_v().to_vec())?,
+                Axis::for_solver(template.degree_u(), template.knots_u().to_vec(), solver)?,
+                Axis::for_solver(template.degree_v(), template.knots_v().to_vec(), solver)?,
                 &mut |uv, sides| source.evaluate_on_sides(uv[0], uv[1], sides[0], sides[1]),
             )?)
         } else {

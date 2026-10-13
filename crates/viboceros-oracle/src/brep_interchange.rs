@@ -57,6 +57,10 @@ pub enum LiftPrimitive {
 
 struct CubicLift;
 impl PointMorph for CubicLift {
+    fn interpolation_solver(&self) -> Option<viboceros_geometry::MorphInterpolationSolver> {
+        viboceros_command::morph_interpolation_solver()
+    }
+
     fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
         Point3::try_new(
             p.x(),
@@ -92,7 +96,7 @@ impl BrepInterchangeSource {
                     Vector3::try_from(fixture.source_y)?,
                     tolerance,
                 )?;
-                SurfacePointMorph::try_new(
+                let morph = SurfacePointMorph::try_new(
                     frame,
                     &target,
                     fixture.uv[0],
@@ -101,8 +105,13 @@ impl BrepInterchangeSource {
                     fixture.angle,
                     false,
                     tolerance,
-                )?
-                .morph_brep(&source, tolerance)?
+                )?;
+                let morph = if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+                    morph.with_interpolation_solver(solver)
+                } else {
+                    morph
+                };
+                morph.morph_brep(&source, tolerance)?
             }
             Self::CubicLift { primitive, .. } => {
                 let frame = Frame3::try_from_directions(

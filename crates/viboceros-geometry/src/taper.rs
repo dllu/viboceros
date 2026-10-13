@@ -16,9 +16,16 @@ pub struct TaperPointMorph {
     flat: bool,
     infinite: bool,
     preserve_structure: bool,
+    interpolation_solver: Option<crate::MorphInterpolationSolver>,
 }
 
 impl TaperPointMorph {
+    /// Use a shared interpolation producer for curve/surface fitting.
+    pub fn with_interpolation_solver(mut self, solver: crate::MorphInterpolationSolver) -> Self {
+        self.interpolation_solver = Some(solver);
+        self
+    }
+
     /// Public SDK construction. Flat mode follows the deterministic plane X
     /// direction perpendicular to the axis; model fitting tolerance is separate.
     pub fn try_new(
@@ -113,6 +120,7 @@ impl TaperPointMorph {
             flat,
             infinite,
             preserve_structure: false,
+            interpolation_solver: None,
         }
     }
 
@@ -185,6 +193,10 @@ impl TaperPointMorph {
 }
 
 impl PointMorph for TaperPointMorph {
+    fn interpolation_solver(&self) -> Option<crate::MorphInterpolationSolver> {
+        self.interpolation_solver
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         if self.is_identity() {
             return Ok(point);

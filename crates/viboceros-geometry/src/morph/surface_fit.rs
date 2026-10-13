@@ -53,7 +53,9 @@ pub(super) fn fit(
             return Ok(candidate);
         }
     }
-    if let Some(candidate) = tensor::rational_candidate(&mut point_at, source, maximum)? {
+    if let Some(candidate) =
+        tensor::rational_candidate(&mut point_at, source, maximum, morph.interpolation_solver())?
+    {
         let errors = candidate_errors(
             &mut point_at,
             &candidate,
@@ -68,7 +70,7 @@ pub(super) fn fit(
         if breaks.iter().any(|b| control_count(b) > maximum) {
             return Err(GeometryError::TooManyMorphSurfaceControlPoints { maximum });
         }
-        let fitted = tensor::interpolate(&mut point_at, &breaks)?;
+        let fitted = tensor::interpolate(&mut point_at, &breaks, morph.interpolation_solver())?;
         let errors = candidate_errors(&mut point_at, &fitted, &breaks, tolerance.absolute() * 0.8)?;
         if errors.deviation <= tolerance.absolute() * 0.8 {
             return Ok(fitted);

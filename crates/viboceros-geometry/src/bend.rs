@@ -16,9 +16,16 @@ pub struct BendPointMorph {
     symmetric: bool,
     non_attenuated: bool,
     preserve_structure: bool,
+    interpolation_solver: Option<crate::MorphInterpolationSolver>,
 }
 
 impl BendPointMorph {
+    /// Use a shared interpolation producer for curve/surface fitting.
+    pub fn with_interpolation_solver(mut self, solver: crate::MorphInterpolationSolver) -> Self {
+        self.interpolation_solver = Some(solver);
+        self
+    }
+
     /// Public SDK-style construction. An explicit angle bounds the circular
     /// region while the through point determines radius and plane. With no
     /// angle, `straight` extends a shorter bend region through the spine end.
@@ -175,6 +182,7 @@ impl BendPointMorph {
             symmetric,
             non_attenuated: false,
             preserve_structure: false,
+            interpolation_solver: None,
         })
     }
 
@@ -221,6 +229,10 @@ impl BendPointMorph {
 }
 
 impl PointMorph for BendPointMorph {
+    fn interpolation_solver(&self) -> Option<crate::MorphInterpolationSolver> {
+        self.interpolation_solver
+    }
+
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
         let [axial, radial, binormal] = self.frame.coordinates_of(point)?;
         if axial == 0. || (axial < 0. && !self.symmetric) {

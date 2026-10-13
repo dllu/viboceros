@@ -23,7 +23,7 @@ pub(crate) struct Key {
 impl MorphPreviewKey for Key {
     type Morph = BendPointMorph;
     fn morph(self, tolerance: Tolerance) -> Result<Self::Morph, viboceros_geometry::GeometryError> {
-        Ok(BendPointMorph::try_for_command(
+        let morph = BendPointMorph::try_for_command(
             self.start,
             self.end,
             self.through,
@@ -32,7 +32,14 @@ impl MorphPreviewKey for Key {
             self.symmetric,
             tolerance,
         )?
-        .with_non_attenuated(self.uniform))
+        .with_non_attenuated(self.uniform);
+        Ok(
+            if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+                morph.with_interpolation_solver(solver)
+            } else {
+                morph
+            },
+        )
     }
     fn rigid(self) -> bool {
         self.rigid

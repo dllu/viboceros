@@ -29,6 +29,13 @@ impl MorphPreviewKey for Key {
                 construction_plane: self.cplane,
             },
         )
+        .map(|morph| {
+            if let Some(solver) = viboceros_command::morph_interpolation_solver() {
+                morph.with_interpolation_solver(solver)
+            } else {
+                morph
+            }
+        })
     }
     fn rigid(self) -> bool {
         self.options.rigid

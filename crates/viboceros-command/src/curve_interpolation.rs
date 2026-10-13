@@ -1,7 +1,7 @@
 //! Shared interpolation backend for point input and curve-through commands.
 use super::*;
 
-pub(super) fn command_curve(
+pub fn command_curve(
     points: &[Point3],
     options: viboceros_geometry::CurveInterpolationOptions,
 ) -> Result<NurbsCurve, CommandError> {

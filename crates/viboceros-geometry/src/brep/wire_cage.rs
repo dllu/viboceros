@@ -28,6 +28,14 @@ impl BrepWireCage {
         wire_density: i32,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::try_new_with_solver(brep, wire_density, tolerance, None)
+    }
+    pub fn try_new_with_solver(
+        brep: &Brep,
+        wire_density: i32,
+        tolerance: Tolerance,
+        solver: Option<crate::MorphInterpolationSolver>,
+    ) -> Result<Self, GeometryError> {
         if !(crate::MIN_SURFACE_WIRE_DENSITY..=crate::MAX_SURFACE_WIRE_DENSITY)
             .contains(&wire_density)
         {
@@ -39,7 +47,7 @@ impl BrepWireCage {
         let edges = brep
             .edges
             .iter()
-            .map(|e| CurvePreviewCage::try_new(&e.curve))
+            .map(|e| CurvePreviewCage::try_new_with_solver(&e.curve, solver))
             .collect::<Result<Vec<_>, _>>()?;
         if wire_density < 0 {
             return Ok(Self {
@@ -51,7 +59,7 @@ impl BrepWireCage {
         let mut wire_count = edges.len();
         for face in &brep.faces {
             let frame = face.local_parameter_frame()?;
-            let surface = SurfacePreviewCage::try_new(&frame.face.surface)?;
+            let surface = SurfacePreviewCage::try_new_with_solver(&frame.face.surface, solver)?;
             let mut wires = Vec::new();
             for (varying, parameters) in [
                 (0, frame.face.surface.wire_parameters_v(wire_density)?),

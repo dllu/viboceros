@@ -166,6 +166,7 @@ fn a_noncubic_map_rejects_the_candidate_and_refines_to_tolerance() {
         &mut |t, side| Wave.morph_point(source.evaluate_on_side(t, side)?),
         &source,
         512,
+        None,
     )
     .unwrap()
     .unwrap();
@@ -218,7 +219,7 @@ fn invalid_or_oversized_candidate_spaces_do_not_sample_the_map() {
         weighted_curve(4, &[1.0, 2.0, 3.0, 4.0, 5.0]),
     ] {
         assert!(
-            candidate::candidate(&mut |_, _| panic!("unsupported space"), &source, 512)
+            candidate::candidate(&mut |_, _| panic!("unsupported space"), &source, 512, None)
                 .unwrap()
                 .is_none()
         );
@@ -227,7 +228,8 @@ fn invalid_or_oversized_candidate_spaces_do_not_sample_the_map() {
         candidate::candidate(
             &mut |_, _| panic!("over control budget"),
             &weighted_curve(2, &[1.0, 2.0, 3.0]),
-            6
+            6,
+            None
         )
         .unwrap()
         .is_none()
@@ -246,6 +248,7 @@ fn candidate_source_mapping_errors_propagate_without_retry() {
         },
         &weighted_curve(2, &[1.0, 2.0, 3.0]),
         512,
+        None,
     );
     assert!(matches!(
         result,
@@ -263,6 +266,7 @@ fn rational_interpolation_keeps_constant_large_coordinate_targets_exact() {
         &mut |_, _| Ok(expected),
         &weighted_curve(3, &[1.0, 2.0, 3.0, 4.0]),
         512,
+        None,
     )
     .unwrap()
     .unwrap();

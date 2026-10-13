@@ -5,13 +5,14 @@ use faer::Mat;
 pub(super) fn interpolate(
     point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
     breaks: &[Vec<Break>; 2],
+    solver: Option<MorphInterpolationSolver>,
 ) -> Result<NurbsSurface, GeometryError> {
     Grid::sample(
-        Axis::cubic(knots(&breaks[0]))?,
-        Axis::cubic(knots(&breaks[1]))?,
+        Axis::for_solver(3, knots(&breaks[0]), solver)?,
+        Axis::for_solver(3, knots(&breaks[1]), solver)?,
         point_at,
     )?
-    .solve(None)
+    .solve(None, solver)
 }
 
 /// A cubic polynomial in XYZ composed with N/W has denominator W³ and
@@ -21,23 +22,26 @@ pub(super) fn rational_candidate(
     point_at: &mut impl FnMut([Real; 2], [ParameterSide; 2]) -> Result<Point3, GeometryError>,
     source: &NurbsSurface,
     maximum: usize,
+    solver: Option<MorphInterpolationSolver>,
 ) -> Result<Option<NurbsSurface>, GeometryError> {
     let Some(denominator) = super::denominator::surface_weights(source) else {
         return Ok(None);
     };
-    let Some(u) = Axis::cubic_composition(
+    let Some(u) = Axis::cubic_composition_with_solver(
         source.degree_u(),
         source.knots_u(),
         source.domain_u(),
         maximum,
+        solver,
     ) else {
         return Ok(None);
     };
-    let Some(v) = Axis::cubic_composition(
+    let Some(v) = Axis::cubic_composition_with_solver(
         source.degree_v(),
         source.knots_v(),
         source.domain_v(),
         maximum,
+        solver,
     ) else {
         return Ok(None);
     };
@@ -58,7 +62,7 @@ pub(super) fn rational_candidate(
     // maps. Mapping failures propagate; numerical solve failures only discard
     // this candidate. Both paths use the same cached source evaluations.
     let grid = Grid::sample(u, v, point_at)?;
-    Ok(grid.solve(Some(&weights)).ok())
+    Ok(grid.solve(Some(&weights), solver).ok())
 }
 
 pub(in crate::morph) struct Grid {
@@ -82,8 +86,12 @@ impl Grid {
         Ok(Self { u, v, targets })
     }
 
-    fn solve(&self, weights: Option<&[Real]>) -> Result<NurbsSurface, GeometryError> {
-        self.solve_targets(&self.targets, weights)
+    fn solve(
+        &self,
+        weights: Option<&[Real]>,
+        solver: Option<MorphInterpolationSolver>,
+    ) -> Result<NurbsSurface, GeometryError> {
+        self.solve_targets(&self.targets, weights, solver)
     }
 
     pub(in crate::morph) fn morphed(
@@ -95,13 +103,14 @@ impl Grid {
             .iter()
             .map(|p| morph.morph_point(*p))
             .collect::<Result<Vec<_>, _>>()?;
-        self.solve_targets(&targets, None)
+        self.solve_targets(&targets, None, morph.interpolation_solver())
     }
 
     fn solve_targets(
         &self,
         targets: &[Point3],
         weights: Option<&[Real]>,
+        solver: Option<MorphInterpolationSolver>,
     ) -> Result<NurbsSurface, GeometryError> {
         let (count_u, count_v) = (self.u.stations.len(), self.v.stations.len());
         let width = if weights.is_some() { 4 } else { 3 };
@@ -127,12 +136,12 @@ impl Grid {
                 (targets[v * count_u + u].to_array()[axis] - origin[axis]) * weight
             }
         });
-        let solved_u = self.u.solve(rhs_u)?;
+        let solved_u = self.u.solve_with(rhs_u, width, solver)?;
         let rhs_v = Mat::from_fn(count_v, count_u * width, |v, column| {
             let (u, axis) = (column / width, column % width);
             solved_u[(u, v * width + axis)]
         });
-        let solved_v = self.v.solve(rhs_v)?;
+        let solved_v = self.v.solve_with(rhs_v, width, solver)?;
         let mut controls = Vec::with_capacity(count_u * count_v);
         for (v, station_v) in self.v.stations.iter().enumerate() {
             for (u, station_u) in self.u.stations.iter().enumerate() {

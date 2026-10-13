@@ -538,6 +538,19 @@ issues reported by NVIDIA that have not all been reproduced here.
   no continuous error bound or arbitrary-conditioning qualification is claimed.
   Internal Sweep1/Pipe fitting now shares the native producer. Fresh Rhino fitting captures remain
   pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
+- **Morph fitting retains shared approximation policy around native solving.**
+  Bend, Twist, Taper, Maelstrom and deformable OrientOnSrf reuse native fixed-row
+  banded interpolation for adaptive cubic and rational degree-3/6/9 candidates,
+  including prepared previews. Full-order sided limits use independent fixed
+  rows at duplicate parameters. Native preparation skips the portable basis
+  matrices; all point maps, candidate checks, budgets and assembled B-rep audits
+  stay shared. The existing 512/256 control and eight-million sample ceilings
+  remain. Mixed-degree preview axes above the pinned degree-17 limit return an
+  explicit backend error. The same exact-span and chart guards apply; no
+  arbitrary-conditioning, continuous-error or Rhino-speed guarantee is claimed.
+  All 33 saved API/orientation/interchange records match the earlier portable producer;
+  fresh Rhino captures remain pending Wine licensing startup. See
+  [native morph interpolation](smlib-morph-interpolation.md).
 - **Point-grid interpolation retains continuation and conditioning limits.**
   Open directions use the existing native banded solver; closed directions fold
   repeated control columns, reuse alternate-end cyclic band ordering for

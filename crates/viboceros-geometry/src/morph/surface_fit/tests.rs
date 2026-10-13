@@ -294,7 +294,7 @@ fn tensor_interpolation_retains_constant_large_world_coordinates_exactly() {
         seed_breaks(1, source.knots_v(), source.domain_v()),
     ];
     let expected = p(1e12, -2e12, 3e12);
-    let fitted = tensor::interpolate(&mut |_, _| Ok(expected), &breaks).unwrap();
+    let fitted = tensor::interpolate(&mut |_, _| Ok(expected), &breaks, None).unwrap();
     assert!(
         fitted
             .control_points()

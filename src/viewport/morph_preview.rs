@@ -180,13 +180,17 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
             } else {
                 if source.cage.is_none() {
                     source.cage = Some(match &*source.snapshot {
-                        Geometry::Brep(b) => Cage::Brep(BrepWireCage::try_new(
+                        Geometry::Brep(b) => Cage::Brep(BrepWireCage::try_new_with_solver(
                             b,
                             source.density,
                             document.tolerance(),
+                            morph.interpolation_solver(),
                         )?),
                         Geometry::NurbsSurface(s) => {
-                            Cage::Surface(Box::new(SurfacePreviewCage::try_new(s)?))
+                            Cage::Surface(Box::new(SurfacePreviewCage::try_new_with_solver(
+                                s,
+                                morph.interpolation_solver(),
+                            )?))
                         }
                         Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_) => {
                             Cage::Direct
@@ -283,8 +287,12 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                     let curves = match (&*source.snapshot, &*object.geometry.geometry) {
                         (Geometry::Brep(b), _) => {
                             if source.boundary_cage.is_none() {
-                                source.boundary_cage =
-                                    Some(BrepWireCage::try_new(b, -1, document.tolerance())?);
+                                source.boundary_cage = Some(BrepWireCage::try_new_with_solver(
+                                    b,
+                                    -1,
+                                    document.tolerance(),
+                                    morph.interpolation_solver(),
+                                )?);
                             }
                             source
                                 .boundary_cage
