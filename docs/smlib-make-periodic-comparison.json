@@ -1,0 +1,196 @@
+{
+  "baseline": "Pre-migration Viboceros native-feature executable; MakePeriodic uses the portable producer. This is not a fresh Rhino capture.",
+  "baseline_binary_sha256": "6d67855cadf9ba9fade19b672a8a1ee5bde79067014d3e17ce426cd55a2b1280",
+  "native_binary_sha256": "71345de832c7a8c7f68e654a15cc18d3cb5d429b31ec2999e0f77f2fa5f5d575",
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-single-interior-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 42,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-uniform-smooth",
+      "passed": true,
+      "max_absolute_error": 1.1102230246251565e-15,
+      "numeric_leaves": 42,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nonuniform-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 52,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nonuniform-smooth",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "numeric_leaves": 42,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-quadratic-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 41,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-quadratic-smooth",
+      "passed": true,
+      "max_absolute_error": 1.3322676295501878e-15,
+      "numeric_leaves": 31,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-unequal-seam-weights-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 41,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nearest-pre-domain-greville-smooth",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "numeric_leaves": 42,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "quadratic-nearest-pre-domain-greville-smooth",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "numeric_leaves": 31,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quadratic-nonrational",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 41,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "cubic-uniform",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 52,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quartic-uniform",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 73,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-uniform",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 84,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "rational-cubic-uniform",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 52,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "cubic-single-span",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 37,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-single-span",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 59,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quartic-nonuniform-smooth",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "numeric_leaves": 53,
+      "differences": []
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-nonuniform-smooth",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-15,
+      "numeric_leaves": 64,
+      "differences": []
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "cubic-u-nonuniform-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 97,
+      "differences": []
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "quadratic-rational-u-smooth",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "numeric_leaves": 60,
+      "differences": []
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "cubic-v-nonuniform-smooth",
+      "passed": true,
+      "max_absolute_error": 1.3322676295501878e-15,
+      "numeric_leaves": 79,
+      "differences": []
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "quadratic-rational-v-sharp",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "numeric_leaves": 78,
+      "differences": []
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "command-double-closed-default-u",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "numeric_leaves": 124,
+      "differences": []
+    }
+  ],
+  "cases": 23,
+  "matched": 23,
+  "max_absolute_error": 8.881784197001252e-15
+}

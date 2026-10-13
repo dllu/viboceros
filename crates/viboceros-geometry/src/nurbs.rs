@@ -1018,32 +1018,46 @@ impl NurbsCurve {
     /// `smooth = true`, the active knot breaks are retained and a periodic
     /// interpolation solve at their Greville abscissae smooths the seam.
     pub fn try_make_periodic(&self, smooth: bool) -> Result<Self, GeometryError> {
-        if self.is_periodic() {
-            return Ok(self.clone());
-        }
-        if self.degree < 2 {
-            return Err(GeometryError::PeriodicNurbsDegreeTooLow);
-        }
-        if !self.is_closed()? {
-            return Err(GeometryError::PeriodicCurveMustBeClosed);
-        }
-        self.try_make_periodic_assuming_closed(smooth)
+        self.try_make_periodic_with_solver(smooth, &mut portable_periodic_interpolation)
     }
 
-    pub(crate) fn try_make_periodic_assuming_closed(
+    /// Retain closure, knot and homogeneous seam policy while delegating the
+    /// smooth periodic basis solve. Parameters include the final domain endpoint
+    /// without a repeated target row; the solver returns unique homogeneous controls.
+    /// Its second argument identifies the control index of the first Greville
+    /// site, allowing a backend to align periodic columns for banded solving.
+    pub fn try_make_periodic_with_solver<E: From<GeometryError>>(
         &self,
         smooth: bool,
-    ) -> Result<Self, GeometryError> {
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
         if self.is_periodic() {
             return Ok(self.clone());
         }
         if self.degree < 2 {
-            return Err(GeometryError::PeriodicNurbsDegreeTooLow);
+            return Err(GeometryError::PeriodicNurbsDegreeTooLow.into());
+        }
+        if !self.is_closed()? {
+            return Err(GeometryError::PeriodicCurveMustBeClosed.into());
+        }
+        self.try_make_periodic_assuming_closed_with_solver(smooth, solve)
+    }
+
+    pub(crate) fn try_make_periodic_assuming_closed_with_solver<E: From<GeometryError>>(
+        &self,
+        smooth: bool,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        if self.is_periodic() {
+            return Ok(self.clone());
+        }
+        if self.degree < 2 {
+            return Err(GeometryError::PeriodicNurbsDegreeTooLow.into());
         }
         if smooth {
-            self.make_periodic_smooth()
+            self.make_periodic_smooth(solve)
         } else {
-            self.make_periodic_with_minimal_control_change()
+            Ok(self.make_periodic_with_minimal_control_change()?)
         }
     }
 
@@ -1076,7 +1090,10 @@ impl NurbsCurve {
         Self::try_new_rational(degree, controls, knots)
     }
 
-    fn make_periodic_smooth(&self) -> Result<Self, GeometryError> {
+    fn make_periodic_smooth<E: From<GeometryError>>(
+        &self,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
         let degree = self.degree;
         let control_count = self.control_points.len();
         let required = if degree == 2 {
@@ -1091,40 +1108,40 @@ impl NurbsCurve {
                 degree,
                 required,
                 actual: control_count,
-            });
+            }
+            .into());
         }
         let unique_count = control_count - degree;
         let knots = periodic_knots_preserving_active(degree, control_count, &self.knots)?;
-        let parameters = periodic_greville_parameters(degree, control_count, unique_count, &knots)?;
+        let (mut parameters, control_shift) =
+            periodic_greville_parameters(degree, control_count, unique_count, &knots)?;
         let weight_scale = self
             .control_points
             .iter()
             .map(|control| control.weight.abs())
             .fold(0.0, Real::max);
-        let mut rows = Vec::new();
-        let mut targets = Vec::new();
-        rows.try_reserve_exact(unique_count)
-            .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "periodic interpolation rows exceed addressable memory",
-            })?;
-        targets
-            .try_reserve_exact(unique_count)
-            .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "periodic interpolation targets exceed addressable memory",
-            })?;
-        for parameter in parameters {
-            let basis = bspline_basis_values(&knots, degree, control_count, parameter)?;
-            let mut folded = vec![0.0; unique_count];
-            for (index, value) in basis.into_iter().enumerate() {
-                folded[index % unique_count] += value;
-            }
-            rows.push(folded);
-            targets.push(self.evaluate_scaled_homogeneous(parameter, weight_scale)?);
+        let targets = parameters
+            .iter()
+            .map(|parameter| self.evaluate_scaled_homogeneous(*parameter, weight_scale))
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>();
+        parameters.push(knots[control_count]);
+        let solution = solve(
+            &crate::NurbsInterpolationSystem {
+                degree,
+                knots: &knots,
+                parameters: &parameters,
+                periodic: true,
+                columns: 4,
+                targets: &targets,
+            },
+            control_shift,
+        )?;
+        if solution.len() != unique_count * 4 {
+            return Err(GeometryError::PeriodicInterpolationSolveFailed.into());
         }
-
-        let matrix = Mat::from_fn(unique_count, unique_count, |row, column| rows[row][column]);
-        let right_hand_side = Mat::from_fn(unique_count, 4, |row, column| targets[row][column]);
-        let solution = matrix.full_piv_lu().solve(&right_hand_side);
         let mut unique_controls = Vec::new();
         unique_controls
             .try_reserve_exact(unique_count)
@@ -1132,19 +1149,19 @@ impl NurbsCurve {
                 context: "periodic solution controls exceed addressable memory",
             })?;
         for row in 0..unique_count {
-            let normalized_weight = solution[(row, 3)];
+            let normalized_weight = solution[row * 4 + 3];
             let weight = normalized_weight * weight_scale;
             let coordinates = [
-                solution[(row, 0)] / normalized_weight,
-                solution[(row, 1)] / normalized_weight,
-                solution[(row, 2)] / normalized_weight,
+                solution[row * 4] / normalized_weight,
+                solution[row * 4 + 1] / normalized_weight,
+                solution[row * 4 + 2] / normalized_weight,
             ];
             require_finite(
                 coordinates.into_iter().chain([normalized_weight, weight]),
                 "smooth periodic NURBS controls",
             )?;
             if normalized_weight == 0.0 || weight == 0.0 {
-                return Err(GeometryError::PeriodicInterpolationSolveFailed);
+                return Err(GeometryError::PeriodicInterpolationSolveFailed.into());
             }
             unique_controls.push(WeightedPoint3::try_new(
                 Point3::try_from(coordinates)?,
@@ -1160,7 +1177,7 @@ impl NurbsCurve {
         })?;
         controls.extend_from_slice(&unique_controls);
         controls.extend_from_slice(&unique_controls[..degree]);
-        Self::try_new_rational(degree, controls, knots)
+        Ok(Self::try_new_rational(degree, controls, knots)?)
     }
 
     fn evaluate_scaled_homogeneous(
@@ -4917,6 +4934,36 @@ fn minimal_change_periodic_knots(
     )
 }
 
+pub(crate) fn portable_periodic_interpolation(
+    input: &crate::NurbsInterpolationSystem<'_>,
+    _control_shift: usize,
+) -> Result<Vec<Real>, GeometryError> {
+    let count = input.parameters.len() - 1;
+    let controls = count + input.degree;
+    let rows = input.parameters[..count]
+        .iter()
+        .map(|parameter| {
+            let basis = bspline_basis_values(input.knots, input.degree, controls, *parameter)?;
+            let mut folded = vec![0.; count];
+            for (index, value) in basis.into_iter().enumerate() {
+                folded[index % count] += value;
+            }
+            Ok(folded)
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let matrix = Mat::from_fn(count, count, |row, column| rows[row][column]);
+    let rhs = Mat::from_fn(count, input.columns, |row, column| {
+        input.targets[row * input.columns + column]
+    });
+    let solution = matrix.full_piv_lu().solve(&rhs);
+    Ok((0..count)
+        .flat_map(|row| {
+            let solution = &solution;
+            (0..input.columns).map(move |column| solution[(row, column)])
+        })
+        .collect())
+}
+
 fn periodic_knots_preserving_active(
     degree: usize,
     control_count: usize,
@@ -4991,7 +5038,7 @@ fn periodic_greville_parameters(
     control_count: usize,
     unique_count: usize,
     knots: &[Real],
-) -> Result<Vec<Real>, GeometryError> {
+) -> Result<(Vec<Real>, usize), GeometryError> {
     let domain_start = knots[degree];
     let mut start_index = None;
     for index in 0..degree {
@@ -5014,7 +5061,7 @@ fn periodic_greville_parameters(
     }) {
         return Err(GeometryError::PeriodicInterpolationSolveFailed);
     }
-    Ok(parameters)
+    Ok((parameters, start_index))
 }
 
 pub(crate) fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
@@ -9254,7 +9301,7 @@ mod tests {
     fn smooth_periodic_greville_phase_starts_with_the_first_in_domain_value() {
         let source_knots = [0.0, 0.0, 0.0, 0.0, 0.1, 9.0, 9.5, 10.0, 10.0, 10.0, 10.0];
         let knots = periodic_knots_preserving_active(3, 7, &source_knots).unwrap();
-        let parameters = periodic_greville_parameters(3, 7, 4, &knots).unwrap();
+        let parameters = periodic_greville_parameters(3, 7, 4, &knots).unwrap().0;
         let expected = [3.033333333333333, 6.2, 9.5, 9.866666666666667];
         for (actual, expected) in parameters.into_iter().zip(expected) {
             assert!((actual - expected).abs() <= 2.0e-15);
@@ -9262,7 +9309,7 @@ mod tests {
 
         let source_knots = [0.0, 0.0, 0.0, 9.8, 9.9, 10.0, 10.0, 10.0];
         let knots = periodic_knots_preserving_active(2, 5, &source_knots).unwrap();
-        let parameters = periodic_greville_parameters(2, 5, 3, &knots).unwrap();
+        let parameters = periodic_greville_parameters(2, 5, 3, &knots).unwrap().0;
         assert!((parameters[0] - 4.9).abs() <= 4.0e-15);
         assert!((parameters[1] - 9.85).abs() <= 4.0e-15);
         assert!((parameters[2] - 9.95).abs() <= 4.0e-15);

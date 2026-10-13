@@ -25,5 +25,8 @@ struct VbInterpolationSystem {
     int point_grid;
     double *amplification;
     size_t amplification_count;
+    // Retain nonuniform Greville phase and full pivoted storage for MakePeriodic.
+    int nonuniform_periodic;
+    size_t periodic_control_shift;
 };
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count);

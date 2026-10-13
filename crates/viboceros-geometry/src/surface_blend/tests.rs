@@ -85,12 +85,11 @@ fn rational_curved_parents_preserve_full_boundary_jets_with_unequal_bases() {
                 .unwrap(),
             b.evaluate_with_second_derivatives(5. - t, -100.).unwrap(),
         ];
-        for end in 0..2 {
+        for (end, p) in parents.into_iter().enumerate() {
             let q = result
                 .surface
                 .evaluate_with_second_derivatives(t, end as Real)
                 .unwrap();
-            let p = parents[end];
             let du = if end == 0 { 26. } else { -1. };
             let dv = if end == 0 { 72. * 0.15 } else { 80. * 0.85 };
             assert!(q.point.distance_to(p.point).unwrap() < 1e-10);

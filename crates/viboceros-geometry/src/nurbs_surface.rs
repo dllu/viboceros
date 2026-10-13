@@ -1824,23 +1824,44 @@ impl NurbsSurface {
         direction: SurfaceKnotDirection,
         smooth: bool,
     ) -> Result<Self, GeometryError> {
+        self.try_make_periodic_with_solver(
+            direction,
+            smooth,
+            &mut crate::nurbs::portable_periodic_interpolation,
+        )
+    }
+
+    /// Convert selected closed directions using an external homogeneous solver.
+    /// Closure is checked on the surface before mapping its control rows.
+    pub fn try_make_periodic_with_solver<E: From<GeometryError>>(
+        &self,
+        direction: SurfaceKnotDirection,
+        smooth: bool,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
         let make_u = direction.includes_u() && !self.is_periodic_u();
         let make_v = direction.includes_v() && !self.is_periodic_v();
         if make_u && !self.is_closed_u()? {
-            return Err(GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "U" });
+            return Err(
+                GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "U" }.into(),
+            );
         }
         if make_v && !self.is_closed_v()? {
-            return Err(GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "V" });
+            return Err(
+                GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "V" }.into(),
+            );
         }
 
         let mut result = self.clone();
         if make_u {
-            result = result
-                .map_u_control_curves(|curve| curve.try_make_periodic_assuming_closed(smooth))?;
+            result = result.map_u_control_curves(|curve| {
+                curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
+            })?;
         }
         if make_v {
-            result = result
-                .map_v_control_curves(|curve| curve.try_make_periodic_assuming_closed(smooth))?;
+            result = result.map_v_control_curves(|curve| {
+                curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
+            })?;
         }
         Ok(result)
     }

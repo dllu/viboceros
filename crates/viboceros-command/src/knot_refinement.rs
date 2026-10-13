@@ -150,3 +150,26 @@ pub(super) fn surface(
     };
     Ok(refined)
 }
+
+pub(super) fn periodic_curve(
+    source: &NurbsCurve,
+    smooth: bool,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let result = viboceros_smlib::make_curve_periodic(source, smooth)?;
+    #[cfg(not(feature = "native-smlib"))]
+    let result = source.try_make_periodic(smooth)?;
+    Ok(result)
+}
+
+pub(super) fn periodic_surface(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    smooth: bool,
+) -> Result<NurbsSurface, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let result = viboceros_smlib::make_surface_periodic(source, direction, smooth)?;
+    #[cfg(not(feature = "native-smlib"))]
+    let result = source.try_make_periodic(direction, smooth)?;
+    Ok(result)
+}

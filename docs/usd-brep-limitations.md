@@ -8,6 +8,19 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Intersection-curve trimming can accept an off-curve vertex projection.**
+  `SmEdgeDefinition::IsInteriorPoint` checked that nearest-point projection
+  succeeded but ignored its model-space distance. A boundary-crossing lamp
+  cutter returned native edge/vertex gaps up to `4.7084e-3` against stored zone
+  radii near `1e-9`, before copying or portable extraction. The merged
+  [lamp-well regression](native-lamp-well.md) verifies a bounded
+  [source patch](../third_party/patches/usd-brep-interior-point.patch) requiring
+  finite distance within the existing tolerance before authorizing a trim.
+  CMake applies it to a generated source copy; the pinned submodule is unchanged.
+  Both Boolean postprocessing modes pass original native endpoint-zone checks,
+  strict portable validation and 3DM roundtrip. Legal additive native zone radii
+  are translated into local portable bounds and checked against every original
+  incident edge; geometry and validation tolerances are not moved globally.
 - **The available curve-offset sampling producer ignores the binormal in its
   circle branch.** For a counterclockwise radius-two XY circle, distance `0.125`
   and normal `+Z`, the documented `B × T` side independently requires radius
@@ -671,6 +684,24 @@ issues reported by NVIDIA that have not all been reproduced here.
   1–11 and 1,000-point ceilings remain. Fresh Rhino capture, continuous fit
   error and performance relative to Rhino remain unqualified. See
   [native Rebuild](smlib-curve-rebuild.md).
+- **MakePeriodic smoothing uses the native nonuniform periodic solve.**
+  Closed curve and surface control rows retain shared active knots, Greville
+  phase, normalized homogeneous targets, repeated seam controls and command
+  history policy. Native builds use existing `N_BasisDerivs`, guarded cyclic
+  band LU with a retry through full pivoted storage, and scalar homogeneous
+  channel back solving instead of portable basis rows and faer LU.
+  Nonuniform Greville stations can start inside the domain; they do not use
+  the uniform Rebuild column shift; their own starting control index aligns
+  native columns. Systems above `4 * degree + 1` unique
+  controls try a band at most `4 * degree + 1` entries wide; exact support and
+  native solve/residual checks guard the retry. The adapter supports degrees 2–17
+  and at most 1,000 unique controls; requests beyond either bound keep the
+  portable producer, and supported native failures propagate. Surface rows
+  currently factor separately. Smooth=No retains direct cyclic control edits.
+  Independent rational constraints cover both surface axes, extreme signed
+  weight gauges and tiny nonzero channels. Fresh Rhino capture, arbitrary
+  conditioning and performance relative to Rhino remain unqualified. See
+  [MakePeriodic integration](smlib-make-periodic.md).
 - **Point interpolation retains application policy around native basis and solves.**
   The missing periodic fit exports above and the different skin handle policy
   prevent a direct producer substitution. InterpCrv and interpolated

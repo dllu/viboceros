@@ -114,6 +114,8 @@ struct InterpolationSystem {
     point_grid: c_int,
     amplification: *mut f64,
     amplification_count: usize,
+    nonuniform_periodic: c_int,
+    periodic_control_shift: usize,
 }
 
 fn solve_cubic_system(
@@ -136,6 +138,8 @@ fn solve_cubic_system(
         point_grid: 0,
         amplification: std::ptr::null_mut(),
         amplification_count: 0,
+        nonuniform_periodic: 0,
+        periodic_control_shift: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -276,6 +280,14 @@ fn solve_with_fixed_rows(
     input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
     fixed: Option<&[u8]>,
 ) -> Result<Vec<f64>, Error> {
+    solve_interpolation(input, fixed, None)
+}
+
+fn solve_interpolation(
+    input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
+    fixed: Option<&[u8]>,
+    nonuniform_periodic: Option<usize>,
+) -> Result<Vec<f64>, Error> {
     let view = InterpolationSystem {
         knots: input.knots.as_ptr(),
         parameters: input.parameters.as_ptr(),
@@ -287,18 +299,54 @@ fn solve_with_fixed_rows(
         degree: input.degree,
         closed: c_int::from(input.periodic),
         handles: 0,
-        uniform_periodic: c_int::from(input.periodic),
+        uniform_periodic: c_int::from(input.periodic && nonuniform_periodic.is_none()),
         fixed_rows: fixed.map_or(std::ptr::null(), |f| f.as_ptr()),
         fixed_count: fixed.map_or(0, |f| f.len()),
         point_grid: 0,
         amplification: std::ptr::null_mut(),
         amplification_count: 0,
+        nonuniform_periodic: c_int::from(nonuniform_periodic.is_some()),
+        periodic_control_shift: nonuniform_periodic.unwrap_or(0),
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
         vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
     })?;
     Ok(output)
+}
+
+/// Smooth a closed curve through native nonuniform periodic collocation.
+/// Direct cyclic control retention for Smooth=No stays in the shared core.
+/// Degrees above the native limit and systems above 1,000 unique controls use
+/// the portable producer; supported native failures propagate without retry.
+pub fn make_curve_periodic(source: &NurbsCurve, smooth: bool) -> Result<NurbsCurve, Error> {
+    if source.degree() > 17 || source.control_points().len() - source.degree() > 1000 {
+        return Ok(source.try_make_periodic(smooth)?);
+    }
+    source.try_make_periodic_with_solver(smooth, &mut |input, shift| {
+        solve_interpolation(input, None, Some(shift))
+    })
+}
+
+/// Apply the same native periodic solver to requested surface control rows.
+/// A requested direction outside the native degree/count bounds uses the shared
+/// portable surface producer, preserving its closure and both-axis policy.
+pub fn make_surface_periodic(
+    source: &NurbsSurface,
+    direction: SurfaceKnotDirection,
+    smooth: bool,
+) -> Result<NurbsSurface, Error> {
+    let unsupported = |degree, count| degree > 17 || count - degree > 1000;
+    if (direction != SurfaceKnotDirection::V
+        && unsupported(source.degree_u(), source.control_point_count_u()))
+        || (direction != SurfaceKnotDirection::U
+            && unsupported(source.degree_v(), source.control_point_count_v()))
+    {
+        return Ok(source.try_make_periodic(direction, smooth)?);
+    }
+    source.try_make_periodic_with_solver(direction, smooth, &mut |input, shift| {
+        solve_interpolation(input, None, Some(shift))
+    })
 }
 
 /// Adaptive degree-one/cubic/general polynomial fit, with shared arc-length,
@@ -385,6 +433,8 @@ fn solve_point_grid(
         point_grid: 1,
         amplification: amplification.as_mut_ptr(),
         amplification_count: amplification.len(),
+        nonuniform_periodic: 0,
+        periodic_control_shift: 0,
     };
     let mut controls = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -1339,5 +1389,45 @@ mod interpolation_tests {
         assert_eq!(output.controls, expected);
         assert_eq!(output.amplification, vec![1.; n]);
         assert_eq!(job.targets, targets);
+    }
+
+    #[test]
+    fn nonuniform_periodic_band_retries_pivoting_and_accepts_a_final_endpoint_site() {
+        // A one-station phase shift gives an independently invertible cyclic
+        // permutation with every diagonal zero. The last actual site is the
+        // domain end; the appended interval endpoint is metadata, not a row.
+        let n = 64;
+        let knots = [
+            vec![0., 0.],
+            (1..n).map(|i| i as f64).collect(),
+            vec![n as f64; 2],
+        ]
+        .concat();
+        let parameters = [
+            (1..=n).map(|i| i as f64).collect::<Vec<_>>(),
+            vec![n as f64],
+        ]
+        .concat();
+        let expected = (0..n)
+            .flat_map(|i| [i as f64, -(i as f64), (i + 1) as f64 * 1e-280, 1.])
+            .collect::<Vec<_>>();
+        let targets = (0..n)
+            .flat_map(|i| {
+                expected[((i + 1) % n) * 4..((i + 1) % n) * 4 + 4]
+                    .iter()
+                    .copied()
+            })
+            .collect::<Vec<_>>();
+        let job = viboceros_geometry::NurbsInterpolationSystem {
+            degree: 1,
+            knots: &knots,
+            parameters: &parameters,
+            periodic: true,
+            columns: 4,
+            targets: &targets,
+        };
+        assert_eq!(solve_interpolation(&job, None, Some(0)).unwrap(), expected);
+        assert_eq!(job.targets, targets);
+        assert!(solve_interpolation(&job, None, None).is_err());
     }
 }

@@ -3,7 +3,7 @@ use crate::{CurveRef, Tolerance, curve::ArcLengthSampler, nurbs::stable_knot_mea
 use crate::{GeometryError, NurbsCurve, NurbsSurface, Point3, Real, SurfaceKnotDirection};
 use faer::{Mat, prelude::*};
 
-/// Uniform collocation shared by curve and tensor rebuild backends.
+/// Collocation shared by curve and tensor construction/editing backends.
 /// Targets and returned controls are row-major homogeneous channels. Periodic
 /// parameters include the final domain endpoint without a repeated target row.
 pub struct NurbsInterpolationSystem<'a> {

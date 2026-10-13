@@ -5323,8 +5323,14 @@ fn execute(
         }
         Operation::CurveMakePeriodicGeometry { curve, smooth, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) =
-                measure(iterations, || source.try_make_periodic(black_box(*smooth)))?;
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::make_curve_periodic(&source, black_box(*smooth))
+                    .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = source.try_make_periodic(black_box(*smooth));
+                result.map_err(ProbeError::from)
+            })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::CurveChangeSeamGeometry {
@@ -6015,8 +6021,18 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
-                source.try_make_periodic(black_box(direction.geometry()), black_box(*smooth))
+            let (surface, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::make_surface_periodic(
+                    &source,
+                    black_box(direction.geometry()),
+                    black_box(*smooth),
+                )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result =
+                    source.try_make_periodic(black_box(direction.geometry()), black_box(*smooth));
+                result.map_err(ProbeError::from)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }

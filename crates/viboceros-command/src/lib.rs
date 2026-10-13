@@ -3404,7 +3404,11 @@ impl Command for MakePeriodicCommand {
                         continue;
                     };
                     surface_count += 1;
-                    Geometry::NurbsSurface(surface.try_make_periodic(direction, options.smooth)?)
+                    Geometry::NurbsSurface(knot_refinement::periodic_surface(
+                        surface,
+                        direction,
+                        options.smooth,
+                    )?)
                 }
                 geometry => {
                     let Some(curve) = geometry.nurbs_curve_representation()? else {
@@ -3414,7 +3418,7 @@ impl Command for MakePeriodicCommand {
                         continue;
                     }
                     curve_count += 1;
-                    Geometry::NurbsCurve(curve.try_make_periodic(options.smooth)?)
+                    Geometry::NurbsCurve(knot_refinement::periodic_curve(&curve, options.smooth)?)
                 }
             };
             replacements.push((object.id(), geometry));
