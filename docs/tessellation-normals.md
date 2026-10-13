@@ -6,7 +6,8 @@
 `TessellationCorner` records per triangle, in the mesh's triangle/corner order.
 The ordinary tessellation API and mesh representation remain available.
 
-Each corner stores its native surface UV parameters, source B-rep face index
+Each corner stores its local surface UV parameters and additive `uv_origin`,
+source B-rep face index
 (`None` for a standalone surface), optional oriented unit normal, and
 `TessellationNormalSource`. For example:
 
@@ -15,7 +16,7 @@ let output = surface.tessellate_with_normals(8, tolerance)?;
 for (triangle, corners) in output.mesh.triangles().iter().zip(&output.corners) {
     for (&vertex, sample) in triangle.iter().zip(corners) {
         let position = output.mesh.vertices()[vertex as usize];
-        // Export position, sample.uv, sample.normal and sample.face together.
+        // Retain sample.uv + sample.uv_origin as a pair with the normal/face.
     }
 }
 ```
@@ -23,7 +24,9 @@ for (triangle, corners) in output.mesh.triangles().iter().zip(&output.corners) {
 Regular normals use the scale-independent surface normal evaluator. Incident
 triangle parameters choose one-sided derivatives at knot breaks; B-rep face
 reversal changes the normal's sense. Separate corners preserve intentional
-creases even at coincident positions. UV samples survive irregular trim sampling
+creases even at coincident positions. For B-reps, normals are evaluated in the same translated parameter chart as the
+mesh. Retain `uv` and `uv_origin` separately: their floating-point sum may erase
+local samples in very large native parameter domains. UV samples survive irregular trim sampling
 and the shared-edge conforming fallback. Boundary positions can be snapped to
 exact topological edges within the supplied tolerance.
 

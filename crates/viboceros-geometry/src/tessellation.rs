@@ -8,8 +8,11 @@ use crate::{
 pub struct TessellationCorner {
     /// Source B-rep face index; `None` for a standalone surface.
     pub face: Option<usize>,
-    /// Parameters in the source surface's native domain.
+    /// Parameters in a translated local chart of the source surface.
     pub uv: Point2,
+    /// Additive chart origin in the source's native parameter domain. Retain
+    /// this pair with `uv`: adding them in f64 can lose small local stations.
+    pub uv_origin: [Real; 2],
     /// Oriented unit normal. An isolated unresolved singularity is `None`;
     /// it never discards regular normals elsewhere in the object.
     pub normal: Option<UnitVector3>,
@@ -87,6 +90,7 @@ pub(crate) fn triangle_corners(
         TessellationCorner {
             face,
             uv: p,
+            uv_origin: [0.; 2],
             normal,
             normal_source,
         }

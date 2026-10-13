@@ -12,15 +12,25 @@ impl Brep {
     ) -> Result<SurfaceTessellation, GeometryError> {
         let (mesh, sources, parameters) =
             self.tessellate_impl(samples_per_span, false, false, tolerance, true)?;
+        let frames = self
+            .faces
+            .iter()
+            .map(BrepFace::local_parameter_frame)
+            .collect::<Result<Vec<_>, _>>()?;
         let mut corners = Vec::with_capacity(mesh.triangles().len());
         for (triangle, source) in mesh.triangles().iter().zip(sources) {
-            let face = &self.faces[source];
-            corners.push(triangle_corners(
+            let frame = &frames[source];
+            let face = frame.face.as_ref();
+            let mut samples = triangle_corners(
                 &face.surface,
                 triangle.map(|i| parameters[i as usize]),
                 Some(source),
                 face.reversed,
-            ));
+            );
+            for sample in &mut samples {
+                sample.uv_origin = frame.origin;
+            }
+            corners.push(samples);
         }
         Ok(SurfaceTessellation { mesh, corners })
     }

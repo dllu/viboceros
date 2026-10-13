@@ -45,8 +45,8 @@ pub use surface_rebuild::{
     NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
-mod surface_tween;
 mod surface_blend;
+mod surface_tween;
 pub use surface_blend::{
     SurfaceBlendContinuity, SurfaceBlendDiagnostics, SurfaceBlendOptions, SurfaceBlendResult,
     try_blend_nurbs_surfaces,

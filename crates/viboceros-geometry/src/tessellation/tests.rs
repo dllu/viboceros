@@ -170,3 +170,39 @@ fn brep_face_sources_and_reversal_preserve_hard_edges() {
         );
     }
 }
+
+#[test]
+fn translated_native_domains_keep_local_uv_samples_and_correct_normals() {
+    let base = surface(
+        &[[0., 0., 0.], [1., 0., 0.], [0., 1., 0.], [1., 1., 1.]],
+        2,
+        vec![0., 0., 1., 1.],
+    );
+    let shifted = base
+        .try_reparameterized(1e12..=1e12 + 1., 0.0..=1.)
+        .unwrap();
+    let reference = Brep::try_surface_face(base, Tolerance::DEFAULT)
+        .unwrap()
+        .tessellate_with_normals(3, Tolerance::DEFAULT)
+        .unwrap();
+    let source = Brep::try_surface_face(shifted, Tolerance::DEFAULT).unwrap();
+    let before = source.clone();
+    let output = source
+        .tessellate_with_normals(3, Tolerance::DEFAULT)
+        .unwrap();
+    assert_eq!(source, before);
+    assert_eq!(
+        output.mesh,
+        source.tessellate(3, Tolerance::DEFAULT).unwrap()
+    );
+    assert_eq!(output.mesh, reference.mesh);
+    for (samples, expected) in output.corners.iter().zip(reference.corners) {
+        for (sample, expected) in samples.iter().zip(expected) {
+            assert_eq!(sample.uv_origin, [1e12, 0.]);
+            assert_eq!(sample.uv, expected.uv);
+            let n = sample.normal.unwrap();
+            let e = expected.normal.unwrap();
+            assert!((n.x() - e.x()).hypot(n.y() - e.y()).hypot(n.z() - e.z()) < 1e-12);
+        }
+    }
+}

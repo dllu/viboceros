@@ -238,10 +238,7 @@ impl Brep {
             }
             for (i, uv) in parameters.into_iter().enumerate() {
                 if retain_parameters {
-                    vertex_parameters.push(Point2::try_new(
-                        uv.x() + frame.origin[0],
-                        uv.y() + frame.origin[1],
-                    )?);
+                    vertex_parameters.push(uv);
                 }
                 vertices.push(if let Some(&p) = boundary_points.get(i) {
                     p

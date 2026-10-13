@@ -186,14 +186,7 @@ impl Brep {
                 return Err(GeometryError::TooManyMeshVertices);
             }
             if retain_parameters {
-                vertex_parameters.extend(
-                    parameters
-                        .iter()
-                        .map(|uv| {
-                            Point2::try_new(uv.x() + frame.origin[0], uv.y() + frame.origin[1])
-                        })
-                        .collect::<Result<Vec<_>, _>>()?,
-                );
+                vertex_parameters.extend(parameters);
             }
             vertices.extend(mesh.vertices());
             for source_face in mesh.faces() {
