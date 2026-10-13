@@ -3249,19 +3249,40 @@ fn execute(
                 "Curvature" => viboceros_geometry::CurveMatchPreserveEnd::Curvature,
                 _ => return Err(ProbeError::InvalidMatchOption("preserve_other_end")),
             };
-            let (matched, elapsed) = measure(iterations, || {
-                if *average {
-                    let (first_output, second_output) =
-                        viboceros_geometry::try_average_match_curve_ends(
-                            &first,
-                            *reverse_first,
-                            &second,
-                            *reverse_second,
-                            continuity,
-                            preserve,
-                            tolerance,
-                        )?;
-                    Ok(vec![first_output, second_output])
+            let (matched, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = if *average {
+                    viboceros_smlib::average_match_curve_ends(
+                        (&first, *reverse_first),
+                        (&second, *reverse_second),
+                        continuity,
+                        preserve,
+                        tolerance,
+                    )
+                    .map(|(a, b)| vec![a, b])
+                } else {
+                    viboceros_smlib::match_curve_end(
+                        (&first, *reverse_first),
+                        (&second, *reverse_second),
+                        continuity,
+                        preserve,
+                        tolerance,
+                    )
+                    .map(|a| vec![a])
+                }
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = if *average {
+                    viboceros_geometry::try_average_match_curve_ends(
+                        &first,
+                        *reverse_first,
+                        &second,
+                        *reverse_second,
+                        continuity,
+                        preserve,
+                        tolerance,
+                    )
+                    .map(|(a, b)| vec![a, b])
                 } else {
                     viboceros_geometry::try_match_curve_end(
                         &first,
@@ -3272,8 +3293,9 @@ fn execute(
                         preserve,
                         tolerance,
                     )
-                    .map(|curve| vec![curve])
-                }
+                    .map(|a| vec![a])
+                };
+                result.map_err(ProbeError::from)
             })?;
             let outputs = matched.iter().map(|curve| {
                 let samples = (0..=16)

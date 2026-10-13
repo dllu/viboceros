@@ -20,6 +20,11 @@ and curvature matching; position matching can trim the source endpoint.
 Average curvature matching can preserve the far position, tangent, or curvature
 of both multi-span curves, refining either curve when needed.
 
+Linux `native-smlib` builds use usd-brep trimming, degree elevation, knot
+refinement and affine Greville solving for structural preparation. The shared
+endpoint and preservation policies remain described below; see
+[native qualification](../smlib-curve-match.md).
+
 When the source has too few controls to preserve the requested opposite end,
 Match adds controls before editing. For five-control cubic and four- or
 five-control quadratic curvature matches preserving far curvature, it uses a

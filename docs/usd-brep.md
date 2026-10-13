@@ -80,6 +80,8 @@ use native clamping, section-station refinement, curve fitting and batched
 homogeneous section solves, including continuous-model Pipe fitting.
 [TweenCurves sampling](smlib-curve-tween.md) reuses native open cubic basis and
 banded solving through the full 9,999-division command range.
+[Curve Match preparation](smlib-curve-match.md) uses native trimming, elevation,
+refinement and affine Greville interpolation around shared continuity policy.
 
 ## Reproduce the native trial
 

@@ -147,13 +147,24 @@ pub(crate) fn interpolate_affine_greville(
     source: &NurbsCurve,
     point_count: usize,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_interpolate_affine_greville_with_solver(source, point_count, &mut solve_portable_rebuild)
+}
+
+/// Match's affine parameter preparation, retaining uniform target knots and
+/// pinned endpoints while delegating only normalized control interpolation.
+pub fn try_interpolate_affine_greville_with_solver<E: From<GeometryError>>(
+    source: &NurbsCurve,
+    point_count: usize,
+    solve: &mut impl FnMut(&CurveRebuildInterpolation<'_>) -> Result<Vec<[Real; 3]>, E>,
+) -> Result<NurbsCurve, E> {
     let degree = source.degree();
-    if point_count <= degree {
+    if point_count <= degree || point_count > MAX_CURVE_REBUILD_POINT_COUNT {
         return Err(GeometryError::InvalidCurveRebuildPointCount {
             actual: point_count,
             minimum: degree + 1,
             maximum: MAX_CURVE_REBUILD_POINT_COUNT,
-        });
+        }
+        .into());
     }
     let span_count = point_count - degree;
     let knots = clamped_uniform_knots(degree, point_count, span_count);
@@ -172,17 +183,10 @@ pub(crate) fn interpolate_affine_greville(
         targets.push(source.evaluate(source_parameter)?);
         parameters.push(parameter);
     }
-    let mut controls = solve_rebuild_targets(
-        degree,
-        &knots,
-        &parameters,
-        false,
-        &targets,
-        &mut solve_portable_rebuild,
-    )?;
+    let mut controls = solve_rebuild_targets(degree, &knots, &parameters, false, &targets, solve)?;
     controls[0] = targets[0];
     controls[point_count - 1] = targets[point_count - 1];
-    NurbsCurve::try_new(degree, controls, knots)
+    Ok(NurbsCurve::try_new(degree, controls, knots)?)
 }
 
 fn rebuild_closed<E: From<GeometryError>>(

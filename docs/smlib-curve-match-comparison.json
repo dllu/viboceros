@@ -1,0 +1,3711 @@
+{
+  "reference": "Saved pre-change Match producer in the oracle built at e24b407e, using portable structural preparation and affine Greville solves.",
+  "reference_binary_sha256": "d1bcf283c9f5f7207fd6ced4fe69666161643c6d37ae09b6a4aca5764425322e",
+  "absolute_epsilon": 1e-08,
+  "relative_epsilon": 1e-12,
+  "cases": 160,
+  "matched": 160,
+  "fixtures": {
+    "curve_match_average_curvature": {
+      "cases": 6,
+      "successful": 6,
+      "fixture_sha256": "ac27bb2f449ad889c6cc7c5eda6b2ef881621b8bb4f20300e08cc9139904ce3a",
+      "reference_sha256": "768fa7b7b1b9198e7712f98db55040893f4987df4c7762c3648b1245d08c3634",
+      "native_sha256": "288ea2fe46ecc862870ca38e8b59f0870fcdacebf9242d72c38a84841f1055da",
+      "matched": 6,
+      "operations": [
+        {
+          "id": "average-cubic-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-reverse-1-0",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-reverse-0-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-reverse-1-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-line-curvature",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_average_multispan_curvature": {
+      "cases": 13,
+      "successful": 13,
+      "fixture_sha256": "3d28dbdcf1e07ee89f32fb443ae447e998ac0c9029685e3e5197b1ca5b29b0a3",
+      "reference_sha256": "dbf14c2b1a035395274b3099d85e0996c0b23813caab20b1058bcf6c35c4777f",
+      "native_sha256": "6e79b023694473d824d395b44eaeb7ce4a5e98be603d61b5f7bd35cf905534dd",
+      "matched": 13,
+      "operations": [
+        {
+          "id": "average-multispan-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-rational-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-rational-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-uneven-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-uneven-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-reversed-end",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-reference-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-reference-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-reference-tangency",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "differences": []
+        },
+        {
+          "id": "average-reference-rational",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-reference-uneven-rational",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_average_multispan_curvature_boundary": {
+      "cases": 2,
+      "successful": 2,
+      "fixture_sha256": "a18f4b47194a40b74d5587092871d8a48bb604d4f81646c44241118fe8852e1a",
+      "reference_sha256": "55fc68de12b2bf9ba1969f1ba7bca38fe74461c1db79e69be01646dffd7b6fd5",
+      "native_sha256": "af8d89a6b1498b5627dbb0d07519aae113e91bb2cbdf2ebab28f4711b8e650b2",
+      "matched": 2,
+      "operations": [
+        {
+          "id": "average-multispan-curvature-curvature",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "average-multispan-reference-curvature",
+          "passed": true,
+          "max_absolute_error": 4.9960036108132044e-15,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_average_position": {
+      "cases": 10,
+      "successful": 10,
+      "fixture_sha256": "3cc261d2256b1c838a1f74fd6c67cd32c0a3eee80694ea1a4c933a20a7b6ef1f",
+      "reference_sha256": "3f4addf2da1c0286847a07c8b1f6a4199790f8cbd055d6c07dd23273a2939836",
+      "native_sha256": "7505b5f07566c3d8665720223dcabeef5bc58d4f456662190ab6efdc353d9aee",
+      "matched": 10,
+      "operations": [
+        {
+          "id": "average-cubic-position-none",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-position-position",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-position-curvature",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "average-line-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-rational-position",
+          "passed": true,
+          "max_absolute_error": 1.1102230246251565e-15,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-position-reverse-10",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-position-reverse-11",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-rational-position-reverse-10",
+          "passed": true,
+          "max_absolute_error": 6.661338147750939e-16,
+          "differences": []
+        },
+        {
+          "id": "average-rational-position-reverse-01",
+          "passed": true,
+          "max_absolute_error": 6.661338147750939e-16,
+          "differences": []
+        },
+        {
+          "id": "average-rational-position-reverse-11",
+          "passed": true,
+          "max_absolute_error": 6.661338147750939e-16,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_average_position_boundary": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "719c40f31ac842cfb2886e4260fd69b219b68ae7df0f15ee221f02d3a805c214",
+      "reference_sha256": "1f01db128aca0b994a851b666aba1fc68a73abe91749a84e808f63304d2bde43",
+      "native_sha256": "22e008d7f7f25d0e108f4186586fef0d4b86e44af7467a12100cff7fe3e4d7d6",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "average-cubic-position-reverse-01",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_average_tangency": {
+      "cases": 8,
+      "successful": 8,
+      "fixture_sha256": "2438e3a47d63996b33f4d57825cf870ecc39d5eb26626ce1043c5ea450183d73",
+      "reference_sha256": "93b9663a40a73bd99ae8e031d165d2fae9e770a3ac464cb6e69e1ff72f86564d",
+      "native_sha256": "84ca889b300b7a06e86acd29b13f4043de645046b6841c03eeba5588ab43d587",
+      "matched": 8,
+      "operations": [
+        {
+          "id": "average-cubic-tangency-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-tangency-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-tangency-curvature",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "average-line-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-rational-tangency",
+          "passed": true,
+          "max_absolute_error": 6.661338147750939e-16,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-tangency-reverse-10",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-tangency-reverse-01",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "average-cubic-tangency-reverse-11",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_five_control_far_g2_probe": {
+      "cases": 6,
+      "successful": 6,
+      "fixture_sha256": "fe9f04f89b3d5dabf8d3e6b95778e5ef6269b3fb5f822de9dee633405e0f9dcf",
+      "reference_sha256": "d96cc8a1f15fab696f749985e389b8fe894a56a8c4645fa00f069f4e92b98284",
+      "native_sha256": "1244f6d59107f3332898544f26917fffca5f8227ab3a669bc5dd97f47dd6f17e",
+      "matched": 6,
+      "operations": [
+        {
+          "id": "base",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "reversed",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-15,
+          "differences": []
+        },
+        {
+          "id": "uneven-knots",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "differences": []
+        },
+        {
+          "id": "different-middle",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "rational",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-uneven",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_five_control_quadratic_end": {
+      "cases": 4,
+      "successful": 4,
+      "fixture_sha256": "dd49b919f2cd15da4268cddd678d7185baaa06be28d3b9e53c74afe1e78a427d",
+      "reference_sha256": "a628b8ff9e961d6eca158c29a45c7b6b1e09efd859f7201e5483ae1b0edff53c",
+      "native_sha256": "e085bcc3f4247ca2954875d2a8eb013dcda669a418e8024852463acc28c71126",
+      "matched": 4,
+      "operations": [
+        {
+          "id": "arc-first-end-False-average-False",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "arc-first-end-False-average-True",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "arc-first-end-True-average-False",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "arc-first-end-True-average-True",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_five_control_quadratic_general": {
+      "cases": 6,
+      "successful": 6,
+      "fixture_sha256": "b8bae725ba8e37d1067481c9fc1163c5015f82bfa27305ac1815fdbeffb882d5",
+      "reference_sha256": "6c709b1f8c3f14734084c3f57a6a2d8b817746426c7d86adc0ac3f3226f82b78",
+      "native_sha256": "6eee453897f5a9fe201f420ab246ce414972e84482e461bb914bbf720e966da0",
+      "matched": 6,
+      "operations": [
+        {
+          "id": "quadratic-uniform-end-False",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "quadratic-uniform-end-True",
+          "passed": true,
+          "max_absolute_error": 1.3877787807814457e-17,
+          "differences": []
+        },
+        {
+          "id": "quadratic-rational-end-False",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "quadratic-rational-end-True",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "quadratic-uneven-end-False",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "quadratic-uneven-end-True",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_five_control_rational_translation_sweep": {
+      "cases": 13,
+      "successful": 13,
+      "fixture_sha256": "10ad845e3382512b620994f007623e939bc7fc0ad15e158c7fa58cb0541e03e2",
+      "reference_sha256": "e699ff748a80c1f06f323734caccaf60f182d122edad5d8cab620b3da0fdc3b7",
+      "native_sha256": "bcec5d521d3c5ea60986fd4ddf9b6f4f788720b6f45ab32b9641dc3f9406946e",
+      "matched": 13,
+      "operations": [
+        {
+          "id": "rational-shift--15",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-shift--10",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-shift--7",
+          "passed": true,
+          "max_absolute_error": 2.6645352591003757e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-shift--5",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-shift--3",
+          "passed": true,
+          "max_absolute_error": 9.992007221626409e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-shift--1",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-0",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-3",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-5",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-7",
+          "passed": true,
+          "max_absolute_error": 5.773159728050814e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-10",
+          "passed": true,
+          "max_absolute_error": 3.552713678800501e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-shift-15",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_four_control_quadratic_g2": {
+      "cases": 4,
+      "successful": 4,
+      "fixture_sha256": "4c158841308a7e72c9586dbe4efe7c56493936a0bfb598efedf7d557d85819b3",
+      "reference_sha256": "6f9e201376bb5416cba3e1af98ac3e65b8237112e9dd7ada9d4787f7df08c8e3",
+      "native_sha256": "aa4471ae6db662dd34000fac74f6be3793f014ca4d478f49fba902dda29acac6",
+      "matched": 4,
+      "operations": [
+        {
+          "id": "four-quadratic-poly-end-False",
+          "passed": true,
+          "max_absolute_error": 2.7755575615628914e-16,
+          "differences": []
+        },
+        {
+          "id": "four-quadratic-poly-end-True",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-16,
+          "differences": []
+        },
+        {
+          "id": "four-quadratic-rational-end-False",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "four-quadratic-rational-end-True",
+          "passed": true,
+          "max_absolute_error": 5.329070518200751e-15,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_geometry": {
+      "cases": 33,
+      "successful": 33,
+      "fixture_sha256": "3fc95fc0246ec9befe24bace908ace39ad52d9fef4d6d9f4c7e959faf38e4ac8",
+      "reference_sha256": "4f70e83b65c84f409965a83db4980228135c252d4675d5144cc6d422ea909594",
+      "native_sha256": "4b0232f04c8dd06844a9b9582238ba44782d1a6c3f6f83ed4bddc6f919bd919d",
+      "matched": 33,
+      "operations": [
+        {
+          "id": "cubic-position-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-position-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-position-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-position-curvature",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-tangency-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-tangency-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-tangency-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-tangency-curvature",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "cubic-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "differences": []
+        },
+        {
+          "id": "cubic-curvature-curvature",
+          "passed": true,
+          "max_absolute_error": 6.8833827526759706e-15,
+          "differences": []
+        },
+        {
+          "id": "cubic-reverse-1-0",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-reverse-0-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "cubic-reverse-1-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-curvature",
+          "passed": true,
+          "max_absolute_error": 2.220446049250313e-15,
+          "differences": []
+        },
+        {
+          "id": "line-position-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-position-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-position-curvature",
+          "passed": true,
+          "max_absolute_error": 5.551115123125783e-16,
+          "differences": []
+        },
+        {
+          "id": "line-tangency-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-tangency-tangency",
+          "passed": true,
+          "max_absolute_error": 5.551115123125783e-16,
+          "differences": []
+        },
+        {
+          "id": "line-tangency-curvature",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "line-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "line-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 1.7763568394002505e-15,
+          "differences": []
+        },
+        {
+          "id": "line-curvature-curvature",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-15,
+          "differences": []
+        },
+        {
+          "id": "quadratic-position",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "quadratic-tangency",
+          "passed": true,
+          "max_absolute_error": 1.3322676295501878e-15,
+          "differences": []
+        },
+        {
+          "id": "quadratic-curvature",
+          "passed": true,
+          "max_absolute_error": 3.774758283725532e-15,
+          "differences": []
+        },
+        {
+          "id": "rational-position",
+          "passed": true,
+          "max_absolute_error": 6.661338147750939e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-tangency",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        },
+        {
+          "id": "rational-curvature",
+          "passed": true,
+          "max_absolute_error": 6.106226635438361e-15,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_curvature": {
+      "cases": 3,
+      "successful": 3,
+      "fixture_sha256": "8b9a5da031fb27a8c5703a83dd67f146ce69dcd8168da98031a3689c3dc3d36f",
+      "reference_sha256": "28f2490262327ac7a77fbb693709d32aa1fd70d7a610bba77e3ec334b20daed1",
+      "native_sha256": "d7c77b3d871946f99f3fbc4d2dfc971a8a26f21f19d8b1efce24680867f8e9ea",
+      "matched": 3,
+      "operations": [
+        {
+          "id": "two-span-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_curvature_b1_rule": {
+      "cases": 12,
+      "successful": 12,
+      "fixture_sha256": "6fdd0d1a09ba242208f175273002dc095b872a553f25d9b05f476085b55e1b84",
+      "reference_sha256": "694b7741259765b1ac9bdc6bd6427ba5eba5cbbcc16bfdb0e36f730f4b42aba8",
+      "native_sha256": "7cca874c5cb2eb74b3c39bead91cf5b275f74405ceb1499a197529431a5e7853",
+      "matched": 12,
+      "operations": [
+        {
+          "id": "a0.5-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.75-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.785-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.65-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.75-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.805-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a1-b1-k0.7-x2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.7-x1.9",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.7-x1.97",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2.4",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2.41",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_curvature_boundary": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "385a7512ba41a3650dfd13798c4529cabdb36691910ae3d78054c9f6026fe938",
+      "reference_sha256": "e2f5fc3e65e883697a9fe4939950f67f8b429d8899e0b8a6ff8ce173d5809bf2",
+      "native_sha256": "1f9256132cc9978a4ba189178faff44159b28adb8c9a840f2b2b60e811aa1886",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "uneven-rational-b1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_curvature_extended": {
+      "cases": 15,
+      "successful": 15,
+      "fixture_sha256": "ec2419a90e286bb7e3cea5fec9596b39f8913d6ab39ea2bd6c30a24383ff1f4c",
+      "reference_sha256": "aa553d947e49254dffa5d41353be0c672f9493563b36300c2c1644e99c6cdea9",
+      "native_sha256": "1baf19280c5a2dbd058db1b65950fa4f946dafeec69c0214e457ddaa8ecbb7e6",
+      "matched": 15,
+      "operations": [
+        {
+          "id": "uneven-cubic-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "uneven-cubic-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "uneven-cubic-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-multispan-curvature-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-multispan-curvature-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "rational-multispan-curvature-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-end-0",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-end-1",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a05-b1-x3",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a15-b1-x3",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a05-b10001",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a15-b10001",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a1-b08",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-curvature-a1-b2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "uneven-rational-b1.2",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_position": {
+      "cases": 7,
+      "successful": 7,
+      "fixture_sha256": "f078448bf4a7176d1b47d4424d5fc3c5c6a5e671f3829ce757fc1457df6c2de1",
+      "reference_sha256": "6f03a98113cc1c33f6e426a208fadcd656adac6d970c2355ddf50acdc91c7c0b",
+      "native_sha256": "b4a6cbbfe0691de04ca7cd3ebf27d428f97bf3119c6bebf6371a7ef53f05e625",
+      "matched": 7,
+      "operations": [
+        {
+          "id": "two-span-position-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-curvature",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-reverse-10",
+          "passed": true,
+          "max_absolute_error": 4.440892098500626e-16,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-reverse-01",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-position-reverse-11",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_preserve_far_curvature": {
+      "cases": 5,
+      "successful": 5,
+      "fixture_sha256": "ed5ba664ca9cf7f93d8726c5da7e6a70694f4e660e00bfcc1bc2bb3a990dabd6",
+      "reference_sha256": "561579e0d26b4ea1c0e8c123c7395367970d1f99b4536c08564a044a6f1dec61",
+      "native_sha256": "de417e41ead09a57e6232f52fc0c88220a9277153821dc9d3cddc715449f27a5",
+      "matched": 5,
+      "operations": [
+        {
+          "id": "six-control-start",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "six-control-end",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "seven-control-start",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "six-control-rational-start",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "six-control-average-six",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_multispan_tangency": {
+      "cases": 10,
+      "successful": 10,
+      "fixture_sha256": "d348d597aa4adfb58f4cfa36bace56753e48e311e6a2fed7354515be374209fe",
+      "reference_sha256": "1632273c120c3486ae28c32836844babea725eaa386fc100daa810fef4a477e9",
+      "native_sha256": "afb7bfb0eefb1ada1d55707b4d44ba21f28924c5cd7ae6d9661be80a82957317",
+      "matched": 10,
+      "operations": [
+        {
+          "id": "two-span-tangency-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-curvature",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-reverse-10",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-reverse-01",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-tangency-reverse-11",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-quadratic-tangency-none",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-quadratic-tangency-position",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        },
+        {
+          "id": "two-span-quadratic-tangency-tangency",
+          "passed": true,
+          "max_absolute_error": 0.0,
+          "differences": []
+        }
+      ]
+    },
+    "curve_match_rhino_only": {
+      "cases": 1,
+      "successful": 1,
+      "fixture_sha256": "007d35f98e99d4b1d23321d406a2a38cca0eebc58516bf043d28985f9c3b4d7c",
+      "reference_sha256": "c7530a09f0355682ceccdd31b61216bac74e30888d00437287bc92c72de21011",
+      "native_sha256": "5b0a20c4e5313137892f31e1d77c9c3b50d318822d9003bbff05b0191486a68a",
+      "matched": 1,
+      "operations": [
+        {
+          "id": "two-span-curvature",
+          "passed": true,
+          "max_absolute_error": 8.881784197001252e-16,
+          "differences": []
+        }
+      ]
+    }
+  },
+  "fresh_sdk_status": "Pending Wine licensing startup; these records compare native preparation with the saved pre-change producer.",
+  "retained_rhino_replay": {
+    "curve_match_average_curvature": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-cubic-curvature-none",
+          "comparison": {
+            "id": "average-cubic-curvature-none",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 117457.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-curvature-position",
+          "comparison": {
+            "id": "average-cubic-curvature-position",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 117232.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-reverse-1-0",
+          "comparison": {
+            "id": "average-cubic-reverse-1-0",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 71457.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-reverse-0-1",
+          "comparison": {
+            "id": "average-cubic-reverse-0-1",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 74656.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-reverse-1-1",
+          "comparison": {
+            "id": "average-cubic-reverse-1-1",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 76512.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-line-curvature",
+          "comparison": {
+            "id": "average-line-curvature",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 118912.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 6,
+      "matched": 6,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "14341a093e03e899fa3d692636018c1f40b6f34f1c7389a2f0a25a5109c9a46c"
+    },
+    "curve_match_average_multispan_curvature": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-multispan-curvature-none",
+          "comparison": {
+            "id": "average-multispan-curvature-none",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 88816.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-curvature-position",
+          "comparison": {
+            "id": "average-multispan-curvature-position",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 81792.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-curvature-tangency",
+          "comparison": {
+            "id": "average-multispan-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 81648.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-rational-none",
+          "comparison": {
+            "id": "average-multispan-rational-none",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-15,
+            "viboceros_ns_per_iteration": 52928.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-rational-tangency",
+          "comparison": {
+            "id": "average-multispan-rational-tangency",
+            "passed": true,
+            "max_absolute_error": 2.220446049250313e-15,
+            "viboceros_ns_per_iteration": 52816.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-uneven-none",
+          "comparison": {
+            "id": "average-multispan-uneven-none",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 77200.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-uneven-tangency",
+          "comparison": {
+            "id": "average-multispan-uneven-tangency",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 77088.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-reversed-end",
+          "comparison": {
+            "id": "average-multispan-reversed-end",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 38928.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-reference-none",
+          "comparison": {
+            "id": "average-multispan-reference-none",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 36272.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-reference-position",
+          "comparison": {
+            "id": "average-multispan-reference-position",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 35985.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-reference-tangency",
+          "comparison": {
+            "id": "average-multispan-reference-tangency",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-16,
+            "viboceros_ns_per_iteration": 58688.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-reference-rational",
+          "comparison": {
+            "id": "average-reference-rational",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 36928.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-reference-uneven-rational",
+          "comparison": {
+            "id": "average-reference-uneven-rational",
+            "passed": true,
+            "max_absolute_error": 1.304512053934559e-15,
+            "viboceros_ns_per_iteration": 45456.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 13,
+      "matched": 13,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "00010a887281e3124fbc4c3ed9f26a1c28aaffad9da782664282f1955bd70b4b"
+    },
+    "curve_match_average_multispan_curvature_boundary": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-multispan-curvature-curvature",
+          "comparison": {
+            "id": "average-multispan-curvature-curvature",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 69872.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-multispan-reference-curvature",
+          "comparison": {
+            "id": "average-multispan-reference-curvature",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 73200.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 2,
+      "matched": 2,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "29701b861142d86c816fa00f0f400ed9960bd9ecb43e7d38b39234bce3c852d0"
+    },
+    "curve_match_average_position": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-cubic-position-none",
+          "comparison": {
+            "id": "average-cubic-position-none",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 20880.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-position-position",
+          "comparison": {
+            "id": "average-cubic-position-position",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 19728.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-position-curvature",
+          "comparison": {
+            "id": "average-cubic-position-curvature",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 19392.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-line-position",
+          "comparison": {
+            "id": "average-line-position",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 2944.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-rational-position",
+          "comparison": {
+            "id": "average-rational-position",
+            "passed": true,
+            "max_absolute_error": 1.119992987241858e-12,
+            "viboceros_ns_per_iteration": 136608.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-position-reverse-10",
+          "comparison": {
+            "id": "average-cubic-position-reverse-10",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 17264.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-position-reverse-11",
+          "comparison": {
+            "id": "average-cubic-position-reverse-11",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 17024.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-rational-position-reverse-10",
+          "comparison": {
+            "id": "average-rational-position-reverse-10",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 19632.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-rational-position-reverse-01",
+          "comparison": {
+            "id": "average-rational-position-reverse-01",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 19712.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-rational-position-reverse-11",
+          "comparison": {
+            "id": "average-rational-position-reverse-11",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 18864.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 10,
+      "matched": 10,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "4d02003e9078fed8629cbe078f6ada386768d9aa831b67e6bbaf0692cb28b3c8"
+    },
+    "curve_match_average_position_boundary": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-cubic-position-reverse-01",
+          "comparison": {
+            "id": "average-cubic-position-reverse-01",
+            "passed": false,
+            "max_absolute_error": 1.9999995231628418,
+            "viboceros_ns_per_iteration": 32176.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": [
+              "average-cubic-position-reverse-01.value.outputs[0].definition.control_points[1].point[0]: 1 != 2.9999995231628418 (error 2, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].definition.control_points[2].point[0]: 2 != 2.9999997615814209 (error 1, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[1][0]: 2.659423828125 != 2.999999918800313 (error 0.341, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[2][0]: 2.384765625 != 2.9999998533166945 (error 0.615, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[3][0]: 2.171630859375 != 2.9999998025014065 (error 0.828, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[4][0]: 2.015625 != 2.9999997653067112 (error 0.984, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[5][0]: 1.912353515625 != 2.9999997406848706 (error 1.09, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[6][0]: 1.857421875 != 2.9999997275881469 (error 1.14, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[7][0]: 1.846435546875 != 2.9999997249688022 (error 1.15, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[8][0]: 1.875 != 2.9999997317790985 (error 1.12, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[9][0]: 1.938720703125 != 2.999999746971298 (error 1.06, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[10][0]: 2.033203125 != 2.9999997694976628 (error 0.967, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[11][0]: 2.154052734375 != 2.9999997983104549 (error 0.846, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[12][0]: 2.296875 != 2.9999998323619366 (error 0.703, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[13][0]: 2.457275390625 != 2.9999998706043698 (error 0.543, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[14][0]: 2.630859375 != 2.9999999119900167 (error 0.369, limit 1e-06)",
+              "average-cubic-position-reverse-01.value.outputs[0].samples[15][0]: 2.813232421875 != 2.9999999554711394 (error 0.187, limit 1e-06)"
+            ]
+          },
+          "native_error": null,
+          "passed": false
+        }
+      ],
+      "passed": false,
+      "cases": 1,
+      "matched": 0,
+      "native_failed": 0,
+      "mismatched": 1,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "f84b0a715a1606de8c60df968352a382b275b0485df0a302c7495aeb79d465d7"
+    },
+    "curve_match_average_tangency": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "average-cubic-tangency-none",
+          "comparison": {
+            "id": "average-cubic-tangency-none",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 1968.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-tangency-position",
+          "comparison": {
+            "id": "average-cubic-tangency-position",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 1200.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-tangency-curvature",
+          "comparison": {
+            "id": "average-cubic-tangency-curvature",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 2944.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-line-tangency",
+          "comparison": {
+            "id": "average-line-tangency",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 2128.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-rational-tangency",
+          "comparison": {
+            "id": "average-rational-tangency",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 2368.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-tangency-reverse-10",
+          "comparison": {
+            "id": "average-cubic-tangency-reverse-10",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 1232.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-tangency-reverse-01",
+          "comparison": {
+            "id": "average-cubic-tangency-reverse-01",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1184.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "average-cubic-tangency-reverse-11",
+          "comparison": {
+            "id": "average-cubic-tangency-reverse-11",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 1216.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 8,
+      "matched": 8,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "6fc814b5b96a6f0d2c46d6256f3ce1ed6efa9987b184fa3ea60a5d20801bb681"
+    },
+    "curve_match_five_control_far_g2_probe": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "base",
+          "comparison": {
+            "id": "base",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 159136.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "reversed",
+          "comparison": {
+            "id": "reversed",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 132208.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "uneven-knots",
+          "comparison": {
+            "id": "uneven-knots",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-14,
+            "viboceros_ns_per_iteration": 171153.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "different-middle",
+          "comparison": {
+            "id": "different-middle",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 147280.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational",
+          "comparison": {
+            "id": "rational",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 103536.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-uneven",
+          "comparison": {
+            "id": "rational-uneven",
+            "passed": true,
+            "max_absolute_error": 1.2434497875801753e-14,
+            "viboceros_ns_per_iteration": 186096.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 6,
+      "matched": 6,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "768ee2e8329b1f6ff2eb31031863f3746cfa3f0fc5552f079979a12aeb5d6fb8"
+    },
+    "curve_match_five_control_quadratic_end": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "arc-first-end-False-average-False",
+          "comparison": {
+            "id": "arc-first-end-False-average-False",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 87424.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "arc-first-end-False-average-True",
+          "comparison": {
+            "id": "arc-first-end-False-average-True",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 140352.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "arc-first-end-True-average-False",
+          "comparison": {
+            "id": "arc-first-end-True-average-False",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 106608.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "arc-first-end-True-average-True",
+          "comparison": {
+            "id": "arc-first-end-True-average-True",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 153345.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "483d25bf8d97b5fb4c8b506abd92ec32974a352e7fbf17e6decf550699a5513b"
+    },
+    "curve_match_five_control_quadratic_general": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "quadratic-uniform-end-False",
+          "comparison": {
+            "id": "quadratic-uniform-end-False",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 64800.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-uniform-end-True",
+          "comparison": {
+            "id": "quadratic-uniform-end-True",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 49856.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-rational-end-False",
+          "comparison": {
+            "id": "quadratic-rational-end-False",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 63552.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-rational-end-True",
+          "comparison": {
+            "id": "quadratic-rational-end-True",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 115088.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-uneven-end-False",
+          "comparison": {
+            "id": "quadratic-uneven-end-False",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 56640.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-uneven-end-True",
+          "comparison": {
+            "id": "quadratic-uneven-end-True",
+            "passed": true,
+            "max_absolute_error": 1.4210854715202004e-14,
+            "viboceros_ns_per_iteration": 56304.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 6,
+      "matched": 6,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "ee24bc57899bc67290ecdef39fd8b625077102c920132da37623d0fe623b02f3"
+    },
+    "curve_match_five_control_rational_translation_sweep": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "rational-shift--15",
+          "comparison": {
+            "id": "rational-shift--15",
+            "passed": true,
+            "max_absolute_error": 2.3092638912203256e-14,
+            "viboceros_ns_per_iteration": 183457.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift--10",
+          "comparison": {
+            "id": "rational-shift--10",
+            "passed": true,
+            "max_absolute_error": 9.769962616701378e-15,
+            "viboceros_ns_per_iteration": 129872.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift--7",
+          "comparison": {
+            "id": "rational-shift--7",
+            "passed": true,
+            "max_absolute_error": 5.773159728050814e-15,
+            "viboceros_ns_per_iteration": 112560.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift--5",
+          "comparison": {
+            "id": "rational-shift--5",
+            "passed": true,
+            "max_absolute_error": 7.882583474838611e-15,
+            "viboceros_ns_per_iteration": 94320.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift--3",
+          "comparison": {
+            "id": "rational-shift--3",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 157232.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift--1",
+          "comparison": {
+            "id": "rational-shift--1",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 103184.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-0",
+          "comparison": {
+            "id": "rational-shift-0",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 104240.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-1",
+          "comparison": {
+            "id": "rational-shift-1",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 102880.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-3",
+          "comparison": {
+            "id": "rational-shift-3",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 132816.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-5",
+          "comparison": {
+            "id": "rational-shift-5",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-14,
+            "viboceros_ns_per_iteration": 146736.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-7",
+          "comparison": {
+            "id": "rational-shift-7",
+            "passed": true,
+            "max_absolute_error": 9.769962616701378e-15,
+            "viboceros_ns_per_iteration": 102576.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-10",
+          "comparison": {
+            "id": "rational-shift-10",
+            "passed": true,
+            "max_absolute_error": 1.1102230246251565e-14,
+            "viboceros_ns_per_iteration": 113841.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-shift-15",
+          "comparison": {
+            "id": "rational-shift-15",
+            "passed": true,
+            "max_absolute_error": 7.327471962526033e-15,
+            "viboceros_ns_per_iteration": 96944.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 13,
+      "matched": 13,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "1e76c02e943c76d17455cb604b155a47fe9e6710211fe4684b77f7ef4e3b6277"
+    },
+    "curve_match_four_control_quadratic_g2": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "four-quadratic-poly-end-False",
+          "comparison": {
+            "id": "four-quadratic-poly-end-False",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 73648.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "four-quadratic-poly-end-True",
+          "comparison": {
+            "id": "four-quadratic-poly-end-True",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 57329.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "four-quadratic-rational-end-False",
+          "comparison": {
+            "id": "four-quadratic-rational-end-False",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 71344.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "four-quadratic-rational-end-True",
+          "comparison": {
+            "id": "four-quadratic-rational-end-True",
+            "passed": true,
+            "max_absolute_error": 7.993605777301127e-15,
+            "viboceros_ns_per_iteration": 80112.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "5d7d2d5419a78f256dafc1359c3bbea832497e806653a0ac9e6833f7a5f9c0d1"
+    },
+    "curve_match_geometry": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "cubic-position-none",
+          "comparison": {
+            "id": "cubic-position-none",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 848.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-position-position",
+          "comparison": {
+            "id": "cubic-position-position",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 544.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-position-tangency",
+          "comparison": {
+            "id": "cubic-position-tangency",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 512.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-position-curvature",
+          "comparison": {
+            "id": "cubic-position-curvature",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 528.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-tangency-none",
+          "comparison": {
+            "id": "cubic-tangency-none",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 2400.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-tangency-position",
+          "comparison": {
+            "id": "cubic-tangency-position",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 896.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-tangency-tangency",
+          "comparison": {
+            "id": "cubic-tangency-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 912.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-tangency-curvature",
+          "comparison": {
+            "id": "cubic-tangency-curvature",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 4352.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-curvature-none",
+          "comparison": {
+            "id": "cubic-curvature-none",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 42416.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-curvature-position",
+          "comparison": {
+            "id": "cubic-curvature-position",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 42016.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-curvature-tangency",
+          "comparison": {
+            "id": "cubic-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 96896.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-curvature-curvature",
+          "comparison": {
+            "id": "cubic-curvature-curvature",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 180688.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-reverse-1-0",
+          "comparison": {
+            "id": "cubic-reverse-1-0",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 42912.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-reverse-0-1",
+          "comparison": {
+            "id": "cubic-reverse-0-1",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 16000.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cubic-reverse-1-1",
+          "comparison": {
+            "id": "cubic-reverse-1-1",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 16144.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-position",
+          "comparison": {
+            "id": "line-position",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 624.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-tangency",
+          "comparison": {
+            "id": "line-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 3072.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-curvature",
+          "comparison": {
+            "id": "line-curvature",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 45184.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-position-none",
+          "comparison": {
+            "id": "line-position-none",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 448.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-position-tangency",
+          "comparison": {
+            "id": "line-position-tangency",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 2384.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-position-curvature",
+          "comparison": {
+            "id": "line-position-curvature",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 2544.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-tangency-none",
+          "comparison": {
+            "id": "line-tangency-none",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 832.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-tangency-tangency",
+          "comparison": {
+            "id": "line-tangency-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 2896.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-tangency-curvature",
+          "comparison": {
+            "id": "line-tangency-curvature",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "viboceros_ns_per_iteration": 3200.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-curvature-none",
+          "comparison": {
+            "id": "line-curvature-none",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 15104.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-curvature-tangency",
+          "comparison": {
+            "id": "line-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 1.7763568394002505e-15,
+            "viboceros_ns_per_iteration": 94752.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "line-curvature-curvature",
+          "comparison": {
+            "id": "line-curvature-curvature",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 166864.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-position",
+          "comparison": {
+            "id": "quadratic-position",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-16,
+            "viboceros_ns_per_iteration": 2736.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-tangency",
+          "comparison": {
+            "id": "quadratic-tangency",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-16,
+            "viboceros_ns_per_iteration": 3536.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "quadratic-curvature",
+          "comparison": {
+            "id": "quadratic-curvature",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 110657.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-position",
+          "comparison": {
+            "id": "rational-position",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 2608.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-tangency",
+          "comparison": {
+            "id": "rational-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 3584.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-curvature",
+          "comparison": {
+            "id": "rational-curvature",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 110560.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 33,
+      "matched": 33,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "d3f6b84b15378366cb1fa66913aff5633f43123cb65f7bb7f14e52b06280b284"
+    },
+    "curve_match_multispan_curvature": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "two-span-curvature-none",
+          "comparison": {
+            "id": "two-span-curvature-none",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 120784.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-position",
+          "comparison": {
+            "id": "two-span-curvature-position",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 121024.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-tangency",
+          "comparison": {
+            "id": "two-span-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 173712.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 3,
+      "matched": 3,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "6d37df722708dc27b78ff80186ff11c6816685d237d137f6ecc4e783eb6cd28d"
+    },
+    "curve_match_multispan_curvature_b1_rule": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "a0.5-b1-k0.7-x2",
+          "comparison": {
+            "id": "a0.5-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 61600.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.75-b1-k0.7-x2",
+          "comparison": {
+            "id": "a0.75-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 46912.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.785-b1-k0.7-x2",
+          "comparison": {
+            "id": "a0.785-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "viboceros_ns_per_iteration": 56864.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.65-x2",
+          "comparison": {
+            "id": "a0.8-b1-k0.65-x2",
+            "passed": true,
+            "max_absolute_error": 1.2434497875801753e-14,
+            "viboceros_ns_per_iteration": 57089.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2",
+          "comparison": {
+            "id": "a0.8-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 56208.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.75-x2",
+          "comparison": {
+            "id": "a0.8-b1-k0.75-x2",
+            "passed": true,
+            "max_absolute_error": 7.993605777301127e-15,
+            "viboceros_ns_per_iteration": 51600.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.805-b1-k0.7-x2",
+          "comparison": {
+            "id": "a0.805-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 55840.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a1-b1-k0.7-x2",
+          "comparison": {
+            "id": "a1-b1-k0.7-x2",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 55104.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.7-x1.9",
+          "comparison": {
+            "id": "a0.8-b1-k0.7-x1.9",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 56496.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.7-x1.97",
+          "comparison": {
+            "id": "a0.8-b1-k0.7-x1.97",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 56001.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2.4",
+          "comparison": {
+            "id": "a0.8-b1-k0.7-x2.4",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 55872.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "a0.8-b1-k0.7-x2.41",
+          "comparison": {
+            "id": "a0.8-b1-k0.7-x2.41",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 56176.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 12,
+      "matched": 12,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "6d367557bcd0c94cb16f6bf6d830f64f4e7ad92ee1e5b646e225ded081afb1d5"
+    },
+    "curve_match_multispan_curvature_boundary": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "uneven-rational-b1",
+          "comparison": {
+            "id": "uneven-rational-b1",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 117457.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 1,
+      "matched": 1,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "e56b0f95b70a8f1b146086dea9c6af82ec09102d53d6451fa298b297379c2d1e"
+    },
+    "curve_match_multispan_curvature_extended": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "uneven-cubic-curvature-none",
+          "comparison": {
+            "id": "uneven-cubic-curvature-none",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 112560.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "uneven-cubic-curvature-position",
+          "comparison": {
+            "id": "uneven-cubic-curvature-position",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 110976.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "uneven-cubic-curvature-tangency",
+          "comparison": {
+            "id": "uneven-cubic-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 7.105427357601002e-15,
+            "viboceros_ns_per_iteration": 110384.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-multispan-curvature-none",
+          "comparison": {
+            "id": "rational-multispan-curvature-none",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "viboceros_ns_per_iteration": 87984.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-multispan-curvature-position",
+          "comparison": {
+            "id": "rational-multispan-curvature-position",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "viboceros_ns_per_iteration": 93296.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "rational-multispan-curvature-tangency",
+          "comparison": {
+            "id": "rational-multispan-curvature-tangency",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "viboceros_ns_per_iteration": 87552.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-end-0",
+          "comparison": {
+            "id": "two-span-curvature-end-0",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "viboceros_ns_per_iteration": 135201.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-end-1",
+          "comparison": {
+            "id": "two-span-curvature-end-1",
+            "passed": true,
+            "max_absolute_error": 8.723602067298787e-15,
+            "viboceros_ns_per_iteration": 56688.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a05-b1-x3",
+          "comparison": {
+            "id": "two-span-curvature-a05-b1-x3",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 103712.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a15-b1-x3",
+          "comparison": {
+            "id": "two-span-curvature-a15-b1-x3",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 149328.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a05-b10001",
+          "comparison": {
+            "id": "two-span-curvature-a05-b10001",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 68240.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a15-b10001",
+          "comparison": {
+            "id": "two-span-curvature-a15-b10001",
+            "passed": true,
+            "max_absolute_error": 1.2434497875801753e-14,
+            "viboceros_ns_per_iteration": 198208.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a1-b08",
+          "comparison": {
+            "id": "two-span-curvature-a1-b08",
+            "passed": true,
+            "max_absolute_error": 7.993605777301127e-15,
+            "viboceros_ns_per_iteration": 139281.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-curvature-a1-b2",
+          "comparison": {
+            "id": "two-span-curvature-a1-b2",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 115168.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "uneven-rational-b1.2",
+          "comparison": {
+            "id": "uneven-rational-b1.2",
+            "passed": true,
+            "max_absolute_error": 3.552713678800501e-15,
+            "viboceros_ns_per_iteration": 107376.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 15,
+      "matched": 15,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "48980ec279df7298575a0a1b932e4739d967286c8af108c782ae9f5aeb58ae60"
+    },
+    "curve_match_multispan_position": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "two-span-position-none",
+          "comparison": {
+            "id": "two-span-position-none",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 430753.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-position",
+          "comparison": {
+            "id": "two-span-position-position",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 418816.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-tangency",
+          "comparison": {
+            "id": "two-span-position-tangency",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 420096.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-curvature",
+          "comparison": {
+            "id": "two-span-position-curvature",
+            "passed": true,
+            "max_absolute_error": 1.0658141036401503e-14,
+            "viboceros_ns_per_iteration": 413089.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-reverse-10",
+          "comparison": {
+            "id": "two-span-position-reverse-10",
+            "passed": true,
+            "max_absolute_error": 5.710987238671805e-12,
+            "viboceros_ns_per_iteration": 412513.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-reverse-01",
+          "comparison": {
+            "id": "two-span-position-reverse-01",
+            "passed": true,
+            "max_absolute_error": 1.1102230246251565e-16,
+            "viboceros_ns_per_iteration": 46880.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-position-reverse-11",
+          "comparison": {
+            "id": "two-span-position-reverse-11",
+            "passed": true,
+            "max_absolute_error": 1.1102230246251565e-16,
+            "viboceros_ns_per_iteration": 50176.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 7,
+      "matched": 7,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "b8a9c5ab1dd6c019d2e80f48bb17ff8144ecd46dd12c51e1b8b47ad3d1e490cf"
+    },
+    "curve_match_multispan_preserve_far_curvature": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "six-control-start",
+          "comparison": {
+            "id": "six-control-start",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 124609.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "six-control-end",
+          "comparison": {
+            "id": "six-control-end",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-15,
+            "viboceros_ns_per_iteration": 116192.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "seven-control-start",
+          "comparison": {
+            "id": "seven-control-start",
+            "passed": true,
+            "max_absolute_error": 5.329070518200751e-15,
+            "viboceros_ns_per_iteration": 119248.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "six-control-rational-start",
+          "comparison": {
+            "id": "six-control-rational-start",
+            "passed": true,
+            "max_absolute_error": 4.440892098500626e-15,
+            "viboceros_ns_per_iteration": 122000.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "six-control-average-six",
+          "comparison": {
+            "id": "six-control-average-six",
+            "passed": true,
+            "max_absolute_error": 1.3322676295501878e-15,
+            "viboceros_ns_per_iteration": 133392.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 5,
+      "matched": 5,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "9c7ec8a493a6bbfee049565a308a6af39e3effd43985fc266ed6fa2026ea684a"
+    },
+    "curve_match_multispan_tangency": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "two-span-tangency-none",
+          "comparison": {
+            "id": "two-span-tangency-none",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1520.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-position",
+          "comparison": {
+            "id": "two-span-tangency-position",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1024.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-tangency",
+          "comparison": {
+            "id": "two-span-tangency-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1040.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-curvature",
+          "comparison": {
+            "id": "two-span-tangency-curvature",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1024.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-reverse-10",
+          "comparison": {
+            "id": "two-span-tangency-reverse-10",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1136.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-reverse-01",
+          "comparison": {
+            "id": "two-span-tangency-reverse-01",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1216.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-tangency-reverse-11",
+          "comparison": {
+            "id": "two-span-tangency-reverse-11",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1184.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-quadratic-tangency-none",
+          "comparison": {
+            "id": "two-span-quadratic-tangency-none",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 944.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-quadratic-tangency-position",
+          "comparison": {
+            "id": "two-span-quadratic-tangency-position",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 864.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "two-span-quadratic-tangency-tangency",
+          "comparison": {
+            "id": "two-span-quadratic-tangency-tangency",
+            "passed": true,
+            "max_absolute_error": 8.881784197001252e-16,
+            "viboceros_ns_per_iteration": 1856.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 10,
+      "matched": 10,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "ffb2cb06e0f1f7345dc95e9e372185b8538f263c9d2759b47ad9abc75dfb2e4f"
+    },
+    "curve_match_rhino_only": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-06,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "two-span-curvature",
+          "comparison": {
+            "id": "two-span-curvature",
+            "passed": true,
+            "max_absolute_error": 2.6645352591003757e-15,
+            "viboceros_ns_per_iteration": 78945.0,
+            "rhino_ns_per_iteration": 0.0,
+            "rhino_to_viboceros_ratio": 0.0,
+            "differences": []
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 1,
+      "matched": 1,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Comparison timings are harness measurements, not kernel speedups; failed operations have no timing or numeric comparison.",
+      "observation_sha256": "eadd019eb9130ee8ed96305c9443ab23349dd1dc5d08426803086ecb3dcd39c4"
+    }
+  }
+}

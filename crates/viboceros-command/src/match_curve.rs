@@ -1,9 +1,6 @@
 //! Match the selected end of the first curve to the second curve.
 use super::*;
-use viboceros_geometry::{
-    CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef, try_average_match_curve_ends,
-    try_match_curve_end,
-};
+use viboceros_geometry::{CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef};
 
 const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No]";
 
@@ -67,11 +64,9 @@ impl Command for MatchCurveCommand {
             document.tolerance(),
         )?;
         if options.average {
-            let (first, second) = try_average_match_curve_ends(
-                &source,
-                source_end,
-                &reference,
-                reference_end,
+            let (first, second) = average_backend(
+                (&source, source_end),
+                (&reference, reference_end),
                 options.continuity,
                 options.preserve,
                 document.tolerance(),
@@ -82,11 +77,9 @@ impl Command for MatchCurveCommand {
             ])?;
             Ok("Averaged and matched curve ends".to_owned())
         } else {
-            let matched = try_match_curve_end(
-                &source,
-                source_end,
-                &reference,
-                reference_end,
+            let matched = match_backend(
+                (&source, source_end),
+                (&reference, reference_end),
                 options.continuity,
                 options.preserve,
                 document.tolerance(),
@@ -94,6 +87,52 @@ impl Command for MatchCurveCommand {
             document.replace_object_geometries([(*source_id, Geometry::NurbsCurve(matched))])?;
             Ok("Matched curve end".to_owned())
         }
+    }
+}
+
+fn match_backend(
+    source: (&Curve3, bool),
+    reference: (&Curve3, bool),
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::match_curve_end(source, reference, continuity, preserve, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_match_curve_end(
+            source.0,
+            source.1,
+            reference.0,
+            reference.1,
+            continuity,
+            preserve,
+            tolerance,
+        )?)
+    }
+}
+
+fn average_backend(
+    first: (&Curve3, bool),
+    second: (&Curve3, bool),
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<(NurbsCurve, NurbsCurve), CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::average_match_curve_ends(first, second, continuity, preserve, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_average_match_curve_ends(
+            first.0, first.1, second.0, second.1, continuity, preserve, tolerance,
+        )?)
     }
 }
 

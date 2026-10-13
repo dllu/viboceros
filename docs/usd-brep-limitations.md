@@ -486,6 +486,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Curve Match retains measured continuity policy around native preparation.**
+  Trim-to-target, exact elevation, end-control refinement and six-control affine
+  Greville interpolation now reuse native adapters. Shared G0/G1/G2 and rational
+  curvature rules, far-end preservation and continuity audits remain intact.
+  All 160 pre-change records match; 159 match retained Rhino captures completely.
+  The existing average-position boundary tail discrepancy remains in the raw
+  comparison. Native degree/chart limits and the 1,000-control affine budget
+  apply, with broader arbitrary matching and fresh captures unqualified. See
+  [qualification](smlib-curve-match.md).
 - **TweenCurves retains direct blending/refit policy around native sampling.**
   Nonlinear sampled sources now use the shared native open cubic adapter,
   including 10,000 stations and 10,002 output controls at 9,999 divisions.

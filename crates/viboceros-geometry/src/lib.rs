@@ -160,11 +160,16 @@ pub use curve_fit::{
 };
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
-pub use curve_match::{CurveMatchPreserveEnd, try_average_match_curve_ends, try_match_curve_end};
+pub use curve_match::{
+    CurveMatchOperations, CurveMatchPreserveEnd, try_average_match_curve_ends,
+    try_average_match_curve_ends_with_operations, try_match_curve_end,
+    try_match_curve_end_with_operations,
+};
 pub use curve_offset::CurveOffsetCornerStyle;
 pub use curve_rebuild::{
     CurveRebuildInterpolation, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT,
-    try_rebuild_curve, try_rebuild_curve_with_interpolation,
+    try_interpolate_affine_greville_with_solver, try_rebuild_curve,
+    try_rebuild_curve_with_interpolation,
 };
 pub use curve_segment::CurveSegment3;
 pub use curve_through::{

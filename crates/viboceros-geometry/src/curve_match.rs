@@ -5,6 +5,21 @@ use crate::{
     Tolerance, UnitVector3, Vector3, WeightedPoint3,
 };
 
+type MatchTrim<'a, E> =
+    dyn FnMut(&NurbsCurve, std::ops::RangeInclusive<Real>) -> Result<NurbsCurve, E> + 'a;
+type MatchElevate<'a, E> = dyn FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E> + 'a;
+type MatchRefine<'a, E> = dyn FnMut(&NurbsCurve, Real, usize) -> Result<NurbsCurve, E> + 'a;
+type MatchGreville<'a, E> = dyn FnMut(&NurbsCurve, usize) -> Result<NurbsCurve, E> + 'a;
+
+/// Structural producers for curve Match. Endpoint controls, curvature rules,
+/// far-end preservation and independent continuity checks remain shared.
+pub struct CurveMatchOperations<'a, E> {
+    pub trim: &'a mut MatchTrim<'a, E>,
+    pub elevate: &'a mut MatchElevate<'a, E>,
+    pub refine: &'a mut MatchRefine<'a, E>,
+    pub affine_greville: &'a mut MatchGreville<'a, E>,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CurveMatchPreserveEnd {
     None,
@@ -40,10 +55,33 @@ pub fn try_match_curve_end(
     preserve: CurveMatchPreserveEnd,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
+    with_portable_match_operations(|operations| {
+        try_match_curve_end_with_operations(
+            (source, source_at_end),
+            (reference, reference_at_end),
+            continuity,
+            preserve,
+            tolerance,
+            operations,
+        )
+    })
+}
+
+pub fn try_match_curve_end_with_operations<E: From<GeometryError>>(
+    source: (&Curve3, bool),
+    reference: (&Curve3, bool),
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
+    let (source, source_at_end) = source;
+    let (reference, reference_at_end) = reference;
     if source.as_ref().is_closed()? || reference.as_ref().is_closed()? {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match requires open curves",
-        });
+        }
+        .into());
     }
     let reference_curve = reference.as_ref();
     let reference_parameter = if reference_at_end {
@@ -66,7 +104,13 @@ pub fn try_match_curve_end(
     // natural directions at the join; unlike ends point the same way.
     let original = source.as_ref().to_nurbs()?;
     let original = if continuity == CurveBlendContinuity::Position && original.spans().count() > 1 {
-        trim_toward_target(source.as_ref(), source_at_end, sample.point(), tolerance)?
+        trim_toward_target(
+            source.as_ref(),
+            source_at_end,
+            sample.point(),
+            tolerance,
+            operations,
+        )?
     } else {
         original
     };
@@ -89,6 +133,7 @@ pub fn try_match_curve_end(
         } else {
             CurvatureControlRule::OneSidedMultiSpan
         },
+        operations,
     )?;
     require_continuity(
         &matched,
@@ -116,10 +161,33 @@ pub fn try_average_match_curve_ends(
     preserve: CurveMatchPreserveEnd,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve, NurbsCurve), GeometryError> {
+    with_portable_match_operations(|operations| {
+        try_average_match_curve_ends_with_operations(
+            (first, first_at_end),
+            (second, second_at_end),
+            continuity,
+            preserve,
+            tolerance,
+            operations,
+        )
+    })
+}
+
+pub fn try_average_match_curve_ends_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, bool),
+    second: (&Curve3, bool),
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<(NurbsCurve, NurbsCurve), E> {
+    let (first, first_at_end) = first;
+    let (second, second_at_end) = second;
     if first.as_ref().is_closed()? || second.as_ref().is_closed()? {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match requires open curves",
-        });
+        }
+        .into());
     }
     let first_curve = first.as_ref();
     let second_curve = second.as_ref();
@@ -155,8 +223,10 @@ pub fn try_average_match_curve_ends(
     };
     let midpoint = first_point.midpoint(second_point)?;
     if continuity == CurveBlendContinuity::Position {
-        let first_nurbs = trim_toward_target(first_curve, first_at_end, midpoint, tolerance)?;
-        let second_nurbs = trim_toward_target(second_curve, second_at_end, midpoint, tolerance)?;
+        let first_nurbs =
+            trim_toward_target(first_curve, first_at_end, midpoint, tolerance, operations)?;
+        let second_nurbs =
+            trim_toward_target(second_curve, second_at_end, midpoint, tolerance, operations)?;
         let first_output = match_end_to_target(
             &first_nurbs,
             first_at_end,
@@ -169,6 +239,7 @@ pub fn try_average_match_curve_ends(
             preserve,
             first_nurbs.spans().count() == 1,
             CurvatureControlRule::SingleSpan,
+            operations,
         )?;
         let second_output = match_end_to_target(
             &second_nurbs,
@@ -182,6 +253,7 @@ pub fn try_average_match_curve_ends(
             preserve,
             second_nurbs.spans().count() == 1,
             CurvatureControlRule::SingleSpan,
+            operations,
         )?;
         require_continuity(
             &first_output,
@@ -236,6 +308,7 @@ pub fn try_average_match_curve_ends(
         } else {
             CurvatureControlRule::AverageMultiSpan
         },
+        operations,
     )?;
     let second_tangent = if first_at_end == second_at_end {
         tangent.opposite()
@@ -258,6 +331,7 @@ pub fn try_average_match_curve_ends(
         } else {
             CurvatureControlRule::AverageMultiSpan
         },
+        operations,
     )?;
     require_continuity(
         &first_output,
@@ -270,12 +344,13 @@ pub fn try_average_match_curve_ends(
     Ok((first_output, second_output))
 }
 
-fn trim_toward_target(
+fn trim_toward_target<E: From<GeometryError>>(
     curve: CurveRef<'_>,
     selected_at_end: bool,
     midpoint: Point3,
     tolerance: Tolerance,
-) -> Result<NurbsCurve, GeometryError> {
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
     let original = curve.to_nurbs()?;
     let domain = original.domain();
     let closest = curve.closest_parameter(midpoint, tolerance)?;
@@ -287,10 +362,19 @@ fn trim_toward_target(
     } else {
         closest..=*domain.end()
     };
-    original.try_trimmed(interval)?.try_reparameterized(domain)
+    let range = interval.clone();
+    let trimmed = (operations.trim)(&original, interval)?;
+    if trimmed.degree() != original.degree() || trimmed.domain() != range {
+        return Err(GeometryError::InvalidControlNet {
+            context: "Match trimming changed degree or interval",
+        }
+        .into());
+    }
+    Ok(trimmed.try_reparameterized(domain)?)
 }
 
-fn match_end_to_target(
+#[allow(clippy::too_many_arguments)]
+fn match_end_to_target<E: From<GeometryError>>(
     original: &NurbsCurve,
     at_end: bool,
     target: MatchTarget,
@@ -298,11 +382,13 @@ fn match_end_to_target(
     preserve: CurveMatchPreserveEnd,
     require_single_span: bool,
     curvature_rule: CurvatureControlRule,
-) -> Result<NurbsCurve, GeometryError> {
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
     if require_single_span && original.spans().count() != 1 {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match currently requires a single-span source curve",
-        });
+        }
+        .into());
     }
     let matched_controls = continuity_control_count(continuity);
     let preserved_controls = preserve_control_count(preserve);
@@ -318,7 +404,7 @@ fn match_end_to_target(
         && continuity == CurveBlendContinuity::Curvature
         && preserve == CurveMatchPreserveEnd::Curvature
     {
-        let interpolant = crate::curve_rebuild::interpolate_affine_greville(original, 6)?;
+        let interpolant = affine_prepared(original, operations)?;
         if at_end {
             interpolant.try_reparameterized(-4.0..=0.0)?
         } else {
@@ -329,7 +415,7 @@ fn match_end_to_target(
         && continuity == CurveBlendContinuity::Curvature
         && preserve == CurveMatchPreserveEnd::Curvature
     {
-        match prepare_five_control_g2(original, at_end)? {
+        match prepare_five_control_g2(original, at_end, operations)? {
             Some((prepared, coefficient)) => {
                 if let CurvatureControlRule::OneSidedMultiSpan = curvature_rule {
                     effective_curvature_rule =
@@ -341,10 +427,16 @@ fn match_end_to_target(
                 original,
                 at_end,
                 matched_controls + preserved_controls,
+                operations,
             )?,
         }
     } else {
-        refine_for_disjoint_end_controls(original, at_end, matched_controls + preserved_controls)?
+        refine_for_disjoint_end_controls(
+            original,
+            at_end,
+            matched_controls + preserved_controls,
+            operations,
+        )?
     };
     let desired_degree = if require_single_span {
         original
@@ -356,9 +448,16 @@ fn match_end_to_target(
     if continuity == CurveBlendContinuity::Curvature && desired_degree < 2 {
         return Err(GeometryError::InvalidPolyCurve {
             context: "Match curvature requires at least a quadratic source span",
-        });
+        }
+        .into());
     }
-    let elevated = prepared.try_change_degree(desired_degree, false)?;
+    let elevated = (operations.elevate)(&prepared, desired_degree)?;
+    if elevated.degree() != desired_degree || elevated.domain() != prepared.domain() {
+        return Err(GeometryError::InvalidControlNet {
+            context: "Match elevation changed target degree or domain",
+        }
+        .into());
+    }
     let mut controls = elevated.control_points().to_vec();
     let last = controls.len() - 1;
     let endpoint_index = if at_end { last } else { 0 };
@@ -372,7 +471,8 @@ fn match_end_to_target(
         if handle == 0.0 {
             return Err(GeometryError::Degenerate {
                 context: "Match source endpoint handle",
-            });
+            }
+            .into());
         }
         let a = controls[adjacent_index].weight() / controls[endpoint_index].weight();
         let b = if continuity == CurveBlendContinuity::Curvature {
@@ -383,7 +483,8 @@ fn match_end_to_target(
         if a == 0.0 || b == 0.0 {
             return Err(GeometryError::Degenerate {
                 context: "Match endpoint weights",
-            });
+            }
+            .into());
         }
         let direction_sign = if at_end { -1.0 } else { 1.0 };
         let offset = target
@@ -453,11 +554,12 @@ fn match_end_to_target(
 /// untouched end equals the corresponding interpolant handle length. The far
 /// second-control tangential offset comes from the source's homogeneous XYZ
 /// control-distance ratio and the curvature-derived transverse offset.
-fn prepare_five_control_g2(
+fn prepare_five_control_g2<E: From<GeometryError>>(
     original: &NurbsCurve,
     at_end: bool,
-) -> Result<Option<(NurbsCurve, Real)>, GeometryError> {
-    let interpolant = crate::curve_rebuild::interpolate_affine_greville(original, 6)?;
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<Option<(NurbsCurve, Real)>, E> {
+    let interpolant = affine_prepared(original, operations)?;
     let selected_index = if at_end { 4 } else { 1 };
     let selected_endpoint = if at_end { 5 } else { 0 };
     let selected_handle = interpolant.control_points()[selected_endpoint]
@@ -599,11 +701,12 @@ fn homogeneous_spatial_distance(
     .length()
 }
 
-fn refine_for_disjoint_end_controls(
+fn refine_for_disjoint_end_controls<E: From<GeometryError>>(
     original: &NurbsCurve,
     at_end: bool,
     required_controls: usize,
-) -> Result<NurbsCurve, GeometryError> {
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
     let mut refined = original.clone();
     while refined.control_points().len() < required_controls {
         let knots = refined.knots();
@@ -630,11 +733,42 @@ fn refine_for_disjoint_end_controls(
         if parameter <= interval.0 || parameter >= interval.1 {
             return Err(GeometryError::Degenerate {
                 context: "Match source end span is too narrow to refine",
-            });
+            }
+            .into());
         }
-        refined = refined.try_insert_knot(parameter, 1)?;
+        let count = refined.control_points().len();
+        let domain = refined.domain();
+        let degree = refined.degree();
+        refined = (operations.refine)(&refined, parameter, 1)?;
+        if refined.control_points().len() <= count
+            || refined.degree() != degree
+            || refined.domain() != domain
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "Match refinement changed basis policy or made no progress",
+            }
+            .into());
+        }
     }
     Ok(refined)
+}
+
+fn affine_prepared<E: From<GeometryError>>(
+    original: &NurbsCurve,
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
+    let result = (operations.affine_greville)(original, 6)?;
+    if result.degree() != original.degree()
+        || result.control_points().len() != 6
+        || result.domain() != (0. ..=(6 - original.degree()) as Real)
+        || result.control_points().iter().any(|c| c.weight() != 1.)
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "Match affine preparation changed the polynomial target layout",
+        }
+        .into());
+    }
+    Ok(result)
 }
 
 /// Ratio of the second and first endpoint derivative knot denominators.
@@ -767,9 +901,98 @@ const fn preserve_control_count(preserve: CurveMatchPreserveEnd) -> usize {
     }
 }
 
+fn with_portable_match_operations<T>(
+    run: impl FnOnce(&mut CurveMatchOperations<'_, GeometryError>) -> Result<T, GeometryError>,
+) -> Result<T, GeometryError> {
+    let mut trim = |curve: &NurbsCurve, range| curve.try_trimmed(range);
+    let mut elevate = |curve: &NurbsCurve, degree| curve.try_change_degree(degree, false);
+    let mut refine =
+        |curve: &NurbsCurve, knot, multiplicity| curve.try_insert_knot(knot, multiplicity);
+    let mut affine = crate::curve_rebuild::interpolate_affine_greville;
+    run(&mut CurveMatchOperations {
+        trim: &mut trim,
+        elevate: &mut elevate,
+        refine: &mut refine,
+        affine_greville: &mut affine,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn external_match_preparation_preserves_policy_and_rejects_bad_degree_layouts() {
+        let source = Curve3::Line(
+            crate::LineSegment::try_new(
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(3., 0., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let reference = Curve3::Line(
+            crate::LineSegment::try_new(
+                Point3::try_new(4., 0., 0.).unwrap(),
+                Point3::try_new(5., 1., 0.).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        );
+        let before = (source.clone(), reference.clone());
+        let mut calls = 0;
+        let mut trim = |curve: &NurbsCurve, range| curve.try_trimmed(range);
+        let mut elevate = |curve: &NurbsCurve, degree| {
+            calls += 1;
+            assert_eq!(degree, 3);
+            curve.try_change_degree(degree, false)
+        };
+        let mut refine = |curve: &NurbsCurve, knot, m| curve.try_insert_knot(knot, m);
+        let mut affine = crate::curve_rebuild::interpolate_affine_greville;
+        let actual = try_match_curve_end_with_operations(
+            (&source, true),
+            (&reference, false),
+            CurveBlendContinuity::Tangency,
+            CurveMatchPreserveEnd::Tangency,
+            Tolerance::DEFAULT,
+            &mut CurveMatchOperations {
+                trim: &mut trim,
+                elevate: &mut elevate,
+                refine: &mut refine,
+                affine_greville: &mut affine,
+            },
+        )
+        .unwrap();
+        assert_eq!(calls, 1);
+        assert_eq!(
+            actual,
+            try_match_curve_end(
+                &source,
+                true,
+                &reference,
+                false,
+                CurveBlendContinuity::Tangency,
+                CurveMatchPreserveEnd::Tangency,
+                Tolerance::DEFAULT
+            )
+            .unwrap()
+        );
+        let mut bad_elevate = |curve: &NurbsCurve, _| Ok::<_, GeometryError>(curve.clone());
+        let bad = try_match_curve_end_with_operations(
+            (&source, true),
+            (&reference, false),
+            CurveBlendContinuity::Tangency,
+            CurveMatchPreserveEnd::Tangency,
+            Tolerance::DEFAULT,
+            &mut CurveMatchOperations {
+                trim: &mut trim,
+                elevate: &mut bad_elevate,
+                refine: &mut refine,
+                affine_greville: &mut affine,
+            },
+        );
+        assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+        assert_eq!((source, reference), before);
+    }
     use crate::{CircularArc3, LineSegment, Point3};
 
     fn point(x: Real, y: Real) -> Point3 {

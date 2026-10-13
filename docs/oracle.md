@@ -38,6 +38,10 @@ boundary; see [native TweenCurves sampling](smlib-curve-tween.md).
 `piecewise_degree_elevation.json` probes exact native curve and tensor elevation
 across full-order breaks. Its reference uses independent rational Bernstein
 coefficients; see [piecewise qualification](smlib-piecewise-elevation.md).
+`curve_match_geometry` selects native structural preparation with `native-smlib`.
+The retained 160-case corpus compares complete outputs with the pre-change
+producer and Rhino captures, preserving the known boundary-tail discrepancy;
+see [native Match qualification](smlib-curve-match.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

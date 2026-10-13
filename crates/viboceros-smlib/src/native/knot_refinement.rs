@@ -153,23 +153,83 @@ pub fn rebuild_curve(
         degree,
         preserve_end_tangents,
         tolerance,
-        &mut |input| {
-            let targets = input
-                .targets
-                .iter()
-                .flat_map(|p| [p[0], p[1], p[2], 1.])
-                .collect::<Vec<_>>();
-            let output = solve_uniform_system(&viboceros_geometry::UniformInterpolationSystem {
-                knots: input.knots,
-                parameters: input.parameters,
-                targets: &targets,
-                columns: 4,
-                degree: input.degree,
-                periodic: input.periodic,
-            })?;
-            Ok(output.chunks_exact(4).map(|p| [p[0], p[1], p[2]]).collect())
-        },
+        &mut solve_rebuild_interpolation,
     )
+}
+
+fn solve_rebuild_interpolation(
+    input: &viboceros_geometry::CurveRebuildInterpolation<'_>,
+) -> Result<Vec<[f64; 3]>, Error> {
+    let targets = input
+        .targets
+        .iter()
+        .flat_map(|p| [p[0], p[1], p[2], 1.])
+        .collect::<Vec<_>>();
+    let output = solve_uniform_system(&viboceros_geometry::UniformInterpolationSystem {
+        knots: input.knots,
+        parameters: input.parameters,
+        targets: &targets,
+        columns: 4,
+        degree: input.degree,
+        periodic: input.periodic,
+    })?;
+    Ok(output.chunks_exact(4).map(|p| [p[0], p[1], p[2]]).collect())
+}
+
+pub fn interpolate_affine_greville(
+    source: &NurbsCurve,
+    point_count: usize,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::try_interpolate_affine_greville_with_solver(
+        source,
+        point_count,
+        &mut solve_rebuild_interpolation,
+    )
+}
+
+/// Match structural preparation uses checked native trimming, elevation,
+/// refinement and affine Greville solving around the shared continuity policy.
+pub fn match_curve_end(
+    source: (&viboceros_geometry::Curve3, bool),
+    reference: (&viboceros_geometry::Curve3, bool),
+    continuity: viboceros_geometry::CurveBlendContinuity,
+    preserve: viboceros_geometry::CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    with_match_operations(|operations| {
+        viboceros_geometry::try_match_curve_end_with_operations(
+            source, reference, continuity, preserve, tolerance, operations,
+        )
+    })
+}
+
+pub fn average_match_curve_ends(
+    first: (&viboceros_geometry::Curve3, bool),
+    second: (&viboceros_geometry::Curve3, bool),
+    continuity: viboceros_geometry::CurveBlendContinuity,
+    preserve: viboceros_geometry::CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<(NurbsCurve, NurbsCurve), Error> {
+    with_match_operations(|operations| {
+        viboceros_geometry::try_average_match_curve_ends_with_operations(
+            first, second, continuity, preserve, tolerance, operations,
+        )
+    })
+}
+
+fn with_match_operations<T>(
+    run: impl FnOnce(&mut viboceros_geometry::CurveMatchOperations<'_, Error>) -> Result<T, Error>,
+) -> Result<T, Error> {
+    let mut trim = trim_curve;
+    let mut elevate = |curve: &NurbsCurve, degree| change_curve_degree(curve, degree, false);
+    let mut refine = insert_curve_knot;
+    let mut affine = interpolate_affine_greville;
+    run(&mut viboceros_geometry::CurveMatchOperations {
+        trim: &mut trim,
+        elevate: &mut elevate,
+        refine: &mut refine,
+        affine_greville: &mut affine,
+    })
 }
 
 /// Rebuild a uniform tensor through native station/pole isocurves and batched
