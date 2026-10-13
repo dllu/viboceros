@@ -91,6 +91,15 @@ id_type!(LayerId);
 id_type!(GroupId);
 id_type!(BlockDefinitionId);
 
+impl ObjectId {
+    pub const fn from_uuid(id: Uuid) -> Self {
+        Self(id)
+    }
+    pub const fn uuid(self) -> Uuid {
+        self.0
+    }
+}
+
 impl std::str::FromStr for ObjectId {
     type Err = uuid::Error;
 

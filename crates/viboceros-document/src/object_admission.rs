@@ -43,6 +43,18 @@ impl Document {
         attributes: ObjectAttributes,
         geometry_user_text: BTreeMap<String, String>,
     ) -> Result<ObjectId, DocumentError> {
+        self.add_geometry_with_metadata_and_id(geometry, attributes, geometry_user_text, None)
+    }
+
+    /// Import admission retaining a non-nil, unused source identity. A duplicate
+    /// import or conflicting ID receives a fresh identity in the same history edit.
+    pub fn add_geometry_with_metadata_and_id(
+        &mut self,
+        geometry: Geometry,
+        attributes: ObjectAttributes,
+        geometry_user_text: BTreeMap<String, String>,
+        source_id: Option<ObjectId>,
+    ) -> Result<ObjectId, DocumentError> {
         let mut folded_keys = BTreeSet::new();
         for (key, value) in &geometry_user_text {
             validate_user_text(key, Some(value))?;
@@ -60,7 +72,9 @@ impl Document {
             return Err(DocumentError::LayerLocked(layer.id));
         }
         let geometry = self.refresh_instance_geometry(normalize_geometry(geometry)?)?;
-        let id = ObjectId::new();
+        let id = source_id
+            .filter(|id| !id.0.is_nil() && self.object(*id).is_none())
+            .unwrap_or_else(ObjectId::new);
         let index = self.objects.len();
         self.objects.push(Object {
             id,

@@ -85,9 +85,13 @@ fn round_trip(source: ThreeDmGeometry, count: usize) -> ThreeDmModel {
     assert_eq!(decoded.objects.len(), count);
     assert_eq!(decoded.layers, original.layers);
     assert_eq!(decoded.groups, original.groups);
+    assert_eq!(decoded.objects[0].id, original.objects[0].id);
+    let ids = decoded.objects.iter().map(|object| object.id).collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(ids.len(), count);
     for object in &decoded.objects {
         let mut attributes = object.clone();
         attributes.geometry = original.objects[0].geometry.clone();
+        attributes.id = original.objects[0].id;
         assert_eq!(attributes, original.objects[0]);
         let actual = view(&object.geometry);
         let expected = view(&original.objects[0].geometry);

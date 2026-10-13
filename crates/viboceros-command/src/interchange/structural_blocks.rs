@@ -42,13 +42,15 @@ pub(super) fn import_definitions(
                     )?),
                     geometry => BlockContent::Geometry(document_geometry_from_3dm(geometry).into()),
                 };
-                let mut member = BlockMember::new(content, attributes).try_with_group_ids(
-                    object
-                        .group_indices
-                        .iter()
-                        .map(|index| groups[*index])
-                        .collect(),
-                )?;
+                let mut member = BlockMember::new(content, attributes)
+                    .with_id(viboceros_document::ObjectId::from_uuid(object.id))
+                    .try_with_group_ids(
+                        object
+                            .group_indices
+                            .iter()
+                            .map(|index| groups[*index])
+                            .collect(),
+                    )?;
                 for (key, value) in object.geometry_user_text {
                     member = member.try_with_geometry_user_text(key, value)?;
                 }
@@ -135,6 +137,7 @@ pub(super) fn export_definitions(
                     let attributes = member.attributes();
                     let color = attributes.object_color();
                     Ok(ThreeDmObject {
+                        id: member.id().uuid(),
                         geometry,
                         layer_index: layers[&attributes.layer_id()],
                         name: attributes.name().map(str::to_owned),

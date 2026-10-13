@@ -15,6 +15,11 @@ display modes, and grid settings. Open restores the views, layout, active
 viewport, maximized state, and active layer. `ReadViewportsFromFile path.3dm`
 copies views and layout into the current document without importing objects.
 
+3DM object UUIDs are retained through ordinary Open/Save/SaveAs, including
+block definition members. Import preserves unused source IDs; repeated imports,
+nil IDs, conflicts, and additional objects created by curve decomposition receive
+fresh IDs. Duplicating a document object also creates a new identity.
+
 ## Paths and export behavior
 
 File commands preserve internal filename whitespace. Use double quotes around

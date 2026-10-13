@@ -53,6 +53,7 @@ struct BridgeCurrentView {
 
 struct BridgeObject {
   std::vector<std::array<double,16>> placements;
+  std::string id = "00000000-0000-0000-0000-000000000000";
   int32_t object_type = 0;
   int32_t source_layer_index = 0;
   std::string name;
@@ -873,6 +874,7 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
 ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
                                        int layer_index) {
   auto* attributes = new ON_3dmObjectAttributes();
+  attributes->m_uuid = source.id == nullptr ? ON_nil_uuid : ON_UuidFromString(source.id);
   attributes->m_layer_index = layer_index;
   if (source.name != nullptr && source.name[0] != '\0') {
     const ON_wString name(source.name);
@@ -1812,6 +1814,9 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
 bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
       read_user_text(*geometry, object.geometry_user_text);
       if (attributes != nullptr) {
+        char id[37] = {};
+        ON_UuidToString(attributes->m_uuid, id);
+        object.id = id;
         object.source_layer_index = attributes->m_layer_index;
         object.name = utf8(attributes->Name());
         object.visible = static_cast<uint8_t>(attributes->IsVisible());
@@ -2216,7 +2221,8 @@ extern "C" int32_t vibo_3dm_object(
     return 0;
   }
   const BridgeObject& object = model->objects[index];
-  *info = {object.object_type,
+  *info = {object.id.c_str(),
+           object.object_type,
            object.source_layer_index,
            object.name.c_str(),
            object.visible,

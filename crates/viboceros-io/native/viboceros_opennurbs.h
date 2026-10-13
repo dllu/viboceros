@@ -25,6 +25,7 @@ enum ViboObjectType {
 typedef struct ViboThreeDmModel ViboThreeDmModel;
 
 typedef struct ViboObjectInfo {
+  const char* id;
   int32_t object_type;
   int32_t source_layer_index;
   const char* name;
@@ -115,6 +116,7 @@ typedef struct ViboUserText {
 } ViboUserText;
 
 typedef struct ViboWriteObject {
+  const char* id;
   int32_t object_type;
   size_t layer_index;
   const char* name;
