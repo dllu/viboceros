@@ -5,6 +5,8 @@ use crate::{
 };
 use viboceros_geometry::{CurveRef, LineSegment, ParameterSide, Point3, Tolerance, WeightedPoint3};
 
+mod pushup;
+
 fn p(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
 }
@@ -85,9 +87,17 @@ fn round_trip(source: ThreeDmGeometry, count: usize) -> ThreeDmModel {
     assert_eq!(decoded.objects.len(), count);
     assert_eq!(decoded.layers, original.layers);
     assert_eq!(decoded.groups, original.groups);
+    assert_eq!(decoded.objects[0].id, original.objects[0].id);
+    let ids = decoded
+        .objects
+        .iter()
+        .map(|object| object.id)
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(ids.len(), count);
     for object in &decoded.objects {
         let mut attributes = object.clone();
         attributes.geometry = original.objects[0].geometry.clone();
+        attributes.id = original.objects[0].id;
         assert_eq!(attributes, original.objects[0]);
         let actual = view(&object.geometry);
         let expected = view(&original.objects[0].geometry);
@@ -202,7 +212,10 @@ fn a_closed_piece_is_not_embedded_in_an_invalid_multi_segment_polycurve() {
 #[test]
 fn valid_ordinary_curves_are_borrowed_and_keep_their_representation() {
     let source = ThreeDmGeometry::NurbsCurve(blocks(0.0).try_split(1.0).unwrap().0);
-    assert!(matches!(&prepare(&source).unwrap()[0], Cow::Borrowed(_)));
+    assert!(matches!(
+        &prepare(&source, Tolerance::DEFAULT).unwrap()[0],
+        Cow::Borrowed(_)
+    ));
     let original = model(source);
     let temporary = tempfile::tempdir().unwrap();
     let report = write_3dm_file(temporary.path().join("ordinary.3dm"), &original).unwrap();

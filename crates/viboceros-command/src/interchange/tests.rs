@@ -1009,3 +1009,79 @@ fn no_visible_mesh_export_keeps_existing_destinations_and_document_unchanged() {
         assert_eq!(format!("{document:?}"), before);
     }
 }
+
+#[test]
+fn open_save_as_preserves_object_ids_and_duplicate_import_regenerates_conflicts() {
+    let registry = CommandRegistry::with_builtins();
+    let directory = tempfile::tempdir().unwrap();
+    let original = directory.path().join("original.3dm");
+    let saved = directory.path().join("saved.3dm");
+    let mut source = Document::default();
+    let id = source
+        .add_geometry(Geometry::Point(Point3::try_new(1., 2., 3.).unwrap()))
+        .unwrap();
+    source
+        .set_object_names([(id, Some("stable identity".to_owned()))])
+        .unwrap();
+    registry
+        .execute(&mut source, &format!("SaveAs {}", original.display()))
+        .unwrap();
+    let before = viboceros_io::read_3dm_file(&original, Tolerance::DEFAULT).unwrap();
+    assert_eq!(before.objects[0].id, id.uuid());
+    let mut loaded = Document::default();
+    registry
+        .execute(&mut loaded, &format!("Open {}", original.display()))
+        .unwrap();
+    assert_eq!(loaded.objects().next().unwrap().id(), id);
+    registry
+        .execute(&mut loaded, &format!("SaveAs {}", saved.display()))
+        .unwrap();
+    let after = viboceros_io::read_3dm_file(&saved, Tolerance::DEFAULT).unwrap();
+    assert_eq!(before.objects, after.objects);
+    registry
+        .execute(&mut loaded, &format!("Import3dm {}", original.display()))
+        .unwrap();
+    let ids = loaded
+        .objects()
+        .map(|o| o.id())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(ids.len(), 2);
+    assert!(ids.contains(&id));
+    loaded.undo().unwrap();
+    assert_eq!(loaded.objects().next().unwrap().id(), id);
+    loaded.redo().unwrap();
+    assert_eq!(
+        loaded
+            .objects()
+            .map(|o| o.id())
+            .collect::<std::collections::BTreeSet<_>>(),
+        ids
+    );
+}
+
+#[test]
+#[ignore = "set VIBOCEROS_ASSEMBLY_3DM to an external assembly"]
+fn external_assembly_open_save_as_preserves_ids_and_geometry() {
+    let path = std::env::var("VIBOCEROS_ASSEMBLY_3DM").expect("VIBOCEROS_ASSEMBLY_3DM");
+    let source = viboceros_io::read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(source.unsupported_object_count(), 0);
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("roundtrip.3dm");
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, &format!("Open \"{path}\""))
+        .unwrap();
+    registry
+        .execute(&mut document, &format!("SaveAs {}", output.display()))
+        .unwrap();
+    let saved = viboceros_io::read_3dm_file(&output, Tolerance::DEFAULT).unwrap();
+    assert_eq!(saved.unsupported_object_count(), 0);
+    assert_eq!(saved.objects, source.objects);
+    assert_eq!(saved.groups, source.groups);
+    assert_eq!(saved.layers, source.layers);
+    eprintln!(
+        "Preserved IDs, geometry and attributes of {} objects",
+        source.objects.len()
+    );
+}

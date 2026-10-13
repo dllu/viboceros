@@ -5,10 +5,14 @@ use eframe::{egui, egui_wgpu, wgpu};
 
 #[cfg(test)]
 pub(crate) mod readback;
+#[cfg(test)]
+mod tests;
 
 const VIEWPORT_COUNT: usize = 4;
 const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Depth32Float;
 const INITIAL_BUFFER_SIZE: wgpu::BufferAddress = 4;
+// Keep individual allocations bounded even on devices with very large limits.
+const DISPLAY_BUFFER_CHUNK_BYTES: u64 = 64 * 1024 * 1024;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -336,22 +340,11 @@ impl ViewportRenderer {
         );
         viewport
             .triangle_buffer
-            .upload(device, queue, bytemuck::cast_slice(&scene.triangles));
-        viewport
-            .line_buffer
-            .upload(device, queue, bytemuck::cast_slice(&scene.lines));
-        viewport
-            .point_buffer
-            .upload(device, queue, bytemuck::cast_slice(&scene.points));
-        viewport.triangle_count = u32::try_from(scene.triangles.len()).unwrap_or(u32::MAX);
-        viewport.line_count = u32::try_from(scene.lines.len()).unwrap_or(u32::MAX);
-        viewport.point_count = u32::try_from(scene.points.len()).unwrap_or(u32::MAX);
-        viewport.overlay_line_start = u32::try_from(scene.overlay_line_start)
-            .unwrap_or(u32::MAX)
-            .min(viewport.line_count);
-        viewport.overlay_point_start = u32::try_from(scene.overlay_point_start)
-            .unwrap_or(u32::MAX)
-            .min(viewport.point_count);
+            .upload(device, queue, &scene.triangles);
+        viewport.line_buffer.upload(device, queue, &scene.lines);
+        viewport.point_buffer.upload(device, queue, &scene.points);
+        viewport.overlay_line_start = scene.overlay_line_start.min(scene.lines.len());
+        viewport.overlay_point_start = scene.overlay_point_start.min(scene.points.len());
         viewport.transparent = scene.transparent;
     }
 
@@ -360,35 +353,32 @@ impl ViewportRenderer {
             return;
         };
         render_pass.set_bind_group(0, &viewport.uniform_bind_group, &[]);
-        if viewport.triangle_count > 0 {
+        if !viewport.triangle_buffer.chunks.is_empty() {
             render_pass.set_pipeline(if viewport.transparent {
                 &self.transparent_pipeline
             } else {
                 &self.opaque_pipeline
             });
-            render_pass.set_vertex_buffer(0, viewport.triangle_buffer.buffer.slice(..));
-            render_pass.draw(0..viewport.triangle_count, 0..1);
+            viewport
+                .triangle_buffer
+                .draw(render_pass, 0..usize::MAX, false);
         }
-        if viewport.overlay_line_start > 0 {
-            render_pass.set_pipeline(&self.line_pipeline);
-            render_pass.set_vertex_buffer(0, viewport.line_buffer.buffer.slice(..));
-            render_pass.draw(0..6, 0..viewport.overlay_line_start);
-        }
-        if viewport.overlay_point_start > 0 {
-            render_pass.set_pipeline(&self.point_pipeline);
-            render_pass.set_vertex_buffer(0, viewport.point_buffer.buffer.slice(..));
-            render_pass.draw(0..6, 0..viewport.overlay_point_start);
-        }
-        if viewport.overlay_line_start < viewport.line_count {
-            render_pass.set_pipeline(&self.overlay_line_pipeline);
-            render_pass.set_vertex_buffer(0, viewport.line_buffer.buffer.slice(..));
-            render_pass.draw(0..6, viewport.overlay_line_start..viewport.line_count);
-        }
-        if viewport.overlay_point_start < viewport.point_count {
-            render_pass.set_pipeline(&self.overlay_point_pipeline);
-            render_pass.set_vertex_buffer(0, viewport.point_buffer.buffer.slice(..));
-            render_pass.draw(0..6, viewport.overlay_point_start..viewport.point_count);
-        }
+        render_pass.set_pipeline(&self.line_pipeline);
+        viewport
+            .line_buffer
+            .draw(render_pass, 0..viewport.overlay_line_start, true);
+        render_pass.set_pipeline(&self.point_pipeline);
+        viewport
+            .point_buffer
+            .draw(render_pass, 0..viewport.overlay_point_start, true);
+        render_pass.set_pipeline(&self.overlay_line_pipeline);
+        viewport
+            .line_buffer
+            .draw(render_pass, viewport.overlay_line_start..usize::MAX, true);
+        render_pass.set_pipeline(&self.overlay_point_pipeline);
+        viewport
+            .point_buffer
+            .draw(render_pass, viewport.overlay_point_start..usize::MAX, true);
     }
 }
 
@@ -398,14 +388,11 @@ struct PreparedViewport {
     scene: Option<Arc<ViewportScene>>,
     uniform_buffer: wgpu::Buffer,
     uniform_bind_group: wgpu::BindGroup,
-    triangle_buffer: GrowingBuffer,
-    line_buffer: GrowingBuffer,
-    point_buffer: GrowingBuffer,
-    triangle_count: u32,
-    line_count: u32,
-    point_count: u32,
-    overlay_line_start: u32,
-    overlay_point_start: u32,
+    triangle_buffer: ChunkedBuffer,
+    line_buffer: ChunkedBuffer,
+    point_buffer: ChunkedBuffer,
+    overlay_line_start: usize,
+    overlay_point_start: usize,
     transparent: bool,
 }
 
@@ -431,17 +418,99 @@ impl PreparedViewport {
             scene: None,
             uniform_buffer,
             uniform_bind_group,
-            triangle_buffer: GrowingBuffer::new(device, "viboceros triangle vertex buffer"),
-            line_buffer: GrowingBuffer::new(device, "viboceros line instance buffer"),
-            point_buffer: GrowingBuffer::new(device, "viboceros point instance buffer"),
-            triangle_count: 0,
-            line_count: 0,
-            point_count: 0,
+            triangle_buffer: ChunkedBuffer::new("viboceros triangle vertex buffer", 3),
+            line_buffer: ChunkedBuffer::new("viboceros line instance buffer", 1),
+            point_buffer: ChunkedBuffer::new("viboceros point instance buffer", 1),
             overlay_line_start: 0,
             overlay_point_start: 0,
             transparent: false,
         }
     }
+}
+
+/// Chunks preserve complete primitives and their ordering. Overlay boundaries
+/// are applied inside each chunk, so depth-tested and overlay instances never mix.
+struct ChunkedBuffer {
+    chunks: Vec<(GrowingBuffer, usize)>,
+    label: &'static str,
+    primitive_elements: usize,
+}
+
+impl ChunkedBuffer {
+    fn new(label: &'static str, primitive_elements: usize) -> Self {
+        Self {
+            chunks: Vec::new(),
+            label,
+            primitive_elements,
+        }
+    }
+
+    fn upload<T: Pod>(&mut self, device: &wgpu::Device, queue: &wgpu::Queue, values: &[T]) {
+        let per_chunk = chunk_elements(
+            device
+                .limits()
+                .max_buffer_size
+                .min(DISPLAY_BUFFER_CHUNK_BYTES),
+            std::mem::size_of::<T>(),
+            self.primitive_elements,
+        );
+        // wgpu guarantees enough space for these tiny vertex records. This also
+        // avoids making an invalid allocation if a future backend breaks that contract.
+        if per_chunk == 0 {
+            eprintln!(
+                "Cannot display {}: device buffer limit cannot hold one primitive",
+                self.label
+            );
+            self.chunks.clear();
+            return;
+        }
+        let chunk_count = values.len().div_ceil(per_chunk);
+        self.chunks.truncate(chunk_count);
+        for (index, values) in values.chunks(per_chunk).enumerate() {
+            if index == self.chunks.len() {
+                self.chunks
+                    .push((GrowingBuffer::new(device, self.label), 0));
+            }
+            let (buffer, count) = &mut self.chunks[index];
+            buffer.upload(device, queue, bytemuck::cast_slice(values));
+            *count = values.len();
+        }
+    }
+
+    fn draw(
+        &self,
+        pass: &mut wgpu::RenderPass<'static>,
+        range: std::ops::Range<usize>,
+        instanced: bool,
+    ) {
+        let mut offset = 0;
+        for (buffer, count) in &self.chunks {
+            let start = range.start.saturating_sub(offset).min(*count) as u32;
+            let end = range.end.saturating_sub(offset).min(*count) as u32;
+            if start < end {
+                pass.set_vertex_buffer(0, buffer.buffer.slice(..));
+                if instanced {
+                    pass.draw(0..6, start..end);
+                } else {
+                    pass.draw(start..end, 0..1);
+                }
+            }
+            offset += count;
+        }
+    }
+}
+
+fn chunk_elements(limit: u64, element_size: usize, primitive_elements: usize) -> usize {
+    let count = (limit / element_size as u64).min(u32::MAX as u64) as usize;
+    count / primitive_elements * primitive_elements
+}
+
+fn buffer_capacity(required: u64, limit: u64) -> u64 {
+    debug_assert!(required <= limit);
+    required
+        .checked_next_power_of_two()
+        .unwrap_or(required)
+        .min(limit)
 }
 
 struct GrowingBuffer {
@@ -465,7 +534,7 @@ impl GrowingBuffer {
         }
         let required = bytes.len() as wgpu::BufferAddress;
         if required > self.capacity {
-            self.capacity = required.checked_next_power_of_two().unwrap_or(required);
+            self.capacity = buffer_capacity(required, device.limits().max_buffer_size);
             self.buffer = create_vertex_buffer(device, self.label, self.capacity);
         }
         queue.write_buffer(&self.buffer, 0, bytes);

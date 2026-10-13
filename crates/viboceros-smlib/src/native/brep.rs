@@ -30,6 +30,52 @@ trait SnapshotOwner {}
 impl SnapshotOwner for OwnedSurfaceData {}
 impl SnapshotOwner for OwnedBrep {}
 
+// SMLib's stored zone radii are additive: an edge endpoint may differ from
+// its vertex by edge.tolerance + vertex.tolerance. Portable B-rep tolerances
+// are complete deviation bounds and validation uses their maximum. Preserve
+// that native contract at each affected vertex, without moving geometry or
+// admitting a gap larger than the native radii authorize.
+fn transfer_vertex_tolerances(
+    vertices: &mut [BrepVertex],
+    edges: &[BrepEdge],
+    tolerance: Tolerance,
+) -> Result<(), Error> {
+    let native_tolerances = vertices
+        .iter()
+        .map(|vertex| vertex.tolerance())
+        .collect::<Vec<_>>();
+    for (edge_index, edge) in edges.iter().enumerate() {
+        let domain = edge.curve().domain();
+        for (end, parameter) in [*domain.start(), *domain.end()].into_iter().enumerate() {
+            let vertex_index = edge.vertices()[end];
+            let vertex = vertices.get_mut(vertex_index).ok_or(Error::InvalidOutput)?;
+            let endpoint = edge.curve().evaluate(parameter)?;
+            let gap = endpoint.distance_to(vertex.point())?;
+            let allowed = tolerance
+                .absolute()
+                .max(native_tolerances[vertex_index])
+                .max(edge.tolerance());
+            if gap <= allowed {
+                continue;
+            }
+            let native_allowed = native_tolerances[vertex_index] + edge.tolerance();
+            if !native_allowed.is_finite() {
+                return Err(Error::InvalidOutput);
+            }
+            let Some(bound) = endpoint.distance_bound_to(vertex.point(), native_allowed)? else {
+                return Err(Error::Kernel(format!(
+                    "Native edge {edge_index} endpoint {end} misses vertex {vertex_index}: gap {gap:e}, vertex radius {:e}, edge radius {:e}, extraction tolerance {:e}",
+                    native_tolerances[vertex_index],
+                    edge.tolerance(),
+                    tolerance.absolute()
+                )));
+            };
+            *vertex = BrepVertex::try_new(vertex.point(), vertex.tolerance().max(bound))?;
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn surface_from_native(pointer: *mut NativeSurfaceData) -> Result<NurbsSurface, Error> {
     let owner = OwnedSurfaceData(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
     let mut view = std::mem::MaybeUninit::uninit();
@@ -83,6 +129,90 @@ pub(super) fn surfaces_from_native_batch(
 #[cfg(test)]
 mod plan_tests {
     use super::*;
+    fn endpoint_fixture(gap: f64) -> (Vec<BrepVertex>, Vec<BrepEdge>, Vec<BrepFace>) {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = viboceros_geometry::Frame3::try_from_normal(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            viboceros_geometry::Vector3::try_new(0., 0., 1.).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let source = Brep::try_box(frame, [[0., 1.]; 3], tolerance).unwrap();
+        let mut vertices = source.vertices().to_vec();
+        vertices[0] = BrepVertex::try_new(Point3::try_new(gap, 0., 0.).unwrap(), 1e-6).unwrap();
+        let edges = source
+            .edges()
+            .iter()
+            .map(|edge| BrepEdge::try_new(edge.vertices(), edge.curve().clone(), 1e-6).unwrap())
+            .collect();
+        (vertices, edges, source.faces().to_vec())
+    }
+    #[test]
+    fn native_additive_endpoint_zones_transfer_as_local_portable_bounds() {
+        let (mut vertices, edges, faces) = endpoint_fixture(1.5e-6);
+        let original_edges = edges.clone();
+        let points = vertices
+            .iter()
+            .map(|vertex| vertex.point())
+            .collect::<Vec<_>>();
+        assert!(
+            Brep::try_new(
+                vertices.clone(),
+                edges.clone(),
+                faces.clone(),
+                Tolerance::DEFAULT
+            )
+            .is_err()
+        );
+        transfer_vertex_tolerances(&mut vertices, &edges, Tolerance::DEFAULT).unwrap();
+        assert_eq!(vertices[0].tolerance(), 1.5e-6);
+        assert!(vertices[1..].iter().all(|vertex| vertex.tolerance() == 0.));
+        assert_eq!(
+            points,
+            vertices
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(edges, original_edges);
+        let transferred = Brep::try_new(vertices, edges, faces, Tolerance::DEFAULT).unwrap();
+        assert!(transferred.is_solid());
+    }
+    #[test]
+    fn gaps_beyond_native_zone_sum_are_rejected_with_indexed_diagnostics() {
+        let (mut vertices, edges, _) = endpoint_fixture(2.5e-6);
+        let original = vertices.clone();
+        let error = transfer_vertex_tolerances(&mut vertices, &edges, Tolerance::DEFAULT)
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.contains("edge 0 endpoint 0 misses vertex 0"),
+            "{error}"
+        );
+        assert!(
+            error.contains("vertex radius 1e-6") && error.contains("edge radius 1e-6"),
+            "{error}"
+        );
+        assert_eq!(vertices, original);
+    }
+    #[test]
+    fn a_certified_vertex_bound_does_not_mask_another_edges_smaller_native_zone() {
+        let (mut vertices, mut edges, _) = endpoint_fixture(1.5e-6);
+        // Edge 0 legally enlarges portable vertex 0 to 1.5e-6. Edge 3 shares
+        // that vertex but its own native zone sum authorizes only 1.1e-6.
+        edges[3] = BrepEdge::try_new(edges[3].vertices(), edges[3].curve().clone(), 1e-7).unwrap();
+        let error = transfer_vertex_tolerances(&mut vertices, &edges, Tolerance::DEFAULT)
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.contains("edge 3 endpoint 0 misses vertex 0"),
+            "{error}"
+        );
+        assert!(
+            error.contains("vertex radius 1e-6") && error.contains("edge radius 1e-7"),
+            "{error}"
+        );
+    }
     #[test]
     fn invalid_plan_buffers_clear_handles_without_writing_parent_storage() {
         let view = BrepView {
@@ -193,6 +323,12 @@ unsafe extern "C" {
         capacity: usize,
     ) -> c_int;
     fn vb_solid_validate_boundary(
+        solid: *const NativeSolid,
+        tolerance: f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+    fn vb_solid_validate_endpoints(
         solid: *const NativeSolid,
         tolerance: f64,
         error: *mut c_char,
@@ -857,6 +993,16 @@ impl Solid {
             vb_solid_validate_boundary(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
         })
     }
+
+    /// Check native edge/vertex endpoint agreement on the original handle.
+    /// Uses additive native zone radii and the requested model-space tolerance,
+    /// without copying, healing, or extracting geometry. Surface/trim interiors
+    /// remain the responsibility of portable B-rep and boundary validation.
+    pub fn validate_native_endpoints(&self, tolerance: Tolerance) -> Result<(), Error> {
+        call(|error, capacity| unsafe {
+            vb_solid_validate_endpoints(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
+        })
+    }
     /// Fillets original Rust edge indices on a freshly imported temporary solid.
     /// The input B-rep is never mutated. Repeated indices select the edge once.
     pub fn fillet_brep_edges(
@@ -1082,7 +1228,7 @@ impl Solid {
             return Err(Error::InvalidOutput);
         }
         let view = unsafe { view.assume_init() };
-        let vertices = borrowed(&owner, view.vertices, view.vertex_count)?
+        let mut vertices = borrowed(&owner, view.vertices, view.vertex_count)?
             .iter()
             .map(|v| {
                 Ok(BrepVertex::try_new(
@@ -1104,6 +1250,7 @@ impl Solid {
                 Ok(BrepEdge::try_new(e.vertices, curve, e.tolerance)?)
             })
             .collect::<Result<Vec<_>, Error>>()?;
+        transfer_vertex_tolerances(&mut vertices, &edges, tolerance)?;
         let trim_data = borrowed(&owner, view.trims, view.trim_count)?;
         let loop_data = borrowed(&owner, view.loops, view.loop_count)?;
         let face_data = borrowed(&owner, view.faces, view.face_count)?;

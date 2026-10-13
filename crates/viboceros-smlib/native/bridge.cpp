@@ -751,6 +751,40 @@ extern "C" int vb_solid_validate_boundary(const VbSolid *solid, double tolerance
     });
 }
 
+extern "C" int vb_solid_validate_endpoints(const VbSolid *solid, double tolerance,
+                                            char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(solid && std::isfinite(tolerance) && tolerance > 0,
+                "Invalid native endpoint validation input");
+        SmTArray<SmEdge *> edges;
+        solid->value->GetEdges(edges);
+        require(edges.GetSize() <= limit, "Native endpoint validation work limit");
+        for (ULONG i = 0; i < edges.GetSize(); ++i) {
+            const auto *edge = edges[i];
+            const auto interval = edge->GetInterval();
+            for (int end = 0; end < 2; ++end) {
+                SmPoint3d endpoint;
+                check(edge->GetCurve()->EvaluatePoint(end ? interval.GetMax() : interval.GetMin(), endpoint),
+                      "evaluate native edge endpoint");
+                const auto *vertex = end ? edge->GetEndVertex() : edge->GetStartVertex();
+                const double gap = endpoint.DistanceBetween(vertex->GetPoint());
+                const double vertex_radius = vertex->GetTolerance(), edge_radius = edge->GetTolerance();
+                const double radius = vertex_radius + edge_radius;
+                require(std::isfinite(gap) && std::isfinite(radius) &&
+                            vertex_radius >= 0 && edge_radius >= 0,
+                        "Nonfinite native endpoint uncertainty");
+                if (gap > std::max(tolerance, radius)) {
+                    char detail[256];
+                    std::snprintf(detail, sizeof(detail),
+                        "Native edge %lu endpoint %d exceeds its native vertex/edge zone radii: gap %.17g, radius %.17g",
+                        static_cast<unsigned long>(i), end, gap, radius);
+                    throw std::runtime_error(detail);
+                }
+            }
+        }
+    });
+}
+
 extern "C" int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out,
                              char *error, size_t capacity) {
     if (out)

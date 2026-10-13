@@ -43,6 +43,7 @@ impl VibocerosApp {
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
+            && self.blend_surface_prompt.is_none()
             && self.object_prompt.is_none()
             && self.group_prompt.is_none()
             && self.intersection_prompt.is_none()
@@ -178,6 +179,8 @@ impl VibocerosApp {
                         "CPlane"
                     } else if set_view_prompt.is_some() {
                         "SetView"
+                    } else if self.blend_surface_prompt.is_some() {
+                        "BlendSrf"
                     } else if self.tween_surfaces_prompt.is_some() {
                         "TweenSurfaces"
                     } else if let Some(p) = &self.planar_boolean_prompt {
@@ -264,6 +267,8 @@ impl VibocerosApp {
                                 "All, Current, Next, Previous or Mark; Enter or Esc ends"
                             } else if let Some(prompt) = set_view_prompt {
                                 prompt.message()
+                            } else if let Some(p) = &self.blend_surface_prompt {
+                                p.hint()
                             } else if let Some(p)=&self.tween_surfaces_prompt {
                                 p.hint()
                             } else if self.planar_boolean_prompt.is_some() {

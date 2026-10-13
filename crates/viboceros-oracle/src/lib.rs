@@ -8751,6 +8751,7 @@ fn three_dm_group_round_trip(
                 color_source,
                 wire_density: 1,
                 group_indices,
+                ..ThreeDmObject::new(ThreeDmGeometry::Point(point(location)?), 0)
             })
         },
     )

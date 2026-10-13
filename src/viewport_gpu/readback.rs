@@ -19,6 +19,10 @@ pub(crate) struct OffscreenRenderer {
 
 impl OffscreenRenderer {
     pub(crate) fn new(format: wgpu::TextureFormat) -> Self {
+        Self::with_buffer_limit(format, None)
+    }
+
+    pub(crate) fn with_buffer_limit(format: wgpu::TextureFormat, limit: Option<u64>) -> Self {
         let serial = GPU_TEST_CONTEXT.lock().expect("GPU test context lock");
         let instance =
             wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle_from_env());
@@ -28,7 +32,11 @@ impl OffscreenRenderer {
         }))
         .expect("the opt-in GPU test requires an available graphics adapter");
         eprintln!("Offscreen viewport adapter: {:?}", adapter.get_info());
-        let (device, queue) = pollster::block_on(adapter.request_device(&Default::default()))
+        let mut descriptor = wgpu::DeviceDescriptor::default();
+        if let Some(limit) = limit {
+            descriptor.required_limits.max_buffer_size = limit;
+        }
+        let (device, queue) = pollster::block_on(adapter.request_device(&descriptor))
             .expect("create offscreen test device");
         let renderer = ViewportRenderer::new(&device, format);
         Self {

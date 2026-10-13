@@ -299,3 +299,106 @@ fn unequal_face_knots_and_independent_edge_speed_mesh_without_t_junctions() {
         assert_eq!(mesh.topology().orientation_conflict_edge_count(), 0);
     }
 }
+
+#[test]
+fn normal_channels_survive_conforming_shared_edge_reconstruction() {
+    let mut source = unit_box()
+        .duplicate_faces(&[0, 2], Tolerance::DEFAULT)
+        .unwrap();
+    source.faces[0].surface = source.faces[0]
+        .surface
+        .try_insert_knot_u(0.23, 1)
+        .unwrap()
+        .try_insert_knot_v(0.71, 1)
+        .unwrap();
+    let output = source
+        .tessellate_with_normals(2, Tolerance::DEFAULT)
+        .unwrap();
+    assert_eq!(
+        output.mesh,
+        source.tessellate(2, Tolerance::DEFAULT).unwrap()
+    );
+    assert_eq!(output.corners.len(), output.mesh.triangles().len());
+    for (triangle, corners) in output.mesh.triangles().iter().zip(output.corners) {
+        for (&index, sample) in triangle.iter().zip(corners) {
+            let face = &source.faces[sample.face.unwrap()];
+            assert!(
+                face.surface
+                    .evaluate(sample.uv.x(), sample.uv.y())
+                    .unwrap()
+                    .distance_to(output.mesh.vertices()[index as usize])
+                    .unwrap()
+                    < 1e-12
+            );
+            assert_eq!(
+                sample.normal_source,
+                crate::TessellationNormalSource::Analytic
+            );
+            let expected = face
+                .surface
+                .normal_at(sample.uv.x(), sample.uv.y())
+                .unwrap();
+            let expected = if face.reversed {
+                expected.opposite()
+            } else {
+                expected
+            };
+            assert!(
+                expected
+                    .as_vector()
+                    .dot(sample.normal.unwrap().as_vector())
+                    .unwrap()
+                    > 1. - 1e-12
+            );
+        }
+    }
+}
+
+#[test]
+fn irregular_trimmed_holes_retain_analytic_normals_and_uv_provenance() {
+    use crate::{Circle3, PointMorph};
+    struct Bend;
+    impl PointMorph for Bend {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            Point3::try_new(p.x(), p.y(), p.z() + p.x().powi(2))
+        }
+    }
+    let circle = |r| {
+        Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            r,
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let planar = Brep::try_planar_face_with_holes(&circle(1.), &[circle(0.3)], tolerance).unwrap();
+    for source in [planar.clone(), Bend.morph_brep(&planar, tolerance).unwrap()] {
+        let output = source.tessellate_with_normals(4, tolerance).unwrap();
+        assert_eq!(output.mesh, source.tessellate(4, tolerance).unwrap());
+        for (triangle, corners) in output.mesh.triangles().iter().zip(output.corners) {
+            for (&index, sample) in triangle.iter().zip(corners) {
+                let face = &source.faces[sample.face.unwrap()];
+                assert!(
+                    face.surface
+                        .evaluate(sample.uv.x(), sample.uv.y())
+                        .unwrap()
+                        .distance_to(output.mesh.vertices()[index as usize])
+                        .unwrap()
+                        <= tolerance.absolute()
+                );
+                assert_eq!(
+                    sample.normal_source,
+                    crate::TessellationNormalSource::Analytic
+                );
+                assert!(sample.normal.is_some());
+            }
+        }
+    }
+}

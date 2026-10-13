@@ -868,6 +868,9 @@ impl Viewport {
 }
 
 #[cfg(test)]
+mod assembly_tests;
+
+#[cfg(test)]
 mod mirror_tests;
 
 #[cfg(test)]

@@ -1,0 +1,24 @@
+diff --git a/source/SMLib/src/SmProtoTopology.cpp b/source/SMLib/src/SmProtoTopology.cpp
+index 34ef2ec..c103f14 100644
+--- a/source/SMLib/src/SmProtoTopology.cpp
++++ b/source/SMLib/src/SmProtoTopology.cpp
+@@ -7,6 +7,7 @@
+ **********************************************************************/
+ 
+ #include "StdAfx.h"
++#include <cmath>
+ 
+ #include <SmBrep.h>
+ #include <SmTopology.h>
+@@ -1337,7 +1338,10 @@ SmBoolean SmEdgeDefinition::IsInteriorPoint(
+   SmStatus eStat = this->m_pXSectCurve3d->DropPoint( m_pXSectInterval, crPosition, NULL, sTol3d, &dGuessParam,
+     bSuccess, rdParam, dDropDist, SM_SO_MINIMIZE) ;
+ 
+-  if(eStat != SM_SUCCESS  ||  ! bSuccess )
++  // A minimum-distance projection can succeed for a point off this curve.
++  // UpdateEdges uses TRUE as permission to trim the curve to this point,
++  // so its existing model-space tolerance must authorize the projection.
++  if(eStat != SM_SUCCESS || !bSuccess || !std::isfinite(dDropDist) || dDropDist > sTol3d)
+     { return FALSE; }
+ 
+   // Sometimes for very short Edges, the point will be at or near the far end.  We don't want that.

@@ -9209,6 +9209,14 @@ fn triangulate_trim_region(
     parameters: &[Point2],
     loop_lengths: &[usize],
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    triangulate_trim_region_with_constraints(parameters, loop_lengths, &[])
+}
+
+fn triangulate_trim_region_with_constraints(
+    parameters: &[Point2],
+    loop_lengths: &[usize],
+    internal_constraints: &[[usize; 2]],
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
     let Some(boundary_vertex_count) = loop_lengths
         .iter()
         .try_fold(0_usize, |total, length| total.checked_add(*length))
@@ -9277,6 +9285,17 @@ fn triangulate_trim_region(
     }
     if triangulation.num_constraints() < constraints.len() {
         return Ok(None);
+    }
+    for &[from_index, to_index] in internal_constraints {
+        let Some(Some(from)) = handles.get(from_index) else {
+            return Ok(None);
+        };
+        let Some(Some(to)) = handles.get(to_index) else {
+            return Ok(None);
+        };
+        if from == to || triangulation.try_add_constraint(*from, *to).is_empty() {
+            return Ok(None);
+        }
     }
 
     let interior = trim_region::interior_faces(&triangulation, &normalized, &loop_ranges, epsilon);

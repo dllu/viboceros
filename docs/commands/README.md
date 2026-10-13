@@ -21,6 +21,7 @@ Rhino's complete command set is still a work in progress.
 - [Two-curve chamfers](chamfer.md)
 - [Connect two curves](connect.md)
 - [Blend two curves](blend.md)
+- [Blend complete surface edges](blend-srf.md)
 - [Match curve ends](match.md)
 - [Polyline corner fillets](fillet-corners.md)
 - [Single and repeated point placement](points.md)

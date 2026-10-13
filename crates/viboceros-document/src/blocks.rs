@@ -48,6 +48,7 @@ pub enum BlockContent {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct BlockMember {
+    id: super::ObjectId,
     content: BlockContent,
     attributes: ObjectAttributes,
     geometry_user_text: BTreeMap<String, String>,
@@ -57,6 +58,7 @@ pub struct BlockMember {
 impl BlockMember {
     pub(super) fn captured(content: BlockContent, object: &super::Object) -> Self {
         Self {
+            id: object.id(),
             content,
             attributes: object.attributes().clone(),
             geometry_user_text: object.geometry_user_text().clone(),
@@ -65,11 +67,19 @@ impl BlockMember {
     }
     pub fn new(content: BlockContent, attributes: ObjectAttributes) -> Self {
         Self {
+            id: super::ObjectId::new(),
             content,
             attributes,
             geometry_user_text: BTreeMap::new(),
             group_ids: Vec::new(),
         }
+    }
+    pub const fn id(&self) -> super::ObjectId {
+        self.id
+    }
+    pub fn with_id(mut self, id: super::ObjectId) -> Self {
+        self.id = id;
+        self
     }
     pub fn content(&self) -> &BlockContent {
         &self.content
@@ -222,13 +232,22 @@ impl Document {
     pub fn replace_block_definition_members(
         &mut self,
         id: BlockDefinitionId,
-        members: Vec<BlockMember>,
+        mut members: Vec<BlockMember>,
     ) -> Result<bool, DocumentError> {
         let mut definitions = self.block_definitions.clone();
         let definition = definitions
             .iter_mut()
             .find(|definition| definition.id == id)
             .ok_or(DocumentError::BlockDefinitionNotFound(id))?;
+        // Reconstructing an unchanged member is a no-op and retains its file
+        // identity. Fresh identities alone must not invalidate instance caches.
+        for (old, new) in definition.members.iter().zip(&mut members) {
+            let mut same_identity = new.clone();
+            same_identity.id = old.id;
+            if &same_identity == old {
+                new.id = old.id;
+            }
+        }
         definition.members = Arc::new(members);
         self.set_block_definitions(definitions)
     }

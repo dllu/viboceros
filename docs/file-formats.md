@@ -15,6 +15,11 @@ display modes, and grid settings. Open restores the views, layout, active
 viewport, maximized state, and active layer. `ReadViewportsFromFile path.3dm`
 copies views and layout into the current document without importing objects.
 
+3DM object UUIDs are retained through ordinary Open/Save/SaveAs, including
+block definition members. Import preserves unused source IDs; repeated imports,
+nil IDs, conflicts, and additional objects created by curve decomposition receive
+fresh IDs. Duplicating a document object also creates a new identity.
+
 ## Paths and export behavior
 
 File commands preserve internal filename whitespace. Use double quotes around
@@ -134,6 +139,17 @@ pieces before export. Connected pieces become PolyCurves; positional gaps produc
 separate objects with the original attributes. Export reports the actual object
 count without editing the document. See [full-order curve interchange](curve-3dm-interchange.md)
 for parameter preservation, cross-reader tests, and remaining limits.
+B-rep edges with full-order knots, including certified surface-pushup composites,
+are subdivided together with every incident UV trim before export. The support
+surfaces and independent rational segment weights remain unchanged; one source
+B-rep still writes as one object. Subdivision uses the model tolerance and fails
+explicitly if trim correspondence cannot be resolved. The retained
+[pushup solid regression and independent OpenNURBS audit](../crates/viboceros-io/tests/fixtures/pushup/README.md)
+check closed topology and edge/trim geometry after 3DM readback.
+Import recomputes derived trim isocurve flags on a private native copy before
+validity checks. This preserves otherwise valid B-reps whose archived flags are
+stale after editing. The [display-mesh diagnostic](display-mesh-diagnostics.md)
+records the six real-model cabinet cases and provides a reusable profiling tool.
 The [rational range adapter](rational-3dm-range.md) prevents silent homogeneous
 coordinate underflow, chooses safe common weight scales when needed, and imports
 subnormal-weight curves and surfaces through direct homogeneous division.

@@ -458,10 +458,11 @@ fn import_3dm_model(
         for (key, value) in object.user_text {
             attributes = attributes.try_with_user_text(key, value)?;
         }
-        let id = document.add_geometry_with_metadata(
+        let id = document.add_geometry_with_metadata_and_id(
             structural_blocks::import_geometry(document, object.geometry, &imported_definitions)?,
             attributes,
             object.geometry_user_text,
+            Some(viboceros_document::ObjectId::from_uuid(object.id)),
         )?;
         imported_objects.push((id, object.group_indices));
     }
@@ -650,7 +651,7 @@ fn write_document_3dm(
     );
     if report.adapted_curve_count != 0 {
         message.push_str(&format!(
-            "; adapted {} curve objects from {} source objects",
+            "; adapted {} objects with composite curves from {} source objects",
             report.adapted_curve_count, report.source_object_count
         ));
     }
@@ -709,6 +710,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         .objects()
         .map(|object| {
             Ok(ThreeDmObject {
+                id: object.id().uuid(),
                 geometry: structural_blocks::export_geometry(
                     object.geometry(),
                     &definition_indices,

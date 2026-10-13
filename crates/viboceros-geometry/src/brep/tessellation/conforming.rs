@@ -17,11 +17,22 @@ impl Brep {
             .map(|(mesh, _)| mesh)
     }
 
+    #[cfg(test)]
     pub(super) fn tessellate_conforming_with_face_sources(
         &self,
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
+        self.tessellate_conforming_impl(samples_per_span, tolerance, false)
+            .map(|(mesh, sources, _)| (mesh, sources))
+    }
+
+    pub(super) fn tessellate_conforming_impl(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
         let frames = self
             .faces
             .iter()
@@ -128,6 +139,7 @@ impl Brep {
         let mut vertices = Vec::new();
         let mut triangles = Vec::new();
         let mut face_sources = Vec::new();
+        let mut vertex_parameters = Vec::new();
         for (index, frame) in frames.iter().enumerate() {
             let face = frame.face.as_ref();
             let mut parameters = Vec::new();
@@ -213,8 +225,12 @@ impl Brep {
                 &face.surface,
                 samples_per_span,
             )?;
-            let face_triangles = triangulate_trim_region(&parameters, &lengths)?
-                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
+            let face_triangles = if retain_parameters {
+                creases::triangulate(&parameters, &lengths, &face.surface, index)?
+            } else {
+                triangulate_trim_region(&parameters, &lengths)?
+            }
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             if vertices
@@ -225,6 +241,9 @@ impl Brep {
                 return Err(GeometryError::TooManyMeshVertices);
             }
             for (i, uv) in parameters.into_iter().enumerate() {
+                if retain_parameters {
+                    vertex_parameters.push(uv);
+                }
                 vertices.push(if let Some(&p) = boundary_points.get(i) {
                     p
                 } else {
@@ -252,7 +271,7 @@ impl Brep {
                 orientation_conflicts: topology.orientation_conflict_edge_count(),
             });
         }
-        Ok((mesh, face_sources))
+        Ok((mesh, face_sources, vertex_parameters))
     }
 }
 

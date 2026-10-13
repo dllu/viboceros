@@ -168,6 +168,8 @@ pub struct ThreeDmDefinition {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmObject {
+    /// Persistent 3DM object identity, retained across ordinary saves.
+    pub id: uuid::Uuid,
     pub geometry: ThreeDmGeometry,
     pub layer_index: usize,
     pub name: Option<String>,
@@ -185,6 +187,7 @@ pub struct ThreeDmObject {
 impl ThreeDmObject {
     pub fn new(geometry: ThreeDmGeometry, layer_index: usize) -> Self {
         Self {
+            id: uuid::Uuid::new_v4(),
             geometry,
             layer_index,
             name: None,
@@ -523,12 +526,14 @@ pub struct ThreeDmWriteReport {
     pub source_object_count: usize,
     /// Objects actually written, including any decomposition expansion.
     pub written_object_count: usize,
-    /// Source curves whose file representation required decomposition.
+    /// Source objects whose free curves or B-rep edges required decomposition.
     pub adapted_curve_count: usize,
 }
 
 /// Writes through a staging file, replacing the destination only on success.
-/// Full-order free-curve knots are decomposed without editing the input model.
+/// Full-order free-curve knots and B-rep edges are decomposed without editing
+/// the input model. B-rep subdivision updates every incident trim and retains
+/// the support surfaces, using the model's stored tolerance.
 pub fn write_3dm_file(
     path: impl AsRef<Path>,
     model: &ThreeDmModel,
@@ -551,7 +556,7 @@ pub fn write_3dm_file(
     for (index, definition) in model.definitions.iter().enumerate() {
         let first_object = prepared.len();
         for object in &definition.members {
-            let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+            let geometries = crate::three_dm_curves::prepare(&object.geometry, model.tolerance)?;
             report.adapted_curve_count +=
                 usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
             prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
@@ -565,7 +570,7 @@ pub fn write_3dm_file(
     }
     let top_level_start = prepared.len();
     for object in &model.objects {
-        let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+        let geometries = crate::three_dm_curves::prepare(&object.geometry, model.tolerance)?;
         report.adapted_curve_count +=
             usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
         prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
@@ -766,44 +771,61 @@ pub fn write_3dm_file(
         .iter()
         .map(|(_, geometry)| ObjectPayload::from_geometry(geometry))
         .collect::<Result<Vec<_>, _>>()?;
+    // Decomposed curve pieces and conflicting/nil input IDs require fresh IDs.
+    // The first occurrence retains its source ID; all other objects stay unique.
+    let mut used_ids = BTreeSet::new();
+    let object_ids = prepared
+        .iter()
+        .map(|(object, _)| {
+            let mut id = object.id;
+            while id.is_nil() || !used_ids.insert(id) {
+                id = uuid::Uuid::new_v4();
+            }
+            c_string(&id.to_string(), "object UUID")
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let objects = prepared
         .iter()
         .zip(&object_names)
         .zip(&payloads)
         .zip(&user_text)
         .zip(&geometry_user_text)
+        .enumerate()
         .map(
-            |(((((object, _), name), payload), text), geometry_text)| ffi::ViboWriteObject {
-                object_type: payload.object_type,
-                layer_index: object.layer_index,
-                name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
-                visible: u8::from(object.visible),
-                locked: u8::from(object.locked),
-                color_source: object.color_source as u8,
-                color_red: object.object_color[0],
-                color_green: object.object_color[1],
-                color_blue: object.object_color[2],
-                wire_density: object.wire_density,
-                degree_u: payload.degree_u,
-                degree_v: payload.degree_v,
-                control_point_count_u: payload.control_point_count_u,
-                control_point_count_v: payload.control_point_count_v,
-                coordinates: pointer_or_null(&payload.coordinates),
-                coordinate_count: payload.coordinates.len(),
-                knots_u: pointer_or_null(&payload.knots_u),
-                knot_u_count: payload.knots_u.len(),
-                knots_v: pointer_or_null(&payload.knots_v),
-                knot_v_count: payload.knots_v.len(),
-                indices: pointer_or_null(&payload.indices),
-                index_count: payload.indices.len(),
-                geometry_data: pointer_or_null(&payload.geometry_data),
-                geometry_data_count: payload.geometry_data.len(),
-                group_indices: pointer_or_null(&object.group_indices),
-                group_index_count: object.group_indices.len(),
-                user_text: pointer_or_null(text),
-                user_text_count: text.len(),
-                geometry_user_text: pointer_or_null(geometry_text),
-                geometry_user_text_count: geometry_text.len(),
+            |(index, (((((object, _), name), payload), text), geometry_text))| {
+                ffi::ViboWriteObject {
+                    id: object_ids[index].as_ptr(),
+                    object_type: payload.object_type,
+                    layer_index: object.layer_index,
+                    name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
+                    visible: u8::from(object.visible),
+                    locked: u8::from(object.locked),
+                    color_source: object.color_source as u8,
+                    color_red: object.object_color[0],
+                    color_green: object.object_color[1],
+                    color_blue: object.object_color[2],
+                    wire_density: object.wire_density,
+                    degree_u: payload.degree_u,
+                    degree_v: payload.degree_v,
+                    control_point_count_u: payload.control_point_count_u,
+                    control_point_count_v: payload.control_point_count_v,
+                    coordinates: pointer_or_null(&payload.coordinates),
+                    coordinate_count: payload.coordinates.len(),
+                    knots_u: pointer_or_null(&payload.knots_u),
+                    knot_u_count: payload.knots_u.len(),
+                    knots_v: pointer_or_null(&payload.knots_v),
+                    knot_v_count: payload.knots_v.len(),
+                    indices: pointer_or_null(&payload.indices),
+                    index_count: payload.indices.len(),
+                    geometry_data: pointer_or_null(&payload.geometry_data),
+                    geometry_data_count: payload.geometry_data.len(),
+                    group_indices: pointer_or_null(&object.group_indices),
+                    group_index_count: object.group_indices.len(),
+                    user_text: pointer_or_null(text),
+                    user_text_count: text.len(),
+                    geometry_user_text: pointer_or_null(geometry_text),
+                    geometry_user_text_count: geometry_text.len(),
+                }
             },
         )
         .collect::<Vec<_>>();
@@ -1471,6 +1493,8 @@ fn decode_object(
     };
     let geometry = instances::apply(handle, index, geometry, tolerance, coordinate_scale)?;
     Ok(ThreeDmObject {
+        id: uuid::Uuid::parse_str(&c_text(info.id)?)
+            .map_err(|_| ThreeDmError::MalformedBridge("invalid object UUID"))?,
         geometry,
         layer_index,
         name,
@@ -1981,6 +2005,7 @@ mod ffi {
     #[repr(C)]
     #[derive(Default)]
     pub struct ViboObjectInfo {
+        pub id: *const c_char,
         pub object_type: c_int,
         pub source_layer_index: i32,
         pub name: *const c_char,
@@ -2109,6 +2134,7 @@ mod ffi {
 
     #[repr(C)]
     pub struct ViboWriteObject {
+        pub id: *const c_char,
         pub object_type: c_int,
         pub layer_index: usize,
         pub name: *const c_char,
@@ -2473,6 +2499,7 @@ mod tests {
                     ..ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0)
                 },
                 ThreeDmObject {
+                    id: uuid::Uuid::new_v4(),
                     geometry: ThreeDmGeometry::Line(line),
                     layer_index: 1,
                     name: Some("guide".to_owned()),
@@ -4120,5 +4147,40 @@ mod tests {
             "viboceros-{}-{unique}-{suffix}",
             std::process::id()
         ))
+    }
+}
+
+#[cfg(test)]
+mod identity_tests {
+    use super::*;
+
+    #[test]
+    fn duplicate_and_nil_ids_are_resolved_without_changing_the_model() {
+        let object = ThreeDmObject::new(
+            ThreeDmGeometry::Point(Point3::try_new(1., 2., 3.).unwrap()),
+            0,
+        );
+        let mut nil = object.clone();
+        nil.id = uuid::Uuid::nil();
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Default".into(),
+                color: [0; 3],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            vec![object.clone(), object.clone(), nil],
+        );
+        let before = model.clone();
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("identity.3dm");
+        write_3dm_file(&file, &model).unwrap();
+        let read = read_3dm_file(&file, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read.objects[0].id, object.id);
+        let ids = read.objects.iter().map(|o| o.id).collect::<BTreeSet<_>>();
+        assert_eq!(ids.len(), 3);
+        assert!(!ids.contains(&uuid::Uuid::nil()));
+        assert_eq!(model, before);
     }
 }

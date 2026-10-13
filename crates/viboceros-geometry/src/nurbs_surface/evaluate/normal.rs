@@ -35,10 +35,45 @@ impl NurbsSurface {
     /// Exact zero denominators and zero first-order crosses are errors; limiting
     /// normals at singular parameterizations are not supplied by this method.
     pub fn normal_at(&self, u: Real, v: Real) -> Result<UnitVector3, GeometryError> {
-        let spans = [
+        self.normal_at_on_sides(u, v, ParameterSide::Right, ParameterSide::Right)
+    }
+
+    /// One-sided regular unit normal. At internal knots the requested side
+    /// selects the incident span; outer endpoints use their interior span.
+    pub fn normal_at_on_sides(
+        &self,
+        u: Real,
+        v: Real,
+        side_u: ParameterSide,
+        side_v: ParameterSide,
+    ) -> Result<UnitVector3, GeometryError> {
+        let mut spans = [
             checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?,
             checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?,
         ];
+        for (axis, (t, side, degree, count, knots)) in [
+            (
+                u,
+                side_u,
+                self.degree_u,
+                self.control_point_count_u,
+                &self.knots_u,
+            ),
+            (
+                v,
+                side_v,
+                self.degree_v,
+                self.control_point_count_v,
+                &self.knots_v,
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            if side == ParameterSide::Left && t > knots[degree] && t < knots[count] {
+                spans[axis] = knots.partition_point(|value| *value < t) - 1;
+            }
+        }
         if let Some(normal) = filter::normal(self, [u, v], spans) {
             return Ok(normal);
         }

@@ -7,6 +7,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 pub enum GeometryError {
     #[error("interpolation backend failed: {message}")]
     InterpolationBackendFailed { message: String },
+    #[error("surface blend failed: {context}")]
+    InvalidSurfaceBlend { context: &'static str },
     #[error("{operation} is unsupported for block instances")]
     UnsupportedBlockInstanceOperation { operation: &'static str },
     #[error("invalid surface rebuild: {context}")]
@@ -561,6 +563,14 @@ pub enum GeometryError {
 
     #[error("B-rep face {face} could not be robustly tessellated inside its trim domain")]
     UnsupportedBrepTrimTessellation { face: usize },
+    #[error(
+        "normal tessellation cannot preserve B-rep face {face}'s local {direction}={parameter} knot crease with the available shared boundary samples; split the face at that knot"
+    )]
+    UnsupportedBrepNormalCrease {
+        face: usize,
+        direction: &'static str,
+        parameter: Real,
+    },
 
     #[error("oriented volume requires a closed, consistently oriented B-rep")]
     OpenBrepVolume,

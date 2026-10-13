@@ -164,3 +164,32 @@ fn malformed_block_graphs_leave_document_and_redo_history_unchanged() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.objects().len(), 2);
 }
+
+#[test]
+fn open_save_preserves_top_level_and_block_member_uuids() {
+    let path = fixture("nested_blocks.3dm");
+    let before = viboceros_io::read_3dm_file_with_blocks(&path, Tolerance::DEFAULT).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    let mut doc = Document::default();
+    registry
+        .execute(&mut doc, &format!("Open \"{}\"", path.display()))
+        .unwrap();
+    let dir = tempfile::tempdir().unwrap();
+    let file = dir.path().join("identities.3dm");
+    registry
+        .execute(&mut doc, &format!("SaveAs \"{}\"", file.display()))
+        .unwrap();
+    let after = viboceros_io::read_3dm_file_with_blocks(&file, doc.tolerance()).unwrap();
+    assert_eq!(
+        before.objects.iter().map(|o| o.id).collect::<Vec<_>>(),
+        after.objects.iter().map(|o| o.id).collect::<Vec<_>>()
+    );
+    assert_eq!(before.definitions.len(), after.definitions.len());
+    for (source, saved) in before.definitions.iter().zip(after.definitions) {
+        assert_eq!(source.name, saved.name);
+        assert_eq!(
+            source.members.iter().map(|o| o.id).collect::<Vec<_>>(),
+            saved.members.iter().map(|o| o.id).collect::<Vec<_>>()
+        );
+    }
+}

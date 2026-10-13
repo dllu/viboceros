@@ -45,7 +45,12 @@ pub use surface_rebuild::{
     NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
+mod surface_blend;
 mod surface_tween;
+pub use surface_blend::{
+    SurfaceBlendContinuity, SurfaceBlendDiagnostics, SurfaceBlendOptions, SurfaceBlendResult,
+    try_blend_nurbs_surfaces,
+};
 pub use surface_tween::{
     MAX_SURFACE_TWEEN_CONTROLS, MAX_SURFACE_TWEEN_COUNT, try_tween_nurbs_surfaces,
     try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_refitted_with_operations,
@@ -66,6 +71,8 @@ mod intersection;
 mod line;
 mod loft;
 mod mesh;
+mod tessellation;
+pub use tessellation::{SurfaceTessellation, TessellationCorner, TessellationNormalSource};
 mod twist;
 pub use twist::TwistPointMorph;
 mod bend;
