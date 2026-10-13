@@ -561,7 +561,9 @@ pub enum GeometryError {
 
     #[error("B-rep face {face} could not be robustly tessellated inside its trim domain")]
     UnsupportedBrepTrimTessellation { face: usize },
-    #[error("normal tessellation cannot preserve B-rep face {face}'s local {direction}={parameter} knot crease with the available shared boundary samples; split the face at that knot")]
+    #[error(
+        "normal tessellation cannot preserve B-rep face {face}'s local {direction}={parameter} knot crease with the available shared boundary samples; split the face at that knot"
+    )]
     UnsupportedBrepNormalCrease {
         face: usize,
         direction: &'static str,

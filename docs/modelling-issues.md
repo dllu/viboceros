@@ -11,7 +11,7 @@ independent constructions and the reduced fender inputs.
 | VIB-03 | Require the native projection distance to satisfy the existing tolerance before trimming intersection curves; preserve legal native endpoint-zone bounds locally | Ordinary and formerly failing boundary-crossing lamp cutters pass native endpoint checks → strict portable B-rep → 3DM in both postprocessing modes |
 | VIB-04 | Preserve object UUIDs, including block members; fresh IDs for conflicts and duplicates | Actual ASTRA V3: 84/84 IDs retained; actual LMP2 V3: 467/467 IDs retained; geometry, names, layers and groups unchanged; repeated import and undo/redo regressions |
 | VIB-05 | Add `BlendSrf` with independent G0/G1/G2 targets, bulges, orientation, preview, rectangular trimming and atomic joining | Supplied ASTRA collar transition agrees within `1e-12` on a 41×41 grid, including second derivatives; command, GUI, undo and 3DM regressions |
-| VIB-06 | Add optional per-corner normals, face provenance and local UV/origin charts | Analytic derivative checks, one-sided normals, face reversal, singular-corner limits, trimmed holes, conforming seams and large translated parameter domains |
+| VIB-06 | Add optional per-corner normals, face provenance, local UV/origin charts and constrained trimmed-knot creases | Analytic derivatives, face reversal, singular limits, loop-order independent creases, closed-solid seam audits, conforming samples and large parameter domains |
 
 VIB-03's retained larger lamp cutter produced native edge/vertex gaps up to
 `4.7084e-3` with radii near `1e-9`, before copying or portable extraction. The
@@ -35,7 +35,15 @@ has not been reduced globally.
 
 The [normal-channel API](tessellation-normals.md) keeps local UV samples and their
 origins separately; adding them in f64 can lose parameter stations. Singular
-samples do not discard regular normals elsewhere in the object.
+samples do not discard regular normals elsewhere in the object. Optional normal
+meshes preserve trimmed knot creases using audited constraints. Missing shared
+crease anchors return an explicit unsupported error; split the face at that knot
+before requesting the channels.
+
+Validation includes 2,175 geometry tests, 1,277 command tests, 1,115 app tests,
+224 IO tests, the real-model GPU/identity checks above, native-feature build and
+BlendSrf checks, and native Boolean/portable-transfer regressions. Existing
+ignored tests remain opt-in; the GPU regressions were run explicitly.
 
 Re-run the external-model checks without committing a model:
 
