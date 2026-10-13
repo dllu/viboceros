@@ -53,7 +53,7 @@ fn transfer_vertex_tolerances(
             let gap = endpoint.distance_to(vertex.point())?;
             let allowed = tolerance
                 .absolute()
-                .max(vertex.tolerance())
+                .max(native_tolerances[vertex_index])
                 .max(edge.tolerance());
             if gap <= allowed {
                 continue;
@@ -194,6 +194,24 @@ mod plan_tests {
             "{error}"
         );
         assert_eq!(vertices, original);
+    }
+    #[test]
+    fn a_certified_vertex_bound_does_not_mask_another_edges_smaller_native_zone() {
+        let (mut vertices, mut edges, _) = endpoint_fixture(1.5e-6);
+        // Edge 0 legally enlarges portable vertex 0 to 1.5e-6. Edge 3 shares
+        // that vertex but its own native zone sum authorizes only 1.1e-6.
+        edges[3] = BrepEdge::try_new(edges[3].vertices(), edges[3].curve().clone(), 1e-7).unwrap();
+        let error = transfer_vertex_tolerances(&mut vertices, &edges, Tolerance::DEFAULT)
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.contains("edge 3 endpoint 0 misses vertex 0"),
+            "{error}"
+        );
+        assert!(
+            error.contains("vertex radius 1e-6") && error.contains("edge radius 1e-7"),
+            "{error}"
+        );
     }
     #[test]
     fn invalid_plan_buffers_clear_handles_without_writing_parent_storage() {
