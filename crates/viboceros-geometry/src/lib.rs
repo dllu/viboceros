@@ -66,6 +66,8 @@ mod intersection;
 mod line;
 mod loft;
 mod mesh;
+mod tessellation;
+pub use tessellation::{SurfaceTessellation, TessellationCorner, TessellationNormalSource};
 mod twist;
 pub use twist::TwistPointMorph;
 mod bend;

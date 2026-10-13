@@ -34,6 +34,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Viewport controls and drafting](docs/interface.md)
 - [Command input, completion, history, and file paths](docs/command-line.md)
 - [File formats and limitations](docs/file-formats.md)
+- [Analytic normals and tessellation provenance](docs/tessellation-normals.md)
 - [Architecture and implementation status](docs/architecture.md)
 - [Development and testing](docs/development.md)
 - [USD BRep kernel integration](docs/usd-brep.md)

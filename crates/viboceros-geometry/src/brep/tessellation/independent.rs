@@ -17,8 +17,8 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        self.tessellate_impl(samples_per_span, false, false, tolerance)
-            .map(|(mesh, _)| mesh)
+        self.tessellate_impl(samples_per_span, false, false, tolerance, false)
+            .map(|(mesh, _, _)| mesh)
     }
 
     /// Creates a display approximation without requiring a watertight mesh.
@@ -43,7 +43,7 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
-        self.tessellate_impl(samples_per_span, false, false, tolerance)
+        self.tessellate_impl(samples_per_span, false, false, tolerance, false)
             .or_else(|error| {
                 // Independent UV triangulation does not constrain internal
                 // positional breaks. Never bridge one to obtain a display mesh.
@@ -69,8 +69,9 @@ impl Brep {
                         }
                     }
                 }
-                self.tessellate_impl(samples_per_span, false, true, tolerance)
+                self.tessellate_impl(samples_per_span, false, true, tolerance, false)
             })
+            .map(|(mesh, sources, _)| (mesh, sources))
     }
 
     /// Creates one editable triangle/quad mesh for this B-rep.
@@ -102,33 +103,35 @@ impl Brep {
             .into_iter()
             .max()
             .expect("a validated B-rep has at least one face");
-        self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance)
-            .map(|(mesh, _)| mesh)
+        self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance, false)
+            .map(|(mesh, _, _)| mesh)
     }
 
-    fn tessellate_impl(
+    pub(super) fn tessellate_impl(
         &self,
         samples_per_span: usize,
         preserve_quads: bool,
         jagged_seams: bool,
         tolerance: Tolerance,
-    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
         if samples_per_span == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
         let mut vertices = Vec::new();
         let mut faces = Vec::new();
         let mut face_sources = Vec::new();
+        let mut vertex_parameters = Vec::new();
         for (face_index, face) in self.faces.iter().enumerate() {
             let frame = face.local_parameter_frame()?;
             let face = frame.face.as_ref();
-            let mesh = if face_covers_full_surface_domain(face, tolerance)? {
-                let surface_mesh = if preserve_quads {
-                    face.surface
-                        .tessellate_grid(samples_per_span, true, tolerance)?
-                } else {
-                    face.surface.tessellate(samples_per_span, tolerance)?
-                };
+            let (mesh, parameters) = if face_covers_full_surface_domain(face, tolerance)? {
+                let (surface_mesh, parameters) = face.surface.tessellate_grid_with_parameters(
+                    samples_per_span,
+                    preserve_quads,
+                    tolerance,
+                    retain_parameters,
+                )?;
                 let mut face_vertices = surface_mesh.vertices().to_vec();
                 if !jagged_seams {
                     self.snap_face_boundary_vertices(
@@ -138,20 +141,24 @@ impl Brep {
                         tolerance,
                     )?;
                 }
-                TriangleMesh::try_new_faces(
-                    face_vertices,
-                    surface_mesh.faces().to_vec(),
-                    Tolerance::MESH_VALIDATION,
-                )?
+                (
+                    TriangleMesh::try_new_faces(
+                        face_vertices,
+                        surface_mesh.faces().to_vec(),
+                        Tolerance::MESH_VALIDATION,
+                    )?,
+                    parameters,
+                )
             } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
                 let surface = face
                     .surface
                     .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
-                if preserve_quads {
-                    surface.tessellate_grid(samples_per_span, true, tolerance)?
-                } else {
-                    surface.tessellate(samples_per_span, tolerance)?
-                }
+                surface.tessellate_grid_with_parameters(
+                    samples_per_span,
+                    preserve_quads,
+                    tolerance,
+                    retain_parameters,
+                )?
             } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
                 self.tessellate_planar_trimmed_face(
                     face_index,
@@ -178,6 +185,16 @@ impl Brep {
             if combined_vertex_count > u32::MAX as usize {
                 return Err(GeometryError::TooManyMeshVertices);
             }
+            if retain_parameters {
+                vertex_parameters.extend(
+                    parameters
+                        .iter()
+                        .map(|uv| {
+                            Point2::try_new(uv.x() + frame.origin[0], uv.y() + frame.origin[1])
+                        })
+                        .collect::<Result<Vec<_>, _>>()?,
+                );
+            }
             vertices.extend(mesh.vertices());
             for source_face in mesh.faces() {
                 let mut mapped = source_face.remapped(|vertex| {
@@ -196,9 +213,9 @@ impl Brep {
         if !jagged_seams
             && !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)?
         {
-            return self.tessellate_conforming_with_face_sources(samples_per_span, tolerance);
+            return self.tessellate_conforming_impl(samples_per_span, tolerance, retain_parameters);
         }
-        Ok((mesh, face_sources))
+        Ok((mesh, face_sources, vertex_parameters))
     }
 
     fn tessellate_planar_trimmed_face(
@@ -208,7 +225,7 @@ impl Brep {
         samples_per_span: usize,
         jagged_seams: bool,
         tolerance: Tolerance,
-    ) -> Result<TriangleMesh, GeometryError> {
+    ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
         let mut sampled_loops = face
             .loops
             .iter()
@@ -246,7 +263,7 @@ impl Brep {
                 tolerance,
             );
         }
-        trimmed_face_mesh(face_vertices, triangles)
+        Ok((trimmed_face_mesh(face_vertices, triangles)?, parameters))
     }
 
     fn tessellate_nonplanar_trimmed_face(
@@ -256,7 +273,7 @@ impl Brep {
         samples_per_span: usize,
         jagged_seams: bool,
         tolerance: Tolerance,
-    ) -> Result<TriangleMesh, GeometryError> {
+    ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
         let sampled_loops = face
             .loops
             .iter()
@@ -285,7 +302,7 @@ impl Brep {
                 tolerance,
             );
         }
-        trimmed_face_mesh(face_vertices, triangles)
+        Ok((trimmed_face_mesh(face_vertices, triangles)?, parameters))
     }
 
     fn snap_face_boundary_vertices(

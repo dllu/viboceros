@@ -3938,6 +3938,17 @@ impl NurbsSurface {
         preserve_quads: bool,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate_grid_with_parameters(samples_per_span, preserve_quads, tolerance, false)
+            .map(|(mesh, _)| mesh)
+    }
+
+    pub(crate) fn tessellate_grid_with_parameters(
+        &self,
+        samples_per_span: usize,
+        preserve_quads: bool,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<crate::Point2>), GeometryError> {
         if samples_per_span == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
@@ -3959,6 +3970,10 @@ impl NurbsSurface {
         }
 
         let mut vertices = Vec::with_capacity(capacity);
+        let mut parameters = Vec::new();
+        if retain_parameters {
+            parameters.reserve(capacity);
+        }
         let mut faces = Vec::new();
         let domain_u_end = *self.domain_u().end();
         let domain_v_end = *self.domain_v().end();
@@ -3979,6 +3994,9 @@ impl NurbsSurface {
                             domain_u_end,
                         );
                         vertices.push(self.evaluate(u, v)?);
+                        if retain_parameters {
+                            parameters.push(crate::Point2::try_new(u, v)?);
+                        }
                     }
                 }
                 for row in 0..samples_per_span {
@@ -4025,7 +4043,10 @@ impl NurbsSurface {
             self.is_closed_v()?,
             tolerance,
         )?;
-        TriangleMesh::try_new_faces(vertices, faces, tolerance)
+        Ok((
+            TriangleMesh::try_new_faces(vertices, faces, tolerance)?,
+            parameters,
+        ))
     }
 
     fn map_u_control_curves<E: From<GeometryError>>(

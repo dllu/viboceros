@@ -5,6 +5,7 @@ use super::*;
 mod audit;
 mod conforming;
 mod independent;
+mod normals;
 
 #[cfg(test)]
 mod tests;
