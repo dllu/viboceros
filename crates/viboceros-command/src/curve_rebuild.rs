@@ -207,15 +207,13 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
             Ok((
                 o.id(),
                 o.attributes().layer_id(),
-                viboceros_document::GeometrySnapshot::from(Geometry::NurbsCurve(
-                    try_rebuild_curve(
-                        c,
-                        options.point_count,
-                        options.degree,
-                        options.preserve_end_tangents,
-                        doc.tolerance(),
-                    )?,
-                )),
+                viboceros_document::GeometrySnapshot::from(Geometry::NurbsCurve(rebuild_backend(
+                    c,
+                    options.point_count,
+                    options.degree,
+                    options.preserve_end_tangents,
+                    doc.tolerance(),
+                )?)),
             ))
         })
         .collect::<Result<Vec<_>, CommandError>>()?;
@@ -227,6 +225,36 @@ pub fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandErro
         options,
         output,
     })
+}
+
+fn rebuild_backend(
+    source: CurveRef<'_>,
+    point_count: usize,
+    degree: usize,
+    preserve_end_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::rebuild_curve(
+            source,
+            point_count,
+            degree,
+            preserve_end_tangents,
+            tolerance,
+        )
+        .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_rebuild_curve(
+            source,
+            point_count,
+            degree,
+            preserve_end_tangents,
+            tolerance,
+        )?)
+    }
 }
 
 #[cfg(test)]

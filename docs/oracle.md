@@ -15,6 +15,10 @@ The `curve_interpolate_geometry` operation accepts `points`, `degree`,
 and optional `start_tangent`/`end_tangent` vectors. It compares complete SDK-style
 curve definitions; the 30-case fixture currently has portable/native evidence
 with fresh Rhino capture pending. See [point interpolation qualification](smlib-curve-interpolation.md).
+The existing `curve_rebuild_geometry` operation now selects the native backend
+in `native-smlib` builds. `curve_rebuild_native.json` exercises all degrees,
+odd/even closed counts and the public point limit; its portable-reference and
+SDK-capture status are recorded in [Rebuild qualification](smlib-curve-rebuild.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

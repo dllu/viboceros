@@ -1,0 +1,304 @@
+{
+  "reference": "Pre-change portable oracle built at 689765b3",
+  "hardware": "Linux ARM64",
+  "method": "Five independent oracle requests per backend, five timed rebuilds and one untimed warmup per operation/request; elapsed_ns excludes JSON serialization. Builds use the same release profile. Processes ran serially; other compilation was active.",
+  "status": "Diagnostic native/portable timings only; not a Rhino performance comparison or general benchmark guarantee.",
+  "request": {
+    "protocol_version": 1,
+    "iterations": 5,
+    "operations": [
+      {
+        "op": "curve_rebuild_geometry",
+        "id": "rebuild-open-3-1000",
+        "degree": 3,
+        "point_count": 1000,
+        "curve": {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                -1,
+                1
+              ]
+            },
+            {
+              "point": [
+                6,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            3,
+            6,
+            6
+          ]
+        },
+        "preserve_tangents": false
+      },
+      {
+        "op": "curve_rebuild_geometry",
+        "id": "rebuild-closed-3-1000",
+        "degree": 3,
+        "point_count": 1000,
+        "curve": {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                4,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            4,
+            8,
+            12,
+            16,
+            16
+          ]
+        },
+        "preserve_tangents": false
+      },
+      {
+        "op": "curve_rebuild_geometry",
+        "id": "rebuild-open-11-1000",
+        "degree": 11,
+        "point_count": 1000,
+        "curve": {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                -1,
+                1
+              ]
+            },
+            {
+              "point": [
+                6,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            3,
+            6,
+            6
+          ]
+        },
+        "preserve_tangents": false
+      },
+      {
+        "op": "curve_rebuild_geometry",
+        "id": "rebuild-closed-11-1000",
+        "degree": 11,
+        "point_count": 1000,
+        "curve": {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                4,
+                4,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            4,
+            8,
+            12,
+            16,
+            16
+          ]
+        },
+        "preserve_tangents": false
+      }
+    ]
+  },
+  "operations": [
+    {
+      "id": "rebuild-open-3-1000",
+      "native_ns_per_rebuild": [
+        7880055.8,
+        7901636.6,
+        7859559.8,
+        8934438.6,
+        9512225.2
+      ],
+      "portable_ns_per_rebuild": [
+        10888775.0,
+        10129477.6,
+        11394827.0,
+        11132263.4,
+        10454012.6
+      ],
+      "native_median_ns": 7901636.6,
+      "portable_median_ns": 10888775.0,
+      "observed_speed_ratio": 1.3780404682240133
+    },
+    {
+      "id": "rebuild-closed-3-1000",
+      "native_ns_per_rebuild": [
+        6522098.0,
+        6522139.6,
+        6511637.4,
+        6528069.4,
+        6522203.8
+      ],
+      "portable_ns_per_rebuild": [
+        11760456.4,
+        11768821.2,
+        11757352.4,
+        11742904.4,
+        11770181.2
+      ],
+      "native_median_ns": 6522139.6,
+      "portable_median_ns": 11760456.4,
+      "observed_speed_ratio": 1.803159257738059
+    },
+    {
+      "id": "rebuild-open-11-1000",
+      "native_ns_per_rebuild": [
+        7990625.6,
+        8013893.0,
+        8001518.4,
+        8014411.2,
+        8002939.2
+      ],
+      "portable_ns_per_rebuild": [
+        10372604.4,
+        10080949.4,
+        10383420.4,
+        11143904.8,
+        10390303.4
+      ],
+      "native_median_ns": 8002939.2,
+      "portable_median_ns": 10383420.4,
+      "observed_speed_ratio": 1.297450866551629
+    },
+    {
+      "id": "rebuild-closed-11-1000",
+      "native_ns_per_rebuild": [
+        6784994.8,
+        6799612.2,
+        6780505.0,
+        6794719.4,
+        6807135.6
+      ],
+      "portable_ns_per_rebuild": [
+        11766981.2,
+        11756626.0,
+        11754958.8,
+        11780392.4,
+        11778248.4
+      ],
+      "native_median_ns": 6794719.4,
+      "portable_median_ns": 11766981.2,
+      "observed_speed_ratio": 1.7317832433227482
+    }
+  ],
+  "native_binary_sha256": "cc396008e9974ba529675a28c65da1c43697f7f274533ebc886cee80f6f8cf5d",
+  "prechange-portable_binary_sha256": "f4ab9728c47bf89a7f47cf8c7c01e73ef6118d1fb5d36181bdebb3bca0664ff8"
+}

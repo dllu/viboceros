@@ -155,7 +155,8 @@ pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves
 pub use curve_match::{CurveMatchPreserveEnd, try_average_match_curve_ends, try_match_curve_end};
 pub use curve_offset::CurveOffsetCornerStyle;
 pub use curve_rebuild::{
-    MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT, try_rebuild_curve,
+    CurveRebuildInterpolation, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT,
+    try_rebuild_curve, try_rebuild_curve_with_interpolation,
 };
 pub use curve_segment::CurveSegment3;
 pub use curve_through::{

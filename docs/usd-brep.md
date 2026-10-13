@@ -65,6 +65,8 @@ pivoted for periodic closed systems.
 [InterpCrv and curve-through interpolation](smlib-curve-interpolation.md) share
 the native cubic solver, preserving point/tangent policy and using banded
 storage and solving for open systems.
+[Curve Rebuild](smlib-curve-rebuild.md) shares native basis and matrix solving
+for all degrees 1–11, including reordered periodic bands and command previews.
 
 ## Reproduce the native trial
 

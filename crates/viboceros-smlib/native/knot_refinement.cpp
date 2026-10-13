@@ -766,94 +766,116 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
     return snapshot(output,points,exponent,origin);
 }
 
-void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count) {
+void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=257 && input.columns>0 && input.columns<=2048 && input.columns%4==0
-        && (input.closed==0 || input.closed==1),"Invalid Loft interpolation dimensions");
+        && input.parameter_count<=1001 && input.columns>0 && input.columns<=2048 && input.columns%4==0
+        && input.degree>=1 && input.degree<=NL_MAXDEG
+        && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
+        && (input.uniform_periodic==0 || input.uniform_periodic==1)
+        && (!input.handles || (!input.closed && input.degree==3))
+        && (!input.uniform_periodic || input.closed),"Invalid interpolation dimensions");
     const size_t sections=input.parameter_count-input.closed;
-    const size_t unknowns=sections+(input.closed?0:2),controls=sections+(input.closed?3:2);
-    require(sections>=2 && input.knot_count==controls+4
+    const size_t unknowns=sections+2*input.handles,controls=unknowns+(input.closed?input.degree:0);
+    require(sections>=2 && (!input.uniform_periodic || sections>=input.degree) && controls>input.degree && input.knot_count==controls+input.degree+1
         && input.target_count==unknowns*input.columns && output_count==input.target_count,
-        "Invalid Loft interpolation layout");
+        "Invalid interpolation layout");
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
     for(size_t i=0;i<basis.size();++i)
-        require(std::isfinite(basis[i]) && (!i || basis[i]>=basis[i-1]),"Invalid Loft knot vector");
+        require(std::isfinite(basis[i]) && (!i || basis[i]>=basis[i-1]),"Invalid interpolation knot vector");
     const BinaryChart chart(input.knots,input.knot_count);
     chart.scale(basis);
     for(size_t i=0;i<input.parameter_count;++i)
         require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]),
-            "Invalid Loft interpolation stations");
-    require(chart.scaled(input.parameters[0])==basis[3]
-        && chart.scaled(input.parameters[input.parameter_count-1])==basis[controls],
-        "Loft stations differ from the active interval");
-    NL_STACKS stack;
-    SmStackHandler cleanup(&stack);
-    NL_RMATRIX matrix;
-    const size_t matrix_width=input.closed?unknowns:5;
-    check(N_SetRealMatrix(&matrix,unknowns-1,unknowns-1,input.closed?NL_MT_FULL:NL_MT_BANDED,
-        input.closed?unknowns-1:matrix_width,&stack),
-        "Allocate native Loft interpolation matrix failed");
-    NL_REAL **values;
-    N_GetRealMatrixPtr(&matrix,&values);
-    for(size_t i=0;i<unknowns;++i) std::fill_n(values[i],matrix_width,0.0);
+            "Invalid interpolation stations");
+    require(chart.scaled(input.parameters[0])>=basis[input.degree]
+        && chart.scaled(input.parameters[input.parameter_count-1])==basis[controls]
+        && (input.uniform_periodic || chart.scaled(input.parameters[0])==basis[input.degree]),
+        "Interpolation stations differ from the active interval");
+
+    // The uniform periodic Greville system is a cyclic band around control
+    // floor(degree/2). Order the cycle from alternate ends, so neighboring
+    // stations remain at most twice their cyclic distance apart. Only rows and
+    // columns change order; coefficients and the original control basis remain.
+    std::vector<size_t> order(unknowns),inverse(unknowns);
+    for(size_t i=0;i<unknowns;++i) {
+        order[i]=input.uniform_periodic?(i%2?(unknowns-1-i/2):i/2):i;
+        inverse[order[i]]=i;
+    }
+    const size_t shift=input.uniform_periodic?input.degree/2:0;
     const auto source_row=[&](size_t row) {
-        if(input.closed || row==0) return row;
+        if(input.uniform_periodic) return order[row];
+        if(!input.handles || row==0) return row;
         if(row==1) return sections;
         if(row+2==unknowns) return sections+1;
         if(row+1==unknowns) return sections-1;
         return row-1;
     };
+    const auto source_column=[&](size_t column) {
+        return input.uniform_periodic?(order[column]+shift)%sections:column;
+    };
+    const bool full=input.closed && !input.uniform_periodic;
+    const size_t half_width=std::min(unknowns-1,input.uniform_periodic?2*(input.degree/2):
+        (input.handles?2:input.degree));
+    const size_t matrix_width=full?unknowns:2*half_width+1;
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_RMATRIX matrix;
+    check(N_SetRealMatrix(&matrix,unknowns-1,unknowns-1,full?NL_MT_FULL:NL_MT_BANDED,
+        full?unknowns-1:matrix_width,&stack),"Allocate native interpolation matrix failed");
+    NL_REAL **values;
+    N_GetRealMatrixPtr(&matrix,&values);
+    for(size_t i=0;i<unknowns;++i) std::fill_n(values[i],matrix_width,0.0);
     NL_KNOTVECTOR knots={static_cast<NL_INDEX>(basis.size()-1),basis.data()};
     for(size_t i=0;i<sections;++i) {
-        double coefficients[4],*rows[]={coefficients};
+        double coefficients[NL_MAXDEG+1],*rows[]={coefficients};
         NL_INDEX span;
         const double parameter=chart.scaled(input.parameters[i]);
-        // The derivative producer's zeroth row honors unclamped periodic
-        // endpoints; N_BasisEval instead supplies clamped identity rows.
-        check(N_BasisDerivs(&knots,3,parameter,NL_LEFT,0,rows,&span),"Evaluate native Loft basis failed");
+        // Zeroth derivatives honor unclamped periodic endpoints.
+        check(N_BasisDerivs(&knots,input.degree,parameter,NL_LEFT,0,rows,&span),"Evaluate native interpolation basis failed");
         const auto expected=parameter==basis[controls]?controls-1:
             static_cast<size_t>(std::upper_bound(basis.begin(),basis.end(),parameter)-basis.begin()-1);
-        require(span==static_cast<NL_INDEX>(expected),"Native Loft span differs from the exact chart");
-        for(size_t j=0;j<4;++j) {
-            const auto column=static_cast<size_t>(span-3)+j;
-            require(column<controls && std::isfinite(coefficients[j]),"Invalid native Loft basis coefficient");
-            if(input.closed) values[i][column%sections]+=coefficients[j];
+        require(span==static_cast<NL_INDEX>(expected),"Native interpolation span differs from the exact chart");
+        const size_t row=input.uniform_periodic?inverse[i]:
+            (input.handles?(i==0?0:(i+1==sections?unknowns-1:i+1)):i);
+        for(size_t j=0;j<=input.degree;++j) {
+            const auto original_column=static_cast<size_t>(span-input.degree)+j;
+            require(original_column<controls && std::isfinite(coefficients[j]),"Invalid native interpolation basis coefficient");
+            const auto folded=input.closed?original_column%sections:original_column;
+            const size_t column=input.uniform_periodic?inverse[(folded+sections-shift)%sections]:folded;
+            if(full) values[row][column]+=coefficients[j];
             else if(coefficients[j]!=0) {
-                const size_t row=i==0?0:(i+1==sections?unknowns-1:i+1);
-                const auto band_column=static_cast<ptrdiff_t>(column)-static_cast<ptrdiff_t>(row)+2;
-                require(band_column>=0 && static_cast<size_t>(band_column)<matrix_width,"Native open cubic exceeded its matrix band");
+                const auto band_column=static_cast<ptrdiff_t>(column)-static_cast<ptrdiff_t>(row)+static_cast<ptrdiff_t>(half_width);
+                require(band_column>=0 && static_cast<size_t>(band_column)<matrix_width,"Native interpolation exceeded its matrix band");
                 values[row][band_column]+=coefficients[j];
             }
         }
     }
-    if(!input.closed) {values[1][2]=1.;values[unknowns-2][2]=1.;}
+    if(input.handles) {values[1][half_width]=1.;values[unknowns-2][half_width]=1.;}
     std::vector<double> original(unknowns*matrix_width);
     for(size_t i=0;i<unknowns;++i) std::copy_n(values[i],matrix_width,original.data()+i*matrix_width);
-    std::vector<NL_INDEX> pivots(unknowns);
-    check(input.closed?N_RealMatrixLuDecomposePivot(&matrix,pivots.data()):N_RealMatrixLuDecompose(&matrix),
-        "Factor native Loft interpolation system failed");
+    std::vector<NL_INDEX> pivots(full?unknowns:0);
+    check(full?N_RealMatrixLuDecomposePivot(&matrix,pivots.data()):N_RealMatrixLuDecompose(&matrix),
+        "Factor native interpolation system failed");
     std::vector<NL_CPOINT> targets(unknowns),solution(unknowns);
     for(size_t column=0;column<input.columns;column+=4) {
         for(size_t i=0;i<unknowns;++i) {
             const double *p=input.targets+source_row(i)*input.columns+column;
-            require(std::all_of(p,p+4,[](double x){return std::isfinite(x);}),"Nonfinite Loft targets");
+            require(std::all_of(p,p+4,[](double x){return std::isfinite(x);}),"Nonfinite interpolation targets");
             targets[i]={p[0],p[1],p[2],p[3]};
         }
-        // Apply the LU row permutation before the native homogeneous solve.
-        // This avoids the real-vector pivot solver's RHS zero-tolerance skip.
-        for(size_t i=0;input.closed && i<unknowns;++i) {
-            require(pivots[i]>=0 && static_cast<size_t>(pivots[i])<unknowns,"Invalid native Loft pivot");
+        // Homogeneous back solving avoids the real-vector RHS tolerance skip.
+        for(size_t i=0;full && i<unknowns;++i) {
+            require(pivots[i]>=0 && static_cast<size_t>(pivots[i])<unknowns,"Invalid native interpolation pivot");
             std::swap(targets[i],targets[pivots[i]]);
         }
         check(N_RealMatrixForBack(&matrix,targets.data(),NL_HPOINT,solution.data(),&stack),
-            "Solve native Loft homogeneous channels failed");
+            "Solve native interpolation homogeneous channels failed");
         for(size_t i=0;i<unknowns;++i) {
             const auto &p=solution[i];
             const double result[]={p.x,p.y,p.z,p.w};
-            require(std::all_of(result,result+4,[](double x){return std::isfinite(x);}),"Nonfinite Loft solution");
-            std::copy_n(result,4,output+i*input.columns+column);
+            require(std::all_of(result,result+4,[](double x){return std::isfinite(x);}),"Nonfinite interpolation solution");
+            std::copy_n(result,4,output+source_column(i)*input.columns+column);
         }
-        // Retain a residual guard around the copied input constraints.
         for(size_t c=0;c<4;++c) {
             double magnitude=0;
             for(size_t i=0;i<unknowns;++i) magnitude=std::max(magnitude,
@@ -862,14 +884,14 @@ void vb_solve_loft(const VbLoftSystem &input,double *output,size_t output_count)
             for(size_t row=0;row<unknowns;++row) {
                 const double target=input.targets[source_row(row)*input.columns+column+c]/magnitude;
                 double sum=0,scale=std::abs(target);
-                const size_t first=input.closed?0:(row>2?row-2:0),last=input.closed?unknowns:std::min(unknowns,row+3);
+                const size_t first=full?0:(row>half_width?row-half_width:0),last=full?unknowns:std::min(unknowns,row+half_width+1);
                 for(size_t i=first;i<last;++i) {
-                    const size_t entry=input.closed?i:static_cast<ptrdiff_t>(i)-static_cast<ptrdiff_t>(row)+2;
-                    const double value=original[row*matrix_width+entry]*(output[i*input.columns+column+c]/magnitude);
+                    const size_t entry=full?i:static_cast<ptrdiff_t>(i)-static_cast<ptrdiff_t>(row)+static_cast<ptrdiff_t>(half_width);
+                    const double value=original[row*matrix_width+entry]*(output[source_column(i)*input.columns+column+c]/magnitude);
                     sum+=value;scale+=std::abs(value);
                 }
                 require(std::isfinite(sum) && std::abs(sum-target)<=1e-12*scale+1e-14,
-                    "Native Loft solution failed the input residual check");
+                    "Native interpolation solution failed the input residual check");
             }
         }
     }

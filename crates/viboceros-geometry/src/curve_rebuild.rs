@@ -11,6 +11,17 @@ pub const MAX_CURVE_REBUILD_DEGREE: usize = 11;
 /// Largest requested point count accepted by RhinoScript's `RebuildCurve`.
 pub const MAX_CURVE_REBUILD_POINT_COUNT: usize = 1_000;
 
+/// Uniform Rebuild collocation, shared with external basis/solve backends.
+/// Targets and returned controls are normalized Cartesian offsets. Periodic
+/// parameters include the final domain endpoint, without a repeated target.
+pub struct CurveRebuildInterpolation<'a> {
+    pub degree: usize,
+    pub knots: &'a [Real],
+    pub parameters: &'a [Real],
+    pub periodic: bool,
+    pub targets: &'a [[Real; 3]],
+}
+
 /// Reconstructs a curve as a non-rational, uniform NURBS curve with a requested
 /// degree and point count.
 ///
@@ -30,11 +41,32 @@ pub fn try_rebuild_curve(
     preserve_end_tangents: bool,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_rebuild_curve_with_interpolation(
+        source,
+        point_count,
+        degree,
+        preserve_end_tangents,
+        tolerance,
+        &mut solve_portable_rebuild,
+    )
+}
+
+/// Retain Rebuild sampling, basis and tangent policy while delegating the
+/// normalized control solve to the caller's backend.
+pub fn try_rebuild_curve_with_interpolation<E: From<GeometryError>>(
+    source: CurveRef<'_>,
+    point_count: usize,
+    degree: usize,
+    preserve_end_tangents: bool,
+    tolerance: Tolerance,
+    solve: &mut impl FnMut(&CurveRebuildInterpolation<'_>) -> Result<Vec<[Real; 3]>, E>,
+) -> Result<NurbsCurve, E> {
     if degree == 0 || degree > MAX_CURVE_REBUILD_DEGREE {
         return Err(GeometryError::InvalidCurveRebuildDegree {
             actual: degree,
             maximum: MAX_CURVE_REBUILD_DEGREE,
-        });
+        }
+        .into());
     }
 
     if point_count == 0 || point_count > MAX_CURVE_REBUILD_POINT_COUNT {
@@ -42,7 +74,8 @@ pub fn try_rebuild_curve(
             actual: point_count,
             minimum: 1,
             maximum: MAX_CURVE_REBUILD_POINT_COUNT,
-        });
+        }
+        .into());
     }
 
     let closed = source.is_closed()?;
@@ -54,18 +87,19 @@ pub fn try_rebuild_curve(
     let mut sampler = ArcLengthSampler::try_new(source, tolerance)?;
     sampler.prepare_budgeted_repeated_sampling(32)?;
     if closed {
-        rebuild_closed(&sampler, point_count, degree)
+        rebuild_closed(&sampler, point_count, degree, solve)
     } else {
-        rebuild_open(&sampler, point_count, degree, preserve_end_tangents)
+        rebuild_open(&sampler, point_count, degree, preserve_end_tangents, solve)
     }
 }
 
-fn rebuild_open(
+fn rebuild_open<E: From<GeometryError>>(
     sampler: &ArcLengthSampler<'_>,
     point_count: usize,
     degree: usize,
     preserve_end_tangents: bool,
-) -> Result<NurbsCurve, GeometryError> {
+    solve: &mut impl FnMut(&CurveRebuildInterpolation<'_>) -> Result<Vec<[Real; 3]>, E>,
+) -> Result<NurbsCurve, E> {
     let span_count = point_count - degree;
     let knots = clamped_uniform_knots(degree, point_count, span_count);
     let mut parameters = Vec::with_capacity(point_count);
@@ -78,11 +112,7 @@ fn rebuild_open(
         );
     }
 
-    let rows = parameters
-        .into_iter()
-        .map(|parameter| bspline_basis_values(&knots, degree, point_count, parameter))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut controls = solve_banded_collocation(rows, &targets)?;
+    let mut controls = solve_rebuild_targets(degree, &knots, &parameters, false, &targets, solve)?;
     // Endpoint collocation rows are identities. Assigning the exact sampled
     // points also avoids retaining inconsequential solver roundoff there.
     controls[0] = targets[0];
@@ -105,7 +135,7 @@ fn rebuild_open(
             .translated(end_tangent.as_vector().scaled(end_projection)?)?;
     }
 
-    NurbsCurve::try_new(degree, controls, knots)
+    Ok(NurbsCurve::try_new(degree, controls, knots)?)
 }
 
 /// Interpolates the source at affine parameter locations corresponding to a
@@ -131,7 +161,7 @@ pub(crate) fn interpolate_affine_greville(
     let start = *domain.start();
     let length = *domain.end() - start;
     let mut targets = Vec::with_capacity(point_count);
-    let mut rows = Vec::with_capacity(point_count);
+    let mut parameters = Vec::with_capacity(point_count);
     for control_index in 0..point_count {
         let parameter = greville_parameter(&knots, degree, control_index);
         let source_parameter = if control_index + 1 == point_count {
@@ -140,24 +170,27 @@ pub(crate) fn interpolate_affine_greville(
             (parameter / span_count as Real).mul_add(length, start)
         };
         targets.push(source.evaluate(source_parameter)?);
-        rows.push(bspline_basis_values(
-            &knots,
-            degree,
-            point_count,
-            parameter,
-        )?);
+        parameters.push(parameter);
     }
-    let mut controls = solve_banded_collocation(rows, &targets)?;
+    let mut controls = solve_rebuild_targets(
+        degree,
+        &knots,
+        &parameters,
+        false,
+        &targets,
+        &mut solve_portable_rebuild,
+    )?;
     controls[0] = targets[0];
     controls[point_count - 1] = targets[point_count - 1];
     NurbsCurve::try_new(degree, controls, knots)
 }
 
-fn rebuild_closed(
+fn rebuild_closed<E: From<GeometryError>>(
     sampler: &ArcLengthSampler<'_>,
     point_count: usize,
     degree: usize,
-) -> Result<NurbsCurve, GeometryError> {
+    solve: &mut impl FnMut(&CurveRebuildInterpolation<'_>) -> Result<Vec<[Real; 3]>, E>,
+) -> Result<NurbsCurve, E> {
     let knots = periodic_uniform_knots(degree, point_count);
     let control_count = point_count + degree;
     let offset = if degree.is_multiple_of(2) { 0.5 } else { 0.0 };
@@ -168,16 +201,71 @@ fn rebuild_closed(
         })
         .collect::<Result<Vec<_>, _>>()?;
 
-    let basis = bspline_basis_values(&knots, degree, control_count, offset)?;
-    let mut kernel = vec![0.0; point_count];
-    for (control_index, coefficient) in basis.into_iter().enumerate() {
-        kernel[control_index % point_count] += coefficient;
-    }
-    let unique_controls = solve_circulant_collocation(&kernel, &targets)?;
+    let mut parameters = (0..point_count)
+        .map(|i| i as Real + offset)
+        .collect::<Vec<_>>();
+    parameters.push(point_count as Real);
+    let unique_controls =
+        solve_rebuild_targets(degree, &knots, &parameters, true, &targets, solve)?;
     let mut controls = Vec::with_capacity(control_count);
     controls.extend_from_slice(&unique_controls);
     controls.extend((0..degree).map(|index| unique_controls[index % point_count]));
-    NurbsCurve::try_new(degree, controls, knots)
+    Ok(NurbsCurve::try_new(degree, controls, knots)?)
+}
+
+fn solve_rebuild_targets<E: From<GeometryError>>(
+    degree: usize,
+    knots: &[Real],
+    parameters: &[Real],
+    periodic: bool,
+    targets: &[Point3],
+    solve: &mut impl FnMut(&CurveRebuildInterpolation<'_>) -> Result<Vec<[Real; 3]>, E>,
+) -> Result<Vec<Point3>, E> {
+    let (normalized, scale, origin) = normalized_targets(targets);
+    let input = CurveRebuildInterpolation {
+        degree,
+        knots,
+        parameters,
+        periodic,
+        targets: &normalized,
+    };
+    let controls = solve(&input)?;
+    if controls.len() != targets.len() {
+        return Err(GeometryError::InvalidControlNet {
+            context: "curve rebuild solver returned an inconsistent layout",
+        }
+        .into());
+    }
+    Ok(controls
+        .into_iter()
+        .map(|p| point_from_normalized(p, scale, origin))
+        .collect::<Result<_, _>>()?)
+}
+
+fn solve_portable_rebuild(
+    input: &CurveRebuildInterpolation<'_>,
+) -> Result<Vec<[Real; 3]>, GeometryError> {
+    let n = input.targets.len();
+    if input.periodic {
+        let basis = bspline_basis_values(
+            input.knots,
+            input.degree,
+            n + input.degree,
+            input.parameters[0],
+        )?;
+        let mut kernel = vec![0.0; n];
+        for (i, coefficient) in basis.into_iter().enumerate() {
+            kernel[i % n] += coefficient;
+        }
+        solve_circulant_collocation(&kernel, input.targets)
+    } else {
+        let rows = input
+            .parameters
+            .iter()
+            .map(|t| bspline_basis_values(input.knots, input.degree, n, *t))
+            .collect::<Result<Vec<_>, _>>()?;
+        solve_banded_collocation(rows, input.targets)
+    }
 }
 
 fn clamped_uniform_knots(degree: usize, point_count: usize, span_count: usize) -> Vec<Real> {
@@ -244,12 +332,12 @@ fn point_from_normalized(
 
 fn solve_banded_collocation(
     mut rows: Vec<Vec<Real>>,
-    targets: &[Point3],
-) -> Result<Vec<Point3>, GeometryError> {
+    targets: &[[Real; 3]],
+) -> Result<Vec<[Real; 3]>, GeometryError> {
     let count = rows.len();
     debug_assert_eq!(targets.len(), count);
     debug_assert!(rows.iter().all(|row| row.len() == count));
-    let (mut right_hand_side, scale, origin) = normalized_targets(targets);
+    let mut right_hand_side = targets.to_vec();
     let mut lower_bandwidth = 0;
     let mut upper_bandwidth = 0;
     for (row_index, row) in rows.iter().enumerate() {
@@ -314,19 +402,16 @@ fn solve_banded_collocation(
         right_hand_side[row_index] = target;
     }
 
-    right_hand_side
-        .into_iter()
-        .map(|coordinates| point_from_normalized(coordinates, scale, origin))
-        .collect()
+    Ok(right_hand_side)
 }
 
 fn solve_circulant_collocation(
     kernel: &[Real],
-    targets: &[Point3],
-) -> Result<Vec<Point3>, GeometryError> {
+    targets: &[[Real; 3]],
+) -> Result<Vec<[Real; 3]>, GeometryError> {
     let count = kernel.len();
     debug_assert_eq!(targets.len(), count);
-    let (right_hand_side, scale, origin) = normalized_targets(targets);
+    let right_hand_side = targets;
     let mut spectrum = Vec::with_capacity(count);
 
     for frequency in 0..count {
@@ -379,16 +464,10 @@ fn solve_circulant_collocation(
     }
 
     let inverse_count = 1.0 / count as Real;
-    solution
+    Ok(solution
         .into_iter()
-        .map(|coordinates| {
-            point_from_normalized(
-                coordinates.map(|value| value * inverse_count),
-                scale,
-                origin,
-            )
-        })
-        .collect()
+        .map(|p| p.map(|value| value * inverse_count))
+        .collect())
 }
 
 #[cfg(test)]
@@ -398,6 +477,62 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn external_rebuild_solver_observes_shared_normalization_and_validates_layout() {
+        let line = LineSegment::try_new(
+            point(1e9, 0., 0.),
+            point(1e9 + 1., 0., 0.),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut calls = 0;
+        let result = try_rebuild_curve_with_interpolation(
+            CurveRef::Line(&line),
+            6,
+            3,
+            false,
+            Tolerance::DEFAULT,
+            &mut |input| {
+                calls += 1;
+                assert_eq!(input.degree, 3);
+                assert!(!input.periodic);
+                assert_eq!(input.targets.len(), 6);
+                assert_eq!(input.targets[0], [0.; 3]);
+                assert_eq!(input.targets[5], [1., 0., 0.]);
+                solve_portable_rebuild(input)
+            },
+        )
+        .unwrap();
+        assert_eq!(calls, 1);
+        assert_eq!(
+            result,
+            try_rebuild_curve(CurveRef::Line(&line), 6, 3, false, Tolerance::DEFAULT).unwrap()
+        );
+        let bad = try_rebuild_curve_with_interpolation(
+            CurveRef::Line(&line),
+            6,
+            3,
+            false,
+            Tolerance::DEFAULT,
+            &mut |_| -> Result<Vec<[Real; 3]>, GeometryError> { Ok(Vec::new()) },
+        );
+        assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+        let invalid = try_rebuild_curve_with_interpolation(
+            CurveRef::Line(&line),
+            0,
+            3,
+            false,
+            Tolerance::DEFAULT,
+            &mut |_| -> Result<Vec<[Real; 3]>, GeometryError> {
+                panic!("invalid request entered solver")
+            },
+        );
+        assert!(matches!(
+            invalid,
+            Err(GeometryError::InvalidCurveRebuildPointCount { .. })
+        ));
     }
 
     fn assert_near(actual: Real, expected: Real, epsilon: Real) {

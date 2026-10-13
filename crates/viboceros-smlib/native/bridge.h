@@ -10,8 +10,8 @@ typedef struct VbSolid VbSolid;
 typedef struct VbCurve VbCurve;
 typedef struct VbMesh VbMesh;
 typedef struct VbParts VbParts;
-typedef struct VbLoftSystem VbLoftSystem;
-int vb_loft_solve(const VbLoftSystem *input,double *output,size_t output_count,char *error,size_t capacity);
+typedef struct VbInterpolationSystem VbInterpolationSystem;
+int vb_interpolation_solve(const VbInterpolationSystem *input,double *output,size_t output_count,char *error,size_t capacity);
 int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double parameter,
                               VbSurfaceData **out,char *error,size_t capacity);
 int vb_nurbs_trim_curve(const VbNurbsData *source,double start,double end,VbSurfaceData **out,

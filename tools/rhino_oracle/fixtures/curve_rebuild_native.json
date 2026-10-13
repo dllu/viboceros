@@ -1,0 +1,4849 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-1-1",
+      "degree": 1,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-1-1",
+      "degree": 1,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-1-31",
+      "degree": 1,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-1-31",
+      "degree": 1,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-1-32",
+      "degree": 1,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-1-32",
+      "degree": 1,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-1-1000",
+      "degree": 1,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-1-1000",
+      "degree": 1,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-2-1",
+      "degree": 2,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-2-1",
+      "degree": 2,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-2-31",
+      "degree": 2,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-2-31",
+      "degree": 2,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-2-32",
+      "degree": 2,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-2-32",
+      "degree": 2,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-2-1000",
+      "degree": 2,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-2-1000",
+      "degree": 2,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-3-1",
+      "degree": 3,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-3-1",
+      "degree": 3,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-3-31",
+      "degree": 3,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-3-31",
+      "degree": 3,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-3-32",
+      "degree": 3,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-3-32",
+      "degree": 3,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-3-1000",
+      "degree": 3,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-3-1000",
+      "degree": 3,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-4-1",
+      "degree": 4,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-4-1",
+      "degree": 4,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-4-31",
+      "degree": 4,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-4-31",
+      "degree": 4,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-4-32",
+      "degree": 4,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-4-32",
+      "degree": 4,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-4-1000",
+      "degree": 4,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-4-1000",
+      "degree": 4,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-5-1",
+      "degree": 5,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-5-1",
+      "degree": 5,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-5-31",
+      "degree": 5,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-5-31",
+      "degree": 5,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-5-32",
+      "degree": 5,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-5-32",
+      "degree": 5,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-5-1000",
+      "degree": 5,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-5-1000",
+      "degree": 5,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-6-1",
+      "degree": 6,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-6-1",
+      "degree": 6,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-6-31",
+      "degree": 6,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-6-31",
+      "degree": 6,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-6-32",
+      "degree": 6,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-6-32",
+      "degree": 6,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-6-1000",
+      "degree": 6,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-6-1000",
+      "degree": 6,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-7-1",
+      "degree": 7,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-7-1",
+      "degree": 7,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-7-31",
+      "degree": 7,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-7-31",
+      "degree": 7,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-7-32",
+      "degree": 7,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-7-32",
+      "degree": 7,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-7-1000",
+      "degree": 7,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-7-1000",
+      "degree": 7,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-8-1",
+      "degree": 8,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-8-1",
+      "degree": 8,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-8-31",
+      "degree": 8,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-8-31",
+      "degree": 8,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-8-32",
+      "degree": 8,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-8-32",
+      "degree": 8,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-8-1000",
+      "degree": 8,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-8-1000",
+      "degree": 8,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-9-1",
+      "degree": 9,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-9-1",
+      "degree": 9,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-9-31",
+      "degree": 9,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-9-31",
+      "degree": 9,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-9-32",
+      "degree": 9,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-9-32",
+      "degree": 9,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-9-1000",
+      "degree": 9,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-9-1000",
+      "degree": 9,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-10-1",
+      "degree": 10,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-10-1",
+      "degree": 10,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-10-31",
+      "degree": 10,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-10-31",
+      "degree": 10,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-10-32",
+      "degree": 10,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-10-32",
+      "degree": 10,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-10-1000",
+      "degree": 10,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-10-1000",
+      "degree": 10,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-11-1",
+      "degree": 11,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-11-1",
+      "degree": 11,
+      "point_count": 1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-11-31",
+      "degree": 11,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-11-31",
+      "degree": 11,
+      "point_count": 31,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-11-32",
+      "degree": 11,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-11-32",
+      "degree": 11,
+      "point_count": 32,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-open-11-1000",
+      "degree": 11,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "rebuild-closed-11-1000",
+      "degree": 11,
+      "point_count": 1000,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      },
+      "preserve_tangents": false
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "line-cubic-six",
+      "degree": 3,
+      "point_count": 6,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          2,
+          2,
+          12,
+          12
+        ]
+      }
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "open-count-raised-to-degree-plus-one",
+      "degree": 3,
+      "point_count": 3,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          10,
+          10
+        ]
+      }
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "piecewise-linear-cubic-seven",
+      "degree": 3,
+      "point_count": 7,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "piecewise-linear-preserved-tangents",
+      "degree": 3,
+      "point_count": 7,
+      "preserve_tangents": true,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              -1,
+              1
+            ]
+          },
+          {
+            "point": [
+              6,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          3,
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "closed-square-quartic-eight",
+      "degree": 4,
+      "point_count": 8,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      }
+    },
+    {
+      "op": "curve_rebuild_geometry",
+      "id": "closed-count-raised-to-degree",
+      "degree": 4,
+      "point_count": 3,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ]
+          },
+          {
+            "point": [
+              4,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ]
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          4,
+          8,
+          12,
+          16,
+          16
+        ]
+      }
+    }
+  ]
+}

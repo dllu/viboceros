@@ -59,7 +59,7 @@ pub fn loft_surface(
 }
 
 #[repr(C)]
-struct LoftSystem {
+struct InterpolationSystem {
     knots: *const f64,
     parameters: *const f64,
     targets: *const f64,
@@ -67,13 +67,16 @@ struct LoftSystem {
     parameter_count: usize,
     columns: usize,
     target_count: usize,
+    degree: usize,
     closed: c_int,
+    handles: c_int,
+    uniform_periodic: c_int,
 }
 
 fn solve_cubic_system(
     input: &viboceros_geometry::CubicInterpolationSystem<'_>,
 ) -> Result<Vec<f64>, Error> {
-    let view = LoftSystem {
+    let view = InterpolationSystem {
         knots: input.knots.as_ptr(),
         parameters: input.parameters.as_ptr(),
         targets: input.targets.as_ptr(),
@@ -81,13 +84,59 @@ fn solve_cubic_system(
         parameter_count: input.parameters.len(),
         columns: input.columns,
         target_count: input.targets.len(),
+        degree: 3,
         closed: c_int::from(input.closed),
+        handles: c_int::from(!input.closed),
+        uniform_periodic: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
-        vb_loft_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+        vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
     })?;
     Ok(output)
+}
+
+/// Uniform open/periodic Rebuild with shared arc-length sampling and tangent
+/// projection, using the native banded basis and matrix routines.
+pub fn rebuild_curve(
+    source: viboceros_geometry::CurveRef<'_>,
+    point_count: usize,
+    degree: usize,
+    preserve_end_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::try_rebuild_curve_with_interpolation(
+        source,
+        point_count,
+        degree,
+        preserve_end_tangents,
+        tolerance,
+        &mut |input| {
+            let targets = input
+                .targets
+                .iter()
+                .flat_map(|p| [p[0], p[1], p[2], 1.])
+                .collect::<Vec<_>>();
+            let view = InterpolationSystem {
+                knots: input.knots.as_ptr(),
+                parameters: input.parameters.as_ptr(),
+                targets: targets.as_ptr(),
+                knot_count: input.knots.len(),
+                parameter_count: input.parameters.len(),
+                columns: 4,
+                target_count: targets.len(),
+                degree: input.degree,
+                closed: c_int::from(input.periodic),
+                handles: 0,
+                uniform_periodic: c_int::from(input.periodic),
+            };
+            let mut output = vec![0.; targets.len()];
+            call(|error, capacity| unsafe {
+                vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+            })?;
+            Ok(output.chunks_exact(4).map(|p| [p[0], p[1], p[2]]).collect())
+        },
+    )
 }
 
 /// Interpolate a point set with shared SDK degree/closure policy and native
@@ -109,8 +158,8 @@ pub fn interpolate_curve_for_command(
 }
 
 unsafe extern "C" {
-    fn vb_loft_solve(
-        input: *const LoftSystem,
+    fn vb_interpolation_solve(
+        input: *const InterpolationSystem,
         output: *mut f64,
         output_count: usize,
         error: *mut c_char,

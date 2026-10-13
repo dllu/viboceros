@@ -40,7 +40,9 @@ kernel raises a small count to its degree/topology minimum. Open outputs use
 clamped non-rational uniform knots; closed outputs use periodic interpolation
 and repeated controls. This is an approximation, without a continuous bound
 between the original and rebuilt loci. Tangent preservation applies to eligible
-open curves. The new preview uses the existing kernel unchanged.
+open curves. Linux `native-smlib` builds use usd-brep basis and banded solving
+for both open and periodic curves, with the same preparation for the command
+and preview. See [native Rebuild qualification](../smlib-curve-rebuild.md).
 
 Changing deletion or output layer reuses prepared geometry. Count, degree or
 tangent changes rebuild it. Invalid syntax keeps the previous preview; valid

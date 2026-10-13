@@ -40,7 +40,7 @@ use viboceros_geometry::{
     NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
     TriangleMesh, UnitVector3, Vector3, WeightedPoint3, sort_and_cull_points, try_catenary,
-    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    try_fit_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -5169,14 +5169,25 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                try_rebuild_curve(
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::rebuild_curve(
                     CurveRef::NurbsCurve(&source),
                     black_box(*point_count),
                     black_box(*degree),
                     black_box(*preserve_tangents),
                     tolerance,
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = viboceros_geometry::try_rebuild_curve(
+                    CurveRef::NurbsCurve(&source),
+                    black_box(*point_count),
+                    black_box(*degree),
+                    black_box(*preserve_tangents),
+                    tolerance,
+                );
+                result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }

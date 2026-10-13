@@ -8,6 +8,21 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Point interpolation supplies clamped endpoint constraints for unclamped bases.**
+  `N_FitCrvInterpGivenParams` accepts the quadratic basis
+  `[-2,-1,0,0.8,2,3,4]` and samples of `X(u)=u` at `[0,0.4,1.4,2]`,
+  but its endpoint identity rows produce actual endpoint limits
+  `0.17511520737327191` and `1.778801843317972` instead of `0` and `2`.
+  Linear precision independently gives controls `[-0.5,0.4,1.4,2.5]`;
+  the producer returns `[0,0.31520737327188947,1.5133640552995387,2]`.
+  The [direct probe](../tools/usd_brep/rebuild_interpolation_probe.cpp) evaluates
+  the endpoint limits with independent quadratic coefficients, avoiding the
+  native endpoint evaluator's identical clamping assumption.
+  [Retained output](smlib-curve-rebuild-probe.json) records the result.
+  Periodic Rebuild instead uses the shared native derivative-basis and matrix
+  adapter with cyclic control constraints; existing basis edits only supply
+  clamped targets to the fitting convenience producer. Source:
+  [NL_CrvFit.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvFit.cpp).
 - **The real-vector pivot solver skips small nonzero RHS values.**
   `N_RealMatrixForBackPivot` advances its first active row only when the RHS
   exceeds `NL_LUDT`. For `[[2,1],[1,2]]` and RHS `[1e-18,0]`, it returns
@@ -471,6 +486,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Curve Rebuild retains application sampling and tangent policy.**
+  The native path uses the existing derivative-basis, LU and homogeneous solve
+  adapter for uniform open and periodic targets. Periodic columns are aligned
+  with Greville stations, then both rows and columns alternate the two ends of
+  the cycle, keeping a band no wider than `2 * degree + 1`. The adapter restores
+  the original control order, weights and repeated periodic controls. This
+  removes the custom open elimination and Fourier solve from native command,
+  preview and oracle paths; portable builds retain them. The existing degree
+  1–11 and 1,000-point ceilings remain. Fresh Rhino capture, continuous fit
+  error and performance relative to Rhino remain unqualified. See
+  [native Rebuild](smlib-curve-rebuild.md).
 - **Point interpolation retains application policy around native basis and solves.**
   The missing periodic fit exports above and the different skin handle policy
   prevent a direct producer substitution. InterpCrv and interpolated

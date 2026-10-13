@@ -329,10 +329,10 @@ extern "C" int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,d
     });
 }
 
-extern "C" int vb_loft_solve(const VbLoftSystem *input,double *output,size_t output_count,char *error,size_t capacity) {
+extern "C" int vb_interpolation_solve(const VbInterpolationSystem *input,double *output,size_t output_count,char *error,size_t capacity) {
     return guarded(error,capacity,[&] {
-        require(input && output,"Missing Loft interpolation payload");
-        vb_solve_loft(*input,output,output_count);
+        require(input && output,"Missing interpolation payload");
+        vb_solve_interpolation(*input,output,output_count);
     });
 }
 
