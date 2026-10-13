@@ -36,6 +36,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [File formats and limitations](docs/file-formats.md)
 - [Analytic normals and tessellation provenance](docs/tessellation-normals.md)
 - [Architecture and implementation status](docs/architecture.md)
+- [Modelling issue fixes and regression results](docs/modelling-issues.md)
 - [Development and testing](docs/development.md)
 - [USD BRep kernel integration](docs/usd-brep.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)

@@ -45319,7 +45319,7 @@ mod tests {
             .execute(&mut document, &format!("Export3dm {}", path.display()))
             .unwrap();
         assert!(message.contains("Exported 2 objects in 1 groups"));
-        assert!(message.contains("adapted 1 curve objects from 1 source objects"));
+        assert!(message.contains("adapted 1 objects with composite curves from 1 source objects"));
         assert_eq!(document_3dm_model(&document).unwrap(), before);
         assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), vec![id]);
         assert_eq!(document.undo_label(), history.0.as_deref());
