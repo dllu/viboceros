@@ -42,13 +42,15 @@ mod curve_trim;
 mod curve_tween;
 mod surface_rebuild;
 pub use surface_rebuild::{
-    UniformInterpolationSystem, try_rebuild_nurbs_surface,
-    try_rebuild_nurbs_surface_with_operations,
+    NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,
+    try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
 mod surface_tween;
 pub use surface_tween::{
     MAX_SURFACE_TWEEN_CONTROLS, MAX_SURFACE_TWEEN_COUNT, try_tween_nurbs_surfaces,
-    try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_sampled,
+    try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_refitted_with_operations,
+    try_tween_nurbs_surfaces_sampled, try_tween_nurbs_surfaces_sampled_with_grid,
+    try_tween_nurbs_surfaces_with_rebuild,
 };
 mod edge_surface;
 pub use edge_surface::arrange_edge_surface_curves;

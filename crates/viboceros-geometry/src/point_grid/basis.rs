@@ -6,7 +6,7 @@ pub(super) struct Direction {
     pub parameters: Vec<Real>,
     pub control_count: usize,
     pub amplification: Vec<Real>,
-    matrix: Mat<Real>,
+    matrix: Option<Mat<Real>>,
 }
 
 impl Direction {
@@ -16,6 +16,7 @@ impl Direction {
         axis: usize,
         degree: usize,
         closed: bool,
+        build_matrix: bool,
     ) -> Result<Self, GeometryError> {
         let n = count[axis];
         let width = count[1 - axis];
@@ -85,16 +86,19 @@ impl Direction {
             knots.extend(std::iter::repeat_n(period, degree + 1));
             knots
         };
-        let mut matrix = Mat::zeros(n, n);
-        let mut amplification = vec![0.0; n];
-        for (i, &parameter) in parameters.iter().enumerate() {
-            for (j, value) in
-                bspline_basis_values_extended(&knots, degree, control_count, parameter)?
-                    .into_iter()
-                    .enumerate()
-            {
-                matrix[(i, j % n)] += value;
-                amplification[i] += value.abs();
+        let mut matrix = build_matrix.then(|| Mat::zeros(n, n));
+        let mut amplification = vec![1.0; n];
+        if let Some(matrix) = &mut matrix {
+            amplification.fill(0.0);
+            for (i, &parameter) in parameters.iter().enumerate() {
+                for (j, value) in
+                    bspline_basis_values_extended(&knots, degree, control_count, parameter)?
+                        .into_iter()
+                        .enumerate()
+                {
+                    matrix[(i, j % n)] += value;
+                    amplification[i] += value.abs();
+                }
             }
         }
         Ok(Self {
@@ -107,8 +111,12 @@ impl Direction {
     }
 
     pub fn solve(&self, targets: &Mat<Real>) -> Result<Mat<Real>, GeometryError> {
-        let lu = self.matrix.full_piv_lu();
-        if (0..self.matrix.nrows()).any(|i| !lu.U()[(i, i)].is_finite() || lu.U()[(i, i)] == 0.0) {
+        let matrix = self
+            .matrix
+            .as_ref()
+            .expect("portable solve requires a prepared basis matrix");
+        let lu = matrix.full_piv_lu();
+        if (0..matrix.nrows()).any(|i| !lu.U()[(i, i)].is_finite() || lu.U()[(i, i)] == 0.0) {
             return Err(GeometryError::SingularSystem);
         }
         let mut solution = lu.solve(targets);

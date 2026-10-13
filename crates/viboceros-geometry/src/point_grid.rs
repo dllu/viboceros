@@ -3,6 +3,9 @@
 use crate::{Brep, GeometryError, NurbsSurface, Point3, Real, Tolerance, require_finite};
 use faer::{Mat, prelude::*};
 
+type TensorSolver<'a, E> =
+    dyn FnMut(&crate::NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E> + 'a;
+
 mod basis;
 mod orientation;
 #[cfg(test)]
@@ -98,10 +101,31 @@ impl NurbsSurface {
         degree: [usize; 2],
         closed: [bool; 2],
     ) -> Result<Self, GeometryError> {
+        Self::try_through_point_grid_impl(points, count, degree, closed, None)
+    }
+
+    /// Retain open mean-chord grid preparation and evaluator residual checks,
+    /// delegating basis evaluation and both tensor solves to the backend.
+    pub fn try_through_open_point_grid_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        count: [usize; 2],
+        degree: [usize; 2],
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        Self::try_through_point_grid_impl(points, count, degree, [false; 2], Some(solve))
+    }
+
+    fn try_through_point_grid_impl<E: From<GeometryError>>(
+        points: &[Point3],
+        count: [usize; 2],
+        degree: [usize; 2],
+        closed: [bool; 2],
+        solve: Option<&mut TensorSolver<'_, E>>,
+    ) -> Result<Self, E> {
         let degree = validate(points, count, degree, closed)?;
         let [u, v] = [
-            basis::Direction::new(points, count, 0, degree[0], closed[0])?,
-            basis::Direction::new(points, count, 1, degree[1], closed[1])?,
+            basis::Direction::new(points, count, 0, degree[0], closed[0], solve.is_none())?,
+            basis::Direction::new(points, count, 1, degree[1], closed[1], solve.is_none())?,
         ];
         let origin = points[0].to_array();
         let mut scale = 0.0_f64;
@@ -115,14 +139,35 @@ impl NurbsSurface {
         if scale == 0.0 {
             return Err(GeometryError::InvalidPointGrid {
                 context: "coincident points",
-            });
+            }
+            .into());
         }
-        let targets = Mat::from_fn(count[0], count[1] * 3, |i, j| {
-            (points[j / 3 * count[0] + i].to_array()[j % 3] - origin[j % 3]) / scale
-        });
-        let first = u.solve(&targets)?;
-        let targets = Mat::from_fn(count[1], count[0] * 3, |i, j| first[(j / 3, i * 3 + j % 3)]);
-        let second = v.solve(&targets)?;
+        let second = if let Some(solve) = solve {
+            let local = points
+                .iter()
+                .map(|p| std::array::from_fn(|k| (p.to_array()[k] - origin[k]) / scale))
+                .collect::<Vec<_>>();
+            let controls = crate::surface_rebuild::interpolate_tensor_local(
+                &local,
+                count,
+                degree,
+                [&u.knots, &v.knots],
+                [&u.parameters, &v.parameters],
+                [false; 2],
+                solve,
+            )?;
+            Mat::from_fn(count[1], count[0] * 3, |j, i| {
+                controls[j * count[0] + i / 3][i % 3]
+            })
+        } else {
+            let targets = Mat::from_fn(count[0], count[1] * 3, |i, j| {
+                (points[j / 3 * count[0] + i].to_array()[j % 3] - origin[j % 3]) / scale
+            });
+            let first = u.solve(&targets)?;
+            let targets =
+                Mat::from_fn(count[1], count[0] * 3, |i, j| first[(j / 3, i * 3 + j % 3)]);
+            v.solve(&targets)?
+        };
         let mut controls = Vec::with_capacity(u.control_count * v.control_count);
         for j in 0..v.control_count {
             for i in 0..u.control_count {
@@ -178,7 +223,8 @@ impl NurbsSurface {
                     if (a - b).abs() > allowance {
                         return Err(GeometryError::InvalidPointGrid {
                             context: "tensor interpolation residual exceeds numeric allowance",
-                        });
+                        }
+                        .into());
                     }
                 }
             }

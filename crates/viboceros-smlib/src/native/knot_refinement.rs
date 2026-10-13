@@ -169,6 +169,82 @@ fn solve_uniform_system(
     Ok(output)
 }
 
+/// Interpolate an open mean-chord point grid using the existing native basis
+/// and batched banded solve; degree/count and residual policies stay shared.
+pub fn interpolate_open_point_grid(
+    points: &[Point3],
+    count: [usize; 2],
+    degree: [usize; 2],
+) -> Result<NurbsSurface, Error> {
+    NurbsSurface::try_through_open_point_grid_with_solver(
+        points,
+        count,
+        degree,
+        &mut solve_uniform_system,
+    )
+}
+
+/// Control-net tweens, with forced-open native rebuilding repeated before
+/// each output when source degrees or counts differ.
+pub fn surface_tweens(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+) -> Result<Vec<NurbsSurface>, Error> {
+    viboceros_geometry::try_tween_nurbs_surfaces_with_rebuild(start, end, number, &mut |s, c, d| {
+        viboceros_geometry::try_rebuild_open_nurbs_surface_with_operations(
+            s,
+            c,
+            d,
+            &mut surface_isocurve,
+            &mut solve_uniform_system,
+        )
+    })
+}
+
+/// Refit uses native clamping/elevation/refinement around the shared exact
+/// knot union, rational displacement and end-source domain policy.
+pub fn surface_tweens_refitted(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+) -> Result<Vec<NurbsSurface>, Error> {
+    viboceros_geometry::try_tween_nurbs_surfaces_refitted_with_operations(
+        start,
+        end,
+        number,
+        &mut |s| {
+            clamp_surface_direction(
+                &clamp_surface_direction(s, SurfaceKnotDirection::U)?,
+                SurfaceKnotDirection::V,
+            )
+        },
+        &mut tween_elevate_surface,
+        &mut insert_surface_knot,
+    )
+}
+
+fn tween_elevate_surface(source: &NurbsSurface, degree: [usize; 2]) -> Result<NurbsSurface, Error> {
+    change_surface_degree(source, degree[0], degree[1], false)
+}
+
+/// Sampled UV tweens use the shared correspondence/blend policy and native
+/// open mean-chord grid interpolation for every output.
+pub fn surface_tweens_sampled(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    sample_number: usize,
+) -> Result<Vec<NurbsSurface>, Error> {
+    viboceros_geometry::try_tween_nurbs_surfaces_sampled_with_grid(
+        start,
+        end,
+        number,
+        sample_number,
+        &mut interpolate_open_point_grid,
+    )
+}
+
 /// Interpolate a point set with shared SDK degree/closure policy and native
 /// cubic basis evaluation and solving. Direct degree-one/two-point paths remain exact.
 pub fn interpolate_curve(

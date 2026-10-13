@@ -1371,6 +1371,13 @@ pub enum Operation {
         number: usize,
         sample_number: usize,
     },
+    SurfaceTweenMatchedGeometry {
+        id: String,
+        start_surface: NurbsSurfaceDefinition,
+        end_surface: NurbsSurfaceDefinition,
+        number: usize,
+        refit: bool,
+    },
     CurveTweenGeometry {
         id: String,
         start_curve: NurbsCurveDefinition,
@@ -2425,6 +2432,7 @@ impl Operation {
             | Self::CurveInterpolateGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
             | Self::SurfaceTweenSampledGeometry { id, .. }
+            | Self::SurfaceTweenMatchedGeometry { id, .. }
             | Self::SurfaceRebuildGeometry { id, .. }
             | Self::BrepRetrimGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
@@ -5104,13 +5112,57 @@ fn execute(
         } => {
             let start = nurbs_surface_from_definition(start_surface)?;
             let end = nurbs_surface_from_definition(end_surface)?;
-            let (surfaces, elapsed) = measure(iterations, || {
-                viboceros_geometry::try_tween_nurbs_surfaces_sampled(
+            let (surfaces, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::surface_tweens_sampled(
                     &start,
                     &end,
                     black_box(*number),
                     black_box(*sample_number),
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = viboceros_geometry::try_tween_nurbs_surfaces_sampled(
+                    &start,
+                    &end,
+                    black_box(*number),
+                    black_box(*sample_number),
+                );
+                result.map_err(ProbeError::from)
+            })?;
+            (
+                json!({"surfaces":surfaces.iter().map(nurbs_surface_definition_value).collect::<Vec<_>>()}),
+                elapsed,
+            )
+        }
+        Operation::SurfaceTweenMatchedGeometry {
+            start_surface,
+            end_surface,
+            number,
+            refit,
+            ..
+        } => {
+            let start = nurbs_surface_from_definition(start_surface)?;
+            let end = nurbs_surface_from_definition(end_surface)?;
+            let (surfaces, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = if *refit {
+                    viboceros_smlib::surface_tweens_refitted(&start, &end, black_box(*number))
+                } else {
+                    viboceros_smlib::surface_tweens(&start, &end, black_box(*number))
+                }
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = if *refit {
+                    viboceros_geometry::try_tween_nurbs_surfaces_refitted(
+                        &start,
+                        &end,
+                        black_box(*number),
+                    )
+                } else {
+                    viboceros_geometry::try_tween_nurbs_surfaces(&start, &end, black_box(*number))
+                };
+                result.map_err(ProbeError::from)
             })?;
             (
                 json!({"surfaces":surfaces.iter().map(nurbs_surface_definition_value).collect::<Vec<_>>()}),

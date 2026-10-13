@@ -6,7 +6,7 @@ use faer::{Mat, prelude::*};
 /// Uniform collocation shared by curve and tensor rebuild backends.
 /// Targets and returned controls are row-major homogeneous channels. Periodic
 /// parameters include the final domain endpoint without a repeated target row.
-pub struct UniformInterpolationSystem<'a> {
+pub struct NurbsInterpolationSystem<'a> {
     pub degree: usize,
     pub knots: &'a [Real],
     pub parameters: &'a [Real],
@@ -14,6 +14,10 @@ pub struct UniformInterpolationSystem<'a> {
     pub columns: usize,
     pub targets: &'a [Real],
 }
+
+/// Compatibility name for uniform Rebuild jobs. Open jobs can also contain
+/// explicitly supplied nonuniform knots and interpolation parameters.
+pub type UniformInterpolationSystem<'a> = NurbsInterpolationSystem<'a>;
 
 /// Rebuild a surface as a non-rational uniform tensor spline. Closed directions
 /// use periodic interpolation with `degree` repeated controls beyond the count.
@@ -57,14 +61,25 @@ pub(crate) fn rebuild_open(
     count: [usize; 2],
     degree: [usize; 2],
 ) -> Result<NurbsSurface, GeometryError> {
-    rebuild(
+    try_rebuild_open_nurbs_surface_with_operations(
         source,
         count,
         degree,
-        [false; 2],
         &mut portable_isocurve,
         &mut portable_solve,
     )
+}
+
+/// Force open tensor preparation, including geometrically closed sources.
+/// TweenSurfaces uses this distinct policy for unequal control nets.
+pub fn try_rebuild_open_nurbs_surface_with_operations<E: From<GeometryError>>(
+    source: &NurbsSurface,
+    count: [usize; 2],
+    degree: [usize; 2],
+    isocurve: &mut impl FnMut(&NurbsSurface, SurfaceKnotDirection, Real) -> Result<NurbsCurve, E>,
+    solve: &mut impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsSurface, E> {
+    rebuild(source, count, degree, [false; 2], isocurve, solve)
 }
 
 fn rebuild<E: From<GeometryError>>(
@@ -170,52 +185,12 @@ fn rebuild<E: From<GeometryError>>(
         .iter()
         .flat_map(|p| (0..3).map(move |k| (p.to_array()[k] - origin[k]).abs()))
         .fold(1., Real::max);
-    let columns_u = count[1] * 4;
-    let columns_v = count[0] * 4;
-    let rhs = (0..count[0] * columns_u)
-        .map(|index| {
-            let i = index / columns_u;
-            let j = index % columns_u;
-            if j % 4 == 3 {
-                1.
-            } else {
-                (points[j / 4 * count[0] + i].to_array()[j % 4] - origin[j % 4]) / scale
-            }
-        })
+    let local = points
+        .iter()
+        .map(|p| std::array::from_fn(|k| (p.to_array()[k] - origin[k]) / scale))
         .collect::<Vec<_>>();
-    let first = checked_solve(
-        &UniformInterpolationSystem {
-            degree: degree[0],
-            knots: &ku,
-            parameters: &tu,
-            periodic: closed[0],
-            columns: columns_u,
-            targets: &rhs,
-        },
-        solve,
-    )?;
-    let rhs = (0..count[1] * columns_v)
-        .map(|index| {
-            let i = index / columns_v;
-            let j = index % columns_v;
-            if j % 4 == 3 {
-                1.
-            } else {
-                first[j / 4 * columns_u + i * 4 + j % 4]
-            }
-        })
-        .collect::<Vec<_>>();
-    let solved = checked_solve(
-        &UniformInterpolationSystem {
-            degree: degree[1],
-            knots: &kv,
-            parameters: &tv,
-            periodic: closed[1],
-            columns: columns_v,
-            targets: &rhs,
-        },
-        solve,
-    )?;
+    let solved =
+        interpolate_tensor_local(&local, count, degree, [&ku, &kv], [&tu, &tv], closed, solve)?;
     let output_count = std::array::from_fn::<_, 2, _>(|axis| {
         count[axis] + if closed[axis] { degree[axis] } else { 0 }
     });
@@ -223,8 +198,7 @@ fn rebuild<E: From<GeometryError>>(
     for j in 0..output_count[1] {
         for i in 0..output_count[0] {
             controls.push(Point3::try_from(std::array::from_fn(|k| {
-                solved[(j % count[1]) * columns_v + (i % count[0]) * 4 + k]
-                    .mul_add(scale, origin[k])
+                solved[(j % count[1]) * count[0] + (i % count[0])][k].mul_add(scale, origin[k])
             }))?);
         }
     }
@@ -276,6 +250,66 @@ fn rebuild<E: From<GeometryError>>(
     )?)
 }
 
+/// Solve both tensor directions using one homogeneous batch per axis. Input
+/// and output use U-fast normalized Cartesian coordinates; weights stay one.
+pub(crate) fn interpolate_tensor_local<E: From<GeometryError>>(
+    points: &[[Real; 3]],
+    count: [usize; 2],
+    degree: [usize; 2],
+    knots: [&[Real]; 2],
+    parameters: [&[Real]; 2],
+    periodic: [bool; 2],
+    solve: &mut (impl FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E> + ?Sized),
+) -> Result<Vec<[Real; 3]>, E> {
+    let columns_u = count[1] * 4;
+    let columns_v = count[0] * 4;
+    let rhs = (0..count[0] * columns_u)
+        .map(|index| {
+            let i = index / columns_u;
+            let j = index % columns_u;
+            if j % 4 == 3 {
+                1.
+            } else {
+                points[j / 4 * count[0] + i][j % 4]
+            }
+        })
+        .collect::<Vec<_>>();
+    let first = checked_solve(
+        &NurbsInterpolationSystem {
+            degree: degree[0],
+            knots: knots[0],
+            parameters: parameters[0],
+            periodic: periodic[0],
+            columns: columns_u,
+            targets: &rhs,
+        },
+        solve,
+    )?;
+    let rhs = (0..count[1] * columns_v)
+        .map(|index| {
+            let i = index / columns_v;
+            let j = index % columns_v;
+            if j % 4 == 3 {
+                1.
+            } else {
+                first[j / 4 * columns_u + i * 4 + j % 4]
+            }
+        })
+        .collect::<Vec<_>>();
+    let second = checked_solve(
+        &NurbsInterpolationSystem {
+            degree: degree[1],
+            knots: knots[1],
+            parameters: parameters[1],
+            periodic: periodic[1],
+            columns: columns_v,
+            targets: &rhs,
+        },
+        solve,
+    )?;
+    Ok(second.chunks_exact(4).map(|p| [p[0], p[1], p[2]]).collect())
+}
+
 fn portable_isocurve(
     source: &NurbsSurface,
     direction: SurfaceKnotDirection,
@@ -290,14 +324,14 @@ fn portable_isocurve(
     }
 }
 
-fn checked_solve<E: From<GeometryError>>(
+pub(crate) fn checked_solve<E: From<GeometryError>>(
     input: &UniformInterpolationSystem<'_>,
-    solve: &mut impl FnMut(&UniformInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    solve: &mut (impl FnMut(&UniformInterpolationSystem<'_>) -> Result<Vec<Real>, E> + ?Sized),
 ) -> Result<Vec<Real>, E> {
     let mut solution = solve(input)?;
     if solution.len() != input.targets.len() {
         return Err(GeometryError::InvalidControlNet {
-            context: "surface rebuild solver returned an inconsistent layout",
+            context: "tensor interpolation solver returned an inconsistent layout",
         }
         .into());
     }

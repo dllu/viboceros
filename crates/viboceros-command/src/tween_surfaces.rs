@@ -1,8 +1,5 @@
 //! Atomic surface tween construction; correspondence belongs to the command.
 use super::*;
-use viboceros_geometry::{
-    try_tween_nurbs_surfaces, try_tween_nurbs_surfaces_refitted, try_tween_nurbs_surfaces_sampled,
-};
 
 const USAGE: &str = "TweenSurfaces [NumberOfSurfaces=n] [MatchMethod=None|Refit|SamplePoints] [SampleNumber=2..255] [OutputLayer=CurrentLayer|StartSrf|EndSrf] [Sources=a,b] [FlipStartU=Yes|No] [FlipStartV=Yes|No] [SwapStartUV=Yes|No] [FlipEndU=Yes|No] [FlipEndV=Yes|No] [SwapEndUV=Yes|No]";
 pub(super) struct TweenSurfacesCommand(
@@ -165,18 +162,13 @@ pub fn prepare(
         }
         surfaces.push(surface);
     }
-    let outputs = match options.method {
-        Method::Sampled => try_tween_nurbs_surfaces_sampled(
-            &surfaces[0],
-            &surfaces[1],
-            options.number,
-            options.sample_number,
-        )?,
-        Method::Control => try_tween_nurbs_surfaces(&surfaces[0], &surfaces[1], options.number)?,
-        Method::Refit => {
-            try_tween_nurbs_surfaces_refitted(&surfaces[0], &surfaces[1], options.number)?
-        }
-    };
+    let outputs = surface_backend(
+        &surfaces[0],
+        &surfaces[1],
+        options.method,
+        options.number,
+        options.sample_number,
+    )?;
     let (attrs, membership) = match options.layer {
         OutputLayer::Current => (
             ObjectAttributes::on_layer(document.current_layer_id()),
@@ -194,6 +186,41 @@ pub fn prepare(
         attributes: attrs,
         memberships: membership,
     })
+}
+
+fn surface_backend(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    method: Method,
+    number: usize,
+    sample_number: usize,
+) -> Result<Vec<NurbsSurface>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        let result = match method {
+            Method::Sampled => {
+                viboceros_smlib::surface_tweens_sampled(start, end, number, sample_number)
+            }
+            Method::Control => viboceros_smlib::surface_tweens(start, end, number),
+            Method::Refit => viboceros_smlib::surface_tweens_refitted(start, end, number),
+        };
+        result.map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(match method {
+            Method::Sampled => viboceros_geometry::try_tween_nurbs_surfaces_sampled(
+                start,
+                end,
+                number,
+                sample_number,
+            )?,
+            Method::Control => viboceros_geometry::try_tween_nurbs_surfaces(start, end, number)?,
+            Method::Refit => {
+                viboceros_geometry::try_tween_nurbs_surfaces_refitted(start, end, number)?
+            }
+        })
+    }
 }
 impl Options {
     pub fn arguments(&self) -> String {

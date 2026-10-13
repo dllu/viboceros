@@ -22,6 +22,12 @@ SDK-capture status are recorded in [Rebuild qualification](smlib-curve-rebuild.m
 Surface Rebuild also selects the native backend. The
 `surface_rebuild_native.json` fixture includes retained source definitions and
 additional degree/count cases; see [tensor qualification](smlib-surface-rebuild.md).
+`surface_tween_sampled_geometry` also selects the native backend.
+`surface_tween_matched_geometry` accepts `start_surface`, `end_surface`, `number`
+and `refit` for direct Viboceros control/Refit comparisons. Rhino references for
+these modes use retained bounded command captures; the installed RhinoCommon
+API exposes only sampled tween construction. See
+[native TweenSurfaces](smlib-surface-tween.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

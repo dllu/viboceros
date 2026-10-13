@@ -486,6 +486,18 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **TweenSurfaces retains measured matching policy around native operations.**
+  Compatible control nets bypass rebuilding; unequal nets repeat native
+  forced-open Rebuild before every output. Refit uses native clamping,
+  elevation and refinement around the exact shared knot union; the tested
+  one-ULP-separated knots `0.3` and `0.30000000000000004` remain distinct.
+  SamplePoints uses native open-grid basis/solves with shared mean-chord
+  stations and independent evaluator residuals. Closed point-grid continuation
+  stays portable. The known full-order interior elevation restriction applies;
+  portable Refit also rejects the tested discontinuous source. Early retained
+  Rhino option changes leave extra source-shaped copies, an existing command
+  discrepancy that remains separate from requested-net agreement. See
+  [native TweenSurfaces](smlib-surface-tween.md).
 - **Surface Rebuild shares native operations while retaining tensor policy.**
   Midpoint and boundary isocurves use the checked native extractor, and each
   direction shares one native banded factorization across all tensor rows.

@@ -2,6 +2,10 @@
 
 [Command reference](README.md) · [Rhino reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/tweensurfaces.htm)
 
+Linux `native-smlib` builds use usd-brep rebuilding, basis edits and batched
+sampled-grid solving for all three matching modes, including readonly previews.
+See [native qualification](../smlib-surface-tween.md) for coverage and limits.
+
 `TweenSurfaces` adds intermediate surfaces between two inputs. The current
 implementation supports sampled matching (`MatchMethod=SamplePoints`) for
 polynomial/rational surfaces with different degrees, counts and parameter domains.

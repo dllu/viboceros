@@ -18,8 +18,8 @@ fn open_grids_interpolate_mean_chord_stations_for_every_degree() {
             .unwrap();
         assert_eq!(s.degree_u(), degree.clamp(1, 11));
         assert_eq!(s.degree_v(), degree.clamp(1, 6));
-        let u = basis::Direction::new(&points, [13, 7], 0, s.degree_u(), false).unwrap();
-        let v = basis::Direction::new(&points, [13, 7], 1, s.degree_v(), false).unwrap();
+        let u = basis::Direction::new(&points, [13, 7], 0, s.degree_u(), false, true).unwrap();
+        let v = basis::Direction::new(&points, [13, 7], 1, s.degree_v(), false, true).unwrap();
         for (j, &tv) in v.parameters.iter().enumerate() {
             for (i, &tu) in u.parameters.iter().enumerate() {
                 assert!(
@@ -41,8 +41,8 @@ fn periodic_constraints_use_boundary_span_continuation_and_repeat_controls_exact
         let s =
             NurbsSurface::try_through_point_grid(&points, [7, 6], [degree; 2], [true; 2]).unwrap();
         assert!(s.is_periodic_u() && s.is_periodic_v());
-        let u = basis::Direction::new(&points, [7, 6], 0, degree, true).unwrap();
-        let v = basis::Direction::new(&points, [7, 6], 1, degree, true).unwrap();
+        let u = basis::Direction::new(&points, [7, 6], 0, degree, true, true).unwrap();
+        let v = basis::Direction::new(&points, [7, 6], 1, degree, true, true).unwrap();
         assert!(u.parameters[0] < *s.domain_u().start());
         assert!(v.parameters[0] < *s.domain_v().start());
         for (j, &tv) in v.parameters.iter().enumerate() {

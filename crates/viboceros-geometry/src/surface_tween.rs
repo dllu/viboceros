@@ -13,8 +13,28 @@ pub fn try_tween_nurbs_surfaces_sampled(
     number: usize,
     sample_number: usize,
 ) -> Result<Vec<NurbsSurface>, GeometryError> {
+    try_tween_nurbs_surfaces_sampled_with_grid(
+        start,
+        end,
+        number,
+        sample_number,
+        &mut |points, count, degree| {
+            NurbsSurface::try_through_point_grid(points, count, degree, [false; 2])
+        },
+    )
+}
+
+/// Keep UV correspondence and blended sample locations while delegating the
+/// open point-grid producer to the caller's backend.
+pub fn try_tween_nurbs_surfaces_sampled_with_grid<E: From<GeometryError>>(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    sample_number: usize,
+    grid: &mut impl FnMut(&[Point3], [usize; 2], [usize; 2]) -> Result<NurbsSurface, E>,
+) -> Result<Vec<NurbsSurface>, E> {
     if !(1..=MAX_SURFACE_TWEEN_COUNT).contains(&number) || !(2..=255).contains(&sample_number) {
-        return Err(error("surface/sample count is outside the resource limit"));
+        return Err(error("surface/sample count is outside the resource limit").into());
     }
     let count = sample_number + 1;
     check_count(
@@ -65,9 +85,15 @@ pub fn try_tween_nurbs_surfaces_sampled(
                 Point3::try_from(coordinates)
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        result.push(NurbsSurface::try_through_point_grid(
-            &points, [count; 2], [3; 2], [false; 2],
-        )?);
+        let surface = grid(&points, [count; 2], [3; 2])?;
+        if surface.control_point_count_u() != count
+            || surface.control_point_count_v() != count
+            || surface.degree_u() != 3.min(count - 1)
+            || surface.degree_v() != 3.min(count - 1)
+        {
+            return Err(error("sampled grid backend changed the requested layout").into());
+        }
+        result.push(surface);
     }
     Ok(result)
 }
@@ -82,7 +108,24 @@ pub fn try_tween_nurbs_surfaces(
     end: &NurbsSurface,
     number: usize,
 ) -> Result<Vec<NurbsSurface>, GeometryError> {
-    tween_matched(start, end, number, false)
+    try_tween_nurbs_surfaces_with_rebuild(
+        start,
+        end,
+        number,
+        &mut crate::surface_rebuild::rebuild_open,
+    )
+}
+
+/// Retain control matching and its repeated per-output preparation while
+/// delegating forced-open rebuilding of incompatible nets.
+pub fn try_tween_nurbs_surfaces_with_rebuild<E: From<GeometryError>>(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    rebuild: &mut impl FnMut(&NurbsSurface, [usize; 2], [usize; 2]) -> Result<NurbsSurface, E>,
+) -> Result<Vec<NurbsSurface>, E> {
+    validate_pair(start, end, number)?;
+    control::tweens_with_rebuild(start, end, number, rebuild)
 }
 
 /// Match source degrees and knot multiplicities before interpolating controls.
@@ -92,14 +135,26 @@ pub fn try_tween_nurbs_surfaces_refitted(
     end: &NurbsSurface,
     number: usize,
 ) -> Result<Vec<NurbsSurface>, GeometryError> {
-    tween_matched(start, end, number, true)
+    try_tween_nurbs_surfaces_refitted_with_operations(
+        start,
+        end,
+        number,
+        &mut |s| s.try_clamped_to_active_domain(),
+        &mut |s, d| s.try_change_degree(d[0], d[1], false),
+        &mut |s, d, t, m| {
+            if d == crate::SurfaceKnotDirection::U {
+                s.try_insert_knot_u(t, m)
+            } else {
+                s.try_insert_knot_v(t, m)
+            }
+        },
+    )
 }
-fn tween_matched(
+fn validate_pair(
     start: &NurbsSurface,
     end: &NurbsSurface,
     number: usize,
-    refit: bool,
-) -> Result<Vec<NurbsSurface>, GeometryError> {
+) -> Result<[usize; 2], GeometryError> {
     if !(1..=MAX_SURFACE_TWEEN_COUNT).contains(&number) {
         return Err(error("surface count is outside the resource limit"));
     }
@@ -111,15 +166,30 @@ fn tween_matched(
     {
         return Err(error("surface tween requires positive weights"));
     }
-    let degree = [
+    Ok([
         start.degree_u().max(end.degree_u()),
         start.degree_v().max(end.degree_v()),
-    ];
-    if !refit {
-        return control::tweens(start, end, number);
-    }
+    ])
+}
+
+/// Retain exact knot union, rational blending and target domains while
+/// delegating clamping, degree elevation and knot insertion.
+pub fn try_tween_nurbs_surfaces_refitted_with_operations<E: From<GeometryError>>(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    clamp: &mut impl FnMut(&NurbsSurface) -> Result<NurbsSurface, E>,
+    elevate: &mut impl FnMut(&NurbsSurface, [usize; 2]) -> Result<NurbsSurface, E>,
+    insert: &mut impl FnMut(
+        &NurbsSurface,
+        crate::SurfaceKnotDirection,
+        Real,
+        usize,
+    ) -> Result<NurbsSurface, E>,
+) -> Result<Vec<NurbsSurface>, E> {
+    let degree = validate_pair(start, end, number)?;
     let mut prepared = [start, end]
-        .map(|s| {
+        .map(|s| -> Result<NurbsSurface, E> {
             check_count(s.control_points().len(), number)?;
             let predicted = [
                 (s.degree_u(), s.knots_u(), s.domain_u(), degree[0]),
@@ -139,9 +209,21 @@ fn tween_matched(
                     .ok_or_else(|| error("degree preparation control count overflow"))?,
                 number,
             )?;
-            s.try_clamped_to_active_domain()?
-                .try_change_degree(degree[0], degree[1], false)?
-                .try_reparameterized(0. ..=1., 0. ..=1.)
+            let clamped = clamp(s)?;
+            if (clamped.degree_u(), clamped.degree_v()) != (s.degree_u(), s.degree_v())
+                || clamped.domain_u() != s.domain_u()
+                || clamped.domain_v() != s.domain_v()
+            {
+                return Err(error("clamping backend changed the source basis domain").into());
+            }
+            let elevated = elevate(&clamped, degree)?;
+            if (elevated.degree_u(), elevated.degree_v()) != (degree[0], degree[1])
+                || elevated.domain_u() != s.domain_u()
+                || elevated.domain_v() != s.domain_v()
+            {
+                return Err(error("elevation backend changed the target degree or domain").into());
+            }
+            Ok(elevated.try_reparameterized(0. ..=1., 0. ..=1.)?)
         })
         .into_iter()
         .collect::<Result<Vec<_>, _>>()?;
@@ -177,13 +259,28 @@ fn tween_matched(
         )?;
         for s in &mut prepared {
             for &(knot, multiplicity) in &union {
-                *s = if axis == 0 {
-                    s.try_insert_knot_u(knot, multiplicity)?
-                } else {
-                    s.try_insert_knot_v(knot, multiplicity)?
-                };
+                *s = insert(
+                    s,
+                    if axis == 0 {
+                        crate::SurfaceKnotDirection::U
+                    } else {
+                        crate::SurfaceKnotDirection::V
+                    },
+                    knot,
+                    multiplicity,
+                )?;
             }
         }
+    }
+    if prepared.iter().any(|s| {
+        s.degree_u() != degree[0]
+            || s.degree_v() != degree[1]
+            || s.knots_u() != prepared[0].knots_u()
+            || s.knots_v() != prepared[0].knots_v()
+            || s.domain_u() != (0. ..=1.)
+            || s.domain_v() != (0. ..=1.)
+    }) {
+        return Err(error("refinement backend produced inconsistent tensor bases").into());
     }
     let a = &prepared[0];
     let b = &prepared[1];
@@ -238,11 +335,7 @@ fn tween_matched(
             knots_u.clone(),
             knots_v.clone(),
         )?;
-        result.push(if refit {
-            surface.try_reparameterized(end.domain_u(), end.domain_v())?
-        } else {
-            surface
-        });
+        result.push(surface.try_reparameterized(end.domain_u(), end.domain_v())?);
     }
     Ok(result)
 }
@@ -263,6 +356,50 @@ fn error(context: &'static str) -> GeometryError {
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
+    #[test]
+    fn injected_surface_operations_preserve_repeated_preparation_and_validate_layouts() {
+        let a = NurbsSurface::try_bilinear([
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 6., 1.).unwrap(),
+            Point3::try_new(0., 6., 0.).unwrap(),
+        ])
+        .unwrap();
+        let b = a.try_change_degree(2, 2, false).unwrap();
+        let before = (a.clone(), b.clone());
+        let mut calls = 0;
+        let actual = try_tween_nurbs_surfaces_with_rebuild(&a, &b, 3, &mut |s, c, d| {
+            calls += 1;
+            crate::surface_rebuild::rebuild_open(s, c, d)
+        })
+        .unwrap();
+        assert_eq!(calls, 6);
+        assert_eq!(actual, try_tween_nurbs_surfaces(&a, &b, 3).unwrap());
+        try_tween_nurbs_surfaces_with_rebuild(&a, &a, 1, &mut |_,
+                                                               _,
+                                                               _|
+         -> Result<
+            NurbsSurface,
+            GeometryError,
+        > {
+            panic!("compatible nets entered rebuild")
+        })
+        .unwrap();
+        let bad = try_tween_nurbs_surfaces_sampled_with_grid(&a, &b, 1, 4, &mut |_,
+                                                                                 _,
+                                                                                 _|
+         -> Result<
+            NurbsSurface,
+            GeometryError,
+        > {
+            Ok(a.clone())
+        });
+        assert!(matches!(
+            bad,
+            Err(GeometryError::InvalidSurfaceTween { .. })
+        ));
+        assert_eq!((a, b), before);
+    }
     #[test]
     fn refitted_polynomial_nets_retain_exact_parameter_correspondence_and_sources() {
         let a = NurbsSurface::try_bilinear([

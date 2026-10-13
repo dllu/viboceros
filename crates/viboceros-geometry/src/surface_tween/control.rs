@@ -1,12 +1,23 @@
 //! Control matching shares the independently exposed surface rebuild kernel.
 use super::*;
+#[cfg(test)]
 use crate::surface_rebuild::rebuild_open as rebuilt;
 
+#[cfg(test)]
 pub(super) fn tweens(
     start: &NurbsSurface,
     end: &NurbsSurface,
     number: usize,
 ) -> Result<Vec<NurbsSurface>, GeometryError> {
+    tweens_with_rebuild(start, end, number, &mut rebuilt)
+}
+
+pub(super) fn tweens_with_rebuild<E: From<GeometryError>>(
+    start: &NurbsSurface,
+    end: &NurbsSurface,
+    number: usize,
+    rebuild: &mut impl FnMut(&NurbsSurface, [usize; 2], [usize; 2]) -> Result<NurbsSurface, E>,
+) -> Result<Vec<NurbsSurface>, E> {
     let count = [
         start
             .control_point_count_u()
@@ -34,8 +45,16 @@ pub(super) fn tweens(
     let mut outputs = Vec::with_capacity(number);
     for index in 1..=number {
         if incompatible {
-            a = rebuilt(&a, count, degree)?;
-            b = rebuilt(&b, count, degree)?;
+            a = rebuild(&a, count, degree)?;
+            b = rebuild(&b, count, degree)?;
+            if [&a, &b].iter().any(|s| {
+                s.degree_u() != degree[0]
+                    || s.degree_v() != degree[1]
+                    || s.control_point_count_u() != count[0]
+                    || s.control_point_count_v() != count[1]
+            }) {
+                return Err(error("rebuild backend changed the requested tensor layout").into());
+            }
         }
         let t = index as Real / (number + 1) as Real;
         let controls = a

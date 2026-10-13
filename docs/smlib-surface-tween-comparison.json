@@ -1,0 +1,2942 @@
+{
+  "reference": "Same-source portable backend, without native-smlib",
+  "native_sha256": "995e216e9ddc7583c5d764df4fee71b5d8d73e53d338c0d002a019ae57162c4f",
+  "portable_sha256": "415bb836c5da9c5ae7b64c739ef9879fec6550cfa82a6554473020a75455020e",
+  "fixture_sha256": "b1d241e2c823afe895285caf32b0af8f6dcd1dc4572643cf92dd14c7f5dd1e18",
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "cases": 104,
+  "matched": 104,
+  "operations": [
+    {
+      "id": "tween_surfaces_command:tween_srf_planes_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_planes_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_planes_samplepoints",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_quadratic_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_quadratic_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_quadratic_samplepoints",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_rational_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_rational_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_rational_samplepoints",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_domains_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_domains_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_domains_samplepoints",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_counts_none",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_counts_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_counts_samplepoints",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_degrees_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_degrees_refit",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_degrees_samplepoints",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_rational_swapped_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_both_rational_none",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_layer_startsrf",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_command:tween_srf_layer_endsrf",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_counts_number1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_counts_number2",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number2",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_u_only_number1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_u_only_number2",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_v_only_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_v_only_number2",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_degrees_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_degrees_number2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_one_degree_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_one_degree_number2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number1",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number2",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number1",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number2",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_both_rational_number1",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_both_rational_number2",
+      "passed": true,
+      "max_absolute_error": 6.217248937900877e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number1",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number2",
+      "passed": true,
+      "max_absolute_error": 1.5987211554602254e-14,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number1",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number2",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_counts_number3",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_counts_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_u_only_number3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_v_only_number3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_degrees_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_one_degree_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_rational_counts_number3",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_rational_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_both_rational_number3",
+      "passed": true,
+      "max_absolute_error": 7.993605777301127e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_cubic_counts_number3",
+      "passed": true,
+      "max_absolute_error": 1.5987211554602254e-14,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_shifted_knot_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_number3",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_control_followup:tween_srf_curved_rows_number3",
+      "passed": true,
+      "max_absolute_error": 7.105427357601002e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_planes_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_planes_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_warped_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_warped_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_swapped_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_both_rational_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_both_rational_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_counts_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_counts_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_counts_swapped_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_counts_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_degrees_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_degrees_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_domains_number1",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_domains_number3",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_counts_number1",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_rational_counts_number3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_layer_startsrf",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_refit:tween_srf_layer_endsrf",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_planes_sample2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_planes_sample3",
+      "passed": true,
+      "max_absolute_error": 4.440892098500626e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_planes_sample6",
+      "passed": true,
+      "max_absolute_error": 2.220446049250313e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_warped_sample2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_warped_sample3",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_warped_sample6",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_rational_sample2",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_rational_sample3",
+      "passed": true,
+      "max_absolute_error": 9.325873406851315e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_rational_sample6",
+      "passed": true,
+      "max_absolute_error": 6.217248937900877e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_counts_sample2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_counts_sample3",
+      "passed": true,
+      "max_absolute_error": 5.329070518200751e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_counts_sample6",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_degrees_sample2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_degrees_sample3",
+      "passed": true,
+      "max_absolute_error": 8.881784197001252e-16,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_degrees_sample6",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_domains_sample2",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_domains_sample3",
+      "passed": true,
+      "max_absolute_error": 1.7763568394002505e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_domains_sample6",
+      "passed": true,
+      "max_absolute_error": 2.6645352591003757e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_layer_startsrf",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    },
+    {
+      "id": "tween_surfaces_sampling:tween_srf_layer_endsrf",
+      "passed": true,
+      "max_absolute_error": 3.552713678800501e-15,
+      "differences": []
+    }
+  ],
+  "prechange_sampled": {
+    "reference": "Sampled portable producer in the native-smlib oracle built at 5c49e4c7",
+    "cases": 26,
+    "matched": 26,
+    "operations": [
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_samplepoints",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_samplepoints",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_samplepoints",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_samplepoints",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_samplepoints",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_samplepoints",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample3",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample6",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample6",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample2",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample3",
+        "passed": true,
+        "max_absolute_error": 9.325873406851315e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample6",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample3",
+        "passed": true,
+        "max_absolute_error": 5.329070518200751e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample6",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample3",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample6",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample6",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      }
+    ]
+  },
+  "retained_rhino_raw": {
+    "cases": 104,
+    "matched": 92,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 1e-10,
+    "operations": [
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_planes_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_refit",
+        "passed": false,
+        "max_absolute_error": 1.3333333333333335,
+        "differences": [
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_refit.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_planes_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_samplepoints",
+        "passed": false,
+        "max_absolute_error": 6.0,
+        "differences": [
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_count[0]: 5 != 2 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_count[1]: 5 != 2 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points: array lengths differ (25 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[1].point[0]: 0.66666666666666685 != 4 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[2].point[0]: 1.9999999999999989 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[2].point[1]: 0 != 6 (error 6, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[3].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[3].point[1]: 0 != 6 (error 6, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].degree[0]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].degree[1]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].domain_u[1]: 4 != 1 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].domain_v[1]: 6 != 1 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_u[2]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_v[2]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[0].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_count[0]: 5 != 2 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_count[1]: 5 != 2 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points: array lengths differ (25 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[1].point[0]: 0.66666666666666685 != 4 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[2].point[0]: 1.9999999999999989 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[2].point[1]: 0 != 6 (error 6, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[3].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[3].point[1]: 0 != 6 (error 6, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].degree[0]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].degree[1]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].domain_u[1]: 4 != 1 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].domain_v[1]: 6 != 1 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_u[2]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 4)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_v[2]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_planes_samplepoints.surfaces[1].knots_v[3]: 0 != 1 (error 1, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_planes_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_quadratic_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_refit",
+        "passed": false,
+        "max_absolute_error": 1.333333333333334,
+        "differences": [
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[4].point[2]: 2.333333333333333 != 1 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[5].point[2]: 3.333333333333333 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[6].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[7].point[2]: 3.333333333333333 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[0].control_points[8].point[2]: 5.333333333333333 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[4].point[2]: 3.6666666666666665 != 5 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[5].point[2]: 4.6666666666666661 != 6 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[6].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[7].point[2]: 4.6666666666666661 != 6 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_refit.surfaces[1].control_points[8].point[2]: 6.6666666666666661 != 8 (error 1.33, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_quadratic_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_samplepoints",
+        "passed": false,
+        "max_absolute_error": 5.465324866812464,
+        "differences": [
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[1].point[0]: 0.66666666666666685 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[2].point[0]: 1.9999999999999989 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[3].point[0]: 3.3333333333333339 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 1 (error 0.333, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[5].point[1]: 1.0000000000000009 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[5].point[2]: 1.3333333333333333 != 2 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[6].point[0]: 0.66666666666666685 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[6].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[6].point[2]: 1.4444444444444426 != 0 (error 1.44, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[7].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[7].point[2]: 1.6666666666666703 != 2 (error 0.333, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[8].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[8].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].control_points[8].point[2]: 1.8888888888888884 != 4 (error 2.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].domain_u[1]: 4.6504191660219245 != 1 (error 3.65, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].domain_v[1]: 6.4653248668124643 != 1 (error 5.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_u[4]: 2.3252095830109623 != 1 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_u[5]: 4.6504191660219245 != 1 (error 3.65, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_v[4]: 3.2326624334062317 != 1 (error 2.23, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[0].knots_v[5]: 6.4653248668124643 != 1 (error 5.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[1].point[0]: 0.66666666666666707 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[2].point[0]: 1.9999999999999982 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[3].point[0]: 3.3333333333333348 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 5 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[5].point[1]: 1.0000000000000009 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[5].point[2]: 2.6666666666666665 != 6 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[6].point[0]: 0.66666666666666707 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[6].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[6].point[2]: 2.7777777777777777 != 4 (error 1.22, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[7].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[7].point[2]: 3.0000000000000009 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[8].point[0]: 3.3333333333333348 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[8].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].control_points[8].point[2]: 3.2222222222222219 != 8 (error 4.78, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].domain_u[1]: 4.6504191660219245 != 1 (error 3.65, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].domain_v[1]: 6.4653248668124643 != 1 (error 5.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_u[4]: 2.3252095830109618 != 1 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_u[5]: 4.6504191660219245 != 1 (error 3.65, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_v[4]: 3.2326624334062326 != 1 (error 2.23, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_quadratic_samplepoints.surfaces[1].knots_v[5]: 6.4653248668124643 != 1 (error 5.47, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_quadratic_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_none",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_rational_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_refit",
+        "passed": false,
+        "max_absolute_error": 2.114381916835873,
+        "differences": [
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[1].point[2]: 1.1925695879998877 != 0 (error 1.19, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[2].point[2]: 1.0886621079036347 != 0 (error 1.09, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[3].point[2]: 1.1925695879998877 != 0 (error 1.19, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[4].point[2]: 2.0886621079036347 != 1 (error 1.09, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[5].point[2]: 3.0079052613579389 != 2 (error 1.01, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[6].point[2]: 1.0886621079036347 != 0 (error 1.09, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[7].point[2]: 3.0079052613579389 != 2 (error 1.01, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[0].control_points[8].point[2]: 4.9428090415820636 != 4 (error 0.943, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[1].point[2]: 2.3851391759997753 != 4 (error 1.61, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[1].weight: 1.25 != 1 (error 0.25, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[2].point[2]: 2.1773242158072694 != 4 (error 1.82, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[2].weight: 1.5 != 1 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[3].point[2]: 2.3851391759997753 != 4 (error 1.61, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[3].weight: 1.25 != 1 (error 0.25, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[4].point[2]: 3.1773242158072694 != 5 (error 1.82, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[4].weight: 1.5 != 1 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[5].point[2]: 4.0158105227158778 != 6 (error 1.98, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[5].weight: 1.75 != 1 (error 0.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[6].point[2]: 2.1773242158072694 != 4 (error 1.82, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[6].weight: 1.5 != 1 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[7].point[2]: 4.0158105227158778 != 6 (error 1.98, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[7].weight: 1.75 != 1 (error 0.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[8].point[2]: 5.8856180831641272 != 8 (error 2.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_refit.surfaces[1].control_points[8].weight: 2 != 1 (error 1, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_rational_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_samplepoints",
+        "passed": false,
+        "max_absolute_error": 5.480171965571952,
+        "differences": [
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[1].point[0]: 0.71728121788758248 != 2 (error 1.28, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[1].weight: 1 != 1.25 (error 0.25, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[2].point[0]: 2.05945521507841 != 4 (error 1.94, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[2].weight: 1 != 1.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[3].point[0]: 3.3752294364545499 != 0 (error 3.38, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[3].weight: 1 != 1.25 (error 0.25, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 1 (error 0.333, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[4].weight: 1 != 1.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[5].point[1]: 1.0755321105691893 != 3 (error 1.92, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[5].point[2]: 1.3333333333333333 != 2 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[5].weight: 1 != 1.75 (error 0.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[6].point[0]: 0.70952915703613351 != 0 (error 0.71, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[6].point[1]: 1.0639026050583633 != 6 (error 4.94, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[6].point[2]: 1.4592883327729136 != 0 (error 1.46, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[6].weight: 1 != 1.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[7].point[0]: 2.0486668174588254 != 2 (error 0.0487, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[7].point[1]: 1.0449420532625464 != 6 (error 4.96, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[7].point[2]: 1.6911229105856538 != 2 (error 0.309, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[7].weight: 1 != 1.75 (error 0.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[8].point[0]: 3.3712630928417591 != 4 (error 0.629, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[8].point[1]: 1.0306947569303808 != 6 (error 4.97, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[8].point[2]: 1.9124315156300327 != 4 (error 2.09, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].control_points[8].weight: 1 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].domain_u[1]: 4.6711907497909699 != 1 (error 3.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].domain_v[1]: 6.4801719655719516 != 1 (error 5.48, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_u[4]: 2.445086002924632 != 1 (error 1.45, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_u[5]: 4.6711907497909699 != 1 (error 3.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_v[4]: 3.3924075228061881 != 1 (error 2.39, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[0].knots_v[5]: 6.4801719655719516 != 1 (error 5.48, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[1].point[0]: 0.69220321065336454 != 2 (error 1.31, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[2].point[0]: 2.0294121974351058 != 4 (error 1.97, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[3].point[0]: 3.3540835091018835 != 0 (error 3.35, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 5 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[5].point[1]: 1.0381446697330545 != 3 (error 1.96, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[5].point[2]: 2.6666666666666665 != 6 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[6].point[0]: 0.68806619963701365 != 0 (error 0.688, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[6].point[1]: 1.0319387944586691 != 6 (error 4.97, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[6].point[2]: 2.7857050909265242 != 4 (error 1.21, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[7].point[0]: 2.0238953691659649 != 2 (error 0.0239, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[7].point[1]: 1.0220400389176978 != 6 (error 4.98, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[7].point[2]: 3.0128151231585125 != 6 (error 2.99, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[8].point[0]: 3.352086046873298 != 4 (error 0.648, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[8].point[1]: 1.0149771690739162 != 6 (error 4.99, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].control_points[8].point[2]: 3.2340321408188708 != 8 (error 4.77, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].domain_u[1]: 4.6606761749128918 != 1 (error 3.66, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].domain_v[1]: 6.472666417670232 != 1 (error 5.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_u[4]: 2.3850698263591594 != 1 (error 1.39, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_u[5]: 4.6606761749128918 != 1 (error 3.66, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_v[4]: 3.312485359333611 != 1 (error 2.31, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_rational_samplepoints.surfaces[1].knots_v[5]: 6.472666417670232 != 1 (error 5.47, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_rational_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_domains_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_refit",
+        "passed": false,
+        "max_absolute_error": 1.333333333333334,
+        "differences": [
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[4].point[2]: 2.333333333333333 != 1 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[5].point[2]: 3.333333333333333 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[6].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[7].point[2]: 3.333333333333333 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[0].control_points[8].point[2]: 5.333333333333333 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[4].point[2]: 3.6666666666666665 != 5 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[5].point[2]: 4.6666666666666661 != 6 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[6].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[7].point[2]: 4.6666666666666661 != 6 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_refit.surfaces[1].control_points[8].point[2]: 6.6666666666666661 != 8 (error 1.33, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_domains_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_samplepoints",
+        "passed": false,
+        "max_absolute_error": 5.0,
+        "differences": [
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[1].point[0]: 0.66666666666666685 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[2].point[0]: 1.9999999999999989 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[3].point[0]: 3.3333333333333339 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 1 (error 0.333, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[5].point[1]: 1.0000000000000009 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[5].point[2]: 1.3333333333333333 != 2 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[6].point[0]: 0.66666666666666685 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[6].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[6].point[2]: 1.4444444444444426 != 0 (error 1.44, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[7].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[7].point[2]: 1.6666666666666703 != 2 (error 0.333, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[8].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[8].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].control_points[8].point[2]: 1.8888888888888884 != 4 (error 2.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].domain_u[0]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].domain_u[1]: 4.6504191660219245 != 5 (error 0.35, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].domain_v[0]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].domain_v[1]: 6.4653248668124643 != 2 (error 4.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[0]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[1]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[2]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[3]: 0 != 5 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[4]: 2.3252095830109623 != 5 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_u[5]: 4.6504191660219245 != 5 (error 0.35, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[0]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[1]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[2]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[3]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[4]: 3.2326624334062317 != 2 (error 1.23, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[0].knots_v[5]: 6.4653248668124643 != 2 (error 4.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[1].point[0]: 0.66666666666666707 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[2].point[0]: 1.9999999999999982 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[3].point[0]: 3.3333333333333348 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 5 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[5].point[1]: 1.0000000000000009 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[5].point[2]: 2.6666666666666665 != 6 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[6].point[0]: 0.66666666666666707 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[6].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[6].point[2]: 2.7777777777777777 != 4 (error 1.22, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[7].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[7].point[2]: 3.0000000000000009 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[8].point[0]: 3.3333333333333348 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[8].point[1]: 1.0000000000000009 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].control_points[8].point[2]: 3.2222222222222219 != 8 (error 4.78, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].domain_u[0]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].domain_u[1]: 4.6504191660219245 != 5 (error 0.35, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].domain_v[0]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].domain_v[1]: 6.4653248668124643 != 2 (error 4.47, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[0]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[1]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[2]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[3]: 0 != 5 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[4]: 2.3252095830109618 != 5 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_u[5]: 4.6504191660219245 != 5 (error 0.35, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[0]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[1]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[2]: 0 != -4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[3]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[4]: 3.2326624334062326 != 2 (error 1.23, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_domains_samplepoints.surfaces[1].knots_v[5]: 6.4653248668124643 != 2 (error 4.47, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_domains_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_none",
+        "passed": true,
+        "max_absolute_error": 4.146214305222884e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_counts_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_refit",
+        "passed": false,
+        "max_absolute_error": 3.0,
+        "differences": [
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[1].point[0]: 1.1111111111111112 != 1 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[2].point[0]: 2.8888888888888888 != 3 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[4].point[1]: 1.6666666666666667 != 1.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[5].point[0]: 1.1111111111111112 != 1 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[5].point[1]: 1.6666666666666667 != 1.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[5].point[2]: 1.8333333333333333 != 0.25 (error 1.58, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[6].point[0]: 2.8888888888888888 != 3 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[6].point[1]: 1.6666666666666667 != 1.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[6].point[2]: 2.5 != 0.75 (error 1.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[7].point[1]: 1.6666666666666667 != 1.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[7].point[2]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[8].point[1]: 4.333333333333333 != 4.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[8].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[9].point[0]: 1.1111111111111112 != 1 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[9].point[1]: 4.333333333333333 != 4.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[9].point[2]: 2.5 != 0.75 (error 1.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[10].point[0]: 2.8888888888888888 != 3 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[10].point[1]: 4.333333333333333 != 4.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[10].point[2]: 4.166666666666667 != 2.25 (error 1.92, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[11].point[1]: 4.333333333333333 != 4.5 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[11].point[2]: 5.333333333333333 != 3 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[12].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[13].point[0]: 1.1111111111111112 != 1 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[13].point[2]: 3 != 1 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[14].point[0]: 2.8888888888888888 != 3 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[14].point[2]: 5.333333333333333 != 3 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[0].control_points[15].point[2]: 7 != 4 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[1].point[0]: 1.2222222222222221 != 1.3333333333333333 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[2].point[0]: 2.7777777777777777 != 2.6666666666666665 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[4].point[1]: 1.8333333333333333 != 2 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[5].point[0]: 1.2222222222222221 != 1.3333333333333333 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[5].point[1]: 1.8333333333333333 != 2 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[5].point[2]: 3.4166666666666665 != 5 (error 1.58, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[6].point[0]: 2.7777777777777777 != 2.6666666666666665 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[6].point[1]: 1.8333333333333333 != 2 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[6].point[2]: 4.25 != 6 (error 1.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[7].point[1]: 1.8333333333333333 != 2 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[7].point[2]: 5 != 7 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[8].point[1]: 4.166666666666667 != 4 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[8].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[9].point[0]: 1.2222222222222221 != 1.3333333333333333 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[9].point[1]: 4.166666666666667 != 4 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[9].point[2]: 4.25 != 6 (error 1.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[10].point[0]: 2.7777777777777777 != 2.6666666666666665 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[10].point[1]: 4.166666666666667 != 4 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[10].point[2]: 6.083333333333333 != 8 (error 1.92, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[11].point[1]: 4.166666666666667 != 4 (error 0.167, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[11].point[2]: 7.6666666666666661 != 10 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[12].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[13].point[0]: 1.2222222222222221 != 1.3333333333333333 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[13].point[2]: 5 != 7 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[14].point[0]: 2.7777777777777777 != 2.6666666666666665 (error 0.111, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[14].point[2]: 7.6666666666666661 != 10 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_refit.surfaces[1].control_points[15].point[2]: 10 != 13 (error 3, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_counts_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_samplepoints",
+        "passed": false,
+        "max_absolute_error": 10.333333333333334,
+        "differences": [
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_count[0]: 5 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_count[1]: 5 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points: array lengths differ (25 != 16)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[1].point[0]: 0.64435784599532364 != 1 (error 0.356, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[2].point[0]: 1.9999999999999996 != 3 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[3].point[0]: 3.3556421540046761 != 4 (error 0.644, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[4].point[0]: 4 != 0 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[4].point[1]: 0 != 1.5 (error 1.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[5].point[0]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[5].point[1]: 0.97993540216616171 != 1.5 (error 0.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[5].point[2]: 1.3333333333333333 != 0.25 (error 1.08, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[6].point[0]: 0.64435784599532364 != 3 (error 2.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[6].point[1]: 0.97993540216616171 != 1.5 (error 0.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[6].point[2]: 1.5192577640628808 != 0.75 (error 0.769, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[7].point[0]: 1.9999999999999996 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[7].point[1]: 0.97993540216616171 != 1.5 (error 0.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[7].point[2]: 1.8382809965165852 != 1 (error 0.838, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[8].point[0]: 3.3556421540046761 != 0 (error 3.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[8].point[1]: 0.97993540216616171 != 4.5 (error 3.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[8].point[2]: 2.1573042289702986 != 0 (error 2.16, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[9].point[0]: 4 != 1 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[9].point[1]: 0.97993540216616171 != 4.5 (error 3.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[9].point[2]: 2.3432286596998444 != 0.75 (error 1.59, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[10].point[0]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[10].point[1]: 3.0000000000000018 != 4.5 (error 1.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[10].point[2]: 1.3333333333333333 != 2.25 (error 0.917, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[11].point[0]: 0.64435784599532364 != 4 (error 3.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[11].point[1]: 3.0000000000000018 != 4.5 (error 1.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[11].point[2]: 1.8320510052443544 != 3 (error 1.17, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[12].point[0]: 1.9999999999999996 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[12].point[1]: 3.0000000000000018 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[12].point[2]: 2.7500000000000062 != 0 (error 2.75, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[13].point[0]: 3.3556421540046761 != 1 (error 2.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[13].point[1]: 3.0000000000000018 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[13].point[2]: 3.6679489947556414 != 1 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[14].point[0]: 4 != 3 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[14].point[1]: 3.0000000000000018 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[14].point[2]: 4.166666666666667 != 3 (error 1.17, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[15].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[15].point[1]: 5.0200645978338354 != 6 (error 0.98, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].control_points[15].point[2]: 1.3333333333333333 != 4 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].domain_u[1]: 5.1746412819007555 != 1 (error 4.17, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].domain_v[1]: 6.8734016586926918 != 1 (error 5.87, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 7)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_u[3]: 0 != 0.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_u[4]: 2.5873206409503777 != 1 (error 1.59, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_u[5]: 5.1746412819007555 != 1 (error 4.17, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_u[6]: 5.1746412819007555 != 1 (error 4.17, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 7)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_v[3]: 0 != 0.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_v[4]: 3.4367008293463459 != 1 (error 2.44, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_v[5]: 6.8734016586926918 != 1 (error 5.87, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[0].knots_v[6]: 6.8734016586926918 != 1 (error 5.87, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_count[0]: 5 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_count[1]: 5 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points: array lengths differ (25 != 16)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[1].point[0]: 0.64373168364084055 != 1.3333333333333333 (error 0.69, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[2].point[0]: 1.9999999999999991 != 2.6666666666666665 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[3].point[0]: 3.3562683163591607 != 4 (error 0.644, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[4].point[0]: 4 != 0 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[4].point[1]: 0 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[5].point[0]: 0 != 1.3333333333333333 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[5].point[1]: 0.97757765978820266 != 2 (error 1.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[5].point[2]: 2.6666666666666665 != 5 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[6].point[0]: 0.64373168364084055 != 2.6666666666666665 (error 2.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[6].point[1]: 0.97757765978820266 != 2 (error 1.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[6].point[2]: 2.8948727239643608 != 6 (error 3.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[7].point[0]: 1.9999999999999991 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[7].point[1]: 0.97757765978820266 != 2 (error 1.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[7].point[2]: 3.3075446667383352 != 7 (error 3.69, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[8].point[0]: 3.3562683163591607 != 0 (error 3.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[8].point[1]: 0.97757765978820266 != 4 (error 3.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[8].point[2]: 3.7202166095123164 != 4 (error 0.28, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[9].point[0]: 4 != 1.3333333333333333 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[9].point[1]: 0.97757765978820266 != 4 (error 3.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[9].point[2]: 3.9484226668100049 != 6 (error 2.05, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[10].point[0]: 0 != 2.6666666666666665 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[10].point[1]: 3.0000000000000013 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[10].point[2]: 2.6666666666666665 != 8 (error 5.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[11].point[0]: 0.64373168364084055 != 4 (error 3.36, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[11].point[1]: 3.0000000000000013 != 4 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[11].point[2]: 3.3003325183452081 != 10 (error 6.7, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[12].point[0]: 1.9999999999999991 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[12].point[1]: 3.0000000000000013 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[12].point[2]: 4.4999999999999973 != 4 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[13].point[0]: 3.3562683163591607 != 1.3333333333333333 (error 2.02, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[13].point[1]: 3.0000000000000013 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[13].point[2]: 5.6996674816547888 != 7 (error 1.3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[14].point[0]: 4 != 2.6666666666666665 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[14].point[1]: 3.0000000000000013 != 6 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[14].point[2]: 6.3333333333333339 != 10 (error 3.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[15].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[15].point[1]: 5.0224223402117953 != 6 (error 0.978, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].control_points[15].point[2]: 2.6666666666666665 != 13 (error 10.3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].domain_u[1]: 5.7782937435614548 != 1 (error 4.78, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].domain_v[1]: 7.3665611218356233 != 1 (error 6.37, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 7)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_u[3]: 0 != 0.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_u[4]: 2.8891468717807274 != 1 (error 1.89, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_u[5]: 5.7782937435614548 != 1 (error 4.78, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_u[6]: 5.7782937435614548 != 1 (error 4.78, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 7)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_v[3]: 0 != 0.5 (error 0.5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_v[4]: 3.6832805609178116 != 1 (error 2.68, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_v[5]: 7.3665611218356233 != 1 (error 6.37, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_counts_samplepoints.surfaces[1].knots_v[6]: 7.3665611218356233 != 1 (error 6.37, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_counts_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_degrees_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_refit",
+        "passed": false,
+        "max_absolute_error": 2.666666666666667,
+        "differences": [
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces: array lengths differ (2 != 6)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[4].point[2]: 1.6666666666666665 != 0 (error 1.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[5].point[2]: 2 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[6].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[7].point[2]: 2 != 0 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[0].control_points[8].point[2]: 2.6666666666666665 != 0 (error 2.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[4].point[2]: 3.333333333333333 != 5 (error 1.67, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[5].point[2]: 4 != 6 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[6].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[7].point[2]: 4 != 6 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_refit.surfaces[1].control_points[8].point[2]: 5.333333333333333 != 8 (error 2.67, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_degrees_refit"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_samplepoints",
+        "passed": false,
+        "max_absolute_error": 5.21474938369754,
+        "differences": [
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces: array lengths differ (2 != 4)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[0].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[1].point[0]: 0.66666666666666685 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[1].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[2].point[0]: 1.9999999999999989 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[2].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[3].point[0]: 3.3333333333333339 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[3].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[4].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[5].point[1]: 0.99999999999999944 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[5].point[2]: 1.3333333333333333 != 0 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[6].point[0]: 0.66666666666666685 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[6].point[1]: 0.99999999999999944 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[6].point[2]: 1.3703703703703694 != 0 (error 1.37, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[7].point[1]: 0.99999999999999944 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[7].point[2]: 1.4444444444444458 != 0 (error 1.44, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[8].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[8].point[1]: 0.99999999999999944 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].control_points[8].point[2]: 1.5185185185185175 != 0 (error 1.52, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].domain_u[1]: 4.0817031437943481 != 1 (error 3.08, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].domain_v[1]: 6.0550602106050135 != 1 (error 5.06, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_u[4]: 2.040851571897174 != 1 (error 1.04, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_u[5]: 4.0817031437943481 != 1 (error 3.08, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_v[4]: 3.0275301053025068 != 1 (error 2.03, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[0].knots_v[5]: 6.0550602106050135 != 1 (error 5.06, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_count[0]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_count[1]: 5 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points: array lengths differ (25 != 9)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[0].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[1].point[0]: 0.66666666666666685 != 2 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[1].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[2].point[0]: 1.9999999999999989 != 4 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[2].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[3].point[0]: 3.3333333333333339 != 0 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[3].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[3].point[2]: 2.6666666666666665 != 4 (error 1.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[4].point[0]: 4 != 2 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[4].point[1]: 0 != 3 (error 3, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[4].point[2]: 2.6666666666666665 != 5 (error 2.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[5].point[0]: 0 != 4 (error 4, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[5].point[1]: 0.99999999999999911 != 3 (error 2, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[5].point[2]: 2.6666666666666665 != 6 (error 3.33, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[6].point[0]: 0.66666666666666685 != 0 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[6].point[1]: 0.99999999999999911 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[6].point[2]: 2.7407407407407387 != 4 (error 1.26, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[7].point[1]: 0.99999999999999911 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[7].point[2]: 2.8888888888888915 != 6 (error 3.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[8].point[0]: 3.3333333333333339 != 4 (error 0.667, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[8].point[1]: 0.99999999999999911 != 6 (error 5, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].control_points[8].point[2]: 3.037037037037035 != 8 (error 4.96, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].degree[0]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].degree[1]: 3 != 2 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].domain_u[1]: 4.3102165778749768 != 1 (error 3.31, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].domain_v[1]: 6.2147493836975398 != 1 (error 5.21, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_u: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_u[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_u[4]: 2.1551082889374884 != 1 (error 1.16, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_u[5]: 4.3102165778749768 != 1 (error 3.31, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_v: array lengths differ (9 != 6)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_v[3]: 0 != 1 (error 1, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_v[4]: 3.1073746918487699 != 1 (error 2.11, limit 1e-06)",
+          "tween_surfaces_command:tween_srf_degrees_samplepoints.surfaces[1].knots_v[5]: 6.2147493836975398 != 1 (error 5.21, limit 1e-06)"
+        ],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_degrees_samplepoints"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_swapped_none",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_rational_swapped_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_both_rational_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_both_rational_none"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_layer_startsrf"
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_command",
+        "source_id": "tween_srf_layer_endsrf"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_number1",
+        "passed": true,
+        "max_absolute_error": 6.219321502243247e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_counts_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_number2",
+        "passed": true,
+        "max_absolute_error": 4.146214305222884e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_counts_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 6.219321502243247e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_counts_swapped_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number2",
+        "passed": true,
+        "max_absolute_error": 8.292428610445768e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_counts_swapped_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_u_only_number1",
+        "passed": true,
+        "max_absolute_error": 2.7641426925129053e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_u_only_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_u_only_number2",
+        "passed": true,
+        "max_absolute_error": 1.8427617654026562e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_u_only_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_v_only_number1",
+        "passed": true,
+        "max_absolute_error": 2.7641428701485893e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_v_only_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_v_only_number2",
+        "passed": true,
+        "max_absolute_error": 1.8427619430383402e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_v_only_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_degrees_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_degrees_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_degrees_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_degrees_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_one_degree_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_one_degree_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_one_degree_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_one_degree_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number1",
+        "passed": true,
+        "max_absolute_error": 6.147010989110413e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_rational_counts_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number2",
+        "passed": true,
+        "max_absolute_error": 4.049800406136228e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_rational_counts_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 6.147010989110413e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_rational_swapped_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number2",
+        "passed": true,
+        "max_absolute_error": 8.244221749720282e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_rational_swapped_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_both_rational_number1",
+        "passed": true,
+        "max_absolute_error": 1.0305553388434419e-07,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_both_rational_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_both_rational_number2",
+        "passed": true,
+        "max_absolute_error": 6.82216194647367e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_both_rational_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number1",
+        "passed": true,
+        "max_absolute_error": 2.4704676881981413e-07,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_cubic_counts_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number2",
+        "passed": true,
+        "max_absolute_error": 2.3301232943140349e-07,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_cubic_counts_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_shifted_knot_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_shifted_knot_number2"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number1",
+        "passed": true,
+        "max_absolute_error": 4.560672017817069e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_curved_rows_number1"
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number2",
+        "passed": true,
+        "max_absolute_error": 9.877055084928088e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_initial",
+        "source_id": "tween_srf_curved_rows_number2"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_counts_number3",
+        "passed": true,
+        "max_absolute_error": 3.1096606623037815e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_counts_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_counts_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 9.328982297773791e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_counts_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_u_only_number3",
+        "passed": true,
+        "max_absolute_error": 1.3820713462564527e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_u_only_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_v_only_number3",
+        "passed": true,
+        "max_absolute_error": 1.3820714350742946e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_v_only_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_degrees_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_one_degree_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_one_degree_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_rational_counts_number3",
+        "passed": true,
+        "max_absolute_error": 3.0011951146491356e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_rational_counts_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_rational_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 9.292827041207374e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_rational_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_both_rational_number3",
+        "passed": true,
+        "max_absolute_error": 5.0804662254932964e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_both_rational_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_cubic_counts_number3",
+        "passed": true,
+        "max_absolute_error": 1.855931692773538e-07,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_cubic_counts_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_shifted_knot_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_shifted_knot_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 8.2924282551744e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_equal_count_degrees_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 1.0883812429085538e-07,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_equal_count_degrees_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_curved_rows_number3",
+        "passed": true,
+        "max_absolute_error": 7.407791269287145e-08,
+        "differences": [],
+        "source_observation": "tween_surfaces_control_followup",
+        "source_id": "tween_srf_curved_rows_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_planes_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_planes_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_planes_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_planes_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_warped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_warped_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_warped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_warped_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_swapped_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_both_rational_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_both_rational_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_both_rational_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_both_rational_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_counts_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_counts_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_counts_swapped_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_counts_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_degrees_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_degrees_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_degrees_swapped_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_degrees_swapped_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_domains_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_domains_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_domains_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_domains_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_counts_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_counts_number1"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_counts_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_rational_counts_number3"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_layer_startsrf"
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "source_observation": "tween_surfaces_refit",
+        "source_id": "tween_srf_layer_endsrf"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample2",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_planes_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample3",
+        "passed": true,
+        "max_absolute_error": 3.1086244689504383e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_planes_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample6",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_planes_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample2",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_warped_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample3",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_warped_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample6",
+        "passed": true,
+        "max_absolute_error": 2.042810365310288e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_warped_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample2",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_rational_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample3",
+        "passed": true,
+        "max_absolute_error": 1.5987211554602254e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_rational_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample6",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_rational_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample2",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_counts_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample3",
+        "passed": true,
+        "max_absolute_error": 1.3322676295501878e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_counts_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample6",
+        "passed": true,
+        "max_absolute_error": 1.4210854715202004e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_counts_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample2",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_degrees_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample3",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_degrees_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample6",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_degrees_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample2",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_domains_sample2"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample3",
+        "passed": true,
+        "max_absolute_error": 7.993605777301127e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_domains_sample3"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample6",
+        "passed": true,
+        "max_absolute_error": 1.509903313490213e-14,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_domains_sample6"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_layer_startsrf"
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": [],
+        "source_observation": "tween_surfaces_sampling",
+        "source_id": "tween_srf_layer_endsrf"
+      }
+    ]
+  },
+  "retained_rhino_requested_outputs": {
+    "interpretation": "Requested output suffix only; early option-change captures also contain extra source-shaped copies retained in the raw report.",
+    "cases": 104,
+    "matched": 104,
+    "absolute_epsilon": 1e-06,
+    "relative_epsilon": 1e-10,
+    "operations": [
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_refit",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_planes_samplepoints",
+        "passed": true,
+        "max_absolute_error": 2.220446049250313e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_refit",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_quadratic_samplepoints",
+        "passed": true,
+        "max_absolute_error": 5.773159728050814e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_none",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_refit",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_samplepoints",
+        "passed": true,
+        "max_absolute_error": 1.1546319456101628e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_refit",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_domains_samplepoints",
+        "passed": true,
+        "max_absolute_error": 5.773159728050814e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_none",
+        "passed": true,
+        "max_absolute_error": 4.146214305222884e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_refit",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_counts_samplepoints",
+        "passed": true,
+        "max_absolute_error": 1.1546319456101628e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_refit",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_degrees_samplepoints",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_rational_swapped_none",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_both_rational_none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_command:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_number1",
+        "passed": true,
+        "max_absolute_error": 6.219321502243247e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_number2",
+        "passed": true,
+        "max_absolute_error": 4.146214305222884e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 6.219321502243247e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_counts_swapped_number2",
+        "passed": true,
+        "max_absolute_error": 8.292428610445768e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_u_only_number1",
+        "passed": true,
+        "max_absolute_error": 2.7641426925129053e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_u_only_number2",
+        "passed": true,
+        "max_absolute_error": 1.8427617654026562e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_v_only_number1",
+        "passed": true,
+        "max_absolute_error": 2.7641428701485893e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_v_only_number2",
+        "passed": true,
+        "max_absolute_error": 1.8427619430383402e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_degrees_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_degrees_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_one_degree_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_one_degree_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number1",
+        "passed": true,
+        "max_absolute_error": 6.147010989110413e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_counts_number2",
+        "passed": true,
+        "max_absolute_error": 4.049800406136228e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 6.147010989110413e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_rational_swapped_number2",
+        "passed": true,
+        "max_absolute_error": 8.244221749720282e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_both_rational_number1",
+        "passed": true,
+        "max_absolute_error": 1.0305553388434419e-07,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_both_rational_number2",
+        "passed": true,
+        "max_absolute_error": 6.82216194647367e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number1",
+        "passed": true,
+        "max_absolute_error": 2.4704676881981413e-07,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_cubic_counts_number2",
+        "passed": true,
+        "max_absolute_error": 2.3301232943140349e-07,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_shifted_knot_number2",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number1",
+        "passed": true,
+        "max_absolute_error": 4.560672017817069e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_initial:tween_srf_curved_rows_number2",
+        "passed": true,
+        "max_absolute_error": 9.877055084928088e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_counts_number3",
+        "passed": true,
+        "max_absolute_error": 3.1096606623037815e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_counts_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 9.328982297773791e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_u_only_number3",
+        "passed": true,
+        "max_absolute_error": 1.3820713462564527e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_v_only_number3",
+        "passed": true,
+        "max_absolute_error": 1.3820714350742946e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_one_degree_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_rational_counts_number3",
+        "passed": true,
+        "max_absolute_error": 3.0011951146491356e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_rational_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 9.292827041207374e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_both_rational_number3",
+        "passed": true,
+        "max_absolute_error": 5.0804662254932964e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_cubic_counts_number3",
+        "passed": true,
+        "max_absolute_error": 1.855931692773538e-07,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_shifted_knot_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 8.2924282551744e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_equal_count_degrees_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 1.0883812429085538e-07,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_control_followup:tween_srf_curved_rows_number3",
+        "passed": true,
+        "max_absolute_error": 7.407791269287145e-08,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_planes_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_planes_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_warped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_warped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_both_rational_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_both_rational_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_counts_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_degrees_swapped_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_domains_number1",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_domains_number3",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_counts_number1",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_rational_counts_number3",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_refit:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample2",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample3",
+        "passed": true,
+        "max_absolute_error": 3.1086244689504383e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_planes_sample6",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample2",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample3",
+        "passed": true,
+        "max_absolute_error": 1.1102230246251565e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_warped_sample6",
+        "passed": true,
+        "max_absolute_error": 2.042810365310288e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample2",
+        "passed": true,
+        "max_absolute_error": 2.6645352591003757e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample3",
+        "passed": true,
+        "max_absolute_error": 1.5987211554602254e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_rational_sample6",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample2",
+        "passed": true,
+        "max_absolute_error": 3.552713678800501e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample3",
+        "passed": true,
+        "max_absolute_error": 1.3322676295501878e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_counts_sample6",
+        "passed": true,
+        "max_absolute_error": 1.4210854715202004e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample2",
+        "passed": true,
+        "max_absolute_error": 4.440892098500626e-16,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample3",
+        "passed": true,
+        "max_absolute_error": 6.217248937900877e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_degrees_sample6",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample2",
+        "passed": true,
+        "max_absolute_error": 1.7763568394002505e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample3",
+        "passed": true,
+        "max_absolute_error": 7.993605777301127e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_domains_sample6",
+        "passed": true,
+        "max_absolute_error": 1.509903313490213e-14,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_startsrf",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": []
+      },
+      {
+        "id": "tween_surfaces_sampling:tween_srf_layer_endsrf",
+        "passed": true,
+        "max_absolute_error": 8.881784197001252e-15,
+        "differences": []
+      }
+    ]
+  },
+  "source_observations": {
+    "tween_surfaces_control_initial": "ec43b7957e67834ccf07d00b15feead92d947296d511c96a2336681b385466e7",
+    "tween_surfaces_refit": "7e9158d3374c4e99e45a9df5415cc96802b5f9aae094148fe27cefb2e05c5de2",
+    "tween_surfaces_command": "1ccaff34ecfa7d6ff7abcc9d45a3de5a67e01e7811fc2a761b3627a42ec4ff38",
+    "tween_surfaces_sampling": "9cf2dbc62d3ee2a02a4202c00da291c33f08afe608b80b3ef11967fc337ffec5",
+    "tween_surfaces_control_followup": "af0f8f57158d890e0d057cbb1727bf5f35a0a84894921f257b7449d04102822a"
+  },
+  "fresh_sdk_status": "Pending Wine licensing startup. Control/Refit direct probe is Viboceros-only; Rhino references are retained command captures."
+}

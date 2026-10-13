@@ -69,6 +69,8 @@ storage and solving for open systems.
 for all degrees 1–11, including reordered periodic bands and command previews.
 [Surface Rebuild](smlib-surface-rebuild.md) reuses native station/pole isocurves
 and batches the same banded tensor interpolation across all rows of each axis.
+[TweenSurfaces](smlib-surface-tween.md) uses native forced-open rebuilding,
+exact basis edits and sampled point-grid solving for all three matching modes.
 
 ## Reproduce the native trial
 
