@@ -1,0 +1,78 @@
+{
+  "protocol_version": 1,
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "id": "curved-offset-none",
+      "comparison": {
+        "id": "curved-offset-none",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "portable_ns_per_iteration": 1741058.0,
+        "portable_to_native_ratio": 0.4826289846057294,
+        "native_ns_per_iteration": 3607446.0
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "curved-offset-sharp",
+      "comparison": {
+        "id": "curved-offset-sharp",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "portable_ns_per_iteration": 1729298.0,
+        "portable_to_native_ratio": 0.8295347922442988,
+        "native_ns_per_iteration": 2084660.0
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "curved-offset-chamfer",
+      "comparison": {
+        "id": "curved-offset-chamfer",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "portable_ns_per_iteration": 2461395.0,
+        "portable_to_native_ratio": 1.422585013411535,
+        "native_ns_per_iteration": 1730227.0
+      },
+      "native_error": null,
+      "passed": true
+    },
+    {
+      "id": "curved-offset-round",
+      "comparison": {
+        "id": "curved-offset-round",
+        "passed": true,
+        "max_absolute_error": 0.0,
+        "differences": [],
+        "portable_ns_per_iteration": 2479411.0,
+        "portable_to_native_ratio": 1.4295208526119456,
+        "native_ns_per_iteration": 1734435.0
+      },
+      "native_error": null,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "cases": 4,
+  "matched": 4,
+  "native_failed": 0,
+  "mismatched": 0,
+  "timing_note": "Local harness measurements, not a kernel/Rhino speed claim",
+  "reference": "Saved pre-change portable offset producer, not a Rhino capture",
+  "fixture_sha256": "ea967fcc2355c22e9cd8f6ad3a26e72e83775fbb1b2a2ca257550a43d5cca92e",
+  "validation": {
+    "geometry_command_bridge_tests_passed": 3663,
+    "ignored": 11,
+    "workspace_lint_native": "passed with warnings denied",
+    "workspace_lint_portable": "passed with warnings denied",
+    "format": "passed"
+  }
+}

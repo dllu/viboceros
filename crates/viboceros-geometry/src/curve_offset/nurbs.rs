@@ -1,5 +1,6 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
+use super::{CurveOffsetOperations, offset_split, offset_split_at, offset_trim};
 use crate::{
     Brep, Circle3, CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError,
     LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance,
@@ -307,6 +308,7 @@ pub(super) fn offset_nurbs_open_gaps(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Vec<Curve3>, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     let domain = curve.domain();
@@ -354,7 +356,9 @@ pub(super) fn offset_nurbs_open_gaps(
         )?)]);
     }
     if closed {
-        return offset_nurbs_closed_gaps(curve, distance, fallback, normal, tolerance, &cuts, seam);
+        return offset_nurbs_closed_gaps(
+            curve, distance, fallback, normal, tolerance, &cuts, seam, operations,
+        );
     }
     debug_assert!(
         cuts.iter()
@@ -364,7 +368,7 @@ pub(super) fn offset_nurbs_open_gaps(
         .iter()
         .map(|&(parameter, _)| parameter)
         .collect::<Vec<_>>();
-    let sources = curve.try_split_at_parameters(&parameters)?;
+    let sources = offset_split_at(curve, &parameters, operations)?;
     let offsets = sources
         .iter()
         .map(|piece| offset_nurbs(piece, distance, fallback, tolerance))
@@ -438,7 +442,11 @@ pub(super) fn offset_nurbs_open_gaps(
                     context: "concave NURBS offset consumes a source segment",
                 });
             }
-            segments.push(offsets[part].try_trimmed(trims[part][0]..=trims[part][1])?);
+            segments.push(offset_trim(
+                &offsets[part],
+                trims[part][0]..=trims[part][1],
+                operations,
+            )?);
             breaks.push(*sources[part].domain().end());
         }
         if segments.len() == 1 {
@@ -484,8 +492,9 @@ pub(super) fn offset_nurbs_chamfer(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    offset_nurbs_connected(curve, distance, fallback, tolerance, false)
+    offset_nurbs_connected(curve, distance, fallback, tolerance, false, operations)
 }
 
 pub(super) fn offset_nurbs_round(
@@ -493,8 +502,9 @@ pub(super) fn offset_nurbs_round(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    offset_nurbs_connected(curve, distance, fallback, tolerance, true)
+    offset_nurbs_connected(curve, distance, fallback, tolerance, true, operations)
 }
 
 fn offset_nurbs_connected(
@@ -503,8 +513,9 @@ fn offset_nurbs_connected(
     fallback: UnitVector3,
     tolerance: Tolerance,
     round: bool,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    let mut pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance)?;
+    let mut pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance, operations)?;
     let closed = curve.is_closed()?;
     if pieces.len() == 1 && (!closed || pieces[0].as_ref().is_closed()?) {
         return Ok(pieces.remove(0));

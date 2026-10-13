@@ -7,8 +7,9 @@ pub(in crate::curve_offset) fn offset_nurbs_sharp(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    let pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance)?;
+    let pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance, operations)?;
     let closed = curve.is_closed()?;
     if pieces.len() == 1 && (!closed || pieces[0].as_ref().is_closed()?) {
         return Ok(pieces.into_iter().next().expect("one offset piece"));
@@ -68,6 +69,7 @@ pub(in crate::curve_offset) fn offset_nurbs_sharp(
             &groups[next][0],
             normal,
             tolerance,
+            operations,
         )?;
         end_extensions[index] = Some(end);
         start_extensions[next] = Some(start);
@@ -194,6 +196,7 @@ fn intersect_sharp_extensions(
     right: &NurbsCurve,
     normal: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<(Real, Real), GeometryError> {
     let left_domain = left.domain();
     let right_domain = right.domain();
@@ -218,8 +221,8 @@ fn intersect_sharp_extensions(
     }
     let tail_start = left.spans().last().expect("offset has a span").0;
     let head_end = right.spans().next().expect("offset has a span").1;
-    let tail = left.try_trimmed(tail_start..=*left_domain.end())?;
-    let head = right.try_trimmed(*right_domain.start()..=head_end)?;
+    let tail = offset_trim(left, tail_start..=*left_domain.end(), operations)?;
+    let head = offset_trim(right, *right_domain.start()..=head_end, operations)?;
     let mut left_reach = left_delta * 2.0;
     let mut right_reach = -right_delta * 2.0;
     let mut best = None;

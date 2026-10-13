@@ -9,6 +9,17 @@ mod tests;
 
 const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset ThroughPoint=point [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 
+fn offset_operations() -> Option<viboceros_geometry::CurveOffsetOperations> {
+    #[cfg(feature = "native-smlib")]
+    {
+        Some(viboceros_smlib::curve_offset_operations())
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        None
+    }
+}
+
 pub(super) struct OffsetCommand;
 pub(super) struct OffsetMultipleCommand;
 
@@ -147,7 +158,13 @@ impl Command for OffsetMultipleCommand {
             for step in 1..=options.count {
                 let distance = sign * options.distance * step as Real;
                 let parts = curve
-                    .try_offset_parts(distance, normal, tolerance, options.corner)
+                    .try_offset_parts_with_operations(
+                        distance,
+                        normal,
+                        tolerance,
+                        options.corner,
+                        offset_operations(),
+                    )
                     .map_err(map_offset_error)?;
                 if outputs
                     .len()
@@ -325,11 +342,12 @@ impl Command for OffsetCommand {
                     let count = 1 + usize::from(options.both_sides);
                     for &signed_distance in &distances[..count] {
                         let parts = curve
-                            .try_offset_parts(
+                            .try_offset_parts_with_operations(
                                 signed_distance,
                                 normal,
                                 document.tolerance(),
                                 options.corner,
+                                offset_operations(),
                             )
                             .map_err(map_offset_error)?;
                         if outputs
@@ -348,11 +366,12 @@ impl Command for OffsetCommand {
                 }
                 OffsetMode::ThroughPoint(point) => {
                     let (_, parts) = curve
-                        .try_offset_through_point(
+                        .try_offset_through_point_with_operations(
                             point,
                             normal,
                             document.tolerance(),
                             options.corner,
+                            offset_operations(),
                         )
                         .map_err(map_offset_error)?;
                     if outputs

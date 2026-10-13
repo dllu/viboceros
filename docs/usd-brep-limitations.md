@@ -8,6 +8,35 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **The available curve-offset sampling producer ignores the binormal in its
+  circle branch.** For a counterclockwise radius-two XY circle, distance `0.125`
+  and normal `+Z`, the documented `B × T` side independently requires radius
+  `1.875`. `N_CrvOffsetPtSampling` returns radius `2.125`; changing the normal
+  to `-Z` still returns `2.125`. The branch constructs `r + d` without using
+  `B`, while the free-form and line branches use that vector. The
+  [direct probe](../tools/usd_brep/curve_offset_probe.cpp) and
+  [retained output](smlib-curve-offset-probe.json) reproduce both orientations.
+  Source: [NL_CrvOffset.cpp](../third_party/usd-brep/source/SMLib/src/NL_CrvOffset.cpp).
+- **Inherited curve-offset sampling is not qualified for the shared pointwise
+  tolerance check.** On `C(t)=(2t,4t(1-t),0)` with `+Z` normal and distance
+  `0.125`, `N_CrvOffsetPtSampling` with degree three, inherited parameters,
+  endpoint tangents and tolerance `1e-5` returns success and 36 controls.
+  Independent de Boor evaluation of the stored net at 1,001 stations differs
+  from the analytic offset by up to `5.45e-5` at corresponding parameters.
+  This does not establish failure of a geometric closest-distance bound;
+  the API has no separate pointwise-error parameter. The same probe records
+  native and independent evaluations, respecting unit weights for polynomial
+  output. The shared offset fitter therefore retains its independent pointwise
+  acceptance checks; the convenience sampling producer is not substituted.
+- **General adaptive curve-offset declarations are absent from the default
+  kernel build.** `N_CrvOffset`, `N_CrvOffsetApprox` and the constant/variable-
+  direction functional producers are inside `#if NLIB_UNUSED`. The default
+  shared library exports `N_CrvOffsetPtSampling` and none of those general
+  producers; an attempted direct call also fails to link. Enabling the unused
+  blocks has not been qualified. This is separate from the sampling defects
+  and limits above. The adapter instead reuses checked native trim/split edits
+  around existing offset fitting and corner policy. See
+  [curve-offset integration](smlib-curve-offset.md).
 - **Banded LU does not pivot around zero diagonals.** On the independently
   invertible matrix `[[0,1],[1,0]]`, `N_RealMatrixLuDecompose` with banded storage
   returns status `1`; native full partial-pivot LU succeeds. The
@@ -549,6 +578,16 @@ issues reported by NVIDIA that have not all been reproduced here.
   portable producers; the earlier mixed-degree interpolation limit remains.
   These are display approximations, not accepted or continuously certified
   model geometry. See [native preview preparation](smlib-morph-preview.md).
+- **Curve offset retains fitting/corner policy around native editing.** Offset
+  and OffsetMultiple now use the checked native curve trim and split adapters
+  for NURBS corner construction, including cyclic seams, concave trims, sharp
+  extension leaves and through-point candidates. The native-feature offset
+  oracle selects the same producer. Source/region admission, side/nesting,
+  analytic offsets, adaptive Hermite fitting, cusp checks, intersection choice,
+  corner joins and source attributes/history remain shared. Unsupported source
+  degrees above 17 retain existing portable edits; errors at supported degrees
+  propagate. No native sampling-fit or Rhino-speed qualification is implied.
+  See [native offset editing](smlib-curve-offset.md).
 - **Morph fitting retains shared approximation policy around native solving.**
   Bend, Twist, Taper, Maelstrom and deformable OrientOnSrf reuse native fixed-row
   banded interpolation for adaptive cubic and rational degree-3/6/9 candidates,

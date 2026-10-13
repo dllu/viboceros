@@ -33,6 +33,55 @@ pub enum CurveOffsetCornerStyle {
     None,
 }
 
+/// Basis editing used while constructing NURBS offset corners. Analytic
+/// geometry, adaptive offset fitting and corner/region policies remain shared.
+pub type CurveOffsetSplit =
+    fn(&crate::NurbsCurve, Real) -> Result<(crate::NurbsCurve, crate::NurbsCurve), GeometryError>;
+
+#[derive(Clone, Copy)]
+pub struct CurveOffsetOperations {
+    pub trim: fn(
+        &crate::NurbsCurve,
+        std::ops::RangeInclusive<Real>,
+    ) -> Result<crate::NurbsCurve, GeometryError>,
+    pub split: CurveOffsetSplit,
+    pub split_at: fn(&crate::NurbsCurve, &[Real]) -> Result<Vec<crate::NurbsCurve>, GeometryError>,
+}
+
+fn offset_trim(
+    curve: &crate::NurbsCurve,
+    interval: std::ops::RangeInclusive<Real>,
+    operations: Option<CurveOffsetOperations>,
+) -> Result<crate::NurbsCurve, GeometryError> {
+    if let Some(o) = operations {
+        (o.trim)(curve, interval)
+    } else {
+        curve.try_trimmed(interval)
+    }
+}
+fn offset_split(
+    curve: &crate::NurbsCurve,
+    parameter: Real,
+    operations: Option<CurveOffsetOperations>,
+) -> Result<(crate::NurbsCurve, crate::NurbsCurve), GeometryError> {
+    if let Some(o) = operations {
+        (o.split)(curve, parameter)
+    } else {
+        curve.try_split(parameter)
+    }
+}
+fn offset_split_at(
+    curve: &crate::NurbsCurve,
+    parameters: &[Real],
+    operations: Option<CurveOffsetOperations>,
+) -> Result<Vec<crate::NurbsCurve>, GeometryError> {
+    if let Some(o) = operations {
+        (o.split_at)(curve, parameters)
+    } else {
+        curve.try_split_at_parameters(parameters)
+    }
+}
+
 impl Curve3 {
     /// Classify two closed offset boundaries without curve intersection when
     /// their boxes are separate or their supporting circles are parallel.
@@ -314,6 +363,17 @@ impl Curve3 {
         tolerance: Tolerance,
         corner: CurveOffsetCornerStyle,
     ) -> Result<Self, GeometryError> {
+        self.try_offset_with_operations(distance, plane_normal, tolerance, corner, None)
+    }
+
+    pub fn try_offset_with_operations(
+        &self,
+        distance: Real,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<Self, GeometryError> {
         if !distance.is_finite() || distance == 0.0 {
             return Err(GeometryError::InvalidCurveOffsetDistance);
         }
@@ -323,7 +383,13 @@ impl Curve3 {
                 Self::Polyline(_) | Self::NurbsCurve(_) | Self::PolyCurve(_)
             )
         {
-            let mut pieces = self.try_offset_parts(distance, plane_normal, tolerance, corner)?;
+            let mut pieces = self.try_offset_parts_with_operations(
+                distance,
+                plane_normal,
+                tolerance,
+                corner,
+                operations,
+            )?;
             return if pieces.len() == 1 {
                 Ok(pieces.remove(0))
             } else {
@@ -368,21 +434,40 @@ impl Curve3 {
             Self::Ellipse(ellipse) => offset_ellipse(*ellipse, distance, tolerance),
             Self::NurbsCurve(curve) => {
                 if let Some(polyline) = linear_nurbs_proxy(curve, tolerance)? {
-                    return Self::Polyline(polyline).try_offset_with_corner_style(
+                    return Self::Polyline(polyline).try_offset_with_operations(
                         distance,
                         plane_normal,
                         tolerance,
                         corner,
+                        operations,
                     );
                 }
                 if corner == CurveOffsetCornerStyle::Chamfer {
-                    return offset_nurbs_chamfer(curve, distance, plane_normal, tolerance);
+                    return offset_nurbs_chamfer(
+                        curve,
+                        distance,
+                        plane_normal,
+                        tolerance,
+                        operations,
+                    );
                 }
                 if corner == CurveOffsetCornerStyle::Round {
-                    return offset_nurbs_round(curve, distance, plane_normal, tolerance);
+                    return offset_nurbs_round(
+                        curve,
+                        distance,
+                        plane_normal,
+                        tolerance,
+                        operations,
+                    );
                 }
                 if corner == CurveOffsetCornerStyle::Sharp {
-                    return offset_nurbs_sharp(curve, distance, plane_normal, tolerance);
+                    return offset_nurbs_sharp(
+                        curve,
+                        distance,
+                        plane_normal,
+                        tolerance,
+                        operations,
+                    );
                 }
                 Ok(Self::NurbsCurve(offset_nurbs(
                     curve,
@@ -394,11 +479,12 @@ impl Curve3 {
             Self::Polyline(polyline) => {
                 offset_polyline(polyline, distance, plane_normal, tolerance, corner)
             }
-            Self::PolyCurve(curve) => offset_proxy(curve, tolerance)?.try_offset_with_corner_style(
+            Self::PolyCurve(curve) => offset_proxy(curve, tolerance)?.try_offset_with_operations(
                 distance,
                 plane_normal,
                 tolerance,
                 corner,
+                operations,
             ),
         }
     }
@@ -412,6 +498,17 @@ impl Curve3 {
         tolerance: Tolerance,
         corner: CurveOffsetCornerStyle,
     ) -> Result<Vec<Self>, GeometryError> {
+        self.try_offset_parts_with_operations(distance, plane_normal, tolerance, corner, None)
+    }
+
+    pub fn try_offset_parts_with_operations(
+        &self,
+        distance: Real,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<Vec<Self>, GeometryError> {
         if corner == CurveOffsetCornerStyle::None {
             if !distance.is_finite() || distance == 0.0 {
                 return Err(GeometryError::InvalidCurveOffsetDistance);
@@ -423,35 +520,45 @@ impl Curve3 {
                 if curve.is_closed()?
                     && let Some(polyline) = linear_nurbs_proxy(curve, tolerance)?
                 {
-                    return Self::Polyline(polyline).try_offset_parts(
+                    return Self::Polyline(polyline).try_offset_parts_with_operations(
                         distance,
                         plane_normal,
                         tolerance,
                         corner,
+                        operations,
                     );
                 }
-                return offset_nurbs_open_gaps(curve, distance, plane_normal, tolerance);
+                return offset_nurbs_open_gaps(
+                    curve,
+                    distance,
+                    plane_normal,
+                    tolerance,
+                    operations,
+                );
             }
             if let Self::PolyCurve(curve) = self {
-                return offset_proxy(curve, tolerance)?.try_offset_parts(
+                return offset_proxy(curve, tolerance)?.try_offset_parts_with_operations(
                     distance,
                     plane_normal,
                     tolerance,
                     corner,
+                    operations,
                 );
             }
-            return Ok(vec![self.try_offset_with_corner_style(
+            return Ok(vec![self.try_offset_with_operations(
                 distance,
                 plane_normal,
                 tolerance,
                 CurveOffsetCornerStyle::Sharp,
+                operations,
             )?]);
         }
-        Ok(vec![self.try_offset_with_corner_style(
+        Ok(vec![self.try_offset_with_operations(
             distance,
             plane_normal,
             tolerance,
             corner,
+            operations,
         )?])
     }
 
@@ -465,23 +572,42 @@ impl Curve3 {
         tolerance: Tolerance,
         corner: CurveOffsetCornerStyle,
     ) -> Result<(Real, Vec<Self>), GeometryError> {
+        self.try_offset_through_point_with_operations(
+            through,
+            plane_normal,
+            tolerance,
+            corner,
+            None,
+        )
+    }
+
+    pub fn try_offset_through_point_with_operations(
+        &self,
+        through: Point3,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: CurveOffsetCornerStyle,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<(Real, Vec<Self>), GeometryError> {
         if let Self::NurbsCurve(curve) = self
             && (corner != CurveOffsetCornerStyle::None || curve.is_closed()?)
             && let Some(polyline) = linear_nurbs_proxy(curve, tolerance)?
         {
-            return Self::Polyline(polyline).try_offset_through_point(
+            return Self::Polyline(polyline).try_offset_through_point_with_operations(
                 through,
                 plane_normal,
                 tolerance,
                 corner,
+                operations,
             );
         }
         if let Self::PolyCurve(curve) = self {
-            return offset_proxy(curve, tolerance)?.try_offset_through_point(
+            return offset_proxy(curve, tolerance)?.try_offset_through_point_with_operations(
                 through,
                 plane_normal,
                 tolerance,
                 corner,
+                operations,
             );
         }
         let (origin, normal, candidates) = match self {
@@ -596,12 +722,16 @@ impl Curve3 {
             if !distance.is_finite() || distance.abs() <= tolerance.absolute() {
                 continue;
             }
-            if let Ok(parts) = self.try_offset_parts(distance, plane_normal, tolerance, corner)
-                && parts.iter().any(|part| {
-                    offset_curve_distance_to_point(part, through, tolerance)
-                        .is_ok_and(|separation| separation <= tolerance.absolute())
-                })
-            {
+            if let Ok(parts) = self.try_offset_parts_with_operations(
+                distance,
+                plane_normal,
+                tolerance,
+                corner,
+                operations,
+            ) && parts.iter().any(|part| {
+                offset_curve_distance_to_point(part, through, tolerance)
+                    .is_ok_and(|separation| separation <= tolerance.absolute())
+            }) {
                 return Ok((distance, parts));
             }
         }

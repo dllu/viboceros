@@ -55,7 +55,14 @@ pub(super) fn run(
     let normal = Vector3::try_from(fixture.normal)?.normalized(tolerance)?;
     let signed = source.offset_side(point(fixture.side)?, normal, tolerance)? * fixture.distance;
     let (outputs, elapsed) = measure(iterations, || {
-        source.try_offset_parts(signed, normal, tolerance, corner)
+        #[cfg(feature = "native-smlib")]
+        {
+            viboceros_smlib::offset_curve_parts(&source, signed, normal, tolerance, corner)
+        }
+        #[cfg(not(feature = "native-smlib"))]
+        {
+            source.try_offset_parts(signed, normal, tolerance, corner)
+        }
     })?;
     let nearest = |query: Point3| -> Result<[f64; 3], ProbeError> {
         let mut best = None;

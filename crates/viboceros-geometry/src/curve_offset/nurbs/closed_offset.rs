@@ -2,6 +2,7 @@
 
 use super::*;
 
+#[allow(clippy::too_many_arguments)]
 pub(super) fn offset_nurbs_closed_gaps(
     curve: &NurbsCurve,
     distance: Real,
@@ -10,6 +11,7 @@ pub(super) fn offset_nurbs_closed_gaps(
     tolerance: Tolerance,
     cuts: &[(Real, bool)],
     seam: Option<bool>,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Vec<Curve3>, GeometryError> {
     let (sources, junctions) = if let Some(seam_convex) = seam {
         let domain = curve.domain();
@@ -19,14 +21,14 @@ pub(super) fn offset_nurbs_closed_gaps(
         parameters.push(*domain.end());
         let sources = parameters
             .windows(2)
-            .map(|window| curve.try_trimmed(window[0]..=window[1]))
+            .map(|window| offset_trim(curve, window[0]..=window[1], operations))
             .collect::<Result<Vec<_>, _>>()?;
         let mut junctions = cuts.iter().map(|cut| cut.1).collect::<Vec<_>>();
         junctions.push(seam_convex);
         (sources, junctions)
     } else {
         let parameters = cuts.iter().map(|cut| cut.0).collect::<Vec<_>>();
-        let sources = curve.try_split_at_parameters(&parameters)?;
+        let sources = offset_split_at(curve, &parameters, operations)?;
         let junctions = (0..sources.len())
             .map(|index| cuts[(index + 1) % cuts.len()].1)
             .collect();
@@ -47,6 +49,7 @@ pub(super) fn offset_nurbs_closed_gaps(
             distance,
             normal,
             tolerance,
+            operations,
         )?)]);
     }
     for (index, &convex) in junctions.iter().enumerate() {
@@ -104,6 +107,7 @@ pub(super) fn offset_nurbs_closed_gaps(
             distance,
             normal,
             tolerance,
+            operations,
         )?]);
     }
     let mut results = Vec::new();
@@ -114,7 +118,7 @@ pub(super) fn offset_nurbs_closed_gaps(
         group.push(index);
         if junctions[index] {
             results.push(build_group(
-                &group, false, &sources, &offsets, &trims, distance, normal, tolerance,
+                &group, false, &sources, &offsets, &trims, distance, normal, tolerance, operations,
             )?);
             group.clear();
         }
@@ -129,10 +133,11 @@ fn trim_single_concave_loop(
     distance: Real,
     normal: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<NurbsCurve, GeometryError> {
     let domain = offset.domain();
     let middle = (*domain.start() + *domain.end()) * 0.5;
-    let (early, late) = offset.try_split(middle)?;
+    let (early, late) = offset_split(offset, middle, operations)?;
     let corner = source.evaluate(*source.domain().start())?;
     let mut best = None;
     for event in early.intersection_events_with_curve(&late, tolerance)? {
@@ -169,7 +174,7 @@ fn trim_single_concave_loop(
             context: "single concave closed NURBS offset has no transverse self-trim",
         });
     };
-    let trimmed = offset.try_trimmed(first..=second)?;
+    let trimmed = offset_trim(offset, first..=second, operations)?;
     let a = trimmed.evaluate(first)?;
     let b = trimmed.evaluate(second)?;
     if a.distance_to(b)? > tolerance.absolute() * 0.1 {
@@ -199,6 +204,7 @@ fn build_group(
     distance: Real,
     normal: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
     let mut segments = Vec::with_capacity(indices.len());
     let mut breaks = vec![*sources[indices[0]].domain().start()];
@@ -208,7 +214,11 @@ fn build_group(
                 context: "concave closed NURBS offset consumes a source segment",
             });
         }
-        segments.push(offsets[index].try_trimmed(trims[index][0]..=trims[index][1])?);
+        segments.push(offset_trim(
+            &offsets[index],
+            trims[index][0]..=trims[index][1],
+            operations,
+        )?);
         let source_domain = sources[index].domain();
         let previous = *breaks.last().unwrap();
         let end = if previous == *source_domain.start() {
