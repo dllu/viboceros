@@ -79,7 +79,11 @@ impl Command for OffsetMultipleCommand {
             .iter()
             .map(|(curve, _)| {
                 curve
-                    .offset_region_inward_sign(normal, tolerance)
+                    .offset_region_inward_sign_with_operations(
+                        normal,
+                        tolerance,
+                        offset_operations(),
+                    )
                     .map_err(map_offset_error)
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -124,7 +128,12 @@ impl Command for OffsetMultipleCommand {
         for &i in &closed {
             inside_any |= sources[i]
                 .0
-                .offset_region_contains(options.side, normal, tolerance)?
+                .offset_region_contains_with_operations(
+                    options.side,
+                    normal,
+                    tolerance,
+                    offset_operations(),
+                )?
                 .unwrap_or(false);
         }
         let mut depths = vec![0_usize; sources.len()];
@@ -137,7 +146,12 @@ impl Command for OffsetMultipleCommand {
                 if i != j
                     && sources[j]
                         .0
-                        .offset_region_contains(witness, normal, tolerance)?
+                        .offset_region_contains_with_operations(
+                            witness,
+                            normal,
+                            tolerance,
+                            offset_operations(),
+                        )?
                         .unwrap_or(false)
                 {
                     depths[i] += 1;

@@ -737,12 +737,14 @@ pub(super) fn nurbs_through_distance(
 fn simple_region_pieces(
     curve: &NurbsCurve,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
-    let mut pending = curve
-        .try_bezier_spans()?
-        .into_iter()
-        .rev()
-        .collect::<Vec<_>>();
+    let spans = if let Some(operations) = operations {
+        (operations.bezier)(curve)?
+    } else {
+        curve.try_bezier_spans()?
+    };
+    let mut pending = spans.into_iter().rev().collect::<Vec<_>>();
     let mut pieces = Vec::new();
     while let Some(piece) = pending.pop() {
         if pieces.len() + pending.len() + 1 > MAX_REGION_PIECES {
@@ -774,7 +776,7 @@ fn simple_region_pieces(
         if midpoint <= *domain.start() || midpoint >= *domain.end() {
             return Err(GeometryError::SelfIntersectingOffsetRegion);
         }
-        let (first, second) = piece.try_split(midpoint)?;
+        let (first, second) = offset_split(&piece, midpoint, operations)?;
         pending.push(second);
         pending.push(first);
     }
@@ -864,9 +866,10 @@ pub(super) fn nurbs_region_inward_sign(
     curve: &NurbsCurve,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<Real, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
-    let _pieces = simple_region_pieces(curve, tolerance)?;
+    let _pieces = simple_region_pieces(curve, tolerance, operations)?;
     // The planar face validates the trim and rational denominator, including
     // cases where the Bezier control hull does not bound the attained curve.
     let face = Brep::try_planar_face(curve, tolerance)?;
@@ -893,6 +896,7 @@ pub(super) fn nurbs_region_contains(
     point: Point3,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<bool, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     let origin = curve.evaluate(*curve.domain().start())?;
@@ -903,7 +907,7 @@ pub(super) fn nurbs_region_contains(
     if nearest.distance_to(point)? <= tolerance.absolute() {
         return Err(GeometryError::AmbiguousCurveOffsetSide);
     }
-    simple_region_pieces(curve, tolerance)?;
+    simple_region_pieces(curve, tolerance, operations)?;
     let face = Brep::try_planar_face(curve, tolerance)?;
     let (index, u, v) = face.closest_underlying_face_parameters(point, tolerance)?;
     if face.faces()[index]

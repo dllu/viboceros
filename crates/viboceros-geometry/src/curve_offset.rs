@@ -46,6 +46,7 @@ pub struct CurveOffsetOperations {
     ) -> Result<crate::NurbsCurve, GeometryError>,
     pub split: CurveOffsetSplit,
     pub split_at: fn(&crate::NurbsCurve, &[Real]) -> Result<Vec<crate::NurbsCurve>, GeometryError>,
+    pub bezier: fn(&crate::NurbsCurve) -> Result<Vec<crate::NurbsCurve>, GeometryError>,
 }
 
 fn offset_trim(
@@ -177,6 +178,15 @@ impl Curve3 {
         plane_normal: UnitVector3,
         tolerance: Tolerance,
     ) -> Result<Option<bool>, GeometryError> {
+        self.offset_region_contains_with_operations(point, plane_normal, tolerance, None)
+    }
+    pub fn offset_region_contains_with_operations(
+        &self,
+        point: Point3,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<Option<bool>, GeometryError> {
         let circle = match self {
             Self::Circle(circle) => Some(*circle),
             Self::Arc(arc) if arc.is_closed() => Some(Circle3::try_from_frame(
@@ -205,19 +215,26 @@ impl Curve3 {
         if let Self::NurbsCurve(curve) = self {
             return if curve.is_closed()? {
                 if let Some(polyline) = linear_nurbs_proxy(curve, tolerance)? {
-                    Self::Polyline(polyline).offset_region_contains(point, plane_normal, tolerance)
+                    Self::Polyline(polyline).offset_region_contains_with_operations(
+                        point,
+                        plane_normal,
+                        tolerance,
+                        operations,
+                    )
                 } else {
-                    nurbs_region_contains(curve, point, plane_normal, tolerance).map(Some)
+                    nurbs_region_contains(curve, point, plane_normal, tolerance, operations)
+                        .map(Some)
                 }
             } else {
                 Ok(None)
             };
         }
         if let Self::PolyCurve(curve) = self {
-            return offset_proxy(curve, tolerance)?.offset_region_contains(
+            return offset_proxy(curve, tolerance)?.offset_region_contains_with_operations(
                 point,
                 plane_normal,
                 tolerance,
+                operations,
             );
         }
         let Self::Polyline(polyline) = self else {
@@ -265,20 +282,35 @@ impl Curve3 {
         plane_normal: UnitVector3,
         tolerance: Tolerance,
     ) -> Result<Option<Real>, GeometryError> {
+        self.offset_region_inward_sign_with_operations(plane_normal, tolerance, None)
+    }
+    pub fn offset_region_inward_sign_with_operations(
+        &self,
+        plane_normal: UnitVector3,
+        tolerance: Tolerance,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<Option<Real>, GeometryError> {
         match self {
             Self::Circle(_) => return Ok(Some(1.0)),
             Self::Arc(arc) if arc.is_closed() => return Ok(Some(1.0)),
             Self::Ellipse(_) => return Ok(Some(1.0)),
             Self::NurbsCurve(curve) if curve.is_closed()? => {
                 if let Some(polyline) = linear_nurbs_proxy(curve, tolerance)? {
-                    return Self::Polyline(polyline)
-                        .offset_region_inward_sign(plane_normal, tolerance);
+                    return Self::Polyline(polyline).offset_region_inward_sign_with_operations(
+                        plane_normal,
+                        tolerance,
+                        operations,
+                    );
                 }
-                return nurbs_region_inward_sign(curve, plane_normal, tolerance).map(Some);
+                return nurbs_region_inward_sign(curve, plane_normal, tolerance, operations)
+                    .map(Some);
             }
             Self::PolyCurve(curve) => {
-                return offset_proxy(curve, tolerance)?
-                    .offset_region_inward_sign(plane_normal, tolerance);
+                return offset_proxy(curve, tolerance)?.offset_region_inward_sign_with_operations(
+                    plane_normal,
+                    tolerance,
+                    operations,
+                );
             }
             Self::Polyline(polyline) if polyline.is_closed() => {
                 let normal = polyline_offset_normal(polyline, plane_normal, tolerance)?;

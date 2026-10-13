@@ -582,7 +582,11 @@ issues reported by NVIDIA that have not all been reproduced here.
   and OffsetMultiple now use the checked native curve trim and split adapters
   for NURBS corner construction, including cyclic seams, concave trims, sharp
   extension leaves and through-point candidates. The native-feature offset
-  oracle selects the same producer. Source/region admission, side/nesting,
+  oracle selects the same producer. OffsetMultiple closed-region admission and
+  nesting also delegate Bézier decomposition and subdivision; positive-weight
+  hull, endpoint, intersection, orientation and containment predicates remain
+  shared, including the 8,192-piece limit and ambiguous-boundary rejection.
+  Source/region admission, side/nesting,
   analytic offsets, adaptive Hermite fitting, cusp checks, intersection choice,
   corner joins and source attributes/history remain shared. Unsupported source
   degrees above 17 retain existing portable edits; errors at supported degrees

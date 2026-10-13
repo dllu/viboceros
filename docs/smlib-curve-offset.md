@@ -6,7 +6,13 @@ concave corner trims, cyclic seam pieces, single concave-loop trimming, sharp
 extension leaves, and through-point candidates. The offset geometry oracle
 selects the same producer.
 
-`CurveOffsetOperations` supplies trim, single-split and multi-split functions.
+`CurveOffsetOperations` supplies trim, single-split, multi-split and Bézier
+functions. OffsetMultiple region admission, containment and nesting also use
+native Bézier decomposition and subdivision through
+`offset_region_inward_sign_with_operations` and
+`offset_region_contains_with_operations`. Positive-weight hull ordering,
+endpoint correspondence, piece intersection, signed region orientation and
+trimmed-face containment remain shared predicates.
 Geometry callers use `try_offset_with_operations`,
 `try_offset_parts_with_operations` or `try_offset_through_point_with_operations`.
 Existing methods keep portable defaults. The bridge exposes
@@ -30,6 +36,13 @@ compares all four existing offset-corner records at absolute `1e-9`, relative
 Existing command tests separately retain geometry, options, source attributes,
 selection, nesting and history checks.
 
+Additional regressions independently classify
+`C(t)=(9t(1-t),9t²(1-t))`: a single closed Bézier must be subdivided because its
+endpoint chord is zero. Instrumented callbacks confirm native decomposition
+and splitting. Cases retain source data, admit common gauges `1e-280`, `1e280`
+and `-1e280`, report ambiguous boundary points, and reject duplicated loops.
+The 8,192-piece region budget and existing uncertainty/error behavior remain.
+
 The [direct upstream probe](../tools/usd_brep/curve_offset_probe.cpp) and
 [its output](smlib-curve-offset-probe.json) explain why the sampling convenience
 producer is not a qualified replacement for the shared offset fitter:
@@ -50,7 +63,7 @@ are not an explicit rational weight array. Existing native extraction imports
 already preserve this distinction. The exact findings and relevant source
 links are retained in the [usd-brep ledger](usd-brep-limitations.md).
 
-The optimized geometry/command/native-bridge suite passes 3,663 tests
+The optimized geometry/command/native-bridge suite passes 3,665 tests
 (11 ignored). Workspace lint passes with warnings denied in both feature
 configurations; formatting passes. The standalone probe builds and records its
 upstream diagnostics without changing the pinned kernel.
