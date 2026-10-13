@@ -328,6 +328,12 @@ unsafe extern "C" {
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
+    fn vb_solid_validate_endpoints(
+        solid: *const NativeSolid,
+        tolerance: f64,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_imported_solid_fillet_edges(
         solid: *mut NativeSolid,
         indices: *const usize,
@@ -985,6 +991,16 @@ impl Solid {
     pub fn validate_boundary_intersections(&self, tolerance: Tolerance) -> Result<(), Error> {
         call(|error, capacity| unsafe {
             vb_solid_validate_boundary(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
+        })
+    }
+
+    /// Check native edge/vertex endpoint agreement on the original handle.
+    /// Uses additive native zone radii and the requested model-space tolerance,
+    /// without copying, healing, or extracting geometry. Surface/trim interiors
+    /// remain the responsibility of portable B-rep and boundary validation.
+    pub fn validate_native_endpoints(&self, tolerance: Tolerance) -> Result<(), Error> {
+        call(|error, capacity| unsafe {
+            vb_solid_validate_endpoints(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
         })
     }
     /// Fillets original Rust edge indices on a freshly imported temporary solid.

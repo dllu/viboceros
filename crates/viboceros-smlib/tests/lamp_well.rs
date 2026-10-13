@@ -168,21 +168,25 @@ fn ellipse_cutter(crown: &Brep, radii: [f64; 2], angle: f64) -> Brep {
     .unwrap()
 }
 
-#[test]
-fn front_fender_lamp_boolean_survives_portable_and_3dm_roundtrip() {
+fn lamp_boolean_roundtrip(radii: [f64; 2], angles: &[f64]) {
     use viboceros_io::{ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject};
     let tolerance = Tolerance::DEFAULT;
     let crown = crown();
     let native = Solid::from_brep(&crown, tolerance).unwrap();
     let before = native.properties(1e-8).unwrap();
-    for angle in [0., 0.5] {
-        let cutter = ellipse_cutter(&crown, [0.16, 0.085], angle);
+    for &angle in angles {
+        let cutter = ellipse_cutter(&crown, radii, angle);
         let cutter = Solid::from_brep(&cutter, tolerance).unwrap();
         for postprocess in [true, false] {
             let result = native
                 .boolean_with_postprocess(&cutter, BooleanOperation::Difference, postprocess)
                 .unwrap();
             assert!(result.properties(1e-8).unwrap().manifold);
+            // Query native endpoints before any copy, NURBS conversion, or
+            // UV generation. A portable tolerance change cannot pass this.
+            result
+                .validate_native_endpoints(Tolerance::NUMERICAL_VALIDATION)
+                .unwrap();
             let brep = result.to_brep(tolerance).unwrap();
             assert!(brep.is_solid());
             let volume = result.volume(1e-8).unwrap();
@@ -227,28 +231,15 @@ fn front_fender_lamp_boolean_survives_portable_and_3dm_roundtrip() {
     assert_eq!(native.properties(1e-8).unwrap(), before);
 }
 
-// Reconstructed from the surviving source master, not the lost original
-// body-boolean-ellipse.rs experiment. The larger cutter crosses the panel
-// boundary. On the retained kernel it produces stale native edge intervals.
 #[test]
-fn invalid_native_lamp_cut_reports_endpoint_gap_and_native_radii() {
-    let tolerance = Tolerance::DEFAULT;
-    let crown = crown();
-    let native = Solid::from_brep(&crown, tolerance).unwrap();
-    let cutter = Solid::from_brep(&ellipse_cutter(&crown, [0.30, 0.16], 0.3), tolerance).unwrap();
-    for postprocess in [true, false] {
-        let result = native
-            .boolean_with_postprocess(&cutter, BooleanOperation::Difference, postprocess)
-            .unwrap();
-        assert!(result.properties(1e-8).unwrap().manifold);
-        let error = result.to_brep(tolerance).unwrap_err().to_string();
-        assert!(
-            error.contains("Native edge 16 endpoint 0 misses vertex 8"),
-            "{error}"
-        );
-        assert!(
-            error.contains("vertex radius") && error.contains("edge radius"),
-            "{error}"
-        );
-    }
+fn front_fender_lamp_boolean_survives_portable_and_3dm_roundtrip() {
+    lamp_boolean_roundtrip([0.16, 0.085], &[0., 0.5]);
+}
+
+// Reconstructed from the surviving source master, not the lost original
+// body-boolean-ellipse.rs experiment. On unpatched usd-brep, the larger cutter
+// produced native endpoint gaps up to 4.7 mm against ~1 nm zone radii.
+#[test]
+fn boundary_crossing_lamp_cut_preserves_native_endpoints_and_3dm_topology() {
+    lamp_boolean_roundtrip([0.30, 0.16], &[0.3]);
 }

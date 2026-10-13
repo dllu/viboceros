@@ -14,19 +14,33 @@ and spatial-edge samples; native volume decreases, and the original operand's
 native properties remain unchanged.
 
 The larger `(0.30, 0.16)` cutter rotated 0.3 radians crosses the panel boundary.
-On the retained usd-brep `c9c5979` kernel it returns manifold topology but invalid
+On unpatched usd-brep `c9c5979` it returned manifold topology but invalid
 geometry. Direct **native** endpoint evaluation before copying or extraction
 measured edge 16's start-to-vertex gap as `6.430754482986e-4` and edge 19's
 end gap as `4.708436575046e-3`, against stored vertex and edge radii near `1e-9`.
 These are model-space distances; UV loop gaps are a separate parameter-space
-quantity. Increasing extraction tolerance cannot correct this native result.
+quantity.
+
+The native cause was `SmEdgeDefinition::IsInteriorPoint`: a minimum-distance
+projection succeeded even when the query point lay off the intersection curve,
+and its distance was ignored. `UpdateEdges` then trimmed that curve and its UV
+curves to the projected parameter while retaining the original vertices. The
+fix requires a finite projection distance within the existing native tolerance
+before authorizing a trim. It changes no geometry tolerance. The tracked patch
+under `third_party/patches` is compiled from a generated source copy, leaving
+the pinned submodule unchanged.
+
+Both ordinary and boundary-crossing cutters now pass in both postprocessing
+modes. `Solid::validate_native_endpoints(Tolerance::NUMERICAL_VALIDATION)` checks
+the original result against its native zone radii before any copy or extraction;
+the strict portable validator and independent 3DM write/readback also pass.
 
 The bridge now translates legal additive native vertex/edge zone radii into
 local portable vertex bounds. It certifies each additional bound against the
 original native radii, without moving geometry or relaxing B-rep validation.
 Native endpoint gaps beyond those radii report their edge, endpoint, vertex,
-distance, and tolerances. This fixes the tolerance contract; the larger-cut
-native construction defect remains under investigation.
+distance, and tolerances. The tolerance-contract regressions also cover a
+shared vertex whose incident edges have different native zone radii.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test lamp_well

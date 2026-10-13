@@ -8,6 +8,21 @@ file(GLOB KERNEL_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SMLib/src/*.
 file(GLOB API_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SM_API/src/*.cpp")
 list(FILTER KERNEL_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 list(FILTER API_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
+# Keep upstream immutable. Compile the bounded topology fix from a generated
+# copy, with the source/version and patch retained under third_party.
+find_program(PATCH_EXECUTABLE patch REQUIRED)
+set(PROTO_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmProtoTopology.cpp")
+set(PROTO_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-interior-point.patch")
+set(PROTO_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmProtoTopology.cpp")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PROTO_SOURCE}" "${PROTO_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch -o "${PROTO_PATCHED}" "${PROTO_SOURCE}" "${PROTO_PATCH}"
+                RESULT_VARIABLE PROTO_PATCH_STATUS OUTPUT_VARIABLE PROTO_PATCH_OUTPUT ERROR_VARIABLE PROTO_PATCH_ERROR)
+if(NOT PROTO_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep topology patch failed; review the pinned upstream version: ${PROTO_PATCH_OUTPUT} ${PROTO_PATCH_ERROR}")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${PROTO_SOURCE}")
+list(APPEND KERNEL_SOURCES "${PROTO_PATCHED}")
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SMLib/inc")
 target_compile_definitions(SMLib PUBLIC NOMINMAX SM_GRAPHICS_CALLBACKS=1)

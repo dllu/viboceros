@@ -19,6 +19,7 @@ fn build_native() {
         "USD BRep source is missing"
     );
     println!("cargo:rerun-if-changed=native");
+    println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-interior-point.patch");
     println!(
         "cargo:rerun-if-changed={}",
         upstream.join("source/SMLib").display()

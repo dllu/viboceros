@@ -21,7 +21,7 @@ Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
 For native B-rep modeling, NURBS editing and fitting, Sweep1/Pipe construction,
 and STEP material regions on Linux,
-install oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
+install `patch` and oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 
 ```sh
 GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep

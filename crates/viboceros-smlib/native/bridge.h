@@ -71,6 +71,7 @@ int vb_solid_mesh(const VbSolid *solid, const double quality[3], VbMesh **out, c
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                    double radius, double accuracy, char *error, size_t capacity);
 int vb_solid_validate_boundary(const VbSolid *solid, double tolerance, char *error, size_t capacity);
+int vb_solid_validate_endpoints(const VbSolid *solid, double tolerance, char *error, size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);
 int vb_mesh_copy(const VbMesh *mesh, double *vertices, size_t vertex_count, uint32_t *triangles,
                  size_t triangle_count);
