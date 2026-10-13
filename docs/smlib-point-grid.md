@@ -12,11 +12,21 @@ atomic document history use the existing command topology path.
 
 `PointGridInterpolationSystem` supplies each axis's complete knots, construction
 stations, folded-control flag and batched homogeneous targets. Native open
-systems share banded LU; closed systems share partial-pivot LU with the existing
-scalar `N_RealMatrixRightForBack`, avoiding both the pivot convenience solver’s
-small-RHS skip and dense per-coefficient point-blending calls. All four
-homogeneous channels remain in the batch layout. The factorization
-is reused across every row of the other axis. Native preparation does not build
+systems share banded LU. Closed grids with more than `4 * degree + 1`
+stations reuse the alternate-end cyclic ordering of periodic Rebuild, using
+half-bandwidth `2 * degree` without shifting original control indices. Exact
+nonzero support is checked before admitting a native band row. Small grids
+retain full partial-pivot LU; failed band support/factor/solve/residual checks
+retry that same native producer. Invalid inputs and incorrect basis spans still
+return errors. Neither basis coefficients nor knot/station policy change.
+
+Closed point grids share scalar `N_RealMatrixRightForBack`, avoiding the pivot
+convenience solver’s small-RHS skip and per-coefficient point blending. Constant coordinates and unit weights are preserved by the shared
+tensor policy between axes; the native producer retains every channel solve
+and input-residual check. All four homogeneous channels remain in the batch layout. Each
+factorization is reused across every row of the other axis. Open grids retain
+their homogeneous back-solver’s existing arithmetic order. Native preparation
+does not build
 the portable dense collocation matrices. Portable builds retain faer full-pivot
 LU and the independent Rust basis implementation.
 
@@ -55,24 +65,46 @@ construction sites gives degree-nine residuals `9.92e-9` for the native net and
 uses exact binary64 inputs with a separate local Cox/de Boor recursion. These
 numerical diagnostics do not certify arbitrary conditioning or a Rhino match.
 
-[Local timing](smlib-point-grid-performance.json), from three alternating
-five-iteration runs after warmup, includes the shared station and evaluator
-checks. The open 256×256 grid takes 36.5 ms native versus 35.6 ms portable;
-the closed 64×64 grid takes 4.08 ms versus 1.87 ms. Closed dense native solves
-remain slower than the portable batch factorization. These are local throughput
-diagnostics, not Rhino measurements or CI timing assertions.
+[Cyclic-band qualification](smlib-point-grid-band-comparison.json) compares
+91 complete records against the saved native producer at `9499aa56`: all 87
+existing ordinary/diagnostic/interchange records and four additional large
+cases pass. The large cases cover 64×65, 255×7, the full 256×256 closed budget,
+and degree eleven on 64×7. Maximum difference is `1.71e-13`; comparison
+allowances retain the existing ordinary/high-degree epsilons. The high-degree
+portable/Rhino differences above remain separate from this native-to-native
+comparison. The [reference tool](../tools/usd_brep/references/point_grid_band_timing.py)
+regenerates the additional comparison fixture with `--comparison-fixture`.
+
+[Updated local timing](smlib-point-grid-band-performance.json) uses three
+rotating backend runs, each with five timed API constructions after warmup,
+including shared station preparation and every independent evaluator audit.
+
+| Cubic grid | Portable | Previous native | Cyclic-band native |
+| --- | ---: | ---: | ---: |
+| Open 256×256 | 34.5 ms | 35.7 ms | 35.7 ms |
+| Closed 64×64 | 1.86 ms | 4.08 ms | 2.80 ms |
+| Closed 256×256 | 35.0 ms | 245.8 ms | 46.2 ms |
+
+The measured full closed grid improves by about 5.3 times versus the previous
+native producer. Native closed construction still takes 1.32–1.51 times the
+portable time in these cases. [Earlier timing](smlib-point-grid-performance.json)
+retains the initial dense qualification. These are local throughput diagnostics,
+not Rhino measurements or CI timing assertions.
 
 Expanding the native-oracle test run also exposes 20 existing Join/audit
 assertions written for portable behavior. [Saved-binary replay](smlib-point-grid-oracle-baseline.json)
 compares all 2,092 records in 27 referenced Join fixtures against the pre-change
-native oracle;
-complete successful values and failure outcomes remain unchanged. These tests
+native oracle; complete successful values and failure outcomes remain unchanged. These tests
 are still failing under the native feature and are not counted as passing checks
 for this change. The point-grid oracle test and full geometry/command/bridge
 suite are qualified separately.
 
-The optimized geometry/command/bridge suite passes 3,647 tests (11 ignored),
-including native grid/tween regressions, topology, source retention and history.
+Before cyclic-band qualification, the optimized geometry/command/bridge suite
+passed 3,647 tests (11 ignored), including topology, source retention and history.
+The cyclic-band change passes the complete native bridge suite: 180 tests,
+one ignored. New regressions cover every degree 1–11 on 64-station closed axes,
+both 64×65 axes, the full closed budget, and an invertible zero-diagonal matrix
+that requires the native pivoted retry.
 The native point-grid tests cover 47 API fixture nets, all requested open
 degrees through 11, the 256×256 grid, minimum closed counts, repeated controls,
 `2^-360`/`2^360` coordinate scales and nonconstant channels down to `1e-280`.

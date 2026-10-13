@@ -1,0 +1,1380 @@
+{
+  "baseline_commit": "9499aa56",
+  "baseline_binary_sha256": "2c3b67b333f4b5b28b5a0fed806f3d67e2c1a59c72d3b3c200f5e318b3974908",
+  "native_binary_sha256": "73b513157e1e2155f4c88bb9d4aaaabedd1e9f482a5d1492bb7d8702a2fe24a4",
+  "reports": {
+    "point_grid": {
+      "protocol_version": 1,
+      "absolute_epsilon": 2e-12,
+      "relative_epsilon": 1e-14,
+      "operations": [
+        {
+          "id": "through-2-2-3-3",
+          "comparison": {
+            "id": "through-2-2-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 6144.0,
+            "dense_ns_per_iteration": 3088.0,
+            "dense_to_band_ratio": 0.5026041666666666
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-2-2-3-3",
+          "comparison": {
+            "id": "control-2-2-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 192.0,
+            "dense_ns_per_iteration": 112.0,
+            "dense_to_band_ratio": 0.5833333333333334
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-3-3-3-3",
+          "comparison": {
+            "id": "through-3-3-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 11472.0,
+            "dense_ns_per_iteration": 5584.0,
+            "dense_to_band_ratio": 0.48675034867503486
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-3-3-3-3",
+          "comparison": {
+            "id": "control-3-3-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 384.0,
+            "dense_ns_per_iteration": 192.0,
+            "dense_to_band_ratio": 0.5
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-4-4-3-3",
+          "comparison": {
+            "id": "through-4-4-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 20112.0,
+            "dense_ns_per_iteration": 10064.0,
+            "dense_to_band_ratio": 0.5003977724741447
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-4-4-3-3",
+          "comparison": {
+            "id": "control-4-4-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 368.0,
+            "dense_ns_per_iteration": 208.0,
+            "dense_to_band_ratio": 0.5652173913043478
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-5-6-3-3",
+          "comparison": {
+            "id": "through-5-6-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 36080.0,
+            "dense_ns_per_iteration": 18512.0,
+            "dense_to_band_ratio": 0.5130820399113082
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-5-6-3-3",
+          "comparison": {
+            "id": "control-5-6-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 496.0,
+            "dense_ns_per_iteration": 256.0,
+            "dense_to_band_ratio": 0.5161290322580645
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-6-5-1-1",
+          "comparison": {
+            "id": "through-6-5-1-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 23312.0,
+            "dense_ns_per_iteration": 11488.0,
+            "dense_to_band_ratio": 0.49279341111873715
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-6-5-1-1",
+          "comparison": {
+            "id": "control-6-5-1-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 448.0,
+            "dense_ns_per_iteration": 224.0,
+            "dense_to_band_ratio": 0.5
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-6-5-2-2",
+          "comparison": {
+            "id": "through-6-5-2-2",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 29936.0,
+            "dense_ns_per_iteration": 15424.0,
+            "dense_to_band_ratio": 0.5152324959914484
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-6-5-2-2",
+          "comparison": {
+            "id": "control-6-5-2-2",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 480.0,
+            "dense_ns_per_iteration": 256.0,
+            "dense_to_band_ratio": 0.5333333333333333
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-6-5-4-4",
+          "comparison": {
+            "id": "through-6-5-4-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 49377.0,
+            "dense_ns_per_iteration": 25008.0,
+            "dense_to_band_ratio": 0.5064706239747251
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-6-5-4-4",
+          "comparison": {
+            "id": "control-6-5-4-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 528.0,
+            "dense_ns_per_iteration": 256.0,
+            "dense_to_band_ratio": 0.48484848484848486
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-7-6-5-3",
+          "comparison": {
+            "id": "through-7-6-5-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 69008.0,
+            "dense_ns_per_iteration": 35184.0,
+            "dense_to_band_ratio": 0.5098539299791328
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-7-6-5-3",
+          "comparison": {
+            "id": "control-7-6-5-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 768.0,
+            "dense_ns_per_iteration": 384.0,
+            "dense_to_band_ratio": 0.5
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-3-5-2-3",
+          "comparison": {
+            "id": "through-3-5-2-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 17936.0,
+            "dense_ns_per_iteration": 8928.0,
+            "dense_to_band_ratio": 0.4977698483496878
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-3-5-2-3",
+          "comparison": {
+            "id": "control-3-5-2-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 384.0,
+            "dense_ns_per_iteration": 192.0,
+            "dense_to_band_ratio": 0.5
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "through-2-5-1-3",
+          "comparison": {
+            "id": "through-2-5-1-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 11696.0,
+            "dense_ns_per_iteration": 5648.0,
+            "dense_to_band_ratio": 0.4829001367989056
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "control-2-5-1-3",
+          "comparison": {
+            "id": "control-2-5-1-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 352.0,
+            "dense_ns_per_iteration": 176.0,
+            "dense_to_band_ratio": 0.5
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-10-1",
+          "comparison": {
+            "id": "closed-10-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 32960.0,
+            "dense_ns_per_iteration": 17280.0,
+            "dense_to_band_ratio": 0.5242718446601942
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-10-2",
+          "comparison": {
+            "id": "closed-10-2",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 45488.0,
+            "dense_ns_per_iteration": 22816.0,
+            "dense_to_band_ratio": 0.5015828350334154
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-10-3",
+          "comparison": {
+            "id": "closed-10-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 55665.0,
+            "dense_ns_per_iteration": 28256.0,
+            "dense_to_band_ratio": 0.5076080122159347
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-10-4",
+          "comparison": {
+            "id": "closed-10-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 72017.0,
+            "dense_ns_per_iteration": 36160.0,
+            "dense_to_band_ratio": 0.5021036699668134
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-10-5",
+          "comparison": {
+            "id": "closed-10-5",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 98241.0,
+            "dense_ns_per_iteration": 49888.0,
+            "dense_to_band_ratio": 0.5078124204761759
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-01-1",
+          "comparison": {
+            "id": "closed-01-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 31600.0,
+            "dense_ns_per_iteration": 16016.0,
+            "dense_to_band_ratio": 0.5068354430379747
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-01-2",
+          "comparison": {
+            "id": "closed-01-2",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 45025.0,
+            "dense_ns_per_iteration": 23056.0,
+            "dense_to_band_ratio": 0.5120710716268739
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-01-3",
+          "comparison": {
+            "id": "closed-01-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 53504.0,
+            "dense_ns_per_iteration": 27440.0,
+            "dense_to_band_ratio": 0.5128588516746412
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-01-4",
+          "comparison": {
+            "id": "closed-01-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 75200.0,
+            "dense_ns_per_iteration": 37264.0,
+            "dense_to_band_ratio": 0.49553191489361703
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-01-5",
+          "comparison": {
+            "id": "closed-01-5",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 100336.0,
+            "dense_ns_per_iteration": 49504.0,
+            "dense_to_band_ratio": 0.49338223568808803
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-11-1",
+          "comparison": {
+            "id": "closed-11-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 34848.0,
+            "dense_ns_per_iteration": 17856.0,
+            "dense_to_band_ratio": 0.512396694214876
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-11-2",
+          "comparison": {
+            "id": "closed-11-2",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 48848.0,
+            "dense_ns_per_iteration": 24752.0,
+            "dense_to_band_ratio": 0.5067147068457255
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-11-3",
+          "comparison": {
+            "id": "closed-11-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 60209.0,
+            "dense_ns_per_iteration": 34288.0,
+            "dense_to_band_ratio": 0.5694829676626418
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-11-4",
+          "comparison": {
+            "id": "closed-11-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 82497.0,
+            "dense_ns_per_iteration": 41568.0,
+            "dense_to_band_ratio": 0.5038728681042947
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "closed-11-5",
+          "comparison": {
+            "id": "closed-11-5",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 104513.0,
+            "dense_ns_per_iteration": 52193.0,
+            "dense_to_band_ratio": 0.4993924200817123
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-2-2-3-3-00",
+          "comparison": {
+            "id": "degrees-2-2-3-3-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 5280.0,
+            "dense_ns_per_iteration": 2816.0,
+            "dense_to_band_ratio": 0.5333333333333333
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-3-3-3-3-00",
+          "comparison": {
+            "id": "degrees-3-3-3-3-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 10864.0,
+            "dense_ns_per_iteration": 5536.0,
+            "dense_to_band_ratio": 0.5095729013254786
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-3-3-3-3-10",
+          "comparison": {
+            "id": "degrees-3-3-3-3-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 12672.0,
+            "dense_ns_per_iteration": 6480.0,
+            "dense_to_band_ratio": 0.5113636363636364
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-3-3-3-3-11",
+          "comparison": {
+            "id": "degrees-3-3-3-3-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 13952.0,
+            "dense_ns_per_iteration": 7136.0,
+            "dense_to_band_ratio": 0.5114678899082569
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-4-4-5-5-00",
+          "comparison": {
+            "id": "degrees-4-4-5-5-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 20112.0,
+            "dense_ns_per_iteration": 10064.0,
+            "dense_to_band_ratio": 0.5003977724741447
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-4-4-5-5-10",
+          "comparison": {
+            "id": "degrees-4-4-5-5-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 23136.0,
+            "dense_ns_per_iteration": 11728.0,
+            "dense_to_band_ratio": 0.5069156293222683
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-4-4-5-5-11",
+          "comparison": {
+            "id": "degrees-4-4-5-5-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 26304.0,
+            "dense_ns_per_iteration": 13728.0,
+            "dense_to_band_ratio": 0.5218978102189781
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-11-8-00",
+          "comparison": {
+            "id": "degrees-6-5-11-8-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 57665.0,
+            "dense_ns_per_iteration": 28896.0,
+            "dense_to_band_ratio": 0.5011011878956039
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-11-8-10",
+          "comparison": {
+            "id": "degrees-6-5-11-8-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 61424.0,
+            "dense_ns_per_iteration": 46224.0,
+            "dense_to_band_ratio": 0.7525397238864288
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-11-8-11",
+          "comparison": {
+            "id": "degrees-6-5-11-8-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 67793.0,
+            "dense_ns_per_iteration": 35328.0,
+            "dense_to_band_ratio": 0.5211157494136562
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-0-3-00",
+          "comparison": {
+            "id": "degrees-6-5-0-3-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 28224.0,
+            "dense_ns_per_iteration": 13856.0,
+            "dense_to_band_ratio": 0.4909297052154195
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-0-3-10",
+          "comparison": {
+            "id": "degrees-6-5-0-3-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 31056.0,
+            "dense_ns_per_iteration": 15696.0,
+            "dense_to_band_ratio": 0.5054095826893354
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "degrees-6-5-0-3-11",
+          "comparison": {
+            "id": "degrees-6-5-0-3-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 34640.0,
+            "dense_ns_per_iteration": 17440.0,
+            "dense_to_band_ratio": 0.5034642032332564
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "cylinder",
+          "comparison": {
+            "id": "cylinder",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 41872.0,
+            "dense_ns_per_iteration": 20033.0,
+            "dense_to_band_ratio": 0.47843427588842186
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "torus",
+          "comparison": {
+            "id": "torus",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 48480.0,
+            "dense_ns_per_iteration": 23632.0,
+            "dense_to_band_ratio": 0.4874587458745875
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "duplicate-u",
+          "comparison": {
+            "id": "duplicate-u",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 46832.0,
+            "dense_ns_per_iteration": 24096.0,
+            "dense_to_band_ratio": 0.5145199863341305
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "duplicate-v",
+          "comparison": {
+            "id": "duplicate-v",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 47696.0,
+            "dense_ns_per_iteration": 24256.0,
+            "dense_to_band_ratio": 0.5085541764508554
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "coincident-u-row",
+          "comparison": {
+            "id": "coincident-u-row",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 38769.0,
+            "dense_ns_per_iteration": 19600.0,
+            "dense_to_band_ratio": 0.5055585648327272
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 53,
+      "matched": 53,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "ea69275253b0f78c0db13989a6c7936275176f7d0e33fad342fbc40492dc9d25"
+    },
+    "point_grid_command": {
+      "protocol_version": 1,
+      "absolute_epsilon": 2e-12,
+      "relative_epsilon": 1e-14,
+      "operations": [
+        {
+          "id": "command-through-5-6-3-3",
+          "comparison": {
+            "id": "command-through-5-6-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 264705.0,
+            "dense_ns_per_iteration": 533587.0,
+            "dense_to_band_ratio": 2.0157798303772125
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-control-5-6-3-3",
+          "comparison": {
+            "id": "command-control-5-6-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 238242.0,
+            "dense_ns_per_iteration": 470114.0,
+            "dense_to_band_ratio": 1.9732624810067074
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-cylinder",
+          "comparison": {
+            "id": "command-cylinder",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 322242.0,
+            "dense_ns_per_iteration": 646948.0,
+            "dense_to_band_ratio": 2.007646427219295
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-torus",
+          "comparison": {
+            "id": "command-torus",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 435746.0,
+            "dense_ns_per_iteration": 854949.0,
+            "dense_to_band_ratio": 1.9620352223543074
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-1-1-00",
+          "comparison": {
+            "id": "command-degree-1-1-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 2456685.0,
+            "dense_ns_per_iteration": 4744842.0,
+            "dense_to_band_ratio": 1.9314002405680826
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-1-1-11",
+          "comparison": {
+            "id": "command-degree-1-1-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 6401635.0,
+            "dense_ns_per_iteration": 11750432.0,
+            "dense_to_band_ratio": 1.8355360778926009
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-2-2-00",
+          "comparison": {
+            "id": "command-degree-2-2-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 250705.0,
+            "dense_ns_per_iteration": 519987.0,
+            "dense_to_band_ratio": 2.074099040705211
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-2-2-11",
+          "comparison": {
+            "id": "command-degree-2-2-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 336225.0,
+            "dense_ns_per_iteration": 699524.0,
+            "dense_to_band_ratio": 2.0805234589932335
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-4-4-00",
+          "comparison": {
+            "id": "command-degree-4-4-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 375890.0,
+            "dense_ns_per_iteration": 755332.0,
+            "dense_to_band_ratio": 2.0094495730133817
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-4-4-11",
+          "comparison": {
+            "id": "command-degree-4-4-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 676899.0,
+            "dense_ns_per_iteration": 1391688.0,
+            "dense_to_band_ratio": 2.0559758545957374
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-5-3-00",
+          "comparison": {
+            "id": "command-degree-5-3-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 370258.0,
+            "dense_ns_per_iteration": 729700.0,
+            "dense_to_band_ratio": 1.970787937060104
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-5-3-11",
+          "comparison": {
+            "id": "command-degree-5-3-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 675108.0,
+            "dense_ns_per_iteration": 711428.0,
+            "dense_to_band_ratio": 1.0537987995994715
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-control-degree-1",
+          "comparison": {
+            "id": "command-control-degree-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 2411245.0,
+            "dense_ns_per_iteration": 2454541.0,
+            "dense_to_band_ratio": 1.017955869270854
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-control-degree-2-4",
+          "comparison": {
+            "id": "command-control-degree-2-4",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 265858.0,
+            "dense_ns_per_iteration": 265169.0,
+            "dense_to_band_ratio": 0.9974083909455423
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-control-degree-5",
+          "comparison": {
+            "id": "command-control-degree-5",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 393250.0,
+            "dense_ns_per_iteration": 401122.0,
+            "dense_to_band_ratio": 1.0200178003814366
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-ruled-closed-10",
+          "comparison": {
+            "id": "command-ruled-closed-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 720964.0,
+            "dense_ns_per_iteration": 720052.0,
+            "dense_to_band_ratio": 0.998735026991639
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-ruled-closed-01",
+          "comparison": {
+            "id": "command-ruled-closed-01",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 733684.0,
+            "dense_ns_per_iteration": 725892.0,
+            "dense_to_band_ratio": 0.9893796239252867
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-mixed-degree-open",
+          "comparison": {
+            "id": "command-mixed-degree-open",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 629540.0,
+            "dense_ns_per_iteration": 636388.0,
+            "dense_to_band_ratio": 1.010877783778632
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 18,
+      "matched": 18,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "70e13a69afae97a33295c6dc239fc2debdbc1b9cf5a249c1d2a3c193a4184114"
+    },
+    "point_grid_high_degree": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "api-degree-7-00",
+          "comparison": {
+            "id": "api-degree-7-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 261169.0,
+            "dense_ns_per_iteration": 261569.0,
+            "dense_to_band_ratio": 1.0015315753401055
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-7-00",
+          "comparison": {
+            "id": "command-degree-7-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 1636137.0,
+            "dense_ns_per_iteration": 1654537.0,
+            "dense_to_band_ratio": 1.0112460020157237
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "api-degree-7-11",
+          "comparison": {
+            "id": "api-degree-7-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 281953.0,
+            "dense_ns_per_iteration": 297730.0,
+            "dense_to_band_ratio": 1.0559561345330604
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-7-11",
+          "comparison": {
+            "id": "command-degree-7-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 4893147.0,
+            "dense_ns_per_iteration": 4929403.0,
+            "dense_to_band_ratio": 1.0074095464534378
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "api-degree-9-00",
+          "comparison": {
+            "id": "api-degree-9-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 664500.0,
+            "dense_ns_per_iteration": 673764.0,
+            "dense_to_band_ratio": 1.013941309255079
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-9-00",
+          "comparison": {
+            "id": "command-degree-9-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 2910032.0,
+            "dense_ns_per_iteration": 2926848.0,
+            "dense_to_band_ratio": 1.0057786306129968
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "api-degree-11-00",
+          "comparison": {
+            "id": "api-degree-11-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 1468856.0,
+            "dense_ns_per_iteration": 884565.0,
+            "dense_to_band_ratio": 0.6022135593958836
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-11-00",
+          "comparison": {
+            "id": "command-degree-11-00",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 2559998.0,
+            "dense_ns_per_iteration": 2544621.0,
+            "dense_to_band_ratio": 0.9939933546823083
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 8,
+      "matched": 8,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "786d09133724632095f1e18b6711cdd0783fdc8eb23d5745dc33411e8b8b93ab"
+    },
+    "point_grid_high_degree_diagnostics": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "api-degree-9-11",
+          "comparison": {
+            "id": "api-degree-9-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 356002.0,
+            "dense_ns_per_iteration": 360066.0,
+            "dense_to_band_ratio": 1.0114156662041225
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-9-11",
+          "comparison": {
+            "id": "command-degree-9-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 5167804.0,
+            "dense_ns_per_iteration": 5169740.0,
+            "dense_to_band_ratio": 1.0003746272110938
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "api-degree-11-11",
+          "comparison": {
+            "id": "api-degree-11-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 768181.0,
+            "dense_ns_per_iteration": 770757.0,
+            "dense_to_band_ratio": 1.0033533763527085
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "command-degree-11-11",
+          "comparison": {
+            "id": "command-degree-11-11",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 10854251.0,
+            "dense_ns_per_iteration": 10813355.0,
+            "dense_to_band_ratio": 0.9962322596004091
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "803cf6160302145ba57b977fe7038433fa1133f7516b12d6c04eb012d0ba8037"
+    },
+    "point_grid_3dm_interchange": {
+      "protocol_version": 1,
+      "absolute_epsilon": 2e-12,
+      "relative_epsilon": 1e-14,
+      "operations": [
+        {
+          "id": "grid-3dm-control-5-6-3-3",
+          "comparison": {
+            "id": "grid-3dm-control-5-6-3-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 838580.0,
+            "dense_ns_per_iteration": 796997.0,
+            "dense_to_band_ratio": 0.950412602256195
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "grid-3dm-through-3-5-2-3",
+          "comparison": {
+            "id": "grid-3dm-through-3-5-2-3",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 707044.0,
+            "dense_ns_per_iteration": 719716.0,
+            "dense_to_band_ratio": 1.017922505530066
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "grid-3dm-torus",
+          "comparison": {
+            "id": "grid-3dm-torus",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 862165.0,
+            "dense_ns_per_iteration": 861477.0,
+            "dense_to_band_ratio": 0.9992020088962089
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "grid-3dm-through-6-5-1-1",
+          "comparison": {
+            "id": "grid-3dm-through-6-5-1-1",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 1696025.0,
+            "dense_ns_per_iteration": 1673993.0,
+            "dense_to_band_ratio": 0.9870096254477381
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "82b5ef98bfa1cca0ae0b4af5a1faa9cc2895b9a924c511386fd2f4ea63de6eb2"
+    },
+    "band_large": {
+      "protocol_version": 1,
+      "absolute_epsilon": 1e-08,
+      "relative_epsilon": 1e-12,
+      "operations": [
+        {
+          "id": "band-64-65-p3-11",
+          "comparison": {
+            "id": "band-64-65-p3-11",
+            "passed": true,
+            "max_absolute_error": 2.1316282072803006e-14,
+            "differences": [],
+            "band_ns_per_iteration": 2819920.0,
+            "dense_ns_per_iteration": 4542041.0,
+            "dense_to_band_ratio": 1.6106985304547647
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "band-255-7-p3-10",
+          "comparison": {
+            "id": "band-255-7-p3-10",
+            "passed": true,
+            "max_absolute_error": 1.1368683772161603e-13,
+            "differences": [],
+            "band_ns_per_iteration": 1095030.0,
+            "dense_ns_per_iteration": 4661705.0,
+            "dense_to_band_ratio": 4.257148205985224
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "band-256-256-p3-11",
+          "comparison": {
+            "id": "band-256-256-p3-11",
+            "passed": true,
+            "max_absolute_error": 1.7053025658242404e-13,
+            "differences": [],
+            "band_ns_per_iteration": 50013200.0,
+            "dense_ns_per_iteration": 250091024.0,
+            "dense_to_band_ratio": 5.000500347908153
+          },
+          "native_error": null,
+          "passed": true
+        },
+        {
+          "id": "band-64-7-p11-10",
+          "comparison": {
+            "id": "band-64-7-p11-10",
+            "passed": true,
+            "max_absolute_error": 0.0,
+            "differences": [],
+            "band_ns_per_iteration": 963493.0,
+            "dense_ns_per_iteration": 890852.0,
+            "dense_to_band_ratio": 0.924606613644313
+          },
+          "native_error": null,
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "cases": 4,
+      "matched": 4,
+      "native_failed": 0,
+      "mismatched": 0,
+      "timing_note": "Local harness measurements against the previous native producer, not Rhino timings",
+      "reference": "Saved pre-change native dense/pivoted grid producer at 9499aa56; not a Rhino capture",
+      "fixture_sha256": "8fdf4b853ed3f983ab3b483ec82fd75291eb316d556118da2c45270c7b625e11"
+    }
+  },
+  "validation": {
+    "native_bridge_tests_passed": 180,
+    "ignored": 1,
+    "scoped_native_oracle_point_grid_test": "passed during cyclic-band qualification",
+    "final_binary_complete_record_comparisons_passed": 91,
+    "workspace_native_lint": "passed with warnings denied",
+    "format": "passed",
+    "standalone_zero_diagonal_probe": "band status 1, pivoted and scalar-solve statuses 0"
+  }
+}

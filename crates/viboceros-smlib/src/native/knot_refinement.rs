@@ -1291,4 +1291,41 @@ mod interpolation_tests {
         ));
         assert_eq!(system.targets, targets);
     }
+    #[test]
+    fn closed_grid_band_retries_native_pivoting_for_an_invertible_zero_diagonal() {
+        // Ordered integer stations shifted by one give the exact cyclic
+        // permutation A[i,(i+1)%64]=1. Every diagonal entry is zero, so native
+        // unpivoted band LU must reject this invertible system. The existing
+        // native pivoted producer must recover every tiny and ordinary channel.
+        let n = 64;
+        let knots = [
+            vec![0., 0.],
+            (1..n).map(|i| i as f64).collect(),
+            vec![n as f64; n.min(2)],
+        ]
+        .concat();
+        let parameters = (1..=n).map(|i| i as f64).collect::<Vec<_>>();
+        let expected = (0..n)
+            .flat_map(|i| [i as f64, -(i as f64), (i + 1) as f64 * 1e-280, 1.])
+            .collect::<Vec<_>>();
+        let targets = (0..n)
+            .flat_map(|i| {
+                expected[((i + 1) % n) * 4..((i + 1) % n) * 4 + 4]
+                    .iter()
+                    .copied()
+            })
+            .collect::<Vec<_>>();
+        let job = viboceros_geometry::PointGridInterpolationSystem {
+            degree: 1,
+            knots: &knots,
+            parameters: &parameters,
+            closed: true,
+            columns: 4,
+            targets: &targets,
+        };
+        let output = solve_point_grid(&job).unwrap();
+        assert_eq!(output.controls, expected);
+        assert_eq!(output.amplification, vec![1.; n]);
+        assert_eq!(job.targets, targets);
+    }
 }

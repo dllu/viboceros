@@ -8,6 +8,20 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Banded LU does not pivot around zero diagonals.** On the independently
+  invertible matrix `[[0,1],[1,0]]`, `N_RealMatrixLuDecompose` with banded storage
+  returns status `1`; native full partial-pivot LU succeeds. The
+  [direct probe](../tools/usd_brep/grid_band_probe.cpp) then solves RHS
+  `[1e-280,2e-280]` exactly as `[2e-280,1e-280]` using
+  `N_RealMatrixRightForBack`; [retained output](smlib-point-grid-band-probe.json)
+  records both statuses. This is an algorithm restriction, not a claim that
+  no-pivot LU should solve every invertible matrix. Closed point grids now try
+  the existing native banded producer with alternate-end cyclic ordering when
+  `count > 4 * degree + 1`, then retry the original full pivoted producer if
+  exact support, factorization, back solving or input residuals fail. Other
+  basis/span and invalid-input errors still propagate. A 64-row exact cyclic
+  permutation regression exercises the retry with every diagonal zero.
+  Source: [NL_Math.cpp](../third_party/usd-brep/source/SMLib/src/NL_Math.cpp).
 - **Point interpolation supplies clamped endpoint constraints for unclamped bases.**
   `N_FitCrvInterpGivenParams` accepts the quadratic basis
   `[-2,-1,0,0.8,2,3,4]` and samples of `X(u)=u` at `[0,0.4,1.4,2]`,
@@ -526,8 +540,11 @@ issues reported by NVIDIA that have not all been reproduced here.
   pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
 - **Point-grid interpolation retains continuation and conditioning limits.**
   Open directions use the existing native banded solver; closed directions fold
-  repeated control columns and share the existing partial-pivot LU and
-  `N_RealMatrixRightForBack` scalar solves (no small-RHS skip). The native
+  repeated control columns, reuse alternate-end cyclic band ordering for
+  larger grids, and retain full partial-pivot LU for small/failed band jobs.
+  Closed point-grid channels share `N_RealMatrixRightForBack` scalar solves (no
+  small-RHS skip), retaining every channel solve and residual check before
+  the shared constant-channel correction between axes. The native
   zeroth-derivative basis supports boundary-span polynomial continuation; the
   [direct probe](../tools/usd_brep/grid_continuation_probe.cpp) returns the exact
   independent quadratic coefficients `[9/8,-1/4,1/8]` at `-0.5` outside active
@@ -539,9 +556,17 @@ issues reported by NVIDIA that have not all been reproduced here.
   comparisons. The degree-nine native net differs from the portable full-pivot
   net by `1.18e-7`; independent 80-digit construction-site residuals are
   `9.92e-9` native versus `6.41e-10` portable. These are adapter qualification
-  limits, not proof of an upstream algorithm defect. The measured closed
-  64×64 construction takes about 2.18 times the portable time even using
-  the native scalar back-solver; open 256×256 construction is within 3%.
+  limits, not proof of an upstream algorithm defect. Guarded cyclic bands
+  improve the measured 256×256 closed construction by about 5.3 times versus
+  the prior native producer; measured closed cases still take 1.32–1.51 times
+  the portable time. Qualification and timings are recorded in
+  [native point grids](smlib-point-grid.md).
+  A constant-channel solve bypass changed the 64×7 degree-11 diagnostic's
+  extrapolated construction samples by `1.17e-8` versus the existing producer,
+  exceeding its `1e-8` allowance even with the open-axis solver unchanged.
+  That bypass is not used: every channel retains its native solve/residual
+  check before shared constant correction. This is an adapter qualification
+  limit, not proof that an upstream solver is incorrect.
   Arbitrary conditioning and Rhino performance remain unqualified.
   See [native point grids](smlib-point-grid.md) and the existing narrow-span and
   real-RHS solver findings above.

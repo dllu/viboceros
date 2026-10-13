@@ -46,7 +46,8 @@ parameters as interpolation sites, with degree-wise averaged interior knots.
 Degrees one through eleven are supported, including mixed degrees.
 
 Linux `native-smlib` builds use [usd-brep basis and matrix routines](smlib-point-grid.md),
-with banded LU for open directions and partial-pivot LU for closed directions.
+with banded LU for open directions, guarded cyclic bands for larger closed
+directions, and full partial-pivot LU for small or failed closed band jobs.
 Portable builds use `point_grid/basis` and faer full-pivot LU. Both backends
 factor the two collocation matrices once and reuse multiple right-hand sides.
 The solve is separable in U and V; it does not construct a dense matrix for the whole tensor grid.

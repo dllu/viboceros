@@ -154,22 +154,97 @@ fn native_minimum_closed_grids_clamp_degrees_and_reject_unsolvable_inputs() {
 
 #[test]
 fn native_closed_scalar_solves_retain_nonconstant_tiny_channels() {
-    let grid = |factor| {
-        (0..5)
+    for count in [[6, 5], [64, 65]] {
+        let grid = |factor| {
+            (0..count[1])
+                .flat_map(|v| {
+                    (0..count[0]).map(move |u| {
+                        Point3::try_new(u as f64, v as f64, (u * v) as f64 * factor).unwrap()
+                    })
+                })
+                .collect::<Vec<_>>()
+        };
+        // Z does not affect any rounded mean chord at either scale. Both runs
+        // therefore solve the same basis with exactly scaled nonconstant RHS.
+        let reference = interpolate_point_grid(&grid(1e-100), count, [3; 2], [true; 2]).unwrap();
+        let tiny = interpolate_point_grid(&grid(1e-280), count, [3; 2], [true; 2]).unwrap();
+        assert_eq!(reference.knots_u(), tiny.knots_u());
+        assert_eq!(reference.knots_v(), tiny.knots_v());
+        for (a, b) in tiny.control_points().iter().zip(reference.control_points()) {
+            assert!((a.point().z() / 1e-280 - b.point().z() / 1e-100).abs() < 1e-10);
+        }
+    }
+}
+
+#[test]
+fn native_large_closed_grids_match_portable_nets_across_all_degrees_and_both_axes() {
+    for degree in 1..=11 {
+        let n = 64;
+        let points = (0..7)
             .flat_map(|v| {
-                (0..6).map(move |u| {
-                    Point3::try_new(u as f64, v as f64, (u * v) as f64 * factor).unwrap()
+                (0..n).map(move |u| {
+                    let x = u as f64 * (1. + 0.001 * u as f64);
+                    Point3::try_new(x, v as f64, (x * 0.21).sin() * (1. + 0.13 * v as f64)).unwrap()
                 })
             })
-            .collect::<Vec<_>>()
-    };
-    // Z does not affect any rounded mean chord at either scale. Both runs
-    // therefore solve the same basis with exactly scaled nonconstant RHS.
-    let reference = interpolate_point_grid(&grid(1e-100), [6, 5], [3; 2], [true; 2]).unwrap();
-    let tiny = interpolate_point_grid(&grid(1e-280), [6, 5], [3; 2], [true; 2]).unwrap();
-    assert_eq!(reference.knots_u(), tiny.knots_u());
-    assert_eq!(reference.knots_v(), tiny.knots_v());
-    for (a, b) in tiny.control_points().iter().zip(reference.control_points()) {
-        assert!((a.point().z() / 1e-280 - b.point().z() / 1e-100).abs() < 1e-10);
+            .collect::<Vec<_>>();
+        let a = interpolate_point_grid(&points, [n, 7], [degree, 3], [true, false]).unwrap();
+        let b = NurbsSurface::try_through_point_grid(&points, [n, 7], [degree, 3], [true, false])
+            .unwrap();
+        compare(&a, &b, 1e-8);
+    }
+    let points = (0..65)
+        .flat_map(|v| {
+            (0..64).map(move |u| {
+                Point3::try_new(
+                    u as f64,
+                    v as f64,
+                    (u as f64 * 0.17).sin() * (v as f64 * 0.23).cos(),
+                )
+                .unwrap()
+            })
+        })
+        .collect::<Vec<_>>();
+    let a = interpolate_point_grid(&points, [64, 65], [3, 4], [true, true]).unwrap();
+    let b = NurbsSurface::try_through_point_grid(&points, [64, 65], [3, 4], [true, true]).unwrap();
+    compare(&a, &b, 1e-10);
+    assert_eq!(a.control_points()[0], a.control_points()[64]);
+    assert_eq!(a.control_points()[0], a.control_points()[65 * 67]);
+}
+
+#[test]
+fn native_closed_bands_construct_the_full_point_grid_budget() {
+    let points = (0..256)
+        .flat_map(|v| {
+            (0..256).map(move |u| {
+                Point3::try_new(
+                    u as f64,
+                    v as f64,
+                    (u as f64 * 0.07).sin() * (v as f64 * 0.11).cos(),
+                )
+                .unwrap()
+            })
+        })
+        .collect::<Vec<_>>();
+    let a = interpolate_point_grid(&points, [256; 2], [3; 2], [true; 2]).unwrap();
+    assert_eq!(a.control_point_count_u(), 259);
+    assert_eq!(a.control_point_count_v(), 259);
+    assert!(a.is_periodic_u() && a.is_periodic_v());
+    assert!(a.is_closed_u().unwrap() && a.is_closed_v().unwrap());
+    assert!(a.control_points().iter().all(|p| p.weight() == 1.));
+    assert_eq!(a.control_points()[0], a.control_points()[256]);
+    assert_eq!(a.control_points()[0], a.control_points()[256 * 259]);
+    for j in [0, 17, 128, 255] {
+        for i in [0, 17, 128, 255] {
+            let u = a.knots_u()[i + 1..=i + 3].iter().sum::<f64>() / 3.;
+            let v = a.knots_v()[j + 1..=j + 3].iter().sum::<f64>() / 3.;
+            assert!(
+                a.evaluate_extended(u, v)
+                    .unwrap()
+                    .distance_to(points[j * 256 + i])
+                    .unwrap()
+                    < 1e-9
+            );
+        }
     }
 }

@@ -1,0 +1,97 @@
+{
+  "platform": "Linux-7.0.0-1019-nvidia-aarch64-with-glibc2.39",
+  "processor": "aarch64",
+  "iterations": 5,
+  "runs": 3,
+  "dense_native_commit": "9499aa56",
+  "measurement": "Median of three rotating backend runs; each has five timed API constructions after one warmup. Shared station preparation and every independent tensor audit included; serialization excluded. Local throughput diagnostic, no Rhino timing claim.",
+  "fixture_sha256": "a536dff9489df8987e27fe8ecb79963aa3bf48bf3677bb152405f750f55306a9",
+  "binary_sha256": {
+    "portable": "f42256ff8d293f3c606dadf69c299f3784768f07211796269eb63badfcb1aea4",
+    "dense_native": "2c3b67b333f4b5b28b5a0fed806f3d67e2c1a59c72d3b3c200f5e318b3974908",
+    "native": "73b513157e1e2155f4c88bb9d4aaaabedd1e9f482a5d1492bb7d8702a2fe24a4"
+  },
+  "cases": [
+    {
+      "id": "256x256-closed-0",
+      "median_ns": {
+        "portable": 34499274.6,
+        "dense_native": 35739640.8,
+        "native": 35706314.6
+      },
+      "samples_ns": {
+        "portable": [
+          34301047.4,
+          34499274.6,
+          34560634.6
+        ],
+        "dense_native": [
+          35739640.8,
+          35372390.2,
+          35828673.4
+        ],
+        "native": [
+          35585102.0,
+          36477611.8,
+          35706314.6
+        ]
+      },
+      "native_over_portable": 1.0349874023148302,
+      "native_over_previous_dense": 0.999067528401125
+    },
+    {
+      "id": "64x64-closed-1",
+      "median_ns": {
+        "portable": 1859981.2,
+        "dense_native": 4081890.8,
+        "native": 2804613.6
+      },
+      "samples_ns": {
+        "portable": [
+          1859981.2,
+          1858691.6,
+          1877946.0
+        ],
+        "dense_native": [
+          4088201.4,
+          4063564.4,
+          4081890.8
+        ],
+        "native": [
+          2801304.8,
+          2833714.6,
+          2804613.6
+        ]
+      },
+      "native_over_portable": 1.5078720150504747,
+      "native_over_previous_dense": 0.6870868765034087
+    },
+    {
+      "id": "256x256-closed-1",
+      "median_ns": {
+        "portable": 34990301.2,
+        "dense_native": 245824618.6,
+        "native": 46210806.4
+      },
+      "samples_ns": {
+        "portable": [
+          34874324.0,
+          34990301.2,
+          35049978.0
+        ],
+        "dense_native": [
+          245824618.6,
+          245471189.2,
+          245936986.8
+        ],
+        "native": [
+          46017712.0,
+          46648498.8,
+          46210806.4
+        ]
+      },
+      "native_over_portable": 1.320674724571962,
+      "native_over_previous_dense": 0.18798282557367912
+    }
+  ]
+}

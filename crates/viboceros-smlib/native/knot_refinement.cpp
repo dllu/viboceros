@@ -817,7 +817,9 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
     return snapshot(output,points,exponent,origin);
 }
 
-void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
+namespace { struct GridBandFailure {}; }
+
+static void solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count,bool grid_band) {
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
         && input.parameter_count<=(input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=2048 && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
@@ -849,18 +851,18 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
         && (input.uniform_periodic || chart.scaled(input.parameters[0])==basis[input.degree])),
         "Interpolation stations differ from the active interval");
 
-    // The uniform periodic Greville system is a cyclic band around control
-    // floor(degree/2). Order the cycle from alternate ends, so neighboring
-    // stations remain at most twice their cyclic distance apart. Only rows and
-    // columns change order; coefficients and the original control basis remain.
+    // Reuse the alternate-end cycle ordering for closed point-grid Greville
+    // rows. Their original control index is the center (no uniform-grid shift).
+    // The exact nonzero support is checked before using a native band matrix.
+    const bool cyclic=input.uniform_periodic || grid_band;
     std::vector<size_t> order(unknowns),inverse(unknowns);
     for(size_t i=0;i<unknowns;++i) {
-        order[i]=input.uniform_periodic?(i%2?(unknowns-1-i/2):i/2):i;
+        order[i]=cyclic?(i%2?(unknowns-1-i/2):i/2):i;
         inverse[order[i]]=i;
     }
     const size_t shift=input.uniform_periodic?input.degree/2:0;
     const auto source_row=[&](size_t row) {
-        if(input.uniform_periodic) return order[row];
+        if(cyclic) return order[row];
         if(!input.handles || row==0) return row;
         if(row==1) return sections;
         if(row+2==unknowns) return sections+1;
@@ -868,10 +870,10 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
         return row-1;
     };
     const auto source_column=[&](size_t column) {
-        return input.uniform_periodic?(order[column]+shift)%sections:column;
+        return cyclic?(order[column]+shift)%sections:column;
     };
-    const bool full=input.closed && !input.uniform_periodic;
-    const size_t half_width=std::min(unknowns-1,input.uniform_periodic?2*(input.degree/2):
+    const bool full=input.closed && !cyclic;
+    const size_t half_width=std::min(unknowns-1,grid_band?2*input.degree:input.uniform_periodic?2*(input.degree/2):
         (input.handles || (input.fixed_rows && input.degree==3)?2:input.degree));
     const size_t matrix_width=full?unknowns:2*half_width+1;
     NL_STACKS stack;
@@ -902,7 +904,7 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
             while(expected>input.degree && basis[expected]==basis[expected+1]) --expected;
         } else expected=std::upper_bound(basis.begin(),basis.end(),parameter)-basis.begin()-1;
         require(span==static_cast<NL_INDEX>(expected),"Native interpolation span differs from the exact chart");
-        const size_t row=input.uniform_periodic?inverse[i]:
+        const size_t row=cyclic?inverse[i]:
             (input.handles?(i==0?0:(i+1==sections?unknowns-1:i+1)):i);
         if(input.point_grid) input.amplification[i]=0;
         for(size_t j=0;j<=input.degree;++j) {
@@ -910,11 +912,13 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
             require(original_column<controls && std::isfinite(coefficients[j]),"Invalid native interpolation basis coefficient");
             if(input.point_grid) input.amplification[i]+=std::abs(coefficients[j]);
             const auto folded=input.closed?original_column%sections:original_column;
-            const size_t column=input.uniform_periodic?inverse[(folded+sections-shift)%sections]:folded;
+            const size_t column=cyclic?inverse[(folded+sections-shift)%sections]:folded;
             if(full) values[row][column]+=coefficients[j];
             else if(coefficients[j]!=0) {
                 const auto band_column=static_cast<ptrdiff_t>(column)-static_cast<ptrdiff_t>(row)+static_cast<ptrdiff_t>(half_width);
-                require(band_column>=0 && static_cast<size_t>(band_column)<matrix_width,"Native interpolation exceeded its matrix band");
+                const bool inside=band_column>=0 && static_cast<size_t>(band_column)<matrix_width;
+                if(grid_band && !inside) throw GridBandFailure{};
+                require(inside,"Native interpolation exceeded its matrix band");
                 values[row][band_column]+=coefficients[j];
             }
         }
@@ -923,9 +927,11 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     std::vector<double> original(unknowns*matrix_width);
     for(size_t i=0;i<unknowns;++i) std::copy_n(values[i],matrix_width,original.data()+i*matrix_width);
     std::vector<NL_INDEX> pivots(full?unknowns:0);
-    check(full?N_RealMatrixLuDecomposePivot(&matrix,pivots.data()):N_RealMatrixLuDecompose(&matrix),
-        "Factor native interpolation system failed");
+    const auto factor_status=full?N_RealMatrixLuDecomposePivot(&matrix,pivots.data()):N_RealMatrixLuDecompose(&matrix);
+    if(grid_band && factor_status!=NL_NO) throw GridBandFailure{};
+    check(factor_status,"Factor native interpolation system failed");
     std::vector<NL_CPOINT> targets(unknowns),solution(unknowns);
+    std::vector<double> rhs(input.point_grid && (full || grid_band)?unknowns:0),answer(rhs.size());
     for(size_t column=0;column<input.columns;column+=4) {
         for(size_t i=0;i<unknowns;++i) {
             const double *p=input.targets+source_row(i)*input.columns+column;
@@ -937,18 +943,18 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
             require(pivots[i]>=0 && static_cast<size_t>(pivots[i])<unknowns,"Invalid native interpolation pivot");
             std::swap(targets[i],targets[pivots[i]]);
         }
-        if(input.point_grid && full) {
+        if(input.point_grid && (full || grid_band)) {
             // The native scalar solver has no RHS tolerance skip and avoids
             // out-of-line point blending for every dense LU coefficient.
-            std::vector<double> rhs(unknowns),answer(unknowns);
             for(size_t c=0;c<4;++c) {
                 for(size_t i=0;i<unknowns;++i) {
                     const auto &p=targets[i];
                     const double channels[]={p.x,p.y,p.z,p.w};
                     rhs[i]=channels[c];
                 }
-                check(N_RealMatrixRightForBack(&matrix,rhs.data(),answer.data()),
-                    "Solve native point-grid scalar channels failed");
+                const auto solve_status=N_RealMatrixRightForBack(&matrix,rhs.data(),answer.data());
+                if(grid_band && solve_status!=NL_NO) throw GridBandFailure{};
+                check(solve_status,"Solve native point-grid scalar channels failed");
                 for(size_t i=0;i<unknowns;++i) {
                     auto &p=solution[i];
                     if(c==0) p.x=answer[i];
@@ -962,7 +968,9 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
         for(size_t i=0;i<unknowns;++i) {
             const auto &p=solution[i];
             const double result[]={p.x,p.y,p.z,p.w};
-            require(std::all_of(result,result+4,[](double x){return std::isfinite(x);}),"Nonfinite interpolation solution");
+            const bool finite=std::all_of(result,result+4,[](double x){return std::isfinite(x);});
+            if(grid_band && !finite) throw GridBandFailure{};
+            require(finite,"Nonfinite interpolation solution");
             std::copy_n(result,4,output+source_column(i)*input.columns+column);
         }
         for(size_t c=0;c<4;++c) {
@@ -979,9 +987,23 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
                     const double value=original[row*matrix_width+entry]*(output[source_column(i)*input.columns+column+c]/magnitude);
                     sum+=value;scale+=std::abs(value);
                 }
-                require(std::isfinite(sum) && std::abs(sum-target)<=1e-12*scale+1e-14,
-                    "Native interpolation solution failed the input residual check");
+                const bool accepted=std::isfinite(sum) && std::abs(sum-target)<=1e-12*scale+1e-14;
+                if(grid_band && !accepted) throw GridBandFailure{};
+                require(accepted,"Native interpolation solution failed the input residual check");
             }
         }
     }
+}
+
+void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
+    // A band wider than a small dense system offers no benefit. Preserve the
+    // pivoted producer for small grids and every unsuccessful native band job.
+    if(input.point_grid==1 && input.closed==1 && input.degree>=1 && input.degree<=NL_MAXDEG
+        && input.parameter_count<=256 && input.parameter_count>4*input.degree+1) {
+        try {
+            solve_interpolation(input,output,output_count,true);
+            return;
+        } catch(const GridBandFailure &) {}
+    }
+    solve_interpolation(input,output,output_count,false);
 }
