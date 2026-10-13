@@ -76,6 +76,8 @@ retaining adaptive sampling, kink and endpoint-handle policy.
 [Sweep1 and Pipe rail/section interpolation](smlib-sweep-interpolation.md) now
 use native clamping, section-station refinement, curve fitting and batched
 homogeneous section solves, including continuous-model Pipe fitting.
+[TweenCurves sampling](smlib-curve-tween.md) reuses native open cubic basis and
+banded solving through the full 9,999-division command range.
 
 ## Reproduce the native trial
 

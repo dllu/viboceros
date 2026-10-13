@@ -32,6 +32,9 @@ The existing `curve_fit_geometry` operation selects native fixed-row fitting
 with `native-smlib`. The 50-case `curve_fit_native.json` corpus compares that
 producer with the saved portable implementation; fresh SDK capture remains
 pending. See [native fitting qualification](smlib-curve-fit.md).
+`curve_tween_geometry` also selects native sampled-source interpolation.
+`curve_tween_native.json` covers the permanent modes and the 9,999-division
+boundary; see [native TweenCurves sampling](smlib-curve-tween.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

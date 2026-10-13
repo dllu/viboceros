@@ -174,7 +174,7 @@ pub use curve_through::{
 pub use curve_tween::{
     CurveTweenMatchMethod, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
     MAX_CURVE_TWEEN_REFIT_CONTROL_POINTS, MAX_CURVE_TWEEN_SAMPLE_NUMBER,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, try_tween_nurbs_curves,
+    MIN_CURVE_TWEEN_SAMPLE_NUMBER, try_tween_nurbs_curves, try_tween_nurbs_curves_with_sampling,
 };
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;

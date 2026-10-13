@@ -153,6 +153,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Within(tolerance),
             false,
             MAX_CURVE_INTERPOLATION_POINTS,
+            false,
             &mut solve_portable_interpolation,
         )
     }
@@ -176,6 +177,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
+            false,
             &mut solve_portable_interpolation,
         )
     }
@@ -192,6 +194,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
+            false,
             &mut solve_portable_interpolation,
         )
     }
@@ -211,6 +214,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             false,
             maximum_points,
+            false,
             &mut solve_portable_interpolation,
         )
     }
@@ -228,6 +232,7 @@ impl NurbsCurve {
             InterpolationCoincidence::Within(tolerance),
             false,
             MAX_CURVE_INTERPOLATION_POINTS,
+            false,
             solve,
         )
     }
@@ -245,6 +250,32 @@ impl NurbsCurve {
             InterpolationCoincidence::Exact,
             true,
             MAX_CURVE_INTERPOLATION_POINTS,
+            false,
+            solve,
+        )
+    }
+
+    /// Large open point interpolation for TweenCurves, retaining exact
+    /// coincidence, linear/cubic construction and the supplied sample budget.
+    pub fn try_interpolate_for_tween_sampling_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        maximum_points: usize,
+        solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+    ) -> Result<Self, E> {
+        if options.closure != InterpolatedCurveClosure::Open {
+            return Err(GeometryError::InvalidControlNet {
+                context: "tween sampling requires open interpolation",
+            }
+            .into());
+        }
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Exact,
+            false,
+            maximum_points,
+            true,
             solve,
         )
     }
@@ -255,6 +286,7 @@ impl NurbsCurve {
         coincidence: InterpolationCoincidence,
         preserve_two_point_degree: bool,
         maximum_points: usize,
+        delegate_large: bool,
         solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
     ) -> Result<Self, E> {
         if !matches!(options.degree, 1 | CUBIC_DEGREE) {
@@ -344,6 +376,7 @@ impl NurbsCurve {
             options.knot_spacing,
             options.start_tangent,
             options.end_tangent,
+            delegate_large,
             solve,
         )
     }
@@ -430,6 +463,7 @@ fn interpolate_open_cubic_with_solver<E: From<GeometryError>>(
     spacing: CurveKnotSpacing,
     start_tangent: Option<Vector3>,
     end_tangent: Option<Vector3>,
+    delegate_large: bool,
     solve: &mut impl FnMut(&CubicInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsCurve, E> {
     let intervals = interpolation_intervals(points, spacing, false)?;
@@ -482,7 +516,7 @@ fn interpolate_open_cubic_with_solver<E: From<GeometryError>>(
         .collect::<Result<Vec<_>, _>>()?;
     let local_start = local_point(start_handle)?;
     let local_end = local_point(end_handle)?;
-    let controls = if points.len() > MAX_CURVE_INTERPOLATION_POINTS {
+    let controls = if points.len() > MAX_CURVE_INTERPOLATION_POINTS && !delegate_large {
         // Only internal TweenCurves sampling exceeds the public solve budget.
         // Keep its original linear-memory path without packing dense job data.
         solve_open_portable_points(

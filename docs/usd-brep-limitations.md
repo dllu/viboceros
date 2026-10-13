@@ -486,6 +486,15 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **TweenCurves retains direct blending/refit policy around native sampling.**
+  Nonlinear sampled sources now use the shared native open cubic adapter,
+  including 10,000 stations and 10,002 output controls at 9,999 divisions.
+  The extended native allowance applies only to open handle systems with four
+  channels; other interpolation layouts retain their existing limits. Public
+  InterpCrv/curve-through point ceilings stay at 256. ControlPoint and adaptive
+  Hermite Refit remain direct constructions, and linear sampled sources stay
+  degree one. Arbitrary conditioning, continuous agreement and performance
+  relative to Rhino remain unqualified. See [sampling qualification](smlib-curve-tween.md).
 - **Sweep1 and Pipe retain model policy around native interpolation.**
   Rail clamping, section-site refinement, adaptive fitting and homogeneous
   section solving now use the existing native adapters. Equal parameter rows
@@ -547,8 +556,9 @@ issues reported by NVIDIA that have not all been reproduced here.
   system, native `N_BasisDerivs`, LU and homogeneous back solve. Open systems
   use five-wide banded storage; periodic systems retain full pivoted storage.
   Public point interpolation keeps the existing 256-point budget, knot/tangent
-  policy and exact command coincidence rule. Large internal TweenCurves sets
-  keep their portable linear-memory solver. All 43 complete point/curve-through
+  policy and exact command coincidence rule. Large TweenCurves sets now share
+  the native banded producer; portable builds keep their linear-memory solver.
+  All 43 complete point/curve-through
   records match the portable backend; fresh Rhino interpolation capture remains
   pending the Wine licensing startup. Extreme span ratios, continuous parity
   and speed relative to Rhino are unqualified. See

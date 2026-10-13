@@ -45,10 +45,30 @@ pub fn try_tween_nurbs_curves(
     method: CurveTweenMatchMethod,
     tolerance: Tolerance,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
+    try_tween_nurbs_curves_with_sampling(
+        start,
+        end,
+        number,
+        method,
+        tolerance,
+        &mut NurbsCurve::try_interpolate_for_tween_sampling,
+    )
+}
+
+/// Retain all tween policies while delegating sampled source interpolation.
+/// Control blending and adaptive Hermite refit remain direct constructions.
+pub fn try_tween_nurbs_curves_with_sampling<E: From<GeometryError>>(
+    start: &NurbsCurve,
+    end: &NurbsCurve,
+    number: usize,
+    method: CurveTweenMatchMethod,
+    tolerance: Tolerance,
+    interpolate: &mut impl FnMut(&[Point3], CurveInterpolationOptions, usize) -> Result<NurbsCurve, E>,
+) -> Result<Vec<NurbsCurve>, E> {
     validate_tween_count(number)?;
     match method {
-        CurveTweenMatchMethod::ControlPoint => tween_control_points(start, end, number),
-        CurveTweenMatchMethod::Refit => tween_refitted(start, end, number, tolerance),
+        CurveTweenMatchMethod::ControlPoint => Ok(tween_control_points(start, end, number)?),
+        CurveTweenMatchMethod::Refit => Ok(tween_refitted(start, end, number, tolerance)?),
         CurveTweenMatchMethod::SamplePoints { sample_number } => {
             validate_sample_number(sample_number)?;
             let maximum_points = MAX_CURVE_TWEEN_SAMPLE_NUMBER + 1;
@@ -57,14 +77,16 @@ pub fn try_tween_nurbs_curves(
                 sample_number,
                 maximum_points,
                 tolerance,
+                interpolate,
             )?;
             let sampled_end = interpolate_sampled_source(
                 CurveRef::NurbsCurve(end),
                 sample_number,
                 maximum_points,
                 tolerance,
+                interpolate,
             )?;
-            tween_control_points(&sampled_start, &sampled_end, number)
+            Ok(tween_control_points(&sampled_start, &sampled_end, number)?)
         }
     }
 }
@@ -357,26 +379,40 @@ fn validate_sample_number(sample_number: usize) -> Result<(), GeometryError> {
     }
 }
 
-fn interpolate_sampled_source(
+fn interpolate_sampled_source<E: From<GeometryError>>(
     source: CurveRef<'_>,
     sample_number: usize,
     maximum_points: usize,
     tolerance: Tolerance,
-) -> Result<NurbsCurve, GeometryError> {
+    interpolate: &mut impl FnMut(&[Point3], CurveInterpolationOptions, usize) -> Result<NurbsCurve, E>,
+) -> Result<NurbsCurve, E> {
     let points = source.divide_by_count_for_tween(sample_number, true, tolerance)?;
-    let linear = NurbsCurve::try_interpolate_for_tween_sampling(
+    let linear = interpolate(
         &points,
         CurveInterpolationOptions::new(1, CurveKnotSpacing::Chord, InterpolatedCurveClosure::Open),
         maximum_points,
     )?;
+    if linear.degree() != 1 || linear.control_points().len() != points.len() {
+        return Err(GeometryError::InvalidControlNet {
+            context: "tween sampling backend changed the linear layout",
+        }
+        .into());
+    }
     if linear.is_linear(tolerance)? {
         return Ok(linear);
     }
-    NurbsCurve::try_interpolate_for_tween_sampling(
+    let result = interpolate(
         &points,
         CurveInterpolationOptions::new(3, CurveKnotSpacing::Chord, InterpolatedCurveClosure::Open),
         maximum_points,
-    )
+    )?;
+    if result.degree() != 3 || result.control_points().len() != points.len() + 2 {
+        return Err(GeometryError::InvalidControlNet {
+            context: "tween sampling backend changed the cubic layout",
+        }
+        .into());
+    }
+    Ok(result)
 }
 
 fn tween_control_points(
@@ -447,6 +483,79 @@ fn blend_real(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryEr
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn external_tween_sampling_preserves_direct_paths_and_validates_layouts() {
+        let a = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0., 0., 0.).unwrap(),
+                Point3::try_new(5., 0., 0.).unwrap(),
+            ],
+            vec![0., 0., 5., 5.],
+        )
+        .unwrap();
+        let b = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0., 1., 0.).unwrap(),
+                Point3::try_new(5., 1., 0.).unwrap(),
+            ],
+            vec![0., 0., 5., 5.],
+        )
+        .unwrap();
+        for method in [
+            CurveTweenMatchMethod::ControlPoint,
+            CurveTweenMatchMethod::Refit,
+        ] {
+            try_tween_nurbs_curves_with_sampling(
+                &a,
+                &b,
+                1,
+                method,
+                Tolerance::DEFAULT,
+                &mut |_, _, _| -> Result<NurbsCurve, GeometryError> {
+                    panic!("direct mode entered sampling backend")
+                },
+            )
+            .unwrap();
+        }
+        let mut calls = 0;
+        let actual = try_tween_nurbs_curves_with_sampling(
+            &a,
+            &b,
+            2,
+            CurveTweenMatchMethod::SamplePoints { sample_number: 256 },
+            Tolerance::DEFAULT,
+            &mut |points, options, maximum| {
+                calls += 1;
+                assert_eq!(options.degree(), 1);
+                assert_eq!(points.len(), 257);
+                NurbsCurve::try_interpolate_for_tween_sampling(points, options, maximum)
+            },
+        )
+        .unwrap();
+        assert_eq!(calls, 2);
+        assert_eq!(
+            actual,
+            try_tween_nurbs_curves(
+                &a,
+                &b,
+                2,
+                CurveTweenMatchMethod::SamplePoints { sample_number: 256 },
+                Tolerance::DEFAULT
+            )
+            .unwrap()
+        );
+        let bad = try_tween_nurbs_curves_with_sampling(
+            &a,
+            &b,
+            1,
+            CurveTweenMatchMethod::SamplePoints { sample_number: 4 },
+            Tolerance::DEFAULT,
+            &mut |_, _, _| -> Result<NurbsCurve, GeometryError> { Ok(a.clone()) },
+        );
+        assert!(matches!(bad, Err(GeometryError::InvalidControlNet { .. })));
+    }
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()

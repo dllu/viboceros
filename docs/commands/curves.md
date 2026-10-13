@@ -152,6 +152,8 @@ and leaves both sources selected. `MatchMethod=None` connects corresponding
 NURBS control locations and weights, including Rhino's last-control rule when
 the counts differ. `MatchMethod=SamplePoints` supports 2 through 9999
 equal-length divisions with bounded, linear-memory interpolation.
+Linux `native-smlib` builds use usd-brep banded solving for nonlinear sampled
+sources across this full range. See [native sampling](../smlib-curve-tween.md).
 `OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
 and `FlipEnd=Yes`
 reverse either temporary source direction. `MatchMethod=Refit` adaptively

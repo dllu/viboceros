@@ -333,6 +333,32 @@ pub fn interpolate_curve_for_command(
     NurbsCurve::try_interpolate_for_command_with_solver(points, options, &mut solve_cubic_system)
 }
 
+/// TweenCurves with the shared direct blend/refit policies and native banded
+/// construction of sampled source cubics through the full 9,999-division range.
+pub fn curve_tweens(
+    start: &NurbsCurve,
+    end: &NurbsCurve,
+    number: usize,
+    method: viboceros_geometry::CurveTweenMatchMethod,
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, Error> {
+    viboceros_geometry::try_tween_nurbs_curves_with_sampling(
+        start,
+        end,
+        number,
+        method,
+        tolerance,
+        &mut |points, options, maximum| {
+            NurbsCurve::try_interpolate_for_tween_sampling_with_solver(
+                points,
+                options,
+                maximum,
+                &mut solve_cubic_system,
+            )
+        },
+    )
+}
+
 unsafe extern "C" {
     fn vb_interpolation_solve(
         input: *const InterpolationSystem,

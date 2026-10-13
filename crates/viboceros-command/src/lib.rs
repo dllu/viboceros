@@ -348,7 +348,7 @@ use viboceros_geometry::{
     Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, brep_brep_intersection_events,
     curve_brep_intersection_events, curve_surface_intersection_events, join_curves,
     sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
-    transformed_curve_brep_intersection_events, try_catenary, try_tween_nurbs_curves,
+    transformed_curve_brep_intersection_events, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -2724,7 +2724,7 @@ impl Command for TweenCurvesCommand {
         if options.flip_end {
             end = end.reversed()?;
         }
-        let curves = try_tween_nurbs_curves(
+        let curves = curve_interpolation::tween_curves(
             &start,
             &end,
             options.number,

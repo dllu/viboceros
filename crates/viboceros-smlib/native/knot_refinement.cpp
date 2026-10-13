@@ -768,7 +768,7 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
 
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=(input.fixed_rows?4096:1001) && input.columns>0 && input.columns<=2048 && input.columns%4==0
+        && input.parameter_count<=(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001)) && input.columns>0 && input.columns<=2048 && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
         && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
         && (input.uniform_periodic==0 || input.uniform_periodic==1)

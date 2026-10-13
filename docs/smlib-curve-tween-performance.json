@@ -1,0 +1,224 @@
+{
+  "reference": "Saved pre-change sampled TweenCurves producer built at 702ce93f",
+  "hardware": "Linux ARM64",
+  "method": "Five independent requests per backend, three timed tweens and one untimed warmup per operation/request. Both release builds. Serialization excluded. Requests run serially; other compilation was active.",
+  "qualification": "Diagnostic full-path timings for these cases, not a Rhino comparison or general performance guarantee.",
+  "request": {
+    "protocol_version": 1,
+    "iterations": 3,
+    "operations": [
+      {
+        "op": "curve_tween_geometry",
+        "id": "sample-1000-number-1",
+        "method": "sample_points",
+        "number": 1,
+        "sample_number": 1000,
+        "start_curve": {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ]
+            },
+            {
+              "point": [
+                8,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        "end_curve": {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                6,
+                1
+              ]
+            },
+            {
+              "point": [
+                1,
+                9,
+                2
+              ]
+            },
+            {
+              "point": [
+                6,
+                4,
+                -1
+              ]
+            },
+            {
+              "point": [
+                8,
+                7,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      {
+        "op": "curve_tween_geometry",
+        "id": "sample-9999-number-1",
+        "method": "sample_points",
+        "number": 1,
+        "sample_number": 9999,
+        "start_curve": {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ]
+            },
+            {
+              "point": [
+                8,
+                0,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        "end_curve": {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                6,
+                1
+              ]
+            },
+            {
+              "point": [
+                1,
+                9,
+                2
+              ]
+            },
+            {
+              "point": [
+                6,
+                4,
+                -1
+              ]
+            },
+            {
+              "point": [
+                8,
+                7,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      }
+    ]
+  },
+  "operations": [
+    {
+      "id": "sample-1000-number-1",
+      "native_ns_per_tween": [
+        41172955.666666664,
+        40983061.666666664,
+        40956288.333333336,
+        40873845.666666664,
+        40701738.333333336
+      ],
+      "prechange_ns_per_tween": [
+        40466745.666666664,
+        40532388.666666664,
+        40324302.666666664,
+        40356921.666666664,
+        40233833.333333336
+      ],
+      "native_median_ns": 40956288.333333336,
+      "prechange_median_ns": 40356921.666666664,
+      "observed_speed_ratio": 0.9853656986251154
+    },
+    {
+      "id": "sample-9999-number-1",
+      "native_ns_per_tween": [
+        411880168.6666667,
+        409492872.6666667,
+        408199418.6666667,
+        409171900.3333333,
+        406897068.3333333
+      ],
+      "prechange_ns_per_tween": [
+        403831232.3333333,
+        404893949.0,
+        402478519.3333333,
+        403315667.3333333,
+        402833031.0
+      ],
+      "native_median_ns": 409171900.3333333,
+      "prechange_median_ns": 403315667.3333333,
+      "observed_speed_ratio": 0.9856875973271155
+    }
+  ],
+  "native_binary_sha256": "7cf27490c35a4b4024c503942d3f072d8dbd5a179628670e0f58bcce965f56f2",
+  "reference_binary_sha256": "f0dbba2b00700f847ca5e04b29dc9d9b8c973f4d4ab5e78f620be51a55d10087"
+}

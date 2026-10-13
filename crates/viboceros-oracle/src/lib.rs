@@ -40,7 +40,6 @@ use viboceros_geometry::{
     NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
     TriangleMesh, UnitVector3, Vector3, WeightedPoint3, sort_and_cull_points, try_catenary,
-    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -5186,14 +5185,25 @@ fn execute(
                     sample_number: sample_number.unwrap_or(100),
                 },
             };
-            let (curves, elapsed) = measure(iterations, || {
-                try_tween_nurbs_curves(
+            let (curves, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::curve_tweens(
                     &start,
                     &end,
                     black_box(*number),
                     black_box(method),
                     tolerance,
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = viboceros_geometry::try_tween_nurbs_curves(
+                    &start,
+                    &end,
+                    black_box(*number),
+                    black_box(method),
+                    tolerance,
+                );
+                result.map_err(ProbeError::from)
             })?;
             (
                 json!({

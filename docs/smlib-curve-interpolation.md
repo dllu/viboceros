@@ -25,8 +25,9 @@ stay outside document history; backend errors propagate through typed command
 conversion.
 
 The portable model retains its tridiagonal/pivoted fallback and periodic faer
-solve. Internal TweenCurves sample sets beyond the public 256-point interpolation
-budget retain their original linear-memory path without packing dense job data.
+solve. [Native TweenCurves sampling](smlib-curve-tween.md) now shares the banded
+producer beyond the public 256-point interpolation budget; portable builds keep
+their original linear-memory path without packing dense job data.
 No additional basis evaluator or linear solver is implemented.
 
 The [native regressions](../crates/viboceros-smlib/tests/curve_interpolation.rs)
