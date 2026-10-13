@@ -166,6 +166,7 @@ impl Brep {
                     samples_per_span,
                     jagged_seams,
                     tolerance,
+                    retain_parameters,
                 )?
             } else {
                 self.tessellate_nonplanar_trimmed_face(
@@ -174,6 +175,7 @@ impl Brep {
                     samples_per_span,
                     jagged_seams,
                     tolerance,
+                    retain_parameters,
                 )?
             };
             let offset =
@@ -218,6 +220,7 @@ impl Brep {
         samples_per_span: usize,
         jagged_seams: bool,
         tolerance: Tolerance,
+        retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
         let mut sampled_loops = face
             .loops
@@ -227,9 +230,19 @@ impl Brep {
         let (parameters, boundary_vertex_count, triangles) = if sampled_loops.len() == 1 {
             let mut parameters = sampled_loops.pop().expect("one sampled trim loop exists");
             let boundary_vertex_count = parameters.len();
-            let triangles = if let Some(triangles) =
-                triangulate_simple_trim_polygon(&mut parameters)?
-            {
+            let has_creases = retain_parameters
+                && creases::parameters(&face.surface)
+                    .iter()
+                    .any(|p| !p.is_empty());
+            let triangles = if has_creases {
+                creases::triangulate(
+                    &parameters,
+                    &[boundary_vertex_count],
+                    &face.surface,
+                    face_index,
+                )?
+                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?
+            } else if let Some(triangles) = triangulate_simple_trim_polygon(&mut parameters)? {
                 triangles
             } else {
                 triangulate_trim_region(&parameters, &[boundary_vertex_count])?
@@ -240,8 +253,12 @@ impl Brep {
             let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
             let parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
             let boundary_vertex_count = parameters.len();
-            let triangles = triangulate_trim_region(&parameters, &loop_lengths)?
-                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+            let triangles = if retain_parameters {
+                creases::triangulate(&parameters, &loop_lengths, &face.surface, face_index)?
+            } else {
+                triangulate_trim_region(&parameters, &loop_lengths)?
+            }
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
             (parameters, boundary_vertex_count, triangles)
         };
         let mut face_vertices = parameters
@@ -266,6 +283,7 @@ impl Brep {
         samples_per_span: usize,
         jagged_seams: bool,
         tolerance: Tolerance,
+        retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
         let sampled_loops = face
             .loops
@@ -281,8 +299,12 @@ impl Brep {
             &face.surface,
             samples_per_span,
         )?;
-        let triangles = triangulate_trim_region(&parameters, &loop_lengths)?
-            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+        let triangles = if retain_parameters {
+            creases::triangulate(&parameters, &loop_lengths, &face.surface, face_index)?
+        } else {
+            triangulate_trim_region(&parameters, &loop_lengths)?
+        }
+        .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
         let mut face_vertices = parameters
             .iter()
             .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))

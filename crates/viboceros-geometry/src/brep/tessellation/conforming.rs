@@ -225,8 +225,12 @@ impl Brep {
                 &face.surface,
                 samples_per_span,
             )?;
-            let face_triangles = triangulate_trim_region(&parameters, &lengths)?
-                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
+            let face_triangles = if retain_parameters {
+                creases::triangulate(&parameters, &lengths, &face.surface, index)?
+            } else {
+                triangulate_trim_region(&parameters, &lengths)?
+            }
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             if vertices
