@@ -17,7 +17,36 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tools.rhino_oracle.client import _compare_value, _validate_response
 
 
-def request(iterations: int) -> dict:
+def surface_operations() -> list[dict]:
+    operations = []
+    for unique_u, unique_v in [(32, 32), (128, 128), (256, 64)]:
+        count_u, count_v = unique_u + 3, unique_v + 3
+        controls = []
+        for v in range(count_v):
+            tv = math.tau * (v % (count_v - 1)) / (count_v - 1)
+            for u in range(count_u):
+                tu = math.tau * (u % (count_u - 1)) / (count_u - 1)
+                radius = 4 + math.cos(tv)
+                controls.append({"point": [radius * math.cos(tu), radius * math.sin(tu), math.sin(tv)],
+                                 "weight": (1 + 0.2 * math.cos(tu)) * (1 + 0.15 * math.sin(tv))})
+        for nonuniform in [False, True]:
+            def knots(unique):
+                return [0] * 3 + [i * i / unique if nonuniform else i for i in range(unique + 1)] + [unique] * 3
+            for direction in ["u", "v", "both"]:
+                operations.append({
+                    "op": "surface_make_periodic_geometry",
+                    "id": f"surface-{unique_u}x{unique_v}-{'nonuniform' if nonuniform else 'uniform'}-{direction}",
+                    "degree_u": 3, "degree_v": 3,
+                    "control_point_count_u": count_u, "control_point_count_v": count_v,
+                    "control_points": controls, "knots_u": knots(unique_u), "knots_v": knots(unique_v),
+                    "direction": direction, "smooth": True,
+                })
+    return operations
+
+
+def request(iterations: int, surfaces: bool = False) -> dict:
+    if surfaces:
+        return {"protocol_version": 1, "iterations": iterations, "operations": surface_operations()}
     operations = []
     for degree, counts in [(3, [32, 128, 256, 512]), (11, [256, 512])]:
         for unique in counts:
@@ -45,10 +74,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--runs", type=int, default=5)
     parser.add_argument("--iterations", type=int, default=5)
+    parser.add_argument("--surfaces", action="store_true", help="compare rational periodic tensor surfaces")
     args = parser.parse_args()
     if args.runs < 1 or not 1 <= args.iterations <= 1_000_000:
         parser.error("runs must be positive and iterations must be 1..1,000,000")
-    fixture = request(args.iterations)
+    fixture = request(args.iterations, args.surfaces)
     timings = {name: {} for name in ["baseline", "native"]}
     definitions = {}
     with tempfile.TemporaryDirectory(prefix="viboceros-periodic-") as directory:
@@ -83,6 +113,7 @@ def main() -> None:
     report = {
         "note": "Both executables are Viboceros; these are diagnostic producer timings, not Rhino measurements. Each operation has an untimed warmup; serialization is excluded. Other compilation may affect timing.",
         "platform": platform.platform(), "runs": args.runs, "iterations": args.iterations,
+        "request_kind": "surfaces" if args.surfaces else "curves",
         "binary_sha256": {name: hashlib.sha256(getattr(args, name).read_bytes()).hexdigest()
                           for name in ["baseline", "native"]},
         "absolute_epsilon": 1e-9, "relative_epsilon": 1e-12,

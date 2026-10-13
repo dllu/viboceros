@@ -27,8 +27,14 @@ does not add a repeated target constraint.
 The portable implementation remains available for builds without usd-brep,
 degrees above 17 and more than 1,000 unique controls. A requested surface axis
 outside those bounds selects the shared portable surface producer. Supported
-native failures propagate. Surface conversion currently factors each control
-row separately; batching and tensor performance remain pending.
+native failures propagate. Surface conversion packs up to 512 control rows
+(2,048 homogeneous channels) into each solve, sharing the basis and factorization
+across those rows. Larger surfaces use consecutive bounded batches. Each row
+keeps its own normalization scale, so unrelated `1e280` and `1e-280` row gauges
+do not erase one another. The U-fast tensor layout is restored after each axis.
+The portable producer shares the same packing and one faer factorization per
+batch. Sources with an already-periodic knot vector keep the original row
+mapping policy, including unchanged rows whose point controls already repeat.
 
 The native regressions expand independent quadratic rational basis coefficients
 at the preserved stations, including signed common weight gauges from `1e-280`
@@ -41,6 +47,10 @@ both uniform and nonuniform nets at 64 and 256 unique controls. An independent
 64-row cyclic permutation, with every diagonal zero, exercises the pivoted
 retry and tiny channels. The existing command regressions check
 staged edits, attributes, groups, selection, retained inputs and undo/redo.
+Batch tests verify one call per direction on a two-axis surface, exact chunking
+at 513 rows, U/V packing, independent scalar-row reference nets, unrelated signed
+extreme gauges, tiny channels, preserved mixed periodic rows, rejected callback
+output and second-batch failure without source mutation.
 
 ```sh
 cargo test --release -p viboceros-smlib --features native --test make_periodic
@@ -53,6 +63,23 @@ Their pre-change producer is retained as a portable-behavior comparison, not a
 fresh Rhino observation. All 23 complete definitions match at absolute `1e-9`,
 relative `1e-12`, with maximum difference `8.89e-15`. Results are recorded in
 [the replay artifact](smlib-make-periodic-comparison.json).
+
+The [batching comparison](smlib-make-periodic-batch-comparison.json) compares
+the new native producer with the pre-batch native executable from `42b09c85`.
+All 42 complete definitions match with zero numeric difference: the original
+23 cases, 18 uniform/nonuniform rational tensors and a mixed-periodic-row case.
+The [tensor timing artifact](smlib-make-periodic-surface-performance.json) uses
+five requests with five timed conversions per operation. Native batching is
+about 2.00–2.09× faster on the tested 32×32, 128×128 and 256×64 unique-control
+tensors across U, V and both directions. Those timings compare two native
+Viboceros producers on this ARM64 machine, exclude serialization and do not
+establish Rhino parity or arbitrary-size performance. Reproduce with:
+
+```sh
+python3 tools/usd_brep/benchmark_make_periodic.py --surfaces \
+  --baseline /path/to/pre-batch-native-oracle --native /path/to/batched-native-oracle \
+  --output /tmp/make-periodic-surface-performance.json
+```
 
 The [diagnostic timing artifact](smlib-make-periodic-performance.json) records
 five requests with five timed conversions and an untimed warmup per operation.

@@ -274,3 +274,181 @@ fn periodic_admission_and_portable_high_degree_fallback_are_preserved() {
     let periodic = make_curve_periodic(&rational_loop(1., 1.), true).unwrap();
     assert_eq!(make_curve_periodic(&periodic, true).unwrap(), periodic);
 }
+
+fn surface_from_rows(rows: &[NurbsCurve], in_u: bool) -> NurbsSurface {
+    let count = rows[0].control_points().len();
+    let other = rows.len();
+    let degree = rows[0].degree();
+    let other_knots = [
+        vec![0.],
+        (0..other).map(|i| i as f64).collect(),
+        vec![(other - 1) as f64],
+    ]
+    .concat();
+    if in_u {
+        NurbsSurface::try_new_rational(
+            degree,
+            1,
+            count,
+            other,
+            rows.iter()
+                .flat_map(|row| row.control_points().iter().copied())
+                .collect(),
+            rows[0].knots().to_vec(),
+            other_knots,
+        )
+        .unwrap()
+    } else {
+        NurbsSurface::try_new_rational(
+            1,
+            degree,
+            other,
+            count,
+            (0..count)
+                .flat_map(|v| rows.iter().map(move |row| row.control_points()[v]))
+                .collect(),
+            other_knots,
+            rows[0].knots().to_vec(),
+        )
+        .unwrap()
+    }
+}
+
+#[test]
+fn batched_surface_rows_preserve_individual_signed_extreme_weight_gauges() {
+    let gauges = [1e280, 1e-280, -1e280, -1e-280];
+    let rows = gauges.map(|gauge| rational_loop(gauge, 1e-280));
+    let expected = rows
+        .iter()
+        .map(|row| make_curve_periodic(row, true).unwrap())
+        .collect::<Vec<_>>();
+    for in_u in [true, false] {
+        let source = surface_from_rows(&rows, in_u);
+        let before = source.clone();
+        let axis = if in_u {
+            SurfaceKnotDirection::U
+        } else {
+            SurfaceKnotDirection::V
+        };
+        let output = make_surface_periodic(&source, axis, true).unwrap();
+        for (other, row) in expected.iter().enumerate() {
+            for (index, expected) in row.control_points().iter().enumerate() {
+                let actual = if in_u {
+                    output.control_point(index, other)
+                } else {
+                    output.control_point(other, index)
+                }
+                .unwrap();
+                assert!(
+                    (actual.weight() / gauges[other] - expected.weight() / gauges[other]).abs()
+                        < 1e-12
+                );
+                let a = actual.point();
+                let b = expected.point();
+                assert!((a.x() - b.x()).abs() < 1e-12 && (a.y() - b.y()).abs() < 1e-12);
+                assert!((a.z() / 1e-280 - b.z() / 1e-280).abs() < 1e-12);
+            }
+        }
+        assert_eq!(source, before);
+    }
+}
+
+#[test]
+fn batched_surface_conversion_supports_more_than_512_control_rows() {
+    let rows = (0..513)
+        .map(|i| {
+            let base = rational_loop(1., 1.);
+            NurbsCurve::try_new_rational(
+                2,
+                base.control_points()
+                    .iter()
+                    .map(|c| {
+                        let p = c.point();
+                        control([p.x(), p.y(), p.z() + i as f64 * 0.01], c.weight())
+                    })
+                    .collect(),
+                base.knots().to_vec(),
+            )
+            .unwrap()
+        })
+        .collect::<Vec<_>>();
+    for in_u in [true, false] {
+        let source = surface_from_rows(&rows, in_u);
+        let axis = if in_u {
+            SurfaceKnotDirection::U
+        } else {
+            SurfaceKnotDirection::V
+        };
+        let output = make_surface_periodic(&source, axis, true).unwrap();
+        for (other, row) in rows.iter().enumerate() {
+            let expected = make_curve_periodic(row, true).unwrap();
+            for (index, c) in expected.control_points().iter().enumerate() {
+                let actual = if in_u {
+                    output.control_point(index, other)
+                } else {
+                    output.control_point(other, index)
+                }
+                .unwrap();
+                assert!(actual.point().distance_to(c.point()).unwrap() < 1e-11);
+                assert!((actual.weight() - c.weight()).abs() < 1e-12);
+            }
+        }
+    }
+}
+
+#[test]
+fn mixed_periodic_control_rows_retain_their_original_weighted_controls() {
+    let knots = vec![-2., -2., 0., 1., 2., 4., 5., 5.];
+    // This row's points repeat periodically, while its seam weights do not.
+    // The existing periodic classifier intentionally retains this row as-is.
+    let periodic = NurbsCurve::try_new_rational(
+        2,
+        [
+            [0., 0., 0.],
+            [0., 0., 0.],
+            [2., 1., 0.],
+            [0., 0., 0.],
+            [0., 0., 0.],
+        ]
+        .into_iter()
+        .zip([1., 1., 0.7, 2., 0.5])
+        .map(|(p, w)| control(p, w))
+        .collect(),
+        knots.clone(),
+    )
+    .unwrap();
+    let closed = NurbsCurve::try_new(
+        2,
+        [
+            [0., 0., 3.],
+            [2., 0., 3.],
+            [3., 2., 3.],
+            [-2., 1., 3.],
+            [3., -0.5, 3.],
+        ]
+        .map(|p| Point3::try_from(p).unwrap())
+        .to_vec(),
+        knots,
+    )
+    .unwrap();
+    assert!(periodic.is_periodic());
+    assert!(!closed.is_periodic() && closed.is_closed().unwrap());
+    let expected = make_curve_periodic(&closed, true).unwrap();
+    let source = surface_from_rows(&[periodic.clone(), closed], true);
+    assert!(!source.is_periodic_u() && source.is_closed_u().unwrap());
+    let result = make_surface_periodic(&source, SurfaceKnotDirection::U, true).unwrap();
+    for u in 0..5 {
+        assert_eq!(
+            result.control_point(u, 0),
+            Some(periodic.control_points()[u])
+        );
+        assert_eq!(
+            result.control_point(u, 1),
+            Some(expected.control_points()[u])
+        );
+    }
+    assert!(matches!(
+        make_surface_periodic(&source, SurfaceKnotDirection::U, false),
+        Err(Error::Geometry(GeometryError::InvalidControlNet { .. }))
+    ));
+}

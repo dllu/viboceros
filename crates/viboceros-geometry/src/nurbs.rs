@@ -12,6 +12,7 @@ mod grips;
 mod integration_frame;
 mod linear_trim;
 mod parameter_frame;
+pub(crate) mod periodic;
 mod sampling;
 mod smoothing;
 pub use sampling::{NurbsCurveParameterSampler, NurbsCurveSamplingSpan};
@@ -1094,90 +1095,7 @@ impl NurbsCurve {
         &self,
         solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
     ) -> Result<Self, E> {
-        let degree = self.degree;
-        let control_count = self.control_points.len();
-        let required = if degree == 2 {
-            5
-        } else {
-            degree
-                .checked_mul(2)
-                .ok_or(GeometryError::PeriodicNurbsDegreeTooLow)?
-        };
-        if control_count < required {
-            return Err(GeometryError::InsufficientSmoothPeriodicControlPoints {
-                degree,
-                required,
-                actual: control_count,
-            }
-            .into());
-        }
-        let unique_count = control_count - degree;
-        let knots = periodic_knots_preserving_active(degree, control_count, &self.knots)?;
-        let (mut parameters, control_shift) =
-            periodic_greville_parameters(degree, control_count, unique_count, &knots)?;
-        let weight_scale = self
-            .control_points
-            .iter()
-            .map(|control| control.weight.abs())
-            .fold(0.0, Real::max);
-        let targets = parameters
-            .iter()
-            .map(|parameter| self.evaluate_scaled_homogeneous(*parameter, weight_scale))
-            .collect::<Result<Vec<_>, _>>()?
-            .into_iter()
-            .flatten()
-            .collect::<Vec<_>>();
-        parameters.push(knots[control_count]);
-        let solution = solve(
-            &crate::NurbsInterpolationSystem {
-                degree,
-                knots: &knots,
-                parameters: &parameters,
-                periodic: true,
-                columns: 4,
-                targets: &targets,
-            },
-            control_shift,
-        )?;
-        if solution.len() != unique_count * 4 {
-            return Err(GeometryError::PeriodicInterpolationSolveFailed.into());
-        }
-        let mut unique_controls = Vec::new();
-        unique_controls
-            .try_reserve_exact(unique_count)
-            .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "periodic solution controls exceed addressable memory",
-            })?;
-        for row in 0..unique_count {
-            let normalized_weight = solution[row * 4 + 3];
-            let weight = normalized_weight * weight_scale;
-            let coordinates = [
-                solution[row * 4] / normalized_weight,
-                solution[row * 4 + 1] / normalized_weight,
-                solution[row * 4 + 2] / normalized_weight,
-            ];
-            require_finite(
-                coordinates.into_iter().chain([normalized_weight, weight]),
-                "smooth periodic NURBS controls",
-            )?;
-            if normalized_weight == 0.0 || weight == 0.0 {
-                return Err(GeometryError::PeriodicInterpolationSolveFailed.into());
-            }
-            unique_controls.push(WeightedPoint3::try_new(
-                Point3::try_from(coordinates)?,
-                weight,
-            )?);
-        }
-
-        let mut controls = Vec::new();
-        controls.try_reserve_exact(control_count).map_err(|_| {
-            GeometryError::InvalidKnotVector {
-                context: "periodic curve controls exceed addressable memory",
-            }
-        })?;
-        controls.extend_from_slice(&unique_controls);
-        controls.extend_from_slice(&unique_controls[..degree]);
-        Ok(Self::try_new_rational(degree, controls, knots)?)
+        Ok(periodic::smooth_curves(std::slice::from_ref(self), solve)?.remove(0))
     }
 
     fn evaluate_scaled_homogeneous(

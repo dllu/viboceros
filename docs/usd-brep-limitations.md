@@ -697,7 +697,15 @@ issues reported by NVIDIA that have not all been reproduced here.
   native solve/residual checks guard the retry. The adapter supports degrees 2–17
   and at most 1,000 unique controls; requests beyond either bound keep the
   portable producer, and supported native failures propagate. Surface rows
-  currently factor separately. Smooth=No retains direct cyclic control edits.
+  now share a native factorization in batches of at most 512 curves, respecting
+  the adapter's existing 2,048-channel limit without rejecting larger tensors.
+  Each row keeps its own weight normalization; U-fast packing is restored
+  between directions. Already-periodic knot bases retain the original row
+  mapping policy. Smooth=No retains direct cyclic control edits.
+  All 42 [pre-batch native definitions](smlib-make-periodic-batch-comparison.json)
+  match with zero numeric difference. The tested rational tensors run about
+  twice as fast in the [diagnostic benchmark](smlib-make-periodic-surface-performance.json);
+  this is not a Rhino timing claim.
   Independent rational constraints cover both surface axes, extreme signed
   weight gauges and tiny nonzero channels. Fresh Rhino capture, arbitrary
   conditioning and performance relative to Rhino remain unqualified. See

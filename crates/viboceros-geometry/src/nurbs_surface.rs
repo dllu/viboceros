@@ -9,6 +9,7 @@ mod evaluate;
 mod grips;
 mod parameter_frame;
 mod parameters;
+mod periodic;
 mod seam;
 mod segments;
 mod smoothing;
@@ -1854,14 +1855,34 @@ impl NurbsSurface {
 
         let mut result = self.clone();
         if make_u {
-            result = result.map_u_control_curves(|curve| {
-                curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
-            })?;
+            if smooth
+                && !knot_vector_is_periodic(
+                    result.degree_u + 1,
+                    result.control_point_count_u,
+                    &result.knots_u[1..result.knots_u.len() - 1],
+                )
+            {
+                result = result.make_smooth_periodic_in_axis(true, solve)?;
+            } else {
+                result = result.map_u_control_curves(|curve| {
+                    curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
+                })?;
+            }
         }
         if make_v {
-            result = result.map_v_control_curves(|curve| {
-                curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
-            })?;
+            if smooth
+                && !knot_vector_is_periodic(
+                    result.degree_v + 1,
+                    result.control_point_count_v,
+                    &result.knots_v[1..result.knots_v.len() - 1],
+                )
+            {
+                result = result.make_smooth_periodic_in_axis(false, solve)?;
+            } else {
+                result = result.map_v_control_curves(|curve| {
+                    curve.try_make_periodic_assuming_closed_with_solver(smooth, solve)
+                })?;
+            }
         }
         Ok(result)
     }

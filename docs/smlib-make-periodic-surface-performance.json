@@ -1,0 +1,430 @@
+{
+  "note": "Both executables are Viboceros; these are diagnostic producer timings, not Rhino measurements. Each operation has an untimed warmup; serialization is excluded. Other compilation may affect timing.",
+  "platform": "Linux-7.0.0-1019-nvidia-aarch64-with-glibc2.39",
+  "runs": 5,
+  "iterations": 5,
+  "request_kind": "surfaces",
+  "binary_sha256": {
+    "baseline": "71345de832c7a8c7f68e654a15cc18d3cb5d429b31ec2999e0f77f2fa5f5d575",
+    "native": "92f80a91bb14c1f6d12791ff757852aec78f64b5ba969913787cadb9e1da9658"
+  },
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "passed": true,
+  "operations": [
+    {
+      "id": "surface-32x32-uniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        432323.2,
+        431616.0,
+        430275.2,
+        432102.6,
+        438377.6
+      ],
+      "native_ns_per_iteration": [
+        213142.4,
+        213936.0,
+        212992.0,
+        214493.0,
+        213449.6
+      ],
+      "median_baseline_ns": 432102.6,
+      "median_native_ns": 213449.6,
+      "baseline_to_native_ratio": 2.0243776516798344
+    },
+    {
+      "id": "surface-32x32-uniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        438380.8,
+        438480.0,
+        435379.2,
+        436128.0,
+        436976.0
+      ],
+      "native_ns_per_iteration": [
+        212144.0,
+        212624.0,
+        212355.2,
+        212870.4,
+        211552.0
+      ],
+      "median_baseline_ns": 436976.0,
+      "median_native_ns": 212355.2,
+      "baseline_to_native_ratio": 2.0577598288151173
+    },
+    {
+      "id": "surface-32x32-uniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        871232.0,
+        872496.2,
+        867273.8,
+        879603.2,
+        869817.8
+      ],
+      "native_ns_per_iteration": [
+        423235.2,
+        424384.0,
+        423949.0,
+        425414.4,
+        423052.8
+      ],
+      "median_baseline_ns": 871232.0,
+      "median_native_ns": 423949.0,
+      "baseline_to_native_ratio": 2.055039639201885
+    },
+    {
+      "id": "surface-32x32-nonuniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        432176.2,
+        433232.0,
+        433558.4,
+        433420.8,
+        433164.8
+      ],
+      "native_ns_per_iteration": [
+        210064.0,
+        210627.2,
+        209657.6,
+        210649.6,
+        210163.2
+      ],
+      "median_baseline_ns": 433232.0,
+      "median_native_ns": 210163.2,
+      "baseline_to_native_ratio": 2.06140751568305
+    },
+    {
+      "id": "surface-32x32-nonuniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        439270.4,
+        442403.2,
+        440326.4,
+        443116.8,
+        441184.0
+      ],
+      "native_ns_per_iteration": [
+        212496.0,
+        212128.0,
+        211088.0,
+        211020.8,
+        211142.4
+      ],
+      "median_baseline_ns": 441184.0,
+      "median_native_ns": 211142.4,
+      "baseline_to_native_ratio": 2.0895092601012397
+    },
+    {
+      "id": "surface-32x32-nonuniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        871680.0,
+        874080.2,
+        871859.4,
+        874028.8,
+        873334.6
+      ],
+      "native_ns_per_iteration": [
+        420633.8,
+        422211.2,
+        419824.0,
+        425881.6,
+        421488.2
+      ],
+      "median_baseline_ns": 873334.6,
+      "median_native_ns": 421488.2,
+      "baseline_to_native_ratio": 2.0720262156805336
+    },
+    {
+      "id": "surface-128x128-uniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6367789.2,
+        6345450.2,
+        6348231.0,
+        6337411.6,
+        6334464.6
+      ],
+      "native_ns_per_iteration": [
+        3131529.8,
+        3166925.0,
+        3138381.2,
+        3169373.0,
+        3131901.0
+      ],
+      "median_baseline_ns": 6345450.2,
+      "median_native_ns": 3138381.2,
+      "baseline_to_native_ratio": 2.021886378875836
+    },
+    {
+      "id": "surface-128x128-uniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6401866.0,
+        6390669.2,
+        6394736.4,
+        6385075.8,
+        6385194.0
+      ],
+      "native_ns_per_iteration": [
+        3120621.0,
+        3152019.4,
+        3116378.0,
+        3151568.2,
+        3114685.0
+      ],
+      "median_baseline_ns": 6390669.2,
+      "median_native_ns": 3120621.0,
+      "baseline_to_native_ratio": 2.0478838026149284
+    },
+    {
+      "id": "surface-128x128-uniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        12746090.6,
+        12727306.6,
+        12690769.0,
+        12699245.8,
+        12693850.6
+      ],
+      "native_ns_per_iteration": [
+        6192787.8,
+        6270109.2,
+        6207725.2,
+        6280474.0,
+        6212362.2
+      ],
+      "median_baseline_ns": 12699245.8,
+      "median_native_ns": 6212362.2,
+      "baseline_to_native_ratio": 2.0441895355039024
+    },
+    {
+      "id": "surface-128x128-nonuniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6359136.6,
+        6349158.8,
+        6318851.6,
+        6318679.0,
+        6328992.4
+      ],
+      "native_ns_per_iteration": [
+        3098963.4,
+        3131619.4,
+        3105680.2,
+        3135718.6,
+        3103386.0
+      ],
+      "median_baseline_ns": 6328992.4,
+      "median_native_ns": 3105680.2,
+      "baseline_to_native_ratio": 2.037876404660081
+    },
+    {
+      "id": "surface-128x128-nonuniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6441376.4,
+        6413267.8,
+        6404771.8,
+        6409725.2,
+        6412608.6
+      ],
+      "native_ns_per_iteration": [
+        3119712.2,
+        3141933.0,
+        3113270.6,
+        3153446.6,
+        3108585.8
+      ],
+      "median_baseline_ns": 6412608.6,
+      "median_native_ns": 3119712.2,
+      "baseline_to_native_ratio": 2.0555128771173186
+    },
+    {
+      "id": "surface-128x128-nonuniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        12832605.8,
+        12818877.8,
+        12801962.6,
+        12802554.6,
+        12834292.2
+      ],
+      "native_ns_per_iteration": [
+        6198144.6,
+        6262010.2,
+        6195085.2,
+        6254867.8,
+        6202906.2
+      ],
+      "median_baseline_ns": 12818877.8,
+      "median_native_ns": 6202906.2,
+      "baseline_to_native_ratio": 2.0665922370388254
+    },
+    {
+      "id": "surface-256x64-uniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6504471.0,
+        6479290.2,
+        6478887.0,
+        6459427.6,
+        6467930.2
+      ],
+      "native_ns_per_iteration": [
+        3225552.4,
+        3259546.0,
+        3234189.0,
+        3262118.6,
+        3230438.6
+      ],
+      "median_baseline_ns": 6478887.0,
+      "median_native_ns": 3234189.0,
+      "baseline_to_native_ratio": 2.003249346281247
+    },
+    {
+      "id": "surface-256x64-uniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6391811.6,
+        6400938.0,
+        6362291.6,
+        6376784.6,
+        6391402.0
+      ],
+      "native_ns_per_iteration": [
+        3056665.8,
+        3089523.6,
+        3087446.6,
+        3102662.6,
+        3068368.4
+      ],
+      "median_baseline_ns": 6391402.0,
+      "median_native_ns": 3087446.6,
+      "baseline_to_native_ratio": 2.0701255205515134
+    },
+    {
+      "id": "surface-256x64-uniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        12896842.6,
+        12879117.8,
+        12826077.8,
+        12854490.6,
+        12837172.2
+      ],
+      "native_ns_per_iteration": [
+        6263008.4,
+        6313677.2,
+        6270851.8,
+        6327571.6,
+        6275229.2
+      ],
+      "median_baseline_ns": 12854490.6,
+      "median_native_ns": 6275229.2,
+      "baseline_to_native_ratio": 2.0484495769493165
+    },
+    {
+      "id": "surface-256x64-nonuniform-u",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6526333.2,
+        6513770.0,
+        6512608.4,
+        6502998.8,
+        6494614.8
+      ],
+      "native_ns_per_iteration": [
+        3207238.6,
+        3243894.6,
+        3208605.0,
+        3242038.6,
+        3210294.6
+      ],
+      "median_baseline_ns": 6512608.4,
+      "median_native_ns": 3210294.6,
+      "baseline_to_native_ratio": 2.0286637868063573
+    },
+    {
+      "id": "surface-256x64-nonuniform-v",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        6393367.0,
+        6408647.0,
+        6379520.6,
+        6386045.4,
+        6404039.0
+      ],
+      "native_ns_per_iteration": [
+        3052441.8,
+        3080243.4,
+        3060598.6,
+        3084694.6,
+        3053881.8
+      ],
+      "median_baseline_ns": 6393367.0,
+      "median_native_ns": 3060598.6,
+      "baseline_to_native_ratio": 2.088926983107161
+    },
+    {
+      "id": "surface-256x64-nonuniform-both",
+      "passed": true,
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "baseline_ns_per_iteration": [
+        12915559.4,
+        12923559.4,
+        12996263.4,
+        12909677.8,
+        12893598.0
+      ],
+      "native_ns_per_iteration": [
+        6239818.2,
+        6301680.6,
+        6255290.0,
+        6307690.2,
+        6251418.2
+      ],
+      "median_baseline_ns": 12915559.4,
+      "median_native_ns": 6255290.0,
+      "baseline_to_native_ratio": 2.0647419064503802
+    }
+  ]
+}

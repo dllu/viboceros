@@ -1,0 +1,307 @@
+{
+  "baseline_commit": "42b09c85",
+  "note": "Native pre-batch versus native batched Viboceros producers; no fresh Rhino observations.",
+  "baseline_binary_sha256": "71345de832c7a8c7f68e654a15cc18d3cb5d429b31ec2999e0f77f2fa5f5d575",
+  "native_binary_sha256": "92f80a91bb14c1f6d12791ff757852aec78f64b5ba969913787cadb9e1da9658",
+  "absolute_epsilon": 1e-09,
+  "relative_epsilon": 1e-12,
+  "operations": [
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-single-interior-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-uniform-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nonuniform-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nonuniform-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-quadratic-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-quadratic-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "rational-unequal-seam-weights-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "cubic-nearest-pre-domain-greville-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic",
+      "id": "quadratic-nearest-pre-domain-greville-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quadratic-nonrational",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "cubic-uniform",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quartic-uniform",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-uniform",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "rational-cubic-uniform",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "cubic-single-span",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-single-span",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quartic-nonuniform-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "curve_make_periodic_degrees",
+      "id": "quintic-nonuniform-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "cubic-u-nonuniform-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "quadratic-rational-u-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "cubic-v-nonuniform-smooth",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "quadratic-rational-v-sharp",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "surface_make_periodic",
+      "id": "command-double-closed-default-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-uniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-uniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-uniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-nonuniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-nonuniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-32x32-nonuniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-uniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-uniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-uniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-nonuniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-nonuniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-128x128-nonuniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-uniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-uniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-uniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-nonuniform-u",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-nonuniform-v",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "rational_tensors",
+      "id": "surface-256x64-nonuniform-both",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    },
+    {
+      "fixture": "mixed_periodic_rows",
+      "id": "mixed-periodic-control-rows",
+      "max_absolute_error": 0.0,
+      "differences": [],
+      "passed": true
+    }
+  ],
+  "cases": 42,
+  "matched": 42,
+  "max_absolute_error": 0.0
+}
