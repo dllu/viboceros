@@ -86,6 +86,57 @@ void clamp_curve_endpoint(NL_CURVE &input,bool end,NL_CURVE &result,NL_STACKS &s
 void edit_curve_basis(NL_CURVE &source, NL_CURVE &result, size_t target, bool exact_elevation,
                   const double *knots, size_t knot_count, NL_STACKS &stack) {
     if (exact_elevation) {
+        const size_t source_count=source.pol->n+1;
+        const auto *basis=source.knt->U;
+        std::vector<size_t> cuts={0};
+        for(size_t i=source.p+1;i<source_count;) {
+            size_t last=i+1;
+            while(last<source_count && basis[last]==basis[i]) ++last;
+            if(last-i==static_cast<size_t>(source.p+1)) cuts.push_back(i);
+            i=last;
+        }
+        if(cuts.size()>1) {
+            // Full-order breaks separate independent control blocks. The
+            // native elevation producer rejects them as one curve; reuse it
+            // on contiguous pieces under the same homogeneous gauge.
+            require(std::all_of(basis,basis+source.p+1,[&](double k){return k==basis[source.p];})
+                && std::all_of(basis+source_count,basis+source.knt->m+1,[&](double k){return k==basis[source_count];}),
+                "Piecewise degree elevation requires clamped active endpoints");
+            cuts.push_back(source_count);
+            std::vector<NL_CPOINT> controls;
+            std::vector<double> elevated_knots;
+            controls.reserve(knot_count-target-1);
+            elevated_knots.reserve(knot_count);
+            for(size_t block=0;block+1<cuts.size();++block) {
+                const size_t first=cuts[block],count=cuts[block+1]-first;
+                require(count>static_cast<size_t>(source.p),"Invalid full-order control block");
+                NL_CURVE piece,elevated;
+                N_CrvInitArrays(&piece);N_CrvInitArrays(&elevated);
+                check(N_CrvFromCPtsAndKnots(&piece,source.pol->Pw+first,count-1,source.p,
+                    const_cast<double *>(basis+first),count+source.p,&stack),
+                    "Build separated native elevation piece failed");
+                check(N_CrvElevateDegree(&piece,target-source.p,&elevated,&stack,&stack),
+                    "Elevate separated native curve degree failed");
+                require(elevated.p==static_cast<NL_DEGREE>(target) && elevated.pol->n>=0,
+                    "Invalid separated elevation output");
+                controls.insert(controls.end(),elevated.pol->Pw,elevated.pol->Pw+elevated.pol->n+1);
+                const auto *start=elevated.knt->U+(block?target+1:0);
+                const double *end=elevated.knt->U+elevated.knt->m+1;
+                elevated_knots.insert(elevated_knots.end(),start,end);
+            }
+            require(elevated_knots.size()==knot_count && controls.size()==knot_count-target-1
+                && std::equal(elevated_knots.begin(),elevated_knots.end(),knots),
+                "Separated elevation changed the target basis");
+            NL_CURVE assembled;
+            N_CrvInitArrays(&assembled);
+            check(N_CrvFromCPtsAndKnots(&assembled,controls.data(),controls.size()-1,target,
+                elevated_knots.data(),elevated_knots.size()-1,&stack),
+                "Assemble separated native degree elevation failed");
+            // The constructor borrows the vector payload; the producer result
+            // must survive these vectors until the caller snapshots its data.
+            check(N_CrvCopy(&assembled,&result,&stack),"Copy separated native degree elevation failed");
+            return;
+        }
         check(N_CrvElevateDegree(&source, target-source.p, &result, &stack, &stack),
               "Elevate native curve degree failed");
         return;

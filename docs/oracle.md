@@ -35,6 +35,9 @@ pending. See [native fitting qualification](smlib-curve-fit.md).
 `curve_tween_geometry` also selects native sampled-source interpolation.
 `curve_tween_native.json` covers the permanent modes and the 9,999-division
 boundary; see [native TweenCurves sampling](smlib-curve-tween.md).
+`piecewise_degree_elevation.json` probes exact native curve and tensor elevation
+across full-order breaks. Its reference uses independent rational Bernstein
+coefficients; see [piecewise qualification](smlib-piecewise-elevation.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

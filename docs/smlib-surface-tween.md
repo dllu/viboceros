@@ -61,9 +61,10 @@ Fresh captures remain pending the Wine licensing startup recorded in
 
 Counts, sampled divisions, aggregate control budgets and source admission retain
 their existing limits. Native basis edits and Rebuild inherit the pinned
-degree-17 restriction. The tested full-order interior degree-elevation case is
-rejected by native and portable Refit without source changes; native elevation's
-existing limitation remains in the [ledger](usd-brep-limitations.md). Continuous
+degree-17 restriction. Native Refit now accepts the tested full-order interior
+case through [piecewise elevation](smlib-piecewise-elevation.md); portable Refit
+still rejects it. The upstream limitation and workaround remain in the
+[ledger](usd-brep-limitations.md). Continuous
 source-blend error, general adaptive Rhino fitting parity and speed relative to
 Rhino remain unqualified.
 

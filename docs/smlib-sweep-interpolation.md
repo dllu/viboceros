@@ -51,7 +51,8 @@ formatting passes.
 
 The existing 4,096 rail-control, 512 profile-control and 262,144 surface-control
 budgets apply before solving. Native clamping/refinement retain their degree-17,
-parameter-chart and full-order elevation limits. Banded LU and per-channel
+parameter-chart limits; [full-order elevation](smlib-piecewise-elevation.md)
+now uses separated native pieces. Banded LU and per-channel
 residual guards keep kernel tolerances unchanged. Existing Rhino basis/domain
 and world-query discrepancies remain documented in [Sweep1](sweep1.md).
 Continuous model error in the rail direction, arbitrary conditioning and speed

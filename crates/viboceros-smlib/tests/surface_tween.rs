@@ -189,7 +189,21 @@ fn native_refit_retains_full_order_degree_elevation_and_distinct_adjacent_knots(
     .unwrap();
     let before = (a.clone(), b.clone());
     assert!(try_tween_nurbs_surfaces_refitted(&a, &b, 2).is_err());
-    assert!(surface_tweens_refitted(&a, &b, 2).is_err());
+    let output = surface_tweens_refitted(&a, &b, 2).unwrap();
+    let ac = [0., 2. / 3., 4. / 3., 2., 4., 14. / 3., 16. / 3., 6.];
+    let bc = [0., 1., 2., 3., 3., 4., 5., 6.];
+    for (index, surface) in output.iter().enumerate() {
+        let f = (index + 1) as f64 / 3.;
+        assert_eq!(
+            surface.knots_u(),
+            &[0., 0., 0., 0., 0.5, 0.5, 0.5, 0.5, 1., 1., 1., 1.]
+        );
+        for (i, p) in surface.control_points().iter().enumerate() {
+            assert!((p.point().x() - (ac[i % 8] * (1. - f) + bc[i % 8] * f)).abs() < 1e-12);
+            assert_eq!(p.point().y(), (i / 8) as f64);
+            assert!((p.point().z() - 2. * f).abs() < 1e-12);
+        }
+    }
     assert_eq!((a, b), before);
     let near = |knot| {
         NurbsSurface::try_new(

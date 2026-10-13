@@ -7,7 +7,7 @@ mod support;
 use support::{compare, control_values, curve_value, knots, points, surface_value};
 
 #[test]
-fn unsupported_discontinuous_elevation_returns_an_error_without_source_mutation() {
+fn separated_discontinuous_elevation_preserves_independent_bezier_controls_and_source() {
     use viboceros_geometry::Point3;
     let source = NurbsCurve::try_new(
         2,
@@ -26,12 +26,175 @@ fn unsupported_discontinuous_elevation_returns_an_error_without_source_mutation(
     )
     .unwrap();
     let before = source.clone();
-    let error = change_curve_degree(&source, 4, false).unwrap_err();
-    assert!(
-        error
-            .to_string()
-            .contains("Elevate native curve degree failed")
+    let elevated = change_curve_degree(&source, 4, false).unwrap();
+    assert_eq!(elevated.degree(), 4);
+    assert_eq!(
+        elevated.knots(),
+        &[
+            0., 0., 0., 0., 0., 0.5, 0.5, 0.5, 0.5, 0.5, 1., 1., 1., 1., 1.
+        ]
     );
+    let expected = [
+        [0., 0., 0.],
+        [0.5, 0.5, 0.],
+        [1., 2. / 3., 0.],
+        [1.5, 0.5, 0.],
+        [2., 0., 0.],
+        [4., 0., 0.],
+        [4.5, -0.5, 0.],
+        [5., -2. / 3., 0.],
+        [5.5, -0.5, 0.],
+        [6., 0., 0.],
+    ];
+    for (a, b) in elevated.control_points().iter().zip(expected) {
+        assert!((a.weight() - 1.).abs() < 1e-14);
+        for (a, b) in a.point().to_array().into_iter().zip(b) {
+            assert!((a - b).abs() < 1e-14);
+        }
+    }
+    for t in [0., 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.] {
+        assert!(
+            elevated
+                .evaluate(t)
+                .unwrap()
+                .distance_to(source.evaluate(t).unwrap())
+                .unwrap()
+                < 1e-13
+        );
+    }
+    assert_eq!(source, before);
+}
+
+#[test]
+fn separated_rational_elevation_covers_many_blocks_all_native_degrees_and_tensor_axes() {
+    use viboceros_geometry::{Point3, WeightedPoint3};
+    for chart in [2_f64.powi(-360), 1., 2_f64.powi(360)] {
+        for gauge in [1e-300, 1., 1e300, -1e300] {
+            let source = NurbsCurve::try_new_rational(
+                2,
+                (0..9)
+                    .map(|i| {
+                        WeightedPoint3::try_new(
+                            Point3::try_new(
+                                i as f64,
+                                ((i % 3) as f64 - 1.).powi(2),
+                                i as f64 * 0.1,
+                            )
+                            .unwrap(),
+                            gauge * [1., 0.5, 1.5][i % 3],
+                        )
+                        .unwrap()
+                    })
+                    .collect(),
+                [0., 0., 0., 0.25, 0.25, 0.25, 0.75, 0.75, 0.75, 1., 1., 1.]
+                    .map(|k| k * chart)
+                    .to_vec(),
+            )
+            .unwrap();
+            let before = source.clone();
+            for degree in [3, 4, 7, 11, 17] {
+                let result = change_curve_degree(&source, degree, false).unwrap();
+                assert_eq!(
+                    result.knots(),
+                    viboceros_geometry::degree_change_knots(2, degree, false, source.knots())
+                        .unwrap()
+                );
+                assert_eq!(result.control_points().len(), 3 * (degree + 1));
+                for f in [0., 0.125, 0.25, 0.5, 0.75, 0.875, 1.] {
+                    assert!(
+                        result
+                            .evaluate(f * chart)
+                            .unwrap()
+                            .distance_to(source.evaluate(f * chart).unwrap())
+                            .unwrap()
+                            < 1e-10
+                    );
+                }
+            }
+            assert_eq!(source, before);
+        }
+    }
+    let net = (0..6)
+        .flat_map(|j| {
+            (0..6).map(move |i| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(i as f64, j as f64, (i * j) as f64 * 0.2).unwrap(),
+                    1. + (i + j) as f64 * 0.1,
+                )
+                .unwrap()
+            })
+        })
+        .collect();
+    let knots = vec![0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1.];
+    let source = NurbsSurface::try_new_rational(2, 2, 6, 6, net, knots.clone(), knots).unwrap();
+    let before = source.clone();
+    let result = change_surface_degree(&source, 4, 3, false).unwrap();
+    assert_eq!(
+        (
+            result.control_point_count_u(),
+            result.control_point_count_v()
+        ),
+        (10, 8)
+    );
+    for j in 0..=16 {
+        for i in 0..=16 {
+            let (u, v) = (i as f64 / 16., j as f64 / 16.);
+            assert!(
+                result
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(source.evaluate(u, v).unwrap())
+                    .unwrap()
+                    < 1e-10
+            );
+        }
+    }
+    assert_eq!(source, before);
+}
+
+#[test]
+fn separated_elevation_preserves_internal_knots_and_both_one_sided_limits() {
+    use viboceros_geometry::{CurveRef, ParameterSide, Point3, WeightedPoint3};
+    let source = NurbsCurve::try_new_rational(
+        2,
+        (0..9)
+            .map(|i| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(i as f64, (i % 4) as f64 - 2., (i * i) as f64 * 0.1).unwrap(),
+                    1. + i as f64 * 0.125,
+                )
+                .unwrap()
+            })
+            .collect(),
+        vec![0., 0., 0., 0.2, 0.35, 0.5, 0.5, 0.5, 0.8, 1., 1., 1.],
+    )
+    .unwrap();
+    let before = source.clone();
+    let result = change_curve_degree(&source, 7, false).unwrap();
+    assert_eq!(
+        result.knots(),
+        viboceros_geometry::degree_change_knots(2, 7, false, source.knots()).unwrap()
+    );
+    for i in 0..=256 {
+        let t = i as f64 / 256.;
+        assert!(
+            result
+                .evaluate(t)
+                .unwrap()
+                .distance_to(source.evaluate(t).unwrap())
+                .unwrap()
+                < 1e-10
+        );
+    }
+    for side in [ParameterSide::Left, ParameterSide::Right] {
+        let a = CurveRef::NurbsCurve(&source)
+            .evaluate_on_side(0.5, side)
+            .unwrap();
+        let b = CurveRef::NurbsCurve(&result)
+            .evaluate_on_side(0.5, side)
+            .unwrap();
+        assert!(a.distance_to(b).unwrap() < 1e-12);
+    }
     assert_eq!(source, before);
 }
 

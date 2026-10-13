@@ -522,8 +522,8 @@ issues reported by NVIDIA that have not all been reproduced here.
   one-ULP-separated knots `0.3` and `0.30000000000000004` remain distinct.
   SamplePoints uses native open-grid basis/solves with shared mean-chord
   stations and independent evaluator residuals. Closed point-grid continuation
-  stays portable. The known full-order interior elevation restriction applies;
-  portable Refit also rejects the tested discontinuous source. Early retained
+  stays portable. Native elevation now composes independent full-order pieces;
+  portable Refit still rejects the tested discontinuous source. Early retained
   Rhino option changes leave extra source-shaped copies, an existing command
   discrepancy that remains separate from requested-net agreement. See
   [native TweenSurfaces](smlib-surface-tween.md).
@@ -664,14 +664,19 @@ issues reported by NVIDIA that have not all been reproduced here.
   These are adapter limits, not evidence that the upstream mathematics is
   invalid. See [refinement](smlib-knot-refinement.md),
   [degree changes](smlib-degree-change.md) and their native regressions.
-- **Exact degree elevation rejects the tested full-order interior break.**
+- **Upstream exact elevation rejects full-order interior breaks; the adapter composes pieces.**
   `N_CrvElevateDegree` failed on a degree-two curve with six controls and knots
   `[0, 0, 0, 0.5, 0.5, 0.5, 1, 1, 1]` when raised to degree four. The native
-  adapter returns an error without changing the source; the regression retains
-  the complete input. This is an observed native operation limitation, not
-  evidence that its accepted output is mathematically invalid. General
-  discontinuous degree elevation remains unsupported by this adapter. See
-  [degree-change regressions](../crates/viboceros-smlib/tests/degree_change.rs).
+  [direct probe](../tools/usd_brep/piecewise_elevation_probe.cpp) retains status
+  `1` for that whole-curve call and status `0` for both independent pieces.
+  The adapter now reuses native elevation per contiguous full-order block,
+  keeps intermediate controls homogeneous, and verifies the assembled target
+  basis. Native-owned copying respects the constructor's borrowed arrays.
+  Curve, tensor and native TweenSurfaces Refit cases now succeed; the portable
+  elevation path still rejects the tested discontinuity. This is an upstream
+  producer restriction with an adapter workaround, not evidence of invalid
+  accepted geometry. See [qualification](smlib-piecewise-elevation.md) and
+  [regressions](../crates/viboceros-smlib/tests/degree_change.rs).
 - **Fixed: whole-chart pole certification rejected a valid mixed-sign interior.**
   The rational triangular EdgeSrf has a positive-weight collapsed natural
   boundary while unrelated interior controls have mixed signs. The general

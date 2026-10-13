@@ -73,6 +73,8 @@ and batches the same banded tensor interpolation across all rows of each axis.
 exact basis edits and sampled point-grid solving for all three matching modes.
 [FitCrv](smlib-curve-fit.md) reuses native fixed-row banded interpolation while
 retaining adaptive sampling, kink and endpoint-handle policy.
+[Full-order degree elevation](smlib-piecewise-elevation.md) composes existing
+native producers across independent curve/tensor control blocks.
 [Sweep1 and Pipe rail/section interpolation](smlib-sweep-interpolation.md) now
 use native clamping, section-station refinement, curve fitting and batched
 homogeneous section solves, including continuous-model Pipe fitting.

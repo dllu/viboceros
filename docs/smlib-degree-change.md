@@ -6,7 +6,9 @@ limits, mixed selections, identities, attributes, groups, selection and atomic
 Undo/Redo retain the existing command policy.
 
 Non-deformable elevation uses `N_CrvElevateDegree`, preserving the rational
-geometry and parameterization. Reduction and `Deformable=Yes` use native
+geometry and parameterization. [Full-order interior breaks](smlib-piecewise-elevation.md)
+are elevated as independent native pieces and assembled without merging their
+control blocks. Reduction and `Deformable=Yes` use native
 Greville stations, homogeneous evaluation and `N_FitCrvInterpGivenParams`.
 The latter delegates the interpolation matrix and solve to NLib. Surfaces
 apply the existing curve operations to each control row or column, in U then V.
@@ -50,9 +52,8 @@ command accepts degrees 1 through 11. Output controls must remain representable
 as finite Euclidean points with nonzero weights. Reduction and deformable
 changes are approximations without a certified deviation bound. Broader
 ill-conditioned interpolation, mixed-sign rational weights and chart extremes
-remain unqualified. The tested full-order interior discontinuity returns a
-native elevation error without changing its source; general discontinuous
-exact elevation remains unsupported. These tests establish the recorded cases,
+remain unqualified. Full-order interior discontinuities now use the qualified
+piecewise native elevation path. These tests establish the recorded cases,
 not arbitrary Rhino parity or kernel speedups. Other builds retain the portable backend.
 
 ```sh
