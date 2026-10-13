@@ -21,9 +21,10 @@ output/control budgets, rational displacement, knot/domain policies and history.
 `UniformInterpolationSystem` remains a compatibility alias. Surface Rebuild and
 point-grid interpolation share the two-axis batch layout, finite/layout checks
 and exact constant-channel preservation. Native open grids prepare knots and
-stations without building the portable dense basis matrices. Closed point-grid
-boundary-span continuation keeps its existing portable producer and is not used
-by sampled TweenSurfaces. No new basis evaluator or linear solver is added.
+stations without building the portable dense basis matrices.
+[Closed point-grid continuation](smlib-point-grid.md) now shares the native
+basis and pivoted solver; sampled TweenSurfaces continues to use open grids.
+No new basis evaluator or linear solver is added.
 
 The bridge exposes `surface_tweens`, `surface_tweens_refitted`,
 `surface_tweens_sampled` and `interpolate_open_point_grid`. Native regressions

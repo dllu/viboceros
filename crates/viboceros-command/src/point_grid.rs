@@ -62,7 +62,7 @@ impl Command for PointGridCommand {
         let surface = if self.control {
             Brep::try_control_point_grid(&points, count, options.degree, document.tolerance())?
         } else {
-            Brep::try_through_point_grid(
+            through_grid(
                 &points,
                 count,
                 options.degree,
@@ -82,6 +82,26 @@ impl Command for PointGridCommand {
             "Created {} by {} point-grid surface",
             count[0], count[1]
         ))
+    }
+}
+
+fn through_grid(
+    points: &[Point3],
+    count: [usize; 2],
+    degree: [usize; 2],
+    closed: [bool; 2],
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::point_grid_brep(points, count, degree, closed, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(Brep::try_through_point_grid(
+            points, count, degree, closed, tolerance,
+        )?)
     }
 }
 

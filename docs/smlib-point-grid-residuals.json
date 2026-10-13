@@ -1,0 +1,48 @@
+{
+  "decimal_digits": 80,
+  "method": "Exact binary64 definitions and recorded stations; independent local Cox/de Boor continued-span basis and tensor multiplication. Numerical diagnostic, not a certified enclosure or Rhino capture.",
+  "cases": [
+    {
+      "id": "api-degree-9-11",
+      "portable": {
+        "high_precision_coordinate_residuals": [
+          3.517746536614741e-13,
+          3.447360505711352e-10,
+          6.41392562469898e-10
+        ],
+        "high_precision_max_residual": 6.41392562469898e-10,
+        "binary64_evaluator_max_residual": 3.896639100275934e-08
+      },
+      "native": {
+        "high_precision_coordinate_residuals": [
+          2.178993991462511e-12,
+          1.9717934907273571e-10,
+          9.91798419652389e-09
+        ],
+        "high_precision_max_residual": 9.91798419652389e-09,
+        "binary64_evaluator_max_residual": 3.8791768020018935e-08
+      }
+    },
+    {
+      "id": "api-degree-11-11",
+      "portable": {
+        "high_precision_coordinate_residuals": [
+          3.930414508251717e-13,
+          1.9502545446687005e-12,
+          1.8406373912199207e-09
+        ],
+        "high_precision_max_residual": 1.8406373912199207e-09,
+        "binary64_evaluator_max_residual": 2.8483388980760083e-09
+      },
+      "native": {
+        "high_precision_coordinate_residuals": [
+          7.708397296753628e-13,
+          3.293168012095905e-12,
+          1.6659052109713884e-09
+        ],
+        "high_precision_max_residual": 1.6659052109713884e-09,
+        "binary64_evaluator_max_residual": 9.717626259231338e-09
+      }
+    }
+  ]
+}

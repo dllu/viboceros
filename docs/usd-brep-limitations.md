@@ -524,6 +524,27 @@ issues reported by NVIDIA that have not all been reproduced here.
   no continuous error bound or arbitrary-conditioning qualification is claimed.
   Internal Sweep1/Pipe fitting now shares the native producer. Fresh Rhino fitting captures remain
   pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
+- **Point-grid interpolation retains continuation and conditioning limits.**
+  Open directions use the existing native banded solver; closed directions fold
+  repeated control columns and share the existing partial-pivot LU and
+  `N_RealMatrixRightForBack` scalar solves (no small-RHS skip). The native
+  zeroth-derivative basis supports boundary-span polynomial continuation; the
+  [direct probe](../tools/usd_brep/grid_continuation_probe.cpp) returns the exact
+  independent quadratic coefficients `[9/8,-1/4,1/8]` at `-0.5` outside active
+  domain `[0,5]`. [Retained output](smlib-point-grid-probe.json) records this
+  capability, not an upstream defect. Exact-span guards, homogeneous solves,
+  constant-channel preservation and independent tensor residuals remain in
+  force. Counts remain capped at 256 per axis and degrees at 11. Ill-conditioned
+  degree-9/11 continuation fixtures are retained separately from passing
+  comparisons. The degree-nine native net differs from the portable full-pivot
+  net by `1.18e-7`; independent 80-digit construction-site residuals are
+  `9.92e-9` native versus `6.41e-10` portable. These are adapter qualification
+  limits, not proof of an upstream algorithm defect. The measured closed
+  64×64 construction takes about 2.18 times the portable time even using
+  the native scalar back-solver; open 256×256 construction is within 3%.
+  Arbitrary conditioning and Rhino performance remain unqualified.
+  See [native point grids](smlib-point-grid.md) and the existing narrow-span and
+  real-RHS solver findings above.
 - **TweenSurfaces retains measured matching policy around native operations.**
   Compatible control nets bypass rebuilding; unequal nets repeat native
   forced-open Rebuild before every output. Refit uses native clamping,
@@ -531,8 +552,8 @@ issues reported by NVIDIA that have not all been reproduced here.
   one-ULP-separated knots `0.3` and `0.30000000000000004` remain distinct.
   SamplePoints uses native open-grid basis/solves with shared mean-chord
   stations and independent evaluator residuals. Closed point-grid continuation
-  stays portable. Native elevation now composes independent full-order pieces;
-  portable Refit still rejects the tested discontinuous source. Early retained
+  now shares the native solver. Native elevation composes independent full-order
+  pieces; portable Refit still rejects the tested discontinuous source. Early retained
   Rhino option changes leave extra source-shaped copies, an existing command
   discrepancy that remains separate from requested-net agreement. See
   [native TweenSurfaces](smlib-surface-tween.md).

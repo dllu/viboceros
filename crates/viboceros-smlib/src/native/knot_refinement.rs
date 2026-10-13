@@ -111,6 +111,9 @@ struct InterpolationSystem {
     uniform_periodic: c_int,
     fixed_rows: *const u8,
     fixed_count: usize,
+    point_grid: c_int,
+    amplification: *mut f64,
+    amplification_count: usize,
 }
 
 fn solve_cubic_system(
@@ -130,6 +133,9 @@ fn solve_cubic_system(
         uniform_periodic: 0,
         fixed_rows: std::ptr::null(),
         fixed_count: 0,
+        point_grid: 0,
+        amplification: std::ptr::null_mut(),
+        amplification_count: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -272,6 +278,9 @@ fn solve_with_fixed_rows(
         uniform_periodic: c_int::from(input.periodic),
         fixed_rows: fixed.map_or(std::ptr::null(), |f| f.as_ptr()),
         fixed_count: fixed.map_or(0, |f| f.len()),
+        point_grid: 0,
+        amplification: std::ptr::null_mut(),
+        amplification_count: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -306,12 +315,79 @@ pub fn interpolate_open_point_grid(
     count: [usize; 2],
     degree: [usize; 2],
 ) -> Result<NurbsSurface, Error> {
-    NurbsSurface::try_through_open_point_grid_with_solver(
+    interpolate_point_grid(points, count, degree, [false; 2])
+}
+
+/// Open or closed Rhino-style point-grid interpolation through native basis
+/// continuation and batched LU; core knot/topology/residual policy stays shared.
+pub fn interpolate_point_grid(
+    points: &[Point3],
+    count: [usize; 2],
+    degree: [usize; 2],
+    closed: [bool; 2],
+) -> Result<NurbsSurface, Error> {
+    NurbsSurface::try_through_point_grid_with_solver(
         points,
         count,
         degree,
-        &mut solve_uniform_system,
+        closed,
+        &mut solve_point_grid,
     )
+}
+
+pub fn point_grid_brep(
+    points: &[Point3],
+    count: [usize; 2],
+    degree: [usize; 2],
+    closed: [bool; 2],
+    tolerance: Tolerance,
+) -> Result<viboceros_geometry::Brep, Error> {
+    viboceros_geometry::Brep::try_through_point_grid_with_solver(
+        points,
+        count,
+        degree,
+        closed,
+        tolerance,
+        &mut solve_point_grid,
+    )
+}
+
+fn solve_point_grid(
+    input: &viboceros_geometry::PointGridInterpolationSystem<'_>,
+) -> Result<viboceros_geometry::PointGridInterpolationSolution, Error> {
+    let mut amplification = vec![0.; input.parameters.len()];
+    let view = InterpolationSystem {
+        knots: input.knots.as_ptr(),
+        parameters: input.parameters.as_ptr(),
+        targets: input.targets.as_ptr(),
+        knot_count: input.knots.len(),
+        parameter_count: input.parameters.len(),
+        columns: input.columns,
+        target_count: input.targets.len(),
+        degree: input.degree,
+        closed: c_int::from(input.closed),
+        handles: 0,
+        uniform_periodic: 0,
+        fixed_rows: std::ptr::null(),
+        fixed_count: 0,
+        point_grid: 1,
+        amplification: amplification.as_mut_ptr(),
+        amplification_count: amplification.len(),
+    };
+    let mut controls = vec![0.; input.targets.len()];
+    call(|error, capacity| unsafe {
+        vb_interpolation_solve(
+            &view,
+            controls.as_mut_ptr(),
+            controls.len(),
+            error,
+            capacity,
+        )
+    })?;
+    Ok(viboceros_geometry::PointGridInterpolationSolution {
+        controls,
+        amplification,
+    })
 }
 
 /// Control-net tweens, with forced-open native rebuilding repeated before

@@ -45,9 +45,11 @@ stations for each parameter interval. Open directions use those cumulative
 parameters as interpolation sites, with degree-wise averaged interior knots.
 Degrees one through eleven are supported, including mixed degrees.
 
-`point_grid/basis` constructs and factors the two collocation matrices once,
-using faer full-pivot LU and multiple right-hand sides. The solve is separable
-in U and V; it does not construct a dense matrix for the whole tensor grid.
+Linux `native-smlib` builds use [usd-brep basis and matrix routines](smlib-point-grid.md),
+with banded LU for open directions and partial-pivot LU for closed directions.
+Portable builds use `point_grid/basis` and faer full-pivot LU. Both backends
+factor the two collocation matrices once and reuse multiple right-hand sides.
+The solve is separable in U and V; it does not construct a dense matrix for the whole tensor grid.
 Coordinates are recentered and scaled before solving. Constant coordinate
 channels and repeated periodic controls are retained exactly. The final tensor
 evaluator is independently checked at every construction site.
@@ -107,8 +109,8 @@ Native tests additionally verify bilinear reproduction, continuation basis
 coefficients, exact large translations, `1e-140`/`1e140` scales, and quadrature
 exactness through every required polynomial degree.
 
-Fresh isolated Rhino 8 checks passed all 75 ordinary/API/command/interchange
-cases at absolute `2e-12` plus relative `1e-14` (maximum difference `3.27e-13`).
+Earlier isolated Rhino 8 checks of the portable producer passed all 75
+ordinary/API/command/interchange cases at absolute `2e-12` plus relative `1e-14` (maximum difference `3.27e-13`).
 The eight passing higher-degree cases use `1e-8` plus relative `1e-12` for full
 records (maximum `3.22e-9`), with active samples independently checked at
 `2e-12` plus relative `1e-14` (maximum `2.67e-14`).

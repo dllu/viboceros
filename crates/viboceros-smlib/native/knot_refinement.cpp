@@ -819,16 +819,19 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
 
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001)) && input.columns>0 && input.columns<=2048 && input.columns%4==0
+        && input.parameter_count<=(input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=2048 && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
         && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
         && (input.uniform_periodic==0 || input.uniform_periodic==1)
         && (!input.handles || (!input.closed && input.degree==3))
-        && (!input.uniform_periodic || input.closed),"Invalid interpolation dimensions");
-    const size_t sections=input.parameter_count-input.closed;
+        && (!input.uniform_periodic || input.closed)
+        && (input.point_grid==0 || input.point_grid==1),"Invalid interpolation dimensions");
+    const size_t sections=input.parameter_count-(input.closed && !input.point_grid);
     const size_t unknowns=sections+2*input.handles,controls=unknowns+(input.closed?input.degree:0);
     require(sections>=2 && (!input.uniform_periodic || sections>=input.degree) && controls>input.degree && input.knot_count==controls+input.degree+1
         && (input.fixed_rows?(input.fixed_count==sections && !input.closed && !input.handles):input.fixed_count==0)
+        && (input.point_grid?(input.amplification && input.amplification_count==sections && !input.fixed_rows && !input.handles && !input.uniform_periodic):
+            (!input.amplification && input.amplification_count==0))
         && input.target_count==unknowns*input.columns && output_count==input.target_count,
         "Invalid interpolation layout");
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
@@ -838,11 +841,12 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     chart.scale(basis);
     for(size_t i=0;i<input.parameter_count;++i)
         require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]
+            || (input.point_grid && input.closed && input.parameters[i]==input.parameters[i-1])
             || (input.fixed_rows && input.fixed_rows[i] && input.fixed_rows[i-1] && input.parameters[i]==input.parameters[i-1])),
             "Invalid interpolation stations");
-    require(chart.scaled(input.parameters[0])>=basis[input.degree]
+    require(input.point_grid || (chart.scaled(input.parameters[0])>=basis[input.degree]
         && chart.scaled(input.parameters[input.parameter_count-1])==basis[controls]
-        && (input.uniform_periodic || chart.scaled(input.parameters[0])==basis[input.degree]),
+        && (input.uniform_periodic || chart.scaled(input.parameters[0])==basis[input.degree])),
         "Interpolation stations differ from the active interval");
 
     // The uniform periodic Greville system is a cyclic band around control
@@ -889,14 +893,22 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
         const double parameter=chart.scaled(input.parameters[i]);
         // Zeroth derivatives honor unclamped periodic endpoints.
         check(N_BasisDerivs(&knots,input.degree,parameter,NL_LEFT,0,rows,&span),"Evaluate native interpolation basis failed");
-        const auto expected=parameter==basis[controls]?controls-1:
-            static_cast<size_t>(std::upper_bound(basis.begin(),basis.end(),parameter)-basis.begin()-1);
+        size_t expected;
+        if(input.point_grid && parameter<=basis[input.degree]) {
+            expected=input.degree;
+            while(expected+1<controls && basis[expected]==basis[expected+1]) ++expected;
+        } else if(parameter>=basis[controls]) {
+            expected=controls-1;
+            while(expected>input.degree && basis[expected]==basis[expected+1]) --expected;
+        } else expected=std::upper_bound(basis.begin(),basis.end(),parameter)-basis.begin()-1;
         require(span==static_cast<NL_INDEX>(expected),"Native interpolation span differs from the exact chart");
         const size_t row=input.uniform_periodic?inverse[i]:
             (input.handles?(i==0?0:(i+1==sections?unknowns-1:i+1)):i);
+        if(input.point_grid) input.amplification[i]=0;
         for(size_t j=0;j<=input.degree;++j) {
             const auto original_column=static_cast<size_t>(span-input.degree)+j;
             require(original_column<controls && std::isfinite(coefficients[j]),"Invalid native interpolation basis coefficient");
+            if(input.point_grid) input.amplification[i]+=std::abs(coefficients[j]);
             const auto folded=input.closed?original_column%sections:original_column;
             const size_t column=input.uniform_periodic?inverse[(folded+sections-shift)%sections]:folded;
             if(full) values[row][column]+=coefficients[j];
@@ -925,7 +937,27 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
             require(pivots[i]>=0 && static_cast<size_t>(pivots[i])<unknowns,"Invalid native interpolation pivot");
             std::swap(targets[i],targets[pivots[i]]);
         }
-        check(N_RealMatrixForBack(&matrix,targets.data(),NL_HPOINT,solution.data(),&stack),
+        if(input.point_grid && full) {
+            // The native scalar solver has no RHS tolerance skip and avoids
+            // out-of-line point blending for every dense LU coefficient.
+            std::vector<double> rhs(unknowns),answer(unknowns);
+            for(size_t c=0;c<4;++c) {
+                for(size_t i=0;i<unknowns;++i) {
+                    const auto &p=targets[i];
+                    const double channels[]={p.x,p.y,p.z,p.w};
+                    rhs[i]=channels[c];
+                }
+                check(N_RealMatrixRightForBack(&matrix,rhs.data(),answer.data()),
+                    "Solve native point-grid scalar channels failed");
+                for(size_t i=0;i<unknowns;++i) {
+                    auto &p=solution[i];
+                    if(c==0) p.x=answer[i];
+                    else if(c==1) p.y=answer[i];
+                    else if(c==2) p.z=answer[i];
+                    else p.w=answer[i];
+                }
+            }
+        } else check(N_RealMatrixForBack(&matrix,targets.data(),NL_HPOINT,solution.data(),&stack),
             "Solve native interpolation homogeneous channels failed");
         for(size_t i=0;i<unknowns;++i) {
             const auto &p=solution[i];

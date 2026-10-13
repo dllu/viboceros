@@ -22,5 +22,8 @@ struct VbInterpolationSystem {
     int closed,handles,uniform_periodic;
     const unsigned char *fixed_rows;
     size_t fixed_count;
+    int point_grid;
+    double *amplification;
+    size_t amplification_count;
 };
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count);

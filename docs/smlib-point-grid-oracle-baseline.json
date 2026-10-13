@@ -1,0 +1,292 @@
+{
+  "reference": "Saved pre-change native oracle; Join behavior is unchanged by point-grid work. Not a Rhino comparison.",
+  "baseline_binary_sha256": "f42256ff8d293f3c606dadf69c299f3784768f07211796269eb63badfcb1aea4",
+  "reports": {
+    "join_boundary_differences": {
+      "cases": 18,
+      "successful_records_unchanged": 18,
+      "identical_failures": [],
+      "fixture_sha256": "8d67d084a85cfeec19b358ccb52453dbf3c3fb1885942176b8d971403be03932"
+    },
+    "join_boundary_matching": {
+      "cases": 142,
+      "successful_records_unchanged": 142,
+      "identical_failures": [],
+      "fixture_sha256": "ce20d37b4ef89a3c2aad3ccf1ee69c72f62ec5ab823b6c0776f858063de296cc"
+    },
+    "join_chord_adjustment": {
+      "cases": 16,
+      "successful_records_unchanged": 16,
+      "identical_failures": [],
+      "fixture_sha256": "3f9eb3219516f0362c620721c79764e6346c99f85309b93737d3fb33219ee45b"
+    },
+    "join_cluster_order": {
+      "cases": 60,
+      "successful_records_unchanged": 60,
+      "identical_failures": [],
+      "fixture_sha256": "f2c28da41cba2eb6e2a5e1e0ea76e4048343ab91690e378545eecde6bfc789a7"
+    },
+    "join_corner_clustering": {
+      "cases": 84,
+      "successful_records_unchanged": 84,
+      "identical_failures": [],
+      "fixture_sha256": "426e5c3d307dd4f5293af79ffbcc660988bdb9fd0c43a211f42f0a901d4b2050"
+    },
+    "join_curved_certificates": {
+      "cases": 48,
+      "successful_records_unchanged": 40,
+      "identical_failures": [
+        "unclamped-Join-pre",
+        "unclamped-Join-post",
+        "unclamped-JoinCopy-pre",
+        "unclamped-JoinCopy-post",
+        "unclamped-canonical-Join-pre",
+        "unclamped-canonical-Join-post",
+        "unclamped-canonical-JoinCopy-pre",
+        "unclamped-canonical-JoinCopy-post"
+      ],
+      "fixture_sha256": "f6ea33ca6f6ae39f3f028b2d2dacc57853152040d3efff6a661d7b7359b01835"
+    },
+    "join_cycles": {
+      "cases": 284,
+      "successful_records_unchanged": 284,
+      "identical_failures": [],
+      "fixture_sha256": "bda4e80d65db47b1d07576a10973a9f108aaf979a890a256e65a287dc26a7d14"
+    },
+    "join_edge_cleanup_degree": {
+      "cases": 8,
+      "successful_records_unchanged": 6,
+      "identical_failures": [
+        "unclamped-uv0-origin0-Join-pre-angle0.0174533",
+        "unclamped-uv1-origin0-Join-pre-angle0.0174533"
+      ],
+      "fixture_sha256": "3d862d6954c35c4e5a967481452a0f9be775cb4c755726f77dead1fe423609eb"
+    },
+    "join_edge_cleanup_resolved": {
+      "cases": 8,
+      "successful_records_unchanged": 6,
+      "identical_failures": [
+        "unclamped-uv0-origin0-Join-pre-angle1e-06",
+        "unclamped-uv1-origin0-Join-pre-angle1e-06"
+      ],
+      "fixture_sha256": "94c012d4b88aafa16800becfe17b3a8d52070fd776a9c8b4be42a519873d98d9"
+    },
+    "join_edge_cleanup_roundoff": {
+      "cases": 8,
+      "successful_records_unchanged": 6,
+      "identical_failures": [
+        "unclamped-uv0-origin0-Join-pre-angle1e-08",
+        "unclamped-uv1-origin0-Join-pre-angle1e-08"
+      ],
+      "fixture_sha256": "d9e21c86a9d82c7cd75e1842ea652a7656f6fd01cd85da1198a7a3955d93328c"
+    },
+    "join_edge_cleanup_tight": {
+      "cases": 8,
+      "successful_records_unchanged": 6,
+      "identical_failures": [
+        "unclamped-uv0-origin0-Join-pre-angle1e-10",
+        "unclamped-uv1-origin0-Join-pre-angle1e-10"
+      ],
+      "fixture_sha256": "f17ebcfd506667537209133b3de977f8a58d65a42b757e76bd0ab94da65c989a"
+    },
+    "join_encodings": {
+      "cases": 352,
+      "successful_records_unchanged": 352,
+      "identical_failures": [],
+      "fixture_sha256": "c3931cea7eb54d4ccc1b241c321cebef29b2f43184898bbf902559f4578d8f51"
+    },
+    "join_gap_chains": {
+      "cases": 4,
+      "successful_records_unchanged": 4,
+      "identical_failures": [],
+      "fixture_sha256": "4c8bdcacdce513f63c4c43c9d85a48367bbe163404dccfe729609f10dadff17d"
+    },
+    "join_gap_matching": {
+      "cases": 88,
+      "successful_records_unchanged": 88,
+      "identical_failures": [],
+      "fixture_sha256": "c5e09c8d21b6f01db00af419642efd1a1c5580a8be7ba6c2c0833461723368e0"
+    },
+    "join_isocurve_certificates": {
+      "cases": 64,
+      "successful_records_unchanged": 16,
+      "identical_failures": [
+        "extrusion-clamped-uv0-origin1e+12-Join-pre",
+        "extrusion-clamped-uv0-origin1e+12-Join-post",
+        "extrusion-clamped-uv0-origin1e+12-JoinCopy-pre",
+        "extrusion-clamped-uv0-origin1e+12-JoinCopy-post",
+        "extrusion-clamped-uv1-origin1e+12-Join-pre",
+        "extrusion-clamped-uv1-origin1e+12-Join-post",
+        "extrusion-clamped-uv1-origin1e+12-JoinCopy-pre",
+        "extrusion-clamped-uv1-origin1e+12-JoinCopy-post",
+        "extrusion-unclamped-uv0-origin0-Join-pre",
+        "extrusion-unclamped-uv0-origin0-Join-post",
+        "extrusion-unclamped-uv0-origin0-JoinCopy-pre",
+        "extrusion-unclamped-uv0-origin0-JoinCopy-post",
+        "extrusion-unclamped-uv1-origin0-Join-pre",
+        "extrusion-unclamped-uv1-origin0-Join-post",
+        "extrusion-unclamped-uv1-origin0-JoinCopy-pre",
+        "extrusion-unclamped-uv1-origin0-JoinCopy-post",
+        "extrusion-unclamped-uv0-origin1e+12-Join-pre",
+        "extrusion-unclamped-uv0-origin1e+12-Join-post",
+        "extrusion-unclamped-uv0-origin1e+12-JoinCopy-pre",
+        "extrusion-unclamped-uv0-origin1e+12-JoinCopy-post",
+        "extrusion-unclamped-uv1-origin1e+12-Join-pre",
+        "extrusion-unclamped-uv1-origin1e+12-Join-post",
+        "extrusion-unclamped-uv1-origin1e+12-JoinCopy-pre",
+        "extrusion-unclamped-uv1-origin1e+12-JoinCopy-post",
+        "tensor-clamped-uv0-origin1e+12-Join-pre",
+        "tensor-clamped-uv0-origin1e+12-Join-post",
+        "tensor-clamped-uv0-origin1e+12-JoinCopy-pre",
+        "tensor-clamped-uv0-origin1e+12-JoinCopy-post",
+        "tensor-clamped-uv1-origin1e+12-Join-pre",
+        "tensor-clamped-uv1-origin1e+12-Join-post",
+        "tensor-clamped-uv1-origin1e+12-JoinCopy-pre",
+        "tensor-clamped-uv1-origin1e+12-JoinCopy-post",
+        "tensor-unclamped-uv0-origin0-Join-pre",
+        "tensor-unclamped-uv0-origin0-Join-post",
+        "tensor-unclamped-uv0-origin0-JoinCopy-pre",
+        "tensor-unclamped-uv0-origin0-JoinCopy-post",
+        "tensor-unclamped-uv1-origin0-Join-pre",
+        "tensor-unclamped-uv1-origin0-Join-post",
+        "tensor-unclamped-uv1-origin0-JoinCopy-pre",
+        "tensor-unclamped-uv1-origin0-JoinCopy-post",
+        "tensor-unclamped-uv0-origin1e+12-Join-pre",
+        "tensor-unclamped-uv0-origin1e+12-Join-post",
+        "tensor-unclamped-uv0-origin1e+12-JoinCopy-pre",
+        "tensor-unclamped-uv0-origin1e+12-JoinCopy-post",
+        "tensor-unclamped-uv1-origin1e+12-Join-pre",
+        "tensor-unclamped-uv1-origin1e+12-Join-post",
+        "tensor-unclamped-uv1-origin1e+12-JoinCopy-pre",
+        "tensor-unclamped-uv1-origin1e+12-JoinCopy-post"
+      ],
+      "fixture_sha256": "2db1e2789f7ddaff5ccd1caa5898272ea21bc9ce5f22a24627174fd4568f443c"
+    },
+    "join_orientation": {
+      "cases": 32,
+      "successful_records_unchanged": 32,
+      "identical_failures": [],
+      "fixture_sha256": "fa2d5ea20fbee675438e85673bfd284c4aa9eb59cbe88cacdb8b55558b095ba0"
+    },
+    "join_orientation_large": {
+      "cases": 32,
+      "successful_records_unchanged": 32,
+      "identical_failures": [],
+      "fixture_sha256": "a5e06e52c38a50e0f41ba4341a5291985b9b69939e269908bb9bda2bd934ca4e"
+    },
+    "join_orientation_tiny": {
+      "cases": 32,
+      "successful_records_unchanged": 32,
+      "identical_failures": [],
+      "fixture_sha256": "bfeaeee1710e869f8cdc668d31633e81df7d34c5fc755c25f505850d232c137d"
+    },
+    "join_projective_correspondence": {
+      "cases": 60,
+      "successful_records_unchanged": 48,
+      "identical_failures": [
+        "speed-16-Join-pre",
+        "speed-16-Join-post",
+        "speed-16-JoinCopy-pre",
+        "speed-16-JoinCopy-post",
+        "unclamped-speed-Join-pre",
+        "unclamped-speed-Join-post",
+        "unclamped-speed-JoinCopy-pre",
+        "unclamped-speed-JoinCopy-post",
+        "stationary-speed-Join-pre",
+        "stationary-speed-Join-post",
+        "stationary-speed-JoinCopy-pre",
+        "stationary-speed-JoinCopy-post"
+      ],
+      "fixture_sha256": "2c3e4f564829786598794270fa9a1268110cd8c9c1d75f23fdbfe8b723999631"
+    },
+    "join_search": {
+      "cases": 48,
+      "successful_records_unchanged": 48,
+      "identical_failures": [],
+      "fixture_sha256": "510e3da53d487a5939e35204c2ec2e158fcb1164775b0e0be5c7eff79e6b56fb"
+    },
+    "join_short_overlaps": {
+      "cases": 102,
+      "successful_records_unchanged": 102,
+      "identical_failures": [],
+      "fixture_sha256": "ad1753884df7919507d3a63ae297db292972485d259bec409bd8cbae0d3a1175"
+    },
+    "join_surface_differences": {
+      "cases": 26,
+      "successful_records_unchanged": 26,
+      "identical_failures": [],
+      "fixture_sha256": "b7342179d0c1adeb983d3023b5520618093eeabe424b10c7f775ff9dc0cfe515"
+    },
+    "join_surface_thresholds": {
+      "cases": 90,
+      "successful_records_unchanged": 90,
+      "identical_failures": [],
+      "fixture_sha256": "96a971de13c117586d7d2224a47a6f0d24f95707eb83d36ee22cb403b3420557"
+    },
+    "join_surfaces": {
+      "cases": 66,
+      "successful_records_unchanged": 66,
+      "identical_failures": [],
+      "fixture_sha256": "6891b698dd4f2fa0f4bfb27703e17ea57033470a972e7579da5361bb032cca9e"
+    },
+    "join_trim_certificates": {
+      "cases": 80,
+      "successful_records_unchanged": 40,
+      "identical_failures": [
+        "quadratic-uv0-origin1e+12-Join-pre",
+        "quadratic-uv0-origin1e+12-Join-post",
+        "quadratic-uv0-origin1e+12-JoinCopy-pre",
+        "quadratic-uv0-origin1e+12-JoinCopy-post",
+        "quadratic-uv1-origin1e+12-Join-pre",
+        "quadratic-uv1-origin1e+12-Join-post",
+        "quadratic-uv1-origin1e+12-JoinCopy-pre",
+        "quadratic-uv1-origin1e+12-JoinCopy-post",
+        "rational-cubic-uv0-origin1e+12-Join-pre",
+        "rational-cubic-uv0-origin1e+12-Join-post",
+        "rational-cubic-uv0-origin1e+12-JoinCopy-pre",
+        "rational-cubic-uv0-origin1e+12-JoinCopy-post",
+        "rational-cubic-uv1-origin1e+12-Join-pre",
+        "rational-cubic-uv1-origin1e+12-Join-post",
+        "rational-cubic-uv1-origin1e+12-JoinCopy-pre",
+        "rational-cubic-uv1-origin1e+12-JoinCopy-post",
+        "unclamped-uv0-origin0-Join-pre",
+        "unclamped-uv0-origin0-Join-post",
+        "unclamped-uv0-origin0-JoinCopy-pre",
+        "unclamped-uv0-origin0-JoinCopy-post",
+        "unclamped-uv1-origin0-Join-pre",
+        "unclamped-uv1-origin0-Join-post",
+        "unclamped-uv1-origin0-JoinCopy-pre",
+        "unclamped-uv1-origin0-JoinCopy-post",
+        "unclamped-uv0-origin1e+12-Join-pre",
+        "unclamped-uv0-origin1e+12-Join-post",
+        "unclamped-uv0-origin1e+12-JoinCopy-pre",
+        "unclamped-uv0-origin1e+12-JoinCopy-post",
+        "unclamped-uv1-origin1e+12-Join-pre",
+        "unclamped-uv1-origin1e+12-Join-post",
+        "unclamped-uv1-origin1e+12-JoinCopy-pre",
+        "unclamped-uv1-origin1e+12-JoinCopy-post",
+        "multispan-uv0-origin1e+12-Join-pre",
+        "multispan-uv0-origin1e+12-Join-post",
+        "multispan-uv0-origin1e+12-JoinCopy-pre",
+        "multispan-uv0-origin1e+12-JoinCopy-post",
+        "multispan-uv1-origin1e+12-Join-pre",
+        "multispan-uv1-origin1e+12-Join-post",
+        "multispan-uv1-origin1e+12-JoinCopy-pre",
+        "multispan-uv1-origin1e+12-JoinCopy-post"
+      ],
+      "fixture_sha256": "78696efd713e79c0904cb984fe23ecd15c6d86d598f72189de5ecf985488d390"
+    },
+    "join_weight_seams": {
+      "cases": 192,
+      "successful_records_unchanged": 192,
+      "identical_failures": [],
+      "fixture_sha256": "5b6d0718fed82396374c6d938199b662f96ca8d365fc627703ac4e2151655dd3"
+    },
+    "join_workflow": {
+      "cases": 140,
+      "successful_records_unchanged": 140,
+      "identical_failures": [],
+      "fixture_sha256": "ef5fa6dc9815a3ad73cbd193766f44e44516d2e05556a255f83ea52ec25ac4e5"
+    }
+  }
+}

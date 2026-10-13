@@ -1443,6 +1443,7 @@ samples. `edge_surface_3dm_interchange.json` separately checks both readers of t
 same native-written files, without changing the serialized basis.
 
 `point_grid.json` checks [point-grid surface construction](point-grid-surfaces.md),
+selecting the [native producer](smlib-point-grid.md) when `native-smlib` is enabled,
 including native domains, full coefficients, active samples, and actual
 construction-site samples (including closed-direction continuation).
 `point_grid_command.json` checks every output face and retained point-cloud

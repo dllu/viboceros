@@ -54,11 +54,34 @@ fn input_points(fixture: &PointGridFixture) -> Result<Vec<Point3>, ProbeError> {
         .collect::<Result<Vec<_>, _>>()?)
 }
 
-fn build(fixture: &PointGridFixture, points: &[Point3]) -> Result<NurbsSurface, GeometryError> {
+fn build(fixture: &PointGridFixture, points: &[Point3]) -> Result<NurbsSurface, ProbeError> {
     if fixture.control {
-        NurbsSurface::try_control_point_grid(points, fixture.count, fixture.degree)
+        Ok(NurbsSurface::try_control_point_grid(
+            points,
+            fixture.count,
+            fixture.degree,
+        )?)
     } else {
-        NurbsSurface::try_through_point_grid(points, fixture.count, fixture.degree, fixture.closed)
+        #[cfg(feature = "native-smlib")]
+        {
+            viboceros_smlib::interpolate_point_grid(
+                points,
+                fixture.count,
+                fixture.degree,
+                fixture.closed,
+            )
+            .map_err(CommandError::from)
+            .map_err(ProbeError::from)
+        }
+        #[cfg(not(feature = "native-smlib"))]
+        {
+            Ok(NurbsSurface::try_through_point_grid(
+                points,
+                fixture.count,
+                fixture.degree,
+                fixture.closed,
+            )?)
+        }
     }
 }
 
@@ -70,13 +93,24 @@ pub(super) fn build_brep(
     Ok(if fixture.control {
         Brep::try_control_point_grid(&points, fixture.count, fixture.degree, tolerance)?
     } else {
-        Brep::try_through_point_grid(
+        #[cfg(feature = "native-smlib")]
+        let result = viboceros_smlib::point_grid_brep(
             &points,
             fixture.count,
             fixture.degree,
             fixture.closed,
             tolerance,
-        )?
+        )
+        .map_err(CommandError::from)?;
+        #[cfg(not(feature = "native-smlib"))]
+        let result = Brep::try_through_point_grid(
+            &points,
+            fixture.count,
+            fixture.degree,
+            fixture.closed,
+            tolerance,
+        )?;
+        result
     })
 }
 

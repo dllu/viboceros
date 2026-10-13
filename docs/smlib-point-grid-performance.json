@@ -1,0 +1,42 @@
+{
+  "platform": "Linux-7.0.0-1019-nvidia-aarch64-with-glibc2.39",
+  "processor": "aarch64",
+  "iterations": 5,
+  "runs": 3,
+  "measurement": "Median of three alternating backend runs, each with five timed API constructions after one warmup; shared station preparation and independent tensor audits included, serialization excluded. Local throughput diagnostic, no Rhino speed claim.",
+  "fixture_sha256": "105e9923aa5afe657d87081175983110a12818a9d449a54199c588847729075a",
+  "cases": [
+    {
+      "id": "256x256-closed-00",
+      "prechange_portable_ns": 35567196.0,
+      "native_ns": 36540618.4,
+      "native_over_portable": 1.027368544880513,
+      "portable_runs_ns": [
+        35567196.0,
+        35678585.0,
+        35444504.4
+      ],
+      "native_runs_ns": [
+        36386160.4,
+        36540618.4,
+        36738209.2
+      ]
+    },
+    {
+      "id": "64x64-closed-11",
+      "prechange_portable_ns": 1871363.4,
+      "native_ns": 4077968.8,
+      "native_over_portable": 2.1791431851237446,
+      "portable_runs_ns": [
+        1870877.0,
+        1881440.2,
+        1871363.4
+      ],
+      "native_runs_ns": [
+        4079316.0,
+        4049120.8,
+        4077968.8
+      ]
+    }
+  ]
+}

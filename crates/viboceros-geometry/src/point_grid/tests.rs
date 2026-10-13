@@ -173,3 +173,29 @@ fn point_grid_solves_preserve_large_translations_and_extreme_uniform_scales() {
         }
     }
 }
+
+#[test]
+fn delegated_point_grid_rejects_invalid_amplification_layout_and_wrong_geometry() {
+    let points = grid(3, 3);
+    for (columns, amplification) in [
+        (0, vec![1.; 3]),
+        (4, vec![]),
+        (4, vec![f64::INFINITY; 3]),
+        (4, vec![0.; 3]),
+        (4, vec![1.; 3]),
+    ] {
+        let result = NurbsSurface::try_through_point_grid_with_solver(
+            &points,
+            [3; 2],
+            [2; 2],
+            [true; 2],
+            &mut |job| {
+                Ok::<_, GeometryError>(PointGridInterpolationSolution {
+                    controls: vec![0.; job.parameters.len() * columns],
+                    amplification: amplification.clone(),
+                })
+            },
+        );
+        assert!(result.is_err());
+    }
+}

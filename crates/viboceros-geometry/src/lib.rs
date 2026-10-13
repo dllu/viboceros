@@ -89,6 +89,7 @@ mod point;
 mod point2;
 mod point_cloud;
 mod point_grid;
+pub use point_grid::{PointGridInterpolationSolution, PointGridInterpolationSystem};
 mod point_projection;
 mod polycurve;
 mod polyline;

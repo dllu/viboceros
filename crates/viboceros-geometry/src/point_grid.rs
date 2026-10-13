@@ -3,8 +3,25 @@
 use crate::{Brep, GeometryError, NurbsSurface, Point3, Real, Tolerance, require_finite};
 use faer::{Mat, prelude::*};
 
+/// A complete point-grid collocation job. Closed directions fold repeated
+/// control columns and may constrain continued boundary-span polynomials.
+pub struct PointGridInterpolationSystem<'a> {
+    pub degree: usize,
+    pub knots: &'a [Real],
+    pub parameters: &'a [Real],
+    pub closed: bool,
+    pub columns: usize,
+    pub targets: &'a [Real],
+}
+
+pub struct PointGridInterpolationSolution {
+    pub controls: Vec<Real>,
+    /// Sum of absolute unfurled basis coefficients at every station.
+    pub amplification: Vec<Real>,
+}
+
 type TensorSolver<'a, E> =
-    dyn FnMut(&crate::NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E> + 'a;
+    dyn FnMut(&PointGridInterpolationSystem<'_>) -> Result<PointGridInterpolationSolution, E> + 'a;
 
 mod basis;
 mod orientation;
@@ -38,6 +55,22 @@ impl Brep {
     ) -> Result<Self, GeometryError> {
         let surface = NurbsSurface::try_through_point_grid(points, count, degree, closed)?;
         command_brep(&surface, tolerance)
+    }
+    /// Construct command topology through the same producer and shared
+    /// crease/orientation policy as the portable point-grid command.
+    pub fn try_through_point_grid_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        count: [usize; 2],
+        degree: [usize; 2],
+        closed: [bool; 2],
+        tolerance: Tolerance,
+        solve: &mut impl FnMut(
+            &PointGridInterpolationSystem<'_>,
+        ) -> Result<PointGridInterpolationSolution, E>,
+    ) -> Result<Self, E> {
+        let surface =
+            NurbsSurface::try_through_point_grid_with_solver(points, count, degree, closed, solve)?;
+        Ok(command_brep(&surface, tolerance)?)
     }
 }
 
@@ -112,7 +145,34 @@ impl NurbsSurface {
         degree: [usize; 2],
         solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
     ) -> Result<Self, E> {
-        Self::try_through_point_grid_impl(points, count, degree, [false; 2], Some(solve))
+        Self::try_through_point_grid_with_solver(points, count, degree, [false; 2], &mut |input| {
+            let system = crate::NurbsInterpolationSystem {
+                degree: input.degree,
+                knots: input.knots,
+                parameters: input.parameters,
+                periodic: false,
+                columns: input.columns,
+                targets: input.targets,
+            };
+            Ok(PointGridInterpolationSolution {
+                controls: solve(&system)?,
+                amplification: vec![1.; input.parameters.len()],
+            })
+        })
+    }
+
+    /// Delegate both open/closed basis producers and solves while retaining
+    /// knot/station policy, repeated controls and independent evaluator audits.
+    pub fn try_through_point_grid_with_solver<E: From<GeometryError>>(
+        points: &[Point3],
+        count: [usize; 2],
+        degree: [usize; 2],
+        closed: [bool; 2],
+        solve: &mut impl FnMut(
+            &PointGridInterpolationSystem<'_>,
+        ) -> Result<PointGridInterpolationSolution, E>,
+    ) -> Result<Self, E> {
+        Self::try_through_point_grid_impl(points, count, degree, closed, Some(solve))
     }
 
     fn try_through_point_grid_impl<E: From<GeometryError>>(
@@ -123,7 +183,7 @@ impl NurbsSurface {
         solve: Option<&mut TensorSolver<'_, E>>,
     ) -> Result<Self, E> {
         let degree = validate(points, count, degree, closed)?;
-        let [u, v] = [
+        let [mut u, mut v] = [
             basis::Direction::new(points, count, 0, degree[0], closed[0], solve.is_none())?,
             basis::Direction::new(points, count, 1, degree[1], closed[1], solve.is_none())?,
         ];
@@ -147,15 +207,41 @@ impl NurbsSurface {
                 .iter()
                 .map(|p| std::array::from_fn(|k| (p.to_array()[k] - origin[k]) / scale))
                 .collect::<Vec<_>>();
+            let mut amplification = [Vec::new(), Vec::new()];
+            let mut axis = 0;
             let controls = crate::surface_rebuild::interpolate_tensor_local(
                 &local,
                 count,
                 degree,
                 [&u.knots, &v.knots],
                 [&u.parameters, &v.parameters],
-                [false; 2],
-                solve,
+                closed,
+                &mut |system| {
+                    let result = solve(&PointGridInterpolationSystem {
+                        degree: system.degree,
+                        knots: system.knots,
+                        parameters: system.parameters,
+                        closed: system.periodic,
+                        columns: system.columns,
+                        targets: system.targets,
+                    })?;
+                    if result.amplification.len() != system.parameters.len()
+                        || result
+                            .amplification
+                            .iter()
+                            .any(|v| !v.is_finite() || *v <= 0.)
+                    {
+                        return Err(GeometryError::InvalidPointGrid {
+                            context: "backend returned invalid basis amplification",
+                        }
+                        .into());
+                    }
+                    amplification[axis] = result.amplification;
+                    axis += 1;
+                    Ok::<_, E>(result.controls)
+                },
             )?;
+            [u.amplification, v.amplification] = amplification;
             Mat::from_fn(count[1], count[0] * 3, |j, i| {
                 controls[j * count[0] + i / 3][i % 3]
             })
