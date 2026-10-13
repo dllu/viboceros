@@ -63,3 +63,7 @@ Regression coverage includes all natural edge orientations, mixed continuity,
 unequal rational spline bases/domains, trimming, joining, cancellation, stale
 previews, undo/redo and OpenNURBS 3DM readback. The supplied ASTRA V3 collar
 fixture also checks the independent minimum-jerk transition across a 41×41 grid.
+
+With `native-smlib`, parent trimming, clamping, degree matching and knot matching
+use usd-brep's existing checked editors. The exact boundary construction and
+command behavior stay shared; see [native preparation](../smlib-surface-blend.md).

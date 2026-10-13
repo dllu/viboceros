@@ -13,6 +13,8 @@ mod construction;
 
 mod curve_offset;
 pub use curve_offset::{curve_offset_operations, offset_curve_parts, offset_curve_through_point};
+mod surface_blend;
+pub use surface_blend::{blend_surfaces, trim_blend_parent};
 mod morph_preview;
 pub use morph_preview::{morph_preview_operations, prepare_morph_preview_curve};
 mod knot_refinement;

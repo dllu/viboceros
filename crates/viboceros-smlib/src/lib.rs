@@ -11,7 +11,7 @@ mod native;
 #[cfg(feature = "native")]
 pub use native::{
     BooleanOperation, Error, KernelCurve, Shape, Solid, SolidProperties, StitchResult,
-    Tessellation, average_match_curve_ends, change_curve_degree, change_curve_seam,
+    Tessellation, average_match_curve_ends, blend_surfaces, change_curve_degree, change_curve_seam,
     change_surface_degree, change_surface_seam, curve_bezier_spans, curve_offset_operations,
     curve_tweens, fit_curve, fit_sweep_model_surface, insert_curve_knot, insert_surface_knot,
     interpolate_affine_greville, interpolate_curve, interpolate_curve_for_command,
@@ -22,6 +22,6 @@ pub use native::{
     rebuild_surface, remove_curve_knot, remove_curve_multiple_knots, remove_surface_knot,
     remove_surface_multiple_knots, split_curve, split_curve_at_parameters, split_surface, subcurve,
     subcurve_at_arc_length, surface_isocurve, surface_single_span_patches, surface_tweens,
-    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_curve,
-    trim_surface, trim_surface_direction,
+    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_blend_parent,
+    trim_curve, trim_surface, trim_surface_direction,
 };

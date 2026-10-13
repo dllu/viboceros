@@ -2,7 +2,6 @@
 use super::*;
 use viboceros_geometry::{
     SurfaceBlendContinuity, SurfaceBlendDiagnostics, SurfaceBlendOptions, SurfaceExtensionEdge,
-    try_blend_nurbs_surfaces,
 };
 
 #[cfg(test)]
@@ -273,6 +272,13 @@ pub fn prepare(
         } else {
             ranges[axis] = start..=(end - (end - start) * options.trims[i]);
         }
+        #[cfg(feature = "native-smlib")]
+        let surface = viboceros_smlib::trim_blend_parent(
+            face.surface(),
+            ranges[0].clone(),
+            ranges[1].clone(),
+        )?;
+        #[cfg(not(feature = "native-smlib"))]
         let surface = face
             .surface()
             .try_trimmed(ranges[0].clone(), ranges[1].clone())?;
@@ -292,7 +298,11 @@ pub fn prepare(
         surfaces.push(surface);
         breps.push(parent);
     }
-    let result = try_blend_nurbs_surfaces(
+    #[cfg(feature = "native-smlib")]
+    let construct = viboceros_smlib::blend_surfaces;
+    #[cfg(not(feature = "native-smlib"))]
+    let construct = viboceros_geometry::try_blend_nurbs_surfaces;
+    let result = construct(
         &surfaces[0],
         edges[0],
         &surfaces[1],

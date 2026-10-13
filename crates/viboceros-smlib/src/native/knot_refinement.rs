@@ -930,7 +930,7 @@ fn clamp_curve(source: &NurbsCurve) -> Result<NurbsCurve, Error> {
     insert_curve_knot(&result, *domain.end(), target)
 }
 
-fn clamp_surface_direction(
+pub(super) fn clamp_surface_direction(
     source: &NurbsSurface,
     direction: SurfaceKnotDirection,
 ) -> Result<NurbsSurface, Error> {

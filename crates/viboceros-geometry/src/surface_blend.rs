@@ -69,6 +69,33 @@ fn error(context: &'static str) -> GeometryError {
     GeometryError::InvalidSurfaceBlend { context }
 }
 
+/// Delegate exact parent preparation while retaining the boundary jet and
+/// Hermite construction policies. Refinement acts on the oriented U basis.
+type ElevateSurface<'a, E> = dyn FnMut(&NurbsSurface, [usize; 2]) -> Result<NurbsSurface, E> + 'a;
+
+pub struct SurfaceBlendOperations<'a, E> {
+    pub clamp: &'a mut dyn FnMut(&NurbsSurface) -> Result<NurbsSurface, E>,
+    pub elevate: &'a mut ElevateSurface<'a, E>,
+    pub refine: &'a mut dyn FnMut(&NurbsSurface, Real, usize) -> Result<NurbsSurface, E>,
+}
+
+fn portable_clamp(source: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {
+    source.try_clamped_to_active_domain()
+}
+fn portable_elevate(
+    source: &NurbsSurface,
+    degree: [usize; 2],
+) -> Result<NurbsSurface, GeometryError> {
+    source.try_change_degree(degree[0], degree[1], false)
+}
+fn portable_refine(
+    source: &NurbsSurface,
+    parameter: Real,
+    target: usize,
+) -> Result<NurbsSurface, GeometryError> {
+    source.try_insert_knot_u(parameter, target)
+}
+
 /// Blends two complete natural boundaries, preserving rational boundary
 /// positions and requested differential jets over their entire common basis.
 /// Different degrees, knots, domain lengths, weights and parent sizes are
@@ -85,17 +112,42 @@ pub fn try_blend_nurbs_surfaces(
     options: SurfaceBlendOptions,
     tolerance: Tolerance,
 ) -> Result<SurfaceBlendResult, GeometryError> {
+    try_blend_nurbs_surfaces_with_operations(
+        first,
+        first_edge,
+        second,
+        second_edge,
+        options,
+        tolerance,
+        &mut SurfaceBlendOperations {
+            clamp: &mut portable_clamp,
+            elevate: &mut portable_elevate,
+            refine: &mut portable_refine,
+        },
+    )
+}
+
+/// Preserve blend policy with delegated clamping, exact elevation and refinement.
+pub fn try_blend_nurbs_surfaces_with_operations<E: From<GeometryError>>(
+    first: &NurbsSurface,
+    first_edge: SurfaceExtensionEdge,
+    second: &NurbsSurface,
+    second_edge: SurfaceExtensionEdge,
+    options: SurfaceBlendOptions,
+    tolerance: Tolerance,
+    operations: &mut SurfaceBlendOperations<'_, E>,
+) -> Result<SurfaceBlendResult, E> {
     if options.bulges.iter().any(|v| !v.is_finite() || *v <= 0.) {
-        return Err(error("bulges must be positive finite numbers"));
+        return Err(error("bulges must be positive finite numbers").into());
     }
     if [first, second].iter().any(|s| {
         s.control_points().len() > MAX_INPUT_CONTROLS || s.degree_u() > 64 || s.degree_v() > 64
     }) {
-        return Err(error("parent surface exceeds the control budget"));
+        return Err(error("parent surface exceeds the control budget").into());
     }
     let mut parents = [
-        orient(first, first_edge, true)?,
-        orient(second, second_edge, false)?,
+        orient_with_clamp(first, first_edge, true, operations.clamp)?,
+        orient_with_clamp(second, second_edge, false, operations.clamp)?,
     ];
     let reverse = match options.reverse_second {
         Some(reverse) => reverse,
@@ -115,7 +167,7 @@ pub fn try_blend_nurbs_surfaces(
             .try_reversed_u()?
             .try_reparameterized(0.0..=1., 0.0..=1.)?;
     }
-    compatible(&mut parents)?;
+    compatible(&mut parents, operations)?;
     let degree = options.continuity[0].order() + options.continuity[1].order() + 1;
     let count_u = parents[0].control_point_count_u();
     let origin = parents[0]
@@ -189,12 +241,22 @@ pub fn try_blend_nurbs_surfaces(
     })
 }
 
+#[cfg(test)]
 fn orient(
     surface: &NurbsSurface,
     edge: SurfaceExtensionEdge,
     first: bool,
 ) -> Result<NurbsSurface, GeometryError> {
-    let mut s = surface.try_clamped_to_active_domain()?;
+    orient_with_clamp(surface, edge, first, &mut portable_clamp)
+}
+
+fn orient_with_clamp<E: From<GeometryError>>(
+    surface: &NurbsSurface,
+    edge: SurfaceExtensionEdge,
+    first: bool,
+    clamp: &mut dyn FnMut(&NurbsSurface) -> Result<NurbsSurface, E>,
+) -> Result<NurbsSurface, E> {
+    let mut s = clamp(surface)?;
     if matches!(
         edge,
         SurfaceExtensionEdge::West | SurfaceExtensionEdge::East
@@ -208,7 +270,7 @@ fn orient(
     if lower == first {
         s = s.try_reversed_v()?;
     }
-    s.try_reparameterized(0.0..=1., 0.0..=1.)
+    Ok(s.try_reparameterized(0.0..=1., 0.0..=1.)?)
 }
 
 fn groups(s: &NurbsSurface) -> Vec<(Real, usize)> {
@@ -227,7 +289,10 @@ fn groups(s: &NurbsSurface) -> Vec<(Real, usize)> {
     }
     groups
 }
-fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
+fn compatible<E: From<GeometryError>>(
+    parents: &mut [NurbsSurface; 2],
+    operations: &mut SurfaceBlendOperations<'_, E>,
+) -> Result<(), E> {
     let degree = parents[0].degree_u().max(parents[1].degree_u());
     let mut work = 0usize;
     for s in parents.iter_mut() {
@@ -240,7 +305,7 @@ fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
         if count > MAX_EDGE_CONTROLS
             || count.saturating_mul(s.control_point_count_v()) > MAX_INPUT_CONTROLS
         {
-            return Err(error("compatible parent basis exceeds the control budget"));
+            return Err(error("compatible parent basis exceeds the control budget").into());
         }
         if degree != s.degree_u() {
             work = work.saturating_add(
@@ -250,10 +315,10 @@ fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
                     .saturating_mul(degree),
             );
             if work > MAX_WORK {
-                return Err(error("compatible parent basis exceeds the work budget"));
+                return Err(error("compatible parent basis exceeds the work budget").into());
             }
         }
-        *s = s.try_change_degree(degree, s.degree_v(), false)?;
+        *s = (operations.elevate)(s, [degree, s.degree_v()])?;
     }
     let mut union = groups(&parents[0]);
     for (k, m) in groups(&parents[1]) {
@@ -270,7 +335,7 @@ fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
             .iter()
             .any(|s| count.saturating_mul(s.control_point_count_v()) > MAX_INPUT_CONTROLS)
     {
-        return Err(error("compatible parent basis exceeds the control budget"));
+        return Err(error("compatible parent basis exceeds the control budget").into());
     }
     for s in parents.iter_mut() {
         let existing = groups(s);
@@ -290,7 +355,7 @@ fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
                 .saturating_mul(insertions),
         );
         if work > MAX_WORK {
-            return Err(error("compatible parent basis exceeds the work budget"));
+            return Err(error("compatible parent basis exceeds the work budget").into());
         }
         for &(k, m) in &union {
             if existing
@@ -298,12 +363,12 @@ fn compatible(parents: &mut [NurbsSurface; 2]) -> Result<(), GeometryError> {
                 .find(|&&(t, _)| t == k)
                 .is_none_or(|&(_, n)| n < m)
             {
-                *s = s.try_insert_knot_u(k, m)?;
+                *s = (operations.refine)(s, k, m)?;
             }
         }
     }
     if parents[0].knots_u() != parents[1].knots_u() {
-        return Err(error("boundary bases could not be aligned"));
+        return Err(error("boundary bases could not be aligned").into());
     }
     Ok(())
 }
