@@ -97,13 +97,14 @@ impl Grid {
     pub(in crate::morph) fn morphed(
         &self,
         morph: &(impl PointMorph + ?Sized),
+        solver: Option<MorphInterpolationSolver>,
     ) -> Result<NurbsSurface, GeometryError> {
         let targets = self
             .targets
             .iter()
             .map(|p| morph.morph_point(*p))
             .collect::<Result<Vec<_>, _>>()?;
-        self.solve_targets(&targets, None, morph.interpolation_solver())
+        self.solve_targets(&targets, None, solver)
     }
 
     fn solve_targets(

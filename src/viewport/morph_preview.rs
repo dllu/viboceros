@@ -180,16 +180,16 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
             } else {
                 if source.cage.is_none() {
                     source.cage = Some(match &*source.snapshot {
-                        Geometry::Brep(b) => Cage::Brep(BrepWireCage::try_new_with_solver(
+                        Geometry::Brep(b) => Cage::Brep(BrepWireCage::try_new_with_operations(
                             b,
                             source.density,
                             document.tolerance(),
-                            morph.interpolation_solver(),
+                            viboceros_command::morph_preview_operations(),
                         )?),
                         Geometry::NurbsSurface(s) => {
-                            Cage::Surface(Box::new(SurfacePreviewCage::try_new_with_solver(
+                            Cage::Surface(Box::new(SurfacePreviewCage::try_new_with_operations(
                                 s,
-                                morph.interpolation_solver(),
+                                viboceros_command::morph_preview_operations(),
                             )?))
                         }
                         Geometry::Point(_) | Geometry::PointCloud(_) | Geometry::Mesh(_) => {
@@ -199,7 +199,7 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                             let c = g
                                 .nurbs_curve_representation()?
                                 .expect("curve geometry has a NURBS representation");
-                            Cage::Curve(c.try_change_degree(c.degree().max(3), false)?)
+                            Cage::Curve(viboceros_command::prepare_morph_preview_curve(&c)?)
                         }
                     });
                 }
@@ -287,11 +287,11 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
                     let curves = match (&*source.snapshot, &*object.geometry.geometry) {
                         (Geometry::Brep(b), _) => {
                             if source.boundary_cage.is_none() {
-                                source.boundary_cage = Some(BrepWireCage::try_new_with_solver(
+                                source.boundary_cage = Some(BrepWireCage::try_new_with_operations(
                                     b,
                                     -1,
                                     document.tolerance(),
-                                    morph.interpolation_solver(),
+                                    viboceros_command::morph_preview_operations(),
                                 )?);
                             }
                             source
@@ -338,12 +338,25 @@ impl<K: MorphPreviewKey> MorphPreviewCache<K> {
 fn surface_boundaries(
     s: &viboceros_geometry::NurbsSurface,
 ) -> Result<Vec<NurbsCurve>, viboceros_geometry::GeometryError> {
-    Ok(vec![
-        s.isocurve_u(*s.domain_v().start())?,
-        s.isocurve_u(*s.domain_v().end())?,
-        s.isocurve_v(*s.domain_u().start())?,
-        s.isocurve_v(*s.domain_u().end())?,
-    ])
+    if let Some(operations) = viboceros_command::morph_preview_operations() {
+        use viboceros_geometry::SurfaceKnotDirection::{U, V};
+        [
+            (U, *s.domain_v().start()),
+            (U, *s.domain_v().end()),
+            (V, *s.domain_u().start()),
+            (V, *s.domain_u().end()),
+        ]
+        .into_iter()
+        .map(|(direction, t)| (operations.isocurve)(s, direction, t))
+        .collect()
+    } else {
+        Ok(vec![
+            s.isocurve_u(*s.domain_v().start())?,
+            s.isocurve_u(*s.domain_v().end())?,
+            s.isocurve_v(*s.domain_u().start())?,
+            s.isocurve_v(*s.domain_u().end())?,
+        ])
+    }
 }
 
 fn display_with_boundaries(

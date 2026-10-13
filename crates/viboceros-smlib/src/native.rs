@@ -10,6 +10,9 @@ use viboceros_geometry::{
 };
 mod brep;
 mod construction;
+
+mod morph_preview;
+pub use morph_preview::{morph_preview_operations, prepare_morph_preview_curve};
 mod knot_refinement;
 pub use knot_refinement::{
     average_match_curve_ends, change_curve_degree, change_curve_seam, change_surface_degree,

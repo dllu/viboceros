@@ -35,6 +35,29 @@ mod rotation_policy;
 pub mod taper;
 pub mod twist;
 use rotation_policy::command_rotation;
+/// Native preview preparation and extraction, when that feature is enabled.
+pub fn morph_preview_operations() -> Option<viboceros_geometry::MorphPreviewOperations> {
+    #[cfg(feature = "native-smlib")]
+    {
+        Some(viboceros_smlib::morph_preview_operations())
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        None
+    }
+}
+
+pub fn prepare_morph_preview_curve(source: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::prepare_morph_preview_curve(source)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        source.try_change_degree(source.degree().max(3), false)
+    }
+}
+
 /// Shared producer selected for command execution and readonly morph previews.
 pub fn morph_interpolation_solver() -> Option<viboceros_geometry::MorphInterpolationSolver> {
     #[cfg(feature = "native-smlib")]

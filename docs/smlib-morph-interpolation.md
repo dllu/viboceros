@@ -34,7 +34,9 @@ recentering. Backend errors retain their native message through
 nonfinite values are rejected before returning geometry.
 
 Preview constructors accept the optional solver so cached native cages prepare
-stations alone. Prepare them for the same solver selected by their point morph.
+stations alone. Cages now retain the preparation solver; a point morph can
+override it with its own solver. [Native preview operations](smlib-morph-preview.md)
+also supply template elevation, isocurve extraction and wire trimming.
 Mouse motion then maps cached points and uses native solving;
 these cages remain display approximations. Preserved structures, rigid
 transforms, identity operations, mesh/point maps and candidate control nets

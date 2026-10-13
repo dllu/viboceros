@@ -538,6 +538,17 @@ issues reported by NVIDIA that have not all been reproduced here.
   no continuous error bound or arbitrary-conditioning qualification is claimed.
   Internal Sweep1/Pipe fitting now shares the native producer. Fresh Rhino fitting captures remain
   pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
+- **Prepared morph previews reuse checked editing/extraction adapters.**
+  Curve and surface template elevation, standalone curve cages, B-rep isocurve
+  extraction and wire-interval trimming now share usd-brep producers. Native
+  elevation across independent full-order pieces admits the tested discontinuous
+  low-degree curve and surface preview cases that portable preparation rejects.
+  Shared sample, fixed-control, trim-hole, boundary and display budgets remain.
+  Prepared cages retain their interpolation producer when the supplied point
+  map has no override. Editing/extraction above degree 17 retains existing
+  portable producers; the earlier mixed-degree interpolation limit remains.
+  These are display approximations, not accepted or continuously certified
+  model geometry. See [native preview preparation](smlib-morph-preview.md).
 - **Morph fitting retains shared approximation policy around native solving.**
   Bend, Twist, Taper, Maelstrom and deformable OrientOnSrf reuse native fixed-row
   banded interpolation for adaptive cubic and rational degree-3/6/9 candidates,
@@ -644,6 +655,18 @@ issues reported by NVIDIA that have not all been reproduced here.
   General native skin replacement is not qualified. Source:
   [NL_SrfAdv.cpp](../third_party/usd-brep/source/SMLib/src/NL_SrfAdv.cpp) and
   [section matching](smlib-section-bases.md).
+- **Fixed: shared chart conditioning omitted some knots and trim/interpolation
+  queries.** Native annulus preview wires exposed subnormal source knot entries
+  beside a moderate domain. The binary chart previously checked reversibility
+  of source knots only when a scalar-query list was supplied; interpolation
+  supplied no list. Curve trimming and refinement also omitted requested
+  parameters from chart selection. The shared helper now always preserves every
+  source knot, and interpolation supplies every station, trim supplies both
+  boundaries, and refinement supplies its requested knot. Regressions retain
+  exact subnormal domains and fixed-row targets, alongside independent trim
+  samples and complete annulus preview wires. This repairs an adapter defect;
+  upstream tolerances and exact-span guards are unchanged. It is not a general
+  mixed-range or conditioning guarantee. See [preview preparation](smlib-morph-preview.md).
 - **Fixed: isocurve chart conditioning rejected subnormal near-boundary queries.**
   Planar trimmed-face closest-point and density paths can supply nonzero
   subnormal parameters or knots next to zero. Scaling a moderate fixed-axis

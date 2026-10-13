@@ -4,12 +4,27 @@ use super::surface_fit::tensor::Grid;
 use super::*;
 use faer::Mat;
 
+/// Geometry producers used by prepared display cages; mapping and trim policy
+/// remain shared. Function pointers keep the geometry crate independent of a
+/// particular kernel and let a prepared cage retain its selected producer.
+#[derive(Clone, Copy)]
+pub struct MorphPreviewOperations {
+    pub interpolate: MorphInterpolationSolver,
+    pub elevate_curve: fn(&NurbsCurve, usize) -> Result<NurbsCurve, GeometryError>,
+    pub elevate_surface: fn(&NurbsSurface, usize, usize) -> Result<NurbsSurface, GeometryError>,
+    pub isocurve:
+        fn(&NurbsSurface, crate::SurfaceKnotDirection, Real) -> Result<NurbsCurve, GeometryError>,
+    pub trim_curve:
+        fn(&NurbsCurve, std::ops::RangeInclusive<Real>) -> Result<NurbsCurve, GeometryError>,
+}
+
 /// Low-degree polynomial B-rep edges use a cubic interpolant of mapped Greville
 /// samples. Higher-degree and rational edges retain a mapped control cage.
 /// Standalone command curves can use a different preview preparation policy.
 pub struct CurvePreviewCage {
     source: NurbsCurve,
     samples: Option<(Axis, Vec<Point3>)>,
+    solver: Option<MorphInterpolationSolver>,
 }
 impl CurvePreviewCage {
     pub fn try_new(source: &NurbsCurve) -> Result<Self, GeometryError> {
@@ -19,13 +34,35 @@ impl CurvePreviewCage {
         source: &NurbsCurve,
         solver: Option<MorphInterpolationSolver>,
     ) -> Result<Self, GeometryError> {
+        Self::prepare(source, solver, None)
+    }
+    pub fn try_new_with_operations(
+        source: &NurbsCurve,
+        operations: Option<MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
+        Self::prepare(source, operations.map(|o| o.interpolate), operations)
+    }
+    fn prepare(
+        source: &NurbsCurve,
+        solver: Option<MorphInterpolationSolver>,
+        operations: Option<MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
         let samples = if source.degree() < 3 && !source.is_rational() {
             if source.control_points().len() > MAX_MORPH_CURVE_CONTROL_POINTS {
                 return Err(GeometryError::TooManyMorphCurveControlPoints {
                     maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
                 });
             }
-            let template = source.try_change_degree(3, false)?;
+            let template = if let Some(operations) = operations {
+                (operations.elevate_curve)(source, 3)?
+            } else {
+                source.try_change_degree(3, false)?
+            };
+            if template.degree() != 3 || template.domain() != source.domain() {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "inconsistent curve preview elevation",
+                });
+            }
             if template.control_points().len() > MAX_MORPH_CURVE_CONTROL_POINTS {
                 return Err(GeometryError::TooManyMorphCurveControlPoints {
                     maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
@@ -44,6 +81,7 @@ impl CurvePreviewCage {
         Ok(Self {
             source: source.clone(),
             samples,
+            solver,
         })
     }
     pub fn morphed_curve(
@@ -74,7 +112,7 @@ impl CurvePreviewCage {
                 targets[i].to_array()[j] - origin[j]
             }),
             3,
-            morph.interpolation_solver(),
+            morph.interpolation_solver().or(self.solver),
         )?;
         let controls = axis
             .stations
@@ -99,6 +137,7 @@ impl CurvePreviewCage {
 pub struct SurfacePreviewCage {
     source: NurbsSurface,
     samples: Option<Grid>,
+    solver: Option<MorphInterpolationSolver>,
 }
 impl SurfacePreviewCage {
     pub fn try_new(source: &NurbsSurface) -> Result<Self, GeometryError> {
@@ -108,6 +147,19 @@ impl SurfacePreviewCage {
         source: &NurbsSurface,
         solver: Option<MorphInterpolationSolver>,
     ) -> Result<Self, GeometryError> {
+        Self::prepare(source, solver, None)
+    }
+    pub fn try_new_with_operations(
+        source: &NurbsSurface,
+        operations: Option<MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
+        Self::prepare(source, operations.map(|o| o.interpolate), operations)
+    }
+    fn prepare(
+        source: &NurbsSurface,
+        solver: Option<MorphInterpolationSolver>,
+        operations: Option<MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
         let samples = if (source.degree_u() < 3 || source.degree_v() < 3) && !source.is_rational() {
             if source.control_point_count_u() > MAX_MORPH_SURFACE_AXIS_CONTROLS
                 || source.control_point_count_v() > MAX_MORPH_SURFACE_AXIS_CONTROLS
@@ -116,11 +168,20 @@ impl SurfacePreviewCage {
                     maximum: MAX_MORPH_SURFACE_AXIS_CONTROLS,
                 });
             }
-            let template = source.try_change_degree(
-                source.degree_u().max(3),
-                source.degree_v().max(3),
-                false,
-            )?;
+            let degree = [source.degree_u().max(3), source.degree_v().max(3)];
+            let template = if let Some(operations) = operations {
+                (operations.elevate_surface)(source, degree[0], degree[1])?
+            } else {
+                source.try_change_degree(degree[0], degree[1], false)?
+            };
+            if [template.degree_u(), template.degree_v()] != degree
+                || template.domain_u() != source.domain_u()
+                || template.domain_v() != source.domain_v()
+            {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "inconsistent surface preview elevation",
+                });
+            }
             if template.control_point_count_u() > MAX_MORPH_SURFACE_AXIS_CONTROLS
                 || template.control_point_count_v() > MAX_MORPH_SURFACE_AXIS_CONTROLS
             {
@@ -139,6 +200,7 @@ impl SurfacePreviewCage {
         Ok(Self {
             source: source.clone(),
             samples,
+            solver,
         })
     }
     pub fn morphed_surface(
@@ -147,7 +209,7 @@ impl SurfacePreviewCage {
         preserve: bool,
     ) -> Result<NurbsSurface, GeometryError> {
         if let Some(samples) = self.samples.as_ref().filter(|_| !preserve) {
-            samples.morphed(morph)
+            samples.morphed(morph, morph.interpolation_solver().or(self.solver))
         } else {
             morph.morph_nurbs_surface_controls(&self.source)
         }

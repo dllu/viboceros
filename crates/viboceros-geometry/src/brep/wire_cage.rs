@@ -20,6 +20,7 @@ struct FaceCage {
 pub struct BrepWireCage {
     edges: Vec<CurvePreviewCage>,
     faces: Vec<FaceCage>,
+    operations: Option<crate::MorphPreviewOperations>,
 }
 
 impl BrepWireCage {
@@ -36,6 +37,29 @@ impl BrepWireCage {
         tolerance: Tolerance,
         solver: Option<crate::MorphInterpolationSolver>,
     ) -> Result<Self, GeometryError> {
+        Self::prepare(brep, wire_density, tolerance, solver, None)
+    }
+    pub fn try_new_with_operations(
+        brep: &Brep,
+        wire_density: i32,
+        tolerance: Tolerance,
+        operations: Option<crate::MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
+        Self::prepare(
+            brep,
+            wire_density,
+            tolerance,
+            operations.map(|o| o.interpolate),
+            operations,
+        )
+    }
+    fn prepare(
+        brep: &Brep,
+        wire_density: i32,
+        tolerance: Tolerance,
+        solver: Option<crate::MorphInterpolationSolver>,
+        operations: Option<crate::MorphPreviewOperations>,
+    ) -> Result<Self, GeometryError> {
         if !(crate::MIN_SURFACE_WIRE_DENSITY..=crate::MAX_SURFACE_WIRE_DENSITY)
             .contains(&wire_density)
         {
@@ -47,19 +71,30 @@ impl BrepWireCage {
         let edges = brep
             .edges
             .iter()
-            .map(|e| CurvePreviewCage::try_new_with_solver(&e.curve, solver))
+            .map(|e| {
+                if operations.is_some() {
+                    CurvePreviewCage::try_new_with_operations(&e.curve, operations)
+                } else {
+                    CurvePreviewCage::try_new_with_solver(&e.curve, solver)
+                }
+            })
             .collect::<Result<Vec<_>, _>>()?;
         if wire_density < 0 {
             return Ok(Self {
                 edges,
                 faces: Vec::new(),
+                operations,
             });
         }
         let mut faces = Vec::with_capacity(brep.faces.len());
         let mut wire_count = edges.len();
         for face in &brep.faces {
             let frame = face.local_parameter_frame()?;
-            let surface = SurfacePreviewCage::try_new_with_solver(&frame.face.surface, solver)?;
+            let surface = if operations.is_some() {
+                SurfacePreviewCage::try_new_with_operations(&frame.face.surface, operations)?
+            } else {
+                SurfacePreviewCage::try_new_with_solver(&frame.face.surface, solver)?
+            };
             let mut wires = Vec::new();
             for (varying, parameters) in [
                 (0, frame.face.surface.wire_parameters_v(wire_density)?),
@@ -84,7 +119,11 @@ impl BrepWireCage {
             }
             faces.push(FaceCage { surface, wires });
         }
-        Ok(Self { edges, faces })
+        Ok(Self {
+            edges,
+            faces,
+            operations,
+        })
     }
 
     pub fn morphed_wires(
@@ -100,12 +139,28 @@ impl BrepWireCage {
         for face in &self.faces {
             let surface = face.surface.morphed_surface(morph, preserve_structure)?;
             for iso in &face.wires {
-                let curve = if iso.varying == 0 {
+                let curve = if let Some(operations) = self.operations {
+                    let direction = if iso.varying == 0 {
+                        crate::SurfaceKnotDirection::U
+                    } else {
+                        crate::SurfaceKnotDirection::V
+                    };
+                    (operations.isocurve)(&surface, direction, iso.fixed)?
+                } else if iso.varying == 0 {
                     surface.isocurve_u(iso.fixed)?
                 } else {
                     surface.isocurve_v(iso.fixed)?
                 };
-                for curve in trim_isocurve_to_intervals(curve, iso.intervals.clone())? {
+                let curves = if let Some(operations) = self.operations {
+                    trim_isocurve_to_intervals_with_extractor(
+                        curve,
+                        iso.intervals.clone(),
+                        &mut |c, interval| (operations.trim_curve)(c, interval),
+                    )?
+                } else {
+                    trim_isocurve_to_intervals(curve, iso.intervals.clone())?
+                };
+                for curve in curves {
                     push_brep_wire(&mut wires, curve)?;
                 }
             }

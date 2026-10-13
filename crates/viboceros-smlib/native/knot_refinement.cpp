@@ -18,11 +18,13 @@ void check(NL_FLAG status, const char *message) { require(status == NL_NO, messa
 
 struct BinaryChart {
     int exponent;
-    BinaryChart(const double *knots,size_t count,std::initializer_list<double> parameters={}) {
+    BinaryChart(const double *knots,size_t count,std::initializer_list<double> parameters={})
+        : BinaryChart(knots,count,parameters.begin(),parameters.size()) {}
+    BinaryChart(const double *knots,size_t count,const double *parameters,size_t parameter_count) {
         double maximum=0;
         for(size_t i=0;i<count;++i) maximum=std::max(maximum,std::abs(knots[i]));
         std::frexp(maximum,&exponent);
-        if(parameters.size()) {
+        {
             // A valid closest-parameter query can be subnormal beside zero.
             // Do not force a downward scale that loses that exact coordinate
             // (or a source knot); retain a smaller reversible binary scale.
@@ -31,7 +33,7 @@ struct BinaryChart {
             };
             while(exponent>0 &&
                   (!std::all_of(knots,knots+count,reversible) ||
-                   !std::all_of(parameters.begin(),parameters.end(),reversible))) --exponent;
+                   (parameter_count && !std::all_of(parameters,parameters+parameter_count,reversible)))) --exponent;
         }
     }
     double scaled(double value) const {
@@ -368,7 +370,7 @@ VbSurfaceData *vb_refine_nurbs(const VbNurbsData &data, int axis, double paramet
             "Inserted knot control resource limit");
     std::vector<NL_CPOINT> points;
     const int exponent = controls(data, points);
-    const BinaryChart chart(knots,data.knot_count[axis]);
+    const BinaryChart chart(knots,data.knot_count[axis],{parameter});
     std::vector<double> query_knots(knots,knots+data.knot_count[axis]);
     chart.scale(query_knots);
     VbNurbsData query=data;
@@ -653,7 +655,7 @@ VbSurfaceData *vb_trim_nurbs_curve(const VbNurbsData &data,double start,double e
         output.knots[0]=full+first;output.points_xyzw=data.points_xyzw+4*first;
         return vb_copy_nurbs_payload(output);
     }
-    const BinaryChart chart(full,data.knot_count[0]);
+    const BinaryChart chart(full,data.knot_count[0],{start,end});
     std::vector<double> basis(full,full+data.knot_count[0]);
     chart.scale(basis);
     std::vector<NL_CPOINT> points;
@@ -839,7 +841,7 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
     for(size_t i=0;i<basis.size();++i)
         require(std::isfinite(basis[i]) && (!i || basis[i]>=basis[i-1]),"Invalid interpolation knot vector");
-    const BinaryChart chart(input.knots,input.knot_count);
+    const BinaryChart chart(input.knots,input.knot_count,input.parameters,input.parameter_count);
     chart.scale(basis);
     for(size_t i=0;i<input.parameter_count;++i)
         require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]
