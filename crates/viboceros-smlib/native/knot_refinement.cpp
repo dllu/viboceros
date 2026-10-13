@@ -768,7 +768,7 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
 
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count) {
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=1001 && input.columns>0 && input.columns<=2048 && input.columns%4==0
+        && input.parameter_count<=(input.fixed_rows?4096:1001) && input.columns>0 && input.columns<=2048 && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
         && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
         && (input.uniform_periodic==0 || input.uniform_periodic==1)
@@ -777,6 +777,7 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     const size_t sections=input.parameter_count-input.closed;
     const size_t unknowns=sections+2*input.handles,controls=unknowns+(input.closed?input.degree:0);
     require(sections>=2 && (!input.uniform_periodic || sections>=input.degree) && controls>input.degree && input.knot_count==controls+input.degree+1
+        && (input.fixed_rows?(input.fixed_count==sections && !input.closed && !input.handles):input.fixed_count==0)
         && input.target_count==unknowns*input.columns && output_count==input.target_count,
         "Invalid interpolation layout");
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
@@ -815,7 +816,7 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     };
     const bool full=input.closed && !input.uniform_periodic;
     const size_t half_width=std::min(unknowns-1,input.uniform_periodic?2*(input.degree/2):
-        (input.handles?2:input.degree));
+        (input.handles || (input.fixed_rows && input.degree==3)?2:input.degree));
     const size_t matrix_width=full?unknowns:2*half_width+1;
     NL_STACKS stack;
     SmStackHandler cleanup(&stack);
@@ -827,6 +828,10 @@ void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,si
     for(size_t i=0;i<unknowns;++i) std::fill_n(values[i],matrix_width,0.0);
     NL_KNOTVECTOR knots={static_cast<NL_INDEX>(basis.size()-1),basis.data()};
     for(size_t i=0;i<sections;++i) {
+        if(input.fixed_rows) {
+            require(input.fixed_rows[i]<=1,"Invalid fixed interpolation row");
+            if(input.fixed_rows[i]) {values[i][half_width]=1.;continue;}
+        }
         double coefficients[NL_MAXDEG+1],*rows[]={coefficients};
         NL_INDEX span;
         const double parameter=chart.scaled(input.parameters[i]);

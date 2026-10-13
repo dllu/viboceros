@@ -28,6 +28,10 @@ and `refit` for direct Viboceros control/Refit comparisons. Rhino references for
 these modes use retained bounded command captures; the installed RhinoCommon
 API exposes only sampled tween construction. See
 [native TweenSurfaces](smlib-surface-tween.md).
+The existing `curve_fit_geometry` operation selects native fixed-row fitting
+with `native-smlib`. The 50-case `curve_fit_native.json` corpus compares that
+producer with the saved portable implementation; fresh SDK capture remains
+pending. See [native fitting qualification](smlib-curve-fit.md).
 
 The [block workflow protocol](block-workflow-oracle.md) records definition-local
 members, nested placements, shared redefinition and both explosion depths using

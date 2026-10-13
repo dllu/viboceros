@@ -71,6 +71,8 @@ for all degrees 1–11, including reordered periodic bands and command previews.
 and batches the same banded tensor interpolation across all rows of each axis.
 [TweenSurfaces](smlib-surface-tween.md) uses native forced-open rebuilding,
 exact basis edits and sampled point-grid solving for all three matching modes.
+[FitCrv](smlib-curve-fit.md) reuses native fixed-row banded interpolation while
+retaining adaptive sampling, kink and endpoint-handle policy.
 
 ## Reproduce the native trial
 

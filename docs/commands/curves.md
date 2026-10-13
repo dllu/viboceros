@@ -168,8 +168,10 @@ Kink and endpoint tangents use [exact one-sided limits](../curve-sided-evaluatio
 including stationary points with a nonzero higher derivative.
 Failing spans are bisected rather than inserting knots at their worst sampled
 point, which could cluster knots and leave large gaps unresolved. Cubic fits use
-a banded solve with exact endpoint/kink handle constraints; other degrees use
-dense full-pivot solves. Repeated error checks cache exact floating-point source
+a banded solve with exact endpoint/kink handle constraints. Linux `native-smlib`
+builds use usd-brep basis and banded solving for all degrees; portable builds
+retain dense full-pivot solves for other degrees. See [native FitCrv](../smlib-curve-fit.md).
+Repeated error checks cache exact floating-point source
 distances locally (at most 32,768 points), without quantization. Accuracy remains
 sampled, with a 4,096-control cubic budget and 512-control budget for other
 degrees; exhaustion is an error, not a relaxed tolerance.

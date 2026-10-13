@@ -13,7 +13,7 @@ mod construction;
 mod knot_refinement;
 pub use knot_refinement::{
     change_curve_degree, change_curve_seam, change_surface_degree, change_surface_seam,
-    curve_bezier_spans, insert_curve_knot, insert_surface_knot, interpolate_curve,
+    curve_bezier_spans, fit_curve, insert_curve_knot, insert_surface_knot, interpolate_curve,
     interpolate_curve_for_command, interpolate_open_point_grid, loft_surface,
     make_curve_non_periodic, make_surface_non_periodic, prepare_loft_sections, rebuild_curve,
     rebuild_surface, remove_curve_knot, remove_curve_multiple_knots, remove_surface_knot,

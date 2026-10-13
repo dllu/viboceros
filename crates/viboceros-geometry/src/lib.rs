@@ -154,7 +154,10 @@ pub use curve_fillet_pair::{
     CurveFilletExtensionStyles, try_fillet_curves_joined, try_fillet_curves_joined_with_styles,
     try_fillet_curves_parts, try_fillet_curves_parts_with_styles,
 };
-pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};
+pub use curve_fit::{
+    CurveFitInterpolation, MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve,
+    try_fit_curve_with_solver,
+};
 pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
 pub use curve_match::{CurveMatchPreserveEnd, try_average_match_curve_ends, try_match_curve_end};

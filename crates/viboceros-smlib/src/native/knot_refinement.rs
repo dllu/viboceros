@@ -71,6 +71,8 @@ struct InterpolationSystem {
     closed: c_int,
     handles: c_int,
     uniform_periodic: c_int,
+    fixed_rows: *const u8,
+    fixed_count: usize,
 }
 
 fn solve_cubic_system(
@@ -88,6 +90,8 @@ fn solve_cubic_system(
         closed: c_int::from(input.closed),
         handles: c_int::from(!input.closed),
         uniform_periodic: 0,
+        fixed_rows: std::ptr::null(),
+        fixed_count: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -149,6 +153,13 @@ pub fn rebuild_surface(
 fn solve_uniform_system(
     input: &viboceros_geometry::UniformInterpolationSystem<'_>,
 ) -> Result<Vec<f64>, Error> {
+    solve_with_fixed_rows(input, None)
+}
+
+fn solve_with_fixed_rows(
+    input: &viboceros_geometry::NurbsInterpolationSystem<'_>,
+    fixed: Option<&[u8]>,
+) -> Result<Vec<f64>, Error> {
     let view = InterpolationSystem {
         knots: input.knots.as_ptr(),
         parameters: input.parameters.as_ptr(),
@@ -161,12 +172,33 @@ fn solve_uniform_system(
         closed: c_int::from(input.periodic),
         handles: 0,
         uniform_periodic: c_int::from(input.periodic),
+        fixed_rows: fixed.map_or(std::ptr::null(), |f| f.as_ptr()),
+        fixed_count: fixed.map_or(0, |f| f.len()),
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
         vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
     })?;
     Ok(output)
+}
+
+/// Adaptive degree-one/cubic/general polynomial fit, with shared arc-length,
+/// kink, tangent and refinement policies around native fixed-row solving.
+pub fn fit_curve(
+    source: viboceros_geometry::CurveRef<'_>,
+    degree: usize,
+    fit_tolerance: f64,
+    angle_tolerance: f64,
+    numerical_tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    viboceros_geometry::try_fit_curve_with_solver(
+        source,
+        degree,
+        fit_tolerance,
+        angle_tolerance,
+        numerical_tolerance,
+        &mut |input| solve_with_fixed_rows(&input.system, Some(input.fixed_rows)),
+    )
 }
 
 /// Interpolate an open mean-chord point grid using the existing native basis

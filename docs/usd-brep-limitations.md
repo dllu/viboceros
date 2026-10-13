@@ -486,6 +486,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **FitCrv retains adaptive and fixed-handle policy around native solving.**
+  Its endpoint and internal kink handles are control constraints, so the adapter
+  supplies identity rows alongside native Greville basis rows. Cubic systems
+  keep five-wide storage; other degrees use native banded LU instead of the
+  application's reduced dense solve. The fixed-row adapter allows 4,096 stations,
+  while other native interpolation jobs retain their previous bounds. FitCrv
+  keeps the existing 4,096/512 control budgets and sampled acceptance policy;
+  no continuous error bound or arbitrary-conditioning qualification is claimed.
+  Internal Sweep1 fits remain portable. Fresh Rhino fitting captures remain
+  pending Wine licensing startup. See [native FitCrv](smlib-curve-fit.md).
 - **TweenSurfaces retains measured matching policy around native operations.**
   Compatible control nets bypass rebuilding; unequal nets repeat native
   forced-open Rebuild before every output. Refit uses native clamping,

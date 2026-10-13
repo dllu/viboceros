@@ -34,3 +34,27 @@ pub(super) fn through_points(
         &mut command_curve,
     )
 }
+
+pub(super) fn fit_curve(
+    source: CurveRef<'_>,
+    degree: usize,
+    fit_tolerance: Real,
+    angle_tolerance: Real,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::fit_curve(source, degree, fit_tolerance, angle_tolerance, tolerance)
+            .map_err(knot_refinement::native_geometry_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::try_fit_curve(
+            source,
+            degree,
+            fit_tolerance,
+            angle_tolerance,
+            tolerance,
+        )?)
+    }
+}

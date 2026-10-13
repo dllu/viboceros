@@ -40,7 +40,7 @@ use viboceros_geometry::{
     NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
     TriangleMesh, UnitVector3, Vector3, WeightedPoint3, sort_and_cull_points, try_catenary,
-    try_fit_curve, try_tween_nurbs_curves,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -5211,14 +5211,25 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let angle_tolerance = angle_tolerance_radians.unwrap_or(tolerance.angular());
-            let (curve, elapsed) = measure(iterations, || {
-                try_fit_curve(
+            let (curve, elapsed) = measure_probe(iterations, || {
+                #[cfg(feature = "native-smlib")]
+                let result = viboceros_smlib::fit_curve(
                     CurveRef::NurbsCurve(&source),
                     black_box(*degree),
                     black_box(*fit_tolerance),
                     black_box(angle_tolerance),
                     tolerance,
                 )
+                .map_err(CommandError::from);
+                #[cfg(not(feature = "native-smlib"))]
+                let result = viboceros_geometry::try_fit_curve(
+                    CurveRef::NurbsCurve(&source),
+                    black_box(*degree),
+                    black_box(*fit_tolerance),
+                    black_box(angle_tolerance),
+                    tolerance,
+                );
+                result.map_err(ProbeError::from)
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
         }

@@ -20,6 +20,15 @@ const MAX_DENSE_CURVE_FIT_CONTROL_POINTS: usize = 512;
 const CURVE_FIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
 const MAX_CACHED_FIT_POINTS: usize = 32_768;
 
+/// Shared adaptive fit targets. A nonzero mask row fixes that control directly;
+/// remaining rows interpolate at the supplied Greville stations. Targets use
+/// translated local homogeneous channels, with polynomial weights equal to one.
+pub struct CurveFitInterpolation<'a> {
+    pub system: crate::NurbsInterpolationSystem<'a>,
+    pub fixed_rows: &'a [u8],
+}
+type FitSolver<'a, E> = dyn FnMut(&CurveFitInterpolation<'_>) -> Result<Vec<Real>, E> + 'a;
+
 #[derive(Clone, Copy, Debug)]
 struct FitBreak {
     distance: Real,
@@ -41,19 +50,58 @@ pub fn try_fit_curve(
     angle_tolerance_radians: Real,
     numerical_tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_fit_curve_impl(
+        source,
+        degree,
+        fit_tolerance,
+        angle_tolerance_radians,
+        numerical_tolerance,
+        None,
+    )
+}
+
+/// Retain adaptive fitting and handle policy while delegating control solving
+/// to the caller's basis/interpolation backend. Degree-one paths stay direct.
+pub fn try_fit_curve_with_solver<E: From<GeometryError>>(
+    source: CurveRef<'_>,
+    degree: usize,
+    fit_tolerance: Real,
+    angle_tolerance_radians: Real,
+    numerical_tolerance: Tolerance,
+    solve: &mut impl FnMut(&CurveFitInterpolation<'_>) -> Result<Vec<Real>, E>,
+) -> Result<NurbsCurve, E> {
+    try_fit_curve_impl(
+        source,
+        degree,
+        fit_tolerance,
+        angle_tolerance_radians,
+        numerical_tolerance,
+        Some(solve),
+    )
+}
+
+fn try_fit_curve_impl<E: From<GeometryError>>(
+    source: CurveRef<'_>,
+    degree: usize,
+    fit_tolerance: Real,
+    angle_tolerance_radians: Real,
+    numerical_tolerance: Tolerance,
+    mut solve: Option<&mut FitSolver<'_, E>>,
+) -> Result<NurbsCurve, E> {
     if degree == 0 || degree > MAX_CURVE_FIT_DEGREE {
         return Err(GeometryError::InvalidCurveFitDegree {
             actual: degree,
             maximum: MAX_CURVE_FIT_DEGREE,
-        });
+        }
+        .into());
     }
     if !fit_tolerance.is_finite() || fit_tolerance <= 0.0 {
-        return Err(GeometryError::InvalidCurveFitTolerance);
+        return Err(GeometryError::InvalidCurveFitTolerance.into());
     }
     if !angle_tolerance_radians.is_finite()
         || !(0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians)
     {
-        return Err(GeometryError::InvalidCurveFitAngleTolerance);
+        return Err(GeometryError::InvalidCurveFitAngleTolerance.into());
     }
     let maximum_controls = if degree == 3 {
         MAX_CURVE_FIT_CONTROL_POINTS
@@ -93,7 +141,8 @@ pub fn try_fit_curve(
                 if midpoint <= interval[0] || midpoint >= interval[1] {
                     return Err(GeometryError::Degenerate {
                         context: "quadratic curve fit span",
-                    });
+                    }
+                    .into());
                 }
                 breaks.push(FitBreak {
                     distance: midpoint,
@@ -113,10 +162,11 @@ pub fn try_fit_curve(
         if control_count > maximum_controls {
             return Err(GeometryError::TooManyCurveFitControlPoints {
                 maximum: maximum_controls,
-            });
+            }
+            .into());
         }
         let knots = fit_knots(degree, total_length, &breaks, control_count);
-        let approximation = interpolate_fit(&sampler, degree, &knots, &kinks)?;
+        let approximation = interpolate_fit(&sampler, degree, &knots, &kinks, &mut solve)?;
         let errors =
             sampled_span_errors(&sampler, &approximation, total_length, &breaks, &mut points)?;
         let maximum_deviation = errors
@@ -133,7 +183,8 @@ pub fn try_fit_curve(
                 tolerance: fit_tolerance,
                 deviation: maximum_deviation,
                 maximum: maximum_controls,
-            });
+            }
+            .into());
         }
         let mut refinements = errors
             .into_iter()
@@ -152,7 +203,8 @@ pub fn try_fit_curve(
                 tolerance: fit_tolerance,
                 deviation: maximum_deviation,
                 maximum: maximum_controls,
-            });
+            }
+            .into());
         }
     }
 }
@@ -187,18 +239,19 @@ fn fit_knots(
     knots
 }
 
-fn interpolate_fit(
+fn interpolate_fit<E: From<GeometryError>>(
     sampler: &ArcLengthSampler<'_>,
     degree: usize,
     knots: &[Real],
     kinks: &[ArcLengthKink],
-) -> Result<NurbsCurve, GeometryError> {
+    solve: &mut Option<&mut FitSolver<'_, E>>,
+) -> Result<NurbsCurve, E> {
     let control_count = knots.len() - degree - 1;
     if degree == 1 {
         let controls = (0..control_count)
             .map(|index| sampler.point_at_distance(knots[index + 1]))
             .collect::<Result<Vec<_>, _>>()?;
-        return NurbsCurve::try_new(degree, controls, knots.to_vec());
+        return Ok(NurbsCurve::try_new(degree, controls, knots.to_vec())?);
     }
 
     let mut controls = vec![None; control_count];
@@ -207,20 +260,94 @@ fn interpolate_fit(
         constrain_kink_handles(sampler, degree, knots, kink, &mut controls)?;
     }
 
-    if degree == 3 {
+    if let Some(solve) = solve.as_deref_mut() {
+        solve_external_fit_controls(sampler, degree, knots, &mut controls, solve)?;
+    } else if degree == 3 {
         solve_cubic_fit_controls(sampler, knots, &mut controls)?;
     } else {
         solve_dense_fit_controls(sampler, degree, knots, &mut controls)?;
     }
 
-    NurbsCurve::try_new(
+    Ok(NurbsCurve::try_new(
         degree,
         controls
             .into_iter()
             .map(|point| point.expect("all curve-fit controls are constrained or solved"))
             .collect(),
         knots.to_vec(),
-    )
+    )?)
+}
+
+fn solve_external_fit_controls<E: From<GeometryError>>(
+    sampler: &ArcLengthSampler<'_>,
+    degree: usize,
+    knots: &[Real],
+    controls: &mut [Option<Point3>],
+    solve: &mut FitSolver<'_, E>,
+) -> Result<(), E> {
+    if controls.iter().all(Option::is_some) {
+        return Ok(());
+    }
+    let origin = controls[0].unwrap().to_array();
+    let parameters = (0..controls.len())
+        .map(|i| {
+            if i == 0 {
+                Ok(knots[degree])
+            } else if i + 1 == controls.len() {
+                Ok(knots[controls.len()])
+            } else {
+                greville_parameter(knots, degree, i)
+            }
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let fixed_rows = controls
+        .iter()
+        .map(|p| u8::from(p.is_some()))
+        .collect::<Vec<_>>();
+    let mut targets = Vec::with_capacity(controls.len() * 4);
+    for (i, &t) in parameters.iter().enumerate() {
+        let p = if let Some(p) = controls[i] {
+            p
+        } else {
+            sampler.point_at_distance(t)?
+        };
+        let xyz = p.to_array();
+        targets.extend([
+            xyz[0] - origin[0],
+            xyz[1] - origin[1],
+            xyz[2] - origin[2],
+            1.,
+        ]);
+    }
+    let system = crate::NurbsInterpolationSystem {
+        degree,
+        knots,
+        parameters: &parameters,
+        periodic: false,
+        columns: 4,
+        targets: &targets,
+    };
+    let output = crate::surface_rebuild::checked_solve(&system, &mut |_| {
+        solve(&CurveFitInterpolation {
+            system: crate::NurbsInterpolationSystem {
+                degree,
+                knots,
+                parameters: &parameters,
+                periodic: false,
+                columns: 4,
+                targets: &targets,
+            },
+            fixed_rows: &fixed_rows,
+        })
+    })?;
+    for (i, control) in controls.iter_mut().enumerate() {
+        if control.is_none() {
+            *control = Some(Point3::try_from(std::array::from_fn(|k| {
+                output[i * 4 + k] + origin[k]
+            }))?);
+        }
+    }
+    Ok(())
 }
 
 fn solve_cubic_fit_controls(
@@ -442,6 +569,58 @@ fn stable_midpoint(start: Real, end: Real) -> Real {
 mod tests {
     use super::*;
     use crate::{LineSegment, Polyline3, WeightedPoint3};
+
+    #[test]
+    fn external_fit_solver_observes_fixed_rows_and_direct_paths_bypass_it() {
+        let line = LineSegment::try_new(point(0., 0., 0.), point(10., 0., 0.), Tolerance::DEFAULT)
+            .unwrap();
+        let mut calls = 0;
+        let result = try_fit_curve_with_solver(
+            CurveRef::Line(&line),
+            5,
+            0.001,
+            0.1,
+            Tolerance::DEFAULT,
+            &mut |input| -> Result<Vec<Real>, GeometryError> {
+                calls += 1;
+                assert_eq!(input.fixed_rows, &[1, 1, 0, 0, 1, 1]);
+                assert_eq!(input.system.columns, 4);
+                assert!(input.system.targets.chunks_exact(4).all(|p| p[3] == 1.));
+                // Linear precision independently gives these Bezier controls.
+                Ok(input.system.targets.to_vec())
+            },
+        )
+        .unwrap();
+        assert_eq!(calls, 1);
+        for (i, p) in result.control_points().iter().enumerate() {
+            assert_eq!(p.point(), point(2. * i as Real, 0., 0.));
+        }
+        for degree in [1, 3] {
+            try_fit_curve_with_solver(
+                CurveRef::Line(&line),
+                degree,
+                0.001,
+                0.1,
+                Tolerance::DEFAULT,
+                &mut |_| -> Result<Vec<Real>, GeometryError> {
+                    panic!("fully constrained fit entered solver")
+                },
+            )
+            .unwrap();
+        }
+        let invalid = try_fit_curve_with_solver(
+            CurveRef::Line(&line),
+            5,
+            0.001,
+            0.1,
+            Tolerance::DEFAULT,
+            &mut |_| -> Result<Vec<Real>, GeometryError> { Ok(Vec::new()) },
+        );
+        assert!(matches!(
+            invalid,
+            Err(GeometryError::InvalidControlNet { .. })
+        ));
+    }
 
     #[test]
     fn cubic_full_circle_refit_reaches_default_sweep_tolerance() {

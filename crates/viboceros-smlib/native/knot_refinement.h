@@ -20,5 +20,7 @@ struct VbInterpolationSystem {
     size_t knot_count,parameter_count,columns,target_count;
     size_t degree;
     int closed,handles,uniform_periodic;
+    const unsigned char *fixed_rows;
+    size_t fixed_count;
 };
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count);

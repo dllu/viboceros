@@ -20,7 +20,7 @@ cargo run --release
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
 For solid Booleans, curve extrusion and revolution, planar and edge surfaces, surface
-joining and offsets, NURBS knot/degree editing, point interpolation, curve/surface Rebuild,
+joining and offsets, NURBS knot/degree editing, point interpolation, FitCrv, curve/surface Rebuild,
 TweenSurfaces, section matching, Bezier/span decomposition, segment/isocurve extraction
 and curve/surface seams,
 edge fillets and STEP material regions on Linux,
