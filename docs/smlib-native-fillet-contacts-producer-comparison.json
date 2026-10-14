@@ -7,11 +7,7 @@
   "source_sha256": {
     "tools/usd_brep/fillet_contacts_probe.cpp": "6b714f17212a5acd5a8703181047729795395a875c04948b2b77ad772d6cc028",
     "tools/usd_brep/compare_native_fillet_contacts.py": "f2fe312dec00fb40a5716960623ff8b3ae28904697fed10115938a29e5782b25",
-    "tools/usd_brep/CMakeLists.txt": "da811bea80812a43b0f6557994483f9847d1692f79d1778d2a367183d953a773",
     "crates/viboceros-smlib/native/CMakeLists.txt": "0b386cad397be39b4b756ec98c464e8f38f32c92e070f6459a1d8153927351a7",
-    "crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b",
-    "crates/viboceros-smlib/native/bridge.h": "b029f966bd0ea01dcd1d512c8038f58ca033aaad22243754e06f22380e66095a",
-    "crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53",
     "third_party/patches/usd-brep-curve-fillet-sides.patch": "8c2aa6618b47a6e35c3e531c7d8662f6381300de7765b35bfcf1add3e197d6c3",
     "third_party/patches/usd-brep-curve-fillet-seed.patch": "581de5093ff3799740b5865d8e62e1656d6614c2cf1d38ac61a3645f5ff38157",
     "third_party/patches/usd-brep-curve-fillet-seed-header.patch": "b6ea700f0466bc37a790eada0b8ca0ed3deb34fd30f521bf4d5751929732545c"
@@ -977,5 +973,11 @@
       "passed": true,
       "binary_sha256": "501fc648aac77f85be47bf5786a6d3169c0159a6a7f080b7b0138ded71a4fc8a"
     }
+  },
+  "source_git_sha256": {
+    "957803e9c444158e8570b564226aee766b53c942:tools/usd_brep/CMakeLists.txt": "da811bea80812a43b0f6557994483f9847d1692f79d1778d2a367183d953a773",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.h": "b029f966bd0ea01dcd1d512c8038f58ca033aaad22243754e06f22380e66095a",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53"
   }
 }

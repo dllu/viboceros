@@ -22,6 +22,7 @@
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
 #include <SmCurveFilletExecutive.h>
+#include <SmOffsetCurve.h>
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
@@ -1004,6 +1005,54 @@ extern "C" int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t p
 extern "C" void vb_curve_free(VbCurve *curve) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete curve;
+}
+
+extern "C" int vb_curve_offset_approx(const VbCurve *source,const double normal[3],
+                                      double distance,double tolerance,VbCurve **out,
+                                      char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out && finite3(normal) && std::isfinite(distance)
+            && std::isfinite(tolerance) && tolerance>0,"Invalid offset approximation input");
+        SmVector3d n(normal[0],normal[1],normal[2]);check(n.Unitize(),"normalize offset plane");
+        const auto domain=source->value->GetNaturalInterval();
+        SmTArray<double> breaks;breaks.Add(domain.GetMin());
+        for(double k:source->knots) {
+            if(k>domain.GetMin() && k<domain.GetMax() && k!=breaks.GetLast())breaks.Add(k);
+        }
+        breaks.Add(domain.GetMax());
+        // SmOffsetCurve uses tangent x normal (right); Rust uses normal x tangent (left).
+        class BoundedOffset : public SmOffsetCurve {
+            mutable size_t evaluations=0;
+            void consume() const {
+                require(++evaluations<=128*8192,"Offset approximation exceeds evaluation budget");
+            }
+        public:
+            BoundedOffset(const SmCurve &curve,const SmExtent1d &interval,const SmVector3d &normal,double d)
+                : SmOffsetCurve(3,curve,interval,normal,d) {}
+            SmStatus Evaluate(double t,ULONG count,SmBoolean left,SmVector3d derivatives[],
+                              SmBoolean nonzero=TRUE) const override {
+                consume();return SmOffsetCurve::Evaluate(t,count,left,derivatives,nonzero);
+            }
+            SmStatus EvaluatePoint(double t,SmPoint3d &point) const override {
+                consume();return SmOffsetCurve::EvaluatePoint(t,point);
+            }
+        } offset(*source->value,domain,n,-distance);
+        SmBSplineCurve *raw=nullptr;double gap=0;
+        const auto status=offset.ApproximateCurve(*SmApiGetOrCreateContext(),breaks,tolerance,gap,raw,FALSE,TRUE,FALSE);
+        std::unique_ptr<SmBSplineCurve> result(raw);check(status,"approximate pointwise offset");
+        require(result && std::isfinite(gap) && gap<=tolerance,"Invalid native offset approximation");
+        auto owner=std::make_unique<VbCurve>();owner->degree=result->GetDegree();
+        SmTArray<SmPoint3d> points;SmTArray<double> weights,knots;
+        check(result->GetControlPolygon(points,weights),"export offset controls");
+        require(points.GetSize()<=24577 && (weights.GetSize()==0 || weights.GetSize()==points.GetSize()),"Offset approximation exceeds control budget");
+        for(ULONG i=0;i<points.GetSize();++i) {
+            const auto p=points[i];owner->points.insert(owner->points.end(),{p.x,p.y,p.z,weights.GetSize()?weights[i]:1.});
+        }
+        check(result->GetKnotsAll(knots),"export offset knots");
+        owner->knots.assign(knots.GetDataArray(),knots.GetDataArray()+knots.GetSize());
+        owner->value=std::move(result);*out=owner.release();
+    });
 }
 
 extern "C" int vb_curve_fillet_contacts(const VbCurve *first, const VbCurve *second,

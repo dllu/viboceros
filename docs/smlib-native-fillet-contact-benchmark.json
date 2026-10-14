@@ -9,8 +9,6 @@
     "tools/numerics/compare_native_curve_connections.py": "f95156c7890a889f4e420675c93c97a81365931cc03741dd436d9c417f6642c8",
     "crates/viboceros-geometry/src/polycurve/fillet.rs": "b63a4d6edde997fa567c4bae20d2e00fb1a5aacd321bf6d2366a0bae3adfd17f",
     "crates/viboceros-geometry/src/curve_fillet_operations.rs": "d387da13fbd8d37626696f0e44610179d27fea6fce4ac4c0246762d7cf7527f7",
-    "crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53",
-    "crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b",
     "tools/rhino_oracle/fixtures/curve_fillet_pair.json": "6b170ae8e92f93936f1abd92c05a75f409b0c349eb0734f564b40af53f17bffc",
     "tools/rhino_oracle/fixtures/curve_fillet_pair_parts.json": "4b23558e005186f63728d064a1e75af4f3f6d955d149413f0fdf39a18685e476",
     "tools/rhino_oracle/fixtures/curve_fillet_nonmeeting.json": "e17298dc5deaa7094f5197a7a98057e9af827d073a50203401ccfcc0b43f80dd",
@@ -38202,5 +38200,9 @@
         "elapsed_ns": 7680720
       }
     ]
+  },
+  "source_git_sha256": {
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b"
   }
 }

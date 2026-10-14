@@ -36,7 +36,9 @@ pub(super) fn offset_nurbs_closed_gaps(
     };
     let offsets = sources
         .iter()
-        .map(|source| offset_nurbs_with_closure(source, distance, fallback, tolerance, false))
+        .map(|source| {
+            offset_nurbs_with_closure(source, distance, fallback, tolerance, false, operations)
+        })
         .collect::<Result<Vec<_>, _>>()?;
     let mut trims = offsets
         .iter()

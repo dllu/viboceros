@@ -87,6 +87,9 @@ int vb_curve_sizes(const VbCurve *curve, size_t *degree, size_t *points, size_t 
 int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count, double *knots,
                   size_t knot_count);
 void vb_curve_free(VbCurve *curve);
+int vb_curve_offset_approx(const VbCurve *source, const double normal[3],
+                           double distance, double tolerance, VbCurve **out,
+                           char *error, size_t capacity);
 int vb_curve_fillet_contacts(const VbCurve *first, const VbCurve *second,
                              double radius, double tolerance, double parameters[2],
                              double arc_samples[9], char *error, size_t capacity);

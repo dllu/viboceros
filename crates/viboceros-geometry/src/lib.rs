@@ -188,7 +188,9 @@ pub use curve_match::{
     try_average_match_curve_ends_with_operations, try_match_curve_end,
     try_match_curve_end_with_operations,
 };
-pub use curve_offset::{CurveOffsetCornerStyle, CurveOffsetOperations, CurveOffsetSplit};
+pub use curve_offset::{
+    CurveOffsetCornerStyle, CurveOffsetOperations, CurveOffsetSmooth, CurveOffsetSplit,
+};
 pub use curve_rebuild::{
     CurveRebuildInterpolation, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT,
     try_interpolate_affine_greville_with_solver, try_rebuild_curve,

@@ -90,17 +90,23 @@ issues reported by NVIDIA that have not all been reproduced here.
   This does not establish failure of a geometric closest-distance bound;
   the API has no separate pointwise-error parameter. The same probe records
   native and independent evaluations, respecting unit weights for polynomial
-  output. The shared offset fitter therefore retains its independent pointwise
-  acceptance checks; the convenience sampling producer is not substituted.
+  output. Native smooth offsets instead use `SmOffsetCurve` with the generic
+  `SmCurve::ApproximateCurve` parameter-matching mode, followed by shared
+  independent pointwise acceptance checks. The convenience sampling producer
+  is not substituted. See [qualification](smlib-curve-offset-fit-comparison.json).
 - **General adaptive curve-offset declarations are absent from the default
   kernel build.** `N_CrvOffset`, `N_CrvOffsetApprox` and the constant/variable-
   direction functional producers are inside `#if NLIB_UNUSED`. The default
   shared library exports `N_CrvOffsetPtSampling` and none of those general
   producers; an attempted direct call also fails to link. Enabling the unused
   blocks has not been qualified. This is separate from the sampling defects
-  and limits above. The adapter instead reuses checked native trim/split edits
-  around existing offset fitting and corner policy. See
+  and limits above. The adapter uses the available generic curve approximator
+  plus checked native trim/split edits with shared corner policy. See
   [curve-offset integration](smlib-curve-offset.md).
+  `SmOffsetCurve` itself treats normalized distances below `SM_EFF_ZERO`
+  (`1e-12`) as zero, and its derivative evaluator's zero-distance branch
+  continues after evaluating the base curve. Such distances use the portable
+  fitter. Source: [SmOffsetCurve.cpp](../third_party/usd-brep/source/SMLib/src/SmOffsetCurve.cpp).
 - **Banded LU does not pivot around zero diagonals.** On the independently
   invertible matrix `[[0,1],[1,0]]`, `N_RealMatrixLuDecompose` with banded storage
   returns status `1`; native full partial-pivot LU succeeds. The

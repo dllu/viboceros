@@ -78,7 +78,8 @@ storage and solving for open systems.
 for all degrees 1–11, including reordered periodic bands and command previews.
 [Surface Rebuild](smlib-surface-rebuild.md) reuses native station/pole isocurves
 and batches the same banded tensor interpolation across all rows of each axis.
-[Curve-offset editing](smlib-curve-offset.md) reuses checked native trim/split
+[Curve-offset fitting and editing](smlib-curve-offset.md) reuses the native
+offset evaluator's generic parameter-matching approximation and checked trim/split
 operations for Offset and OffsetMultiple corner construction and through-point
 candidates; source fitting and region policy retain independent checks.
 [Morph preview preparation](smlib-morph-preview.md) reuses checked native

@@ -33,13 +33,26 @@ pub enum CurveOffsetCornerStyle {
     None,
 }
 
-/// Basis editing used while constructing NURBS offset corners. Analytic
-/// geometry, adaptive offset fitting and corner/region policies remain shared.
+/// Basis splitting used while constructing NURBS offset corners.
 pub type CurveOffsetSplit =
     fn(&crate::NurbsCurve, Real) -> Result<(crate::NurbsCurve, crate::NurbsCurve), GeometryError>;
 
+pub type CurveOffsetSmooth = fn(
+    &crate::NurbsCurve,
+    Real,
+    UnitVector3,
+    Tolerance,
+    bool,
+) -> Result<Option<crate::NurbsCurve>, GeometryError>;
+
+/// Optional producers for smooth NURBS offsets and structural edits.
+/// Admission, pointwise fit validation and corner/region policies remain shared.
 #[derive(Clone, Copy)]
 pub struct CurveOffsetOperations {
+    /// `None` retains the shared fitter for a basis the backend cannot import.
+    /// The final argument requests closure; pieces at a closed source's kink
+    /// seam must remain open. Results must preserve the source parameter domain.
+    pub smooth: CurveOffsetSmooth,
     pub trim: fn(
         &crate::NurbsCurve,
         std::ops::RangeInclusive<Real>,
@@ -506,6 +519,7 @@ impl Curve3 {
                     distance,
                     plane_normal,
                     tolerance,
+                    operations,
                 )?))
             }
             Self::Polyline(polyline) => {
@@ -1415,6 +1429,9 @@ fn offset_circle(
     )?
     .try_reparameterized(circle.domain())
 }
+
+#[cfg(test)]
+mod backend_tests;
 
 #[cfg(test)]
 mod tests {

@@ -1,4 +1,4 @@
-//! Structural NURBS edits for shared planar offset fitting and corner policy.
+//! Native pointwise NURBS offset fitting and edits with shared admission/corner policy.
 use super::*;
 use viboceros_geometry::{
     Curve3, CurveOffsetCornerStyle, CurveOffsetOperations, GeometryError, Point3, UnitVector3,
@@ -21,6 +21,10 @@ pub fn curve_offset_operations() -> CurveOffsetOperations {
             } else {
                 curve_bezier_spans(curve).map_err(geometry_error)
             }
+        },
+        smooth: |curve, distance, normal, tolerance, closed| {
+            super::curve_offset_fit::fit(curve, distance, normal, tolerance, closed)
+                .map_err(geometry_error)
         },
         trim: |curve, interval| {
             if curve.degree() > NATIVE_DEGREE_LIMIT {

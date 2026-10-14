@@ -1,0 +1,1666 @@
+{
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "48 actual C ABI analytic parabola/rational-circle cases per job: two charts, three planes, both sides and two tolerances. Exported controls independently evaluated at 1025 stations. Six generic Hermite cases at 4097 stations. Four existing Rhino corner records replayed at their unchanged 1e-7 epsilon; no fresh capture.",
+  "sanitizer_scope": "Complete SMLib, SM_API and C bridge; only process-global context leak accounting disabled.",
+  "passed": true,
+  "source_sha256": {
+    "tools/rhino_oracle/fixtures/curve_offset_corners.json": "ea967fcc2355c22e9cd8f6ad3a26e72e83775fbb1b2a2ca257550a43d5cca92e",
+    "tools/rhino_oracle/observations/curve_offset_corners.json": "357a7f262c886a8f4d7e46fc22b208ba7c77aebd3a6555e4694430107eb90d2b",
+    "tools/usd_brep/qualify_curve_offset_fit.py": "4c8d5865a63b00b2eedebfda609f6a69a53c014621b6647425d076c7fa458692",
+    "tools/usd_brep/CMakeLists.txt": "02854317637376195ad8ad21b0876286f856af99099c766e35039afb40b4d60d",
+    "tools/usd_brep/offset_adapter_probe.cpp": "6ef1b39bbbc141c66eff0862f0d771589cd670c22ace61c300ec618410aa4f93",
+    "tools/usd_brep/offset_hermite_probe.cpp": "e0a86b45be5f3853503b37abaee3b30d56e71eee93b09e77450bf0fb9586fd01",
+    "crates/viboceros-smlib/native/bridge.cpp": "ff4a81dcf7a86e10bfbf85f599129671b0ae71cbbc0ad5c49dba4fb794520eff",
+    "crates/viboceros-smlib/native/bridge.h": "91521437bbfb2287b02b9bb5dcaa3b2cc360f457f3de6a13f9453fe8bddec464",
+    "crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615",
+    "crates/viboceros-smlib/src/native/curve_offset_fit.rs": "02d9db6b1bea56e2b2223db0f5497a2c98a14ec662f3f126b8ba8331151b01d3",
+    "crates/viboceros-smlib/src/native/curve_offset.rs": "30a7170de68c8f36c6fd49c4bf19ef6479fab57719696db98459230e333983ca",
+    "crates/viboceros-smlib/tests/curve_offset_fit.rs": "f1da3099fafa9c6eba2c9386f9e1232476967585b9a32bc0d6e85335d5b9bf85",
+    "crates/viboceros-geometry/src/curve_offset.rs": "5e24d3661a214ae34bbd42a4dd20e0bc4960d2a217953eee584e0e887930933c",
+    "crates/viboceros-geometry/src/curve_offset/nurbs.rs": "8ca6d80dd025eb42607b278b765b40acec7afe45ceaf794541e5a4c9812d11f8",
+    "crates/viboceros-geometry/src/curve_offset/nurbs/closed_offset.rs": "09845b735e6e4680dda9b2518d95da35b7ae2b3af13601861fa212b0520b3ea8",
+    "crates/viboceros-oracle/src/curve_offset.rs": "fedef8b5665765eb1faeb80b4c210e76964d51fa92b1a8d744b46f6f13d2a9ca",
+    "third_party/usd-brep/source/SMLib/src/SmCurve.cpp": "f0c0a7fb5a6d800556bb206a5f0e80ac2c6f0a65edb101c1629ae2a2b33a6b24",
+    "third_party/usd-brep/source/SMLib/src/SmOffsetCurve.cpp": "b85a129c1ed86918657468c4463e556fa0b5e1662c7d6b652eab5ebc5c03dd89"
+  },
+  "jobs": {
+    "native": {
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          }
+        ],
+        "invalid_input_rejected": true,
+        "invalid_values_rejected": true,
+        "extreme_tolerance_rejected": true,
+        "passed": true
+      },
+      "passed": true,
+      "binary_sha256": "2b163d4e14551b97dfe6be711ef0f98631bf00c1b3dc45b062e33032323ff4a0"
+    },
+    "address_sanitizer": {
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.49411368700026e-06,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.47545209131181e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.494113686785969e-06,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 0,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 9.37508598267515e-10,
+            "native_export_error": 4.965068306494546e-16,
+            "controls": 535,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503314928e-06,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 0,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.919000725030348e-10,
+            "native_export_error": 2.2887833992611187e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 0,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 1,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 1.0076081026063583e-06,
+            "native_export_error": 4.449557262054371e-16,
+            "controls": 49,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": -0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 2.4672859772878745e-10,
+            "native_export_error": 4.440892098500626e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-05,
+            "status": 0,
+            "point_error": 9.204348503292348e-06,
+            "native_export_error": 2.482534153247273e-16,
+            "controls": 43,
+            "source_unchanged": true,
+            "passed": true
+          },
+          {
+            "kind": 1,
+            "chart": 1,
+            "plane": 2,
+            "distance": 0.125,
+            "tolerance": 1e-09,
+            "status": 0,
+            "point_error": 1.9189999527884174e-10,
+            "native_export_error": 2.2247786310271853e-16,
+            "controls": 385,
+            "source_unchanged": true,
+            "passed": true
+          }
+        ],
+        "invalid_input_rejected": true,
+        "invalid_values_rejected": true,
+        "extreme_tolerance_rejected": true,
+        "passed": true
+      },
+      "passed": true,
+      "binary_sha256": "6f7db10c9f7de36b2751474653bf9ef5df463730730c49f3307922c542b952ef"
+    },
+    "generic_hermite": {
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "tolerance": 1e-05,
+            "chart": 0,
+            "status": 1000,
+            "reported_gap": 9.494113686889303e-06,
+            "independent_point_error": 9.495444255214318e-06,
+            "controls": 49,
+            "degree": 3
+          },
+          {
+            "tolerance": 1e-05,
+            "chart": 1,
+            "status": 1000,
+            "reported_gap": 9.494113686889303e-06,
+            "independent_point_error": 9.495444255214318e-06,
+            "controls": 49,
+            "degree": 3
+          },
+          {
+            "tolerance": 1e-08,
+            "chart": 0,
+            "status": 1000,
+            "reported_gap": 9.854142385980055e-09,
+            "independent_point_error": 9.854142385980055e-09,
+            "controls": 283,
+            "degree": 3
+          },
+          {
+            "tolerance": 1e-08,
+            "chart": 1,
+            "status": 1000,
+            "reported_gap": 9.854142385980055e-09,
+            "independent_point_error": 9.854142370438432e-09,
+            "controls": 283,
+            "degree": 3
+          },
+          {
+            "tolerance": 1e-10,
+            "chart": 0,
+            "status": 1000,
+            "reported_gap": 9.896265249450204e-11,
+            "independent_point_error": 9.896265249450204e-11,
+            "controls": 979,
+            "degree": 3
+          },
+          {
+            "tolerance": 1e-10,
+            "chart": 1,
+            "status": 1000,
+            "reported_gap": 9.896265249450204e-11,
+            "independent_point_error": 9.896265249450204e-11,
+            "controls": 979,
+            "degree": 3
+          }
+        ]
+      },
+      "passed": true,
+      "binary_sha256": "230647ca75f7e5f50028a6721de7cede203bf59867efbcdda31e1ed47570c2bb"
+    }
+  },
+  "rhino_checks": [
+    {
+      "id": "curved-offset-none",
+      "passed": true,
+      "max_absolute_error": 3.714764829076955e-08,
+      "differences": []
+    },
+    {
+      "id": "curved-offset-sharp",
+      "passed": true,
+      "max_absolute_error": 3.714764829076955e-08,
+      "differences": []
+    },
+    {
+      "id": "curved-offset-chamfer",
+      "passed": true,
+      "max_absolute_error": 3.714764829076955e-08,
+      "differences": []
+    },
+    {
+      "id": "curved-offset-round",
+      "passed": true,
+      "max_absolute_error": 3.714764829076955e-08,
+      "differences": []
+    }
+  ],
+  "native_response": {
+    "protocol_version": 1,
+    "engine": "viboceros",
+    "engine_version": "0.1.0",
+    "iterations": 1,
+    "results": [
+      {
+        "id": "curved-offset-none",
+        "value": {
+          "closed": false,
+          "queries": [
+            [
+              2.178885438199983,
+              -0.08944271909999159,
+              0.0
+            ],
+            [
+              2.215232482321056,
+              -0.01410255670172334,
+              0.0
+            ],
+            [
+              1.5209472759824052,
+              -0.3882445061485121,
+              0.0
+            ]
+          ],
+          "samples": [
+            [
+              0.12572186522648776,
+              -0.27569533831978715,
+              0.0
+            ],
+            [
+              0.780099253168844,
+              -0.43900743750120375,
+              0.0
+            ],
+            [
+              1.6574695797234444,
+              -0.3515652562085433,
+              0.0
+            ],
+            [
+              1.9605477232883883,
+              -0.23946300628426592,
+              0.0
+            ],
+            [
+              2.239463006276332,
+              0.03945227669358065,
+              0.0
+            ],
+            [
+              2.3515652563169724,
+              0.3425304206379869,
+              0.0
+            ],
+            [
+              2.439007437556038,
+              1.2199007462828106,
+              0.0
+            ],
+            [
+              2.275695338145219,
+              1.8742781352099316,
+              0.0
+            ]
+          ]
+        },
+        "elapsed_ns": 1166914
+      },
+      {
+        "id": "curved-offset-sharp",
+        "value": {
+          "closed": false,
+          "queries": [
+            [
+              2.1490711984999855,
+              -0.14907119849998632,
+              0.0
+            ],
+            [
+              2.215232482321056,
+              -0.01410255670172334,
+              0.0
+            ],
+            [
+              1.5209472759824052,
+              -0.3882445061485121,
+              0.0
+            ]
+          ],
+          "samples": [
+            [
+              0.12572186522648776,
+              -0.27569533831978715,
+              0.0
+            ],
+            [
+              0.780099253168844,
+              -0.43900743750120375,
+              0.0
+            ],
+            [
+              1.6574695797234444,
+              -0.3515652562085433,
+              0.0
+            ],
+            [
+              1.9605477232883883,
+              -0.23946300628426592,
+              0.0
+            ],
+            [
+              2.239463006276332,
+              0.03945227669358065,
+              0.0
+            ],
+            [
+              2.3515652563169724,
+              0.3425304206379869,
+              0.0
+            ],
+            [
+              2.439007437556038,
+              1.2199007462828106,
+              0.0
+            ],
+            [
+              2.275695338145219,
+              1.8742781352099316,
+              0.0
+            ]
+          ]
+        },
+        "elapsed_ns": 1132881
+      },
+      {
+        "id": "curved-offset-chamfer",
+        "value": {
+          "closed": false,
+          "queries": [
+            [
+              2.1591640786499875,
+              -0.1091640786499874,
+              0.0
+            ],
+            [
+              2.215232482321056,
+              -0.01410255670172334,
+              0.0
+            ],
+            [
+              1.5209472759824052,
+              -0.3882445061485121,
+              0.0
+            ]
+          ],
+          "samples": [
+            [
+              0.12572186522648776,
+              -0.27569533831978715,
+              0.0
+            ],
+            [
+              0.780099253168844,
+              -0.43900743750120375,
+              0.0
+            ],
+            [
+              1.6574695797234444,
+              -0.3515652562085433,
+              0.0
+            ],
+            [
+              1.9605477232883883,
+              -0.23946300628426592,
+              0.0
+            ],
+            [
+              2.239463006276332,
+              0.03945227669358065,
+              0.0
+            ],
+            [
+              2.3515652563169724,
+              0.3425304206379869,
+              0.0
+            ],
+            [
+              2.439007437556038,
+              1.2199007462828106,
+              0.0
+            ],
+            [
+              2.275695338145219,
+              1.8742781352099316,
+              0.0
+            ]
+          ]
+        },
+        "elapsed_ns": 1146497
+      },
+      {
+        "id": "curved-offset-round",
+        "value": {
+          "closed": false,
+          "queries": [
+            [
+              2.156173761888606,
+              -0.12493900951088491,
+              0.0
+            ],
+            [
+              2.215232482321056,
+              -0.01410255670172334,
+              0.0
+            ],
+            [
+              1.5209472759824052,
+              -0.3882445061485121,
+              0.0
+            ]
+          ],
+          "samples": [
+            [
+              0.12572186522648776,
+              -0.27569533831978715,
+              0.0
+            ],
+            [
+              0.780099253168844,
+              -0.43900743750120375,
+              0.0
+            ],
+            [
+              1.6574695797234444,
+              -0.3515652562085433,
+              0.0
+            ],
+            [
+              1.9605477232883886,
+              -0.23946300628426584,
+              0.0
+            ],
+            [
+              2.239463006276332,
+              0.03945227669358065,
+              0.0
+            ],
+            [
+              2.351565256316973,
+              0.34253042063798733,
+              0.0
+            ],
+            [
+              2.439007437556038,
+              1.2199007462828106,
+              0.0
+            ],
+            [
+              2.275695338145219,
+              1.8742781352099316,
+              0.0
+            ]
+          ]
+        },
+        "elapsed_ns": 1121377
+      }
+    ]
+  }
+}

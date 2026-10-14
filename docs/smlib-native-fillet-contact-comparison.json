@@ -33,9 +33,6 @@
     "crates/viboceros-smlib/native/CMakeLists.txt": "0b386cad397be39b4b756ec98c464e8f38f32c92e070f6459a1d8153927351a7",
     "third_party/patches/usd-brep-curve-fillet-sides.patch": "8c2aa6618b47a6e35c3e531c7d8662f6381300de7765b35bfcf1add3e197d6c3",
     "crates/viboceros-geometry/src/curve_fillet_operations.rs": "d387da13fbd8d37626696f0e44610179d27fea6fce4ac4c0246762d7cf7527f7",
-    "crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53",
-    "crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b",
-    "crates/viboceros-smlib/native/bridge.h": "b029f966bd0ea01dcd1d512c8038f58ca033aaad22243754e06f22380e66095a",
     "crates/viboceros-smlib/build.rs": "dcac67f49ce04699e96f4bdb59aa8778a15fe7f8171888009b868798dfb5a99d",
     "third_party/patches/usd-brep-curve-fillet-seed.patch": "581de5093ff3799740b5865d8e62e1656d6614c2cf1d38ac61a3645f5ff38157",
     "third_party/patches/usd-brep-curve-fillet-seed-header.patch": "b6ea700f0466bc37a790eada0b8ca0ed3deb34fd30f521bf4d5751929732545c",
@@ -20305,5 +20302,10 @@
         ]
       }
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/src/native/curve_fillet_contacts.rs": "a86cd647251f8c31ec14dfe6faaca130cf28e87a228063da7731f53a48f7cb53",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.cpp": "003e7aae8b30f79878dc2193e4c2beb5599d22711d7c9cdc4644a405ca5a2d1b",
+    "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.h": "b029f966bd0ea01dcd1d512c8038f58ca033aaad22243754e06f22380e66095a"
+  }
 }

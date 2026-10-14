@@ -188,8 +188,16 @@ pub(super) fn offset_nurbs(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<NurbsCurve, GeometryError> {
-    offset_nurbs_with_closure(curve, distance, fallback, tolerance, curve.is_closed()?)
+    offset_nurbs_with_closure(
+        curve,
+        distance,
+        fallback,
+        tolerance,
+        curve.is_closed()?,
+        operations,
+    )
 }
 
 fn offset_nurbs_with_closure(
@@ -198,6 +206,7 @@ fn offset_nurbs_with_closure(
     fallback: UnitVector3,
     tolerance: Tolerance,
     closed: bool,
+    operations: Option<CurveOffsetOperations>,
 ) -> Result<NurbsCurve, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     curve.tight_bounds(tolerance)?; // Reject poles before the adaptive fit.
@@ -231,6 +240,12 @@ fn offset_nurbs_with_closure(
         return Err(GeometryError::Degenerate {
             context: "NURBS offset source seam kink",
         });
+    }
+    if let Some(operations) = operations
+        && let Some(result) = (operations.smooth)(curve, distance, normal, tolerance, closed)?
+    {
+        validate_native_offset(curve, &result, distance, normal, tolerance, closed)?;
+        return Ok(result);
     }
     let mut pending = boundaries.into_iter().rev().collect::<Vec<_>>();
     let mut accepted = Vec::new();
@@ -301,6 +316,61 @@ fn offset_nurbs_with_closure(
     Ok(result)
 }
 
+fn validate_native_offset(
+    source: &NurbsCurve,
+    result: &NurbsCurve,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+    closed: bool,
+) -> Result<(), GeometryError> {
+    if result.domain() != source.domain()
+        || result.control_points().len() > 3 * MAX_OFFSET_SPANS + 1
+        || result.spans().count() > MAX_OFFSET_SPANS
+    {
+        return Err(GeometryError::NurbsOffsetFitLimit);
+    }
+    let mut cuts = vec![*source.domain().start()];
+    cuts.extend(source.spans().map(|(_, b)| b));
+    cuts.extend(result.spans().flat_map(|(a, b)| [a, b]));
+    cuts.sort_by(Real::total_cmp);
+    cuts.dedup();
+    for range in cuts.windows(2) {
+        for check in 0..=CHECKS_PER_SPAN + 1 {
+            let fraction = check as Real / (CHECKS_PER_SPAN + 1) as Real;
+            let parameter = if check == 0 {
+                range[0]
+            } else if check == CHECKS_PER_SPAN + 1 {
+                range[1]
+            } else {
+                range[0].mul_add(1. - fraction, range[1] * fraction)
+            };
+            let side = if check == CHECKS_PER_SPAN + 1 {
+                ParameterSide::Left
+            } else {
+                ParameterSide::Right
+            };
+            let expected = offset_sample(source, distance, normal, parameter, side)?.point;
+            if result
+                .evaluate_on_side(parameter, side)?
+                .distance_to(expected)?
+                > tolerance.absolute()
+            {
+                return Err(GeometryError::NurbsOffsetFitLimit);
+            }
+        }
+    }
+    if closed
+        && result
+            .evaluate(*result.domain().start())?
+            .distance_to(result.evaluate(*result.domain().end())?)?
+            > tolerance.absolute()
+    {
+        return Err(GeometryError::NurbsOffsetFitLimit);
+    }
+    Ok(())
+}
+
 /// Keep convex gaps open and trim concave kinks at the nearest transverse
 /// intersection of the neighboring offset loci.
 pub(super) fn offset_nurbs_open_gaps(
@@ -352,7 +422,7 @@ pub(super) fn offset_nurbs_open_gaps(
     };
     if cuts.is_empty() && seam.is_none() {
         return Ok(vec![Curve3::NurbsCurve(offset_nurbs(
-            curve, distance, fallback, tolerance,
+            curve, distance, fallback, tolerance, operations,
         )?)]);
     }
     if closed {
@@ -371,7 +441,7 @@ pub(super) fn offset_nurbs_open_gaps(
     let sources = offset_split_at(curve, &parameters, operations)?;
     let offsets = sources
         .iter()
-        .map(|piece| offset_nurbs(piece, distance, fallback, tolerance))
+        .map(|piece| offset_nurbs(piece, distance, fallback, tolerance, operations))
         .collect::<Result<Vec<_>, _>>()?;
     let mut trims = offsets
         .iter()

@@ -62,6 +62,12 @@ fn closed() -> Curve3 {
         .unwrap(),
     )
 }
+fn editing_operations() -> viboceros_geometry::CurveOffsetOperations {
+    let mut operations = viboceros_smlib::curve_offset_operations();
+    // Keep the original structural editing contract independent of fitting.
+    operations.smooth = |_, _, _, _, _| Ok(None);
+    operations
+}
 #[test]
 fn native_offset_edits_preserve_open_and_closed_corner_nets_and_sources() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
@@ -76,7 +82,15 @@ fn native_offset_edits_preserve_open_and_closed_corner_nets_and_sources() {
                 CurveOffsetCornerStyle::Round,
                 CurveOffsetCornerStyle::Chamfer,
             ] {
-                let a = offset_curve_parts(&source, distance, normal, tolerance, corner).unwrap();
+                let a = source
+                    .try_offset_parts_with_operations(
+                        distance,
+                        normal,
+                        tolerance,
+                        corner,
+                        Some(editing_operations()),
+                    )
+                    .unwrap();
                 let b = source
                     .try_offset_parts(distance, normal, tolerance, corner)
                     .unwrap();
@@ -102,14 +116,15 @@ fn native_offset_through_point_reuses_corner_edits_and_rejects_invalid_input() {
         .unwrap();
     let curve = parts[0].as_ref();
     let through = curve.evaluate(curve.parameter_at(0.3).unwrap()).unwrap();
-    let (a, first) = offset_curve_through_point(
-        &source,
-        through,
-        normal,
-        tolerance,
-        CurveOffsetCornerStyle::None,
-    )
-    .unwrap();
+    let (a, first) = source
+        .try_offset_through_point_with_operations(
+            through,
+            normal,
+            tolerance,
+            CurveOffsetCornerStyle::None,
+            Some(editing_operations()),
+        )
+        .unwrap();
     let (b, second) = source
         .try_offset_through_point(through, normal, tolerance, CurveOffsetCornerStyle::None)
         .unwrap();
@@ -130,6 +145,154 @@ fn native_offset_through_point_reuses_corner_edits_and_rejects_invalid_input() {
             .is_err()
         );
     }
+    assert_eq!(source, before);
+}
+
+#[test]
+fn native_fitted_offsets_preserve_corner_loci_closure_and_through_point_side() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let normal = UnitVector3::try_new(0., 0., 1., tolerance).unwrap();
+    for source in [open(), closed()] {
+        let before = source.clone();
+        for distance in [-0.15, 0.15] {
+            for corner in [
+                CurveOffsetCornerStyle::None,
+                CurveOffsetCornerStyle::Sharp,
+                CurveOffsetCornerStyle::Round,
+                CurveOffsetCornerStyle::Chamfer,
+            ] {
+                let native =
+                    offset_curve_parts(&source, distance, normal, tolerance, corner).unwrap();
+                let portable = source
+                    .try_offset_parts(distance, normal, tolerance, corner)
+                    .unwrap();
+                assert_eq!(native.len(), portable.len());
+                for (a, b) in native.iter().zip(&portable) {
+                    assert_eq!(
+                        a.as_ref().is_closed().unwrap(),
+                        b.as_ref().is_closed().unwrap()
+                    );
+                    for (a, b) in [(a, b), (b, a)] {
+                        for i in 0..=32 {
+                            let point = a
+                                .as_ref()
+                                .evaluate(a.as_ref().parameter_at(i as f64 / 32.).unwrap())
+                                .unwrap();
+                            let parameter = b.as_ref().closest_parameter(point, tolerance).unwrap();
+                            let error = point
+                                .distance_to(b.as_ref().evaluate(parameter).unwrap())
+                                .unwrap();
+                            assert!(
+                                error <= tolerance.absolute(),
+                                "{corner:?}, {distance}: {error}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        assert_eq!(source, before);
+    }
+    let source = open();
+    let parts = source
+        .try_offset_parts(-0.15, normal, tolerance, CurveOffsetCornerStyle::None)
+        .unwrap();
+    let through = parts[0]
+        .as_ref()
+        .evaluate(parts[0].as_ref().parameter_at(0.3).unwrap())
+        .unwrap();
+    let (distance, parts) = offset_curve_through_point(
+        &source,
+        through,
+        normal,
+        tolerance,
+        CurveOffsetCornerStyle::None,
+    )
+    .unwrap();
+    assert!((distance + 0.15).abs() <= tolerance.absolute());
+    assert!(parts.iter().any(|part| {
+        let parameter = part.as_ref().closest_parameter(through, tolerance).unwrap();
+        part.as_ref()
+            .evaluate(parameter)
+            .unwrap()
+            .distance_to(through)
+            .unwrap()
+            <= tolerance.absolute()
+    }));
+}
+
+#[test]
+fn native_single_kink_closed_source_keeps_fitted_seam_open_until_corner_policy() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let normal = UnitVector3::try_new(0., 0., 1., tolerance).unwrap();
+    let curve = NurbsCurve::try_new(
+        3,
+        vec![p(0., 0.), p(4., 0.), p(0., 4.), p(0., 0.)],
+        vec![0., 0., 0., 0., 1., 1., 1., 1.],
+    )
+    .unwrap();
+    let source = Curve3::NurbsCurve(curve.clone());
+    let before = source.clone();
+    let inward = offset_curve_parts(
+        &source,
+        0.2,
+        normal,
+        tolerance,
+        CurveOffsetCornerStyle::None,
+    )
+    .unwrap();
+    let [Curve3::NurbsCurve(inner)] = inward.as_slice() else {
+        panic!("expected one trimmed loop")
+    };
+    assert!(inner.is_closed().unwrap());
+    assert!(*inner.domain().start() > 0. && *inner.domain().end() < 1.);
+    let outward = offset_curve_parts(
+        &source,
+        -0.2,
+        normal,
+        tolerance,
+        CurveOffsetCornerStyle::None,
+    )
+    .unwrap();
+    let [Curve3::NurbsCurve(outer)] = outward.as_slice() else {
+        panic!("expected open seam")
+    };
+    assert!(!outer.is_closed().unwrap());
+    assert!(
+        outer
+            .evaluate(0.)
+            .unwrap()
+            .distance_to(p(0., -0.2))
+            .unwrap()
+            <= tolerance.absolute()
+    );
+    assert!(
+        outer
+            .evaluate(1.)
+            .unwrap()
+            .distance_to(p(-0.2, 0.))
+            .unwrap()
+            <= tolerance.absolute()
+    );
+    for corner in [CurveOffsetCornerStyle::Round, CurveOffsetCornerStyle::Sharp] {
+        let result = offset_curve_parts(&source, -0.2, normal, tolerance, corner).unwrap();
+        assert_eq!(result.len(), 1);
+        assert!(result[0].as_ref().is_closed().unwrap());
+    }
+    let relocated = Curve3::NurbsCurve(curve.try_split_at_parameters(&[0.5]).unwrap().remove(0));
+    let result = offset_curve_parts(
+        &relocated,
+        0.2,
+        normal,
+        tolerance,
+        CurveOffsetCornerStyle::None,
+    )
+    .unwrap();
+    let [Curve3::NurbsCurve(inner)] = result.as_slice() else {
+        panic!("expected relocated trimmed loop")
+    };
+    assert!(inner.is_closed().unwrap());
+    assert!(*inner.domain().start() > 1. && *inner.domain().end() < 2.);
     assert_eq!(source, before);
 }
 
