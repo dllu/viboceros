@@ -6,6 +6,10 @@ For Wine licensing startup errors involving `AcquireCredentialsHandleW`, use
 the [security DLL diagnostic](oracle-sspi.md) to check symbol resolution and
 compare native and x64 execution before running another geometry capture.
 
+`project_curve_plane` compares complete NURBS curve images against RhinoCommon's
+public ProjectAlong transform. Its four recipes and current capture limits are
+described in [infinite-plane projection](commands/project-infinite-plane.md).
+
 The `surface_trim_geometry` operation accepts a complete `surface` definition
 and increasing `u` and `v` intervals. It compares direct Rhino SDK rectangular
 trimming against the selected portable or usd-brep backend, including complete

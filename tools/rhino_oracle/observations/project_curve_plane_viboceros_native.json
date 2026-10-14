@@ -1,0 +1,184 @@
+{
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 186992,
+      "id": "plane_orthogonal",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              {
+                "point": [
+                  1.0,
+                  2.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  9.0,
+                  8.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 167312,
+      "id": "plane_oblique",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              {
+                "point": [
+                  -2.5,
+                  2.0,
+                  0.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  5.5,
+                  8.0,
+                  0.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 1,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 158081,
+      "id": "plane_rational",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              {
+                "point": [
+                  20.0,
+                  20.0,
+                  2.0
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  25.0,
+                  28.0,
+                  2.0
+                ],
+                "weight": 2.0
+              },
+              {
+                "point": [
+                  30.0,
+                  20.0,
+                  2.0
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 2,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 161744,
+      "id": "plane_sloped",
+      "value": {
+        "curves": [
+          {
+            "control_points": [
+              {
+                "point": [
+                  -2.6666666666666665,
+                  -3.3333333333333326,
+                  2.666666666666667
+                ],
+                "weight": 1.0
+              },
+              {
+                "point": [
+                  0.6666666666666665,
+                  2.333333333333333,
+                  5.333333333333333
+                ],
+                "weight": 0.75
+              },
+              {
+                "point": [
+                  -1.333333333333333,
+                  -4.666666666666666,
+                  1.3333333333333335
+                ],
+                "weight": 1.0
+              }
+            ],
+            "degree": 2,
+            "domain": [
+              0.0,
+              1.0
+            ],
+            "knots": [
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -75,8 +75,9 @@ both source relations, clips original face trims, and certifies the retained
 spans again. Finite sweep bounds require nonzero common-sign rational weights.
 No additional projection solver or vendor-source patch is introduced.
 
-SubD targets, grips, edge subobjects, InfinitePlane input and Loose projection
-are pending. Curved
+InfinitePlane targets use the [IP picker and plane definitions](project-infinite-plane.md).
+
+SubD targets, grips, edge subobjects and Loose projection are pending. Curved
 source kinks and distinct target faces can produce separate objects. Coincident,
 collapsed or singular source relations can be declined by existing
 contact/preparation checks. Continuous

@@ -1,0 +1,215 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-10,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "project_curve_plane",
+      "id": "plane_orthogonal",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              7.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              8.0,
+              7.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_plane",
+      "id": "plane_oblique",
+      "curve": {
+        "degree": 1,
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              7.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              8.0,
+              7.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "direction": [
+        1.0,
+        0.0,
+        2.0
+      ]
+    },
+    {
+      "op": "project_curve_plane",
+      "id": "plane_rational",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              20.0,
+              20.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              25.0,
+              28.0,
+              3.0
+            ],
+            "weight": 2.0
+          },
+          {
+            "point": [
+              30.0,
+              20.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_plane",
+      "id": "plane_sloped",
+      "curve": {
+        "degree": 2,
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "control_points": [
+          {
+            "point": [
+              10.0,
+              3.0,
+              9.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              12.0,
+              8.0,
+              11.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              14.0,
+              3.0,
+              9.0
+            ],
+            "weight": 1.0
+          }
+        ]
+      },
+      "origin": [
+        4.0,
+        5.0,
+        6.0
+      ],
+      "normal": [
+        1.0,
+        -2.0,
+        3.0
+      ],
+      "direction": [
+        2.0,
+        1.0,
+        1.0
+      ]
+    }
+  ]
+}

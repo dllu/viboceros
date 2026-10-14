@@ -16,6 +16,8 @@ pub(super) struct ProjectSession {
     options: ProjectOptions,
     pub(super) custom_requested: bool,
     finish_targets: Option<Vec<ObjectId>>,
+    pub(super) planes: Vec<String>,
+    pub(super) plane_getter: Option<super::project_plane::PlaneGetter>,
 }
 impl ProjectSession {
     fn command(&self) -> String {
@@ -176,6 +178,8 @@ impl VibocerosApp {
                 options,
                 custom_requested,
                 finish_targets,
+                planes: Vec::new(),
+                plane_getter: None,
             }),
         });
         self.command_input.clear();
@@ -207,6 +211,9 @@ impl VibocerosApp {
         mut prompt: TwoSetsPrompt,
         input: &str,
     ) -> bool {
+        if self.continue_project_plane(&prompt, input) {
+            return true;
+        }
         if !self.picking_project_direction()
             && prompt.first.is_none()
             && self.try_continue_uv_subcurve(&prompt, input)
@@ -255,7 +262,11 @@ impl VibocerosApp {
                 .map(|o| o.id())
                 .collect::<Vec<_>>();
             if selected.is_empty()
-                && (prompt.first.is_some() || prompt.uv_subcurves.ranges.is_empty())
+                && if prompt.first.is_some() {
+                    prompt.projection.as_ref().unwrap().planes.is_empty()
+                } else {
+                    prompt.uv_subcurves.ranges.is_empty()
+                }
             {
                 self.push_log(prompt.hint().into());
                 return true;
@@ -283,6 +294,8 @@ impl VibocerosApp {
         {
             let mut session = prompt.projection.clone().unwrap();
             if custom_option(input) {
+                self.clear_project_plane_state();
+                session.plane_getter = None;
                 session.custom_requested = true;
                 prompt.projection = Some(session);
                 self.intersection_prompt = Some(prompt);
@@ -293,6 +306,8 @@ impl VibocerosApp {
                     .split_once('=')
                     .is_some_and(|(key, _)| key.eq_ignore_ascii_case("Direction"));
                 if direction_changed {
+                    self.clear_project_plane_state();
+                    session.plane_getter = None;
                     session.custom_requested = false;
                     self.clear_project_direction();
                 }
@@ -431,6 +446,9 @@ impl VibocerosApp {
             return;
         }
         let ids = ids.into_iter().collect::<Vec<_>>();
+        if self.pick_project_plane_reference(&ids) {
+            return;
+        }
         if self.pick_uv_subcurve_source(ids.iter().copied()) {
             return;
         }
@@ -461,12 +479,26 @@ fn project_command(prompt: &TwoSetsPrompt, sources: &[ObjectId], targets: &[Obje
     } else {
         format!(" Sources={}", project_ids(sources))
     };
+    let targets = if targets.is_empty() {
+        String::new()
+    } else {
+        format!(" Targets={}", project_ids(targets))
+    };
+    let planes = prompt
+        .projection
+        .as_ref()
+        .unwrap()
+        .planes
+        .iter()
+        .map(|p| format!(" InfinitePlane={p}"))
+        .collect::<String>();
     format!(
-        "{}{} Targets={}{}",
+        "{}{}{}{}{}",
         prompt.projection.as_ref().unwrap().command(),
         sources,
-        project_ids(targets),
-        prompt.uv_subcurves.arguments()
+        targets,
+        prompt.uv_subcurves.arguments(),
+        planes,
     )
 }
 fn project_ids(ids: &[ObjectId]) -> String {

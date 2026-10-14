@@ -11,6 +11,37 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_infinite_plane_projection_disposes_source_and_duplicates_at_failure_boundaries(self):
+        for failure in (None, 'duplicate', 'transform', 'record'):
+            with self.subTest(failure=failure):
+                result=SimpleNamespace(Transform=Mock(return_value=failure!='transform'),Dispose=Mock())
+                source=SimpleNamespace(DuplicateCurve=Mock(return_value=None if failure=='duplicate' else result),Dispose=Mock())
+                vector=SimpleNamespace(X=0.,Y=0.,Z=1.,Unitize=lambda:True)
+                geometry=SimpleNamespace(Plane=lambda *args:SimpleNamespace(IsValid=True),Transform=SimpleNamespace(ProjectAlong=lambda *args:SimpleNamespace(IsValid=True,IsIdentity=False)))
+                with patch.object(self.worker.Rhino,'Geometry',geometry,create=True), \
+                     patch.object(self.worker,'_vector',return_value=vector), \
+                     patch.object(self.worker,'_point',return_value=object()), \
+                     patch.object(self.worker,'_nurbs_curve_from_definition',return_value=source), \
+                     patch.object(self.worker,'_nurbs_curve_definition',return_value={'degree':2},side_effect=ValueError('record') if failure=='record' else None):
+                    op=dict(op='project_curve_plane',curve={},origin=[0.,0.,0.],normal=[0.,0.,1.],direction=[0.,0.,1.])
+                    if failure:
+                        with self.assertRaises(ValueError):self.worker._execute(op,1,dict(absolute=1e-6))
+                    else:
+                        value,_=self.worker._execute(op,1,dict(absolute=1e-6));self.assertEqual(value,dict(curves=[{'degree':2}]))
+                source.Dispose.assert_called_once()
+                self.assertEqual(result.Dispose.call_count,2 if failure is None else int(failure!='duplicate'))
+
+    def test_infinite_plane_projection_declines_parallel_and_identity_sdk_fallback_before_allocation(self):
+        for parallel in (True,False):
+            vectors=[SimpleNamespace(X=1.,Y=0.,Z=0.,Unitize=lambda:True),SimpleNamespace(X=0. if parallel else 1.,Y=1.,Z=0.,Unitize=lambda:True)]
+            geometry=SimpleNamespace(Plane=lambda *args:SimpleNamespace(IsValid=True),Transform=SimpleNamespace(ProjectAlong=lambda *args:SimpleNamespace(IsValid=True,IsIdentity=True)))
+            with patch.object(self.worker.Rhino,'Geometry',geometry,create=True), \
+                 patch.object(self.worker,'_vector',side_effect=vectors), \
+                 patch.object(self.worker,'_point',return_value=object()), \
+                 patch.object(self.worker,'_nurbs_curve_from_definition') as source:
+                with self.assertRaises(ValueError):self.worker._execute(dict(op='project_curve_plane',curve={},origin=[0.,0.,0.],normal=[0.,1.,0.],direction=[1.,0.,0.]),1,dict(absolute=1e-6))
+                source.assert_not_called()
+
     def test_mesh_curve_projection_disposes_sources_results_and_target_on_failures(self):
         for failure in (None,"curve","sdk","sampling"):
             with self.subTest(failure=failure):

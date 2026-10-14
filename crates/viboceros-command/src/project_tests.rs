@@ -1,4 +1,6 @@
 use super::*;
+#[path = "project_infinite_tests.rs"]
+mod infinite;
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()

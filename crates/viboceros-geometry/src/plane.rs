@@ -2,6 +2,7 @@ use faer::{Mat, prelude::*};
 use nalgebra::Matrix3;
 
 use crate::{GeometryError, Point3, Real, Tolerance, UnitVector3, Vector3};
+mod projection;
 
 /// An infinite plane represented by a finite origin and unit normal.
 #[derive(Clone, Copy, Debug, PartialEq)]

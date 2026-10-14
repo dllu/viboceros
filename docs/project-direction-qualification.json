@@ -32,8 +32,6 @@
     "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm"
   ],
   "source_sha256": {
-    "src/app.rs": "d1f925a1cf0616f58a02661bc265e266332feb5dd499839b6dca5fe09801ef6a",
-    "src/app/object_selection.rs": "87546c98bfa7fddaa6e4dc0d97c8888deaa14fb082da03f1fd47517e7fc19ccd",
     "src/app/tests/blocks.rs": "c9a77d134c3044a5c8692b07aedaac792bd1708702e2aa784fa0b5071d1630ce",
     "src/app/tests/block_manager.rs": "0ed9e5a47011deaf339acb4d288881deea2a64f4284e0568263796c0b0e47e68"
   },
@@ -61,6 +59,8 @@
     "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/project.rs": "8129ff2c83f1691ff4164ecdb08bbc74d6d7a240a48dc72d316db204a7fafe85",
     "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/intersect_two_sets.rs": "11ed9de29ef31e0b1ddd2cb40178d5c60ee7cf7c32b18afcdb6a38400a0e037b",
     "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/tests/project.rs": "21095450c60e0aec28e9b03fd0cf5ea8a8f1f65d19e7ecb9f84b2a992259e5df",
-    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:docs/commands/project.md": "5e894890b79f410921be595f50b2d6fbbe3efd0594ee39dc03c543f8e50affb0"
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:docs/commands/project.md": "5e894890b79f410921be595f50b2d6fbbe3efd0594ee39dc03c543f8e50affb0",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app.rs": "d1f925a1cf0616f58a02661bc265e266332feb5dd499839b6dca5fe09801ef6a",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:src/app/object_selection.rs": "87546c98bfa7fddaa6e4dc0d97c8888deaa14fb082da03f1fd47517e7fc19ccd"
   }
 }

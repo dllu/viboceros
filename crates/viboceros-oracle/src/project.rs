@@ -1,6 +1,60 @@
 //! Public directional projection comparison, independent fixture inputs.
 use super::*;
 
+pub(super) fn plane_curve(
+    iterations: u32,
+    curve: &NurbsCurveDefinition,
+    origin: [f64; 3],
+    normal: [f64; 3],
+    direction: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let curve = nurbs_curve_from_definition(curve)?;
+    let origin = Point3::try_from(origin)?;
+    let normal = Vector3::try_from(normal)?.normalized_nonzero()?.as_vector();
+    let direction = Vector3::try_from(direction)?
+        .normalized_nonzero()?
+        .as_vector();
+    if normal.dot(direction)? == 0. {
+        return Err(ProbeError::FixtureInvariant(
+            "plane SDK comparison requires nonparallel direction",
+        ));
+    }
+    let normal = normal.to_array();
+    let direction = direction.to_array();
+    measure_probe(iterations, || -> Result<Value, ProbeError> {
+        let mut doc = Document::new(tolerance);
+        let source = doc.add_geometry(Geometry::NurbsCurve(curve.clone()))?;
+        doc.select_objects_direct([source], SelectionMode::Replace)?;
+        CommandRegistry::with_builtins().execute(
+            &mut doc,
+            &format!(
+                "Project InfinitePlane={},{},{},{},{},{} Direction={},{},{}",
+                origin.x(),
+                origin.y(),
+                origin.z(),
+                normal[0],
+                normal[1],
+                normal[2],
+                direction[0],
+                direction[1],
+                direction[2]
+            ),
+        )?;
+        let outputs = doc
+            .selected_objects()
+            .filter(|o| o.id() != source)
+            .map(|o| {
+                let c = o.geometry().nurbs_curve_representation()?.ok_or(
+                    ProbeError::FixtureInvariant("plane projection produced a point"),
+                )?;
+                Ok(nurbs_curve_definition_value(&c))
+            })
+            .collect::<Result<Vec<_>, ProbeError>>()?;
+        Ok(json!({"curves":outputs}))
+    })
+}
+
 pub(super) fn run(
     iterations: u32,
     curve: &NurbsCurveDefinition,
@@ -145,6 +199,42 @@ pub(super) fn mesh_point(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn infinite_plane_protocol_retains_source_structure_and_rejects_parallel_sdk_inputs() {
+        let mut q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/project_curve_plane.json"
+        ))
+        .unwrap();
+        let response = run_request(&q).unwrap();
+        assert_eq!(response.results.len(), 4);
+        for (op, row) in q.operations.iter().zip(response.results) {
+            let Operation::ProjectCurvePlane { curve, .. } = op else {
+                panic!()
+            };
+            let outputs = row.value["curves"].as_array().unwrap();
+            assert_eq!(outputs.len(), 1);
+            let output = &outputs[0];
+            assert_eq!(output["degree"], json!(curve.degree));
+            assert_eq!(output["knots"], json!(curve.knots));
+            assert_eq!(
+                output["control_points"].as_array().unwrap().len(),
+                curve.control_points.len()
+            );
+            for (a, b) in output["control_points"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(&curve.control_points)
+            {
+                assert_eq!(a["weight"], json!(b.weight));
+            }
+        }
+        q.operations.truncate(1);
+        if let Operation::ProjectCurvePlane { direction, .. } = &mut q.operations[0] {
+            *direction = [1., 0., 0.];
+        }
+        assert!(run_request(&q).is_err());
+    }
     #[cfg(feature = "native-smlib")]
     #[test]
     fn project_curve_surface_protocol_covers_finite_and_curved_targets() {

@@ -13293,6 +13293,32 @@ def _execute(operation, iterations, tolerance):
             if curve is not None: curve.Dispose()
             mesh.Dispose()
 
+    if kind == "project_curve_plane":
+        direction, normal = _vector(operation["direction"]), _vector(operation["normal"])
+        if not direction.Unitize() or not normal.Unitize():
+            raise ValueError("projection requires nonzero finite direction and normal")
+        if sum(a*b for a,b in zip(_xyz(direction), _xyz(normal))) == 0.:
+            raise ValueError("ProjectAlong requires a direction not parallel to the plane")
+        plane = Rhino.Geometry.Plane(_point(operation["origin"]), normal)
+        transform = Rhino.Geometry.Transform.ProjectAlong(plane, direction)
+        if not plane.IsValid or not transform.IsValid or transform.IsIdentity:
+            raise ValueError("could not construct plane projection")
+        source = _nurbs_curve_from_definition(operation["curve"])
+        def project_plane():
+            result = source.DuplicateCurve()
+            if result is None:
+                raise ValueError("could not duplicate projection source")
+            try:
+                if not result.Transform(transform):
+                    raise ValueError("could not transform projection source")
+                return dict(curves=[_nurbs_curve_definition(result)])
+            finally:
+                result.Dispose()
+        try:
+            return _measure(iterations, project_plane)
+        finally:
+            source.Dispose()
+
     if kind == "project_curve_surface":
         direction = _vector(operation["direction"])
         if not direction.Unitize():

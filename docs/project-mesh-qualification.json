@@ -61,10 +61,6 @@
     "crates/viboceros-geometry/src/lib.rs": "bf77c5e2545fe957a6e706c5a5852cab5eb93026b22f8e9a4b306c71c1d2d2bb",
     "crates/viboceros-geometry/src/error.rs": "03e8913cb16e0e5c8009ce3857820237a83c9a7f9a55b036924750b79e0ca525",
     "crates/viboceros-command/src/object_selection.rs": "689701a9baa9cf797bce08409ec94f963dc25b521f681fd25661bdd4e0a2964e",
-    "crates/viboceros-oracle/src/lib.rs": "2f5c86a08449b2da894df33457e191809450b55312f110b660449f8cef69aa78",
-    "crates/viboceros-oracle/src/project.rs": "74da4de824a692d92c0503c98458e0692526b7af96a8b5d3e89dfef8fab7f34c",
-    "tools/rhino_oracle/rhino_worker.py": "09369d3346efbd2558ecde795154d9c3380ae0950089b0b34d5fed6cf046b9fd",
-    "tools/rhino_oracle/test_worker.py": "7d5c888e70373160edf36e5537bbf950986db3a4ab0c83e4e12998f4fed62fca",
     "tools/rhino_oracle/test_project_mesh.py": "56a2c919d2cf023ca94c44a0c3df6076a3be00fb93d8f098b4b6456da04f644f",
     "tools/rhino_oracle/fixtures/project_mesh.json": "f7c4df57eca09d521ba6d3adde9f3048cc9a7aac43bb428711dd21bbd37fed69",
     "tools/rhino_oracle/observations/project_mesh_viboceros_native.json": "ab16f496d1de01f997b186cfea0e701131d04eece9a1deae43c3b38486a15673",
@@ -75,6 +71,10 @@
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:crates/viboceros-command/src/project_tests.rs": "d5553dddad5793ccc03e6cdcc534e157855d94223b77162a2360f01badb47e25",
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/project.rs": "323328f052e39cefb5d510667efd84d912ca38d17630079437d46117326817e6",
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/intersect_two_sets.rs": "0d425b93f0f690b36120a036a541bbefbe467937df59d24b4b22cf8ee86979b8",
-    "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/project.rs": "8f1ace869a619677efbaedfebef4fec8fc1fb2c77c4b55d93caabf005ad99169"
+    "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/project.rs": "8f1ace869a619677efbaedfebef4fec8fc1fb2c77c4b55d93caabf005ad99169",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:crates/viboceros-oracle/src/lib.rs": "2f5c86a08449b2da894df33457e191809450b55312f110b660449f8cef69aa78",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:crates/viboceros-oracle/src/project.rs": "74da4de824a692d92c0503c98458e0692526b7af96a8b5d3e89dfef8fab7f34c",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:tools/rhino_oracle/rhino_worker.py": "09369d3346efbd2558ecde795154d9c3380ae0950089b0b34d5fed6cf046b9fd",
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:tools/rhino_oracle/test_worker.py": "7d5c888e70373160edf36e5537bbf950986db3a4ab0c83e4e12998f4fed62fca"
   }
 }

@@ -69,6 +69,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if let Some(getter) = self
+            .projection
+            .as_ref()
+            .and_then(|p| p.plane_getter.as_ref())
+        {
+            return getter.filter();
+        }
         if self.uv_subcurves.pending.is_some() {
             return ObjectSelectionFilter::Curves;
         }
@@ -88,6 +95,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(getter) = self
+            .projection
+            .as_ref()
+            .and_then(|p| p.plane_getter.as_ref())
+        {
+            return getter.hint();
+        }
         if let Some(hint) = self.uv_subcurves.hint() {
             return hint;
         }
@@ -96,7 +110,7 @@ impl TwoSetsPrompt {
         }
         if self.projection.is_some() {
             return if self.first.is_some() {
-                "Select target surfaces, B-reps or meshes; Enter projects, Esc cancels"
+                "Select target surfaces, B-reps or meshes (IP defines an infinite plane); Enter projects, Esc cancels"
             } else {
                 "Select curves and points (SubCrv selects a temporary range); Enter continues, Esc cancels"
             };

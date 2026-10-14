@@ -198,6 +198,7 @@ mod bounding_box;
 pub use bounding_box::selected_bounding_box_center;
 mod distribute;
 mod geometry_selection;
+pub mod infinite_plane;
 mod intersect_self;
 mod intersect_two_sets;
 mod object_name;

@@ -1564,6 +1564,13 @@ pub enum Operation {
         surface: NurbsSurfaceDefinition,
         direction: [f64; 3],
     },
+    ProjectCurvePlane {
+        id: String,
+        curve: NurbsCurveDefinition,
+        origin: [f64; 3],
+        normal: [f64; 3],
+        direction: [f64; 3],
+    },
     CurveSurfaceIntersectCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2489,6 +2496,7 @@ impl Operation {
             | Self::ProjectCurveMesh { id, .. }
             | Self::ProjectPointMesh { id, .. }
             | Self::ProjectCurveSurface { id, .. }
+            | Self::ProjectCurvePlane { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
@@ -5652,6 +5660,13 @@ fn execute(
             direction,
             ..
         } => project::run(iterations, curve, surface, *direction, tolerance)?,
+        Operation::ProjectCurvePlane {
+            curve,
+            origin,
+            normal,
+            direction,
+            ..
+        } => project::plane_curve(iterations, curve, *origin, *normal, *direction, tolerance)?,
         Operation::CurveSurfaceIntersectCommand { curve, surface, .. } => {
             curve_surface_intersect_command(iterations, curve, surface, tolerance)?
         }

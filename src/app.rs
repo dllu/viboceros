@@ -176,6 +176,7 @@ mod point_input;
 mod points;
 mod preferences;
 mod project;
+mod project_plane;
 mod radius;
 mod replace_block;
 mod scale_by_plane;
@@ -307,6 +308,11 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
+    ProjectPlane {
+        mode: project_plane::PlaneMode,
+        step: usize,
+        anchor: Option<Point3>,
+    },
     ProjectDirection {
         start: Option<Point3>,
     },
@@ -726,7 +732,7 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::ProjectDirection { .. } => "Project",
+            Self::ProjectDirection { .. } | Self::ProjectPlane { .. } => "Project",
             Self::Section { .. } => "Section",
             Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
@@ -843,6 +849,7 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::ProjectPlane { mode, step, .. } => mode.point_hint(step),
             Self::ProjectDirection { start: None } => {
                 "Project: pick the custom direction start (Esc cancels)"
             }
@@ -1617,6 +1624,7 @@ impl InteractiveCommand {
     const fn anchor(self) -> Option<Point3> {
         match self {
             Self::ProjectDirection { start } => start,
+            Self::ProjectPlane { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
                 base,
@@ -2322,6 +2330,9 @@ impl VibocerosApp {
             self.lasso_selection = None;
         }
         if self.try_one_shot_snap(&input) {
+            return;
+        }
+        if self.continue_project_plane_name_input(&input) {
             return;
         }
         if !input.is_empty() && self.try_run_view_command(&input) {
@@ -5315,7 +5326,11 @@ impl VibocerosApp {
         if let Some(command) = command
             && announce
             && command != InteractiveCommand::Points
-            && !matches!(command, InteractiveCommand::ProjectDirection { .. })
+            && !matches!(
+                command,
+                InteractiveCommand::ProjectDirection { .. }
+                    | InteractiveCommand::ProjectPlane { .. }
+            )
         {
             let action =
                 if transform_applied || matches!(command, InteractiveCommand::EvaluateUv { .. }) {
@@ -5350,6 +5365,9 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::ProjectPlane { .. } => {
+                return self.accept_project_plane_point(point);
+            }
             InteractiveCommand::ProjectDirection { start } => {
                 return self.accept_project_direction_point(start, point);
             }

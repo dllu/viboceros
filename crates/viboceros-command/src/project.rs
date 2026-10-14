@@ -6,7 +6,7 @@ mod tests;
 #[cfg(feature = "native-smlib")]
 use viboceros_geometry::{SurfaceIntersectionInput, SurfaceSurfaceIntersectionEvent};
 
-pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
+pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
 pub(super) struct ProjectCommand;
 #[derive(Clone, Copy)]
 enum Layer {
@@ -98,31 +98,46 @@ fn line(
     )
 }
 
-fn projection_plane(
-    curve: &NurbsCurve,
+fn projection_transform(
     plane: Plane,
     direction: Vector3,
-) -> Result<Option<NurbsCurve>, GeometryError> {
+) -> Result<Option<AffineTransform3>, GeometryError> {
     let n = plane.normal().as_vector().to_array();
     let d = direction.to_array();
     let denominator = plane.normal().as_vector().dot(direction)?;
     // A small angle can still give a finite projection inside the target.
     // Classify only an exactly parallel represented direction as a miss.
     if denominator == 0. {
+        if !plane.direction_is_parallel(direction) {
+            return Err(GeometryError::CurveIntersectionDidNotConverge);
+        }
         return Ok(None);
     }
     let matrix = std::array::from_fn(|r| {
         std::array::from_fn(|c| f64::from(r == c) - d[r] * n[c] / denominator)
     });
-    let p = plane.origin().to_array();
-    let mut translation = [0.; 3];
-    for r in 0..3 {
-        translation[r] = p[r] - (0..3).map(|c| matrix[r][c] * p[c]).sum::<f64>();
-    }
-    let projected = curve.transformed(AffineTransform3::try_new(
+    Ok(Some(AffineTransform3::try_with_fixed_point(
         matrix,
-        Vector3::try_from(translation)?,
-    )?)?;
+        plane.origin(),
+    )?))
+}
+
+fn projection_plane(
+    curve: &NurbsCurve,
+    plane: Plane,
+    direction: Vector3,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    let Some(transform) = projection_transform(plane, direction)? else {
+        return Ok(None);
+    };
+    Ok(Some(transform_projection_curve(curve, transform)?))
+}
+
+fn transform_projection_curve(
+    curve: &NurbsCurve,
+    transform: AffineTransform3,
+) -> Result<NurbsCurve, GeometryError> {
+    let projected = curve.transformed(transform)?;
     if projected
         .control_points()
         .iter()
@@ -132,7 +147,7 @@ fn projection_plane(
             context: "projection curve collapses to a point",
         });
     }
-    Ok(Some(projected))
+    Ok(projected)
 }
 
 fn curve_output(
@@ -231,6 +246,7 @@ impl Command for ProjectCommand {
         let mut sources = None;
         let mut targets = None;
         let mut subcurves = Vec::new();
+        let mut plane_definitions = Vec::new();
         let mut direction = context.construction_plane.z_axis().as_vector();
         let mut view = false;
         let mut custom = false;
@@ -245,6 +261,13 @@ impl Command for ProjectCommand {
                 .trim_start_matches('_')
                 .split_once('=')
                 .ok_or(CommandError::Usage(PROJECT_USAGE))?;
+            if key.eq_ignore_ascii_case("InfinitePlane") {
+                if plane_definitions.len() >= MAX_INTERSECT_PAIRS {
+                    return Err(CommandError::Usage(PROJECT_USAGE));
+                }
+                plane_definitions.push(value);
+                continue;
+            }
             if key.eq_ignore_ascii_case("SubCrv") || key.eq_ignore_ascii_case("SubCrvLength") {
                 if subcurves.len() >= MAX_INTERSECT_PAIRS {
                     return Err(CommandError::Usage(PROJECT_USAGE));
@@ -309,6 +332,10 @@ impl Command for ProjectCommand {
             return Err(CommandError::Usage(PROJECT_USAGE));
         }
         direction = direction.normalized_nonzero()?.as_vector();
+        let planes = plane_definitions
+            .into_iter()
+            .map(|value| infinite_plane::resolve(document, value, context.construction_plane))
+            .collect::<Result<Vec<_>, _>>()?;
         let selected = document.selected_object_ids().collect::<Vec<_>>();
         let source_ids = sources.unwrap_or_else(|| {
             selected
@@ -337,11 +364,11 @@ impl Command for ProjectCommand {
                 .collect()
         });
         if source_ids.is_empty() && subcurves.is_empty()
-            || target_ids.is_empty()
+            || target_ids.is_empty() && planes.is_empty()
             || source_ids
                 .len()
                 .saturating_add(subcurves.len())
-                .saturating_mul(target_ids.len())
+                .saturating_mul(target_ids.len().saturating_add(planes.len()))
                 > MAX_INTERSECT_PAIRS
         {
             return Err(CommandError::Usage(PROJECT_USAGE));
@@ -462,6 +489,28 @@ impl Command for ProjectCommand {
                     });
                 }
             }
+            for target in &planes {
+                let output = infinite_plane_output(
+                    input.geometry.as_ref(),
+                    target.plane,
+                    direction,
+                    tolerance,
+                )?;
+                let layer_id = match layer {
+                    Layer::Current => document.current_layer_id(),
+                    Layer::Input => source.attributes().layer_id(),
+                    Layer::Target => target
+                        .object
+                        .and_then(|id| document.object(id))
+                        .map_or(document.current_layer_id(), |o| o.attributes().layer_id()),
+                };
+                staged.extend(output.into_iter().map(|g| (g, layer_id)));
+                if staged.len() > MAX_INTERSECT_OUTPUTS {
+                    return Err(CommandError::TooManyIntersectOutputs {
+                        maximum: MAX_INTERSECT_OUTPUTS,
+                    });
+                }
+            }
         }
         drop(mesh_indexes);
         if staged.is_empty() {
@@ -480,6 +529,48 @@ impl Command for ProjectCommand {
         document.select_command_results(output_ids.iter().copied())?;
         Ok(format!("Created {} projected object(s)", output_ids.len()))
     }
+}
+
+fn infinite_plane_output(
+    source: &Geometry,
+    plane: Plane,
+    direction: Vector3,
+    tolerance: Tolerance,
+) -> Result<Vec<Geometry>, CommandError> {
+    let Some(transform) = projection_transform(plane, direction)? else {
+        return Ok(vec![]);
+    };
+    let check = |original: Point3, projected: Point3| -> Result<(), GeometryError> {
+        if !plane.directional_projection_within_tolerance(
+            original,
+            projected,
+            direction,
+            tolerance.absolute(),
+        )? {
+            return Err(GeometryError::Degenerate {
+                context: "infinite plane projection exceeds absolute tolerance",
+            });
+        }
+        Ok(())
+    };
+    if let Geometry::Point(p) = source {
+        let projected = transform.transform_point(*p)?;
+        check(*p, projected)?;
+        return Ok(vec![Geometry::Point(projected)]);
+    }
+    let curve = source
+        .nurbs_curve_representation()?
+        .ok_or(CommandError::Usage(PROJECT_USAGE))?;
+    bounded_weights(curve.control_points().iter().map(|p| p.weight()))?;
+    let projected = transform_projection_curve(&curve, transform)?;
+    for (a, b) in curve
+        .control_points()
+        .iter()
+        .zip(projected.control_points())
+    {
+        check(a.point(), b.point())?;
+    }
+    Ok(vec![Geometry::NurbsCurve(projected)])
 }
 
 fn planar_output(
