@@ -20,10 +20,24 @@ issues reported by NVIDIA that have not all been reproduced here.
   for the offset, single reversal and ruled flag, leaving tolerances and the
   pinned submodule unchanged. All 24 cases pass with independent Hermite and
   boundary checks, including an AddressSanitizer build of both complete native
-  libraries. Curved/rational fitting, extreme domains, automatic direction and
-  whole-command shape parity remain unqualified. See the
+  libraries. Fixed curved/rational extrusions are additionally covered by the
+  [derivative-scaling qualification](smlib-blend-derivative-scaling.md);
+  extreme domains, automatic direction and whole-command shape parity remain
+  unqualified. See the
   [direct qualification](smlib-surface-blend-producer.md) and
   [retained outcomes](smlib-surface-blend-producer-probe.json).
+- **Surface-boundary blends rescale the tangent without rescaling higher jets.**
+  `SmDerivSurfDefinition::GetSampleValues` changes takeoff length while keeping
+  the original second/third directional derivatives. Curved extrusion fixtures
+  report native success but a cross normal curvature error as large as `7.13`.
+  The [generated-source repair](../third_party/patches/usd-brep-blend-derivative-scaling.patch)
+  applies the chain rule's squared/cubed speed factors. Independent direct
+  rational jets agree within `1e-10` in 144 polynomial/rational constructions;
+  fitted cross normal curvature errors fall below `3.3e-8`. Reverse-direction
+  mixed curvature retains a `4.9e-5` skinning residual, so this repair is not a
+  certificate of whole-surface G2 continuity. See the
+  [qualification and reproduction](smlib-blend-derivative-scaling.md) and
+  [all retained outcomes](smlib-blend-derivative-scaling-comparison.json).
 - **Intersection-curve trimming can accept an off-curve vertex projection.**
   `SmEdgeDefinition::IsInteriorPoint` checked that nearest-point projection
   succeeded but ignored its model-space distance. A boundary-crossing lamp

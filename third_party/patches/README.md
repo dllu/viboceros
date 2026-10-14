@@ -15,3 +15,9 @@ It corrects the affine offset when aligning unequal blend rail domains, removes
 the second reversal that undid explicit end-to-start correspondence, and honors
 that correspondence in the early ruled branch. The native build compiles a
 generated `SmBrep.cpp` copy. See the [direct producer qualification](../../docs/smlib-surface-blend-producer.md).
+
+`usd-brep-blend-derivative-scaling.patch` applies to the same pinned release.
+It scales second and third surface-boundary derivatives by the square and cube
+of the tangent's speed change, preserving the chain rule when takeoff length
+changes. The native build compiles a generated `SmSurface.cpp` copy. See the
+[curved rational qualification](../../docs/smlib-blend-derivative-scaling.md).

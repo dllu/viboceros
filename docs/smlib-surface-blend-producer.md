@@ -51,9 +51,11 @@ Omit the option, or set it to `OFF`, to reproduce the unmodified standalone
 kernel in isolated processes. Argument order is domain case (0–3), blend flag
 (0 ruled, 1 G1, 2 G2) and direction (1 start-to-start, 2 start-to-end).
 
-These fixtures qualify the two repairs, not arbitrary curved or rational
-boundary fitting, extreme parameter ranges, automatic correspondence, global
-fairness or absence of folds. The opposite-direction parallel-sheet case has
+These planar fixtures qualify the two repairs. Separate
+[curved rational fixtures](smlib-blend-derivative-scaling.md) qualify the
+additional derivative scaling repair. Arbitrary curved boundary fitting,
+extreme parameter ranges, automatic correspondence, global fairness and absence
+of folds remain unqualified. The opposite-direction parallel-sheet case has
 a collapsing interior, so endpoint correctness is not a regularity claim.
 The application's exact [BlendSrf construction](smlib-surface-blend.md) still
 uses native parent preparation and independent Hermite constraints; switching

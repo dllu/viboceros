@@ -31,6 +31,9 @@ Separate [direct producer qualification](smlib-surface-blend-producer.md) found
 and repaired unequal-domain heap corruption and ignored explicit reverse
 correspondence. Those repairs are applied to the native build; the shared
 command still retains its exact independent boundary construction.
+The [curved rational qualification](smlib-blend-derivative-scaling.md) also
+repairs higher-derivative scaling while retaining the native skinning residuals
+as diagnostics.
 
 Native regressions compare complete control nets and 13×13 grids for 80
 combinations of all natural edge orientations, mixed continuity, unequal

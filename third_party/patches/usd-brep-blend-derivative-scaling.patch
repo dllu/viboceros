@@ -1,0 +1,16 @@
+--- a/source/SMLib/src/SmSurface.cpp
++++ b/source/SMLib/src/SmSurface.cpp
+@@ -3237,7 +3237,12 @@
+       // Change tangent length when not using the current length
+       if ( dTanLength > 0.0 )
+         {
+-          sTgtValues[1] = sTgtValues[1] * dTanLength / dTgt1stDerivLength ;
++          // A constant parameter-speed change scales derivative order k by
++          // speed^k. Scaling only the tangent changes the normal curvature.
++          double dSpeedScale = dTanLength / dTgt1stDerivLength ;
++          sTgtValues[1] *= dSpeedScale ;
++          if(pOpt2ndDerivs) { sTgtValues[2] *= dSpeedScale * dSpeedScale ; }
++          if(pOpt3rdDerivs) { sTgtValues[3] *= dSpeedScale * dSpeedScale * dSpeedScale ; }
+         }
+
+       // When asked Rotate Tangent about BaseCurve by Ang

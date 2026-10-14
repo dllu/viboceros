@@ -25,6 +25,10 @@ fn build_native() {
     );
     println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_blend_probe.cpp");
     println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-blend-derivative-scaling.patch"
+    );
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_blend_curved_probe.cpp");
+    println!(
         "cargo:rerun-if-changed={}",
         upstream.join("source/SMLib").display()
     );
@@ -40,6 +44,12 @@ fn build_native() {
         "cargo:rustc-env=VIBOCEROS_NATIVE_SURFACE_BLEND_PROBE={}",
         destination
             .join("build/viboceros_smlib_surface_blend_probe")
+            .display()
+    );
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_SURFACE_BLEND_CURVED_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_surface_blend_curved_probe")
             .display()
     );
     println!(
