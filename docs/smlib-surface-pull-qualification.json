@@ -26,7 +26,8 @@
     "native_and_portable_lint": "All targets, warnings denied",
     "python_worker_projection_and_provenance_tests": 121,
     "retained_native_oracle_recipes": 6,
-    "python_final_geometry_ownership_and_provenance_tests": 126
+    "python_final_geometry_ownership_and_provenance_tests": 126,
+    "context_free_patch_applied_source_identical": true
   },
   "limitations": [
     "Pull command/UI coordination, points, meshes, face trims and Loose are pending.",
@@ -56,7 +57,6 @@
     "tools/rhino_oracle/test_surface_pull.py": "7faf129588527acb6cf1defbb8a606d96daf5e686b55dcb1d6c2fc48b77075f7",
     "tools/rhino_oracle/fixtures/pull_curve_surface.json": "408e114633f25d9eae69020a09e5fa726f1f8d279c4d655e1be423e43c119f41",
     "tools/usd_brep/surface_pull_probe.cpp": "01d70ea1b94ad3995b39b6ad0bfa34d8cb950f11c9e389dbef2d359d25d067a4",
-    "third_party/patches/usd-brep-surface-drop-start-normal.patch": "51b007896ebaffa24f2e9a34f1fe8113ff24d55c1bb1a5c499c5bddc14a784b9",
     "third_party/usd-brep/source/SMLib/src/SmSurfaceDropCurve.cpp": "e86c71c26c2e793c4c0b0a928893921263d6725390c3ba529fb2b60cdeb6e9d9",
     "third_party/usd-brep/source/SM_API/src/SmApiCurves.cpp": "c96c0aa4f955eefba6021658748051c5e734adc55e5d8ee08bb6421f8544c438"
   },
@@ -64,5 +64,12 @@
     "docs/smlib-surface-pull-baseline.jsonl": "fafbd2aa05ca3a40a0f176e55bbdde8fa71fdc8336f134ad1ec7cfb326ac57c1",
     "docs/smlib-surface-pull-repaired.jsonl": "0c71fc0f85325e51a005a0f7ec4ca4e9f92cda054c8dd6e2a81d5d4b87d39ce2",
     "tools/rhino_oracle/observations/pull_curve_surface_viboceros_native.json": "a5b645f9a1a99e109430a19a1aaf18151dba0b7318c2aac319da49f4b3f9f411"
-  }
+  },
+  "source_git_sha256": {
+    "ecf6c649c6e1f724090971bd813baee70db6f3df:third_party/patches/usd-brep-surface-drop-start-normal.patch": "51b007896ebaffa24f2e9a34f1fe8113ff24d55c1bb1a5c499c5bddc14a784b9"
+  },
+  "current_patch_sha256": {
+    "third_party/patches/usd-brep-surface-drop-start-normal.patch": "e428d3aeaa053816bcddc1af4681899db840f5300da006c26e515ba0d12f73ea"
+  },
+  "applied_patch_source_digest": "56914f27efe881ac798306f1481a44475b0d70fda8ab74dd8a3a6cbbefd5fc14"
 }

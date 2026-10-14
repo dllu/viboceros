@@ -1,20 +1,8 @@
 --- a/SmSurfaceDropCurve.cpp
 +++ b/SmSurfaceDropCurve.cpp
-@@ -1186,7 +1186,7 @@
-       //double dDist = m_dThisApproxTol3d;
-       SER(m_cpSurface->GlobalPointSolve      // eff: search surface for points whose normal vectors aim at the target point
-               (m_vUVDomain,                  // in : Domain of surface to search for solutions
+@@ -1189 +1189 @@
 -               SM_SO_INTERSECT,              // in : oneof: SM_SO_MINIMIZE, SM_SO_MAXIMIZE, SM_SO_NORMALIZE, SM_SO_INTERSECT
 +               m_bCurveIsOnSurface ? SM_SO_INTERSECT : SM_SO_NORMALIZE, // in : oneof: SM_SO_MINIMIZE, SM_SO_MAXIMIZE, SM_SO_NORMALIZE, SM_SO_INTERSECT
-                sStart,                       // in : Target point for the solve operation
-                m_dThisApproxTol3d,           // in : Min dist between unique points for range solutions, max 3d-dist to be in surface domain
-                pdMaxDropDist,                // in : Max/Min Drop distance for min/max and normalize operations.
-@@ -1211,7 +1211,7 @@
-       if (sSolutions.GetSize() > 1 && !bAtSeam) 
-         {
-           SER(m_crCurveToDrop.EvaluatePoint(sIvl.Evaluate(0.001),sStart));
+@@ -1214 +1214 @@
 -          SER(m_cpSurface->GlobalPointSolve(m_vUVDomain,SM_SO_INTERSECT,sStart,
 +          SER(m_cpSurface->GlobalPointSolve(m_vUVDomain,m_bCurveIsOnSurface ? SM_SO_INTERSECT : SM_SO_NORMALIZE,sStart,
-               m_dThisApproxTol3d, pdMaxDropDist,
-               SM_SR_ALL,sSolutions));
- 
