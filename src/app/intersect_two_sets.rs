@@ -69,6 +69,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.uv_subcurves.pending.is_some() {
+            return ObjectSelectionFilter::Curves;
+        }
         if self.projection.is_some() {
             return if self.first.is_some() {
                 ObjectSelectionFilter::ProjectTargets
@@ -77,9 +80,6 @@ impl TwoSetsPrompt {
             };
         }
         if let Some(kind) = self.uv_mapping {
-            if self.uv_subcurves.pending.is_some() {
-                return ObjectSelectionFilter::Curves;
-            }
             kind.filter(self.first.is_some())
         } else if self.boolean.is_some() {
             ObjectSelectionFilter::SurfaceComponents
@@ -88,6 +88,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(hint) = self.uv_subcurves.hint() {
+            return hint;
+        }
         if self.projection.as_ref().is_some_and(|p| p.custom_requested) {
             return "Pick two points for the custom direction; Esc cancels";
         }
@@ -95,11 +98,8 @@ impl TwoSetsPrompt {
             return if self.first.is_some() {
                 "Select target surfaces, B-reps or meshes; Enter projects, Esc cancels"
             } else {
-                "Select curves and points; Enter continues, Esc cancels"
+                "Select curves and points (SubCrv selects a temporary range); Enter continues, Esc cancels"
             };
-        }
-        if let Some(hint) = self.uv_subcurves.hint() {
-            return hint;
         }
         if let Some(kind) = self.uv_mapping {
             kind.hint(self.first.is_some())

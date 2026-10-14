@@ -1,4 +1,4 @@
-//! Nested, nonmutating SubCrv input for the UV source getter.
+//! Nested, nonmutating SubCrv input for curve-mapping source getters.
 use super::*;
 use viboceros_document::ObjectId;
 mod length_confirmation;

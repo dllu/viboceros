@@ -207,6 +207,12 @@ impl VibocerosApp {
         mut prompt: TwoSetsPrompt,
         input: &str,
     ) -> bool {
+        if !self.picking_project_direction()
+            && prompt.first.is_none()
+            && self.try_continue_uv_subcurve(&prompt, input)
+        {
+            return true;
+        }
         if self.picking_project_direction() {
             if input.trim_start_matches('_').eq_ignore_ascii_case("Undo") {
                 self.active_command = Some(InteractiveCommand::ProjectDirection { start: None });
@@ -248,17 +254,14 @@ impl VibocerosApp {
                 .filter(|o| prompt.filter().accepts_object(o))
                 .map(|o| o.id())
                 .collect::<Vec<_>>();
-            if selected.is_empty() {
+            if selected.is_empty()
+                && (prompt.first.is_some() || prompt.uv_subcurves.ranges.is_empty())
+            {
                 self.push_log(prompt.hint().into());
                 return true;
             }
             if let Some(first) = &prompt.first {
-                let command = format!(
-                    "{} Sources={} Targets={}",
-                    prompt.projection.as_ref().unwrap().command(),
-                    project_ids(first),
-                    project_ids(&selected)
-                );
+                let command = project_command(&prompt, first, &selected);
                 if !self.try_execute_command(&command) {
                     self.intersection_prompt = Some(prompt);
                     self.push_log("Adjust the targets or direction; Enter retries".into());
@@ -309,6 +312,14 @@ impl VibocerosApp {
             .eq_ignore_ascii_case("SelNone")
         {
             self.document.clear_selection();
+            if prompt.first.is_none() {
+                self.intersection_prompt
+                    .as_mut()
+                    .unwrap()
+                    .uv_subcurves
+                    .ranges
+                    .clear();
+            }
         } else if input.trim_start_matches('_').eq_ignore_ascii_case("SelAll") {
             let ids = self
                 .document
@@ -400,12 +411,7 @@ impl VibocerosApp {
 
     fn finish_deferred_project(&mut self, mut prompt: TwoSetsPrompt) {
         if let Some(targets) = prompt.projection.as_mut().unwrap().finish_targets.take() {
-            let command = format!(
-                "{} Sources={} Targets={}",
-                prompt.projection.as_ref().unwrap().command(),
-                project_ids(prompt.first.as_ref().unwrap()),
-                project_ids(&targets)
-            );
+            let command = project_command(&prompt, prompt.first.as_ref().unwrap(), &targets);
             if !self.try_execute_command(&command) {
                 self.intersection_prompt = Some(prompt);
                 self.log_intersection_prompt();
@@ -422,6 +428,10 @@ impl VibocerosApp {
         mode: SelectionMode,
     ) {
         if self.picking_project_direction() {
+            return;
+        }
+        let ids = ids.into_iter().collect::<Vec<_>>();
+        if self.pick_uv_subcurve_source(ids.iter().copied()) {
             return;
         }
         let Some(prompt) = &self.intersection_prompt else {
@@ -444,6 +454,20 @@ impl VibocerosApp {
             Err(e) => self.push_log(format!("Error: {e}")),
         }
     }
+}
+fn project_command(prompt: &TwoSetsPrompt, sources: &[ObjectId], targets: &[ObjectId]) -> String {
+    let sources = if sources.is_empty() {
+        String::new()
+    } else {
+        format!(" Sources={}", project_ids(sources))
+    };
+    format!(
+        "{}{} Targets={}{}",
+        prompt.projection.as_ref().unwrap().command(),
+        sources,
+        project_ids(targets),
+        prompt.uv_subcurves.arguments()
+    )
 }
 fn project_ids(ids: &[ObjectId]) -> String {
     ids.iter()

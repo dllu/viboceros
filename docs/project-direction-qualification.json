@@ -32,14 +32,8 @@
     "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm"
   ],
   "source_sha256": {
-    "crates/viboceros-command/src/project.rs": "2625ecb2565779fb85571ed5ed345dcf40bf1f197265ce9f7c8e35930a7d4d59",
-    "crates/viboceros-command/src/project_tests.rs": "f6cb92758e28fbec2c961e27faf2c03c433b9426a416b7e4f2676c151e65aa97",
     "src/app.rs": "d1f925a1cf0616f58a02661bc265e266332feb5dd499839b6dca5fe09801ef6a",
-    "src/app/project.rs": "8129ff2c83f1691ff4164ecdb08bbc74d6d7a240a48dc72d316db204a7fafe85",
-    "src/app/intersect_two_sets.rs": "11ed9de29ef31e0b1ddd2cb40178d5c60ee7cf7c32b18afcdb6a38400a0e037b",
     "src/app/object_selection.rs": "87546c98bfa7fddaa6e4dc0d97c8888deaa14fb082da03f1fd47517e7fc19ccd",
-    "src/app/tests/project.rs": "21095450c60e0aec28e9b03fd0cf5ea8a8f1f65d19e7ecb9f84b2a992259e5df",
-    "docs/commands/project.md": "5e894890b79f410921be595f50b2d6fbbe3efd0594ee39dc03c543f8e50affb0",
     "src/app/tests/blocks.rs": "c9a77d134c3044a5c8692b07aedaac792bd1708702e2aa784fa0b5071d1630ce",
     "src/app/tests/block_manager.rs": "0ed9e5a47011deaf339acb4d288881deea2a64f4284e0568263796c0b0e47e68"
   },
@@ -60,5 +54,13 @@
   "baseline_git_sha256": {
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4",
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d"
+  },
+  "source_git_sha256": {
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:crates/viboceros-command/src/project.rs": "2625ecb2565779fb85571ed5ed345dcf40bf1f197265ce9f7c8e35930a7d4d59",
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:crates/viboceros-command/src/project_tests.rs": "f6cb92758e28fbec2c961e27faf2c03c433b9426a416b7e4f2676c151e65aa97",
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/project.rs": "8129ff2c83f1691ff4164ecdb08bbc74d6d7a240a48dc72d316db204a7fafe85",
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/intersect_two_sets.rs": "11ed9de29ef31e0b1ddd2cb40178d5c60ee7cf7c32b18afcdb6a38400a0e037b",
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:src/app/tests/project.rs": "21095450c60e0aec28e9b03fd0cf5ea8a8f1f65d19e7ecb9f84b2a992259e5df",
+    "5b1248fdd179931dbbb16d9650bc836e3d1c2937:docs/commands/project.md": "5e894890b79f410921be595f50b2d6fbbe3efd0594ee39dc03c543f8e50affb0"
   }
 }

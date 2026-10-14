@@ -18,6 +18,7 @@ points before projecting. Esc restores the selection from before the prompt.
 Project [Sources=id[,id...]] [Targets=id[,id...]]
         [Direction=CPlaneZ|View|Custom|x,y,z] [DeleteInput=Yes|No]
         [OutputLayer=Current|Input|TargetObject]
+        [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length]
 ```
 
 `Direction=View` uses the active camera at completion. `Direction=Custom` picks
@@ -44,6 +45,28 @@ run `Project`. Use `Project Direction=1,0,2 OutputLayer=Input` for oblique
 projection; use `Project Sources=1,2 Targets=3 DeleteInput=Yes` for explicit IDs.
 IDs here are examples, not stable document identifiers.
 
+During source selection, type `SubCrv`, choose a curve, and pick its start and
+end. This uses the same temporary range picker as ApplyCrv/CreateUVCrv, with
+typed points, a curve preview, numeric lengths and cursor direction locking.
+Repeat it to collect multiple ranges, or combine ranges with whole curves and
+points. Enter returns from an incomplete range to source selection; SelNone
+clears the collected ranges. Source preselection skips this stage, so start
+without curves or points selected when choosing a temporary range.
+
+Headless `SubCrv=id,start,end` uses the source's native parameter domain, which
+can differ from 0–1. `SubCrvLength=id,start,signed-length` uses a model-unit arc
+length; its sign specifies the direction. Both arguments can repeat. For
+example, a line from `(1,5,3)` to `(9,5,3)` has domain 0–8: a range from 2 to 6
+projects the part from `(3,5,3)` to `(7,5,3)`. These arguments add ranges to the
+whole inputs supplied by Sources or selection. To project only a temporary
+range, leave its whole source unselected.
+
+Temporary ranges create no model objects. DeleteInput=Yes deletes whole source
+inputs only; a curve used solely through temporary ranges is preserved.
+OutputLayer=Input uses the original range source's layer. Failed range resolution
+preserves geometry, selection and redo history. Projection still stages all
+outputs before a single history edit.
+
 Planar projection is an exact affine transform followed by the shared curve/face
 clipping query. Curved projection constructs the existing exact ruled surface
 `C(u)+v*d` and intersects it with each original target using usd-brep. The native
@@ -52,7 +75,8 @@ both source relations, clips original face trims, and certifies the retained
 spans again. Finite sweep bounds require nonzero common-sign rational weights.
 No additional projection solver or vendor-source patch is introduced.
 
-SubD targets, grips, edge subobjects and Loose projection are pending. Curved
+SubD targets, grips, edge subobjects, InfinitePlane input and Loose projection
+are pending. Curved
 source kinks and distinct target faces can produce separate objects. Coincident,
 collapsed or singular source relations can be declined by existing
 contact/preparation checks. Continuous
@@ -71,12 +95,20 @@ on 2026-10-14 timed out before the worker responded; these recipes have no
 fresh Rhino observations yet. [Qualification record](../project-qualification.json)
 retains the local response and source hashes.
 
-The custom-direction increment passes 21 native and 19 portable command tests
+The custom-direction increment passed 21 native and 19 portable command tests
 and 13 Project app tests, including actual viewport clicks with endpoint snaps,
 mixed preselection, typed coordinates, transient Undo/Cancel, saved direction,
 and atomic validation of headless custom points. These are local checks;
 interactive Rhino parity has not been measured. See the
 [direction qualification record](../project-direction-qualification.json).
+
+The subcurve increment passes 27 native and 24 portable command tests, 17
+Project app tests in both builds, four shared range-command tests in both
+builds, and six existing UV range-picker app tests. The shared range resolver,
+trimming and projection producers are reused. Project-specific native getter
+behavior, broad Rhino parity and comparative performance remain unqualified;
+the current Wine dependency failure prevents fresh captures. See the
+[subcurve qualification record](../project-subcurve-qualification.json).
 
 ```sh
 cargo test -p viboceros-command --features native-smlib project::tests

@@ -6,7 +6,7 @@ mod tests;
 #[cfg(feature = "native-smlib")]
 use viboceros_geometry::{SurfaceIntersectionInput, SurfaceSurfaceIntersectionEvent};
 
-pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
+pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
 pub(super) struct ProjectCommand;
 #[derive(Clone, Copy)]
 enum Layer {
@@ -230,6 +230,7 @@ impl Command for ProjectCommand {
     ) -> Result<String, CommandError> {
         let mut sources = None;
         let mut targets = None;
+        let mut subcurves = Vec::new();
         let mut direction = context.construction_plane.z_axis().as_vector();
         let mut view = false;
         let mut custom = false;
@@ -244,6 +245,17 @@ impl Command for ProjectCommand {
                 .trim_start_matches('_')
                 .split_once('=')
                 .ok_or(CommandError::Usage(PROJECT_USAGE))?;
+            if key.eq_ignore_ascii_case("SubCrv") || key.eq_ignore_ascii_case("SubCrvLength") {
+                if subcurves.len() >= MAX_INTERSECT_PAIRS {
+                    return Err(CommandError::Usage(PROJECT_USAGE));
+                }
+                subcurves.push(if key.eq_ignore_ascii_case("SubCrv") {
+                    uv_inputs::SubcurveInput::parse(value, PROJECT_USAGE)?
+                } else {
+                    uv_inputs::SubcurveInput::parse_length(value, PROJECT_USAGE)?
+                });
+                continue;
+            }
             if !seen.insert(key.to_ascii_lowercase()) {
                 return Err(CommandError::Usage(PROJECT_USAGE));
             }
@@ -324,11 +336,31 @@ impl Command for ProjectCommand {
                 })
                 .collect()
         });
-        if source_ids.is_empty()
+        if source_ids.is_empty() && subcurves.is_empty()
             || target_ids.is_empty()
-            || source_ids.len().saturating_mul(target_ids.len()) > MAX_INTERSECT_PAIRS
+            || source_ids
+                .len()
+                .saturating_add(subcurves.len())
+                .saturating_mul(target_ids.len())
+                > MAX_INTERSECT_PAIRS
         {
             return Err(CommandError::Usage(PROJECT_USAGE));
+        }
+        let mut inputs = source_ids
+            .iter()
+            .map(|id| {
+                let source = document
+                    .object(*id)
+                    .ok_or(DocumentError::ObjectNotFound(*id))?;
+                Ok(uv_inputs::Input {
+                    object: *id,
+                    geometry: std::borrow::Cow::Borrowed(source.geometry()),
+                    temporary: false,
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        for range in subcurves {
+            inputs.push(range.resolve(document, PROJECT_USAGE)?);
         }
         // Borrow and build each mesh target once; output admission happens
         // only after these caches and all source queries have been released.
@@ -347,21 +379,22 @@ impl Command for ProjectCommand {
         }
         let mut staged = Vec::new();
         let tolerance = document.tolerance();
-        for source_id in &source_ids {
+        for input in inputs {
+            let source_id = input.object;
             let source = document
-                .object(*source_id)
-                .ok_or(DocumentError::ObjectNotFound(*source_id))?;
-            if !document.is_object_selectable(*source_id) {
+                .object(source_id)
+                .ok_or(DocumentError::ObjectNotFound(source_id))?;
+            if !document.is_object_selectable(source_id) {
                 return Err(CommandError::Usage(PROJECT_USAGE));
             }
             for target_id in &target_ids {
-                if source_id == target_id || !document.is_object_selectable(*target_id) {
+                if source_id == *target_id || !document.is_object_selectable(*target_id) {
                     return Err(CommandError::Usage(PROJECT_USAGE));
                 }
                 let target = document
                     .object(*target_id)
                     .ok_or(DocumentError::ObjectNotFound(*target_id))?;
-                let output = if let Geometry::Point(point) = source.geometry() {
+                let output = if let Geometry::Point(point) = input.geometry.as_ref() {
                     if let Some(index) = mesh_indexes.get(target_id) {
                         index
                             .project_point(*point, direction, tolerance)?
@@ -398,8 +431,8 @@ impl Command for ProjectCommand {
                     }
                 } else if let Geometry::Mesh(_) = target.geometry() {
                     mesh_curve_output(
-                        &source
-                            .geometry()
+                        &input
+                            .geometry
                             .nurbs_curve_representation()?
                             .ok_or(CommandError::Usage(PROJECT_USAGE))?,
                         &mesh_indexes[target_id],
@@ -408,8 +441,8 @@ impl Command for ProjectCommand {
                     )?
                 } else {
                     curve_output(
-                        &source
-                            .geometry()
+                        &input
+                            .geometry
                             .nurbs_curve_representation()?
                             .ok_or(CommandError::Usage(PROJECT_USAGE))?,
                         target.geometry(),
@@ -441,7 +474,7 @@ impl Command for ProjectCommand {
                     .add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
             );
         }
-        if delete {
+        if delete && !source_ids.is_empty() {
             document.delete_objects(source_ids.iter().copied())?;
         }
         document.select_command_results(output_ids.iter().copied())?;

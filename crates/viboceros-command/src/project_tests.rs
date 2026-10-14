@@ -624,3 +624,215 @@ fn project_custom_point_validation_preserves_document_and_redo() {
         assert_eq!(before, format!("{d:?}"));
     }
 }
+
+#[test]
+fn project_temporary_range_preserves_source_attributes_and_undo_redo() {
+    let (mut d, r, a, b) = setup(
+        line(point(1., 5., 3.), point(9., 5., 3.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    let layer = d.add_layer("range-input", ColorRgb::BLACK).unwrap();
+    d.set_objects_layer([a], layer).unwrap();
+    d.select_objects_direct([b], SelectionMode::Replace)
+        .unwrap();
+    let original = d.object(a).unwrap().clone();
+    r.execute(
+        &mut d,
+        &format!("Project Targets={b} SubCrv={a},2,6 DeleteInput=Yes OutputLayer=Input"),
+    )
+    .unwrap();
+    assert_eq!(d.object(a), Some(&original));
+    assert_eq!(d.objects().len(), 3);
+    let out = d.selected_objects().next().unwrap();
+    assert_eq!(out.attributes().layer_id(), layer);
+    assert_eq!(
+        curve_ends(out.geometry()),
+        [point(3., 5., 0.), point(7., 5., 0.)]
+    );
+    assert_eq!(d.undo_label(), Some("Project"));
+    r.execute(&mut d, "Undo").unwrap();
+    assert_eq!(d.objects().len(), 2);
+    assert_eq!(d.object(a), Some(&original));
+    r.execute(&mut d, "Redo").unwrap();
+    assert_eq!(d.selected_object_count(), 1);
+    assert_eq!(d.object(a), Some(&original));
+}
+
+#[test]
+fn project_repeated_ranges_signed_lengths_and_whole_points_share_atomic_admission() {
+    let (mut d, r, a, b) = setup(
+        line(point(1., 5., 3.), point(9., 5., 3.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    let p = d.add_geometry(Geometry::Point(point(5., 8., 2.))).unwrap();
+    r.execute(
+        &mut d,
+        &format!(
+            "Project Sources={p} Targets={b} SubCrv={a},2,4 SubCrvLength={a},6,-2 DeleteInput=Yes"
+        ),
+    )
+    .unwrap();
+    assert!(d.object(p).is_none());
+    assert!(d.object(a).is_some());
+    assert_eq!(d.selected_object_count(), 3);
+    let out = outputs(&d);
+    assert_eq!(out[0], Geometry::Point(point(5., 8., 0.)));
+    assert_eq!(curve_ends(&out[1]), [point(3., 5., 0.), point(5., 5., 0.)]);
+    assert_eq!(curve_ends(&out[2]), [point(7., 5., 0.), point(5., 5., 0.)]);
+    r.execute(&mut d, "Undo").unwrap();
+    assert!(d.object(p).is_some());
+    assert_eq!(d.objects().len(), 3);
+}
+
+#[test]
+fn project_closed_subcurve_wraps_the_seam_and_preserves_its_kink() {
+    let polyline = Polyline3::try_new(
+        vec![
+            point(2., 2., 3.),
+            point(4., 2., 3.),
+            point(4., 4., 3.),
+            point(2., 4., 3.),
+            point(2., 2., 3.),
+        ],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let (mut d, r, a, b) = setup(
+        Geometry::Polyline(polyline),
+        Geometry::NurbsSurface(plane()),
+    );
+    d.select_objects_direct([b], SelectionMode::Replace)
+        .unwrap();
+    r.execute(&mut d, &format!("Project SubCrv={a},3.5,0.5"))
+        .unwrap();
+    let out = outputs(&d);
+    assert_eq!(out.len(), 1);
+    let curve = out[0].curve_ref().unwrap();
+    assert_eq!(curve.start_point().unwrap(), point(2., 3., 0.));
+    assert_eq!(curve.end_point().unwrap(), point(3., 2., 0.));
+    assert!((curve.length(d.tolerance()).unwrap() - 2.).abs() < 1e-8);
+    assert!(
+        out[0]
+            .nurbs_curve_representation()
+            .unwrap()
+            .unwrap()
+            .control_points()
+            .iter()
+            .any(|p| p.point() == point(2., 2., 0.))
+    );
+}
+
+#[test]
+fn project_rational_subcurve_uses_the_existing_mesh_producer() {
+    let curve = NurbsCurve::try_new_rational(
+        2,
+        vec![
+            WeightedPoint3::try_new(point(2., 2., 3.), 1.).unwrap(),
+            WeightedPoint3::try_new(point(5., 8., 3.), 2.).unwrap(),
+            WeightedPoint3::try_new(point(8., 2., 3.), 1.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let (mut d, r, a, b) = setup(
+        Geometry::NurbsCurve(curve),
+        mesh_target([
+            point(0., 0., 0.),
+            point(10., 0., 0.),
+            point(10., 10., 0.),
+            point(0., 10., 0.),
+        ]),
+    );
+    d.select_objects_direct([b], SelectionMode::Replace)
+        .unwrap();
+    r.execute(&mut d, &format!("Project _SubCrv={a},0.2,0.7"))
+        .unwrap();
+    let out = outputs(&d);
+    assert_eq!(out.len(), 1);
+    let c = out[0].nurbs_curve_representation().unwrap().unwrap();
+    assert_eq!(c.degree(), 2);
+    assert!(c.is_rational());
+    for i in 0..=32 {
+        let t = 0.2 + 0.5 * i as f64 / 32.;
+        let p = c.evaluate(t).unwrap();
+        let a = (1. - t).powi(2);
+        let b = 4. * t * (1. - t);
+        let e = t * t;
+        let expected = point(
+            (2. * a + 5. * b + 8. * e) / (a + b + e),
+            (2. * a + 8. * b + 2. * e) / (a + b + e),
+            0.,
+        );
+        assert!(p.distance_to(expected).unwrap() < 1e-8);
+    }
+}
+
+#[test]
+fn project_invalid_later_subcurve_is_read_only_and_preserves_redo() {
+    let (mut d, r, a, b) = setup(
+        line(point(1., 5., 3.), point(9., 5., 3.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    let p = d
+        .add_geometry(Geometry::Point(point(99., 99., 99.)))
+        .unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    let before = format!("{d:?}");
+    for spec in [
+        format!("SubCrv={a},0.5,0.5"),
+        format!("SubCrv={a},-1,0.5"),
+        format!("SubCrv={a},NaN,0.5"),
+        format!("SubCrvLength={a},0.5,99"),
+        format!("SubCrv={p},0,1"),
+        format!("SubCrv={b},0,1"),
+    ] {
+        assert!(
+            r.execute(
+                &mut d,
+                &format!("Project SubCrv={a},0.2,0.7 {spec} DeleteInput=Yes")
+            )
+            .is_err()
+        );
+        assert_eq!(format!("{d:?}"), before);
+    }
+    d.set_objects_locked([a], true).unwrap();
+    let before = format!("{d:?}");
+    assert!(
+        r.execute(&mut d, &format!("Project SubCrv={a},0,1"))
+            .is_err()
+    );
+    assert_eq!(format!("{d:?}"), before);
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn project_native_subcurve_clips_the_source_before_curved_surface_projection() {
+    let s = NurbsSurface::try_bilinear([
+        point(0., 0., 0.),
+        point(10., 0., 0.),
+        point(10., 10., 4.),
+        point(0., 10., 0.),
+    ])
+    .unwrap();
+    let (mut d, r, a, b) = setup(
+        line(point(1., 2., 7.), point(9., 8., 7.)),
+        Geometry::NurbsSurface(s),
+    );
+    d.select_objects_direct([b], SelectionMode::Replace)
+        .unwrap();
+    r.execute(&mut d, &format!("Project SubCrv={a},2.5,7.5"))
+        .unwrap();
+    let out = outputs(&d);
+    assert_eq!(out.len(), 1);
+    let c = out[0].nurbs_curve_representation().unwrap().unwrap();
+    for i in 0..=64 {
+        let p = c
+            .parameter_sampler()
+            .unwrap()
+            .evaluate(i as f64 / 64.)
+            .unwrap();
+        assert!((p.z() - 0.04 * p.x() * p.y()).abs() < d.tolerance().absolute());
+        assert!((p.y() - (2. + (p.x() - 1.) * 0.75)).abs() < d.tolerance().absolute());
+        assert!(p.x() >= 3. - 1e-8 && p.x() <= 7. + 1e-8);
+    }
+}

@@ -34,6 +34,35 @@ impl SubcurveInput {
         input.arc_length = true;
         Ok(input)
     }
+    pub(super) fn resolve<'a>(
+        self,
+        document: &'a Document,
+        usage: &'static str,
+    ) -> Result<Input<'a>, CommandError> {
+        if !document.is_object_selectable(self.object) {
+            return Err(CommandError::Usage(usage));
+        }
+        let curve = document
+            .object(self.object)
+            .and_then(|o| o.geometry().curve_ref())
+            .ok_or(CommandError::Usage(usage))?;
+        let [start, end] = self.parameters;
+        let piece = if self.arc_length {
+            curve
+                .to_owned()
+                .try_subcurve_at_arc_length(start, end, document.tolerance())?
+                .ok_or(CommandError::Usage(
+                    "Subcurve length exceeds the available curve",
+                ))?
+        } else {
+            curve.to_owned().try_subcurve(start, end)?
+        };
+        Ok(Input {
+            object: self.object,
+            geometry: Cow::Owned(Geometry::from(piece)),
+            temporary: true,
+        })
+    }
 }
 
 pub(super) fn resolve<'a>(
@@ -55,29 +84,10 @@ pub(super) fn resolve<'a>(
         })
         .collect::<Vec<_>>();
     for input in subcurves {
-        if input.object == target || !document.is_object_selectable(input.object) {
+        if input.object == target {
             return Err(CommandError::Usage(usage));
         }
-        let curve = document
-            .object(input.object)
-            .and_then(|o| o.geometry().curve_ref())
-            .ok_or(CommandError::Usage(usage))?;
-        let [start, end] = input.parameters;
-        let piece = if input.arc_length {
-            curve
-                .to_owned()
-                .try_subcurve_at_arc_length(start, end, document.tolerance())?
-                .ok_or(CommandError::Usage(
-                    "Subcurve length exceeds the available curve",
-                ))?
-        } else {
-            curve.to_owned().try_subcurve(start, end)?
-        };
-        inputs.push(Input {
-            object: input.object,
-            geometry: Cow::Owned(Geometry::from(piece)),
-            temporary: true,
-        });
+        inputs.push(input.resolve(document, usage)?);
     }
     if subcurves.is_empty() {
         return Ok(inputs);
