@@ -16,7 +16,12 @@ mod curve_blend;
 pub use boundary_extension::{
     extend_curve_to_boundaries, join_curve_to_boundaries, separate_curve_extensions_to_boundaries,
 };
+mod curve_connections;
 mod curve_extension;
+pub use curve_connections::{
+    chamfer_curves_joined, chamfer_curves_parts, connect_curves_joined, connect_curves_parts,
+    fillet_curves_joined, fillet_curves_parts,
+};
 pub use curve_extension::{
     extend_curve, extend_curve_by_length, extend_curve_naturally_by_length, extend_surface,
     extend_surface_by_length, join_curve_natural_extension, join_curve_smooth_extension,

@@ -1,10 +1,7 @@
 //! Extends or trims selected curve ends until they meet.
 
 use super::*;
-use viboceros_geometry::{
-    CurveArcExtensionStyle, CurveOtherExtensionStyle, try_connect_curves_joined_with_styles,
-    try_connect_curves_parts_with_styles,
-};
+use viboceros_geometry::{CurveArcExtensionStyle, CurveOtherExtensionStyle};
 
 const USAGE: &str = "Connect [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
 
@@ -51,11 +48,9 @@ impl Command for ConnectCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join {
-            let joined = try_connect_curves_joined_with_styles(
-                first,
-                picks[0],
-                second,
-                picks[1],
+            let joined = super::curve_connections::connect_joined(
+                (first, picks[0]),
+                (second, picks[1]),
                 arc_extension,
                 other_extension,
                 document.tolerance(),
@@ -63,11 +58,9 @@ impl Command for ConnectCommand {
             document
                 .copy_object_pieces_into_source_groups([(*first_id, Geometry::PolyCurve(joined))])?
         } else {
-            let parts = try_connect_curves_parts_with_styles(
-                first,
-                picks[0],
-                second,
-                picks[1],
+            let parts = super::curve_connections::connect_parts(
+                (first, picks[0]),
+                (second, picks[1]),
                 arc_extension,
                 other_extension,
                 document.tolerance(),

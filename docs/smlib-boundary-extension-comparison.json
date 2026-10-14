@@ -4,25 +4,6 @@
   "reference": "portable producer",
   "reference_engine": "viboceros",
   "scope": "Native and portable producers on the same fixtures; this does not qualify Rhino parity.",
-  "source_sha256": {
-    "crates/viboceros-geometry/src/nurbs.rs": "21684524da58851dc373f330d7c2fc6f87067bc037469a7813af03ae9965cea0",
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
-    "crates/viboceros-geometry/src/nurbs/boundary_extension.rs": "dc653beec631e48478683fc08828765edecdbd66d9096e6e013e6ce64c67b646",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
-    "crates/viboceros-smlib/src/native/curve_extension.rs": "3db231cadd07725f95899f66c8e5dd28d0c475fb9866ea2ada92765d4e6994ec",
-    "crates/viboceros-smlib/src/native/boundary_extension.rs": "2bdc79af0378e710fd409e33aa37f3fdde4ce1a7f0169168183c8f5f6d644dd3",
-    "crates/viboceros-command/src/extension_backend.rs": "4e51dc8c8099dbbe5d896e07bb3043ccf897c572f7316a5721ca46d49a46b8da",
-    "crates/viboceros-oracle/src/extension_backend.rs": "af74b3e53ba27d172316fa0bf7624166e98078af3d1096803f0a43a63fd87271",
-    "tools/numerics/compare_native_extensions.py": "e23075c27d52fdc138946a40d6eb238c42de1d78e822832464a434c46b98150a",
-    "tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
-    "tools/rhino_oracle/fixtures/curve_extend.json": "08408f77b211e7a6144abcd7442f2c421d8aaa2364fc994b14f9473708a51191",
-    "tools/rhino_oracle/fixtures/curve_extend_length.json": "34480393ee8b34847bacaf20818cf504a899b6fb03722e54866ef23f10cecfd0",
-    "tools/rhino_oracle/fixtures/surface_extend.json": "04d837472df4107a2a145afd0fcf9ac6c07afa26e1d30979fe2690688fc16345",
-    "tools/rhino_oracle/fixtures/surface_extend_length.json": "3d9437a3f0d18568c5fdf94cda8498ba7e9ec041e336f49f951c9746f1b5d4e7",
-    "tools/rhino_oracle/fixtures/curve_extend_command.json": "6372c3378bb6d30c2d42b229e6a5721c2c6d25889ed0c4f360f49b63d7bddc08",
-    "tools/rhino_oracle/fixtures/curve_extend_arc_command.json": "7e9ba72dffc8be692976d77ecedeab4f2d65305de36b5ca7304db73e7caa9bcd",
-    "tools/rhino_oracle/fixtures/curve_extend_boundary_command.json": "837e09bc06d217ceda7d5d6b08676e16f8d3b5b45ed2de4c8b3f4e124dbee91b"
-  },
   "passed": true,
   "records": [
     {
@@ -13478,5 +13459,24 @@
         "elapsed_ns": 34560
       }
     ]
+  },
+  "source_git_sha256": {
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-geometry/src/nurbs.rs": "21684524da58851dc373f330d7c2fc6f87067bc037469a7813af03ae9965cea0",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-geometry/src/nurbs/boundary_extension.rs": "dc653beec631e48478683fc08828765edecdbd66d9096e6e013e6ce64c67b646",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-smlib/src/native/curve_extension.rs": "3db231cadd07725f95899f66c8e5dd28d0c475fb9866ea2ada92765d4e6994ec",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-smlib/src/native/boundary_extension.rs": "2bdc79af0378e710fd409e33aa37f3fdde4ce1a7f0169168183c8f5f6d644dd3",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-command/src/extension_backend.rs": "4e51dc8c8099dbbe5d896e07bb3043ccf897c572f7316a5721ca46d49a46b8da",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:crates/viboceros-oracle/src/extension_backend.rs": "af74b3e53ba27d172316fa0bf7624166e98078af3d1096803f0a43a63fd87271",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/numerics/compare_native_extensions.py": "e23075c27d52fdc138946a40d6eb238c42de1d78e822832464a434c46b98150a",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/curve_extend.json": "08408f77b211e7a6144abcd7442f2c421d8aaa2364fc994b14f9473708a51191",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/curve_extend_length.json": "34480393ee8b34847bacaf20818cf504a899b6fb03722e54866ef23f10cecfd0",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/surface_extend.json": "04d837472df4107a2a145afd0fcf9ac6c07afa26e1d30979fe2690688fc16345",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/surface_extend_length.json": "3d9437a3f0d18568c5fdf94cda8498ba7e9ec041e336f49f951c9746f1b5d4e7",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/curve_extend_command.json": "6372c3378bb6d30c2d42b229e6a5721c2c6d25889ed0c4f360f49b63d7bddc08",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/curve_extend_arc_command.json": "7e9ba72dffc8be692976d77ecedeab4f2d65305de36b5ca7304db73e7caa9bcd",
+    "385926278e96d2f4a2394c25a4e7f8d0f0ef11ea:tools/rhino_oracle/fixtures/curve_extend_boundary_command.json": "837e09bc06d217ceda7d5d6b08676e16f8d3b5b45ed2de4c8b3f4e124dbee91b"
   }
 }

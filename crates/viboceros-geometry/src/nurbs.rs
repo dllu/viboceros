@@ -4,6 +4,7 @@ mod arc_length_from;
 mod boundary_extension;
 mod circularity;
 pub use boundary_extension::CurveExtensionOperations;
+pub(crate) use boundary_extension::with_portable_extension_operations;
 mod closest_point;
 pub(crate) use closest_point::PreparedCurveClosest;
 mod decompose;

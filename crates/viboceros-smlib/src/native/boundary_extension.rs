@@ -57,11 +57,17 @@ pub fn separate_curve_extensions_to_boundaries(
     })
 }
 
-fn with_native_operations<T>(
+pub(super) fn with_native_operations<T>(
     run: impl FnOnce(&mut CurveExtensionOperations<'_, Error>) -> Result<T, Error>,
 ) -> Result<T, Error> {
     let mut extend = extend_curve;
-    let mut trim = trim_curve;
+    let mut trim = |source: &NurbsCurve, interval| {
+        if source.degree() > 17 {
+            Ok(source.try_trimmed(interval)?)
+        } else {
+            trim_curve(source, interval)
+        }
+    };
     let mut clamp_endpoint = super::knot_refinement::clamp_curve_endpoint;
     run(&mut CurveExtensionOperations {
         extend: &mut extend,

@@ -23,6 +23,10 @@ NURBS pieces are retained when the chosen continuation supports them.
 Earlier polycurve leaves are preserved. Zero distances on both sides produce
 a sharp join when trimming is enabled.
 
+Linux `native-smlib` builds use
+[usd-brep producers](../smlib-curve-connections.md) for smooth NURBS
+connections and partial retained NURBS pieces.
+
 The solver rejects chamfers that consume an entire connected source curve.
 A setback may cross a tangent extension and continue into the original arc or
 NURBS. Smooth NURBS extension currently supports the curve pairs handled by

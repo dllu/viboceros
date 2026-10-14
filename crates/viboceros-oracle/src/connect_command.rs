@@ -1,12 +1,9 @@
-//! Actual Connect command probes for line and smooth NURBS extensions.
+//! Connect geometry preparation compared with scripted Rhino command outputs.
 
 use crate::{ProbeError, curve_join_close::CurveInput};
 use serde::Deserialize;
 use serde_json::{Value, json};
-use viboceros_geometry::{
-    Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, Tolerance,
-    try_connect_curves_parts_with_styles,
-};
+use viboceros_geometry::{Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, Tolerance};
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Fixture {
@@ -29,11 +26,9 @@ pub fn run(fixture: &Fixture, tolerance: Tolerance) -> Result<(Value, u64), Prob
     let second = fixture.source_second.geometry()?;
     let first_pick = first.as_ref().end_point()?;
     let second_pick = second.as_ref().start_point()?;
-    let outputs = try_connect_curves_parts_with_styles(
-        &first,
-        first_pick,
-        &second,
-        second_pick,
+    let outputs = crate::curve_connections::connect_parts(
+        (&first, first_pick),
+        (&second, second_pick),
         CurveArcExtensionStyle::Arc,
         style,
         tolerance,

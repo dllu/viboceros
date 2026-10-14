@@ -1,9 +1,15 @@
 //! Endpoint connections using exact lines, circular supports, and tangents.
 
+#[cfg(test)]
+mod backend_tests;
+
+use crate::nurbs::with_portable_extension_operations;
+
 use crate::{
-    CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveExtensionSide, CurveExtensionStyle,
-    CurveSegment3, GeometryError, LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Real,
-    Tolerance, UnitVector3, Vector3,
+    CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveExtensionBoundary,
+    CurveExtensionOperations, CurveExtensionSide, CurveExtensionStyle, CurveSegment3,
+    GeometryError, LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Real, Tolerance,
+    UnitVector3, Vector3,
     curve_pair_support::{
         curve_from_segments, oriented, original_direction, selected_end,
         supporting_directions_intersection,
@@ -74,16 +80,38 @@ pub fn try_connect_curves_parts_with_styles(
     other_extension: CurveOtherExtensionStyle,
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, GeometryError> {
+    with_portable_extension_operations(|operations| {
+        try_connect_curves_parts_with_operations(
+            (first, first_pick),
+            (second, second_pick),
+            arc_extension,
+            other_extension,
+            tolerance,
+            operations,
+        )
+    })
+}
+
+/// Retain picking, source direction and analytic policies with delegated NURBS edits.
+pub fn try_connect_curves_parts_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
+    tolerance: Tolerance,
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<Vec<Curve3>, E> {
+    let (first, first_pick) = first;
+    let (second, second_pick) = second;
     let reverse_first = !selected_end(first, first_pick, tolerance)?;
     let reverse_second = selected_end(second, second_pick, tolerance)?;
     let (first, second) = connected_oriented(
-        first,
-        first_pick,
-        second,
-        second_pick,
+        (first, first_pick),
+        (second, second_pick),
         arc_extension,
         other_extension,
         tolerance,
+        operations,
     )?;
     Ok(vec![
         original_direction(
@@ -101,25 +129,25 @@ pub fn try_connect_curves_parts_with_styles(
 
 /// Connects selected ends and returns updated picks at their meeting point.
 /// The curves retain their original directions.
-pub(crate) fn connected_ends_with_styles(
-    first: &Curve3,
-    first_pick: Point3,
-    second: &Curve3,
-    second_pick: Point3,
+pub(crate) fn connected_ends_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
     arc_extension: CurveArcExtensionStyle,
     other_extension: CurveOtherExtensionStyle,
     tolerance: Tolerance,
-) -> Result<([Curve3; 2], [Point3; 2]), GeometryError> {
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<([Curve3; 2], [Point3; 2]), E> {
+    let (first, first_pick) = first;
+    let (second, second_pick) = second;
     let first_at_end = selected_end(first, first_pick, tolerance)?;
     let second_at_end = selected_end(second, second_pick, tolerance)?;
-    let mut connected = try_connect_curves_parts_with_styles(
-        first,
-        first_pick,
-        second,
-        second_pick,
+    let mut connected = try_connect_curves_parts_with_operations(
+        (first, first_pick),
+        (second, second_pick),
         arc_extension,
         other_extension,
         tolerance,
+        operations,
     )?;
     let second = connected.pop().expect("Connect returns two curves");
     let first = connected.pop().expect("Connect returns two curves");
@@ -184,31 +212,52 @@ pub fn try_connect_curves_joined_with_styles(
     other_extension: CurveOtherExtensionStyle,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
-    let (first, second) = connected_oriented(
-        first,
-        first_pick,
-        second,
-        second_pick,
-        arc_extension,
-        other_extension,
-        tolerance,
-    )?;
-    let mut segments = first.segments().to_vec();
-    segments.extend_from_slice(second.segments());
-    PolyCurve3::try_new(segments)
+    with_portable_extension_operations(|operations| {
+        try_connect_curves_joined_with_operations(
+            (first, first_pick),
+            (second, second_pick),
+            arc_extension,
+            other_extension,
+            tolerance,
+            operations,
+        )
+    })
 }
 
-fn connected_oriented(
-    first: &Curve3,
-    first_pick: Point3,
-    second: &Curve3,
-    second_pick: Point3,
+/// Retain picking, source direction and analytic policies with delegated NURBS edits.
+pub fn try_connect_curves_joined_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
     arc_extension: CurveArcExtensionStyle,
     other_extension: CurveOtherExtensionStyle,
     tolerance: Tolerance,
-) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
-    let first = oriented(first, first_pick, true, tolerance)?;
-    let second = oriented(second, second_pick, false, tolerance)?;
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<PolyCurve3, E> {
+    let (first, first_pick) = first;
+    let (second, second_pick) = second;
+    let (first, second) = connected_oriented(
+        (first, first_pick),
+        (second, second_pick),
+        arc_extension,
+        other_extension,
+        tolerance,
+        operations,
+    )?;
+    let mut segments = first.segments().to_vec();
+    segments.extend_from_slice(second.segments());
+    PolyCurve3::try_new(segments).map_err(E::from)
+}
+
+fn connected_oriented<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    arc_extension: CurveArcExtensionStyle,
+    other_extension: CurveOtherExtensionStyle,
+    tolerance: Tolerance,
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<(PolyCurve3, PolyCurve3), E> {
+    let first = oriented(first.0, first.1, true, tolerance)?;
+    let second = oriented(second.0, second.1, false, tolerance)?;
     let last = first.segments().len() - 1;
     let tail = &first.segments()[last];
     let head = &second.segments()[0];
@@ -220,20 +269,26 @@ fn connected_oriented(
     if other_extension == CurveOtherExtensionStyle::Smooth {
         match (tail, head) {
             (CurveSegment3::NurbsCurve(curve), CurveSegment3::Line(line)) => {
-                return connect_smooth_nurbs_line(&first, &second, curve, *line, true, tolerance);
+                return connect_smooth_nurbs_line(
+                    &first, &second, curve, *line, true, tolerance, operations,
+                );
             }
             (CurveSegment3::Line(line), CurveSegment3::NurbsCurve(curve)) => {
-                return connect_smooth_nurbs_line(&first, &second, curve, *line, false, tolerance);
+                return connect_smooth_nurbs_line(
+                    &first, &second, curve, *line, false, tolerance, operations,
+                );
             }
             (CurveSegment3::NurbsCurve(before), CurveSegment3::NurbsCurve(after)) => {
-                return connect_smooth_nurbs_pair(&first, &second, before, after, tolerance);
+                return connect_smooth_nurbs_pair(
+                    &first, &second, before, after, tolerance, operations,
+                );
             }
             _ => {}
         }
         if matches!(tail, CurveSegment3::NurbsCurve(_))
             || matches!(head, CurveSegment3::NurbsCurve(_))
         {
-            return Err(unsupported());
+            return Err(unsupported().into());
         }
     }
     if arc_extension == CurveArcExtensionStyle::Arc {
@@ -276,18 +331,19 @@ fn connected_oriented(
         .distance_to(second.evaluate(*second.domain().start())?)?
         > tolerance.absolute()
     {
-        return Err(unsupported());
+        return Err(unsupported().into());
     }
     Ok((first, second))
 }
 
-fn connect_smooth_nurbs_pair(
+fn connect_smooth_nurbs_pair<E: From<GeometryError>>(
     first: &PolyCurve3,
     second: &PolyCurve3,
     before: &NurbsCurve,
     after: &NurbsCurve,
     tolerance: Tolerance,
-) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<(PolyCurve3, PolyCurve3), E> {
     let before_domain = before.domain();
     let after_domain = after.domain();
     let before_end = *before_domain.end();
@@ -304,8 +360,8 @@ fn connect_smooth_nurbs_pair(
         if !before_outer.is_finite() || !after_outer.is_finite() {
             break;
         }
-        let extended_before = before.try_extended_to(*before_domain.start()..=before_outer)?;
-        let extended_after = after.try_extended_to(after_outer..=*after_domain.end())?;
+        let extended_before = (operations.extend)(before, *before_domain.start()..=before_outer)?;
+        let extended_after = (operations.extend)(after, after_outer..=*after_domain.end())?;
         let mut best = None;
         for event in extended_before.intersection_events_with_curve(&extended_after, tolerance)? {
             let CurveCurveIntersectionEvent::Point(hit) = event else {
@@ -316,14 +372,24 @@ fn connect_smooth_nurbs_pair(
             if first_parameter <= before_end || second_parameter >= after_start {
                 continue;
             }
+            if !extended_before.domain().contains(&first_parameter)
+                || !extended_after.domain().contains(&second_parameter)
+                || !extended_before
+                    .evaluate(first_parameter)?
+                    .is_near(extended_after.evaluate(second_parameter)?, tolerance)
+            {
+                continue;
+            }
+
             let proximity = a.distance_to(hit.point())? + b.distance_to(hit.point())?;
             if best.is_none_or(|(prior, _, _)| proximity < prior) {
                 best = Some((proximity, first_parameter, second_parameter));
             }
         }
         if let Some((_, first_parameter, second_parameter)) = best {
-            let before = extended_before.try_trimmed(*before_domain.start()..=first_parameter)?;
-            let after = extended_after.try_trimmed(second_parameter..=*after_domain.end())?;
+            let before =
+                (operations.trim)(&extended_before, *before_domain.start()..=first_parameter)?;
+            let after = (operations.trim)(&extended_after, second_parameter..=*after_domain.end())?;
             let mut first_segments = first.segments()[..first.segments().len() - 1].to_vec();
             first_segments.push(CurveSegment3::NurbsCurve(before));
             let mut second_segments = vec![CurveSegment3::NurbsCurve(after)];
@@ -335,24 +401,25 @@ fn connect_smooth_nurbs_pair(
                 .distance_to(second.evaluate(*second.domain().start())?)?
                 > tolerance.absolute()
             {
-                return Err(unsupported());
+                return Err(unsupported().into());
             }
             return Ok((first, second));
         }
         before_reach *= 2.0;
         after_reach *= 2.0;
     }
-    Err(unsupported())
+    Err(unsupported().into())
 }
 
-fn connect_smooth_nurbs_line(
+fn connect_smooth_nurbs_line<E: From<GeometryError>>(
     first: &PolyCurve3,
     second: &PolyCurve3,
     curve: &NurbsCurve,
     line: LineSegment,
     nurbs_first: bool,
     tolerance: Tolerance,
-) -> Result<(PolyCurve3, PolyCurve3), GeometryError> {
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<(PolyCurve3, PolyCurve3), E> {
     let endpoint = curve.evaluate(if nurbs_first {
         *curve.domain().end()
     } else {
@@ -361,7 +428,7 @@ fn connect_smooth_nurbs_line(
     let line_direction = line.direction(tolerance)?.as_vector();
     let reach = (endpoint.distance_to(line.start())? + endpoint.distance_to(line.end())?) * 8.0;
     if !reach.is_finite() || reach <= tolerance.absolute() {
-        return Err(unsupported());
+        return Err(unsupported().into());
     }
     let support_start = line.start().translated(line_direction.scaled(-reach)?)?;
     let support_end = line.end().translated(line_direction.scaled(reach)?)?;
@@ -375,11 +442,12 @@ fn connect_smooth_nurbs_line(
     } else {
         CurveExtensionSide::Start
     };
-    let extended = curve.try_merged_to_curve_boundaries(
+    let extended = curve.try_merged_to_boundaries_with_operations(
         side,
         CurveExtensionStyle::Smooth,
-        &[support],
+        &[CurveExtensionBoundary::Curve(support)],
         tolerance,
+        operations,
     )?;
     let meeting = extended.evaluate(if nurbs_first {
         *extended.domain().end()
@@ -410,7 +478,7 @@ fn connect_smooth_nurbs_line(
         .distance_to(second.evaluate(*second.domain().start())?)?
         > tolerance.absolute()
     {
-        return Err(unsupported());
+        return Err(unsupported().into());
     }
     Ok((first, second))
 }

@@ -112,6 +112,7 @@ mod bezier;
 mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
+mod curve_connections;
 mod curve_segments;
 mod extension_backend;
 mod surface_segments;

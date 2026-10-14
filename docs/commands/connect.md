@@ -18,6 +18,10 @@ terminal spans to their nearest forward intersection. `Join=Yes` joins the two
 results. Curved terminal segments are also supported when their selected
 endpoints already meet.
 
+Linux `native-smlib` builds use
+[usd-brep producers](../smlib-curve-connections.md) for smooth NURBS
+continuation and retained intervals.
+
 For coplanar arc/line pairs, the default `ExtendArcsBy=Arc` trims or extends
 the selected arc end on its supporting circle to a valid line intersection.
 Coplanar arc pairs can trim or extend their selected ends to a

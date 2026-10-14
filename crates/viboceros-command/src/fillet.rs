@@ -3,7 +3,6 @@
 use super::*;
 use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle, CurveFilletExtensionStyles, CurveOtherExtensionStyle,
-    try_fillet_curves_joined_with_styles, try_fillet_curves_parts_with_styles,
 };
 
 const USAGE: &str = "Fillet radius [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
@@ -53,11 +52,9 @@ impl Command for FilletCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join && trim {
-            let joined = try_fillet_curves_joined_with_styles(
-                first,
-                picks[0],
-                second,
-                picks[1],
+            let joined = super::curve_connections::fillet_joined(
+                (first, picks[0]),
+                (second, picks[1]),
                 radius,
                 styles,
                 document.tolerance(),
@@ -69,7 +66,7 @@ impl Command for FilletCommand {
             document.delete_objects([*first_id, *second_id])?;
             outputs
         } else {
-            let parts = try_fillet_curves_parts_with_styles(
+            let parts = super::curve_connections::fillet_parts(
                 (first, picks[0]),
                 (second, picks[1]),
                 radius,

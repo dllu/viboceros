@@ -26,7 +26,7 @@ impl<E: From<GeometryError>> CurveExtensionOperations<'_, E> {
     }
 }
 
-fn with_portable_extension_operations<T>(
+pub(crate) fn with_portable_extension_operations<T>(
     run: impl FnOnce(&mut CurveExtensionOperations<'_, GeometryError>) -> Result<T, GeometryError>,
 ) -> Result<T, GeometryError> {
     let mut extend = NurbsCurve::try_extended_to;

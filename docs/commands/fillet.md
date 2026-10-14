@@ -24,6 +24,10 @@ nonmeeting NURBS. The defaults are `Arc` and `Line`. Already meeting line,
 arc, and NURBS terminal leaves are supported, including terminal leaves of
 polycurves. Earlier leaves remain native and unchanged.
 
+Linux `native-smlib` builds use
+[usd-brep producers](../smlib-curve-connections.md) to prepare smooth NURBS
+connections before the shared fillet contact solve.
+
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
 fillets that consume an entire added segment can still be rejected. Dynamic

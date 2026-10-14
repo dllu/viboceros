@@ -3,7 +3,6 @@
 use super::*;
 use viboceros_geometry::{
     CurveArcExtensionStyle, CurveChamferExtensionStyles, CurveOtherExtensionStyle,
-    try_chamfer_curves_joined_with_styles, try_chamfer_curves_parts_with_styles,
 };
 
 const USAGE: &str = "Chamfer distance1 distance2 | Chamfer Distances=distance1,distance2 [Pick1=x,y,z] [Pick2=x,y,z] [Join=Yes|No] [Trim=Yes|No] [ExtendArcsBy=Arc|Line] [ExtendOtherCurvesBy=Line|Smooth]";
@@ -55,11 +54,9 @@ impl Command for ChamferCommand {
             picks[1].unwrap_or(default_second),
         ];
         let outputs = if join && trim {
-            let joined = try_chamfer_curves_joined_with_styles(
-                first,
-                picks[0],
-                second,
-                picks[1],
+            let joined = super::curve_connections::chamfer_joined(
+                (first, picks[0]),
+                (second, picks[1]),
                 distances,
                 CurveChamferExtensionStyles {
                     arc: arc_extension,
@@ -74,7 +71,7 @@ impl Command for ChamferCommand {
             document.delete_objects([*first_id, *second_id])?;
             outputs
         } else {
-            let parts = try_chamfer_curves_parts_with_styles(
+            let parts = super::curve_connections::chamfer_parts(
                 (first, picks[0]),
                 (second, picks[1]),
                 distances,

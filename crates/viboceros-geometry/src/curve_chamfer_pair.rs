@@ -1,13 +1,14 @@
 //! Straight chamfers between selected ends of open curves.
 
 use crate::{
-    Curve3, CurveArcExtensionStyle, CurveOtherExtensionStyle, CurveRef, CurveSegment3,
-    GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
+    Curve3, CurveArcExtensionStyle, CurveExtensionOperations, CurveOtherExtensionStyle, CurveRef,
+    CurveSegment3, GeometryError, LineSegment, Point3, PolyCurve3, Real, Tolerance,
     curve::ArcLengthSampler,
-    curve_connect_pair::connected_ends_with_styles,
+    curve_connect_pair::connected_ends_with_operations,
     curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end,
     },
+    nurbs::with_portable_extension_operations,
 };
 
 /// Styles used to extend nonmeeting curve ends before chamfering.
@@ -37,14 +38,34 @@ pub fn try_chamfer_curves_joined_with_styles(
     styles: CurveChamferExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, GeometryError> {
-    let (connected, picks) = connected_ends_with_styles(
+    with_portable_extension_operations(|operations| {
+        try_chamfer_curves_joined_with_operations(
+            (first, first_pick),
+            (second, second_pick),
+            distances,
+            styles,
+            tolerance,
+            operations,
+        )
+    })
+}
+
+/// Shared connected-end policy with delegated NURBS extrapolation and setback extraction.
+pub fn try_chamfer_curves_joined_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    distances: [Real; 2],
+    styles: CurveChamferExtensionStyles,
+    tolerance: Tolerance,
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<PolyCurve3, E> {
+    let (connected, picks) = connected_ends_with_operations(
         first,
-        first_pick,
         second,
-        second_pick,
         styles.arc,
         styles.other,
         tolerance,
+        operations,
     )?;
     Ok(chamfer_connected_curves(
         &connected[0],
@@ -53,6 +74,7 @@ pub fn try_chamfer_curves_joined_with_styles(
         picks[1],
         distances,
         tolerance,
+        operations,
     )?
     .0)
 }
@@ -66,14 +88,30 @@ pub fn try_chamfer_curves_parts_with_styles(
     styles: CurveChamferExtensionStyles,
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, GeometryError> {
-    let (connected, picks) = connected_ends_with_styles(
-        first.0,
-        first.1,
-        second.0,
-        second.1,
+    with_portable_extension_operations(|operations| {
+        try_chamfer_curves_parts_with_operations(
+            first, second, distances, trim, styles, tolerance, operations,
+        )
+    })
+}
+
+/// Shared connected-end policy with delegated NURBS extrapolation and setback extraction.
+pub fn try_chamfer_curves_parts_with_operations<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    distances: [Real; 2],
+    trim: bool,
+    styles: CurveChamferExtensionStyles,
+    tolerance: Tolerance,
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<Vec<Curve3>, E> {
+    let (connected, picks) = connected_ends_with_operations(
+        first,
+        second,
         styles.arc,
         styles.other,
         tolerance,
+        operations,
     )?;
     let reverse_first = !selected_end(&connected[0], picks[0], tolerance)?;
     let reverse_second = selected_end(&connected[1], picks[1], tolerance)?;
@@ -84,6 +122,7 @@ pub fn try_chamfer_curves_parts_with_styles(
         picks[1],
         distances,
         tolerance,
+        operations,
     )?;
     chamfer_parts_from_joined(
         &joined,
@@ -94,16 +133,18 @@ pub fn try_chamfer_curves_parts_with_styles(
         reverse_second,
         tolerance,
     )
+    .map_err(E::from)
 }
 
-fn chamfer_connected_curves(
+fn chamfer_connected_curves<E: From<GeometryError>>(
     first: &Curve3,
     first_pick: Point3,
     second: &Curve3,
     second_pick: Point3,
     distances: [Real; 2],
     tolerance: Tolerance,
-) -> Result<(PolyCurve3, usize, bool), GeometryError> {
+    operations: &mut CurveExtensionOperations<'_, E>,
+) -> Result<(PolyCurve3, usize, bool), E> {
     validate_distances(distances[0], distances[1])?;
     let first = oriented(first, first_pick, true, tolerance)?;
     let second = oriented(second, second_pick, false, tolerance)?;
@@ -112,7 +153,7 @@ fn chamfer_connected_curves(
     if distances[0] >= first_sampler.total_length() - tolerance.absolute()
         || distances[1] >= second_sampler.total_length() - tolerance.absolute()
     {
-        return Err(unsupported());
+        return Err(unsupported().into());
     }
     let first_parameter = if distances[0] == 0.0 {
         *first.domain().end()
@@ -124,8 +165,14 @@ fn chamfer_connected_curves(
     } else {
         second_sampler.parameter_at_distance(distances[1])?
     };
-    let first_retained = first.try_trimmed(*first.domain().start()..=first_parameter)?;
-    let second_retained = second.try_trimmed(second_parameter..=*second.domain().end())?;
+    let first_retained = first.try_trimmed_with_nurbs(
+        *first.domain().start()..=first_parameter,
+        &mut |curve, interval| (operations.trim)(curve, interval),
+    )?;
+    let second_retained = second.try_trimmed_with_nurbs(
+        second_parameter..=*second.domain().end(),
+        &mut |curve, interval| (operations.trim)(curve, interval),
+    )?;
     let first_cut = first_retained.evaluate(*first_retained.domain().end())?;
     let second_cut = second_retained.evaluate(*second_retained.domain().start())?;
     let first_count = first_retained.segments().len();

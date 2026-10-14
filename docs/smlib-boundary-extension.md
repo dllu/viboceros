@@ -73,6 +73,8 @@ holes. The [retained backend comparison](smlib-boundary-extension-comparison.jso
 uses actual native and portable engine identities. Fresh Rhino validation
 remains unavailable due to the
 [recorded Wine licensing startup error](smlib-extension-rhino-capture.json).
+The 82-case record identifies its original sources at commit `38592627`
+through immutable Git references.
 The earlier [60-case record](smlib-extension-comparison.json) now identifies its
 original source through immutable Git references.
 
