@@ -386,9 +386,8 @@ use viboceros_geometry::{
     NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
     RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
     SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, brep_brep_intersection_events,
-    join_curves, sort_and_cull_points, surface_brep_intersection_events,
-    surface_surface_intersection_events, try_catenary,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
+    sort_and_cull_points, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -11024,7 +11023,7 @@ fn intersect_pair(
                 .collect::<Result<Vec<_>, CommandError>>()?
         }
         (IntersectInput::Surface(first), IntersectInput::Surface(second)) => {
-            surface_surface_intersection_events(first, second, tolerance)?
+            curve_intersections::surface_pair_events(first, second, tolerance)?
                 .into_iter()
                 .map(|event| match event {
                     SurfaceSurfaceIntersectionEvent::Point(point) => Geometry::Point(point),
@@ -11034,7 +11033,7 @@ fn intersect_pair(
         }
         (IntersectInput::Surface(surface), IntersectInput::Brep(brep))
         | (IntersectInput::Brep(brep), IntersectInput::Surface(surface)) => {
-            surface_brep_intersection_events(surface, brep, tolerance)?
+            curve_intersections::surface_brep_events(surface, brep, tolerance)?
                 .into_iter()
                 .map(|event| match event {
                     SurfaceBrepIntersectionEvent::Point(point) => Geometry::Point(point),
@@ -11043,7 +11042,7 @@ fn intersect_pair(
                 .collect()
         }
         (IntersectInput::Brep(first), IntersectInput::Brep(second)) => {
-            brep_brep_intersection_events(first, second, tolerance)?
+            curve_intersections::brep_pair_events(first, second, tolerance)?
                 .into_iter()
                 .map(|event| match event {
                     BrepBrepIntersectionEvent::Point(point) => Geometry::Point(point),
@@ -11582,14 +11581,14 @@ fn append_surface_cutter_intersection_curves(
             }
         }
         CurveCutterInput::Surface(cutter) => {
-            for event in surface_surface_intersection_events(surface, cutter, tolerance)? {
+            for event in curve_intersections::surface_pair_events(surface, cutter, tolerance)? {
                 if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event {
                     append_surface_split_curve(curves, curve)?;
                 }
             }
         }
         CurveCutterInput::Brep(cutter) => {
-            for event in surface_brep_intersection_events(surface, cutter, tolerance)? {
+            for event in curve_intersections::surface_brep_events(surface, cutter, tolerance)? {
                 if let SurfaceBrepIntersectionEvent::Curve(curve) = event {
                     append_surface_split_curve(curves, curve)?;
                 }

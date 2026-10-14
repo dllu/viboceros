@@ -113,6 +113,16 @@ size_t vb_curve_surface_intersections_count(const VbCurveSurfaceIntersections *e
 int vb_curve_surface_intersections_copy(const VbCurveSurfaceIntersections *events,
                                        VbCurveSurfaceIntersection *out, size_t count);
 void vb_curve_surface_intersections_free(VbCurveSurfaceIntersections *events);
+typedef struct VbSurfaceIntersections VbSurfaceIntersections;
+int vb_surface_intersect(const VbNurbsData *first, const VbNurbsData *second,
+                         double tolerance, double angle, VbSurfaceIntersections **out,
+                         char *error, size_t capacity);
+size_t vb_surface_intersections_count(const VbSurfaceIntersections *events);
+int vb_surface_intersections_info(const VbSurfaceIntersections *events, size_t index,
+                                  int *kind, double point[3]);
+int vb_surface_intersections_take_curve(VbSurfaceIntersections *events, size_t index,
+                                        size_t part, VbSurfaceData **out);
+void vb_surface_intersections_free(VbSurfaceIntersections *events);
 int vb_curve_offset_approx(const VbCurve *source, const double normal[3],
                            double distance, double tolerance, VbCurve **out,
                            char *error, size_t capacity);

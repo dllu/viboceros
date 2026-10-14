@@ -150,6 +150,11 @@ VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface) {
     result->geometry = surface_payload(surface);
     return result.release();
 }
+VbSurfaceData *vb_export_curve(const SmBSplineCurve &curve) {
+    auto result = std::make_unique<VbSurfaceData>();
+    result->geometry = curve_payload(curve);
+    return result.release();
+}
 extern "C" int vb_surface_data_view(const VbSurfaceData *surface, VbNurbsData *view) {
     if (!surface || !view) return 1;
     *view = surface->geometry->view;

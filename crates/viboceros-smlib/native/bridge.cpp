@@ -60,6 +60,13 @@ struct VbCurveIntersections {
 struct VbCurveSurfaceIntersections {
     std::vector<VbCurveSurfaceIntersection> events;
 };
+struct NurbsSnapshotDelete { void operator()(VbSurfaceData *p) const { vb_surface_data_free(p); } };
+struct SurfaceIntersectionEntry {
+    int kind;
+    double point[3]{};
+    std::unique_ptr<VbSurfaceData,NurbsSnapshotDelete> curves[3];
+};
+struct VbSurfaceIntersections { std::vector<SurfaceIntersectionEntry> entries; };
 struct VbMesh {
     std::vector<double> points;
     std::vector<uint32_t> triangles;
@@ -1119,6 +1126,90 @@ extern "C" int vb_curve_surface_intersections_copy(const VbCurveSurfaceIntersect
     return 0;
 }
 extern "C" void vb_curve_surface_intersections_free(VbCurveSurfaceIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);delete events;
+}
+
+namespace {
+struct OwnedIntersectionCurves {
+    SmTArray<SmCurve*> values;
+    ~OwnedIntersectionCurves() { for(ULONG i=0;i<values.GetSize();++i)delete values[i]; }
+};
+VbSurfaceData *intersection_curve_snapshot(SmCurve &curve,double tolerance) {
+    if(curve.IsKindOf(SmBSplineCurve_TYPE))
+        return vb_export_curve(static_cast<SmBSplineCurve&>(curve));
+    SmBSplineCurve *exact=nullptr;
+    const auto exact_status=curve.MakeExactBSplineIfPossible(exact);
+    std::unique_ptr<SmBSplineCurve> owner(exact);
+    check(exact_status,"convert exact intersection curve");
+    if(!exact) {
+        SmTArray<double> breaks;
+        const auto interval=curve.GetNaturalInterval();
+        breaks.Add(interval.GetMin());breaks.Add(interval.GetMax());
+        double deviation=0;
+        const auto status=curve.ApproximateCurve(*SmApiGetOrCreateContext(),breaks,tolerance,deviation,exact,TRUE,TRUE,TRUE);
+        owner.reset(exact);
+        check(status,"approximate parameter-matched intersection curve");
+        require(std::isfinite(deviation) && deviation<=tolerance,"Intersection curve approximation gap");
+    }
+    require(exact,"Missing intersection spline");
+    return vb_export_curve(*exact);
+}
+}
+extern "C" int vb_surface_intersect(const VbNurbsData *first,const VbNurbsData *second,
+    double tolerance,double angle,VbSurfaceIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(first && second && out && std::isfinite(tolerance) && tolerance>0
+            && std::isfinite(angle) && angle>0,"Invalid surface intersection input");
+        require(first->degree[0]<=17 && first->degree[1]<=17 && second->degree[0]<=17 && second->degree[1]<=17,
+            "Surface intersection degree limit");
+        std::unique_ptr<SmSurface> a(vb_import_query_surface(*first)),b(vb_import_query_surface(*second));
+        OwnedIntersectionCurves xyz,uv1,uv2;
+        SmTArray<SmTsectCurveType> types;SmTArray<double> deviations;
+        const SmBoolean edges[]={TRUE,TRUE};const SmApproxTol3d approximation(tolerance*0.25);
+        check(a->GlobalSurfaceIntersect(*SmApiGetOrCreateContext(),a->GetNaturalUVDomain(),*b,b->GetNaturalUVDomain(),
+            edges,&approximation,&angle,&xyz.values,&uv1.values,&uv2.values,&types,&deviations),"intersect native surfaces");
+        const ULONG count=xyz.values.GetSize();
+        require(count<=500000 && uv1.values.GetSize()==count && uv2.values.GetSize()==count
+            && types.GetSize()==count && deviations.GetSize()==count,"Inconsistent surface intersection arrays");
+        auto result=std::make_unique<VbSurfaceIntersections>();
+        for(ULONG i=0;i<count;++i) {
+            require(xyz.values[i],"Missing spatial intersection curve");
+            SurfaceIntersectionEntry entry{};
+            entry.kind=static_cast<int>(types[i]);
+            require(entry.kind>=SM_TC_TOUCHING && entry.kind<=SM_TC_REGION_BOUNDARY,"Unknown surface intersection classification");
+            require(std::isfinite(deviations[i]) && deviations[i]>=0,"Invalid surface intersection deviation");
+            if(types[i]==SM_TC_TOUCHING) {
+                SmPoint3d point;
+                check(xyz.values[i]->EvaluatePoint(xyz.values[i]->GetNaturalInterval().GetMin(),point),"evaluate surface contact point");
+                entry.point[0]=point.x;entry.point[1]=point.y;entry.point[2]=point.z;
+                require(finite3(entry.point),"Nonfinite surface contact point");
+            } else {
+                require(uv1.values[i] && uv2.values[i],"Missing surface intersection UV curve");
+                entry.curves[0].reset(intersection_curve_snapshot(*xyz.values[i],tolerance*0.25));
+                entry.curves[1].reset(intersection_curve_snapshot(*uv1.values[i],tolerance*0.25));
+                entry.curves[2].reset(intersection_curve_snapshot(*uv2.values[i],tolerance*0.25));
+            }
+            result->entries.push_back(std::move(entry));
+        }
+        *out=result.release();
+    });
+}
+extern "C" size_t vb_surface_intersections_count(const VbSurfaceIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);return events?events->entries.size():0;
+}
+extern "C" int vb_surface_intersections_info(const VbSurfaceIntersections *events,size_t index,int *kind,double point[3]) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    if(!events || index>=events->entries.size() || !kind || !point)return 1;
+    const auto &entry=events->entries[index];*kind=entry.kind;std::copy(entry.point,entry.point+3,point);return 0;
+}
+extern "C" int vb_surface_intersections_take_curve(VbSurfaceIntersections *events,size_t index,size_t part,VbSurfaceData **out) {
+    if(out)*out=nullptr;
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    if(!events || index>=events->entries.size() || part>=3 || !out || !events->entries[index].curves[part])return 1;
+    *out=events->entries[index].curves[part].release();return 0;
+}
+extern "C" void vb_surface_intersections_free(VbSurfaceIntersections *events) {
     std::lock_guard<std::mutex> lock(kernel_mutex);delete events;
 }
 

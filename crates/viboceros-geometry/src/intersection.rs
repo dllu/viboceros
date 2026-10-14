@@ -2,8 +2,12 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 mod bilinear_plane;
 mod curve_surface_backend;
+mod surface_surface_backend;
 pub use curve_surface_backend::{
     CurveSurfaceIntersectionParameters, curve_surface_intersection_events_with_operation,
+};
+pub use surface_surface_backend::{
+    SurfaceSurfaceIntersectionProposal, surface_surface_intersection_events_with_operation,
 };
 mod coincident_brep_graph;
 mod cone_cone;
@@ -1238,23 +1242,44 @@ pub fn surface_brep_intersection_events(
     brep: &Brep,
     tolerance: Tolerance,
 ) -> Result<Vec<SurfaceBrepIntersectionEvent>, GeometryError> {
+    surface_brep_intersection_events_with_operation(
+        surface,
+        brep,
+        tolerance,
+        &mut |a, b, tol, _| surface_surface_intersection_events(a, b, tol),
+    )
+}
+
+/// Retain shared face-pair trim and assembly policy around a surface producer.
+/// The final callback argument is true when both natural domains are untrimmed;
+/// approximate producers must reject partial faces unless their trim crossings
+/// are qualified separately.
+pub fn surface_brep_intersection_events_with_operation<E: From<GeometryError>>(
+    surface: &NurbsSurface,
+    brep: &Brep,
+    tolerance: Tolerance,
+    surface_events: &mut impl FnMut(
+        &NurbsSurface,
+        &NurbsSurface,
+        Tolerance,
+        bool,
+    ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, E>,
+) -> Result<Vec<SurfaceBrepIntersectionEvent>, E> {
     if let [face] = brep.faces()
         && crate::brep::face_covers_full_surface_domain(face, tolerance)?
         && (surface.plane(tolerance)?.is_none() || face.surface().plane(tolerance)?.is_none())
     {
-        return Ok(
-            surface_surface_intersection_events(surface, face.surface(), tolerance)?
-                .into_iter()
-                .map(|event| match event {
-                    SurfaceSurfaceIntersectionEvent::Point(point) => {
-                        SurfaceBrepIntersectionEvent::Point(point)
-                    }
-                    SurfaceSurfaceIntersectionEvent::Curve(curve) => {
-                        SurfaceBrepIntersectionEvent::Curve(curve)
-                    }
-                })
-                .collect(),
-        );
+        return Ok(surface_events(surface, face.surface(), tolerance, true)?
+            .into_iter()
+            .map(|event| match event {
+                SurfaceSurfaceIntersectionEvent::Point(point) => {
+                    SurfaceBrepIntersectionEvent::Point(point)
+                }
+                SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                    SurfaceBrepIntersectionEvent::Curve(curve)
+                }
+            })
+            .collect());
     }
     let surface_plane = surface.plane(tolerance)?;
     let distance_tolerance = surface_brep_distance_tolerance(surface, brep, tolerance);
@@ -1284,7 +1309,7 @@ pub fn surface_brep_intersection_events(
             curves.extend(face_curves);
             continue;
         }
-        let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
+        let face_events = surface_events(surface, face.surface(), tolerance, full_domain)?;
 
         for event in face_events {
             match event {
@@ -1398,27 +1423,45 @@ pub fn brep_brep_intersection_events(
     second: &Brep,
     tolerance: Tolerance,
 ) -> Result<Vec<BrepBrepIntersectionEvent>, GeometryError> {
+    brep_brep_intersection_events_with_operation(first, second, tolerance, &mut |a, b, tol, _| {
+        surface_surface_intersection_events(a, b, tol)
+    })
+}
+
+/// Retain shared face-pair trim and assembly policy around a surface producer.
+/// The final callback argument is true when both natural domains are untrimmed;
+/// approximate producers must reject partial faces unless their trim crossings
+/// are qualified separately.
+pub fn brep_brep_intersection_events_with_operation<E: From<GeometryError>>(
+    first: &Brep,
+    second: &Brep,
+    tolerance: Tolerance,
+    surface_events: &mut impl FnMut(
+        &NurbsSurface,
+        &NurbsSurface,
+        Tolerance,
+        bool,
+    ) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, E>,
+) -> Result<Vec<BrepBrepIntersectionEvent>, E> {
     if let ([first_face], [second_face]) = (first.faces(), second.faces())
         && crate::brep::face_covers_full_surface_domain(first_face, tolerance)?
         && crate::brep::face_covers_full_surface_domain(second_face, tolerance)?
         && (first_face.surface().plane(tolerance)?.is_none()
             || second_face.surface().plane(tolerance)?.is_none())
     {
-        return Ok(surface_surface_intersection_events(
-            first_face.surface(),
-            second_face.surface(),
-            tolerance,
-        )?
-        .into_iter()
-        .map(|event| match event {
-            SurfaceSurfaceIntersectionEvent::Point(point) => {
-                BrepBrepIntersectionEvent::Point(point)
-            }
-            SurfaceSurfaceIntersectionEvent::Curve(curve) => {
-                BrepBrepIntersectionEvent::Curve(curve)
-            }
-        })
-        .collect());
+        return Ok(
+            surface_events(first_face.surface(), second_face.surface(), tolerance, true)?
+                .into_iter()
+                .map(|event| match event {
+                    SurfaceSurfaceIntersectionEvent::Point(point) => {
+                        BrepBrepIntersectionEvent::Point(point)
+                    }
+                    SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                        BrepBrepIntersectionEvent::Curve(curve)
+                    }
+                })
+                .collect(),
+        );
     }
     let distance_tolerance = brep_brep_distance_tolerance(first, second, tolerance);
     let mut points = Vec::new();
@@ -1468,10 +1511,11 @@ pub fn brep_brep_intersection_events(
                 curves.extend(pair_curves);
                 continue;
             }
-            let face_events = surface_surface_intersection_events(
+            let face_events = surface_events(
                 first_face.surface(),
                 second_face.surface(),
                 tolerance,
+                first_full && second_full,
             )?;
             if coincident {
                 let mut has_area_overlap = false;

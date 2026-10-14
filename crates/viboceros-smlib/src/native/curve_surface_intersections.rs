@@ -68,7 +68,7 @@ pub fn curve_surface_intersection_events(
     curve_surface_intersection_events_with_operation(curve, surface, tolerance, &mut propose)
 }
 
-fn prepared_surface(
+pub(super) fn prepared_surface(
     source: &NurbsSurface,
     origin: Point3,
     scale: f64,

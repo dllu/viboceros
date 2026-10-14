@@ -1,5 +1,8 @@
 use crate::{CommandError, CurveCurveIntersectionEvent, NurbsCurve, Tolerance};
 
+#[cfg(all(test, feature = "native-smlib"))]
+mod tests;
+
 pub(crate) fn events(
     first: &NurbsCurve,
     second: &NurbsCurve,
@@ -57,5 +60,64 @@ pub(crate) fn brep_events(
         } else {
             viboceros_geometry::curve_brep_intersection_events(curve, brep, tolerance)?
         })
+    }
+}
+
+pub(crate) fn surface_pair_events(
+    first: &crate::NurbsSurface,
+    second: &crate::NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<crate::SurfaceSurfaceIntersectionEvent>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::modeling_surface_intersection_events(first, second, tolerance)
+            .map_err(surface_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::surface_surface_intersection_events(
+            first, second, tolerance,
+        )?)
+    }
+}
+pub(crate) fn surface_brep_events(
+    surface: &crate::NurbsSurface,
+    brep: &crate::Brep,
+    tolerance: Tolerance,
+) -> Result<Vec<crate::SurfaceBrepIntersectionEvent>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::surface_brep_intersection_events(surface, brep, tolerance)
+            .map_err(surface_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::surface_brep_intersection_events(
+            surface, brep, tolerance,
+        )?)
+    }
+}
+pub(crate) fn brep_pair_events(
+    first: &crate::Brep,
+    second: &crate::Brep,
+    tolerance: Tolerance,
+) -> Result<Vec<crate::BrepBrepIntersectionEvent>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        viboceros_smlib::brep_intersection_events(first, second, tolerance).map_err(surface_error)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        Ok(viboceros_geometry::brep_brep_intersection_events(
+            first, second, tolerance,
+        )?)
+    }
+}
+
+#[cfg(feature = "native-smlib")]
+fn surface_error(error: viboceros_smlib::Error) -> CommandError {
+    match error {
+        viboceros_smlib::Error::Geometry(error) => error.into(),
+        error => error.into(),
     }
 }

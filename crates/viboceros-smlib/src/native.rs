@@ -21,9 +21,14 @@ mod curve_extension;
 mod curve_fillet_contacts;
 mod curve_intersections;
 mod curve_surface_intersections;
+mod surface_intersections;
 pub use curve_intersections::{curve_intersection_events, curve_self_intersection_events};
 pub use curve_surface_intersections::{
     curve_brep_intersection_events, curve_surface_intersection_events,
+};
+pub use surface_intersections::{
+    brep_intersection_events, modeling_surface_intersection_events,
+    surface_brep_intersection_events, surface_intersection_events,
 };
 mod curve_offset_fit;
 mod working_curve;
