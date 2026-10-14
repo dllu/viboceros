@@ -13,14 +13,33 @@ pub(super) fn normalized(
     {
         return Ok(None);
     }
+    let Some(points) = normalized_controls(source.control_points(), origin, scale)? else {
+        return Ok(None);
+    };
+    let prepared = NurbsCurve::try_new_rational(source.degree(), points, source.knots().to_vec())?
+        .try_reparameterized(0. ..=1.)?;
+    if source
+        .knots()
+        .windows(2)
+        .zip(prepared.knots().windows(2))
+        .any(|(a, b)| a[0] < a[1] && b[0] >= b[1])
+    {
+        return Ok(None);
+    }
+    Ok(Some(prepared))
+}
+
+pub(super) fn normalized_controls(
+    source: &[WeightedPoint3],
+    origin: Point3,
+    scale: f64,
+) -> Result<Option<Vec<WeightedPoint3>>, Error> {
     let reference = source
-        .control_points()
         .iter()
         .map(|p| p.weight())
         .max_by(|a, b| a.abs().total_cmp(&b.abs()))
         .ok_or(Error::InvalidOutput)?;
     let minimum = source
-        .control_points()
         .iter()
         .map(|p| p.weight() / reference)
         .fold(1., f64::min);
@@ -32,8 +51,8 @@ pub(super) fn normalized(
     } else {
         0.001 / minimum
     };
-    let mut points = Vec::with_capacity(source.control_points().len());
-    for p in source.control_points() {
+    let mut points = Vec::with_capacity(source.len());
+    for p in source {
         let weight = (p.weight() / reference) * weight_scale;
         if !(0.001..=100.).contains(&weight) {
             return Ok(None);
@@ -49,15 +68,5 @@ pub(super) fn normalized(
         }
         points.push(WeightedPoint3::try_new(Point3::try_from(xyz)?, weight)?);
     }
-    let prepared = NurbsCurve::try_new_rational(source.degree(), points, source.knots().to_vec())?
-        .try_reparameterized(0. ..=1.)?;
-    if source
-        .knots()
-        .windows(2)
-        .zip(prepared.knots().windows(2))
-        .any(|(a, b)| a[0] < a[1] && b[0] >= b[1])
-    {
-        return Ok(None);
-    }
-    Ok(Some(prepared))
+    Ok(Some(points))
 }

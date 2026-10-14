@@ -387,9 +387,8 @@ use viboceros_geometry::{
     RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
     SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
     Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, brep_brep_intersection_events,
-    curve_brep_intersection_events, curve_surface_intersection_events, join_curves,
-    sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
-    transformed_curve_brep_intersection_events, try_catenary,
+    join_curves, sort_and_cull_points, surface_brep_intersection_events,
+    surface_surface_intersection_events, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -10998,7 +10997,7 @@ fn intersect_pair(
         }
         (IntersectInput::Curve(curve), IntersectInput::Surface(surface))
         | (IntersectInput::Surface(surface), IntersectInput::Curve(curve)) => {
-            curve_surface_intersection_events(curve, surface, tolerance)?
+            curve_intersections::surface_events(curve, surface, tolerance)?
                 .into_iter()
                 .map(|event| match event {
                     CurveSurfaceIntersectionEvent::Point(intersection) => {
@@ -11012,7 +11011,7 @@ fn intersect_pair(
         }
         (IntersectInput::Curve(curve), IntersectInput::Brep(brep))
         | (IntersectInput::Brep(brep), IntersectInput::Curve(curve)) => {
-            curve_brep_intersection_events(curve, brep, tolerance)?
+            curve_intersections::brep_events(curve, brep, None, tolerance)?
                 .into_iter()
                 .map(|event| match event {
                     CurveBrepIntersectionEvent::Point(intersection) => {
@@ -11573,7 +11572,7 @@ fn append_surface_cutter_intersection_curves(
 ) -> Result<(), CommandError> {
     match cutter {
         CurveCutterInput::Curve(curve) => {
-            for event in curve_surface_intersection_events(curve, surface, tolerance)? {
+            for event in curve_intersections::surface_events(curve, surface, tolerance)? {
                 if let CurveSurfaceIntersectionEvent::Overlap(overlap) = event {
                     append_surface_split_curve(
                         curves,

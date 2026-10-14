@@ -57,6 +57,9 @@ struct VbCurve {
 struct VbCurveIntersections {
     std::vector<VbCurveIntersection> events;
 };
+struct VbCurveSurfaceIntersections {
+    std::vector<VbCurveSurfaceIntersection> events;
+};
 struct VbMesh {
     std::vector<double> points;
     std::vector<uint32_t> triangles;
@@ -1065,6 +1068,57 @@ extern "C" int vb_curve_intersections_copy(const VbCurveIntersections *events,Vb
     return 0;
 }
 extern "C" void vb_curve_intersections_free(VbCurveIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);delete events;
+}
+
+extern "C" int vb_curve_surface_intersect(const VbCurve *curve,const VbNurbsData *surface,
+    double tolerance,VbCurveSurfaceIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(curve && surface && out && std::isfinite(tolerance) && tolerance>0,
+                "Invalid curve/surface intersection input");
+        require(surface->degree[0]<=17 && surface->degree[1]<=17,
+                "Curve/surface intersection degree limit");
+        std::unique_ptr<SmSurface> imported(vb_import_query_surface(*surface));
+        const auto interval=curve->value->GetNaturalInterval();
+        const auto domain=imported->GetNaturalUVDomain();
+        SmSolutionArray solutions;
+        check(imported->GlobalCurveIntersect(domain,*curve->value,interval,tolerance,solutions),
+              "intersect native curve and surface");
+        require(solutions.GetSize()<=500000,"Curve/surface intersection event budget");
+        auto result=std::make_unique<VbCurveSurfaceIntersections>();
+        for(ULONG i=0;i<solutions.GetSize();++i) {
+            const auto &s=solutions[i];
+            require(s.m_lNumVariables==3 && (s.m_eSolutionType==SM_ST_SINGLE_VALUE ||
+                s.m_eSolutionType==SM_ST_RANGE_OF_VALUES),"Unsupported curve/surface solution");
+            VbCurveSurfaceIntersection event{};
+            event.overlap=s.m_eSolutionType==SM_ST_RANGE_OF_VALUES?1:0;
+            for(int end=0;end<2;++end) {
+                const auto &value=end && event.overlap?s.m_vEnd:s.m_vStart;
+                const double t=value[0],u=value[1],v=value[2];
+                require(std::isfinite(t) && std::isfinite(u) && std::isfinite(v)
+                    && t>=interval.GetMin() && t<=interval.GetMax()
+                    && u>=domain.GetMin().x && u<=domain.GetMax().x
+                    && v>=domain.GetMin().y && v<=domain.GetMax().y,
+                    "Invalid curve/surface intersection parameters");
+                event.curve[end]=t;event.u[end]=u;event.v[end]=v;
+            }
+            result->events.push_back(event);
+        }
+        *out=result.release();
+    });
+}
+extern "C" size_t vb_curve_surface_intersections_count(const VbCurveSurfaceIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);return events?events->events.size():0;
+}
+extern "C" int vb_curve_surface_intersections_copy(const VbCurveSurfaceIntersections *events,
+    VbCurveSurfaceIntersection *out,size_t count) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    if(!events || count!=events->events.size() || (count && !out))return 1;
+    if(count)std::copy(events->events.begin(),events->events.end(),out);
+    return 0;
+}
+extern "C" void vb_curve_surface_intersections_free(VbCurveSurfaceIntersections *events) {
     std::lock_guard<std::mutex> lock(kernel_mutex);delete events;
 }
 

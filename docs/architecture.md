@@ -502,6 +502,10 @@ The [native self-contact adapter](smlib-curve-self-intersections.md) replaces
 IntersectSelf and SelSelfIntersectingCrv's recursive search for eligible curves,
 sharing paired-parameter acceptance and segment extraction while preserving the
 document policies. Nested collinear Rhino parity remains under qualification.
+The [native curve/surface producer](smlib-curve-surface-intersections.md) shares
+original-geometry acceptance and temporary surface import with curve/B-rep
+queries. Face trim containment and projected UV charts stay in one geometry
+policy, while command selection, source replacement and history stay separate.
 The app's two-set prompt snapshots the first picked set before clearing the
 transient selection for the second; both phases use the parametric-object filter.
 The geometry [shortness module](curve-shortness.md) keeps representation-dependent

@@ -88,6 +88,10 @@ independent source-space acceptance and shared local contact polishing.
 [Curve self-intersections](smlib-curve-self-intersections.md) share that acceptance
 and native event ownership for IntersectSelf and SelSelfIntersectingCrv, with a
 scoped repair preventing mirrored ranges from merging across a turnaround.
+[Curve/surface contacts](smlib-curve-surface-intersections.md) use the native
+global producer and shared original-geometry validation. Curve/B-rep contacts
+reuse the same producer while retaining shared face trim and view-projection
+policies, with native generic trim-edge queries.
 [Morph preview preparation](smlib-morph-preview.md) reuses checked native
 curve/surface elevation, isocurve extraction and interval trimming, including
 independent full-order pieces.

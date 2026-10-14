@@ -95,18 +95,20 @@
     "docs/smlib-offset-partitions.json": "c9fb0ea222faacdc4332d5b6ce97344e25ef37ffc639a4e657e5f69112d1d8cd"
   },
   "replay_source_sha256": {
-    "crates/viboceros-smlib/src/native/brep.rs": "350031264c892047d56011973b74215805ae092bbc4590a51f0fec7b49de3187",
-    "crates/viboceros-smlib/src/native/shape.rs": "066f57953db2635eecd302c8e926c90744f766304079f30bd5a9c5543662f3c0",
-    "crates/viboceros-smlib/native/brep_import.cpp": "9dea6a9836009c560e1c348fa32868deb55cdcff722c982713d14724b4a25cf9",
-    "crates/viboceros-smlib/native/brep_export.cpp": "286ca00b0c8787b027ac046b00ec239a48b7bc1514abbea728a676789e976003",
-    "crates/viboceros-smlib/native/bridge.cpp": "5b0378ce60eafbdda0a5563de55bcae7f2428b141d86d6e47dc9d547e5561799",
     "crates/viboceros-smlib/tests/sheets.rs": "750de01982a044d51524ad918e704175be4dba6b91048c292b1de062649c5432",
     "crates/viboceros-command/src/offset_surface.rs": "ca73436c0b26bb3598593dfb87193034976aa2b6b4d2f4575880044d2a3aee8b",
     "crates/viboceros-command/src/offset_surface/native.rs": "d07b573bab1932381505670990f1c11a2e2b690492e910b568b50135ee30de57",
     "crates/viboceros-command/src/offset_surface/native/tests.rs": "ac865d5cfdc361aa974aa853d4d8a8106115677aca99c8898bacd56e11f02c0d",
-    "src/app/object_selection.rs": "16cc4ad59cbaa652d41b7f6a68f9ba4c6e0e9cce988805c40ebcd18808f4fc0d",
     "src/app/tests/offset_surface.rs": "848104d99cdd58a00a473bb2054232619efec7b7ef0c5ed368255a5f6d02da7a",
-    "tools/rhino_oracle/rhino_worker.py": "503bb0244ffcc9d807c9d6bd3ab4d52774a694616db6949a26c20cff125787d7",
     "tools/rhino_oracle/test_offset_native.py": "590ad38863a1552762f3a397a55e3dd06b9ac6bce0e66ed6f5268ed89894fe21"
+  },
+  "replay_source_git_sha256": {
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-smlib/native/brep_import.cpp": "9dea6a9836009c560e1c348fa32868deb55cdcff722c982713d14724b4a25cf9",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/src/native/brep.rs": "350031264c892047d56011973b74215805ae092bbc4590a51f0fec7b49de3187",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/src/native/shape.rs": "066f57953db2635eecd302c8e926c90744f766304079f30bd5a9c5543662f3c0",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/native/brep_export.cpp": "286ca00b0c8787b027ac046b00ec239a48b7bc1514abbea728a676789e976003",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:crates/viboceros-smlib/native/bridge.cpp": "5b0378ce60eafbdda0a5563de55bcae7f2428b141d86d6e47dc9d547e5561799",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:src/app/object_selection.rs": "16cc4ad59cbaa652d41b7f6a68f9ba4c6e0e9cce988805c40ebcd18808f4fc0d",
+    "57a3d5ab6405860ba5164a584c319b781382ce4c:tools/rhino_oracle/rhino_worker.py": "503bb0244ffcc9d807c9d6bd3ab4d52774a694616db6949a26c20cff125787d7"
   }
 }

@@ -1,6 +1,10 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 mod bilinear_plane;
+mod curve_surface_backend;
+pub use curve_surface_backend::{
+    CurveSurfaceIntersectionParameters, curve_surface_intersection_events_with_operation,
+};
 mod coincident_brep_graph;
 mod cone_cone;
 mod cone_cylinder;
@@ -370,7 +374,7 @@ pub fn curve_surface_intersection_events(
     let distance_tolerance = curve_surface_distance_tolerance(curve, surface, tolerance);
     let overlaps = curve_surface_overlaps(curve, surface, tolerance, distance_tolerance)?;
     let curve_domain = curve.domain();
-    let mut intersections = if overlaps.is_empty() {
+    let intersections = if overlaps.is_empty() {
         curve_surface_point_intersections(curve, surface, tolerance)?
     } else {
         let mut gap_start = *curve_domain.start();
@@ -388,30 +392,7 @@ pub fn curve_surface_intersection_events(
         }
         intersections
     };
-    intersections.retain(|intersection| {
-        !overlaps.iter().any(|overlap| {
-            parameter_inside_interval(
-                intersection.curve_parameter,
-                overlap.start.curve_parameter,
-                overlap.end.curve_parameter,
-            )
-        })
-    });
-    intersections.sort_by(compare_curve_surface_intersections);
-
-    let mut events = intersections
-        .into_iter()
-        .map(CurveSurfaceIntersectionEvent::Point)
-        .chain(
-            overlaps
-                .into_iter()
-                .map(CurveSurfaceIntersectionEvent::Overlap),
-        )
-        .collect::<Vec<_>>();
-    events.sort_by(|left, right| {
-        curve_surface_event_parameter(*left).total_cmp(&curve_surface_event_parameter(*right))
-    });
-    Ok(events)
+    Ok(curve_surface_backend::finalize(intersections, overlaps))
 }
 
 /// Finds isolated contacts and finite source-curve intervals shared with the
@@ -422,7 +403,15 @@ pub fn curve_brep_intersection_events(
     tolerance: Tolerance,
 ) -> Result<Vec<CurveBrepIntersectionEvent>, GeometryError> {
     let distance_tolerance = curve_brep_distance_tolerance(curve, brep, tolerance);
-    curve_brep_intersection_events_with_transform(curve, brep, None, tolerance, distance_tolerance)
+    curve_brep_intersection_events_with_transform(
+        curve,
+        brep,
+        None,
+        tolerance,
+        distance_tolerance,
+        &mut curve_surface_intersection_events,
+        &mut |a, b, tol| a.intersection_events_with_curve(b, tol),
+    )
 }
 
 /// Finds curve/B-rep contacts after applying the same affine map to both
@@ -446,16 +435,71 @@ pub fn transformed_curve_brep_intersection_events(
         Some(transform),
         tolerance,
         distance_tolerance,
+        &mut curve_surface_intersection_events,
+        &mut |a, b, tol| a.intersection_events_with_curve(b, tol),
     )
 }
 
-fn curve_brep_intersection_events_with_transform(
+/// Query original or commonly transformed curve/B-rep geometry with external
+/// surface and edge producers. Trim containment, singular-vertex checks,
+/// original-face UV charts, event merging and ordering remain shared.
+pub fn curve_brep_intersection_events_with_operations<E: From<GeometryError>>(
+    curve: &NurbsCurve,
+    brep: &Brep,
+    transform: Option<AffineTransform3>,
+    tolerance: Tolerance,
+    surface_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsSurface,
+        Tolerance,
+    ) -> Result<Vec<CurveSurfaceIntersectionEvent>, E>,
+    curve_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsCurve,
+        Tolerance,
+    ) -> Result<Vec<crate::CurveCurveIntersectionEvent>, E>,
+) -> Result<Vec<CurveBrepIntersectionEvent>, E> {
+    let transformed_curve;
+    let (curve, distance_tolerance) = if let Some(transform) = transform {
+        transformed_curve = curve.transformed(transform)?;
+        let limit = transformed_curve_brep_distance_tolerance(
+            &transformed_curve,
+            brep,
+            transform,
+            tolerance,
+        )?;
+        (&transformed_curve, limit)
+    } else {
+        (curve, curve_brep_distance_tolerance(curve, brep, tolerance))
+    };
+    curve_brep_intersection_events_with_transform(
+        curve,
+        brep,
+        transform,
+        tolerance,
+        distance_tolerance,
+        surface_events,
+        curve_events,
+    )
+}
+
+fn curve_brep_intersection_events_with_transform<E: From<GeometryError>>(
     curve: &NurbsCurve,
     brep: &Brep,
     transform: Option<AffineTransform3>,
     tolerance: Tolerance,
     distance_tolerance: Real,
-) -> Result<Vec<CurveBrepIntersectionEvent>, GeometryError> {
+    surface_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsSurface,
+        Tolerance,
+    ) -> Result<Vec<CurveSurfaceIntersectionEvent>, E>,
+    curve_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsCurve,
+        Tolerance,
+    ) -> Result<Vec<crate::CurveCurveIntersectionEvent>, E>,
+) -> Result<Vec<CurveBrepIntersectionEvent>, E> {
     let mut intersections = Vec::new();
     let mut overlaps = Vec::new();
     for face in brep.faces() {
@@ -466,7 +510,7 @@ fn curve_brep_intersection_events_with_transform(
         } else {
             face.surface()
         };
-        for event in curve_surface_intersection_events(curve, surface, tolerance)? {
+        for event in surface_events(curve, surface, tolerance)? {
             match event {
                 CurveSurfaceIntersectionEvent::Point(intersection) => {
                     if face.contains_parameters(intersection.u, intersection.v, tolerance)? {
@@ -493,6 +537,7 @@ fn curve_brep_intersection_events_with_transform(
                         &mut intersections,
                         tolerance,
                         distance_tolerance,
+                        curve_events,
                     )?);
                 }
             }
@@ -1810,6 +1855,7 @@ fn clip_curve_to_brep_face(
                     &mut intersections,
                     tolerance,
                     distance_tolerance,
+                    &mut |a, b, tol| a.intersection_events_with_curve(b, tol),
                 )?);
             }
         }
@@ -3814,14 +3860,20 @@ struct CurveBrepFaceGeometry<'a> {
     transform: Option<AffineTransform3>,
 }
 
-fn curve_brep_face_overlaps(
+#[allow(clippy::too_many_arguments)]
+fn curve_brep_face_overlaps<E: From<GeometryError>>(
     curve: &NurbsCurve,
     geometry: CurveBrepFaceGeometry<'_>,
     overlap: CurveSurfaceOverlap,
     intersections: &mut Vec<CurveBrepIntersection>,
     tolerance: Tolerance,
     distance_tolerance: Real,
-) -> Result<Vec<CurveBrepOverlap>, GeometryError> {
+    curve_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsCurve,
+        Tolerance,
+    ) -> Result<Vec<crate::CurveCurveIntersectionEvent>, E>,
+) -> Result<Vec<CurveBrepOverlap>, E> {
     let CurveBrepFaceGeometry {
         brep,
         face,
@@ -3849,10 +3901,17 @@ fn curve_brep_face_overlaps(
             )? {
                 contacts
             } else {
-                curve
-                    .intersections_with_curve(edge_curve, tolerance)?
+                curve_events(curve, edge_curve, tolerance)?
                     .into_iter()
-                    .map(|intersection| intersection.first_parameter())
+                    .flat_map(|event| match event {
+                        crate::CurveCurveIntersectionEvent::Point(point) => {
+                            vec![point.first_parameter()]
+                        }
+                        crate::CurveCurveIntersectionEvent::Overlap(overlap) => vec![
+                            overlap.start().first_parameter(),
+                            overlap.end().first_parameter(),
+                        ],
+                    })
                     .collect()
             };
             for edge_parameter in edge_parameters {

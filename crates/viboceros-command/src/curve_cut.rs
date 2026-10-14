@@ -332,7 +332,7 @@ fn append_curve_cutter_intersections(
             } else {
                 surface
             };
-            for event in curve_surface_intersection_events(
+            for event in crate::curve_intersections::surface_events(
                 intersection_source,
                 intersection_surface,
                 tolerance,
@@ -362,11 +362,8 @@ fn append_curve_cutter_intersections(
             }
         }
         CurveCutterInput::Brep(brep) => {
-            let events = if let Some(projection) = projection {
-                transformed_curve_brep_intersection_events(source, brep, projection, tolerance)?
-            } else {
-                curve_brep_intersection_events(source, brep, tolerance)?
-            };
+            let events =
+                crate::curve_intersections::brep_events(source, brep, projection, tolerance)?;
             for event in events {
                 match event {
                     CurveBrepIntersectionEvent::Point(intersection) => {

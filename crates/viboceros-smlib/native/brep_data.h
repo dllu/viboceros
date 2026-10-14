@@ -50,10 +50,13 @@ void vb_surface_data_free(VbSurfaceData *surface);
 class SmBrep;
 class SmEdge;
 class SmBSplineSurface;
+class SmSurface;
 #include <vector>
 VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0);
 VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface);
 VbSurfaceData *vb_copy_nurbs_payload(const VbNurbsData &data);
+// Clamped query geometry, owned by the caller; use under the shared kernel lock.
+SmSurface *vb_import_query_surface(const VbNurbsData &data);
 SmBrep *vb_copy_brep(const SmBrep &source);
 void vb_validate_boundary_intersections(SmBrep &solid, double tolerance);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,

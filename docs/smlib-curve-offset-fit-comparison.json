@@ -9,7 +9,6 @@
     "tools/usd_brep/qualify_curve_offset_fit.py": "4c8d5865a63b00b2eedebfda609f6a69a53c014621b6647425d076c7fa458692",
     "tools/usd_brep/offset_adapter_probe.cpp": "6ef1b39bbbc141c66eff0862f0d771589cd670c22ace61c300ec618410aa4f93",
     "tools/usd_brep/offset_hermite_probe.cpp": "e0a86b45be5f3853503b37abaee3b30d56e71eee93b09e77450bf0fb9586fd01",
-    "crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615",
     "crates/viboceros-smlib/src/native/curve_offset_fit.rs": "02d9db6b1bea56e2b2223db0f5497a2c98a14ec662f3f126b8ba8331151b01d3",
     "crates/viboceros-smlib/tests/curve_offset_fit.rs": "f1da3099fafa9c6eba2c9386f9e1232476967585b9a32bc0d6e85335d5b9bf85",
     "crates/viboceros-oracle/src/curve_offset.rs": "fedef8b5665765eb1faeb80b4c210e76964d51fa92b1a8d744b46f6f13d2a9ca",
@@ -1663,6 +1662,7 @@
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-smlib/src/native/curve_offset.rs": "30a7170de68c8f36c6fd49c4bf19ef6479fab57719696db98459230e333983ca",
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-geometry/src/curve_offset.rs": "5e24d3661a214ae34bbd42a4dd20e0bc4960d2a217953eee584e0e887930933c",
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-geometry/src/curve_offset/nurbs.rs": "8ca6d80dd025eb42607b278b765b40acec7afe45ceaf794541e5a4c9812d11f8",
-    "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-geometry/src/curve_offset/nurbs/closed_offset.rs": "09845b735e6e4680dda9b2518d95da35b7ae2b3af13601861fa212b0520b3ea8"
+    "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-geometry/src/curve_offset/nurbs/closed_offset.rs": "09845b735e6e4680dda9b2518d95da35b7ae2b3af13601861fa212b0520b3ea8",
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615"
   }
 }

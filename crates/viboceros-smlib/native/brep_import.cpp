@@ -99,6 +99,10 @@ SmSurface *import_surface(const VbNurbsData &data) {
 }
 } // namespace
 
+SmSurface *vb_import_query_surface(const VbNurbsData &data) {
+    return import_surface(data);
+}
+
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
                        std::vector<size_t> *parents, std::vector<SmEdge *> *source_edges,

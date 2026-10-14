@@ -612,6 +612,14 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Native curve/surface contacts retain bounded preparation and acceptance.**
+  Curve/B-rep queries share the underlying-surface producer and original-face
+  trim policy. Unsupported degree, full-order interior breaks, weight ratios
+  and collapsed frames retain the portable query. Original-geometry point
+  residuals and per-span overlap samples reject invalid native proposals, but
+  do not certify continuous coincidence, arbitrary conditioning or event
+  completeness. See [qualification](smlib-curve-surface-intersections.md).
+
 - **Curve self-contact search has bounded qualification.** IntersectSelf and
   SelSelfIntersectingCrv use the native global producer for eligible curves,
   preserving source-space acceptance and portable preparation fallback. A

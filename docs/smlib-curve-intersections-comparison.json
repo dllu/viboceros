@@ -8,11 +8,7 @@
     "tools/usd_brep/qualify_curve_intersections.py": "7abb4d06541a648876876d08320db113205faa6cf80e0d276b94d88de5d5e902",
     "tools/usd_brep/curve_intersect_probe.cpp": "6122d8c49556bcacfd9f31511af30276ff3d8bb7e4f96183c9c6ef2ffe177c4b",
     "tools/usd_brep/intersection_adapter_probe.cpp": "1f3659c3c5df238fda78f78a58a1616417455152fd8badaa3cda4a8564fb294b",
-    "crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615",
     "crates/viboceros-geometry/src/nurbs/intersection_backend.rs": "bf78fd136d04a54c7588e292dd9d43480567fc5eb4cbab2c2da7821835e08075",
-    "crates/viboceros-command/src/lib.rs": "646026b04742cca00b75f4380eb9b4cae0266005eeef3f5bd190e2b6fd74c9a4",
-    "crates/viboceros-command/src/curve_intersections.rs": "6a62d3a11d7eb7316ebc6f48a70310c95aacbc1c3819917ec93707d136a2f1c2",
-    "crates/viboceros-command/src/curve_cut.rs": "0f91c1bfb17c2638c0df39f097bdc332afa1c72b99091594910767dc4fcb1fee",
     "third_party/patches/usd-brep-curve-intersection-distance.patch": "2a34f44ff1880c09725f64637576218a2f379a3118277a7404678ff987609f3d",
     "third_party/patches/usd-brep-curve-intersection-distance-solver.patch": "7649cf8310195d4923e4cdc3843a50adf1666d93605440342919bc78ce65b234",
     "third_party/patches/usd-brep-curve-intersection-distance-header.patch": "4e0d6fd7ef1f7d8411fdaa8e6cae721279e73d18d5ded75ee1df3bad6894dcbf",
@@ -17658,6 +17654,10 @@
     "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-smlib/native/CMakeLists.txt": "fee7bed16c0d2b41e535a8eeb0f3ba29990d4b126832e34e8d8a2bb5618220d9",
     "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-smlib/build.rs": "d1a544d8b33f14255e56fd39726c20763fc360de494d72467fcab474e212b0dd",
     "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-smlib/src/native/curve_intersections.rs": "690a70ac20fd91461a0c1f89f2605ffd421831b72cbbd647f9e0d6dda9df48a0",
-    "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-geometry/src/nurbs.rs": "04800350063852786d8f34e10af61257b118e23a53728af25a0422170bb5fbb8"
+    "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-geometry/src/nurbs.rs": "04800350063852786d8f34e10af61257b118e23a53728af25a0422170bb5fbb8",
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615",
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-command/src/lib.rs": "646026b04742cca00b75f4380eb9b4cae0266005eeef3f5bd190e2b6fd74c9a4",
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-command/src/curve_intersections.rs": "6a62d3a11d7eb7316ebc6f48a70310c95aacbc1c3819917ec93707d136a2f1c2",
+    "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-command/src/curve_cut.rs": "0f91c1bfb17c2638c0df39f097bdc332afa1c72b99091594910767dc4fcb1fee"
   }
 }

@@ -1181,7 +1181,7 @@ impl<'a> NurbsInput<'a> {
             source.control_points(),
         )
     }
-    fn surface(source: &'a NurbsSurface) -> Self {
+    pub(super) fn surface(source: &'a NurbsSurface) -> Self {
         Self::new(
             [source.degree_u(), source.degree_v()],
             [
