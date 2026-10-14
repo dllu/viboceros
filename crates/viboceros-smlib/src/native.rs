@@ -12,6 +12,12 @@ mod brep;
 mod construction;
 
 mod curve_blend;
+mod curve_extension;
+pub use curve_extension::{
+    extend_curve, extend_curve_by_length, extend_curve_naturally_by_length, extend_surface,
+    extend_surface_by_length, join_curve_natural_extension, join_curve_smooth_extension,
+    separate_curve_natural_extensions, separate_curve_smooth_extensions,
+};
 mod curve_offset;
 pub use curve_blend::blend_curve;
 pub use curve_offset::{curve_offset_operations, offset_curve_parts, offset_curve_through_point};

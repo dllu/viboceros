@@ -1,0 +1,24 @@
+--- a/source/SMLib/src/NL_CrvAdv.cpp
++++ b/source/SMLib/src/NL_CrvAdv.cpp
+@@ -948,7 +948,9 @@
+         }
+
+         /* let mq = number of knots in extended curve */
+-        mq = m + 2 * p - mult;
++        /* A full-order interior break already isolates the end span. */
++        /* Only insert missing copies of uu; multiplicity may be p+1. */
++        mq = m + p + (mult < p ? p - mult : 0);
+     }    /* end if (cont EQ NL_CMAX) branch */
+     else /* cont NE NL_G2 nor NL_CMAX branch */
+     {    /* let mq = number of knots in extended curve */
+@@ -3711,7 +3713,9 @@
+         }
+
+         /* mq = */
+-        mq = m + 2 * p - mult;
++        /* A full-order interior break already isolates the end span. */
++        /* Only insert missing copies of uu; multiplicity may be p+1. */
++        mq = m + p + (mult < p ? p - mult : 0);
+     } /* end NL_CMAX extension branch*/
+     else
+     {

@@ -1,0 +1,15 @@
+{
+  "status": "Rhino startup failed before worker execution",
+  "owned_process": 571060,
+  "private_scheme": "VibocerosOracleNativeExtensions20261014",
+  "diagnostic": "McNeel license servers could not be reached: unable to find an entry point named AcquireCredentialsHandleW in DLL sspicli.dll",
+  "observed_by": "owned Xvfb window screenshot on 2026-10-14",
+  "request_case_count": 60,
+  "worker_started": false,
+  "retry": {
+    "scheme": "VibocerosOracleNativeExtensionsRetry20261014",
+    "WINEDLLOVERRIDES": "sspicli,secur32,schannel=b",
+    "worker_started": false,
+    "outcome": "No worker response; startup dialog remained in owned Xvfb. Closed the scoped test process."
+  }
+}

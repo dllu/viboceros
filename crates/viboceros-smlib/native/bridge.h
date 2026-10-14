@@ -16,6 +16,8 @@ int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double param
                               VbSurfaceData **out,char *error,size_t capacity);
 int vb_nurbs_trim_curve(const VbNurbsData *source,double start,double end,VbSurfaceData **out,
                         char *error,size_t capacity);
+int vb_nurbs_extend_curve(const VbNurbsData *source,double start,double end,VbSurfaceData **out,
+                          char *error,size_t capacity);
 int vb_nurbs_trim_surface_axis(const VbNurbsData *source,int axis,double start,double end,
                                VbSurfaceData **out,char *error,size_t capacity);
 int vb_nurbs_insert_knot(const VbNurbsData *source, int axis, double parameter, size_t target,

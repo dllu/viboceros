@@ -2827,21 +2827,54 @@ impl NurbsSurface {
     /// Naturally extends the open U direction to include the requested
     /// parameter interval while leaving V topology and parameterization intact.
     pub fn try_extended_u(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.try_extended_u_with_extender(interval, &mut |curve, interval| {
+            curve.try_extended_control_curve_to(interval)
+        })
+    }
+
+    /// Extend U through a backend for the complete normal control curves.
+    /// Degenerate/closed control rows are allowed when the surface axis is open.
+    pub fn try_extended_u_with_extender<E: From<GeometryError>>(
+        &self,
+        interval: RangeInclusive<Real>,
+        extend: &mut impl FnMut(
+            &crate::NurbsCurve,
+            RangeInclusive<Real>,
+        ) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         if self.is_closed_u()? {
-            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" });
+            return Err(
+                GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" }.into(),
+            );
         }
         validate_surface_extension_interval(&interval, self.domain_u())?;
-        self.map_u_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
+        self.map_u_control_curves(|curve| extend(curve, interval.clone()))
     }
 
     /// Naturally extends the open V direction to include the requested
     /// parameter interval while leaving U topology and parameterization intact.
     pub fn try_extended_v(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.try_extended_v_with_extender(interval, &mut |curve, interval| {
+            curve.try_extended_control_curve_to(interval)
+        })
+    }
+
+    /// Extend V through the same control-curve backend while retaining U topology.
+    pub fn try_extended_v_with_extender<E: From<GeometryError>>(
+        &self,
+        interval: RangeInclusive<Real>,
+        extend: &mut impl FnMut(
+            &crate::NurbsCurve,
+            RangeInclusive<Real>,
+        ) -> Result<crate::NurbsCurve, E>,
+    ) -> Result<Self, E> {
         if self.is_closed_v()? {
-            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "V" });
+            return Err(
+                GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "V" }.into(),
+            );
         }
         validate_surface_extension_interval(&interval, self.domain_v())?;
-        self.map_v_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
+        self.map_v_control_curves(|curve| extend(curve, interval.clone()))
     }
 
     /// Extends the U direction with a straight, tangent continuation joined at
@@ -4156,7 +4189,9 @@ impl NurbsSurface {
         )?)
     }
 
-    fn extension_interval_by_length(
+    /// Parameter interval for the shared edge-distance/RMS-speed convention.
+    /// The interval includes the source domain and extends the selected edge.
+    pub fn extension_interval_by_length(
         &self,
         edge: SurfaceExtensionEdge,
         length: Real,

@@ -8,6 +8,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **End-span extension underallocates arrays at full-order interior breaks.**
+  Both `N_CrvExtendByParamDist` and `N_CrvExtendByDist` size the output with
+  `m + 2*p - mult`, allowing multiplicity `p+1` to subtract a nonexistent
+  insertion. Quadratic parameter extension returns an error at either end;
+  distance extension writes outside its control/knot arrays, confirmed by
+  AddressSanitizer. The [generated-source repair](../third_party/patches/usd-brep-extension-break-allocation.patch)
+  counts only missing copies of the interior knot. All eight isolated
+  ordinary/full-break, start/end and parameter/distance probes pass analytic
+  position/domain checks afterward, including a complete instrumented kernel.
+  See the [qualification](smlib-extension.md) and
+  [retained baseline and sanitizer outcomes](smlib-extension-producer-comparison.json).
 - **Whole surface blending misaligns unequal rail domains and can corrupt the heap.**
   `SmBrep::CreateEdgeEdgeBlend` applies division to only part of its affine
   offset numerator. `[2,5]` is mapped to `[90,110]` when the first rail is

@@ -320,6 +320,15 @@ extern "C" int vb_nurbs_trim_surface_axis(const VbNurbsData *source,int axis,dou
     });
 }
 
+extern "C" int vb_nurbs_extend_curve(const VbNurbsData *source,double start,double end,
+                                     VbSurfaceData **out,char *error,size_t capacity) {
+    if(out) *out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(source && out,"Missing curve extension payload");
+        *out=vb_extend_nurbs_curve(*source,start,end);
+    });
+}
+
 extern "C" int vb_nurbs_surface_isocurve(const VbNurbsData *source,int varying,double parameter,
                                          VbSurfaceData **out,char *error,size_t capacity) {
     if(out) *out=nullptr;

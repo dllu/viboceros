@@ -21,3 +21,9 @@ It scales second and third surface-boundary derivatives by the square and cube
 of the tangent's speed change, preserving the chain rule when takeoff length
 changes. The native build compiles a generated `SmSurface.cpp` copy. See the
 [curved rational qualification](../../docs/smlib-blend-derivative-scaling.md).
+
+`usd-brep-extension-break-allocation.patch` applies to the same pinned release.
+It allocates the complete knot/control arrays when an end span is separated
+by a full-order interior break, in both parameter and distance extension.
+The native build compiles a generated `NL_CrvAdv.cpp` copy. See the
+[direct producer and adapter qualification](../../docs/smlib-extension.md).

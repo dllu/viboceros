@@ -3177,27 +3177,47 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_extended_by_length_with_operations(
+            side,
+            length,
+            tolerance,
+            &mut |curve, interval| curve.try_extended_to(interval),
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Shared arc-length bracketing with delegated exact extension and extraction.
+    pub fn try_extended_by_length_with_operations<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        extend: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         if !length.is_finite() || length <= 0.0 {
-            return Err(GeometryError::InvalidCurveExtensionLength);
+            return Err(GeometryError::InvalidCurveExtensionLength.into());
         }
         if self.is_closed()? {
-            return Err(GeometryError::CurveExtensionMustBeOpen);
+            return Err(GeometryError::CurveExtensionMustBeOpen.into());
         }
 
         let domain = self.domain();
         let start = match side {
-            CurveExtensionSide::Start | CurveExtensionSide::Both => {
-                self.extension_parameter_by_length(true, length, tolerance)?
-            }
+            CurveExtensionSide::Start | CurveExtensionSide::Both => self
+                .extension_parameter_by_length_with_operations(
+                    true, length, tolerance, extend, trim,
+                )?,
             CurveExtensionSide::End => *domain.start(),
         };
         let end = match side {
-            CurveExtensionSide::End | CurveExtensionSide::Both => {
-                self.extension_parameter_by_length(false, length, tolerance)?
-            }
+            CurveExtensionSide::End | CurveExtensionSide::Both => self
+                .extension_parameter_by_length_with_operations(
+                    false, length, tolerance, extend, trim,
+                )?,
             CurveExtensionSide::Start => *domain.end(),
         };
-        self.try_extended_to(start..=end)
+        extend(self, start..=end)
     }
 
     /// Applies Rhino's type-sensitive `Natural` merge behavior: line-like
@@ -3209,14 +3229,36 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_merged_naturally_by_length_with_extender(
+            side,
+            length,
+            tolerance,
+            &mut |source, side, length, tolerance| {
+                source.try_extended_by_length(side, length, tolerance)
+            },
+        )
+    }
+
+    /// Preserve natural line/arc policy with a delegated smooth extension backend.
+    pub fn try_merged_naturally_by_length_with_extender<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        smooth: &mut impl FnMut(&Self, CurveExtensionSide, Real, Tolerance) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         self.validate_length_extension(length)?;
         if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
-            return self.try_merged_linearly_by_length(side, length, tolerance);
+            return self
+                .try_merged_linearly_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
         if self.try_canonical_circular_arc(tolerance)?.is_some() {
-            return self.try_merged_circularly_by_length(side, length, tolerance);
+            return self
+                .try_merged_circularly_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
-        self.try_extended_by_length(side, length, tolerance)
+        smooth(self, side, length, tolerance)
     }
 
     /// Extends an open curve with an exact degree-matched straight tangent
@@ -3477,14 +3519,36 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_joined_naturally_by_length_with_extender(
+            side,
+            length,
+            tolerance,
+            &mut |source, side, length, tolerance| {
+                source.try_joined_smoothly_by_length(side, length, tolerance)
+            },
+        )
+    }
+
+    /// Preserve natural line/arc policy with a delegated smooth extension backend.
+    pub fn try_joined_naturally_by_length_with_extender<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        smooth: &mut impl FnMut(&Self, CurveExtensionSide, Real, Tolerance) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         self.validate_length_extension(length)?;
         if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
-            return self.try_joined_linearly_by_length(side, length, tolerance);
+            return self
+                .try_joined_linearly_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
         if self.try_canonical_circular_arc(tolerance)?.is_some() {
-            return self.try_joined_circularly_by_length(side, length, tolerance);
+            return self
+                .try_joined_circularly_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
-        self.try_joined_smoothly_by_length(side, length, tolerance)
+        smooth(self, side, length, tolerance)
     }
 
     /// Joins smooth NURBS extrapolation pieces to the unchanged source with
@@ -3495,27 +3559,51 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_joined_smoothly_by_length_with_operations(
+            side,
+            length,
+            tolerance,
+            &mut |curve, interval| curve.try_extended_to(interval),
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Retain the existing seam/representation policy with delegated extrapolation and trim.
+    pub fn try_joined_smoothly_by_length_with_operations<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        extend: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         if self.degree == 1 {
-            return self.try_joined_linearly_by_length(side, length, tolerance);
+            return self
+                .try_joined_linearly_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
         if !length.is_finite() || length <= 0.0 {
-            return Err(GeometryError::InvalidCurveExtensionLength);
+            return Err(GeometryError::InvalidCurveExtensionLength.into());
         }
         if self.is_closed()? {
-            return Err(GeometryError::CurveExtensionMustBeOpen);
+            return Err(GeometryError::CurveExtensionMustBeOpen.into());
         }
 
         let domain = self.domain();
         let start_extension =
             if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
-                let parameter = self.extension_parameter_by_length(true, length, tolerance)?;
-                Some(self.extension_segment(true, parameter)?)
+                let parameter = self.extension_parameter_by_length_with_operations(
+                    true, length, tolerance, extend, trim,
+                )?;
+                Some(self.extension_segment_with_operations(true, parameter, extend, trim)?)
             } else {
                 None
             };
         let end_extension = if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
-            let parameter = self.extension_parameter_by_length(false, length, tolerance)?;
-            Some(self.extension_segment(false, parameter)?)
+            let parameter = self.extension_parameter_by_length_with_operations(
+                false, length, tolerance, extend, trim,
+            )?;
+            Some(self.extension_segment_with_operations(false, parameter, extend, trim)?)
         } else {
             None
         };
@@ -3594,14 +3682,36 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Vec<Self>, GeometryError> {
+        self.try_separate_natural_extensions_by_length_with_extender(
+            side,
+            length,
+            tolerance,
+            &mut |source, side, length, tolerance| {
+                source.try_separate_smooth_extensions_by_length(side, length, tolerance)
+            },
+        )
+    }
+
+    /// Preserve natural line/arc policy with a delegated smooth extension backend.
+    pub fn try_separate_natural_extensions_by_length_with_extender<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        smooth: &mut impl FnMut(&Self, CurveExtensionSide, Real, Tolerance) -> Result<Vec<Self>, E>,
+    ) -> Result<Vec<Self>, E> {
         self.validate_length_extension(length)?;
         if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
-            return self.try_separate_linear_extensions_by_length(side, length, tolerance);
+            return self
+                .try_separate_linear_extensions_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
         if self.try_canonical_circular_arc(tolerance)?.is_some() {
-            return self.try_separate_circular_extensions_by_length(side, length, tolerance);
+            return self
+                .try_separate_circular_extensions_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
-        self.try_separate_smooth_extensions_by_length(side, length, tolerance)
+        smooth(self, side, length, tolerance)
     }
 
     /// Creates independent smooth NURBS extrapolation pieces without changing
@@ -3612,14 +3722,34 @@ impl NurbsCurve {
         length: Real,
         tolerance: Tolerance,
     ) -> Result<Vec<Self>, GeometryError> {
+        self.try_separate_smooth_extensions_by_length_with_operations(
+            side,
+            length,
+            tolerance,
+            &mut |curve, interval| curve.try_extended_to(interval),
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    /// Retain the existing seam/representation policy with delegated extrapolation and trim.
+    pub fn try_separate_smooth_extensions_by_length_with_operations<E: From<GeometryError>>(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+        extend: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Vec<Self>, E> {
         if self.degree == 1 {
-            return self.try_separate_linear_extensions_by_length(side, length, tolerance);
+            return self
+                .try_separate_linear_extensions_by_length(side, length, tolerance)
+                .map_err(E::from);
         }
         if !length.is_finite() || length <= 0.0 {
-            return Err(GeometryError::InvalidCurveExtensionLength);
+            return Err(GeometryError::InvalidCurveExtensionLength.into());
         }
         if self.is_closed()? {
-            return Err(GeometryError::CurveExtensionMustBeOpen);
+            return Err(GeometryError::CurveExtensionMustBeOpen.into());
         }
 
         let mut extensions = Vec::with_capacity(if side == CurveExtensionSide::Both {
@@ -3628,12 +3758,17 @@ impl NurbsCurve {
             1
         });
         if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
-            let parameter = self.extension_parameter_by_length(true, length, tolerance)?;
-            extensions.push(self.extension_segment(true, parameter)?);
+            let parameter = self.extension_parameter_by_length_with_operations(
+                true, length, tolerance, extend, trim,
+            )?;
+            extensions.push(self.extension_segment_with_operations(true, parameter, extend, trim)?);
         }
         if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
-            let parameter = self.extension_parameter_by_length(false, length, tolerance)?;
-            extensions.push(self.extension_segment(false, parameter)?);
+            let parameter = self.extension_parameter_by_length_with_operations(
+                false, length, tolerance, extend, trim,
+            )?;
+            extensions
+                .push(self.extension_segment_with_operations(false, parameter, extend, trim)?);
         }
         Ok(extensions)
     }
@@ -3714,12 +3849,14 @@ impl NurbsCurve {
         Self::try_new_rational(source.degree, controls, knots)
     }
 
-    fn extension_parameter_by_length(
+    fn extension_parameter_by_length_with_operations<E: From<GeometryError>>(
         &self,
         at_start: bool,
         length: Real,
         tolerance: Tolerance,
-    ) -> Result<Real, GeometryError> {
+        extend: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Real, E> {
         let domain = self.domain();
         let endpoint = if at_start {
             *domain.start()
@@ -3761,9 +3898,10 @@ impl NurbsCurve {
                 endpoint + step
             };
             if !parameter.is_finite() || parameter == endpoint {
-                return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+                return Err(GeometryError::CurveExtensionLengthDidNotConverge.into());
             }
-            let extension = self.extension_segment(at_start, parameter)?;
+            let extension =
+                self.extension_segment_with_operations(at_start, parameter, extend, trim)?;
             let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&extension), tolerance)?;
             let extension_length = sampler.total_length();
             if extension_length >= length {
@@ -3772,26 +3910,38 @@ impl NurbsCurve {
                 } else {
                     length
                 };
-                return sampler.parameter_at_distance(distance);
+                return sampler.parameter_at_distance(distance).map_err(E::from);
             }
             step *= 2.0;
             if !step.is_finite() {
-                return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+                return Err(GeometryError::CurveExtensionLengthDidNotConverge.into());
             }
         }
-        Err(GeometryError::CurveExtensionLengthDidNotConverge)
+        Err(GeometryError::CurveExtensionLengthDidNotConverge.into())
     }
 
     fn extension_segment(&self, at_start: bool, parameter: Real) -> Result<Self, GeometryError> {
+        self.extension_segment_with_operations(
+            at_start,
+            parameter,
+            &mut |curve, interval| curve.try_extended_to(interval),
+            &mut |curve, interval| curve.try_trimmed(interval),
+        )
+    }
+
+    fn extension_segment_with_operations<E: From<GeometryError>>(
+        &self,
+        at_start: bool,
+        parameter: Real,
+        extend: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+        trim: &mut impl FnMut(&Self, RangeInclusive<Real>) -> Result<Self, E>,
+    ) -> Result<Self, E> {
         let domain = self.domain();
-        let start = *domain.start();
-        let end = *domain.end();
+        let (start, end) = (*domain.start(), *domain.end());
         if at_start {
-            self.try_extended_to(parameter..=end)?
-                .try_trimmed(parameter..=start)
+            trim(&extend(self, parameter..=end)?, parameter..=start)
         } else {
-            self.try_extended_to(start..=parameter)?
-                .try_trimmed(end..=parameter)
+            trim(&extend(self, start..=parameter)?, end..=parameter)
         }
     }
 

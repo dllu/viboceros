@@ -1,0 +1,696 @@
+{
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Degree-two linear pieces, with or without a full-order interior break; both ends and parameter/distance extension; analytic position and domain checks.",
+  "maximum_point_epsilon": 1e-10,
+  "maximum_domain_epsilon": 1e-10,
+  "asan_options": "detect_leaks=0:halt_on_error=1",
+  "source_sha256": {
+    "third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp": "63685ffb966435fcb2213aac68febb71eed09f53bf06e3ee42961f1696218294",
+    "third_party/patches/usd-brep-extension-break-allocation.patch": "631bb00ad9518f65779e2551b348239c3c958ce745b7519df361358fa2930db7",
+    "tools/usd_brep/CMakeLists.txt": "d1768deaa12673d0ed445e6689cdd01ee088175ab9218222c23c336b761e7e7c",
+    "tools/usd_brep/extension_probe.cpp": "45c7512b323c8c5389e75d433a916cdc0f2cd78ebc99eb8c5ab2be24d9c140d8",
+    "tools/usd_brep/compare_curve_extension_producer.py": "38aa6768a231b80d7aa6a67afea9475c926af32e1b1e2b21ec6d3ffd59f3b2c6"
+  },
+  "records": {
+    "before": [
+      {
+        "index": 0,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 1,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 2,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 3,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 4,
+        "returncode": 1,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"end\",\"status\":1}],\"passed\":false}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "end",
+              "status": 1
+            }
+          ],
+          "passed": false
+        }
+      },
+      {
+        "index": 5,
+        "returncode": 1,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"start\",\"status\":1}],\"passed\":false}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "start",
+              "status": 1
+            }
+          ],
+          "passed": false
+        }
+      },
+      {
+        "index": 6,
+        "returncode": -6,
+        "stdout": "",
+        "stderr": "double free or corruption (out)\n",
+        "output": null
+      },
+      {
+        "index": 7,
+        "returncode": -6,
+        "stdout": "",
+        "stderr": "double free or corruption (out)\n",
+        "output": null
+      }
+    ],
+    "after": [
+      {
+        "index": 0,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 1,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 2,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 3,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 4,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":9.9301366129890925e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 9.930136612989092e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 5,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":3.1401849173675503e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 3.1401849173675503e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 6,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":9.9301366129890925e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 9.930136612989092e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 7,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":3.1401849173675503e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 3.1401849173675503e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      }
+    ],
+    "asan_before": [
+      {
+        "index": 0,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 1,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 2,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 3,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 4,
+        "returncode": 1,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"end\",\"status\":1}],\"passed\":false}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "end",
+              "status": 1
+            }
+          ],
+          "passed": false
+        }
+      },
+      {
+        "index": 5,
+        "returncode": 1,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"start\",\"status\":1}],\"passed\":false}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "start",
+              "status": 1
+            }
+          ],
+          "passed": false
+        }
+      },
+      {
+        "index": 6,
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "=================================================================\n==568881==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x507000000150 at pc 0xe18113293fd4 bp 0xffffc01be880 sp 0xffffc01be870\nWRITE of size 8 at 0x507000000150 thread T0\n    #0 0xe18113293fd0 in ST_curxcdr /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp:1504\n    #1 0xb76d4eee2508 in main /home/dllu/proj/viboceros/tools/usd_brep/extension_probe.cpp:44\n    #2 0xe18112b184c0 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #3 0xe18112b18594 in __libc_start_main_impl ../csu/libc-start.c:360\n    #4 0xb76d4eee2c2c in _start (/tmp/viboceros-extension-before-asan/viboceros_usd_brep_extension_probe+0x2c2c) (BuildId: c598676aa5adf838764fe87bcc302203a299ffd1)\n\n0x507000000150 is located 0 bytes after 80-byte region [0x507000000100,0x507000000150)\nallocated by thread T0 here:\n    #0 0xe18114f776d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0xe18113524620 in N_Malloc /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Util.cpp:802\n    #2 0xe181135257d8 in N_AllocReal1dArray /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Util.cpp:1645\n    #3 0xe18113273db4 in N_AllocKnotVectorAndArray /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_BasisBasic.cpp:335\n    #4 0xe181132bdce0 in N_AllocCrvArrays /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp:1542\n    #5 0xe181132bf628 in N_CrvSizeArrays /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp:1607\n    #6 0xe1811328f420 in ST_curxcdr /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp:977\n    #7 0xb76d4eee2508 in main /home/dllu/proj/viboceros/tools/usd_brep/extension_probe.cpp:44\n    #8 0xe18112b184c0 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #9 0xe18112b18594 in __libc_start_main_impl ../csu/libc-start.c:360\n    #10 0xb76d4eee2c2c in _start (/tmp/viboceros-extension-before-asan/viboceros_usd_brep_extension_probe+0x2c2c) (BuildId: c598676aa5adf838764fe87bcc302203a299ffd1)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp:1504 in ST_curxcdr\nShadow bytes around the buggy address:\n  0x506ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x506fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x506fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x507000000000: fa fa fa fa fd fd fd fd fd fd fd fd fd fa fa fa\n  0x507000000080: fa fa fd fd fd fd fd fd fd fd fd fa fa fa fa fa\n=>0x507000000100: 00 00 00 00 00 00 00 00 00 00[fa]fa fa fa fa fa\n  0x507000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x507000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x507000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x507000000300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x507000000380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==568881==ABORTING\n",
+        "output": null
+      },
+      {
+        "index": 7,
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "=================================================================\n==568885==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x511000000120 at pc 0xfc39c7a24f9c bp 0xffffebc0cf00 sp 0xffffebc0cef0\nWRITE of size 8 at 0x511000000120 thread T0\n    #0 0xfc39c7a24f98 in N_CopyCPt /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Math.cpp:483\n    #1 0xfc39c7932924 in ST_curxcdr /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp:1366\n    #2 0xb4a9fba72508 in main /home/dllu/proj/viboceros/tools/usd_brep/extension_probe.cpp:44\n    #3 0xfc39c71b84c0 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0xfc39c71b8594 in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0xb4a9fba72c2c in _start (/tmp/viboceros-extension-before-asan/viboceros_usd_brep_extension_probe+0x2c2c) (BuildId: c598676aa5adf838764fe87bcc302203a299ffd1)\n\n0x511000000120 is located 0 bytes after 224-byte region [0x511000000040,0x511000000120)\nallocated by thread T0 here:\n    #0 0xfc39c96176d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0xfc39c7bc4620 in N_Malloc /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Util.cpp:802\n    #2 0xfc39c7bc7448 in N_AllocCPt1dArray /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Util.cpp:2803\n    #3 0xfc39c79d35d4 in N_AllocCPolygonAndArray /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_FrameBasic.cpp:123\n    #4 0xfc39c795dccc in N_AllocCrvArrays /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp:1537\n    #5 0xfc39c795f628 in N_CrvSizeArrays /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvBasic.cpp:1607\n    #6 0xfc39c792f420 in ST_curxcdr /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_CrvAdv.cpp:977\n    #7 0xb4a9fba72508 in main /home/dllu/proj/viboceros/tools/usd_brep/extension_probe.cpp:44\n    #8 0xfc39c71b84c0 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #9 0xfc39c71b8594 in __libc_start_main_impl ../csu/libc-start.c:360\n    #10 0xb4a9fba72c2c in _start (/tmp/viboceros-extension-before-asan/viboceros_usd_brep_extension_probe+0x2c2c) (BuildId: c598676aa5adf838764fe87bcc302203a299ffd1)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/NL_Math.cpp:483 in N_CopyCPt\nShadow bytes around the buggy address:\n  0x510ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x510fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x510fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x511000000000: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00\n  0x511000000080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x511000000100: 00 00 00 00[fa]fa fa fa fa fa fa fa fa fa fa fa\n  0x511000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x511000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x511000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x511000000300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x511000000380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==568885==ABORTING\n",
+        "output": null
+      }
+    ],
+    "asan_after": [
+      {
+        "index": 0,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 1,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 2,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 3,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":false,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":0,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": false,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 0,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 4,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":9.9301366129890925e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 9.930136612989092e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 5,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"parameter\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":3.1401849173675503e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "parameter",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 3.1401849173675503e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 6,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"distance\",\"side\":\"end\",\"status\":0,\"domain\":[0,1.25],\"maximum_point_error\":9.9301366129890925e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "distance",
+              "side": "end",
+              "status": 0,
+              "domain": [
+                0,
+                1.25
+              ],
+              "maximum_point_error": 9.930136612989092e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      },
+      {
+        "index": 7,
+        "returncode": 0,
+        "stdout": "{\"cases\":[{\"full_order_break\":true,\"method\":\"distance\",\"side\":\"start\",\"status\":0,\"domain\":[-0.25,1],\"maximum_point_error\":3.1401849173675503e-16,\"domain_error\":0,\"evaluation_succeeded\":true}],\"passed\":true}\n",
+        "stderr": "",
+        "output": {
+          "cases": [
+            {
+              "full_order_break": true,
+              "method": "distance",
+              "side": "start",
+              "status": 0,
+              "domain": [
+                -0.25,
+                1
+              ],
+              "maximum_point_error": 3.1401849173675503e-16,
+              "domain_error": 0,
+              "evaluation_succeeded": true
+            }
+          ],
+          "passed": true
+        }
+      }
+    ]
+  }
+}

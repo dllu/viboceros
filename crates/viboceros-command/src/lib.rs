@@ -113,6 +113,7 @@ mod extrude_along_curve;
 mod extrude_apex;
 use extrude_along_curve::ExtrudeCurveAlongCurveCommand;
 mod curve_segments;
+mod extension_backend;
 mod surface_segments;
 pub use curve_segments::directed as prepare_directed_subcurve;
 mod extrude_curve;
@@ -9763,15 +9764,19 @@ impl Command for ExtendCurveCommand {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             };
             let extensions = match style {
-                ExtendCurveStyle::Natural => curve.try_separate_natural_extensions_by_length(
+                ExtendCurveStyle::Natural => extension_backend::curve_pieces(
+                    &curve,
                     side,
                     length,
                     document.tolerance(),
+                    true,
                 )?,
-                ExtendCurveStyle::Smooth => curve.try_separate_smooth_extensions_by_length(
+                ExtendCurveStyle::Smooth => extension_backend::curve_pieces(
+                    &curve,
                     side,
                     length,
                     document.tolerance(),
+                    false,
                 )?,
                 ExtendCurveStyle::Arc => curve.try_separate_circular_extensions_by_length(
                     side,
@@ -9811,12 +9816,22 @@ impl Command for ExtendCurveCommand {
         let (curve, description) = match (target, style, join) {
             (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Natural, join) => (
                 match join {
-                    ExtendCurveJoin::Merge => {
-                        curve.try_merged_naturally_by_length(side, length, document.tolerance())?
-                    }
-                    ExtendCurveJoin::Yes => {
-                        curve.try_joined_naturally_by_length(side, length, document.tolerance())?
-                    }
+                    ExtendCurveJoin::Merge => extension_backend::curve_length(
+                        &curve,
+                        side,
+                        length,
+                        document.tolerance(),
+                        true,
+                        false,
+                    )?,
+                    ExtendCurveJoin::Yes => extension_backend::curve_length(
+                        &curve,
+                        side,
+                        length,
+                        document.tolerance(),
+                        true,
+                        true,
+                    )?,
                     ExtendCurveJoin::No => {
                         unreachable!("Join=No returns before source replacement")
                     }
@@ -9825,12 +9840,22 @@ impl Command for ExtendCurveCommand {
             ),
             (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Smooth, join) => (
                 match join {
-                    ExtendCurveJoin::Merge => {
-                        curve.try_extended_by_length(side, length, document.tolerance())?
-                    }
-                    ExtendCurveJoin::Yes => {
-                        curve.try_joined_smoothly_by_length(side, length, document.tolerance())?
-                    }
+                    ExtendCurveJoin::Merge => extension_backend::curve_length(
+                        &curve,
+                        side,
+                        length,
+                        document.tolerance(),
+                        false,
+                        false,
+                    )?,
+                    ExtendCurveJoin::Yes => extension_backend::curve_length(
+                        &curve,
+                        side,
+                        length,
+                        document.tolerance(),
+                        false,
+                        true,
+                    )?,
                     ExtendCurveJoin::No => {
                         unreachable!("Join=No returns before source replacement")
                     }
@@ -9866,7 +9891,7 @@ impl Command for ExtendCurveCommand {
                 format!("{side:?} by length {length}"),
             ),
             (ExtendCurveTarget::Domain([start, end]), ExtendCurveStyle::Natural, _) => (
-                curve.try_extended_to(start..=end)?,
+                extension_backend::curve_domain(&curve, start..=end)?,
                 format!("to include domain {start}..{end}"),
             ),
             (
@@ -10210,7 +10235,9 @@ impl Command for ExtendSurfaceCommand {
             && !merge
         {
             let extended = match style {
-                SurfaceExtensionStyle::Smooth => surface.try_extended_by_length(edge, distance)?,
+                SurfaceExtensionStyle::Smooth => {
+                    extension_backend::surface_length(&surface, edge, distance)?
+                }
                 SurfaceExtensionStyle::Line => {
                     surface.try_extended_linearly_by_length(edge, distance)?
                 }
@@ -10244,7 +10271,7 @@ impl Command for ExtendSurfaceCommand {
                 ExtendSurfaceTarget::Distance { edge, distance, .. },
                 SurfaceExtensionStyle::Smooth,
             ) => (
-                surface.try_extended_by_length(edge, distance)?,
+                extension_backend::surface_length(&surface, edge, distance)?,
                 format!("at its {edge:?} edge by distance {distance}"),
             ),
             (ExtendSurfaceTarget::Distance { edge, distance, .. }, SurfaceExtensionStyle::Line) => {
@@ -10260,10 +10287,7 @@ impl Command for ExtendSurfaceCommand {
                 },
                 SurfaceExtensionStyle::Smooth,
             ) => (
-                match direction {
-                    SurfaceExtensionDirection::U => surface.try_extended_u(start..=end)?,
-                    SurfaceExtensionDirection::V => surface.try_extended_v(start..=end)?,
-                },
+                extension_backend::surface_domain(&surface, direction, start..=end)?,
                 format!("in {direction:?} to include domain {start}..{end}"),
             ),
             (
@@ -22583,6 +22607,39 @@ mod tests {
         assert_eq!(document.undo_label(), history.as_deref());
     }
 
+    fn assert_extended_curve_matches(actual: &Geometry, expected: &NurbsCurve) {
+        let Geometry::NurbsCurve(actual) = actual else {
+            panic!("extension output must retain its exact NURBS representation")
+        };
+        assert_eq!(actual.degree(), expected.degree());
+        assert_eq!(
+            actual.control_points().len(),
+            expected.control_points().len()
+        );
+        assert_eq!(actual.knots().len(), expected.knots().len());
+        for (a, b) in actual.knots().iter().zip(expected.knots()) {
+            assert!((a - b).abs() < 1e-12);
+        }
+        for (a, b) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(a.point().distance_to(b.point()).unwrap() < 1e-12);
+            assert!((a.weight() - b.weight()).abs() < 1e-12);
+        }
+        for i in 0..=32 {
+            let fraction = i as Real / 32.;
+            let a = actual
+                .evaluate(actual.parameter_at(fraction).unwrap())
+                .unwrap();
+            let b = expected
+                .evaluate(expected.parameter_at(fraction).unwrap())
+                .unwrap();
+            assert!(a.distance_to(b).unwrap() < 1e-12);
+        }
+    }
+
     #[test]
     fn extend_by_length_preserves_curve_identity_attributes_groups_and_history() {
         let registry = CommandRegistry::with_builtins();
@@ -22661,7 +22718,7 @@ mod tests {
             "Smoothly extended the selected curve Both by length 2, merging the extension"
         );
         let object = document.object(id).unwrap();
-        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_smooth));
+        assert_extended_curve_matches(object.geometry(), &expected_smooth);
         assert_eq!(object.attributes(), before.attributes());
         assert!(!document.is_selected(id));
 
@@ -22709,7 +22766,7 @@ mod tests {
             "Linearly extended the selected curve Both by length 2, joining the extension"
         );
         let object = document.object(id).unwrap();
-        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_joined));
+        assert_extended_curve_matches(object.geometry(), &expected_joined);
         assert_eq!(object.attributes(), before.attributes());
         assert!(!document.is_selected(id));
     }
@@ -22811,7 +22868,7 @@ mod tests {
             .objects()
             .find(|object| object.id() != source_id)
             .unwrap();
-        assert_eq!(output.geometry(), &Geometry::NurbsCurve(expected_natural));
+        assert_extended_curve_matches(output.geometry(), &expected_natural);
         assert_eq!(output.attributes(), source_before.attributes());
         assert!(!document.is_selected(source_id));
         assert!(!document.is_selected(output.id()));
@@ -22842,7 +22899,7 @@ mod tests {
         );
         assert_eq!(document.objects().count(), 1);
         let object = document.object(source_id).unwrap();
-        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_joined));
+        assert_extended_curve_matches(object.geometry(), &expected_joined);
         assert_eq!(object.attributes(), source_before.attributes());
         assert!(!document.is_selected(source_id));
         assert_eq!(

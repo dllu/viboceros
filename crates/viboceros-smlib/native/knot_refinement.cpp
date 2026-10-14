@@ -745,6 +745,60 @@ VbSurfaceData *vb_trim_nurbs_surface_axis(const VbNurbsData &data,int axis,doubl
     return vb_copy_nurbs_payload(output);
 }
 
+VbSurfaceData *vb_extend_nurbs_curve(const VbNurbsData &data,double start,double end) {
+    validate(data);
+    require(data.degree[1]==0 && std::isfinite(start) && std::isfinite(end) && start<end,
+            "Invalid native curve extension interval");
+    const size_t degree=data.degree[0],count=data.count[0];
+    const auto *full=data.knots[0];
+    const double active_start=full[degree],active_end=full[count];
+    require(start<=active_start && end>=active_end && (start<active_start || end>active_end),
+            "Native extension must contain and extend the active domain");
+    require(count<=limit-2*degree,"Native curve extension resource limit");
+    const BinaryChart chart(full,data.knot_count[0],{start,end});
+    std::vector<double> basis(full,full+data.knot_count[0]);
+    chart.scale(basis);
+    std::vector<NL_CPOINT> points;
+    std::array<double,3> origin;
+    const int exponent=conditioned_controls(data,points,origin);
+    const bool negative=std::all_of(points.begin(),points.end(),[](const auto &p){return p.w<0.;});
+    if(negative) for(auto &p:points) {p.x=-p.x;p.y=-p.y;p.z=-p.z;p.w=-p.w;}
+    NL_STACKS stack;
+    SmStackHandler cleanup(&stack);
+    NL_CURVE curve;
+    N_CrvInitArrays(&curve);
+    check(N_CrvFromCPtsAndKnots(&curve,points.data(),points.size()-1,degree,
+          basis.data(),basis.size()-1,&stack),"Build native extension curve failed");
+    for(bool at_start:{true,false}) {
+        const double requested=at_start?start:end,original=at_start?active_start:active_end;
+        if(requested==original) continue;
+        const size_t width=curve.pol->n+1;
+        const auto *padding=at_start?curve.knt->U:curve.knt->U+width;
+        if(!std::all_of(padding,padding+degree+1,[&](double k){return k==chart.scaled(original);})) {
+            NL_CURVE clamped;
+            N_CrvInitArrays(&clamped);
+            clamp_curve_endpoint(curve,!at_start,clamped,stack);
+            curve=clamped;
+        }
+        NL_CURVE extended;
+        N_CrvInitArrays(&extended);
+        check(N_CrvExtendByParamDist(&curve,chart.scaled(requested),at_start?NL_START:NL_END,
+              NL_CMAX,&extended,&stack,&stack),"Extend native curve parameter boundary failed");
+        curve=extended;
+    }
+    const size_t output_count=curve.pol->n+1,knot_count=curve.knt->m+1;
+    require(curve.p==static_cast<NL_DEGREE>(degree) && output_count<=limit
+        && knot_count==output_count+degree+1,"Native extension output dimensions differ");
+    std::vector<double> knots(knot_count);
+    for(size_t i=0;i<knot_count;++i) knots[i]=chart.restored(curve.knt->U[i]);
+    require(knots[degree]==start && knots[output_count]==end,"Native extension output domain differs");
+    points.assign(curve.pol->Pw,curve.pol->Pw+output_count);
+    if(negative) for(auto &p:points) {p.x=-p.x;p.y=-p.y;p.z=-p.z;p.w=-p.w;}
+    VbNurbsData output=data;
+    output.count[0]=output_count;output.knots[0]=knots.data();output.knot_count[0]=knots.size();
+    return snapshot(output,points,exponent,origin);
+}
+
 VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double parameter) {
     validate(data);
     require(data.degree[1]>0 && (varying==0 || varying==1) && std::isfinite(parameter),

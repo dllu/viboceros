@@ -138,6 +138,7 @@ mod curve_join_close;
 mod curve_native;
 mod curve_offset;
 mod ellipse_offset;
+mod extension_backend;
 mod non_manifold_selection;
 mod planar_surface;
 mod volume_selection;
@@ -5360,8 +5361,11 @@ fn execute(
         }
         Operation::CurveExtendGeometry { curve, domain, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_extended_to(black_box(domain[0])..=black_box(domain[1]))
+            let (curve, elapsed) = measure_probe(iterations, || {
+                extension_backend::curve_domain(
+                    &source,
+                    black_box(domain[0])..=black_box(domain[1]),
+                )
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -5373,21 +5377,28 @@ fn execute(
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || match style {
-                CurveLengthExtensionStyle::Arc => source.try_extended_circularly_by_length(
+            let (curve, elapsed) = measure_probe(iterations, || match style {
+                CurveLengthExtensionStyle::Arc => source
+                    .try_extended_circularly_by_length(
+                        black_box(side.geometry()),
+                        black_box(*length),
+                        tolerance,
+                    )
+                    .map_err(CommandError::from),
+                CurveLengthExtensionStyle::Line => source
+                    .try_extended_linearly_by_length(
+                        black_box(side.geometry()),
+                        black_box(*length),
+                        tolerance,
+                    )
+                    .map_err(CommandError::from),
+                CurveLengthExtensionStyle::Smooth => extension_backend::curve_length(
+                    &source,
                     black_box(side.geometry()),
                     black_box(*length),
                     tolerance,
-                ),
-                CurveLengthExtensionStyle::Line => source.try_extended_linearly_by_length(
-                    black_box(side.geometry()),
-                    black_box(*length),
-                    tolerance,
-                ),
-                CurveLengthExtensionStyle::Smooth => source.try_extended_by_length(
-                    black_box(side.geometry()),
-                    black_box(*length),
-                    tolerance,
+                    false,
+                    false,
                 ),
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6197,13 +6208,12 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || match direction {
-                SurfaceKnotAxis::U => {
-                    source.try_extended_u(black_box(domain[0])..=black_box(domain[1]))
-                }
-                SurfaceKnotAxis::V => {
-                    source.try_extended_v(black_box(domain[0])..=black_box(domain[1]))
-                }
+            let (surface, elapsed) = measure_probe(iterations, || {
+                extension_backend::surface_domain(
+                    &source,
+                    *direction,
+                    black_box(domain[0])..=black_box(domain[1]),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -6229,18 +6239,17 @@ fn execute(
                 knots_u.clone(),
                 knots_v.clone(),
             )?;
-            let (surface, elapsed) = measure(iterations, || {
+            let (surface, elapsed) = measure_probe(iterations, || {
                 if *length < 0.0 {
-                    source.try_shrunk_by_length(
-                        edge.geometry(),
-                        black_box(-*length),
-                        None,
-                        tolerance,
-                    )
+                    source
+                        .try_shrunk_by_length(edge.geometry(), black_box(-*length), None, tolerance)
+                        .map_err(CommandError::from)
                 } else if *smooth {
-                    source.try_extended_by_length(edge.geometry(), black_box(*length))
+                    extension_backend::surface_length(&source, edge.geometry(), black_box(*length))
                 } else {
-                    source.try_extended_linearly_by_length(edge.geometry(), black_box(*length))
+                    source
+                        .try_extended_linearly_by_length(edge.geometry(), black_box(*length))
+                        .map_err(CommandError::from)
                 }
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -9766,64 +9775,29 @@ fn curve_extend_command(
         "objects": records.into_iter().map(|(_, _, value)| value).collect::<Vec<_>>(),
     });
 
-    let (_, elapsed_ns) = measure(iterations, || match (style, join) {
+    let (_, elapsed_ns) = measure_probe(iterations, || match (style, join) {
         (
             CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
-            CurveCommandExtensionJoin::Merge,
-        ) => match style {
-            CurveCommandExtensionStyle::Natural => source.try_merged_naturally_by_length(
-                black_box(side.geometry()),
-                black_box(length),
-                tolerance,
-            ),
-            CurveCommandExtensionStyle::Smooth => source.try_extended_by_length(
-                black_box(side.geometry()),
-                black_box(length),
-                tolerance,
-            ),
-            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
-                unreachable!("the match arm accepts only natural and smooth styles")
-            }
-        }
-        .map(|_| 1),
-        (
-            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
-            CurveCommandExtensionJoin::Yes,
-        ) => match style {
-            CurveCommandExtensionStyle::Natural => source.try_joined_naturally_by_length(
-                black_box(side.geometry()),
-                black_box(length),
-                tolerance,
-            ),
-            CurveCommandExtensionStyle::Smooth => source.try_joined_smoothly_by_length(
-                black_box(side.geometry()),
-                black_box(length),
-                tolerance,
-            ),
-            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
-                unreachable!("the match arm accepts only natural and smooth styles")
-            }
-        }
+            CurveCommandExtensionJoin::Merge | CurveCommandExtensionJoin::Yes,
+        ) => extension_backend::curve_length(
+            &source,
+            black_box(side.geometry()),
+            black_box(length),
+            tolerance,
+            style == CurveCommandExtensionStyle::Natural,
+            join == CurveCommandExtensionJoin::Yes,
+        )
         .map(|_| 1),
         (
             CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
             CurveCommandExtensionJoin::No,
-        ) => match style {
-            CurveCommandExtensionStyle::Natural => source
-                .try_separate_natural_extensions_by_length(
-                    black_box(side.geometry()),
-                    black_box(length),
-                    tolerance,
-                ),
-            CurveCommandExtensionStyle::Smooth => source.try_separate_smooth_extensions_by_length(
-                black_box(side.geometry()),
-                black_box(length),
-                tolerance,
-            ),
-            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
-                unreachable!("the match arm accepts only natural and smooth styles")
-            }
-        }
+        ) => extension_backend::curve_pieces(
+            &source,
+            black_box(side.geometry()),
+            black_box(length),
+            tolerance,
+            style == CurveCommandExtensionStyle::Natural,
+        )
         .map(|curves| curves.len()),
         (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::Merge) => source
             .try_merged_circularly_by_length(
@@ -9831,34 +9805,40 @@ fn curve_extend_command(
                 black_box(length),
                 tolerance,
             )
-            .map(|_| 1),
+            .map(|_| 1)
+            .map_err(CommandError::from),
         (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::Yes) => source
             .try_joined_circularly_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
             )
-            .map(|_| 1),
+            .map(|_| 1)
+            .map_err(CommandError::from),
         (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::No) => source
             .try_separate_circular_extensions_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
             )
-            .map(|curves| curves.len()),
+            .map(|curves| curves.len())
+            .map_err(CommandError::from),
         (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::Merge) => source
             .try_merged_linearly_by_length(black_box(side.geometry()), black_box(length), tolerance)
-            .map(|_| 1),
+            .map(|_| 1)
+            .map_err(CommandError::from),
         (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::Yes) => source
             .try_joined_linearly_by_length(black_box(side.geometry()), black_box(length), tolerance)
-            .map(|_| 1),
+            .map(|_| 1)
+            .map_err(CommandError::from),
         (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::No) => source
             .try_separate_linear_extensions_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
             )
-            .map(|curves| curves.len()),
+            .map(|curves| curves.len())
+            .map_err(CommandError::from),
     })?;
     Ok((value, elapsed_ns))
 }

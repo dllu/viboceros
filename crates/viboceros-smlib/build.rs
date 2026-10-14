@@ -29,6 +29,9 @@ fn build_native() {
     );
     println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_blend_curved_probe.cpp");
     println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-extension-break-allocation.patch"
+    );
+    println!(
         "cargo:rerun-if-changed={}",
         upstream.join("source/SMLib").display()
     );

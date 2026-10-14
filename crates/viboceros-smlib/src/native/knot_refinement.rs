@@ -1147,7 +1147,7 @@ pub fn remove_surface_multiple_knots(
     Ok((result, removed))
 }
 
-struct NurbsInput<'a> {
+pub(super) struct NurbsInput<'a> {
     degree: [usize; 2],
     count: [usize; 2],
     knots: [&'a [f64]; 2],
@@ -1173,7 +1173,7 @@ impl<'a> NurbsInput<'a> {
                 .collect(),
         }
     }
-    fn curve(source: &'a NurbsCurve) -> Self {
+    pub(super) fn curve(source: &'a NurbsCurve) -> Self {
         Self::new(
             [source.degree(), 0],
             [source.control_points().len(), 1],
@@ -1192,7 +1192,7 @@ impl<'a> NurbsInput<'a> {
             source.control_points(),
         )
     }
-    fn view(&self) -> brep::NurbsData {
+    pub(super) fn view(&self) -> brep::NurbsData {
         brep::NurbsData {
             degree: self.degree,
             count: self.count,

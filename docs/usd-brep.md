@@ -93,6 +93,9 @@ homogeneous section solves, including continuous-model Pipe fitting.
 banded solving through the full 9,999-division command range.
 [Curve Match preparation](smlib-curve-match.md) uses native trimming, elevation,
 refinement and affine Greville interpolation around shared continuity policy.
+[Extend and ExtendSrf extrapolation](smlib-extension.md) uses the native exact
+parameter-extension producer and checked extraction around shared distance,
+natural-style and joining policies.
 
 ## Reproduce the native trial
 
