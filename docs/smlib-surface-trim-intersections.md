@@ -23,6 +23,9 @@ surfaces, covering rounded knot insertion as well as parameter mapping.
 Certified payloads are retained without spatial re-clipping or endpoint joining.
 Exact duplicate payloads and covered points are removed; analytic face results
 retain the shared legacy assembly policy.
+Consecutive retained ranges now share one restriction of each original curve;
+[boundary-image certificates](smlib-surface-trim-tangencies.md) prevent false
+fragmentation at qualified fitted-trace tangencies.
 
 Only exact natural boundary images skip UV clipping. Their controls must stay
 on the corresponding natural sides, weights must have one sign, and trim
@@ -64,8 +67,10 @@ intersection/cutting command records at absolute `1e-8`, relative `1e-12`, with
 SDK comparisons kept separately. General trimmed-face regressions are independent
 analytic tests, not fresh Rhino observations. Continuous source correspondence
 does not prove complete contact discovery, face-region topology or injectivity.
-Arbitrary conditioning, tangencies of fitted UV traces and speed relative to
-Rhino remain unqualified.
+Arbitrary conditioning, general tangent-contact discovery and speed relative to
+Rhino remain unqualified. The subsequent
+[tangency qualification](smlib-surface-trim-tangencies.md) covers analytic circular
+boundaries with fitted UV traces at `1e-6` and `1e-9` model tolerances.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_intersections

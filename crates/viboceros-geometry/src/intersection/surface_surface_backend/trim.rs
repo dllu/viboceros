@@ -3,6 +3,7 @@ use super::*;
 use crate::{
     BrepLoop, BrepTrim, Point2, SurfaceIso, WeightedPoint2, WeightedPoint3, require_finite,
 };
+mod boundary_span;
 
 fn exact_natural_region(face: &BrepFace) -> Result<bool, GeometryError> {
     if !face.is_untrimmed(Tolerance::NUMERICAL_VALIDATION)? {
@@ -174,6 +175,7 @@ pub(super) fn clip<E: From<GeometryError>>(
     work: &mut usize,
 ) -> Result<Clipped, E> {
     let mut normalized = [None, None];
+    let mut boundary_ranges: [Vec<[Real; 2]>; 2] = [Vec::new(), Vec::new()];
     let mut breaks = vec![0., 1.];
     for axis in 0..2 {
         let Some(region) = &regions[axis] else {
@@ -181,6 +183,7 @@ pub(super) fn clip<E: From<GeometryError>>(
         };
         let witness = normalized_curve(uv[axis], region.original.surface())?;
         for (original, boundary) in &region.boundaries {
+            let mut hits = Vec::new();
             *work += 1;
             if *work > MAX_CURVE_SURFACE_NODE_PAIRS {
                 return Err(GeometryError::CurveIntersectionDidNotConverge.into());
@@ -208,9 +211,41 @@ pub(super) fn clip<E: From<GeometryError>>(
                         return Err(GeometryError::CurveIntersectionDidNotConverge.into());
                     }
                     breaks.push(fraction);
+                    hits.push((fraction, contact.second_parameter()));
                     if breaks.len() > 500_000 {
                         return Err(GeometryError::CurveIntersectionDidNotConverge.into());
                     }
+                }
+            }
+            hits.sort_by(|a, b| a.0.total_cmp(&b.0));
+            hits.dedup();
+            for pair in hits.windows(2) {
+                let [(a, ta), (b, tb)] = pair else {
+                    unreachable!()
+                };
+                if a >= b {
+                    continue;
+                }
+                if region.contains(&witness, finite_midpoint(*a, *b))? {
+                    continue;
+                }
+                *work += 1;
+                if *work > MAX_CURVE_SURFACE_NODE_PAIRS {
+                    return Err(GeometryError::CurveIntersectionDidNotConverge.into());
+                }
+                // A near-boundary span is eligible only after proving its
+                // complete spatial image is within tolerance of the actual
+                // original trim image. Endpoint proximity alone is insufficient.
+                let piece =
+                    spatial.try_trimmed(spatial.parameter_at(*a)?..=spatial.parameter_at(*b)?)?;
+                if boundary_span::certified(
+                    region.original.surface(),
+                    original,
+                    [*ta, *tb],
+                    &piece,
+                    limit,
+                )? {
+                    boundary_ranges[axis].push([*a, *b]);
                 }
             }
         }
@@ -222,6 +257,9 @@ pub(super) fn clip<E: From<GeometryError>>(
         for axis in 0..2 {
             if let (Some(region), Some(witness)) = (&regions[axis], &normalized[axis])
                 && !region.contains(witness, fraction)?
+                && !boundary_ranges[axis]
+                    .iter()
+                    .any(|r| r[0] <= fraction && fraction <= r[1])
             {
                 return Ok(false);
             }
@@ -240,10 +278,20 @@ pub(super) fn clip<E: From<GeometryError>>(
                 .push(spatial.evaluate(spatial.parameter_at(fraction)?)?);
         }
     }
+    let mut retained: Vec<[Real; 2]> = Vec::new();
     for interval in breaks.windows(2) {
         if !contained(finite_midpoint(interval[0], interval[1]))? {
             continue;
         }
+        if let Some(last) = retained.last_mut()
+            && last[1] == interval[0]
+        {
+            last[1] = interval[1];
+        } else {
+            retained.push([interval[0], interval[1]]);
+        }
+    }
+    for interval in retained {
         let piece = spatial
             .try_trimmed(spatial.parameter_at(interval[0])?..=spatial.parameter_at(interval[1])?)?;
         let middle =

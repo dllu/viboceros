@@ -324,3 +324,82 @@ fn fitted_general_intersection_retains_a_trim_corner_contact() {
     let expected = Point3::try_new(0.5, y, 1. - 0.5 * y).unwrap();
     assert!(point.distance_to(expected).unwrap() < 1e-6);
 }
+
+#[test]
+fn fitted_general_intersections_keep_tangent_holes_from_fragmenting_the_curve() {
+    for absolute in [1e-6, 1e-9] {
+        let tolerance = Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap();
+        for x in [0.45, 0.5, 0.6] {
+            for side in [-1., 1.] {
+                let [first, second] = pair();
+                let y = y_at(x);
+                let radius = 0.06;
+                let gradient = [2. * x + y, 3. * y * y + x];
+                let length = gradient[0].hypot(gradient[1]);
+                let center = [
+                    x + side * radius * gradient[0] / length,
+                    y + side * radius * gradient[1] / length,
+                ];
+                let hole = circular_hole(second, center, radius, tolerance);
+                let before = hole.clone();
+                let events =
+                    viboceros_smlib::surface_brep_intersection_events(&first, &hole, tolerance)
+                        .unwrap();
+                assert_eq!(
+                    events.len(),
+                    1,
+                    "absolute={absolute} x={x} side={side}, events={}",
+                    events.len()
+                );
+                let SurfaceBrepIntersectionEvent::Curve(curve) = &events[0] else {
+                    panic!("expected curve");
+                };
+                let ends = [
+                    curve.evaluate(*curve.domain().start()).unwrap().x(),
+                    curve.evaluate(*curve.domain().end()).unwrap().x(),
+                ];
+                assert!((ends[0].min(ends[1]) - 0.25).abs() < absolute * 2.);
+                assert!((ends[0].max(ends[1]) - 0.75).abs() < absolute * 2.);
+                for p in points(curve) {
+                    assert!(
+                        (p.x() * p.x() + p.y().powi(3) + p.x() * p.y() - 1.).abs() < absolute * 2.
+                    );
+                    assert!((p.x() - center[0]).hypot(p.y() - center[1]) >= radius - absolute * 2.);
+                }
+                assert_eq!(hole, before);
+            }
+        }
+    }
+}
+
+#[test]
+fn genuine_crossings_and_clearance_above_tolerance_are_preserved() {
+    for absolute in [1e-6, 1e-9] {
+        let tolerance = Tolerance::try_new(absolute, 1e-12, 1e-10).unwrap();
+        let x = 0.5;
+        let y = y_at(x);
+        let radius = 0.06;
+        let gradient = [2. * x + y, 3. * y * y + x];
+        let length = gradient[0].hypot(gradient[1]);
+        for (delta, count) in [(-64. * absolute, 2), (64. * absolute, 1)] {
+            let [first, second] = pair();
+            let center = [
+                x + (radius + delta) * gradient[0] / length,
+                y + (radius + delta) * gradient[1] / length,
+            ];
+            let hole = circular_hole(second, center, radius, tolerance);
+            let events =
+                viboceros_smlib::surface_brep_intersection_events(&first, &hole, tolerance)
+                    .unwrap();
+            assert_eq!(events.len(), count, "absolute={absolute}, delta={delta}");
+            for event in events {
+                let SurfaceBrepIntersectionEvent::Curve(curve) = event else {
+                    panic!("expected curve");
+                };
+                for p in points(&curve) {
+                    assert!((p.x() - center[0]).hypot(p.y() - center[1]) >= radius - absolute * 2.);
+                }
+            }
+        }
+    }
+}

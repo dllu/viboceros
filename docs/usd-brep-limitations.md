@@ -622,10 +622,14 @@ issues reported by NVIDIA that have not all been reproduced here.
   intersects coupled UV witnesses with original trim loops through the native
   curve producer, retaining both face restrictions and holes. Every resulting
   XYZ/UV span is recertified on both original surfaces. Tiny corner spans become
-  points only with a same-sign control-hull bound. Contact discovery, trim
+  points only with a same-sign control-hull bound. Fitted traces that penetrate
+  tangent boundaries can retain a span only with a continuous certificate
+  against the original trim image; larger crossings remain excluded. Consecutive
+  retained ranges use the same original curves. Contact discovery, trim
   topology, arbitrary conditioning and Rhino speed parity remain unqualified.
   See [surface qualification](smlib-surface-surface-intersections.md) and
-  [trim qualification](smlib-surface-trim-intersections.md).
+  [trim qualification](smlib-surface-trim-intersections.md) and
+  [tangency qualification](smlib-surface-trim-tangencies.md).
 
 - **Native curve/surface contacts retain bounded preparation and acceptance.**
   Curve/B-rep queries share the underlying-surface producer and original-face
