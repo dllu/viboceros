@@ -1,0 +1,62 @@
+{
+  "architecture": "x86_64",
+  "compiler": "/home/dllu/wines/build/toolchains/llvm-mingw-20260616-ucrt-ubuntu-22.04-aarch64/bin/x86_64-w64-mingw32-clang",
+  "launcher": "/home/dllu/wines/prefixes/rhino/launch.sh",
+  "libraries": [
+    {
+      "error": 0,
+      "loaded": true,
+      "name": "sspicli.dll",
+      "symbols": [
+        {
+          "attempted": true,
+          "error": 127,
+          "name": "AcquireCredentialsHandleW",
+          "resolved": false
+        },
+        {
+          "attempted": true,
+          "error": 127,
+          "name": "FreeCredentialsHandle",
+          "resolved": false
+        },
+        {
+          "attempted": true,
+          "error": 127,
+          "name": "InitializeSecurityContextW",
+          "resolved": false
+        }
+      ]
+    },
+    {
+      "error": 998,
+      "loaded": false,
+      "name": "secur32.dll",
+      "symbols": [
+        {
+          "attempted": false,
+          "error": 0,
+          "name": "AcquireCredentialsHandleW",
+          "resolved": false
+        },
+        {
+          "attempted": false,
+          "error": 0,
+          "name": "FreeCredentialsHandle",
+          "resolved": false
+        },
+        {
+          "attempted": false,
+          "error": 0,
+          "name": "InitializeSecurityContextW",
+          "resolved": false
+        }
+      ]
+    }
+  ],
+  "passed": false,
+  "schema_version": 1,
+  "source_sha256": {
+    "tools/rhino_oracle/wine_sspi_probe.c": "30a4ca8bd2fdf6e010bc293432fc46a90f4f8aadfd70c588f008c16f0987c1ae"
+  }
+}

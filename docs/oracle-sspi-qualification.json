@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "experiment": "Wine SSPI loader diagnostics",
+  "rhino_worker_started": false,
+  "fresh_rhino_geometry_observations": 0,
+  "dll_overrides": "sspicli,secur32,schannel=b",
+  "x86_64": {
+    "passed": false,
+    "sspicli_loaded": true,
+    "forwarded_symbol_error": 127,
+    "secur32_loaded": false,
+    "secur32_loader_error": 998
+  },
+  "aarch64": {
+    "passed": true,
+    "resolved_symbols": 6
+  },
+  "checks": {
+    "python_diagnostic_tests": 6,
+    "both_cross_compiler_builds": "Wall, Wextra, Werror",
+    "compiled_PE_machine_types": "checked before execution"
+  },
+  "rhino_attempts": [
+    {
+      "settings_scheme": "VibocerosOracleProjectDiagnostic20261014",
+      "status": "startup_timeout",
+      "timeout_seconds": 180,
+      "owned_startup_dialog": "Missing AcquireCredentialsHandleW in sspicli.dll"
+    },
+    {
+      "settings_scheme": "VibocerosOracleProjectBuiltin20261014",
+      "status": "stopped_after_dependency_failure_was_reproduced",
+      "timeout_seconds": 300,
+      "worker_response": false
+    }
+  ],
+  "other_evidence": "A public x64 loader probe traced secur32 provider initialization failing with an access violation. A process-local overlay of the existing Wine x64 security DLLs did not repair the probe.",
+  "limits": [
+    "Resolution diagnostics do not test SSPI calls, authentication, license validity or network connectivity.",
+    "The architecture-dependent difference does not establish a specific Wine/FEX source defect.",
+    "No geometry-parity or performance qualification is established."
+  ],
+  "references": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress",
+    "https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--500-999-"
+  ],
+  "source_sha256": {
+    "tools/rhino_oracle/wine_sspi.py": "24f0360de4f14b2957ba4761da49a5f12748a10e6351130ade911748a8b66317",
+    "tools/rhino_oracle/wine_sspi_probe.c": "30a4ca8bd2fdf6e010bc293432fc46a90f4f8aadfd70c588f008c16f0987c1ae",
+    "tools/rhino_oracle/test_wine_sspi.py": "387e123f181fc50819cd0851f49b79f96cc053822f7d04795b7bc109d69c7764",
+    "tools/rhino_oracle/observations/wine_sspi_x86_64_20261014.json": "da5e5d575e3269134c253b3efe809da601fba519756fd400ae2b7ce4f8fcd6a7",
+    "tools/rhino_oracle/observations/wine_sspi_aarch64_20261014.json": "8ddb52c2a6749a367488c5583e8bcf6d8c9d9ff278ea4dfe29f49f28263a39d7"
+  }
+}
