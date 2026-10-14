@@ -959,3 +959,13 @@ queries. The sampler retains this metadata through polycurve parameter maps
 and bypasses derivative integration and lookup construction for those spans.
 Endpoint-sign checks reject poles; direct geometric station sampling retains
 points beside heavily compressed native parameters.
+
+Directional `Project` reuses exact affine transforms for planar faces, shared
+curve/face clipping, and the existing usd-brep coupled surface intersector for
+curved targets. Its ruled source surface retains `C(u)+v*d` as a second source
+relation, with original target trims handled by the shared UV certificate path.
+The coordinator stages all results before document admission and requires
+common-sign rational weights for finite sweep bounds. The app supplies source
+and target picking, session options, and finishing-view CPlane/camera directions.
+See [Project](commands/project.md) for supported behavior and qualifications;
+mesh/SubD targets, Loose, grips, and edge subobjects are pending.

@@ -194,6 +194,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            projection: None,
             first: (!first.is_empty()).then_some(first),
             original_selection,
             output_layer: "Current",

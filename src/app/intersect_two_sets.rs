@@ -13,6 +13,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) uv_mapping: Option<super::apply_curves::UvMappingKind>,
     pub(super) uv_face: Option<usize>,
     pub(super) uv_subcurves: super::uv_subcurve_input::SubcurveInputs,
+    pub(super) projection: Option<super::project::ProjectOptions>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -56,6 +57,9 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
+        if self.projection.is_some() {
+            return "Project";
+        }
         if let Some(kind) = self.uv_mapping {
             kind.name()
         } else {
@@ -65,6 +69,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
+        if self.projection.is_some() {
+            return if self.first.is_some() {
+                ObjectSelectionFilter::SurfaceComponents
+            } else {
+                ObjectSelectionFilter::ApplyCurves
+            };
+        }
         if let Some(kind) = self.uv_mapping {
             if self.uv_subcurves.pending.is_some() {
                 return ObjectSelectionFilter::Curves;
@@ -77,6 +88,13 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if self.projection.is_some() {
+            return if self.first.is_some() {
+                "Select target surfaces or B-reps; Enter projects, Esc cancels"
+            } else {
+                "Select curves and points; Enter continues, Esc cancels"
+            };
+        }
         if let Some(hint) = self.uv_subcurves.hint() {
             return hint;
         }
@@ -131,6 +149,9 @@ fn output_layer_option(input: &str) -> Option<&'static str> {
 
 impl VibocerosApp {
     pub(super) fn try_start_intersection_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_project_prompt(input) {
+            return true;
+        }
         if self.try_start_apply_curves_prompt(input) {
             return true;
         }
@@ -165,6 +186,7 @@ impl VibocerosApp {
         self.cancel_interactive_command(false);
         self.document.clear_selection();
         self.intersection_prompt = Some(TwoSetsPrompt {
+            projection: None,
             first: (!first.is_empty()).then_some(first),
             output_layer,
             original_selection,
@@ -181,6 +203,11 @@ impl VibocerosApp {
 
     pub(super) fn log_intersection_prompt(&mut self) {
         if let Some(prompt) = &self.intersection_prompt {
+            if prompt.projection.is_some() {
+                let prompt = prompt.clone();
+                self.log_project_prompt(&prompt);
+                return;
+            }
             if prompt.uv_mapping.is_some() {
                 self.push_log(format!("{}: {}", prompt.name(), prompt.hint()));
                 return;
@@ -205,6 +232,9 @@ impl VibocerosApp {
         let Some(mut prompt) = self.intersection_prompt.clone() else {
             return false;
         };
+        if prompt.projection.is_some() {
+            return self.continue_project_prompt(prompt, input);
+        }
         if prompt.uv_mapping.is_some() {
             return self.continue_apply_curves_prompt(prompt, input);
         }
@@ -310,6 +340,10 @@ impl VibocerosApp {
         mode: SelectionMode,
     ) {
         if let Some(prompt) = &self.intersection_prompt {
+            if prompt.projection.is_some() {
+                self.select_project_objects(ids, mode);
+                return;
+            }
             if prompt.uv_mapping.is_some() {
                 self.select_apply_curves_objects(ids, mode);
                 return;

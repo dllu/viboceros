@@ -106,6 +106,7 @@ mod object_layout;
 mod object_source;
 mod plane_arrays;
 mod polyhedral_boolean;
+mod project;
 mod remove_holes;
 mod shrink_trimmed;
 mod solid_orientation;
@@ -1543,6 +1544,12 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: self_intersect::Fixture,
     },
+    ProjectCurveSurface {
+        id: String,
+        curve: NurbsCurveDefinition,
+        surface: NurbsSurfaceDefinition,
+        direction: [f64; 3],
+    },
     CurveSurfaceIntersectCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2465,6 +2472,7 @@ impl Operation {
             | Self::SurfaceSplitCuttingCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::SelfIntersectProbe { id, .. }
+            | Self::ProjectCurveSurface { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
@@ -5608,6 +5616,12 @@ fn execute(
         Operation::SelfIntersectProbe { fixture, .. } => {
             self_intersect::run(iterations, fixture, tolerance)?
         }
+        Operation::ProjectCurveSurface {
+            curve,
+            surface,
+            direction,
+            ..
+        } => project::run(iterations, curve, surface, *direction, tolerance)?,
         Operation::CurveSurfaceIntersectCommand { curve, surface, .. } => {
             curve_surface_intersect_command(iterations, curve, surface, tolerance)?
         }

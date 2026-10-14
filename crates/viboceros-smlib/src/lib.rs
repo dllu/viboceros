@@ -31,7 +31,8 @@ pub use native::{
     separate_curve_extensions_to_boundaries, separate_curve_natural_extensions,
     separate_curve_smooth_extensions, split_curve, split_curve_at_parameters, split_surface,
     subcurve, subcurve_at_arc_length, surface_brep_intersection_events,
-    surface_intersection_events, surface_isocurve, surface_single_span_patches, surface_tweens,
-    surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_surface, trim_blend_parent,
-    trim_curve, trim_surface, trim_surface_direction,
+    surface_face_intersection_events, surface_intersection_events, surface_isocurve,
+    surface_single_span_patches, surface_tweens, surface_tweens_refitted, surface_tweens_sampled,
+    sweep_model, sweep_surface, trim_blend_parent, trim_curve, trim_surface,
+    trim_surface_direction,
 };

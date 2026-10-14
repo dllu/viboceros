@@ -175,6 +175,7 @@ mod point_grid;
 mod point_input;
 mod points;
 mod preferences;
+mod project;
 mod radius;
 mod replace_block;
 mod scale_by_plane;
@@ -2068,6 +2069,7 @@ pub struct VibocerosApp {
     object_prompt: Option<object_selection::PendingObjectCommand>,
     group_prompt: Option<group_prompt::GroupPrompt>,
     intersection_prompt: Option<intersect_two_sets::TwoSetsPrompt>,
+    project_options: project::ProjectOptions,
     subcurve_prompt: Option<subcurve_prompt::SubcurvePrompt>,
     boolean_two_prompt: Option<boolean_two::Prompt>,
     planar_boolean_prompt: Option<planar_boolean::Prompt>,
@@ -2173,6 +2175,7 @@ impl VibocerosApp {
             object_prompt: None,
             group_prompt: None,
             intersection_prompt: None,
+            project_options: Default::default(),
             subcurve_prompt: None,
             boolean_two_prompt: None,
             planar_boolean_prompt: None,
@@ -2850,11 +2853,14 @@ impl VibocerosApp {
             return true;
         }
         let active_plane = self.viewports[self.active_viewport].construction_plane();
-        // Scale2D uses the viewport where the scale factor is supplied, not
-        // the one where its center/reference was picked.
+        // Scale2D and Project use the viewport at completion. Project's
+        // direction must not inherit a previous drawing command's plane.
         let finishing_plane = input.split_whitespace().next().is_some_and(|name| {
             name.trim_start_matches(['_', '-'])
                 .eq_ignore_ascii_case("Scale2D")
+                || name
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("Project")
         });
         let construction_plane = if self.active_command.is_none() && !finishing_plane {
             self.drafting_plane.unwrap_or(active_plane)
@@ -2866,11 +2872,24 @@ impl VibocerosApp {
                 .eq_ignore_ascii_case("ExtractMeshFacesByDraftAngle")
         });
         let has_view_direction = input.split_whitespace().skip(1).any(|argument| {
-            argument
-                .split_once('=')
-                .is_some_and(|(key, _)| key.eq_ignore_ascii_case("ViewDirection"))
+            argument.split_once('=').is_some_and(|(key, _)| {
+                key.trim_start_matches('_')
+                    .eq_ignore_ascii_case("ViewDirection")
+            })
         });
-        let command_input = if draft_angle_command && !has_view_direction {
+        let project_view = input.split_whitespace().next().is_some_and(|name| {
+            name.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Project")
+        }) && input.split_whitespace().skip(1).any(|argument| {
+            argument
+                .trim_start_matches('_')
+                .split_once('=')
+                .is_some_and(|(key, value)| {
+                    key.eq_ignore_ascii_case("Direction")
+                        && value.trim_start_matches('_').eq_ignore_ascii_case("View")
+                })
+        });
+        let command_input = if (draft_angle_command || project_view) && !has_view_direction {
             let [x, y, z] = self.viewports[self.active_viewport]
                 .viewward_direction()
                 .to_array();
@@ -9768,6 +9787,7 @@ mod tests {
     mod point_grid;
     mod point_input;
     mod points;
+    mod project;
     mod radius;
     mod rebuild_preview;
     mod rhino_curve_prompt;
@@ -9865,6 +9885,7 @@ mod tests {
             curve_points: Vec::new(),
             group_prompt: None,
             intersection_prompt: None,
+            project_options: Default::default(),
             subcurve_prompt: None,
             boolean_two_prompt: None,
             planar_boolean_prompt: None,

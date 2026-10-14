@@ -60,6 +60,27 @@ pub fn surface_intersection_events(
     )
 }
 
+/// Intersect explicit surface/face operands with coupled native witnesses.
+/// Used by projection coordinators that must retain both source relations.
+pub fn surface_face_intersection_events(
+    first: SurfaceIntersectionInput<'_>,
+    second: SurfaceIntersectionInput<'_>,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, Error> {
+    surface_face_intersection_events_with_operations(
+        first,
+        second,
+        tolerance,
+        &mut |a, b, limit| propose(a, b, tolerance, limit),
+        &mut super::curve_intersection_events,
+    )?
+    .ok_or({
+        Error::Geometry(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "native surface/face preparation",
+        })
+    })
+}
+
 fn uv_original(curve: NurbsCurve, source: &NurbsSurface) -> Result<NurbsCurve2, Error> {
     let u = source.domain_u();
     let v = source.domain_v();

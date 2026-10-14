@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "command": "Project",
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "qualification": "Local command, interaction, protocol and independent image regressions; continuous native acceptance inherited from the coupled intersection adapter. No fresh Rhino outputs.",
+  "source_relation": "C(u)+v*d; existing exact NurbsSurface extrusion and usd-brep coupled surface/face intersection",
+  "limitations": [
+    "Mesh/SubD targets, Loose, grips and edge subobjects pending",
+    "Custom direction accepts a vector; interactive two-point Custom pending",
+    "Curved kinks and target faces may produce separate outputs",
+    "Common-sign weights required for finite extent bounds",
+    "Continuous acceptance does not prove complete discovery or topology"
+  ],
+  "fixtures": 6,
+  "native_output_curves": 5,
+  "checks": {
+    "native_command_tests": 12,
+    "portable_command_tests": 10,
+    "app_tests": 5,
+    "native_protocol_tests": 2,
+    "native_surface_adapter_tests": 10,
+    "python_worker_tests": 112,
+    "help_registration": true,
+    "native_and_portable_lint": "warnings denied",
+    "python_retained_response_tests": 3
+  },
+  "rhino_attempt": {
+    "status": "startup_timeout",
+    "timeout_seconds": 180,
+    "worker_response": false,
+    "owned_window": null,
+    "private_xvfb": true,
+    "settings_scheme": "VibocerosOracleProject20261014",
+    "sdk": "Rhino.Geometry.Curve.ProjectToBrep",
+    "fresh_observations": 0
+  },
+  "references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm",
+    "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Methods_T_Rhino_Geometry_Curve.htm"
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/project.rs": "cd79847dab71533ac80f0013516028a995fc3c5764e4f58e94132581b190606f",
+    "crates/viboceros-command/src/project_tests.rs": "ef6564c39c05ce898c6ed71ad0a7bd5aba96b6315f84ecb3810d77dc9276cb51",
+    "crates/viboceros-oracle/src/project.rs": "119112bf3265d81e6dd5dd3397ecc7b67c35104254b65bfe0b8cc239e0018040",
+    "src/app/project.rs": "0f3fa0473d3a5ae35d91387deae358f76f27370828acc35696bc96df46f28cba",
+    "src/app/tests/project.rs": "99e309fd74e2c42c421f6647f05bb09c6666b36bc2d33b8791fbc52f050b1504",
+    "crates/viboceros-smlib/src/native/surface_intersections.rs": "f633598897f6ebc62dacc00e54564d243a44dc933d850e2e004893692db3af01",
+    "crates/viboceros-geometry/src/nurbs.rs": "5b29a91339332eebcb35a46c651dea48b7ea3f631be4ff31b378eccb147d9374",
+    "tools/rhino_oracle/rhino_worker.py": "58fcd1af4c35964d5113832a4c64973d36bdd8451f6fba3d372f51c4154682f4",
+    "tools/rhino_oracle/test_worker.py": "4d6363ae00d3ee7c063e0f29e6a0f0d01aa717c87026e77d6a260be65a46e0bf",
+    "tools/rhino_oracle/test_project.py": "751a811a225692860b60deee1c4d6494cd79b3688d527c01c7bbadb13235dfb7",
+    "tools/rhino_oracle/fixtures/project_curve_surface.json": "903dda36dd3288d4b3332d2ea8aee460325dedd0a01f820fc809e43582a7abfe",
+    "tools/rhino_oracle/observations/project_curve_surface_viboceros_native.json": "d338a5ff11b9c00203ed3a008133defe0eb98144ead97c6d426f27cb9fd42a1b",
+    "crates/viboceros-command/src/lib.rs": "488e0e8b3fdf0b1fdc1b4dc652704e4c7617fa50d755b4338d542d4cbc030764",
+    "crates/viboceros-oracle/src/lib.rs": "f079fb5198bccfa05decd35efd37b126d0684e99def5cc1b2a65405a70c332be",
+    "crates/viboceros-smlib/src/lib.rs": "3c7fa8dd8d944799b6eb94f842ab01eee66b02e6349ae927730f037efef0034b",
+    "crates/viboceros-smlib/src/native.rs": "109ec5d8f59ccbbf047123941eb86fe52ad9d8df9b4ff9bb94d75a274cef5483",
+    "src/app.rs": "dc7aa18b7aa9988279c60f47935b8700c2ec39fa2ba1b49feacf6f6aecec742e",
+    "src/app/intersect_two_sets.rs": "8ec91322f7cc2128cb5563085c1c1323c9a89d89eafcf72c65114a5c172f3eb9",
+    "src/app/apply_curves.rs": "449a4f30e98e5a48bed8f7a37e75b3575762b3cc80f0f516167be578799cc9f0",
+    "src/app/boolean_solids.rs": "694f39791209c8d9ae1a2c9cc3517be9ed80eb1dc1a28a0b623c0829dc85ea30"
+  }
+}

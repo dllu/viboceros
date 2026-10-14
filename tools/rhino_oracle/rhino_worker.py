@@ -13257,6 +13257,42 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
+    if kind == "project_curve_surface":
+        direction = _vector(operation["direction"])
+        if not direction.Unitize():
+            raise ValueError("projection requires a nonzero finite direction")
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        surface = brep = None
+        def project_curve():
+            results = Rhino.Geometry.Curve.ProjectToBrep(
+                [curve], [brep], direction, float(tolerance["absolute"]))
+            records = []
+            try:
+                for result in results or []:
+                    parameters = result.DivideByCount(32, True)
+                    if parameters is None:
+                        raise ValueError("could not divide projection result")
+                    samples = [_xyz(result.PointAt(t)) for t in parameters]
+                    if tuple(samples[-1]) < tuple(samples[0]):
+                        samples.reverse()
+                    records.append(dict(samples=samples, length=float(result.GetLength()),
+                                        closed=bool(result.IsClosed)))
+                records.sort(key=lambda r: tuple(r['samples'][0]))
+                return dict(curves=records)
+            finally:
+                for result in results or []:
+                    result.Dispose()
+        try:
+            surface = _nurbs_surface_from_definition(operation["surface"])
+            brep = Rhino.Geometry.Brep.CreateFromSurface(surface)
+            if brep is None:
+                raise ValueError("could not create projection target")
+            return _measure(iterations, project_curve)
+        finally:
+            if brep is not None: brep.Dispose()
+            if surface is not None: surface.Dispose()
+            curve.Dispose()
+
     if kind == "curve_surface_intersect_command":
         document = Rhino.RhinoDoc.ActiveDoc
         curve = _nurbs_curve_from_definition(operation["curve"])

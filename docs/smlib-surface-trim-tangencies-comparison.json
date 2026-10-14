@@ -17,7 +17,6 @@
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "1dcb976798e8a1b79c2e8e379f859e87b2526b326924fd93ebb548e0d717d14e",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "312ae2527631a8a80020951de18b1aa2f0f03b460c1804e2d969b00120812e83",
-    "crates/viboceros-smlib/src/native/surface_intersections.rs": "b164b67b37c76fb5b656723a175a5d0d7bb2fbcd517343cb52fd998a863cd3a8",
     "crates/viboceros-smlib/tests/surface_intersections.rs": "ce70ecc244f115b0dbf51cc6a630b605d73b22403dca1970bba10f3a9eac3c8c",
     "crates/viboceros-smlib/tests/surface_intersections/trim.rs": "aee0dab4a49fdd7e4b99ead45c51d843b7cafa860d93107bfe644d1e12b56495",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
@@ -33,7 +32,6 @@
     "crates/viboceros-geometry/src/nurbs2/evaluate.rs": "b8e4011d8e9568efb1de46f1bb69367599e2114706874157fb5dd1d19004d0e1",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/tests.rs": "a6d1b2fc66b0a3c1ab51e2c51e422f31889811f8e06a434ce4cdcac3909639f9",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
-    "crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984",
     "crates/viboceros-command/src/curve_intersections.rs": "0c78fad06179d1af400daa751fe2bc009059e4e9594de1a015aec4041907b817",
     "crates/viboceros-command/src/curve_intersections/tests.rs": "d78bae196175cf5515d6150f2fa98773267c97972364037520bea873a52f5aee"
   },
@@ -190167,5 +190165,9 @@
       "max_absolute_error": 0.0,
       "differences": []
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-smlib/src/native/surface_intersections.rs": "b164b67b37c76fb5b656723a175a5d0d7bb2fbcd517343cb52fd998a863cd3a8",
+    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984"
+  }
 }

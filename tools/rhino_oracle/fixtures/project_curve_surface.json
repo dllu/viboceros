@@ -1,0 +1,549 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-10,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "project_curve_surface",
+      "id": "project_plane",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_surface",
+      "id": "project_clipped_plane",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              -5.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              15.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_surface",
+      "id": "project_oblique",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              4.0,
+              2.0,
+              -3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              8.0,
+              -3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        1.0,
+        0.0,
+        2.0
+      ]
+    },
+    {
+      "op": "project_curve_surface",
+      "id": "project_curved_graph",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              2.0,
+              7.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              9.0,
+              8.0,
+              7.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_surface",
+      "id": "project_rational_graph",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1.0,
+              1.0,
+              7.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              5.0,
+              9.0,
+              7.0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              9.0,
+              1.0,
+              7.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              4.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "op": "project_curve_surface",
+      "id": "project_miss",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              20.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              25.0,
+              5.0,
+              3.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ]
+      },
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              0.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              0.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          },
+          {
+            "point": [
+              10.0,
+              10.0,
+              0.0
+            ],
+            "weight": 1.0
+          }
+        ],
+        "knots_u": [
+          2.0,
+          2.0,
+          5.0,
+          5.0
+        ],
+        "knots_v": [
+          -3.0,
+          -3.0,
+          1.0,
+          1.0
+        ]
+      },
+      "direction": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ]
+}

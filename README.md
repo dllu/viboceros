@@ -20,8 +20,8 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available.
 
-For native B-rep modeling, NURBS editing, extension and fitting, Sweep1/Pipe construction,
-and STEP material regions on Linux,
+For native B-rep modeling, curved Project targets, NURBS editing, extension and
+fitting, Sweep1/Pipe construction, and STEP material regions on Linux,
 install `patch` and oneTBB development libraries (`libtbb-dev` on Ubuntu) and enable usd-brep:
 
 ```sh
@@ -32,6 +32,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 ## Documentation
 
 - [Command reference and examples](docs/commands/README.md)
+- [Directional curve and point projection](docs/commands/project.md)
 - [Viewport controls and drafting](docs/interface.md)
 - [Command input, completion, history, and file paths](docs/command-line.md)
 - [File formats and limitations](docs/file-formats.md)

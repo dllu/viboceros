@@ -2736,3 +2736,15 @@ Workflow `finish` may be `Enter` (default) or `Cancel`. The
 results together with accepted points and Undo/Redo state. These are completed
 native observations; a canceled command is distinct from a failed worker or
 process launch.
+
+`project_curve_surface` accepts an independent NURBS `curve`, NURBS `surface`
+and a finite nonzero three-coordinate `direction`. The local adapter executes
+Project on a fresh document; Rhino invokes public `Curve.ProjectToBrep` against
+an owned natural face. Both report output curves' lengths, closure and 33
+samples at equal arc-length intervals, oriented by lexicographic endpoints and
+sorted by their first sample. This removes open-curve direction and parameter
+chart differences from the six supplied recipes. It does not measure command
+metadata parity or establish a continuous correspondence between engines.
+See [Project qualification](commands/project.md) and
+`tools/rhino_oracle/fixtures/project_curve_surface.json`. No fresh Rhino
+response is retained: the 2026-10-14 isolated attempt timed out during startup.

@@ -11,6 +11,41 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_directional_projection_disposes_sources_and_all_results_on_failures(self):
+        for failure in (None, "surface", "target", "sdk", "sampling"):
+            with self.subTest(failure=failure):
+                source, surface, brep = Mock(), Mock(), Mock()
+                results = [SimpleNamespace(
+                    DivideByCount=Mock(return_value=None if failure == "sampling" else [0., 1.]),
+                    PointAt=lambda t: SimpleNamespace(X=3.-2.*t, Y=0., Z=0.),
+                    GetLength=lambda: 2., IsClosed=False, Dispose=Mock()) for _ in range(2)]
+                project = Mock(side_effect=ValueError("sdk failure") if failure == "sdk" else [[results[0]], [results[1]]])
+                geometry = SimpleNamespace(Curve=SimpleNamespace(ProjectToBrep=project),
+                    Brep=SimpleNamespace(CreateFromSurface=Mock(return_value=None if failure == "target" else brep)))
+                with patch.object(self.worker.Rhino, "Geometry", geometry, create=True), \
+                     patch.object(self.worker, "_vector", return_value=SimpleNamespace(Unitize=lambda: True)), \
+                     patch.object(self.worker, "_nurbs_curve_from_definition", return_value=source), \
+                     patch.object(self.worker, "_nurbs_surface_from_definition", return_value=surface,
+                        side_effect=ValueError("surface failure") if failure == "surface" else None):
+                    op=dict(op="project_curve_surface",id="projection",curve={},surface={},direction=[0.,0.,1.])
+                    if failure:
+                        with self.assertRaises(ValueError): self.worker._execute(op,1,dict(absolute=1e-6))
+                    else:
+                        value,_=self.worker._execute(op,1,dict(absolute=1e-6))
+                        self.assertEqual(value,dict(curves=[dict(samples=[[1.,0.,0.],[3.,0.,0.]],length=2.,closed=False)]))
+                source.Dispose.assert_called_once()
+                self.assertEqual(surface.Dispose.call_count, int(failure != "surface"))
+                self.assertEqual(brep.Dispose.call_count, int(failure not in ("surface", "target")))
+                self.assertEqual(results[0].Dispose.call_count, int(failure in (None,"sampling")))
+                self.assertEqual(results[1].Dispose.call_count, int(failure is None))
+
+    def test_directional_projection_rejects_zero_direction_before_allocating_inputs(self):
+        with patch.object(self.worker,"_vector",return_value=SimpleNamespace(Unitize=lambda:False)), \
+             patch.object(self.worker,"_nurbs_curve_from_definition") as build:
+            with self.assertRaises(ValueError):
+                self.worker._execute(dict(op="project_curve_surface",direction=[0.,0.,0.]),1,dict(absolute=1e-6))
+            build.assert_not_called()
+
     def test_curve_trim_geometry_disposes_owned_source_and_result_at_every_failure_boundary(self):
         for failure in (None, "interval", "sdk", "record"):
             with self.subTest(failure=failure):

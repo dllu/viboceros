@@ -2200,7 +2200,9 @@ impl NurbsCurve {
         Ok(sine.atan2(cosine))
     }
 
-    pub(crate) fn full_multiplicity_kink_parameters(
+    /// Interior full-multiplicity knots whose one-sided tangent angle exceeds
+    /// the angular tolerance, in increasing parameter order.
+    pub fn full_multiplicity_kink_parameters(
         &self,
         tolerance: Tolerance,
     ) -> Result<Vec<Real>, GeometryError> {

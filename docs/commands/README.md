@@ -41,6 +41,7 @@ Rhino's complete command set is still a work in progress.
 - [Intermediate surface construction and limits](tween-surfaces.md)
 - [Apply World-XY curves and points onto surfaces](apply-curves.md)
 - [Create UV curves from a surface and spatial inputs](create-uv-curves.md)
+- [Project curves and points directionally onto surfaces and B-reps](project.md)
 - [Union convex polyhedral solids](boolean-union.md)
 - [Intersect convex polyhedral solids and sets](boolean-intersection.md)
 - [Subtract convex polyhedral cutters from solids](boolean-difference.md)
