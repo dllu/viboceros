@@ -1,6 +1,8 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{NurbsSurface, Point3, SurfaceSurfaceIntersectionEvent, Tolerance};
 use viboceros_smlib::surface_intersection_events;
+#[path = "surface_intersections/trim.rs"]
+mod trim;
 fn patch(points: [[f64; 3]; 4]) -> NurbsSurface {
     NurbsSurface::try_new(
         1,
@@ -124,7 +126,7 @@ fn general_polynomial_surface_pairs_extend_the_unimplemented_dispatcher() {
 }
 
 #[test]
-fn general_face_pairs_support_full_domains_and_reject_unqualified_partial_trims() {
+fn general_face_pairs_clip_partial_domains_and_preserve_operands() {
     use viboceros_geometry::{Brep, BrepBrepIntersectionEvent, SurfaceBrepIntersectionEvent};
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
     let controls = (0..4)
@@ -155,18 +157,39 @@ fn general_face_pairs_support_full_domains_and_reject_unqualified_partial_trims(
     let first =
         Brep::try_rectangular_surface_face(curved.clone(), 0. ..=1., 0. ..=1., tolerance).unwrap();
     let before = (first.clone(), face.clone());
-    assert!(matches!(
-        viboceros_smlib::surface_brep_intersection_events(&curved, &face, tolerance),
-        Err(viboceros_smlib::Error::Geometry(
-            viboceros_geometry::GeometryError::UnsupportedSurfaceSurfaceIntersection { .. }
-        ))
-    ));
-    assert!(matches!(
-        viboceros_smlib::brep_intersection_events(&first, &face, tolerance),
-        Err(viboceros_smlib::Error::Geometry(
-            viboceros_geometry::GeometryError::UnsupportedSurfaceSurfaceIntersection { .. }
-        ))
-    ));
+    let events =
+        viboceros_smlib::surface_brep_intersection_events(&curved, &face, tolerance).unwrap();
+    let curves = events
+        .iter()
+        .map(|event| {
+            let SurfaceBrepIntersectionEvent::Curve(curve) = event else {
+                panic!("expected curve");
+            };
+            curve
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(curves.len(), 1);
+    let brep_events = viboceros_smlib::brep_intersection_events(&first, &face, tolerance).unwrap();
+    for curve in curves.into_iter().chain(brep_events.iter().map(|event| {
+        let BrepBrepIntersectionEvent::Curve(curve) = event else {
+            panic!("expected curve");
+        };
+        curve
+    })) {
+        for station in 0..=32 {
+            let p = curve
+                .evaluate(curve.parameter_at(station as f64 / 32.).unwrap())
+                .unwrap();
+            assert!(p.x() >= 0.25 - 1e-6 && p.x() <= 0.75 + 1e-6, "{p:?}");
+            assert!((p.x() * p.x() + p.y().powi(3) + p.x() * p.y() - 1.).abs() < 2e-6);
+        }
+        let ends = [
+            curve.evaluate(*curve.domain().start()).unwrap().x(),
+            curve.evaluate(*curve.domain().end()).unwrap().x(),
+        ];
+        assert!((ends[0].min(ends[1]) - 0.25).abs() < 1e-6);
+        assert!((ends[0].max(ends[1]) - 0.75).abs() < 1e-6);
+    }
     let full = Brep::try_surface_face(other, tolerance).unwrap();
     let events =
         viboceros_smlib::surface_brep_intersection_events(&curved, &full, tolerance).unwrap();

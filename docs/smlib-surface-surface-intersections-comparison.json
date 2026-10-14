@@ -9,7 +9,6 @@
     "tools/usd_brep/qualify_surface_surface_intersections.py": "9e34cabf6fa48f7211f21763b6e2d987dc95b38de0265a071e8d46fa5e215da9",
     "tools/usd_brep/surface_surface_adapter_probe.cpp": "b9e47da5c5c4cb37602ab977509677f06aa4ec7517c6228a2f441ccc83a88f71",
     "tools/usd_brep/surface_surface_probe.cpp": "ff17e3d8df73fec598a455b64b751347bdf8bf06bd41c175674a2989552eb7b7",
-    "tools/usd_brep/CMakeLists.txt": "6e9986db16c7d842b85f0b92071b451f1bd59a5274b0fdb239b1243c6e7bc38a",
     "crates/viboceros-smlib/native/bridge.cpp": "a2dce0763ac8f47a0a5d911ade6b0d5b1dcb6cd922eebf344254e25c8c0664c0",
     "crates/viboceros-smlib/native/bridge.h": "0e9c8adfb8b489fc172454902dc493e964869a926f3dc2db83d79a39bdaebaa5",
     "crates/viboceros-smlib/native/brep_import.cpp": "d5b760d316f682f7065cc271167b136a83e143e4b40fbcd9abf2f2276479d0d0",
@@ -18,16 +17,9 @@
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "1dcb976798e8a1b79c2e8e379f859e87b2526b326924fd93ebb548e0d717d14e",
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "312ae2527631a8a80020951de18b1aa2f0f03b460c1804e2d969b00120812e83",
-    "crates/viboceros-smlib/src/native/surface_intersections.rs": "2236578c80b7caaa9d2bb05afeef22816ba1de24dc0fa25062409167c5bce2b1",
-    "crates/viboceros-smlib/tests/surface_intersections.rs": "ce73bd6c2f4eaff8d2fc424fded94ab8c10f8b1b8207d17e8c2779938f1e530c",
-    "crates/viboceros-geometry/src/intersection.rs": "8108f3eb35f64e040e97b4c4f664718f5bccf2cba4aab918e3a86f5ffee52baf",
-    "crates/viboceros-geometry/src/lib.rs": "05aa5ff6c284aff8384c0c6e7deffcd74a09b72decc54c63406305b4a2f0637c",
-    "crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "33f3393926620570116a41033f93a774a01c164c02cbada15ead1ebba44ffcc9",
-    "crates/viboceros-geometry/src/intersection/surface_surface_backend/tests.rs": "e3111af3321ba583f14c05f4082d3defaa7adea395c43515c7afdf129ba19c7a",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
     "crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984",
-    "crates/viboceros-command/src/curve_intersections.rs": "0c78fad06179d1af400daa751fe2bc009059e4e9594de1a015aec4041907b817",
-    "crates/viboceros-command/src/curve_intersections/tests.rs": "11e4f6fa8155a65662fc7de698207b3be557a443d3991364e4baf0114080ad3a"
+    "crates/viboceros-command/src/curve_intersections.rs": "0c78fad06179d1af400daa751fe2bc009059e4e9594de1a015aec4041907b817"
   },
   "jobs": {
     "native": {
@@ -190372,5 +190364,15 @@
       "max_absolute_error": 0.0,
       "differences": []
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:tools/usd_brep/CMakeLists.txt": "6e9986db16c7d842b85f0b92071b451f1bd59a5274b0fdb239b1243c6e7bc38a",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-smlib/src/native/surface_intersections.rs": "2236578c80b7caaa9d2bb05afeef22816ba1de24dc0fa25062409167c5bce2b1",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-smlib/tests/surface_intersections.rs": "ce73bd6c2f4eaff8d2fc424fded94ab8c10f8b1b8207d17e8c2779938f1e530c",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-geometry/src/intersection.rs": "8108f3eb35f64e040e97b4c4f664718f5bccf2cba4aab918e3a86f5ffee52baf",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-geometry/src/lib.rs": "05aa5ff6c284aff8384c0c6e7deffcd74a09b72decc54c63406305b4a2f0637c",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "33f3393926620570116a41033f93a774a01c164c02cbada15ead1ebba44ffcc9",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-geometry/src/intersection/surface_surface_backend/tests.rs": "e3111af3321ba583f14c05f4082d3defaa7adea395c43515c7afdf129ba19c7a",
+    "8e7c41d639e3a16348e9068787737c9bd119a81c:crates/viboceros-command/src/curve_intersections/tests.rs": "11e4f6fa8155a65662fc7de698207b3be557a443d3991364e4baf0114080ad3a"
+  }
 }

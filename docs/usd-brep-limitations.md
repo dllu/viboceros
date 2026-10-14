@@ -612,17 +612,20 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
-- **General surface contacts require continuous certificates and full face domains.**
+- **General surface contacts retain bounded curve and trim qualification.**
   Previously unsupported surface pairs can use `GlobalSurfaceIntersect` with
   independently owned XYZ and both UV curves. Original-surface certificates
   accept each complete curve; unknown classifications, missing witnesses and
   inconclusive proofs fail. Established analytic definitions remain in use.
   Approximate XYZ curves can miss exact spatial trim-edge contacts, reproduced
-  on `z=x²+y³` and `z=1−xy` with a partial rectangular face. General partial
-  trims therefore retain the portable unsupported error, with atomic command
-  rollback, pending clipping directly against coupled UV witnesses. Completeness,
+  on `z=x²+y³` and `z=1−xy` with a partial rectangular face. The adapter now
+  intersects coupled UV witnesses with original trim loops through the native
+  curve producer, retaining both face restrictions and holes. Every resulting
+  XYZ/UV span is recertified on both original surfaces. Tiny corner spans become
+  points only with a same-sign control-hull bound. Contact discovery, trim
   topology, arbitrary conditioning and Rhino speed parity remain unqualified.
-  See [qualification](smlib-surface-surface-intersections.md).
+  See [surface qualification](smlib-surface-surface-intersections.md) and
+  [trim qualification](smlib-surface-trim-intersections.md).
 
 - **Native curve/surface contacts retain bounded preparation and acceptance.**
   Curve/B-rep queries share the underlying-surface producer and original-face

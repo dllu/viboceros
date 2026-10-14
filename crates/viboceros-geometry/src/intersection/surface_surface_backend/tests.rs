@@ -1,5 +1,6 @@
 use super::*;
 use crate::{NurbsCurve2, Point2};
+mod trim;
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

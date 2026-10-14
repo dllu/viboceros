@@ -217,14 +217,15 @@ pub use interpolation::{
 pub use intersection::{
     BrepBrepIntersectionEvent, CurveBrepIntersection, CurveBrepIntersectionEvent, CurveBrepOverlap,
     CurveSurfaceIntersection, CurveSurfaceIntersectionEvent, CurveSurfaceIntersectionParameters,
-    CurveSurfaceOverlap, SurfaceBrepIntersectionEvent, SurfaceSurfaceIntersectionEvent,
-    SurfaceSurfaceIntersectionProposal, brep_brep_intersection_events,
-    brep_brep_intersection_events_with_operation, curve_brep_intersection_events,
-    curve_brep_intersection_events_with_operations, curve_surface_intersection_events,
-    curve_surface_intersection_events_with_operation, curve_surface_intersections,
-    surface_brep_intersection_events, surface_brep_intersection_events_with_operation,
-    surface_surface_intersection_events, surface_surface_intersection_events_with_operation,
-    transformed_curve_brep_intersection_events,
+    CurveSurfaceOverlap, SurfaceBrepIntersectionEvent, SurfaceIntersectionInput,
+    SurfaceIntersectionOutput, SurfaceSurfaceIntersectionEvent, SurfaceSurfaceIntersectionProposal,
+    brep_brep_intersection_events, brep_brep_intersection_events_with_operation,
+    curve_brep_intersection_events, curve_brep_intersection_events_with_operations,
+    curve_surface_intersection_events, curve_surface_intersection_events_with_operation,
+    curve_surface_intersections, surface_brep_intersection_events,
+    surface_brep_intersection_events_with_operation,
+    surface_face_intersection_events_with_operations, surface_surface_intersection_events,
+    surface_surface_intersection_events_with_operation, transformed_curve_brep_intersection_events,
 };
 pub use line::LineSegment;
 pub use loft::{

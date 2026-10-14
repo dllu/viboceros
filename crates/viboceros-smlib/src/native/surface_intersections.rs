@@ -1,8 +1,9 @@
 //! General coupled XYZ/UV surface intersections with original-surface certificates.
 use super::*;
 use viboceros_geometry::{
-    AffineTransform3, NurbsCurve2, Point2, SurfaceSurfaceIntersectionEvent,
-    SurfaceSurfaceIntersectionProposal, WeightedPoint2,
+    AffineTransform3, NurbsCurve2, Point2, SurfaceIntersectionInput, SurfaceIntersectionOutput,
+    SurfaceSurfaceIntersectionEvent, SurfaceSurfaceIntersectionProposal, WeightedPoint2,
+    surface_face_intersection_events_with_operations,
     surface_surface_intersection_events_with_operation,
 };
 #[repr(C)]
@@ -216,18 +217,33 @@ pub fn brep_intersection_events(
 }
 
 fn face_pair_events(
-    first: &NurbsSurface,
-    second: &NurbsSurface,
+    first: SurfaceIntersectionInput<'_>,
+    second: SurfaceIntersectionInput<'_>,
     tolerance: Tolerance,
-    full_domains: bool,
-) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, Error> {
-    if full_domains {
-        modeling_surface_intersection_events(first, second, tolerance)
-    } else {
-        // Approximate XYZ curves cannot reliably intersect exact spatial trim
-        // edges. Retain the established analytic path until coupled UV clipping.
-        Ok(viboceros_geometry::surface_surface_intersection_events(
-            first, second, tolerance,
-        )?)
+) -> Result<SurfaceIntersectionOutput, Error> {
+    match viboceros_geometry::surface_surface_intersection_events(
+        first.surface(),
+        second.surface(),
+        tolerance,
+    ) {
+        Ok(events) => Ok(SurfaceIntersectionOutput::Underlying(events)),
+        Err(
+            error @ GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "non-planar surfaces",
+            },
+        ) => {
+            let Some(events) = surface_face_intersection_events_with_operations(
+                first,
+                second,
+                tolerance,
+                &mut |a, b, limit| propose(a, b, tolerance, limit),
+                &mut super::curve_intersection_events,
+            )?
+            else {
+                return Err(error.into());
+            };
+            Ok(SurfaceIntersectionOutput::Clipped(events))
+        }
+        Err(error) => Err(error.into()),
     }
 }

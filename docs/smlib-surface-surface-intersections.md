@@ -6,8 +6,9 @@ The established exact analytic dispatcher runs first, preserving its specific
 coincidence and singularity restrictions. Its unimplemented general nonplanar
 pair branch can use the native producer, including polynomial patches such
 as `z=x²+y³` against `z=1−xy`. Surface/B-rep and B-rep/B-rep queries admit this
-producer for face pairs covering both complete natural domains. Existing
-analytic trimmed-face handling retains its shared path.
+producer for face pairs, including partial regions and holes through
+[coupled UV clipping](smlib-surface-trim-intersections.md). Existing analytic
+trimmed-face handling retains its shared path.
 
 Each native query imports temporary source surfaces with the existing B-rep
 importer. It returns independent snapshots of the spatial curve and both UV
@@ -30,19 +31,19 @@ Exact rational extraction and outward interval or exact Bernstein arithmetic
 prove the complete matched-parameter correspondence and that UV stays inside
 each natural domain. An inconclusive certificate rejects the proposal. The
 existing certificate has bounded work, surface/UV degrees up to 16, spatial
-degree up to 64, and bounded composed degree. Point contacts are independently
+degree up to 64, and bounded composed degree. Touching-point proposals are independently
 checked on both original sources. Certified curve payloads remain verbatim;
 direct proposals are not joined by moving their endpoints. Measured analytic
 curve definitions still use their established assembly policy.
 
-General partial face trims are deliberately unavailable in this increment.
-The tested polynomial pair produced an approximate spatial curve whose
+The initial qualification below covered full face domains. The tested
+polynomial pair produced an approximate spatial curve whose
 intersections with exact trim edges were missed by both existing spatial
 contact producers. A midpoint-only trim classification then retained an
-outside segment. Such pairs now return the established unsupported error
-before editing the document. Correct extension requires clipping the coupled
-UV witnesses against original trim loops, preserving both spatial/UV parameter
-correspondence and boundary contacts.
+outside segment. That initial implementation therefore rejected these pairs
+before editing the document. The subsequent
+[trim adapter](smlib-surface-trim-intersections.md) now clips coupled UV witnesses
+against original trim loops and recertifies the resulting spans.
 
 [Retained qualification](smlib-surface-surface-intersections-comparison.json)
 contains 42 actual C ABI cases in normal and complete AddressSanitizer builds:
@@ -70,8 +71,8 @@ The comparison replays all 121 saved intersection/cutting command records at
 absolute `1e-8`, relative `1e-12`, retaining complete native/portable responses
 and SDK comparisons. These saved observations check existing compatibility;
 the polynomial regression is an independent analytic test, not a Rhino capture.
-Fresh instrumentation remains blocked by the existing Wine licensing startup
-failure. Continuous curve acceptance does not prove complete event discovery,
+No fresh Rhino observations are included; the previous instrumentation attempt
+failed during Wine licensing startup. Continuous curve acceptance does not prove complete event discovery,
 topology or injectivity. Arbitrary conditioning and speed relative to Rhino
 remain unqualified.
 
