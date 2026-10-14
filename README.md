@@ -1,4 +1,5 @@
 # Viboceros
+<img width="1178" height="814" alt="C2C04CCF-0E74-4702-AB38-8A875DF4BCC7" src="https://github.com/user-attachments/assets/cb4f97f2-3283-45d3-91e6-93583e779ea7" />
 
 An open-source CAD application in Rust, working toward a reimplementation of
 Rhinoceros 3D. It combines a modular geometry kernel with a command-driven
