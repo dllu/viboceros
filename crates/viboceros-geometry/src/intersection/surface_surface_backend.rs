@@ -246,3 +246,66 @@ pub(super) fn append_clipped(
 
 #[cfg(test)]
 mod tests;
+
+/// Restrict a paired spatial/UV curve to a face using the shared trim-region
+/// clipper. Every retained curve is certified on the original surface.
+pub fn clip_surface_curve_to_face_with_operation<E: From<GeometryError>>(
+    spatial: &NurbsCurve,
+    uv: &NurbsCurve2,
+    face: &crate::BrepFace,
+    tolerance: Tolerance,
+    curve_events: &mut impl FnMut(
+        &NurbsCurve,
+        &NurbsCurve,
+        Tolerance,
+    ) -> Result<Vec<crate::CurveCurveIntersectionEvent>, E>,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, E> {
+    let surface = face.surface();
+    let limit = tolerance.absolute();
+    if surface
+        .parameter_curve_deviation_bound(uv, spatial, limit)?
+        .is_none()
+    {
+        return Err(GeometryError::CurveIntersectionDidNotConverge.into());
+    }
+    let region = trim::Region::new(SurfaceIntersectionInput::Face(face), tolerance)?;
+    if region.is_none() {
+        return Ok(vec![SurfaceSurfaceIntersectionEvent::Curve(
+            spatial.clone(),
+        )]);
+    }
+    let clipped = trim::clip(
+        spatial,
+        [uv, uv],
+        &[region, None],
+        limit,
+        curve_events,
+        &mut 0,
+    )?;
+    let mut result = Vec::new();
+    for (piece, witnesses) in clipped.curves {
+        if surface
+            .parameter_curve_deviation_bound(&witnesses[0], &piece, limit)?
+            .is_none()
+        {
+            return Err(GeometryError::CurveIntersectionDidNotConverge.into());
+        }
+        result.push(SurfaceSurfaceIntersectionEvent::Curve(piece));
+    }
+    // Interior span endpoints are already represented by those curves. Keep
+    // only isolated contacts, following the shared intersection event policy.
+    for point in clipped.points {
+        if !result.iter().any(|event| match event {
+            SurfaceSurfaceIntersectionEvent::Curve(c) => c
+                .closest_parameter(point, tolerance)
+                .and_then(|t| c.evaluate(t))
+                .is_ok_and(|p| p.distance_to(point).is_ok_and(|d| d <= limit)),
+            SurfaceSurfaceIntersectionEvent::Point(p) => {
+                p.distance_to(point).is_ok_and(|d| d <= limit)
+            }
+        }) {
+            result.push(SurfaceSurfaceIntersectionEvent::Point(point));
+        }
+    }
+    Ok(result)
+}

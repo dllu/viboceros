@@ -137,7 +137,7 @@ impl VibocerosApp {
             .intersection_prompt
             .as_ref()
             .and_then(|p| p.projection.as_ref())
-            .is_some_and(|s| s.intersection)
+            .is_some_and(|s| s.is_iplane())
         {
             self.finish_iplane(definition);
             return;
@@ -153,9 +153,22 @@ impl VibocerosApp {
         s.plane_getter = None;
         self.clear_project_plane_state();
         self.command_input.clear();
-        self.push_log(
-            "Added infinite plane target; Enter projects or select another target".into(),
-        );
+        let action = if self
+            .intersection_prompt
+            .as_ref()
+            .unwrap()
+            .projection
+            .as_ref()
+            .unwrap()
+            .is_pull()
+        {
+            "pulls"
+        } else {
+            "projects"
+        };
+        self.push_log(format!(
+            "Added infinite plane target; Enter {action} or select another target"
+        ));
         self.log_intersection_prompt();
     }
     pub(super) fn begin_iplane_getter(&mut self) {
@@ -219,7 +232,7 @@ impl VibocerosApp {
                 )
                 .unwrap();
                 self.add_project_plane(plane_value(p));
-            } else if prompt.projection.as_ref().unwrap().intersection {
+            } else if prompt.projection.as_ref().unwrap().is_iplane() {
                 self.begin_iplane_getter();
             } else {
                 self.intersection_prompt

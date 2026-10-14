@@ -1,6 +1,6 @@
 //! Standalone plane intersections share the object selection and plane getter.
 use super::intersect_two_sets::TwoSetsPrompt;
-use super::project::{ProjectOptions, ProjectSession, project_ids};
+use super::project::{PlaneOperation, ProjectOptions, ProjectSession, project_ids};
 use super::*;
 use viboceros_command::ObjectSelectionFilter;
 impl VibocerosApp {
@@ -36,7 +36,7 @@ impl VibocerosApp {
             uv_face: None,
             uv_subcurves: Default::default(),
             projection: Some(ProjectSession {
-                intersection: true,
+                operation: PlaneOperation::IPlane,
                 options: ProjectOptions::default(),
                 custom_requested: false,
                 finish_targets: None,

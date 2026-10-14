@@ -48,6 +48,61 @@ impl<'a> MeshProjectionIndex<'a> {
         }
         Ok(index)
     }
+    /// Globally nearest point on the indexed mesh. Box pruning and candidate
+    /// ordering share exact distance comparisons, retaining deterministic ties.
+    pub fn closest_point(&self, target: Point3) -> Result<Option<Point3>, GeometryError> {
+        use crate::point::PointDistance;
+        let mut best: Option<(usize, PointDistance)> = None;
+        let mut pending = if self.nodes.is_empty() {
+            vec![]
+        } else {
+            vec![0]
+        };
+        while let Some(key) = pending.pop() {
+            let node = &self.nodes[key];
+            let lower_point = Point3::try_from(std::array::from_fn::<_, 3, _>(|i| {
+                target.to_array()[i].clamp(
+                    node.bounds.min().to_array()[i],
+                    node.bounds.max().to_array()[i],
+                )
+            }))?;
+            let lower = PointDistance::new(target, lower_point);
+            if best.is_some_and(|(_, b)| lower.compare(&b, target).is_gt()) {
+                continue;
+            }
+            if let Some(children) = node.children {
+                let lower = |key: usize| -> Result<PointDistance, GeometryError> {
+                    let bounds = self.nodes[key].bounds;
+                    let q = Point3::try_from(std::array::from_fn::<_, 3, _>(|i| {
+                        target.to_array()[i]
+                            .clamp(bounds.min().to_array()[i], bounds.max().to_array()[i])
+                    }))?;
+                    Ok(PointDistance::new(target, q))
+                };
+                let [a, b] = children;
+                if lower(a)?.compare(&lower(b)?, target).is_gt() {
+                    pending.extend([a, b]);
+                } else {
+                    pending.extend([b, a]);
+                }
+            } else {
+                for &index in &self.order[node.range.clone()] {
+                    let [a, b, c] = self.triangle_points(index).unwrap();
+                    let point = super::closest_point_on_triangle(target, a, b, c)?;
+                    let distance = PointDistance::new(target, point);
+                    if best.is_none_or(|(previous, best)| {
+                        distance
+                            .compare(&best, target)
+                            .then(index.cmp(&previous))
+                            .is_lt()
+                    }) {
+                        best = Some((index, distance));
+                    }
+                }
+            }
+        }
+        Ok(best.map(|(_, d)| d.point()))
+    }
     /// Original triangle coordinates, including the chosen diagonal of a quad.
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         self.triangles

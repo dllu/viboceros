@@ -15,16 +15,16 @@ enum Layer {
     Target,
 }
 
-fn ids(value: &str) -> Result<Vec<ObjectId>, CommandError> {
+fn ids(value: &str, usage: &'static str) -> Result<Vec<ObjectId>, CommandError> {
     let result = value
         .split(',')
         .map(|p| {
             p.parse::<ObjectId>()
-                .map_err(|_| CommandError::Usage(PROJECT_USAGE))
+                .map_err(|_| CommandError::Usage(usage))
         })
         .collect::<Result<Vec<_>, _>>()?;
     if result.is_empty() {
-        return Err(CommandError::Usage(PROJECT_USAGE));
+        return Err(CommandError::Usage(usage));
     }
     let mut seen = BTreeSet::new();
     Ok(result.into_iter().filter(|id| seen.insert(*id)).collect())
@@ -243,292 +243,335 @@ impl Command for ProjectCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let mut sources = None;
-        let mut targets = None;
-        let mut subcurves = Vec::new();
-        let mut plane_definitions = Vec::new();
-        let mut direction = context.construction_plane.z_axis().as_vector();
-        let mut view = false;
-        let mut custom = false;
-        let mut direction_start = None;
-        let mut direction_end = None;
-        let mut view_direction = None;
-        let mut delete = false;
-        let mut layer = Layer::Current;
-        let mut seen = BTreeSet::new();
-        for argument in arguments {
-            let (key, value) = argument
-                .trim_start_matches('_')
-                .split_once('=')
-                .ok_or(CommandError::Usage(PROJECT_USAGE))?;
-            if key.eq_ignore_ascii_case("InfinitePlane") {
-                if plane_definitions.len() >= MAX_INTERSECT_PAIRS {
-                    return Err(CommandError::Usage(PROJECT_USAGE));
-                }
-                plane_definitions.push(value);
-                continue;
+        run_projection(document, arguments, context, false)
+    }
+}
+
+pub(super) fn run_projection(
+    document: &mut Document,
+    arguments: &[&str],
+    context: CommandContext,
+    pull: bool,
+) -> Result<String, CommandError> {
+    let usage = if pull {
+        super::pull::USAGE
+    } else {
+        PROJECT_USAGE
+    };
+    let mut sources = None;
+    let mut targets = None;
+    let mut subcurves = Vec::new();
+    let mut plane_definitions = Vec::new();
+    let mut direction = context.construction_plane.z_axis().as_vector();
+    let mut view = false;
+    let mut custom = false;
+    let mut direction_start = None;
+    let mut direction_end = None;
+    let mut view_direction = None;
+    let mut delete = false;
+    let mut layer = Layer::Current;
+    let mut seen = BTreeSet::new();
+    for argument in arguments {
+        let (key, value) = argument
+            .trim_start_matches('_')
+            .split_once('=')
+            .ok_or(CommandError::Usage(usage))?;
+        if key.eq_ignore_ascii_case("InfinitePlane") {
+            if plane_definitions.len() >= MAX_INTERSECT_PAIRS {
+                return Err(CommandError::Usage(usage));
             }
-            if key.eq_ignore_ascii_case("SubCrv") || key.eq_ignore_ascii_case("SubCrvLength") {
-                if subcurves.len() >= MAX_INTERSECT_PAIRS {
-                    return Err(CommandError::Usage(PROJECT_USAGE));
-                }
-                subcurves.push(if key.eq_ignore_ascii_case("SubCrv") {
-                    uv_inputs::SubcurveInput::parse(value, PROJECT_USAGE)?
-                } else {
-                    uv_inputs::SubcurveInput::parse_length(value, PROJECT_USAGE)?
-                });
-                continue;
-            }
-            if !seen.insert(key.to_ascii_lowercase()) {
-                return Err(CommandError::Usage(PROJECT_USAGE));
-            }
-            match key.to_ascii_lowercase().as_str() {
-                "sources" => sources = Some(ids(value)?),
-                "targets" => targets = Some(ids(value)?),
-                "direction" => {
-                    direction = match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "cplanez" => direction,
-                        "view" => {
-                            view = true;
-                            direction
-                        }
-                        "custom" => {
-                            custom = true;
-                            direction
-                        }
-                        _ => Vector3::try_from(parse_point(&[value])?.0.to_array())?,
-                    }
-                }
-                "viewdirection" => view_direction = Some(parse_axis_option(value, PROJECT_USAGE)?),
-                "directionstart" => direction_start = Some(parse_point(&[value])?.0),
-                "directionend" => direction_end = Some(parse_point(&[value])?.0),
-                "deleteinput" => {
-                    delete = parse_yes_no(value).ok_or(CommandError::Usage(PROJECT_USAGE))?
-                }
-                "outputlayer" => {
-                    layer = match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "current" => Layer::Current,
-                        "input" => Layer::Input,
-                        "targetobject" => Layer::Target,
-                        _ => return Err(CommandError::Usage(PROJECT_USAGE)),
-                    }
-                }
-                _ => return Err(CommandError::Usage(PROJECT_USAGE)),
-            }
+            plane_definitions.push(value);
+            continue;
         }
-        if custom {
-            let (start, end) = direction_start.zip(direction_end).ok_or(CommandError::Usage(
+        if key.eq_ignore_ascii_case("SubCrv") || key.eq_ignore_ascii_case("SubCrvLength") {
+            if subcurves.len() >= MAX_INTERSECT_PAIRS {
+                return Err(CommandError::Usage(usage));
+            }
+            subcurves.push(if key.eq_ignore_ascii_case("SubCrv") {
+                uv_inputs::SubcurveInput::parse(value, usage)?
+            } else {
+                uv_inputs::SubcurveInput::parse_length(value, usage)?
+            });
+            continue;
+        }
+        if !seen.insert(key.to_ascii_lowercase()) {
+            return Err(CommandError::Usage(usage));
+        }
+        if pull
+            && matches!(
+                key.to_ascii_lowercase().as_str(),
+                "direction" | "viewdirection" | "directionstart" | "directionend"
+            )
+        {
+            return Err(CommandError::Usage(usage));
+        }
+        match key.to_ascii_lowercase().as_str() {
+            "loose" if pull => {
+                if parse_yes_no(value) != Some(false) {
+                    return Err(CommandError::Usage("Pull Loose=Yes is not implemented"));
+                }
+            }
+            "sources" => sources = Some(ids(value, usage)?),
+            "targets" => targets = Some(ids(value, usage)?),
+            "direction" => {
+                direction = match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                    "cplanez" => direction,
+                    "view" => {
+                        view = true;
+                        direction
+                    }
+                    "custom" => {
+                        custom = true;
+                        direction
+                    }
+                    _ => Vector3::try_from(parse_point(&[value])?.0.to_array())?,
+                }
+            }
+            "viewdirection" => view_direction = Some(parse_axis_option(value, usage)?),
+            "directionstart" => direction_start = Some(parse_point(&[value])?.0),
+            "directionend" => direction_end = Some(parse_point(&[value])?.0),
+            "deleteinput" => delete = parse_yes_no(value).ok_or(CommandError::Usage(usage))?,
+            "outputlayer" => {
+                layer = match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                    "current" => Layer::Current,
+                    "input" => Layer::Input,
+                    "targetobject" => Layer::Target,
+                    _ => return Err(CommandError::Usage(usage)),
+                }
+            }
+            _ => return Err(CommandError::Usage(usage)),
+        }
+    }
+    if custom {
+        let (start, end) = direction_start.zip(direction_end).ok_or(CommandError::Usage(
                 "Project Direction=Custom requires DirectionStart=x,y,z and DirectionEnd=x,y,z outside a point prompt",
             ))?;
-            direction = start.direction_to(end)?.as_vector();
-        } else if direction_start.is_some() || direction_end.is_some() {
-            return Err(CommandError::Usage(PROJECT_USAGE));
-        }
-        if view {
-            direction = view_direction.ok_or(CommandError::Usage(
-                "Project Direction=View requires ViewDirection=x,y,z outside a viewport",
-            ))?;
-        } else if view_direction.is_some() {
-            return Err(CommandError::Usage(PROJECT_USAGE));
-        }
-        direction = direction.normalized_nonzero()?.as_vector();
-        let planes = plane_definitions
-            .into_iter()
-            .map(|value| infinite_plane::resolve(document, value, context.construction_plane))
-            .collect::<Result<Vec<_>, _>>()?;
-        let selected = document.selected_object_ids().collect::<Vec<_>>();
-        let source_ids = sources.unwrap_or_else(|| {
-            selected
-                .iter()
-                .copied()
-                .filter(|id| {
-                    document.object(*id).is_some_and(|o| {
-                        matches!(o.geometry(), Geometry::Point(_))
-                            || o.geometry().curve_ref().is_some()
-                    })
-                })
-                .collect()
-        });
-        let target_ids = targets.unwrap_or_else(|| {
-            selected
-                .iter()
-                .copied()
-                .filter(|id| {
-                    document.object(*id).is_some_and(|o| {
-                        matches!(
-                            o.geometry(),
-                            Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
-                        )
-                    })
-                })
-                .collect()
-        });
-        if source_ids.is_empty() && subcurves.is_empty()
-            || target_ids.is_empty() && planes.is_empty()
-            || source_ids
-                .len()
-                .saturating_add(subcurves.len())
-                .saturating_mul(target_ids.len().saturating_add(planes.len()))
-                > MAX_INTERSECT_PAIRS
-        {
-            return Err(CommandError::Usage(PROJECT_USAGE));
-        }
-        let mut inputs = source_ids
+        direction = start.direction_to(end)?.as_vector();
+    } else if direction_start.is_some() || direction_end.is_some() {
+        return Err(CommandError::Usage(usage));
+    }
+    if view {
+        direction = view_direction.ok_or(CommandError::Usage(
+            "Project Direction=View requires ViewDirection=x,y,z outside a viewport",
+        ))?;
+    } else if view_direction.is_some() {
+        return Err(CommandError::Usage(usage));
+    }
+    direction = direction.normalized_nonzero()?.as_vector();
+    let planes = plane_definitions
+        .into_iter()
+        .map(|value| infinite_plane::resolve(document, value, context.construction_plane))
+        .collect::<Result<Vec<_>, _>>()?;
+    let selected = document.selected_object_ids().collect::<Vec<_>>();
+    let source_ids = sources.unwrap_or_else(|| {
+        selected
             .iter()
-            .map(|id| {
-                let source = document
-                    .object(*id)
-                    .ok_or(DocumentError::ObjectNotFound(*id))?;
-                Ok(uv_inputs::Input {
-                    object: *id,
-                    geometry: std::borrow::Cow::Borrowed(source.geometry()),
-                    temporary: false,
+            .copied()
+            .filter(|id| {
+                document.object(*id).is_some_and(|o| {
+                    matches!(o.geometry(), Geometry::Point(_)) || o.geometry().curve_ref().is_some()
                 })
             })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        for range in subcurves {
-            inputs.push(range.resolve(document, PROJECT_USAGE)?);
-        }
-        // Borrow and build each mesh target once; output admission happens
-        // only after these caches and all source queries have been released.
-        let mut mesh_indexes = BTreeMap::new();
-        for id in &target_ids {
-            let object = document
+            .collect()
+    });
+    let target_ids = targets.unwrap_or_else(|| {
+        selected
+            .iter()
+            .copied()
+            .filter(|id| {
+                document.object(*id).is_some_and(|o| {
+                    matches!(
+                        o.geometry(),
+                        Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                    )
+                })
+            })
+            .collect()
+    });
+    if source_ids.is_empty() && subcurves.is_empty()
+        || target_ids.is_empty() && planes.is_empty()
+        || source_ids
+            .len()
+            .saturating_add(subcurves.len())
+            .saturating_mul(target_ids.len().saturating_add(planes.len()))
+            > MAX_INTERSECT_PAIRS
+    {
+        return Err(CommandError::Usage(usage));
+    }
+    let mut inputs = source_ids
+        .iter()
+        .map(|id| {
+            let source = document
                 .object(*id)
                 .ok_or(DocumentError::ObjectNotFound(*id))?;
-            if !document.is_object_selectable(*id) {
-                return Err(CommandError::Usage(PROJECT_USAGE));
-            }
-            bounded_target(object.geometry())?;
-            if let Geometry::Mesh(mesh) = object.geometry() {
-                mesh_indexes.insert(*id, viboceros_geometry::MeshProjectionIndex::new(mesh)?);
-            }
+            Ok(uv_inputs::Input {
+                object: *id,
+                geometry: std::borrow::Cow::Borrowed(source.geometry()),
+                temporary: false,
+            })
+        })
+        .collect::<Result<Vec<_>, CommandError>>()?;
+    for range in subcurves {
+        inputs.push(range.resolve(document, usage)?);
+    }
+    // Borrow and build each mesh target once; output admission happens
+    // only after these caches and all source queries have been released.
+    let mut mesh_indexes = BTreeMap::new();
+    for id in &target_ids {
+        let object = document
+            .object(*id)
+            .ok_or(DocumentError::ObjectNotFound(*id))?;
+        if !document.is_object_selectable(*id) {
+            return Err(CommandError::Usage(usage));
         }
-        let mut staged = Vec::new();
-        let tolerance = document.tolerance();
-        for input in inputs {
-            let source_id = input.object;
-            let source = document
-                .object(source_id)
-                .ok_or(DocumentError::ObjectNotFound(source_id))?;
-            if !document.is_object_selectable(source_id) {
-                return Err(CommandError::Usage(PROJECT_USAGE));
+        bounded_target(object.geometry())?;
+        if let Geometry::Mesh(mesh) = object.geometry() {
+            mesh_indexes.insert(*id, viboceros_geometry::MeshProjectionIndex::new(mesh)?);
+        }
+    }
+    let mut staged = Vec::new();
+    let tolerance = document.tolerance();
+    for input in inputs {
+        let source_id = input.object;
+        let source = document
+            .object(source_id)
+            .ok_or(DocumentError::ObjectNotFound(source_id))?;
+        if !document.is_object_selectable(source_id) {
+            return Err(CommandError::Usage(usage));
+        }
+        for target_id in &target_ids {
+            if source_id == *target_id || !document.is_object_selectable(*target_id) {
+                return Err(CommandError::Usage(usage));
             }
-            for target_id in &target_ids {
-                if source_id == *target_id || !document.is_object_selectable(*target_id) {
-                    return Err(CommandError::Usage(PROJECT_USAGE));
-                }
-                let target = document
-                    .object(*target_id)
-                    .ok_or(DocumentError::ObjectNotFound(*target_id))?;
-                let output = if let Geometry::Point(point) = input.geometry.as_ref() {
-                    if let Some(index) = mesh_indexes.get(target_id) {
-                        index
-                            .project_point(*point, direction, tolerance)?
-                            .into_iter()
-                            .map(Geometry::Point)
-                            .collect()
-                    } else {
-                        let ray = line(*point, target.geometry(), direction, tolerance)?;
-                        match target.geometry() {
-                            Geometry::NurbsSurface(surface) => {
-                                curve_intersections::surface_events(&ray, surface, tolerance)?
-                                    .into_iter()
-                                    .filter_map(|e| match e {
-                                        CurveSurfaceIntersectionEvent::Point(p) => {
-                                            Some(Geometry::Point(p.point()))
-                                        }
-                                        _ => None,
-                                    })
-                                    .collect()
-                            }
-                            Geometry::Brep(brep) => {
-                                curve_intersections::brep_events(&ray, brep, None, tolerance)?
-                                    .into_iter()
-                                    .filter_map(|e| match e {
-                                        CurveBrepIntersectionEvent::Point(p) => {
-                                            Some(Geometry::Point(p.point()))
-                                        }
-                                        _ => None,
-                                    })
-                                    .collect()
-                            }
-                            _ => return Err(CommandError::Usage(PROJECT_USAGE)),
-                        }
-                    }
-                } else if let Geometry::Mesh(_) = target.geometry() {
-                    mesh_curve_output(
-                        &input
-                            .geometry
-                            .nurbs_curve_representation()?
-                            .ok_or(CommandError::Usage(PROJECT_USAGE))?,
-                        &mesh_indexes[target_id],
-                        direction,
-                        tolerance,
-                    )?
-                } else {
-                    curve_output(
-                        &input
-                            .geometry
-                            .nurbs_curve_representation()?
-                            .ok_or(CommandError::Usage(PROJECT_USAGE))?,
-                        target.geometry(),
-                        direction,
-                        tolerance,
-                    )?
-                };
-                let layer_id = match layer {
-                    Layer::Current => document.current_layer_id(),
-                    Layer::Input => source.attributes().layer_id(),
-                    Layer::Target => target.attributes().layer_id(),
-                };
-                staged.extend(output.into_iter().map(|g| (g, layer_id)));
-                if staged.len() > MAX_INTERSECT_OUTPUTS {
-                    return Err(CommandError::TooManyIntersectOutputs {
-                        maximum: MAX_INTERSECT_OUTPUTS,
-                    });
-                }
-            }
-            for target in &planes {
-                let output = infinite_plane_output(
+            let target = document
+                .object(*target_id)
+                .ok_or(DocumentError::ObjectNotFound(*target_id))?;
+            let output = if pull {
+                super::pull::geometry(
                     input.geometry.as_ref(),
-                    target.plane,
+                    target.geometry(),
+                    mesh_indexes.get(target_id),
+                    tolerance,
+                )?
+            } else if let Geometry::Point(point) = input.geometry.as_ref() {
+                if let Some(index) = mesh_indexes.get(target_id) {
+                    index
+                        .project_point(*point, direction, tolerance)?
+                        .into_iter()
+                        .map(Geometry::Point)
+                        .collect()
+                } else {
+                    let ray = line(*point, target.geometry(), direction, tolerance)?;
+                    match target.geometry() {
+                        Geometry::NurbsSurface(surface) => {
+                            curve_intersections::surface_events(&ray, surface, tolerance)?
+                                .into_iter()
+                                .filter_map(|e| match e {
+                                    CurveSurfaceIntersectionEvent::Point(p) => {
+                                        Some(Geometry::Point(p.point()))
+                                    }
+                                    _ => None,
+                                })
+                                .collect()
+                        }
+                        Geometry::Brep(brep) => {
+                            curve_intersections::brep_events(&ray, brep, None, tolerance)?
+                                .into_iter()
+                                .filter_map(|e| match e {
+                                    CurveBrepIntersectionEvent::Point(p) => {
+                                        Some(Geometry::Point(p.point()))
+                                    }
+                                    _ => None,
+                                })
+                                .collect()
+                        }
+                        _ => return Err(CommandError::Usage(usage)),
+                    }
+                }
+            } else if let Geometry::Mesh(_) = target.geometry() {
+                mesh_curve_output(
+                    &input
+                        .geometry
+                        .nurbs_curve_representation()?
+                        .ok_or(CommandError::Usage(usage))?,
+                    &mesh_indexes[target_id],
                     direction,
                     tolerance,
-                )?;
-                let layer_id = match layer {
-                    Layer::Current => document.current_layer_id(),
-                    Layer::Input => source.attributes().layer_id(),
-                    Layer::Target => target
-                        .object
-                        .and_then(|id| document.object(id))
-                        .map_or(document.current_layer_id(), |o| o.attributes().layer_id()),
-                };
-                staged.extend(output.into_iter().map(|g| (g, layer_id)));
-                if staged.len() > MAX_INTERSECT_OUTPUTS {
-                    return Err(CommandError::TooManyIntersectOutputs {
-                        maximum: MAX_INTERSECT_OUTPUTS,
-                    });
-                }
+                )?
+            } else {
+                curve_output(
+                    &input
+                        .geometry
+                        .nurbs_curve_representation()?
+                        .ok_or(CommandError::Usage(usage))?,
+                    target.geometry(),
+                    direction,
+                    tolerance,
+                )?
+            };
+            let layer_id = match layer {
+                Layer::Current => document.current_layer_id(),
+                Layer::Input => source.attributes().layer_id(),
+                Layer::Target => target.attributes().layer_id(),
+            };
+            staged.extend(output.into_iter().map(|g| (g, layer_id)));
+            if staged.len() > MAX_INTERSECT_OUTPUTS {
+                return Err(CommandError::TooManyIntersectOutputs {
+                    maximum: MAX_INTERSECT_OUTPUTS,
+                });
             }
         }
-        drop(mesh_indexes);
-        if staged.is_empty() {
-            return Ok("Projection missed the target objects".into());
+        for target in &planes {
+            let output = infinite_plane_output(
+                input.geometry.as_ref(),
+                target.plane,
+                if pull {
+                    target.plane.normal().as_vector()
+                } else {
+                    direction
+                },
+                tolerance,
+            )?;
+            let layer_id = match layer {
+                Layer::Current => document.current_layer_id(),
+                Layer::Input => source.attributes().layer_id(),
+                Layer::Target => target
+                    .object
+                    .and_then(|id| document.object(id))
+                    .map_or(document.current_layer_id(), |o| o.attributes().layer_id()),
+            };
+            staged.extend(output.into_iter().map(|g| (g, layer_id)));
+            if staged.len() > MAX_INTERSECT_OUTPUTS {
+                return Err(CommandError::TooManyIntersectOutputs {
+                    maximum: MAX_INTERSECT_OUTPUTS,
+                });
+            }
         }
-        let mut output_ids = Vec::new();
-        for (geometry, layer) in staged {
-            output_ids.push(
-                document
-                    .add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
-            );
-        }
-        if delete && !source_ids.is_empty() {
-            document.delete_objects(source_ids.iter().copied())?;
-        }
-        document.select_command_results(output_ids.iter().copied())?;
-        Ok(format!("Created {} projected object(s)", output_ids.len()))
     }
+    drop(mesh_indexes);
+    if staged.is_empty() {
+        return Ok(if pull {
+            "Pull missed the target objects"
+        } else {
+            "Projection missed the target objects"
+        }
+        .into());
+    }
+    let mut output_ids = Vec::new();
+    for (geometry, layer) in staged {
+        output_ids.push(
+            document.add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
+        );
+    }
+    if delete && !source_ids.is_empty() {
+        document.delete_objects(source_ids.iter().copied())?;
+    }
+    document.select_command_results(output_ids.iter().copied())?;
+    Ok(format!(
+        "Created {} {} object(s)",
+        output_ids.len(),
+        if pull { "pulled" } else { "projected" }
+    ))
 }
 
 fn infinite_plane_output(
@@ -573,7 +616,7 @@ fn infinite_plane_output(
     Ok(vec![Geometry::NurbsCurve(projected)])
 }
 
-fn planar_output(
+pub(super) fn planar_output(
     curve: &NurbsCurve,
     face: &Brep,
     plane: Plane,

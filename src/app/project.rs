@@ -11,10 +11,16 @@ pub(super) struct ProjectOptions {
     delete_input: bool,
     output_layer: &'static str,
 }
-/// Shared source selection and plane getter state for Project and IPlane.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum PlaneOperation {
+    Project,
+    Pull,
+    IPlane,
+}
+/// Shared source selection and plane getter state for Project, Pull and IPlane.
 #[derive(Clone, Debug)]
 pub(super) struct ProjectSession {
-    pub(super) intersection: bool,
+    pub(super) operation: PlaneOperation,
     pub(super) options: ProjectOptions,
     pub(super) custom_requested: bool,
     pub(super) finish_targets: Option<Vec<ObjectId>>,
@@ -22,16 +28,25 @@ pub(super) struct ProjectSession {
     pub(super) plane_getter: Option<super::project_plane::PlaneGetter>,
 }
 impl ProjectSession {
+    pub(super) fn is_iplane(&self) -> bool {
+        self.operation == PlaneOperation::IPlane
+    }
+    pub(super) fn is_pull(&self) -> bool {
+        self.operation == PlaneOperation::Pull
+    }
     pub(super) fn name(&self) -> &'static str {
-        if self.intersection {
-            "IPlane"
-        } else {
-            "Project"
+        match self.operation {
+            PlaneOperation::Project => "Project",
+            PlaneOperation::Pull => "Pull",
+            PlaneOperation::IPlane => "IPlane",
         }
     }
     fn command(&self) -> String {
-        if self.intersection {
+        if self.is_iplane() {
             return "IPlane".into();
+        }
+        if self.is_pull() {
+            return self.options.pull_command();
         }
         self.options
             .command_with_direction(if self.custom_requested {
@@ -109,6 +124,28 @@ impl ProjectOptions {
         }
         true
     }
+    fn argument_for(&mut self, argument: &str, pull: bool) -> bool {
+        let key = argument
+            .trim_start_matches('_')
+            .split_once('=')
+            .map(|(k, _)| k);
+        if pull && key.is_some_and(|k| k.eq_ignore_ascii_case("Direction")) {
+            return false;
+        }
+        if pull && key.is_some_and(|k| k.eq_ignore_ascii_case("Loose")) {
+            return argument
+                .split_once('=')
+                .is_some_and(|(_, v)| v.trim_start_matches('_').eq_ignore_ascii_case("No"));
+        }
+        self.argument(argument)
+    }
+    pub(super) fn pull_command(&self) -> String {
+        format!(
+            "Pull DeleteInput={} OutputLayer={}",
+            if self.delete_input { "Yes" } else { "No" },
+            self.output_layer
+        )
+    }
     pub(super) fn command(&self) -> String {
         self.command_with_direction(&self.direction)
     }
@@ -127,13 +164,19 @@ impl VibocerosApp {
             return true;
         }
         let mut words = input.split_whitespace();
-        if !words.next().is_some_and(|w| {
-            w.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("Project")
-        }) {
+        let Some(name) = words.next() else {
+            return false;
+        };
+        let name = name.trim_start_matches(['_', '-']);
+        let pull = name.eq_ignore_ascii_case("Pull");
+        if !pull && !name.eq_ignore_ascii_case("Project") {
             return false;
         }
-        let mut options = self.project_options.clone();
+        let mut options = if pull {
+            self.pull_options.clone()
+        } else {
+            self.project_options.clone()
+        };
         let mut custom_requested = false;
         let mut seen = std::collections::BTreeSet::new();
         for argument in words {
@@ -143,11 +186,11 @@ impl VibocerosApp {
             if !seen.insert(key.trim_start_matches('_').to_ascii_lowercase()) {
                 return false;
             }
-            if custom_option(argument) {
+            if !pull && custom_option(argument) {
                 custom_requested = true;
                 continue;
             }
-            if !options.argument(argument) {
+            if !options.argument_for(argument, pull) {
                 return false;
             }
         }
@@ -165,11 +208,19 @@ impl VibocerosApp {
             .map(|o| o.id())
             .collect::<Vec<_>>();
         self.cancel_interactive_command(false);
-        self.project_options = options.clone();
+        if pull {
+            self.pull_options = options.clone();
+        } else {
+            self.project_options = options.clone();
+        }
         if !custom_requested && !first.is_empty() && !targets.is_empty() {
             self.try_execute_command(&format!(
                 "{} Sources={} Targets={}",
-                options.command(),
+                if pull {
+                    options.pull_command()
+                } else {
+                    options.command()
+                },
                 project_ids(&first),
                 project_ids(&targets)
             ));
@@ -190,7 +241,11 @@ impl VibocerosApp {
             uv_face: None,
             uv_subcurves: Default::default(),
             projection: Some(ProjectSession {
-                intersection: false,
+                operation: if pull {
+                    PlaneOperation::Pull
+                } else {
+                    PlaneOperation::Project
+                },
                 options,
                 custom_requested,
                 finish_targets,
@@ -230,7 +285,7 @@ impl VibocerosApp {
         if self.continue_project_plane(&prompt, input) {
             return true;
         }
-        if !prompt.projection.as_ref().unwrap().intersection
+        if !prompt.projection.as_ref().unwrap().is_iplane()
             && !self.picking_project_direction()
             && prompt.first.is_none()
             && self.try_continue_uv_subcurve(&prompt, input)
@@ -290,14 +345,19 @@ impl VibocerosApp {
             }
             if let Some(first) = &prompt.first {
                 let command = project_command(&prompt, first, &selected);
+                let retry = if prompt.projection.as_ref().unwrap().is_pull() {
+                    "Adjust the targets; Enter retries"
+                } else {
+                    "Adjust the targets or direction; Enter retries"
+                };
                 if !self.try_execute_command(&command) {
                     self.intersection_prompt = Some(prompt);
-                    self.push_log("Adjust the targets or direction; Enter retries".into());
+                    self.push_log(retry.into());
                 }
             } else {
                 prompt.first = Some(selected);
                 self.document.clear_selection();
-                let intersection = prompt.projection.as_ref().unwrap().intersection;
+                let intersection = prompt.projection.as_ref().unwrap().is_iplane();
                 self.intersection_prompt = Some(prompt);
                 if intersection {
                     self.begin_iplane_getter();
@@ -315,16 +375,16 @@ impl VibocerosApp {
             )
         {
             let mut session = prompt.projection.clone().unwrap();
-            if session.intersection {
+            if session.is_iplane() {
                 self.push_log("IPlane: choose a plane or press Esc to cancel".into());
-            } else if custom_option(input) {
+            } else if !session.is_pull() && custom_option(input) {
                 self.clear_project_plane_state();
                 session.plane_getter = None;
                 session.custom_requested = true;
                 prompt.projection = Some(session);
                 self.intersection_prompt = Some(prompt);
                 self.begin_project_direction();
-            } else if session.options.argument(input) {
+            } else if session.options.argument_for(input, session.is_pull()) {
                 let direction_changed = input
                     .trim_start_matches('_')
                     .split_once('=')
@@ -335,7 +395,11 @@ impl VibocerosApp {
                     session.custom_requested = false;
                     self.clear_project_direction();
                 }
-                self.project_options = session.options.clone();
+                if session.is_pull() {
+                    self.pull_options = session.options.clone();
+                } else {
+                    self.project_options = session.options.clone();
+                }
                 prompt.projection = Some(session);
                 self.intersection_prompt = Some(prompt.clone());
                 if direction_changed {
@@ -344,7 +408,7 @@ impl VibocerosApp {
                     self.log_intersection_prompt();
                 }
             } else {
-                self.push_log("Project options: Direction=CPlaneZ|View|Custom|x,y,z, DeleteInput=Yes|No, OutputLayer=Current|Input|TargetObject".into());
+                self.push_log(if session.is_pull() {"Pull options: DeleteInput=Yes|No, OutputLayer=Current|Input|TargetObject, Loose=No"}else{"Project options: Direction=CPlaneZ|View|Custom|x,y,z, DeleteInput=Yes|No, OutputLayer=Current|Input|TargetObject"}.into());
             }
         } else if input
             .trim_start_matches('_')

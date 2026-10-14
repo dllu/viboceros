@@ -12,8 +12,8 @@ from unittest.mock import Mock, patch
 
 class RhinoWorkerTests(unittest.TestCase):
     def test_surface_pull_disposes_source_surface_face_and_results_on_failures(self):
-        for failure in (None, 'surface', 'brep', 'sdk', 'sampling'):
-            with self.subTest(failure=failure):
+        for kind, failure in ((kind, failure) for kind in ('pull_curve_surface', 'pull_curve_surface_command') for failure in (None, 'surface', 'brep', 'sdk', 'sampling')):
+            with self.subTest(kind=kind, failure=failure):
                 source=SimpleNamespace(Dispose=Mock())
                 brep=SimpleNamespace(Dispose=Mock(),Faces=SimpleNamespace(Count=1,__getitem__=lambda i:None))
                 class Faces:

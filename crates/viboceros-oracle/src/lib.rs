@@ -1566,6 +1566,11 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         direction: [f64; 3],
     },
+    PullCurveSurfaceCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        surface: NurbsSurfaceDefinition,
+    },
     PullCurveSurface {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2509,6 +2514,7 @@ impl Operation {
             | Self::SelfIntersectProbe { id, .. }
             | Self::ProjectCurveMesh { id, .. }
             | Self::ProjectPointMesh { id, .. }
+            | Self::PullCurveSurfaceCommand { id, .. }
             | Self::PullCurveSurface { id, .. }
             | Self::ProjectCurveSurface { id, .. }
             | Self::ProjectCurvePlane { id, .. }
@@ -5670,6 +5676,9 @@ fn execute(
             direction,
             ..
         } => project::mesh_point(iterations, *point, vertices, faces, *direction, tolerance)?,
+        Operation::PullCurveSurfaceCommand { curve, surface, .. } => {
+            surface_pull::command(iterations, curve, surface, tolerance)?
+        }
         Operation::PullCurveSurface { curve, surface, .. } => {
             surface_pull::run(iterations, curve, surface, tolerance)?
         }

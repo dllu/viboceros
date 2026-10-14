@@ -968,8 +968,9 @@ points beside heavily compressed native parameters.
 The [native surface pull producer](smlib-surface-pull.md) reuses usd-brep normal
 tracing and lifting with caller-controlled tolerances and shared whole-curve
 surface image certificates. A generated-source seed repair restores finite
-boundary crossings. The Pull command coordinator and broader target families
-remain pending.
+boundary crossings. The [Pull coordinator](commands/pull.md) shares Project
+selection and atomic admission, clips paired witnesses to original face trims,
+and removes complete spatial seam duplicates. Mesh curves and Loose remain pending.
 
 Directional `Project` reuses exact affine transforms for planar faces, shared
 curve/face clipping, and the existing usd-brep coupled surface intersector for

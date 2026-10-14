@@ -8,7 +8,7 @@ pub use curve_surface_backend::{
 };
 pub use surface_surface_backend::{
     SurfaceIntersectionInput, SurfaceIntersectionOutput, SurfaceSurfaceIntersectionProposal,
-    surface_face_intersection_events_with_operations,
+    clip_surface_curve_to_face_with_operation, surface_face_intersection_events_with_operations,
     surface_surface_intersection_events_with_operation,
 };
 mod coincident_brep_graph;

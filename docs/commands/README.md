@@ -43,6 +43,7 @@ Rhino's complete command set is still a work in progress.
 - [Create UV curves from a surface and spatial inputs](create-uv-curves.md)
 - [Project curves and points directionally onto surfaces, B-reps and meshes](project.md)
 - [Intersect objects with an infinite plane](iplane.md)
+- [Pull curves and points toward surfaces, B-reps and mesh points](pull.md)
 - [Union convex polyhedral solids](boolean-union.md)
 - [Intersect convex polyhedral solids and sets](boolean-intersection.md)
 - [Subtract convex polyhedral cutters from solids](boolean-difference.md)

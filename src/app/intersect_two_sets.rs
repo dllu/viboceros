@@ -79,7 +79,7 @@ impl TwoSetsPrompt {
         if self.uv_subcurves.pending.is_some() {
             return ObjectSelectionFilter::Curves;
         }
-        if self.projection.as_ref().is_some_and(|p| p.intersection) {
+        if self.projection.as_ref().is_some_and(|p| p.is_iplane()) {
             return ObjectSelectionFilter::Section;
         }
         if self.projection.is_some() {
@@ -111,8 +111,15 @@ impl TwoSetsPrompt {
         if self.projection.as_ref().is_some_and(|p| p.custom_requested) {
             return "Pick two points for the custom direction; Esc cancels";
         }
-        if self.projection.as_ref().is_some_and(|p| p.intersection) {
+        if self.projection.as_ref().is_some_and(|p| p.is_iplane()) {
             return "Select curves, surfaces, B-reps or meshes; Enter chooses a plane, Esc cancels";
+        }
+        if self.projection.as_ref().is_some_and(|p| p.is_pull()) {
+            return if self.first.is_some() {
+                "Select target surfaces, B-reps or meshes (IP defines an infinite plane); Enter pulls, Esc cancels"
+            } else {
+                "Select curves and points (SubCrv selects a temporary range); Enter continues, Esc cancels"
+            };
         }
         if self.projection.is_some() {
             return if self.first.is_some() {

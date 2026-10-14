@@ -181,3 +181,94 @@ fn false_uv_boundary_contacts_and_intersector_errors_fail_before_output() {
         ));
     }
 }
+#[test]
+fn single_surface_clip_preserves_curved_holes_and_rejects_a_wrong_spatial_image() {
+    use crate::{BrepFace, Frame3, Polyline3, Vector3};
+    let rectangle = |lo: f64, hi: f64| {
+        Polyline3::try_new(
+            vec![
+                p(lo, lo, 0.),
+                p(hi, lo, 0.),
+                p(hi, hi, 0.),
+                p(lo, hi, 0.),
+                p(lo, lo, 0.),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let planar = Brep::try_planar_face_with_holes(
+        &rectangle(0., 1.),
+        &[rectangle(0.4, 0.6)],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let original = &planar.faces()[0];
+    let surface = NurbsSurface::try_cylinder(
+        Frame3::try_from_normal(
+            p(0., 0., 0.),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+        2.,
+        0.,
+        1.,
+    )
+    .unwrap()
+    .try_reparameterized(original.surface().domain_u(), original.surface().domain_v())
+    .unwrap();
+    let face = BrepFace::try_new(surface, false, original.loops().to_vec()).unwrap();
+    let u = face.surface().domain_u();
+    let v = face.surface().domain_v();
+    let mid = 0.5 * (*v.start() + *v.end());
+    let spatial = face.surface().isocurve_u(mid).unwrap();
+    let witness = uv([*u.start(), mid], [*u.end(), mid], [*u.start(), *u.end()]);
+    let events = clip_surface_curve_to_face_with_operation(
+        &spatial,
+        &witness,
+        &face,
+        Tolerance::DEFAULT,
+        &mut |a, b, t| a.intersection_events_with_curve(b, t),
+    )
+    .unwrap();
+    let curves = events
+        .iter()
+        .filter_map(|e| {
+            if let SurfaceSurfaceIntersectionEvent::Curve(c) = e {
+                Some(c)
+            } else {
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(curves.len(), 2);
+    assert!(curves[0].domain().end() < curves[1].domain().start());
+    for curve in curves {
+        for t in [*curve.domain().start(), *curve.domain().end()] {
+            let q = curve.evaluate(t).unwrap();
+            assert!((q.x().hypot(q.y()) - 2.).abs() < 1e-9);
+        }
+    }
+    let wrong = spatial
+        .transformed(
+            crate::AffineTransform3::try_new(
+                [[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]],
+                Vector3::try_new(0., 0., 0.1).unwrap(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    assert!(
+        clip_surface_curve_to_face_with_operation(
+            &wrong,
+            &witness,
+            &face,
+            Tolerance::DEFAULT,
+            &mut |a, b, t| a.intersection_events_with_curve(b, t)
+        )
+        .is_err()
+    );
+}

@@ -4,6 +4,8 @@ use viboceros_document::SelectionMode;
 mod infinite;
 #[path = "iplane.rs"]
 mod iplane;
+#[path = "pull.rs"]
+mod pull;
 #[path = "project_subcurve.rs"]
 mod subcurve;
 fn enter(app: &mut VibocerosApp, input: &str) {

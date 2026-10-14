@@ -50,10 +50,6 @@
     "crates/viboceros-smlib/src/native/surface_intersections.rs": "00b029d3a57ff98e8e41db27dca4f1e9d5000fc649dd1c899dec9413431bdd4b",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
-    "crates/viboceros-oracle/src/lib.rs": "d4ea669629a00fde478da87a14d7c1b2c1d09c8d42149f609ef9c4c2f7139a7c",
-    "crates/viboceros-oracle/src/surface_pull.rs": "072d2d1978979b3ff6274dc7fc164230ae9ea6be0e021bc7164f2dca1d9e2878",
-    "tools/rhino_oracle/rhino_worker.py": "5b88b1c53c2c65b1a8a2c653e802086ff0e1156ec188b1ef7b766d2583e177fa",
-    "tools/rhino_oracle/test_worker.py": "a9f9916f87a2ab84e1d7cf2c17353dd3c403b27638a0ae25f3c5c3f2d9f7a430",
     "tools/rhino_oracle/test_surface_pull.py": "7faf129588527acb6cf1defbb8a606d96daf5e686b55dcb1d6c2fc48b77075f7",
     "tools/rhino_oracle/fixtures/pull_curve_surface.json": "408e114633f25d9eae69020a09e5fa726f1f8d279c4d655e1be423e43c119f41",
     "tools/usd_brep/surface_pull_probe.cpp": "01d70ea1b94ad3995b39b6ad0bfa34d8cb950f11c9e389dbef2d359d25d067a4",
@@ -66,7 +62,11 @@
     "tools/rhino_oracle/observations/pull_curve_surface_viboceros_native.json": "a5b645f9a1a99e109430a19a1aaf18151dba0b7318c2aac319da49f4b3f9f411"
   },
   "source_git_sha256": {
-    "ecf6c649c6e1f724090971bd813baee70db6f3df:third_party/patches/usd-brep-surface-drop-start-normal.patch": "51b007896ebaffa24f2e9a34f1fe8113ff24d55c1bb1a5c499c5bddc14a784b9"
+    "ecf6c649c6e1f724090971bd813baee70db6f3df:third_party/patches/usd-brep-surface-drop-start-normal.patch": "51b007896ebaffa24f2e9a34f1fe8113ff24d55c1bb1a5c499c5bddc14a784b9",
+    "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:crates/viboceros-oracle/src/lib.rs": "d4ea669629a00fde478da87a14d7c1b2c1d09c8d42149f609ef9c4c2f7139a7c",
+    "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:crates/viboceros-oracle/src/surface_pull.rs": "072d2d1978979b3ff6274dc7fc164230ae9ea6be0e021bc7164f2dca1d9e2878",
+    "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:tools/rhino_oracle/rhino_worker.py": "5b88b1c53c2c65b1a8a2c653e802086ff0e1156ec188b1ef7b766d2583e177fa",
+    "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:tools/rhino_oracle/test_worker.py": "a9f9916f87a2ab84e1d7cf2c17353dd3c403b27638a0ae25f3c5c3f2d9f7a430"
   },
   "current_patch_sha256": {
     "third_party/patches/usd-brep-surface-drop-start-normal.patch": "e428d3aeaa053816bcddc1af4681899db840f5300da006c26e515ba0d12f73ea"

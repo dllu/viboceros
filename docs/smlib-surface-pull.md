@@ -3,8 +3,9 @@
 The native adapter exports `pull_curve_to_surface(source, surface, tolerance)`.
 It uses usd-brep's public `SmSurface::DropAndTrimCurve` and `LiftCurve` operations,
 returning paired spatial/UV NURBS curves over the finite natural surface domain.
-This supplies the geometry producer for the planned Pull command; command/UI
-coordination, point and mesh inputs, face trims and Loose remain pending.
+This supplies the geometry producer for the [Pull command](commands/pull.md).
+The command adds source/target picking, points, face trim clipping and spatial
+seam admission. Mesh curves and Loose remain pending.
 
 The high-level `SmApiProjectCurve` and `SmApiDropCurveToSrf` helpers fix their
 approximation tolerances internally. The adapter instead passes one eighth of
@@ -22,7 +23,7 @@ apply. The source curve limit is degree 17; target surfaces are limited to degre
 16 by certificate support. Returned spatial/UV pairs share the native curve
 parameterization; original source parameter domains are not promised. Two UV
 preimages of a cylinder seam can yield coincident spatial witnesses. They remain
-available for future trim-aware admission. Broader curved families, singularities,
+available to trim-aware command admission. Broader curved families, singularities,
 closed-seam parity and comparative performance remain open.
 
 The pinned kernel used `SM_SO_INTERSECT` to seed interval starts even when a

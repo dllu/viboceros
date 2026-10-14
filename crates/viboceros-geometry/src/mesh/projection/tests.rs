@@ -312,3 +312,53 @@ fn candidate_faces_coalesce_exact_coplanar_cells_and_preserve_warped_planes() {
         2
     );
 }
+#[test]
+fn indexed_closest_points_match_triangle_queries_across_multiple_bvh_levels() {
+    let mut vertices = Vec::new();
+    let mut triangles = Vec::new();
+    for i in 0..32 {
+        let x = i as f64 * 3.;
+        let base = vertices.len() as u32;
+        vertices.extend([p(x, 0., 0.), p(x + 1., 0., 0.), p(x, 1., 0.)]);
+        triangles.push([base, base + 1, base + 2]);
+    }
+    let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::DEFAULT).unwrap();
+    let index = MeshProjectionIndex::new(&mesh).unwrap();
+    for target in [
+        p(-5., 2., 3.),
+        p(31., 0.2, 7.),
+        p(56., -0.3, -4.),
+        p(100., 0., 2.),
+    ] {
+        let mut expected = None;
+        for face in 0..mesh.faces().len() {
+            let candidate = mesh.closest_point_on_face(face, target).unwrap();
+            if expected.is_none_or(|p| target.compare_distances(candidate, p).is_lt()) {
+                expected = Some(candidate);
+            }
+        }
+        assert_eq!(index.closest_point(target).unwrap(), expected);
+    }
+}
+#[test]
+fn closest_point_orders_far_sheets_even_when_rounded_distances_tie() {
+    let mesh = TriangleMesh::try_new(
+        vec![
+            p(0., 0., 0.),
+            p(1., 0., 0.),
+            p(0., 1., 0.),
+            p(0., 0., 1.),
+            p(1., 0., 1.),
+            p(0., 1., 1.),
+        ],
+        vec![[0, 1, 2], [3, 4, 5]],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let actual = MeshProjectionIndex::new(&mesh)
+        .unwrap()
+        .closest_point(p(1e200, 1e200, 1e200))
+        .unwrap()
+        .unwrap();
+    assert_eq!(actual.z(), 1.);
+}

@@ -13322,7 +13322,7 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
-    if kind == "pull_curve_surface":
+    if kind in ("pull_curve_surface", "pull_curve_surface_command"):
         source = _nurbs_curve_from_definition(operation["curve"])
         surface = brep = None
         try:
