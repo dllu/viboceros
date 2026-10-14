@@ -1,0 +1,8 @@
+--- SmCurveFilletExecutive.cpp
++++ SmCurveFilletExecutive.cpp
+@@ -138 +138 @@
+-  // double dCheckParam2 = ( m_dParam2 != SM_UNDEF_DOUBLE ) ? m_dParam2 : sDom2.GetMid();
++  double dCheckParam2 = ( m_dParam2 != SM_UNDEF_DOUBLE ) ? m_dParam2 : sDom2.GetMid();
+@@ -140 +140 @@
+-  SmBoolean bHiSide2 = ( dT2 < dCheckParam1 );
++  SmBoolean bHiSide2 = ( dT2 < dCheckParam2 );

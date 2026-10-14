@@ -30,13 +30,18 @@ impl Command for FilletCornersCommand {
                 Geometry::Polyline(polyline) => {
                     polyline.try_fillet_corners(radius, document.tolerance())?
                 }
-                Geometry::PolyCurve(polycurve) => {
-                    polycurve.try_fillet_corners(radius, document.tolerance())?
-                }
-                Geometry::NurbsCurve(curve) => viboceros_geometry::PolyCurve3::try_new(vec![
-                    viboceros_geometry::CurveSegment3::NurbsCurve(curve.clone()),
-                ])?
-                .try_fillet_corners(radius, document.tolerance())?,
+                Geometry::PolyCurve(polycurve) => super::curve_connections::fillet_corners(
+                    polycurve,
+                    radius,
+                    document.tolerance(),
+                )?,
+                Geometry::NurbsCurve(curve) => super::curve_connections::fillet_corners(
+                    &viboceros_geometry::PolyCurve3::try_new(vec![
+                        viboceros_geometry::CurveSegment3::NurbsCurve(curve.clone()),
+                    ])?,
+                    radius,
+                    document.tolerance(),
+                )?,
                 _ => return Err(CommandError::FilletCornersRequiresSupportedCurves),
             };
             replacements.push((object.id(), Geometry::PolyCurve(curve)));

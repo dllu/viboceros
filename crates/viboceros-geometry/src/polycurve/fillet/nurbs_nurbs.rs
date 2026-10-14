@@ -29,19 +29,24 @@ struct Search<'a> {
     y_axis: Vector3,
 }
 
-pub(super) fn resolve_nurbs_nurbs_kinks(
+pub(super) fn resolve_nurbs_nurbs_kinks<E: From<GeometryError>>(
     source: &PolyCurve3,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<Option<PolyCurve3>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<PolyCurve3>, E> {
     let closed = source.is_closed()?;
     let mut segments = source.segments().to_vec();
     let mut changed = false;
     let mut index = 0;
     while index + 1 < segments.len() {
-        if let Some(solution) =
-            fillet_pair(&segments[index], &segments[index + 1], radius, tolerance)?
-        {
+        if let Some(solution) = fillet_pair(
+            &segments[index],
+            &segments[index + 1],
+            radius,
+            tolerance,
+            trim,
+        )? {
             segments.splice(
                 index..=index + 1,
                 [
@@ -57,8 +62,13 @@ pub(super) fn resolve_nurbs_nurbs_kinks(
         }
     }
     if closed
-        && let Some(solution) =
-            fillet_pair(segments.last().unwrap(), &segments[0], radius, tolerance)?
+        && let Some(solution) = fillet_pair(
+            segments.last().unwrap(),
+            &segments[0],
+            radius,
+            tolerance,
+            trim,
+        )?
     {
         segments[0] = CurveSegment3::NurbsCurve(solution.second);
         *segments.last_mut().unwrap() = CurveSegment3::NurbsCurve(solution.first);
@@ -72,12 +82,13 @@ pub(super) fn resolve_nurbs_nurbs_kinks(
     }
 }
 
-fn fillet_pair(
+fn fillet_pair<E: From<GeometryError>>(
     before: &CurveSegment3,
     after: &CurveSegment3,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<Option<NurbsNurbsSolution>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<NurbsNurbsSolution>, E> {
     let (CurveSegment3::NurbsCurve(first), CurveSegment3::NurbsCurve(second)) = (before, after)
     else {
         return Ok(None);
@@ -88,15 +99,18 @@ fn fillet_pair(
     {
         return Ok(None);
     }
-    Ok(Some(solve_nurbs_nurbs(first, second, radius, tolerance)?))
+    Ok(Some(solve_nurbs_nurbs(
+        first, second, radius, tolerance, trim,
+    )?))
 }
 
-fn solve_nurbs_nurbs(
+fn solve_nurbs_nurbs<E: From<GeometryError>>(
     first: &NurbsCurve,
     second: &NurbsCurve,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<NurbsNurbsSolution, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<NurbsNurbsSolution, E> {
     let first_tangent = CurveRef::NurbsCurve(first)
         .evaluate_with_tangent_on_side(*first.domain().end(), ParameterSide::Left)?
         .tangent()
@@ -114,7 +128,7 @@ fn solve_nurbs_nurbs(
         .length()?
         > tolerance.angular()
     {
-        return Err(unsupported_curved_corner());
+        return Err(unsupported_curved_corner().into());
     }
     let normal = first_normal.as_vector();
     let x_axis = first_tangent.normalized_nonzero()?.as_vector();
@@ -140,10 +154,11 @@ fn solve_nurbs_nurbs(
                 first_side,
                 second_side,
                 &mut best,
+                trim,
             )?;
         }
     }
-    best.ok_or_else(unsupported_curved_corner)
+    best.ok_or_else(unsupported_curved_corner).map_err(E::from)
 }
 
 impl Search<'_> {
@@ -207,14 +222,15 @@ impl Search<'_> {
         Ok(samples)
     }
 
-    fn intersections(
+    fn intersections<E: From<GeometryError>>(
         &self,
         first: &[OffsetSample],
         second: &[OffsetSample],
         first_side: Real,
         second_side: Real,
         best: &mut Option<NurbsNurbsSolution>,
-    ) -> Result<(), GeometryError> {
+        trim: &mut NurbsTrim<'_, E>,
+    ) -> Result<(), E> {
         let mut sorted = (0..second.len() - 1).collect::<Vec<_>>();
         sorted.sort_by(|&a, &b| {
             second[a]
@@ -253,6 +269,7 @@ impl Search<'_> {
                         second_parameter,
                         first_side,
                         second_side,
+                        trim,
                     )?
                     && best
                         .as_ref()
@@ -320,8 +337,13 @@ impl Search<'_> {
             let dx = a.x - b.x;
             let dy = a.y - b.y;
             let error = dx.hypot(dy);
-            let scale = a.x.hypot(a.y).max(b.x.hypot(b.y)).max(1.0);
-            let target = (self.tolerance.absolute() * 0.001).max(512.0 * Real::EPSILON * scale);
+            let scale = a.x.hypot(a.y).max(b.x.hypot(b.y)).max(self.radius);
+            // A center residual is also an angular error divided by radius.
+            // Keep small corners refining until both contact criteria can be
+            // met; the floating-point floor uses the local geometric scale.
+            let target = (self.tolerance.absolute() * 0.001)
+                .min(self.radius * self.tolerance.angular() * 0.001)
+                .max(512.0 * Real::EPSILON * scale);
             if error <= target {
                 return Ok(Some((first_parameter, second_parameter)));
             }
@@ -361,13 +383,14 @@ impl Search<'_> {
         Ok(None)
     }
 
-    fn candidate_at(
+    fn candidate_at<E: From<GeometryError>>(
         &self,
         first_parameter: Real,
         second_parameter: Real,
         first_side: Real,
         second_side: Real,
-    ) -> Result<Option<NurbsNurbsSolution>, GeometryError> {
+        trim: &mut NurbsTrim<'_, E>,
+    ) -> Result<Option<NurbsNurbsSolution>, E> {
         if !(first_parameter > *self.first.domain().start()
             && first_parameter < *self.first.domain().end()
             && second_parameter > *self.second.domain().start()
@@ -399,22 +422,17 @@ impl Search<'_> {
         else {
             return Ok(None);
         };
-        let removed_length = self
-            .first
-            .try_trimmed(first_parameter..=*self.first.domain().end())?
+        let removed_length = trim(self.first, first_parameter..=*self.first.domain().end())?
             .length(self.tolerance)?
-            + self
-                .second
-                .try_trimmed(*self.second.domain().start()..=second_parameter)?
-                .length(self.tolerance)?;
+            + trim(
+                self.second,
+                *self.second.domain().start()..=second_parameter,
+            )?
+            .length(self.tolerance)?;
         Ok(Some(NurbsNurbsSolution {
-            first: self
-                .first
-                .try_trimmed(*self.first.domain().start()..=first_parameter)?,
+            first: trim(self.first, *self.first.domain().start()..=first_parameter)?,
             fillet,
-            second: self
-                .second
-                .try_trimmed(second_parameter..=*self.second.domain().end())?,
+            second: trim(self.second, second_parameter..=*self.second.domain().end())?,
             removed_length,
         }))
     }
@@ -443,6 +461,70 @@ fn segment_intersection(first: &[OffsetSample], second: &[OffsetSample]) -> Opti
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn small_corners_refine_to_angular_tolerance_and_match_independent_symmetric_contacts() {
+        let mut low = 0.5;
+        let mut high = 1.;
+        for _ in 0..80 {
+            let t: Real = low + (high - low) * 0.5;
+            if 4. * t + 0.5 * (2. * t - 1.) / t.hypot(1. - t) < 4. {
+                low = t;
+            } else {
+                high = t;
+            }
+        }
+        let t = low + (high - low) * 0.5;
+        for scale in [1e-6, 1.] {
+            for chart in [false, true] {
+                let p = |x, y| Point3::try_new(x * scale, y * scale, 0.).unwrap();
+                let mut first = NurbsCurve::try_new(
+                    2,
+                    vec![p(0., 0.), p(2., 0.), p(2., 2.)],
+                    vec![0., 0., 0., 1., 1., 1.],
+                )
+                .unwrap();
+                let mut second = NurbsCurve::try_new(
+                    2,
+                    vec![p(2., 2.), p(4., 2.), p(4., 4.)],
+                    vec![0., 0., 0., 1., 1., 1.],
+                )
+                .unwrap();
+                if chart {
+                    first = first.try_reparameterized(-4. ..=7.).unwrap();
+                    second = second.try_reparameterized(10. ..=16.).unwrap();
+                }
+                let source = PolyCurve3::try_new(vec![
+                    CurveSegment3::NurbsCurve(first),
+                    CurveSegment3::NurbsCurve(second),
+                ])
+                .unwrap();
+                let result = source
+                    .try_fillet_corners(0.5 * scale, Tolerance::DEFAULT)
+                    .unwrap();
+                let CurveSegment3::Arc(arc) = result.segments()[1] else {
+                    panic!("fillet arc missing")
+                };
+                assert!((arc.radius() / scale - 0.5).abs() < 1e-10);
+                assert!(
+                    arc.start()
+                        .unwrap()
+                        .distance_to(p(4. * t - 2. * t * t, 2. * t * t))
+                        .unwrap()
+                        / scale
+                        < 1e-11
+                );
+                assert!(
+                    arc.end()
+                        .unwrap()
+                        .distance_to(p(4. - 2. * t * t, 4. - 4. * t + 2. * t * t))
+                        .unwrap()
+                        / scale
+                        < 1e-11
+                );
+            }
+        }
+    }
     use crate::LineSegment;
 
     fn p(x: Real, y: Real) -> Point3 {

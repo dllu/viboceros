@@ -2,13 +2,17 @@ use super::*;
 
 mod arc_arc;
 mod arc_line;
+#[cfg(test)]
+mod backend_tests;
 mod nurbs_arc;
 mod nurbs_internal;
 mod nurbs_line;
 mod nurbs_nurbs;
 
+type NurbsTrim<'a, E> = dyn FnMut(&NurbsCurve, RangeInclusive<Real>) -> Result<NurbsCurve, E> + 'a;
+
 enum FilletPart {
-    Straight(Vec<Point3>),
+    Straight(Vec<Point3>, CurveSegment3),
     Curved(CurveSegment3),
 }
 
@@ -21,34 +25,48 @@ impl PolyCurve3 {
         radius: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_fillet_corners_with_nurbs(radius, tolerance, &mut NurbsCurve::try_trimmed)
+    }
+
+    /// Preserve corner selection and analytic leaves with delegated NURBS extraction.
+    pub fn try_fillet_corners_with_nurbs<E: From<GeometryError>>(
+        &self,
+        radius: Real,
+        tolerance: Tolerance,
+        trim: &mut NurbsTrim<'_, E>,
+    ) -> Result<Self, E> {
         require_finite([radius], "fillet radius")?;
         if radius <= tolerance.absolute() {
             return Err(GeometryError::Degenerate {
                 context: "fillet radius",
-            });
+            }
+            .into());
         }
-        if let Some(split) = nurbs_internal::split_sharp_knots(self, tolerance)? {
-            return split.try_fillet_corners(radius, tolerance);
+        if let Some(split) = nurbs_internal::split_sharp_knots(self, tolerance, trim)? {
+            return split.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
         if let Some(rounded) = arc_line::resolve_arc_line_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners(radius, tolerance);
+            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
         if let Some(rounded) = arc_arc::resolve_arc_arc_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners(radius, tolerance);
+            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
-        if let Some(rounded) = nurbs_line::resolve_nurbs_line_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners(radius, tolerance);
+        if let Some(rounded) = nurbs_line::resolve_nurbs_line_kinks(self, radius, tolerance, trim)?
+        {
+            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
-        if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners(radius, tolerance);
+        if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(self, radius, tolerance, trim)? {
+            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
-        if let Some(rounded) = nurbs_nurbs::resolve_nurbs_nurbs_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners(radius, tolerance);
+        if let Some(rounded) =
+            nurbs_nurbs::resolve_nurbs_nurbs_kinks(self, radius, tolerance, trim)?
+        {
+            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
         }
         let mut parts = Vec::with_capacity(self.segments.len());
         for segment in &self.segments {
             if let Some(vertices) = straight_leaf_vertices(segment)? {
-                parts.push(FilletPart::Straight(vertices));
+                parts.push(FilletPart::Straight(vertices, segment.clone()));
             } else {
                 if let CurveSegment3::NurbsCurve(curve) = segment {
                     check_curved_nurbs_is_smooth(curve, tolerance)?;
@@ -58,19 +76,21 @@ impl PolyCurve3 {
         }
         if parts
             .iter()
-            .all(|part| matches!(part, FilletPart::Straight(_)))
+            .all(|part| matches!(part, FilletPart::Straight(..)))
         {
             let mut vertices = Vec::new();
             for part in parts {
-                let FilletPart::Straight(points) = part else {
+                let FilletPart::Straight(points, _) = part else {
                     unreachable!()
                 };
                 append_straight_vertices(&mut vertices, &points)?;
             }
             if self.is_closed()? && vertices.first() != vertices.last() {
-                return Err(unsupported_straight_polycurve());
+                return Err(unsupported_straight_polycurve().into());
             }
-            return Polyline3::try_new(vertices, tolerance)?.try_fillet_corners(radius, tolerance);
+            return Polyline3::try_new(vertices, tolerance)?
+                .try_fillet_corners(radius, tolerance)
+                .map_err(E::from);
         }
         let closed = self.is_closed()?;
         for pair in parts.windows(2) {
@@ -82,14 +102,16 @@ impl PolyCurve3 {
         if closed {
             let last = parts.last().unwrap();
             let first = &parts[0];
-            if matches!(last, FilletPart::Straight(_)) && matches!(first, FilletPart::Straight(_)) {
+            if matches!(last, FilletPart::Straight(..)) && matches!(first, FilletPart::Straight(..))
+            {
                 let (end, incoming) = part_end(last)?;
                 let (start, outgoing) = part_start(first)?;
                 if !curve_points_coincident(end, start) {
-                    return Err(unsupported_straight_polycurve());
+                    return Err(unsupported_straight_polycurve().into());
                 }
                 if tangent_angle(incoming, outgoing)? > tolerance.angular() {
-                    return fillet_closed_mixed_sharp_seam(parts, radius, tolerance);
+                    return fillet_closed_mixed_sharp_seam(parts, radius, tolerance)
+                        .map_err(E::from);
                 }
             } else {
                 check_smooth_joint(last, first, tolerance)?;
@@ -97,17 +119,27 @@ impl PolyCurve3 {
         }
         let mut result = Vec::new();
         let mut run = Vec::new();
+        let mut originals = Vec::new();
         for part in parts {
             match part {
-                FilletPart::Straight(points) => append_straight_vertices(&mut run, &points)?,
+                FilletPart::Straight(points, original) => {
+                    append_straight_vertices(&mut run, &points)?;
+                    originals.push(original);
+                }
                 FilletPart::Curved(curve) => {
-                    append_rounded_run(&mut result, std::mem::take(&mut run), radius, tolerance)?;
+                    append_preserved_or_rounded_run(
+                        &mut result,
+                        std::mem::take(&mut run),
+                        std::mem::take(&mut originals),
+                        radius,
+                        tolerance,
+                    )?;
                     result.push(curve);
                 }
             }
         }
-        append_rounded_run(&mut result, run, radius, tolerance)?;
-        Self::try_new(result)
+        append_preserved_or_rounded_run(&mut result, run, originals, radius, tolerance)?;
+        Self::try_new(result).map_err(E::from)
     }
 }
 
@@ -126,14 +158,14 @@ fn fillet_closed_mixed_sharp_seam(
         .unwrap();
     let mut joined = Vec::new();
     for part in &parts[last_curved + 1..] {
-        let FilletPart::Straight(points) = part else {
+        let FilletPart::Straight(points, _) = part else {
             unreachable!()
         };
         append_straight_vertices(&mut joined, points)?;
     }
     let seam_corner = joined.len() - 1;
     for part in &parts[..first_curved] {
-        let FilletPart::Straight(points) = part else {
+        let FilletPart::Straight(points, _) = part else {
             unreachable!()
         };
         append_straight_vertices(&mut joined, points)?;
@@ -143,20 +175,30 @@ fn fillet_closed_mixed_sharp_seam(
     let seam_segments = seam_run.segments();
     let mut result = seam_segments[seam_piece..].to_vec();
     let mut run = Vec::new();
+    let mut originals = Vec::new();
     for part in parts
         .into_iter()
         .skip(first_curved)
         .take(last_curved - first_curved + 1)
     {
         match part {
-            FilletPart::Straight(points) => append_straight_vertices(&mut run, &points)?,
+            FilletPart::Straight(points, original) => {
+                append_straight_vertices(&mut run, &points)?;
+                originals.push(original);
+            }
             FilletPart::Curved(curve) => {
-                append_rounded_run(&mut result, std::mem::take(&mut run), radius, tolerance)?;
+                append_preserved_or_rounded_run(
+                    &mut result,
+                    std::mem::take(&mut run),
+                    std::mem::take(&mut originals),
+                    radius,
+                    tolerance,
+                )?;
                 result.push(curve);
             }
         }
     }
-    append_rounded_run(&mut result, run, radius, tolerance)?;
+    append_preserved_or_rounded_run(&mut result, run, originals, radius, tolerance)?;
     result.extend_from_slice(&seam_segments[..seam_piece]);
     PolyCurve3::try_new(result)
 }
@@ -221,7 +263,7 @@ fn check_smooth_joint(
 
 fn part_start(part: &FilletPart) -> Result<(Point3, Vector3), GeometryError> {
     match part {
-        FilletPart::Straight(points) => Ok((points[0], points[0].vector_to(points[1])?)),
+        FilletPart::Straight(points, _) => Ok((points[0], points[0].vector_to(points[1])?)),
         FilletPart::Curved(curve) => {
             let sample = curve
                 .as_ref()
@@ -233,7 +275,7 @@ fn part_start(part: &FilletPart) -> Result<(Point3, Vector3), GeometryError> {
 
 fn part_end(part: &FilletPart) -> Result<(Point3, Vector3), GeometryError> {
     match part {
-        FilletPart::Straight(points) => {
+        FilletPart::Straight(points, _) => {
             let end = points.len() - 1;
             Ok((points[end], points[end - 1].vector_to(points[end])?))
         }
@@ -250,6 +292,32 @@ fn tangent_angle(first: Vector3, second: Vector3) -> Result<Real, GeometryError>
     let first = first.normalized_nonzero()?.as_vector();
     let second = second.normalized_nonzero()?.as_vector();
     Ok(first.cross(second)?.length()?.atan2(first.dot(second)?))
+}
+
+fn append_preserved_or_rounded_run(
+    result: &mut Vec<CurveSegment3>,
+    points: Vec<Point3>,
+    originals: Vec<CurveSegment3>,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let mut sharp = false;
+    for triple in points.windows(3) {
+        if tangent_angle(
+            triple[0].vector_to(triple[1])?,
+            triple[1].vector_to(triple[2])?,
+        )? > tolerance.angular()
+        {
+            sharp = true;
+            break;
+        }
+    }
+    if !originals.is_empty() && !sharp {
+        result.extend(originals);
+        Ok(())
+    } else {
+        append_rounded_run(result, points, radius, tolerance)
+    }
 }
 
 fn append_rounded_run(

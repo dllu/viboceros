@@ -11,8 +11,9 @@ both terminal spans, independently check intersection parameters and meeting
 positions, and extract the retained intervals with the same native producers.
 
 Chamfer also uses native extraction for partial retained NURBS leaves after
-measuring its two arc-length setbacks. Fillet's corner/contact solver and its
-final contact trimming remain shared portable geometry. Picking, analytic
+measuring its two arc-length setbacks. Fillet's corner/contact solver remains
+shared geometry; [contact extraction](smlib-fillet-contacts.md) now uses native
+producers for retained NURBS and FilletCorners sharp-knot preparation. Picking, analytic
 arc/line policies, source directions, composite leaves, attributes, groups and
 Undo remain shared command behavior. Native geometry errors retain their
 command error type; preparation finishes before document mutation.
@@ -40,6 +41,8 @@ All 24 cases pass. Connect's maximum coordinate difference is `7.07e-14`;
 the largest fillet length/sample difference is `2.87e-8`. The complete native
 suite passes 236 tests, including its doc test; targeted command/geometry
 regressions and native/portable Clippy checks also pass.
+That 24-case snapshot identifies commit `222d3bdb` through immutable Git
+references; the expanded contact comparison includes FilletCorners.
 These observations come from the saved licensed Rhino outputs. Fresh Rhino
 capture is still blocked by the
 [recorded Wine startup failure](smlib-extension-rhino-capture.json).

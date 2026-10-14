@@ -68,6 +68,18 @@ endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${REMOVE_SOURCE}")
 list(APPEND KERNEL_SOURCES "${REMOVE_PATCHED}")
 
+set(CURVE_FILLET_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmCurveFilletExecutive.cpp")
+set(CURVE_FILLET_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-fillet-sides.patch")
+set(CURVE_FILLET_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmCurveFilletExecutive.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CURVE_FILLET_SOURCE}" "${CURVE_FILLET_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${CURVE_FILLET_PATCHED}" "${CURVE_FILLET_SOURCE}" "${CURVE_FILLET_PATCH}"
+                RESULT_VARIABLE CURVE_FILLET_PATCH_STATUS)
+if(NOT CURVE_FILLET_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep curve fillet side patch failed; review the pinned source")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${CURVE_FILLET_SOURCE}")
+list(APPEND KERNEL_SOURCES "${CURVE_FILLET_PATCHED}")
+
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SMLib/inc")
 target_compile_definitions(SMLib PUBLIC NOMINMAX SM_GRAPHICS_CALLBACKS=1)

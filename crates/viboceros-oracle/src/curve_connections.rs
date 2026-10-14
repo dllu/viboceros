@@ -4,6 +4,16 @@ use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle, CurveFilletExtensionStyles, CurveOtherExtensionStyle, Point3,
     PolyCurve3, Real, Tolerance,
 };
+pub(super) fn fillet_corners(
+    source: &PolyCurve3,
+    radius: Real,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    return viboceros_smlib::fillet_corners(source, radius, tolerance).map_err(native_error);
+    #[cfg(not(feature = "native-smlib"))]
+    Ok(source.try_fillet_corners(radius, tolerance)?)
+}
 pub(super) fn connect_parts(
     first: (&Curve3, Point3),
     second: (&Curve3, Point3),

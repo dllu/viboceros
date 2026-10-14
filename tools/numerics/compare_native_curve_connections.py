@@ -1,4 +1,4 @@
-"""Replay retained Connect and pair-filleting observations through usd-brep."""
+"""Replay retained Connect and curve-filleting observations through usd-brep."""
 import argparse
 import hashlib
 import json
@@ -9,12 +9,23 @@ from tools.rhino_oracle import OracleClient, compare_responses, load_request
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ("connect_nurbs_line", "curve_fillet_pair",
             "curve_fillet_pair_parts", "curve_fillet_nonmeeting")
+CORNERS_NURBS_KINKS = {"quadratic-nurbs-to-line-kink", "line-to-quadratic-nurbs-kink",
+                      "quadratic-nurbs-to-arc-kink", "arc-to-quadratic-nurbs-kink",
+                      "quadratic-nurbs-to-quadratic-nurbs-kink", "reversed-quadratic-nurbs-kink",
+                      "closed-quadratic-nurbs-seam", "single-nurbs-internal-kink",
+                      "polycurve-nurbs-internal-kink"}
+CORNERS_ARC_KINKS = {"arc-to-line-kink", "line-to-arc-kink", "arc-to-line-and-line-corner",
+                    "arc-to-polyline-kink", "arc-to-linear-nurbs-kink", "polyline-to-arc-kink",
+                    "closed-arc-line-kinks-and-seam", "arc-to-opposite-line-kink",
+                    "arc-to-arc-kink", "reversed-arc-to-arc-kink",
+                    "closed-arc-to-arc-and-line-kinks"}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
     parser.add_argument("--timeout", type=float, default=1800.)
+    parser.add_argument("--include-corners", action="store_true")
     args = parser.parse_args()
     client = OracleClient(native_smlib=True)
     sources = ["crates/viboceros-geometry/src/curve_connect_pair.rs",
@@ -36,8 +47,19 @@ def main():
                "crates/viboceros-oracle/src/lib.rs",
                "tools/rhino_oracle/client.py",
                "tools/numerics/compare_native_curve_connections.py"]
+    if args.include_corners:
+        sources += ["crates/viboceros-geometry/src/polycurve/fillet.rs",
+                    "crates/viboceros-geometry/src/polycurve/fillet/nurbs_line.rs",
+                    "crates/viboceros-geometry/src/polycurve/fillet/nurbs_arc.rs",
+                    "crates/viboceros-geometry/src/polycurve/fillet/nurbs_nurbs.rs",
+                    "crates/viboceros-geometry/src/polycurve/fillet/nurbs_internal.rs",
+                    "crates/viboceros-geometry/src/polycurve/fillet/backend_tests.rs",
+                    "crates/viboceros-smlib/tests/fillet_contacts.rs",
+                    "crates/viboceros-command/src/fillet_corners.rs",
+                    "crates/viboceros-smlib/native/CMakeLists.txt",
+                    "third_party/patches/usd-brep-curve-fillet-sides.patch"]
     records = []
-    for fixture in FIXTURES:
+    for fixture in FIXTURES + (("curve_fillet_corners",) if args.include_corners else ()):
         request_path = Path("tools/rhino_oracle/fixtures") / f"{fixture}.json"
         reference_path = Path("tools/rhino_oracle/observations") / f"{fixture}.json"
         sources.extend([str(request_path), str(reference_path)])
@@ -51,6 +73,9 @@ def main():
             # Keep the existing replay ceilings: the NURBS fillet solver uses
             # length sampling, while Connect checks exact ends and controls.
             epsilon = 1e-7 if fixture != "connect_nurbs_line" and "nurbs" in a["id"] else 1e-10
+            if fixture == "curve_fillet_corners":
+                epsilon = (1e-7 if a["id"] in CORNERS_NURBS_KINKS else
+                           1e-8 if a["id"] in CORNERS_ARC_KINKS else 1e-10)
             actual = dict(native, results=[a])
             expected = dict(reference, results=[b])
             checks.append(compare_responses(actual, expected,
@@ -65,7 +90,7 @@ def main():
         print(fixture, record["passed"], record["max_absolute_error"], flush=True)
     result = dict(native_smlib=True,
                   upstream_commit="c9c5979f04cea8c38213004d4f04df0dcfb40d05",
-                  scope="Saved scripted Connect command and public pair-filleting SDK outputs. "
+                  scope="Saved scripted Connect command and public curve-filleting SDK outputs. "
                         "No fresh Rhino capture, interactive viewport capture, Chamfer SDK "
                         "qualification, rational smooth-Connect parity or kernel-speed claim.",
                   source_sha256={path: hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in sources},

@@ -1,10 +1,11 @@
 use super::*;
 use crate::CurveRef;
 
-pub(super) fn split_sharp_knots(
+pub(super) fn split_sharp_knots<E: From<GeometryError>>(
     source: &PolyCurve3,
     tolerance: Tolerance,
-) -> Result<Option<PolyCurve3>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<PolyCurve3>, E> {
     let mut segments = Vec::with_capacity(source.segments().len());
     let mut changed = false;
     for segment in source.segments() {
@@ -18,7 +19,7 @@ pub(super) fn split_sharp_knots(
             let left = source.evaluate_with_tangent_on_side(knot, ParameterSide::Left)?;
             let right = source.evaluate_with_tangent_on_side(knot, ParameterSide::Right)?;
             if !curve_points_coincident(left.point(), right.point()) {
-                return Err(unsupported_curved_corner());
+                return Err(unsupported_curved_corner().into());
             }
             if tangent_angle(left.tangent().as_vector(), right.tangent().as_vector())?
                 > tolerance.angular()
@@ -33,9 +34,7 @@ pub(super) fn split_sharp_knots(
         changed = true;
         breaks.push(*curve.domain().end());
         for pair in breaks.windows(2) {
-            segments.push(CurveSegment3::NurbsCurve(
-                curve.try_trimmed(pair[0]..=pair[1])?,
-            ));
+            segments.push(CurveSegment3::NurbsCurve(trim(curve, pair[0]..=pair[1])?));
         }
     }
     if changed {

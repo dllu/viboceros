@@ -11,19 +11,24 @@ struct NurbsLineSolution {
     removed_length: Real,
 }
 
-pub(super) fn resolve_nurbs_line_kinks(
+pub(super) fn resolve_nurbs_line_kinks<E: From<GeometryError>>(
     source: &PolyCurve3,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<Option<PolyCurve3>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<PolyCurve3>, E> {
     let closed = source.is_closed()?;
     let mut segments = source.segments().to_vec();
     let mut changed = false;
     let mut index = 0;
     while index + 1 < segments.len() {
-        if let Some((before, fillet, after)) =
-            fillet_pair(&segments[index], &segments[index + 1], radius, tolerance)?
-        {
+        if let Some((before, fillet, after)) = fillet_pair(
+            &segments[index],
+            &segments[index + 1],
+            radius,
+            tolerance,
+            trim,
+        )? {
             segments.splice(
                 index..=index + 1,
                 [before, CurveSegment3::Arc(fillet), after],
@@ -35,8 +40,13 @@ pub(super) fn resolve_nurbs_line_kinks(
         }
     }
     if closed
-        && let Some((before, fillet, after)) =
-            fillet_pair(segments.last().unwrap(), &segments[0], radius, tolerance)?
+        && let Some((before, fillet, after)) = fillet_pair(
+            segments.last().unwrap(),
+            &segments[0],
+            radius,
+            tolerance,
+            trim,
+        )?
     {
         segments[0] = after;
         *segments.last_mut().unwrap() = before;
@@ -50,12 +60,13 @@ pub(super) fn resolve_nurbs_line_kinks(
     }
 }
 
-fn fillet_pair(
+fn fillet_pair<E: From<GeometryError>>(
     before: &CurveSegment3,
     after: &CurveSegment3,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<Option<(CurveSegment3, CircularArc3, CurveSegment3)>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<(CurveSegment3, CircularArc3, CurveSegment3)>, E> {
     let (curve, line, reversed) = match (before, after) {
         (CurveSegment3::NurbsCurve(curve), CurveSegment3::Line(line)) => {
             (curve.clone(), *line, false)
@@ -70,7 +81,7 @@ fn fillet_pair(
     {
         return Ok(None);
     }
-    let solution = solve_nurbs_then_line(&curve, line, radius, tolerance)?;
+    let solution = solve_nurbs_then_line(&curve, line, radius, tolerance, trim)?;
     if reversed {
         Ok(Some((
             CurveSegment3::Line(solution.line.reversed()),
@@ -86,12 +97,13 @@ fn fillet_pair(
     }
 }
 
-fn solve_nurbs_then_line(
+fn solve_nurbs_then_line<E: From<GeometryError>>(
     curve: &NurbsCurve,
     line: LineSegment,
     radius: Real,
     tolerance: Tolerance,
-) -> Result<NurbsLineSolution, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<NurbsLineSolution, E> {
     let end_tangent = CurveRef::NurbsCurve(curve)
         .evaluate_with_tangent_on_side(*curve.domain().end(), ParameterSide::Left)?
         .tangent()
@@ -100,7 +112,7 @@ fn solve_nurbs_then_line(
     let fallback = end_tangent.cross(line_direction)?.normalized_nonzero()?;
     let normal = nurbs_offset_plane(curve, fallback, tolerance)?.as_vector();
     if normal.dot(line_direction)?.abs() > tolerance.angular() {
-        return Err(unsupported_curved_corner());
+        return Err(unsupported_curved_corner().into());
     }
     let line_left = normal
         .cross(line_direction)?
@@ -111,7 +123,8 @@ fn solve_nurbs_then_line(
     if spans.len().saturating_mul(SAMPLES_PER_SPAN) > MAX_ROOT_SAMPLES {
         return Err(GeometryError::InvalidPolyCurve {
             context: "too many NURBS fillet search intervals",
-        });
+        }
+        .into());
     }
     let mut best: Option<NurbsLineSolution> = None;
     for curve_side in [-1.0, 1.0] {
@@ -173,6 +186,7 @@ fn solve_nurbs_then_line(
                             line_length,
                             target,
                             tolerance,
+                            trim,
                         )?
                         && best.as_ref().is_none_or(|previous| {
                             solution.removed_length < previous.removed_length
@@ -186,7 +200,7 @@ fn solve_nurbs_then_line(
             }
         }
     }
-    best.ok_or_else(unsupported_curved_corner)
+    best.ok_or_else(unsupported_curved_corner).map_err(E::from)
 }
 
 fn offset_line_distance(
@@ -274,7 +288,7 @@ fn bisect_offset_root(
 }
 
 #[allow(clippy::too_many_arguments)]
-fn candidate_at(
+fn candidate_at<E: From<GeometryError>>(
     curve: &NurbsCurve,
     line: LineSegment,
     parameter: Real,
@@ -286,7 +300,8 @@ fn candidate_at(
     line_length: Real,
     target: Real,
     tolerance: Tolerance,
-) -> Result<Option<NurbsLineSolution>, GeometryError> {
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<Option<NurbsLineSolution>, E> {
     if !(parameter > *curve.domain().start() && parameter < *curve.domain().end()) {
         return Ok(None);
     }
@@ -315,10 +330,8 @@ fn candidate_at(
     else {
         return Ok(None);
     };
-    let removed_length = curve
-        .try_trimmed(parameter..=*curve.domain().end())?
-        .length(tolerance)?
-        + setback;
+    let removed_length =
+        trim(curve, parameter..=*curve.domain().end())?.length(tolerance)? + setback;
     let line_parameter = CurveRef::Line(&line).parameter_at(setback / line_length)?;
     let CurveSegment3::Line(trimmed_line) =
         CurveSegment3::Line(line).try_trimmed(line_parameter..=*line.domain().end())?
@@ -326,7 +339,7 @@ fn candidate_at(
         unreachable!()
     };
     Ok(Some(NurbsLineSolution {
-        curve: curve.try_trimmed(*curve.domain().start()..=parameter)?,
+        curve: trim(curve, *curve.domain().start()..=parameter)?,
         fillet,
         line: trimmed_line,
         removed_length,

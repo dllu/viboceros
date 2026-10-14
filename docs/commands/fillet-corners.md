@@ -11,8 +11,8 @@ must have room for the setbacks at both ends. Adjacent arcs may meet at a tangen
 A radius that makes them overlap rejects the entire
 selection without editing it.
 
-The result is a polycurve with native line and arc leaves and any preserved
-curved leaves. Original object IDs,
+The result is a polycurve with native lines, arcs and preserved source leaves.
+Original object IDs,
 attributes, groups, and selection are retained. One command changes all
 selected curves in one Undo step. Straight polycurves may contain line,
 polyline, and linear NURBS knot-span leaves; their junctions must be exact.
@@ -30,6 +30,9 @@ arc, with both source leaves trimmed at their tangent points.
 Sharp internal knots of a curved NURBS leaf are split into exact NURBS pieces
 and rounded in the same way, including when the selected object is a standalone
 NURBS curve.
+Linux `native-smlib` builds use [native interval extraction](../smlib-fillet-contacts.md)
+for the retained NURBS contacts and sharp internal knot pieces. Smooth
+unselected straight leaves retain their original classes and parameter domains.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
 The same seam convention applies to a sharp curved NURBS junction.

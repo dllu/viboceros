@@ -33,3 +33,11 @@ The native build compiles a generated `NL_CrvAdv.cpp` copy. See the
 conservative bound one; it must clear that handled failure from its return
 status. No removal tolerance or geometry criterion changes. The build compiles
 a generated `NL_CrvTool.cpp` copy. See [boundary extension](../../docs/smlib-boundary-extension.md).
+
+`usd-brep-curve-fillet-sides.patch` applies to the same pinned release.
+`SmCurveFilletExecutive` must use the second curve's side-selection parameter
+for that curve. Reusing the first curve's parameter selects the wrong side
+when their domains differ. The native build compiles a generated source copy.
+The direct producer remains under qualification: scaled-down corners can
+still return `SM_ERR_NULL_POINTER`. Application curve fillets use the shared
+contact solver and native interval extraction.

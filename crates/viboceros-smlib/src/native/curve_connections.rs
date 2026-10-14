@@ -6,6 +6,17 @@ use viboceros_geometry::{
     CurveOtherExtensionStyle, PolyCurve3,
 };
 
+/// Shared corner selection and contact solve with native exact NURBS extraction.
+pub fn fillet_corners(
+    source: &PolyCurve3,
+    radius: f64,
+    tolerance: Tolerance,
+) -> Result<PolyCurve3, Error> {
+    with_native_operations(|operations| {
+        source.try_fillet_corners_with_nurbs(radius, tolerance, operations.trim)
+    })
+}
+
 pub fn connect_curves_parts(
     first: (&Curve3, Point3),
     second: (&Curve3, Point3),

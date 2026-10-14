@@ -16,7 +16,7 @@ pub use native::{
     change_surface_seam, connect_curves_joined, connect_curves_parts, curve_bezier_spans,
     curve_offset_operations, curve_tweens, extend_curve, extend_curve_by_length,
     extend_curve_naturally_by_length, extend_curve_to_boundaries, extend_surface,
-    extend_surface_by_length, fillet_curves_joined, fillet_curves_parts, fit_curve,
+    extend_surface_by_length, fillet_corners, fillet_curves_joined, fillet_curves_parts, fit_curve,
     fit_sweep_model_surface, insert_curve_knot, insert_surface_knot, interpolate_affine_greville,
     interpolate_curve, interpolate_curve_for_command, interpolate_endpoints,
     interpolate_open_point_grid, interpolate_point_grid, interpolate_surface_blend,

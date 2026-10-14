@@ -1,0 +1,1235 @@
+{
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Direct native executive; independent 80-digit quadratic contacts. All jobs retained, including small-scale failures; no Rhino or speed qualification.",
+  "side_fix_verified": true,
+  "address_sanitizer_passed": true,
+  "sanitizer_scope": "Complete SMLib and SM_API; only process-global context leak accounting disabled.",
+  "qualified_corrected_cases": 6,
+  "unqualified_corrected_cases": [
+    {
+      "scale": 1e-06,
+      "chart": 0,
+      "status": 1006,
+      "qualified": false
+    },
+    {
+      "scale": 1e-06,
+      "chart": 1,
+      "status": 1006,
+      "qualified": false
+    },
+    {
+      "scale": 1e-06,
+      "chart": 2,
+      "status": 1006,
+      "qualified": false
+    }
+  ],
+  "source_sha256": {
+    "tools/usd_brep/curve_fillet_probe.cpp": "8f6065095354317002682bc0af39b20078bb48ec7fb2b8635d243bc8de7ce391",
+    "tools/usd_brep/compare_curve_fillet_producer.py": "6f0db497815e5d86d558dc750566c12ac65c055584077f08761eddb20fcbbcd1",
+    "tools/usd_brep/CMakeLists.txt": "d68f104dee70331f044414e995e600e89c97cc4031db2a1e994bbd1d8e335c7b",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "10dcaa03645deef605841fbec2db3dee441398483c6c60daa8f7d5c2699ed7ac",
+    "third_party/patches/usd-brep-curve-fillet-sides.patch": "8c2aa6618b47a6e35c3e531c7d8662f6381300de7765b35bfcf1add3e197d6c3",
+    "third_party/usd-brep/source/SMLib/src/SmCurveFilletExecutive.cpp": "b8baa240c205040b6e13f50ab047fea496a6f48b3fb2efdef571ca3c0c1aa79a"
+  },
+  "jobs": {
+    "baseline": {
+      "executable": "/tmp/viboceros-curve-fillet-baseline",
+      "binary_sha256": "66ab7e9d7e9a8e69d34ade71257852c155c221a6da2740b23bf657316a2a7a68",
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "scale": 1,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795027,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1,
+            "chart": 1,
+            "status": 1001
+          },
+          {
+            "scale": 1,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1e-06,
+            "chart": 0,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 1,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 2,
+            "status": 1006
+          },
+          {
+            "scale": 1000000,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795036,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1000000,
+            "chart": 1,
+            "status": 1001
+          },
+          {
+            "scale": 1000000,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          }
+        ]
+      },
+      "checks": [
+        {
+          "scale": 1,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 1.6653345369377348e-16
+        },
+        {
+          "scale": 1,
+          "chart": 1,
+          "status": 1001,
+          "qualified": false
+        },
+        {
+          "scale": 1,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        },
+        {
+          "scale": 1e-06,
+          "chart": 0,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 1,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 2,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1000000,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 2.498001805406602e-16
+        },
+        {
+          "scale": 1000000,
+          "chart": 1,
+          "status": 1001,
+          "qualified": false
+        },
+        {
+          "scale": 1000000,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        }
+      ]
+    },
+    "corrected": {
+      "executable": "/tmp/viboceros-curve-fillet-corrected",
+      "binary_sha256": "1f33b23b33b19f2008177804f499b9392bbd1e2466622401bab14d965d998bfe",
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "scale": 1,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795027,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1,
+            "chart": 1,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                10.234559142967951,
+                11
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.139244200012094,
+                  1.8757433797632816,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359024,
+                  2.0000000000000013,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1e-06,
+            "chart": 0,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 1,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 2,
+            "status": 1006
+          },
+          {
+            "scale": 1000000,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795036,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1000000,
+            "chart": 1,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785736
+              ],
+              [
+                10.23455914296795,
+                11
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.270170564,
+                  1564732.3497437302,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.200012093,
+                  1875743.3797632793,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.285935899,
+                  1999999.9999999988,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1000000,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          }
+        ]
+      },
+      "checks": [
+        {
+          "scale": 1,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 1.6653345369377348e-16
+        },
+        {
+          "scale": 1,
+          "chart": 1,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 2.220446049250313e-15,
+          "maximum_parameter_error": 1.7763568394002505e-15
+        },
+        {
+          "scale": 1,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        },
+        {
+          "scale": 1e-06,
+          "chart": 0,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 1,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 2,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1000000,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 2.498001805406602e-16
+        },
+        {
+          "scale": 1000000,
+          "chart": 1,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 1.3322676295501878e-15,
+          "maximum_parameter_error": 1.1102230246251565e-16
+        },
+        {
+          "scale": 1000000,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        }
+      ]
+    },
+    "asan": {
+      "executable": "/tmp/viboceros-usd-brep-blend-asan/viboceros_usd_brep_curve_fillet_probe",
+      "binary_sha256": "7de543232ebbaee47dd97185ec70aae93e0b902c2127eef80350590f8f7bb930",
+      "return_code": 0,
+      "stderr": "",
+      "response": {
+        "cases": [
+          {
+            "scale": 1,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795027,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1,
+            "chart": 1,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                10.234559142967951,
+                11
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.139244200012094,
+                  1.8757433797632816,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359024,
+                  2.0000000000000013,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1.9733262701705643,
+                  1.5647323497437307,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.1392442000120933,
+                  1.87574337976328,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2.4691182859359007,
+                  2,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4,
+                2,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1e-06,
+            "chart": 0,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 1,
+            "status": 1006
+          },
+          {
+            "scale": 1e-06,
+            "chart": 2,
+            "status": 1006
+          },
+          {
+            "scale": 1000000,
+            "chart": 0,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                0.23455914296795036,
+                1
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1000000,
+            "chart": 1,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785736
+              ],
+              [
+                10.23455914296795,
+                11
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.270170564,
+                  1564732.3497437302,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.200012093,
+                  1875743.3797632793,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.285935899,
+                  1999999.9999999988,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          },
+          {
+            "scale": 1000000,
+            "chart": 2,
+            "status": 1000,
+            "retained_domains": [
+              [
+                0,
+                0.8845146549785737
+              ],
+              [
+                -7.76544085703205,
+                -7
+              ]
+            ],
+            "fillet_samples": [
+              {
+                "status": 1000,
+                "point": [
+                  1973326.2701705643,
+                  1564732.3497437306,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2139244.2000120934,
+                  1875743.3797632803,
+                  0
+                ]
+              },
+              {
+                "status": 1000,
+                "point": [
+                  2469118.2859359006,
+                  2000000.0000000002,
+                  0
+                ]
+              }
+            ],
+            "first_start": {
+              "status": 1000,
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            "second_end": {
+              "status": 1000,
+              "point": [
+                4000000,
+                2000000,
+                0
+              ]
+            }
+          }
+        ]
+      },
+      "checks": [
+        {
+          "scale": 1,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 1.6653345369377348e-16
+        },
+        {
+          "scale": 1,
+          "chart": 1,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 2.220446049250313e-15,
+          "maximum_parameter_error": 1.7763568394002505e-15
+        },
+        {
+          "scale": 1,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        },
+        {
+          "scale": 1e-06,
+          "chart": 0,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 1,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1e-06,
+          "chart": 2,
+          "status": 1006,
+          "qualified": false
+        },
+        {
+          "scale": 1000000,
+          "chart": 0,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 2.498001805406602e-16
+        },
+        {
+          "scale": 1000000,
+          "chart": 1,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 1.3322676295501878e-15,
+          "maximum_parameter_error": 1.1102230246251565e-16
+        },
+        {
+          "scale": 1000000,
+          "chart": 2,
+          "status": 1000,
+          "qualified": true,
+          "maximum_normalized_coordinate_error": 4.440892098500626e-16,
+          "maximum_parameter_error": 0
+        }
+      ]
+    }
+  }
+}

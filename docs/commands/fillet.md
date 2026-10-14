@@ -26,7 +26,8 @@ polycurves. Earlier leaves remain native and unchanged.
 
 Linux `native-smlib` builds use
 [usd-brep producers](../smlib-curve-connections.md) to prepare smooth NURBS
-connections before the shared fillet contact solve.
+connections and [extract NURBS contact intervals](../smlib-fillet-contacts.md)
+around the shared fillet contact solve.
 
 When a larger fillet consumes an arc's tangent extension and touches the
 original arc, the extension is removed and the native arc is retained. Other
