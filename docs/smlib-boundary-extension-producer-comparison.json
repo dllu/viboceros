@@ -1,0 +1,1164 @@
+{
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Fixed polynomial end-span growth and real C ABI extrapolation; source grid uses absolute error, distant grid uses relative error; no Rhino capture.",
+  "source_point_epsilon": 1e-09,
+  "relative_point_epsilon": 1e-12,
+  "asan_options": "detect_leaks=0:halt_on_error=1",
+  "records": {
+    "before": {
+      "returncode": 1,
+      "stdout": "{\"cases\":[{\"power\":0,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":1.2174545926647189e-15,\"relative_point_error\":3.007729196431371e-16,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":8.9509041826236192e-16,\"relative_point_error\":5.4578960061239835e-16,\"control_count\":3,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":16,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":7.7728001618096153e-16,\"relative_point_error\":6.9933392448468909e-16,\"control_count\":3,\"evaluated\":true},{\"power\":17,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":17,\"side\":\"start\",\"status\":1,\"kernel_error_code\":12},{\"power\":18,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":18,\"side\":\"start\",\"status\":1,\"kernel_error_code\":6},{\"power\":24,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":24,\"side\":\"start\",\"status\":1,\"kernel_error_code\":12},{\"power\":32,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":32,\"side\":\"start\",\"status\":1,\"kernel_error_code\":12},{\"power\":39,\"side\":\"end\",\"status\":1,\"kernel_error_code\":12},{\"power\":39,\"side\":\"start\",\"status\":1,\"kernel_error_code\":6}],\"passed\":false}\n",
+      "stderr": "",
+      "output": {
+        "cases": [
+          {
+            "power": 0,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 1.217454592664719e-15,
+            "relative_point_error": 3.007729196431371e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 8.95090418262362e-16,
+            "relative_point_error": 5.457896006123984e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 7.772800161809615e-16,
+            "relative_point_error": 6.993339244846891e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 17,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 17,
+            "side": "start",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "status": 1,
+            "kernel_error_code": 6
+          },
+          {
+            "power": 24,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 24,
+            "side": "start",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "status": 1,
+            "kernel_error_code": 12
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "status": 1,
+            "kernel_error_code": 6
+          }
+        ],
+        "passed": false
+      }
+    },
+    "after": {
+      "returncode": 0,
+      "stdout": "{\"cases\":[{\"power\":0,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":1.2174545926647189e-15,\"relative_point_error\":3.007729196431371e-16,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":8.9509041826236192e-16,\"relative_point_error\":5.4578960061239835e-16,\"control_count\":3,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":1.3506446028928519e-15,\"relative_point_error\":3.0239725035321626e-16,\"control_count\":3,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":7.7728001618096153e-16,\"relative_point_error\":6.9933392448468909e-16,\"control_count\":3,\"evaluated\":true},{\"power\":17,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":9.2649175722905968e-16,\"relative_point_error\":2.2960024910869242e-16,\"control_count\":3,\"evaluated\":true},{\"power\":17,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":8.4552066524511512e-16,\"relative_point_error\":4.3015673745376197e-16,\"control_count\":3,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":9.4857407581712284e-16,\"relative_point_error\":1.9745152516133234e-16,\"control_count\":3,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"status\":0,\"kernel_error_code\":6,\"source_point_error\":4.9650683064945462e-16,\"relative_point_error\":3.330643662887052e-16,\"control_count\":3,\"evaluated\":true},{\"power\":24,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":1.3506446028928519e-15,\"relative_point_error\":2.9361477754927268e-16,\"control_count\":3,\"evaluated\":true},{\"power\":24,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":8.9509041826236192e-16,\"relative_point_error\":7.1181808428118891e-16,\"control_count\":3,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":6.5052130349130266e-19,\"relative_point_error\":1.3010426069826053e-19,\"control_count\":3,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":6.5052130349130266e-19,\"relative_point_error\":6.5052130349130266e-19,\"control_count\":3,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":3.9704669402545328e-23,\"relative_point_error\":7.9409338805090654e-24,\"control_count\":3,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"status\":0,\"kernel_error_code\":6,\"source_point_error\":3.9704669402545328e-23,\"relative_point_error\":3.9704669402545328e-23,\"control_count\":3,\"evaluated\":true}],\"passed\":true}\n",
+      "stderr": "",
+      "output": {
+        "cases": [
+          {
+            "power": 0,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 1.217454592664719e-15,
+            "relative_point_error": 3.007729196431371e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 8.95090418262362e-16,
+            "relative_point_error": 5.457896006123984e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 1.3506446028928519e-15,
+            "relative_point_error": 3.0239725035321626e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 7.772800161809615e-16,
+            "relative_point_error": 6.993339244846891e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 17,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 9.264917572290597e-16,
+            "relative_point_error": 2.296002491086924e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 17,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 8.455206652451151e-16,
+            "relative_point_error": 4.3015673745376197e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 9.485740758171228e-16,
+            "relative_point_error": 1.9745152516133234e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 6,
+            "source_point_error": 4.965068306494546e-16,
+            "relative_point_error": 3.330643662887052e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 24,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 1.3506446028928519e-15,
+            "relative_point_error": 2.936147775492727e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 24,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 8.95090418262362e-16,
+            "relative_point_error": 7.118180842811889e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 6.505213034913027e-19,
+            "relative_point_error": 1.3010426069826053e-19,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 6.505213034913027e-19,
+            "relative_point_error": 6.505213034913027e-19,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 3.970466940254533e-23,
+            "relative_point_error": 7.940933880509065e-24,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 6,
+            "source_point_error": 3.970466940254533e-23,
+            "relative_point_error": 3.970466940254533e-23,
+            "control_count": 3,
+            "evaluated": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    "adapter": {
+      "returncode": 0,
+      "stdout": "{\"cases\":[{\"power\":0,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.4857496805350942e-16,\"relative_point_error\":2.1896060654902687e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":8.0059320849734419e-16,\"relative_point_error\":2.1964428291182205e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":4.4408920985006262e-16,\"relative_point_error\":2.7993833992003221e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":4.5775667985222375e-16,\"relative_point_error\":1.7538604877677825e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":1.2626476083767896e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.9301366129890925e-16,\"relative_point_error\":3.9863673896305368e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":1.1102230246251565e-15,\"relative_point_error\":2.7976830680073453e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":2.0043704572278224e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":5.900916318210353e-16,\"relative_point_error\":4.2471149584049178e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.5511151231257827e-16,\"relative_point_error\":4.4338896493099575e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":1.1102230246251565e-15,\"relative_point_error\":2.667469964300714e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":1.6011864169946884e-15,\"relative_point_error\":3.9338270948582677e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":1.8540743761656167e-15,\"relative_point_error\":3.7333016917414878e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":2.2423373594114569e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.0216669371534024e-16,\"relative_point_error\":4.9054928585399161e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.5511151231257827e-16,\"relative_point_error\":3.8726924930554974e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":1.6263032587282567e-19,\"relative_point_error\":3.2526065174565132e-20,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.1088959579333461e-16,\"relative_point_error\":3.7895612669163215e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":7.1088959579333461e-16,\"relative_point_error\":2.7838833846345099e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.4368957093138306e-16,\"relative_point_error\":6.1546959112289587e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":6.3292450452841926e-16,\"relative_point_error\":4.1809248833530135e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":6.6613381477509392e-16,\"relative_point_error\":2.6316397621669922e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.900916318210353e-16,\"relative_point_error\":2.7838833846734865e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.6378280954397878e-16,\"relative_point_error\":6.8719022557242428e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":6.0060526020317978e-16,\"relative_point_error\":5.4037621570120269e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true}],\"passed\":true}\n",
+      "stderr": "",
+      "output": {
+        "cases": [
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.485749680535094e-16,
+            "relative_point_error": 2.1896060654902687e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 8.005932084973442e-16,
+            "relative_point_error": 2.1964428291182205e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 4.440892098500626e-16,
+            "relative_point_error": 2.799383399200322e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 4.577566798522237e-16,
+            "relative_point_error": 1.7538604877677825e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 1.2626476083767896e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.930136612989092e-16,
+            "relative_point_error": 3.986367389630537e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 1.1102230246251565e-15,
+            "relative_point_error": 2.7976830680073453e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 2.0043704572278224e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 5.900916318210353e-16,
+            "relative_point_error": 4.247114958404918e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.551115123125783e-16,
+            "relative_point_error": 4.4338896493099575e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 1.1102230246251565e-15,
+            "relative_point_error": 2.667469964300714e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 1.6011864169946884e-15,
+            "relative_point_error": 3.9338270948582677e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 1.8540743761656167e-15,
+            "relative_point_error": 3.733301691741488e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 2.242337359411457e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.021666937153402e-16,
+            "relative_point_error": 4.905492858539916e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.551115123125783e-16,
+            "relative_point_error": 3.8726924930554974e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 1.6263032587282567e-19,
+            "relative_point_error": 3.252606517456513e-20,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.108895957933346e-16,
+            "relative_point_error": 3.7895612669163215e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 7.108895957933346e-16,
+            "relative_point_error": 2.78388338463451e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.43689570931383e-16,
+            "relative_point_error": 6.154695911228959e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 6.329245045284193e-16,
+            "relative_point_error": 4.1809248833530135e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 6.661338147750939e-16,
+            "relative_point_error": 2.631639762166992e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.900916318210353e-16,
+            "relative_point_error": 2.7838833846734865e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.637828095439788e-16,
+            "relative_point_error": 6.871902255724243e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 6.006052602031798e-16,
+            "relative_point_error": 5.403762157012027e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    "asan": {
+      "returncode": 0,
+      "stdout": "{\"cases\":[{\"power\":0,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":0,\"relative_point_error\":0,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"end\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":1.2174545926647189e-15,\"relative_point_error\":3.007729196431371e-16,\"control_count\":3,\"evaluated\":true},{\"power\":8,\"side\":\"start\",\"status\":0,\"kernel_error_code\":0,\"source_point_error\":8.9509041826236192e-16,\"relative_point_error\":5.4578960061239835e-16,\"control_count\":3,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":1.3506446028928519e-15,\"relative_point_error\":3.0239725035321626e-16,\"control_count\":3,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":7.7728001618096153e-16,\"relative_point_error\":6.9933392448468909e-16,\"control_count\":3,\"evaluated\":true},{\"power\":17,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":9.2649175722905968e-16,\"relative_point_error\":2.2960024910869242e-16,\"control_count\":3,\"evaluated\":true},{\"power\":17,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":8.4552066524511512e-16,\"relative_point_error\":4.3015673745376197e-16,\"control_count\":3,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":9.4857407581712284e-16,\"relative_point_error\":1.9745152516133234e-16,\"control_count\":3,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"status\":0,\"kernel_error_code\":6,\"source_point_error\":4.9650683064945462e-16,\"relative_point_error\":3.330643662887052e-16,\"control_count\":3,\"evaluated\":true},{\"power\":24,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":1.3506446028928519e-15,\"relative_point_error\":2.9361477754927268e-16,\"control_count\":3,\"evaluated\":true},{\"power\":24,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":8.9509041826236192e-16,\"relative_point_error\":7.1181808428118891e-16,\"control_count\":3,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":6.5052130349130266e-19,\"relative_point_error\":1.3010426069826053e-19,\"control_count\":3,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":6.5052130349130266e-19,\"relative_point_error\":6.5052130349130266e-19,\"control_count\":3,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"status\":0,\"kernel_error_code\":12,\"source_point_error\":3.9704669402545328e-23,\"relative_point_error\":7.9409338805090654e-24,\"control_count\":3,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"status\":0,\"kernel_error_code\":6,\"source_point_error\":3.9704669402545328e-23,\"relative_point_error\":3.9704669402545328e-23,\"control_count\":3,\"evaluated\":true}],\"passed\":true}\n",
+      "stderr": "",
+      "output": {
+        "cases": [
+          {
+            "power": 0,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 1.217454592664719e-15,
+            "relative_point_error": 3.007729196431371e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 8,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 0,
+            "source_point_error": 8.95090418262362e-16,
+            "relative_point_error": 5.457896006123984e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 1.3506446028928519e-15,
+            "relative_point_error": 3.0239725035321626e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 7.772800161809615e-16,
+            "relative_point_error": 6.993339244846891e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 17,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 9.264917572290597e-16,
+            "relative_point_error": 2.296002491086924e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 17,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 8.455206652451151e-16,
+            "relative_point_error": 4.3015673745376197e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 9.485740758171228e-16,
+            "relative_point_error": 1.9745152516133234e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 6,
+            "source_point_error": 4.965068306494546e-16,
+            "relative_point_error": 3.330643662887052e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 24,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 1.3506446028928519e-15,
+            "relative_point_error": 2.936147775492727e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 24,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 8.95090418262362e-16,
+            "relative_point_error": 7.118180842811889e-16,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 6.505213034913027e-19,
+            "relative_point_error": 1.3010426069826053e-19,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 6.505213034913027e-19,
+            "relative_point_error": 6.505213034913027e-19,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "status": 0,
+            "kernel_error_code": 12,
+            "source_point_error": 3.970466940254533e-23,
+            "relative_point_error": 7.940933880509065e-24,
+            "control_count": 3,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "status": 0,
+            "kernel_error_code": 6,
+            "source_point_error": 3.970466940254533e-23,
+            "relative_point_error": 3.970466940254533e-23,
+            "control_count": 3,
+            "evaluated": true
+          }
+        ],
+        "passed": true
+      }
+    },
+    "asan_adapter": {
+      "returncode": 0,
+      "stdout": "{\"cases\":[{\"power\":0,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.4857496805350942e-16,\"relative_point_error\":2.1896060654902687e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":8.0059320849734419e-16,\"relative_point_error\":2.1964428291182205e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":4.4408920985006262e-16,\"relative_point_error\":2.7993833992003221e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":0,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":4.5775667985222375e-16,\"relative_point_error\":1.7538604877677825e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":1.2626476083767896e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.9301366129890925e-16,\"relative_point_error\":3.9863673896305368e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":1.1102230246251565e-15,\"relative_point_error\":2.7976830680073453e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":2.0043704572278224e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":5.900916318210353e-16,\"relative_point_error\":4.2471149584049178e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":16,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.5511151231257827e-16,\"relative_point_error\":4.4338896493099575e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":1.1102230246251565e-15,\"relative_point_error\":2.667469964300714e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":1.6011864169946884e-15,\"relative_point_error\":3.9338270948582677e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":1.8540743761656167e-15,\"relative_point_error\":3.7333016917414878e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":2.2423373594114569e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.0216669371534024e-16,\"relative_point_error\":4.9054928585399161e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":18,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.5511151231257827e-16,\"relative_point_error\":3.8726924930554974e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":1.6263032587282567e-19,\"relative_point_error\":3.2526065174565132e-20,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.1088959579333461e-16,\"relative_point_error\":3.7895612669163215e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":7.1088959579333461e-16,\"relative_point_error\":2.7838833846345099e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":9.4368957093138306e-16,\"relative_point_error\":6.1546959112289587e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":32,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":6.3292450452841926e-16,\"relative_point_error\":4.1809248833530135e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":6.6613381477509392e-16,\"relative_point_error\":2.6316397621669922e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"end\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":5.900916318210353e-16,\"relative_point_error\":2.7838833846734865e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":1,\"status\":0,\"source_point_error\":0,\"relative_point_error\":0,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":9.9999999999999996e-281,\"status\":0,\"source_point_error\":7.6378280954397878e-16,\"relative_point_error\":6.8719022557242428e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true},{\"power\":39,\"side\":\"start\",\"gauge\":-1e+280,\"status\":0,\"source_point_error\":6.0060526020317978e-16,\"relative_point_error\":5.4037621570120269e-16,\"weights_preserved\":true,\"domain_preserved\":true,\"evaluated\":true}],\"passed\":true}\n",
+      "stderr": "",
+      "output": {
+        "cases": [
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.485749680535094e-16,
+            "relative_point_error": 2.1896060654902687e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 8.005932084973442e-16,
+            "relative_point_error": 2.1964428291182205e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 4.440892098500626e-16,
+            "relative_point_error": 2.799383399200322e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 0,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 4.577566798522237e-16,
+            "relative_point_error": 1.7538604877677825e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 1.2626476083767896e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.930136612989092e-16,
+            "relative_point_error": 3.986367389630537e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 1.1102230246251565e-15,
+            "relative_point_error": 2.7976830680073453e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 2.0043704572278224e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 5.900916318210353e-16,
+            "relative_point_error": 4.247114958404918e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 16,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.551115123125783e-16,
+            "relative_point_error": 4.4338896493099575e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 1.1102230246251565e-15,
+            "relative_point_error": 2.667469964300714e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 1.6011864169946884e-15,
+            "relative_point_error": 3.9338270948582677e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 1.8540743761656167e-15,
+            "relative_point_error": 3.733301691741488e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 2.242337359411457e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.021666937153402e-16,
+            "relative_point_error": 4.905492858539916e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 18,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.551115123125783e-16,
+            "relative_point_error": 3.8726924930554974e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 1.6263032587282567e-19,
+            "relative_point_error": 3.252606517456513e-20,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.108895957933346e-16,
+            "relative_point_error": 3.7895612669163215e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 7.108895957933346e-16,
+            "relative_point_error": 2.78388338463451e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 9.43689570931383e-16,
+            "relative_point_error": 6.154695911228959e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 32,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 6.329245045284193e-16,
+            "relative_point_error": 4.1809248833530135e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 6.661338147750939e-16,
+            "relative_point_error": 2.631639762166992e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "end",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 5.900916318210353e-16,
+            "relative_point_error": 2.7838833846734865e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": 1,
+            "status": 0,
+            "source_point_error": 0,
+            "relative_point_error": 0,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": 1e-280,
+            "status": 0,
+            "source_point_error": 7.637828095439788e-16,
+            "relative_point_error": 6.871902255724243e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          },
+          {
+            "power": 39,
+            "side": "start",
+            "gauge": -1e+280,
+            "status": 0,
+            "source_point_error": 6.006052602031798e-16,
+            "relative_point_error": 5.403762157012027e-16,
+            "weights_preserved": true,
+            "domain_preserved": true,
+            "evaluated": true
+          }
+        ],
+        "passed": true
+      }
+    }
+  },
+  "source_sha256": {
+    "third_party/usd-brep/source/SMLib/src/NL_CrvTool.cpp": "e6a619f83d147c5bb5db29cdf7ade29e2392406ef1b433dc769b7d80ba99b21c",
+    "third_party/patches/usd-brep-knot-removal-bound-error.patch": "c9e71c83111dd69c7c3d2c248fa243dc87201d11d75fe6e415f95abd660e538e",
+    "tools/usd_brep/extension_growth_probe.cpp": "84aab3b3ee22035ee539458e36c9fac7831efcd24db6b796fae4169106c7f895",
+    "tools/usd_brep/extension_adapter_probe.cpp": "afb8c035521e3f46646f112cd651eda8ad573a489124e6fe608ed004e2819fae",
+    "tools/usd_brep/CMakeLists.txt": "626ead2293fed2f0e26d5f566c794ce903c4b774f653821f64f69c2b5911a050",
+    "tools/usd_brep/compare_extension_growth.py": "e39a9daf8de6e909b13b5cf1c1fd14f6bddc37ed4370e7d703704ee68a2c96c1",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "c376522a69643b1bc52770fe4bad63a143b296971e92e93171eb21262b75695f"
+  }
+}

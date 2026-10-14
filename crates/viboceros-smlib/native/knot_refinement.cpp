@@ -7,6 +7,7 @@
 #include <memory>
 #include <initializer_list>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace {
@@ -761,6 +762,13 @@ VbSurfaceData *vb_extend_nurbs_curve(const VbNurbsData &data,double start,double
     std::vector<NL_CPOINT> points;
     std::array<double,3> origin;
     const int exponent=conditioned_controls(data,points,origin);
+    const double common_weight=data.points_xyzw[3];
+    bool polynomial=true;
+    for(size_t i=1;i<count;++i) polynomial=polynomial && data.points_xyzw[4*i+3]==common_weight;
+    if(polynomial) for(size_t i=0;i<count;++i) {
+        const auto *p=data.points_xyzw+4*i;
+        points[i]={p[0]-origin[0],p[1]-origin[1],p[2]-origin[2],1.};
+    }
     const bool negative=std::all_of(points.begin(),points.end(),[](const auto &p){return p.w<0.;});
     if(negative) for(auto &p:points) {p.x=-p.x;p.y=-p.y;p.z=-p.z;p.w=-p.w;}
     NL_STACKS stack;
@@ -780,11 +788,51 @@ VbSurfaceData *vb_extend_nurbs_curve(const VbNurbsData &data,double start,double
             clamp_curve_endpoint(curve,!at_start,clamped,stack);
             curve=clamped;
         }
-        NL_CURVE extended;
-        N_CrvInitArrays(&extended);
-        check(N_CrvExtendByParamDist(&curve,chart.scaled(requested),at_start?NL_START:NL_END,
-              NL_CMAX,&extended,&stack,&stack),"Extend native curve parameter boundary failed");
-        curve=extended;
+        if(polynomial) for(NL_INDEX i=0;i<=curve.pol->n;++i) curve.pol->Pw[i].w=1.;
+        const double target=chart.scaled(requested);
+        // A single very long extension makes removal of its original endpoint
+        // numerically singular. Grow only by the existing end span each time;
+        // that span doubles after exact NL_CMAX removal, preserving the same
+        // end polynomial without a new extrapolation or fitting algorithm.
+        for(size_t step=0; ; ++step) {
+            require(step<4096,"Native extension growth did not converge");
+            const size_t current_count=curve.pol->n+1;
+            const double current=curve.knt->U[at_start?degree:current_count];
+            if(current==target) break;
+            const double adjacent=curve.knt->U[at_start?degree+1:current_count-1];
+            const double span=std::abs(current-adjacent);
+            const double distance=std::abs(target-current);
+            // Share the last two stages when needed so the remainder cannot
+            // be a tiny sliver relative to the newly enlarged end span.
+            const double increment=std::min(span,distance*0.5);
+            const double next=distance<=span?target:current+(at_start?-increment:increment);
+            require(span>0 && std::isfinite(span) && std::isfinite(next) && next!=current,
+                    "Native extension growth lost its active span");
+            require(current_count<=limit-degree,"Native extension growth resource limit");
+            NL_CURVE extended;
+            N_CrvInitArrays(&extended);
+            if(N_CrvExtendByParamDist(&curve,next,at_start?NL_START:NL_END,
+                  NL_CMAX,&extended,&stack,&stack)!=NL_NO)
+                throw std::runtime_error("Extend native curve parameter boundary failed: kernel code "
+                    +std::to_string(N_ErrGetType())+", current "+std::to_string(current)
+                    +", next "+std::to_string(next)+", controls "+std::to_string(current_count));
+            curve=extended;
+            // Constant input weights describe a polynomial. Keep its known
+            // unit denominator exact so roundoff cannot become a growing
+            // rational denominator in subsequent native stages.
+            if(polynomial) for(NL_INDEX i=0;i<=curve.pol->n;++i) curve.pol->Pw[i].w=1.;
+            if(next!=target) {
+                // Keep only the current curve between stages; copying whole
+                // large sources into one growing native arena is unbounded.
+                points.assign(curve.pol->Pw,curve.pol->Pw+curve.pol->n+1);
+                basis.assign(curve.knt->U,curve.knt->U+curve.knt->m+1);
+                N_EndNurbs(&stack);
+                N_InitNurbs(&stack);
+                N_CrvInitArrays(&curve);
+                check(N_CrvFromCPtsAndKnots(&curve,points.data(),points.size()-1,degree,
+                      basis.data(),basis.size()-1,&stack),"Build native extension growth curve failed");
+            }
+        }
     }
     const size_t output_count=curve.pol->n+1,knot_count=curve.knt->m+1;
     require(curve.p==static_cast<NL_DEGREE>(degree) && output_count<=limit
@@ -796,6 +844,17 @@ VbSurfaceData *vb_extend_nurbs_curve(const VbNurbsData &data,double start,double
     if(negative) for(auto &p:points) {p.x=-p.x;p.y=-p.y;p.z=-p.z;p.w=-p.w;}
     VbNurbsData output=data;
     output.count[0]=output_count;output.knots[0]=knots.data();output.knot_count[0]=knots.size();
+    if(polynomial) {
+        std::vector<double> euclidean;
+        euclidean.reserve(4*output_count);
+        for(const auto &p:points) {
+            const double values[4]={p.x+origin[0],p.y+origin[1],p.z+origin[2],common_weight};
+            for(double value:values) require(std::isfinite(value),"Polynomial extension control exceeds finite range");
+            euclidean.insert(euclidean.end(),values,values+4);
+        }
+        output.points_xyzw=euclidean.data();
+        return vb_copy_nurbs_payload(output);
+    }
     return snapshot(output,points,exponent,origin);
 }
 

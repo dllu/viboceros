@@ -27,3 +27,9 @@ It allocates the complete knot/control arrays when an end span is separated
 by a full-order interior break, in both parameter and distance extension.
 The native build compiles a generated `NL_CrvAdv.cpp` copy. See the
 [direct producer and adapter qualification](../../docs/smlib-extension.md).
+
+`usd-brep-knot-removal-bound-error.patch` applies to the same pinned release.
+`N_CrvRemoveKnot` already handles a failed basis-maximum search with the
+conservative bound one; it must clear that handled failure from its return
+status. No removal tolerance or geometry criterion changes. The build compiles
+a generated `NL_CrvTool.cpp` copy. See [boundary extension](../../docs/smlib-boundary-extension.md).

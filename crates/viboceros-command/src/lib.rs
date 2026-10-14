@@ -9977,7 +9977,8 @@ fn extend_curve_to_selected_boundaries(
         ExtendCurveStyle::Smooth => GeometryCurveExtensionStyle::Smooth,
     };
     if join == ExtendCurveJoin::No {
-        let extensions = source.try_separate_extensions_to_boundaries(
+        let extensions = extension_backend::curve_boundary_pieces(
+            &source,
             side,
             geometry_style,
             &boundaries,
@@ -10003,17 +10004,21 @@ fn extend_curve_to_selected_boundaries(
         ));
     }
     let extended = match join {
-        ExtendCurveJoin::Merge => source.try_merged_to_boundaries(
+        ExtendCurveJoin::Merge => extension_backend::curve_boundary(
+            &source,
             side,
             geometry_style,
             &boundaries,
             document.tolerance(),
+            false,
         )?,
-        ExtendCurveJoin::Yes => source.try_joined_to_boundaries(
+        ExtendCurveJoin::Yes => extension_backend::curve_boundary(
+            &source,
             side,
             geometry_style,
             &boundaries,
             document.tolerance(),
+            true,
         )?,
         ExtendCurveJoin::No => unreachable!("Join=No returns after creating separate extensions"),
     };

@@ -16,9 +16,9 @@ FIXTURES = ("curve_extend", "curve_extend_length", "surface_extend",
 REFERENCE = Path("tools/rhino_oracle/observations/native_extensions.json")
 
 
-def combined_request():
+def combined_request(fixtures=FIXTURES):
     operations = []
-    for fixture in FIXTURES:
+    for fixture in fixtures:
         source = load_request(ROOT/"tools/rhino_oracle/fixtures"/(fixture+".json"))
         if {k: v for k, v in source.items() if k != "operations"} != dict(protocol_version=1, iterations=1):
             raise ValueError("extension fixture header changed; review batch settings")
@@ -36,22 +36,26 @@ def main():
     reference_mode.add_argument("--capture-rhino", action="store_true")
     reference_mode.add_argument("--portable-baseline", action="store_true")
     parser.add_argument("--scheme", default="VibocerosOracleNativeExtensions20261014")
+    parser.add_argument("--include-boundaries", action="store_true")
     parser.add_argument("--timeout", type=float, default=1800.)
     args = parser.parse_args()
-    request = combined_request()
+    fixtures = FIXTURES + (("curve_extend_boundary_command",) if args.include_boundaries else ())
+    request = combined_request(fixtures)
+    reference_path = (Path("tools/rhino_oracle/observations/native_boundary_extensions.json")
+                      if args.include_boundaries else REFERENCE)
     client = OracleClient(native_smlib=True, settings_scheme=args.scheme)
     if args.portable_baseline:
         reference = OracleClient(native_smlib=False).run_viboceros(request, timeout=args.timeout)
         print("Captured", len(reference["results"]), "portable outputs", flush=True)
     elif args.capture_rhino:
         reference = client.run_rhino(request, timeout=args.timeout)
-        (ROOT/REFERENCE).write_text(json.dumps(reference, indent=2, allow_nan=False)+"\n")
+        (ROOT/reference_path).write_text(json.dumps(reference, indent=2, allow_nan=False)+"\n")
         print("Captured", len(reference["results"]), "fresh Rhino outputs", flush=True)
     else:
-        reference = load_request(ROOT/REFERENCE)
+        reference = load_request(ROOT/reference_path)
     native = client.run_viboceros(request, timeout=args.timeout)
     records = []
-    for fixture in FIXTURES:
+    for fixture in fixtures:
         def subset(response):
             response = dict(response)
             response["results"] = [r for r in response["results"] if r["id"].startswith(fixture+"/")]
@@ -83,16 +87,18 @@ def main():
         print(fixture, record["passed"], record["max_absolute_error"], flush=True)
     sources = ["crates/viboceros-geometry/src/nurbs.rs",
                "crates/viboceros-geometry/src/nurbs_surface.rs",
+               "crates/viboceros-geometry/src/nurbs/boundary_extension.rs",
                "crates/viboceros-smlib/native/knot_refinement.cpp",
                "crates/viboceros-smlib/src/native/curve_extension.rs",
+               "crates/viboceros-smlib/src/native/boundary_extension.rs",
                "crates/viboceros-command/src/extension_backend.rs",
                "crates/viboceros-oracle/src/extension_backend.rs",
                "tools/numerics/compare_native_extensions.py", "tools/rhino_oracle/client.py"]
     if not args.portable_baseline:
-        sources.append(str(REFERENCE))
-    sources += [f"tools/rhino_oracle/fixtures/{fixture}.json" for fixture in FIXTURES]
+        sources.append(str(reference_path))
+    sources += [f"tools/rhino_oracle/fixtures/{fixture}.json" for fixture in fixtures]
     result = dict(native_smlib=True, cases=len(request["operations"]),
-                  reference="portable producer" if args.portable_baseline else str(REFERENCE),
+                  reference="portable producer" if args.portable_baseline else str(reference_path),
                   reference_engine=reference["engine"],
                   scope=("Native and portable producers on the same fixtures; this does not qualify Rhino parity."
                          if args.portable_baseline else

@@ -1334,17 +1334,40 @@ pub fn insert_curve_knot(
     parameter: f64,
     target: usize,
 ) -> Result<NurbsCurve, Error> {
+    Ok(source.restore_knot_insertion_topology(
+        refine_curve_payload(source, parameter, target)?,
+        parameter,
+        target,
+    )?)
+}
+
+/// Modeling preparation retains the complete outer padding; the InsertKnot
+/// command's OpenNURBS outer-knot convention is applied only by its public edit.
+pub(super) fn clamp_curve_endpoint(
+    source: &NurbsCurve,
+    at_start: bool,
+) -> Result<NurbsCurve, Error> {
+    let domain = source.domain();
+    let parameter = if at_start {
+        *domain.start()
+    } else {
+        *domain.end()
+    };
+    refine_curve_payload(source, parameter, source.degree() + 1)
+}
+
+fn refine_curve_payload(
+    source: &NurbsCurve,
+    parameter: f64,
+    target: usize,
+) -> Result<NurbsCurve, Error> {
     let input = NurbsInput::curve(source);
     let view = input.view();
     let mut pointer = std::ptr::null_mut();
     call(|error, capacity| unsafe {
         vb_nurbs_insert_knot(&view, 0, parameter, target, &mut pointer, error, capacity)
     })?;
-    Ok(source.restore_knot_insertion_topology(
-        brep::curve_from_native(pointer)?,
-        parameter,
-        target,
-    )?)
+    brep::curve_from_native(pointer)
 }
 
 pub fn insert_surface_knot(

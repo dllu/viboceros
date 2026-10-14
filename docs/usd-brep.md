@@ -96,6 +96,9 @@ refinement and affine Greville interpolation around shared continuity policy.
 [Extend and ExtendSrf extrapolation](smlib-extension.md) uses the native exact
 parameter-extension producer and checked extraction around shared distance,
 natural-style and joining policies.
+[Boundary-target Extend](smlib-boundary-extension.md) reuses those producers
+through nearest-hit search, exact hit extraction and joined-source preparation,
+with independent checks on both loci at candidate intersections.
 
 ## Reproduce the native trial
 

@@ -4,22 +4,6 @@
   "reference": "portable producer",
   "reference_engine": "viboceros",
   "scope": "Native and portable producers on the same fixtures; this does not qualify Rhino parity.",
-  "source_sha256": {
-    "crates/viboceros-geometry/src/nurbs.rs": "de25449647f60f4b310983f17dfb08e17810fd0127eccd66e13496e69049f55a",
-    "crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "15b96c1ccd82b0e146fa1f85c779dc3c7df1b1eb8818506f85f9511433409a98",
-    "crates/viboceros-smlib/src/native/curve_extension.rs": "3db231cadd07725f95899f66c8e5dd28d0c475fb9866ea2ada92765d4e6994ec",
-    "crates/viboceros-command/src/extension_backend.rs": "4510e2231c8ecde50b4e4205047a3ccd6855b9cc2b919e36076477a381eb448b",
-    "crates/viboceros-oracle/src/extension_backend.rs": "e9ea6228e69616666ccc4359109284c5c4e23f4f67751dfc201b794a2c59cefd",
-    "tools/numerics/compare_native_extensions.py": "99a528b94ccaa6cc86027a1f09dbbf74afe203eab47a5ca128a195316a9a9080",
-    "tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
-    "tools/rhino_oracle/fixtures/curve_extend.json": "08408f77b211e7a6144abcd7442f2c421d8aaa2364fc994b14f9473708a51191",
-    "tools/rhino_oracle/fixtures/curve_extend_length.json": "34480393ee8b34847bacaf20818cf504a899b6fb03722e54866ef23f10cecfd0",
-    "tools/rhino_oracle/fixtures/surface_extend.json": "04d837472df4107a2a145afd0fcf9ac6c07afa26e1d30979fe2690688fc16345",
-    "tools/rhino_oracle/fixtures/surface_extend_length.json": "3d9437a3f0d18568c5fdf94cda8498ba7e9ec041e336f49f951c9746f1b5d4e7",
-    "tools/rhino_oracle/fixtures/curve_extend_command.json": "6372c3378bb6d30c2d42b229e6a5721c2c6d25889ed0c4f360f49b63d7bddc08",
-    "tools/rhino_oracle/fixtures/curve_extend_arc_command.json": "7e9ba72dffc8be692976d77ecedeab4f2d65305de36b5ca7304db73e7caa9bcd"
-  },
   "passed": true,
   "records": [
     {
@@ -10410,5 +10394,21 @@
         "elapsed_ns": 192
       }
     ]
+  },
+  "source_git_sha256": {
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-geometry/src/nurbs.rs": "de25449647f60f4b310983f17dfb08e17810fd0127eccd66e13496e69049f55a",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-geometry/src/nurbs_surface.rs": "28408170d1b5433c6cc821cf85d78aac797ec3901a88d9b7c69fb4ddb175d7c0",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-smlib/native/knot_refinement.cpp": "15b96c1ccd82b0e146fa1f85c779dc3c7df1b1eb8818506f85f9511433409a98",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-smlib/src/native/curve_extension.rs": "3db231cadd07725f95899f66c8e5dd28d0c475fb9866ea2ada92765d4e6994ec",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-command/src/extension_backend.rs": "4510e2231c8ecde50b4e4205047a3ccd6855b9cc2b919e36076477a381eb448b",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:crates/viboceros-oracle/src/extension_backend.rs": "e9ea6228e69616666ccc4359109284c5c4e23f4f67751dfc201b794a2c59cefd",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/numerics/compare_native_extensions.py": "99a528b94ccaa6cc86027a1f09dbbf74afe203eab47a5ca128a195316a9a9080",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/curve_extend.json": "08408f77b211e7a6144abcd7442f2c421d8aaa2364fc994b14f9473708a51191",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/curve_extend_length.json": "34480393ee8b34847bacaf20818cf504a899b6fb03722e54866ef23f10cecfd0",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/surface_extend.json": "04d837472df4107a2a145afd0fcf9ac6c07afa26e1d30979fe2690688fc16345",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/surface_extend_length.json": "3d9437a3f0d18568c5fdf94cda8498ba7e9ec041e336f49f951c9746f1b5d4e7",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/curve_extend_command.json": "6372c3378bb6d30c2d42b229e6a5721c2c6d25889ed0c4f360f49b63d7bddc08",
+    "1a4e80792833edf691fef77600b2a80e69f6636a:tools/rhino_oracle/fixtures/curve_extend_arc_command.json": "7e9ba72dffc8be692976d77ecedeab4f2d65305de36b5ca7304db73e7caa9bcd"
   }
 }

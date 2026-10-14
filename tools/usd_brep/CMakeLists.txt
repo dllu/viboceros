@@ -70,6 +70,23 @@ if(VIBOCEROS_EXTENSION_BREAK_PATCH)
   list(APPEND KERNEL_SOURCES "${EXTEND_PATCHED}")
 endif()
 
+option(VIBOCEROS_KNOT_REMOVAL_BOUND_PATCH "Qualify successful conservative knot-removal bounds" OFF)
+if(VIBOCEROS_KNOT_REMOVAL_BOUND_PATCH)
+  find_program(PATCH_EXECUTABLE patch REQUIRED)
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
+set(REMOVE_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/NL_CrvTool.cpp")
+set(REMOVE_PATCH "${CMAKE_CURRENT_LIST_DIR}/../../third_party/patches/usd-brep-knot-removal-bound-error.patch")
+set(REMOVE_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/NL_CrvTool.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${REMOVE_SOURCE}" "${REMOVE_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch -o "${REMOVE_PATCHED}" "${REMOVE_SOURCE}" "${REMOVE_PATCH}"
+                RESULT_VARIABLE REMOVE_PATCH_STATUS)
+if(NOT REMOVE_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep knot-removal bound patch failed; review the pinned source")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${REMOVE_SOURCE}")
+list(APPEND KERNEL_SOURCES "${REMOVE_PATCHED}")
+endif()
+
 add_library(SMLib SHARED ${KERNEL_SOURCES})
 target_include_directories(SMLib PUBLIC "${USD_BREP_ROOT}/source/SMLib/inc")
 target_link_libraries(SMLib PRIVATE TBB::tbb TBB::tbbmalloc)
@@ -113,6 +130,20 @@ target_link_libraries(viboceros_usd_brep_surface_blend_probe PRIVATE SM_API)
 add_executable(viboceros_usd_brep_surface_blend_curved_probe surface_blend_curved_probe.cpp)
 target_link_libraries(viboceros_usd_brep_surface_blend_curved_probe PRIVATE SM_API)
 enable_testing()
+add_executable(viboceros_usd_brep_extension_growth_probe extension_growth_probe.cpp)
+target_link_libraries(viboceros_usd_brep_extension_growth_probe PRIVATE SMLib)
+set(VIBOCEROS_NATIVE_BRIDGE "${CMAKE_CURRENT_LIST_DIR}/../../crates/viboceros-smlib/native")
+add_library(viboceros_extension_adapter_trial STATIC
+  "${VIBOCEROS_NATIVE_BRIDGE}/bridge.cpp"
+  "${VIBOCEROS_NATIVE_BRIDGE}/basis_preservation.cpp"
+  "${VIBOCEROS_NATIVE_BRIDGE}/brep_export.cpp"
+  "${VIBOCEROS_NATIVE_BRIDGE}/brep_import.cpp"
+  "${VIBOCEROS_NATIVE_BRIDGE}/boundary_validation.cpp"
+  "${VIBOCEROS_NATIVE_BRIDGE}/knot_refinement.cpp")
+target_include_directories(viboceros_extension_adapter_trial PUBLIC "${VIBOCEROS_NATIVE_BRIDGE}")
+target_link_libraries(viboceros_extension_adapter_trial PUBLIC SM_API)
+add_executable(viboceros_usd_brep_extension_adapter_probe extension_adapter_probe.cpp)
+target_link_libraries(viboceros_usd_brep_extension_adapter_probe PRIVATE viboceros_extension_adapter_trial)
 add_executable(viboceros_usd_brep_extension_probe extension_probe.cpp)
 target_link_libraries(viboceros_usd_brep_extension_probe PRIVATE SMLib)
 if(VIBOCEROS_EXTENSION_BREAK_PATCH)

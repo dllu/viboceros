@@ -91,7 +91,8 @@ python3 tools/usd_brep/compare_curve_extension_producer.py \
 Build sanitizer variants with
 `-DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer"` and pass their
 executables as `--asan-before` and `--asan-after` to the producer comparison.
-Boundary-target `Extend`, Connect continuation, circular/linear style geometry
+[Boundary-target Extend](smlib-boundary-extension.md) now also uses the native
+producers with independently verified hit locations. Connect continuation, circular/linear style geometry
 and negative `ExtendSrf` shrinking retain their current shared producers.
 Arbitrary conditioning, rational poles and performance against native Rhino
 remain further qualification work.

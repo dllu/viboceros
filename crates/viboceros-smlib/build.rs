@@ -1,4 +1,7 @@
 fn main() {
+    println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-knot-removal-bound-error.patch"
+    );
     #[cfg(feature = "native")]
     build_native();
 }

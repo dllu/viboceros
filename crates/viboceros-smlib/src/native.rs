@@ -11,7 +11,11 @@ use viboceros_geometry::{
 mod brep;
 mod construction;
 
+mod boundary_extension;
 mod curve_blend;
+pub use boundary_extension::{
+    extend_curve_to_boundaries, join_curve_to_boundaries, separate_curve_extensions_to_boundaries,
+};
 mod curve_extension;
 pub use curve_extension::{
     extend_curve, extend_curve_by_length, extend_curve_naturally_by_length, extend_surface,

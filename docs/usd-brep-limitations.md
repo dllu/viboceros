@@ -8,6 +8,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Knot removal reports a handled extremum-search failure as fatal.**
+  `N_CrvRemoveKnot` explicitly substitutes the conservative bound one when
+  `N_BasisFindGlobalMax` fails, then leaves `error` set while returning a valid
+  curve. Distant polynomial extensions consequently report convergence or
+  parameter errors. The [generated-source patch](../third_party/patches/usd-brep-knot-removal-bound-error.patch)
+  clears the handled status in all three fallback sites, retaining the same
+  bound, removal tolerance and acceptance criterion. The
+  [qualification](smlib-boundary-extension.md) retains failing baseline results,
+  16 corrected direct cases and 30 real C ABI cases, including instrumented
+  native libraries and adapter code under AddressSanitizer.
 - **End-span extension underallocates arrays at full-order interior breaks.**
   Both `N_CrvExtendByParamDist` and `N_CrvExtendByDist` size the output with
   `m + 2*p - mult`, allowing multiplicity `p+1` to subtract a nonexistent

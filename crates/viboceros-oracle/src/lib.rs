@@ -9875,21 +9875,26 @@ fn curve_extend_boundary_command(
         CurveCommandExtensionStyle::Line => CurveExtensionStyle::Line,
         CurveCommandExtensionStyle::Smooth => CurveExtensionStyle::Smooth,
     };
-    let extend = || -> Result<Vec<NurbsCurve>, GeometryError> {
+    let extend = || -> Result<Vec<NurbsCurve>, CommandError> {
         Ok(match join {
-            CurveCommandExtensionJoin::Merge => vec![source.try_merged_to_boundaries(
+            CurveCommandExtensionJoin::Merge => vec![extension_backend::curve_boundary(
+                &source,
                 side.geometry(),
                 geometry_style,
                 &boundaries,
                 tolerance,
+                false,
             )?],
-            CurveCommandExtensionJoin::Yes => vec![source.try_joined_to_boundaries(
+            CurveCommandExtensionJoin::Yes => vec![extension_backend::curve_boundary(
+                &source,
                 side.geometry(),
                 geometry_style,
                 &boundaries,
                 tolerance,
+                true,
             )?],
-            CurveCommandExtensionJoin::No => source.try_separate_extensions_to_boundaries(
+            CurveCommandExtensionJoin::No => extension_backend::curve_boundary_pieces(
+                &source,
                 side.geometry(),
                 geometry_style,
                 &boundaries,
@@ -9963,7 +9968,7 @@ fn curve_extend_boundary_command(
         "command_succeeded": true,
         "objects": records.into_iter().map(|(_, _, value)| value).collect::<Vec<_>>(),
     });
-    let (_, elapsed_ns) = measure(iterations, || {
+    let (_, elapsed_ns) = measure_probe(iterations, || {
         black_box(extend()).map(|curves| curves.len())
     })?;
     Ok((value, elapsed_ns))
