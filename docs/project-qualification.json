@@ -41,13 +41,10 @@
     "https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/Methods_T_Rhino_Geometry_Curve.htm"
   ],
   "source_sha256": {
-    "crates/viboceros-smlib/src/native/surface_intersections.rs": "f633598897f6ebc62dacc00e54564d243a44dc933d850e2e004893692db3af01",
     "crates/viboceros-geometry/src/nurbs.rs": "5b29a91339332eebcb35a46c651dea48b7ea3f631be4ff31b378eccb147d9374",
     "tools/rhino_oracle/test_project.py": "751a811a225692860b60deee1c4d6494cd79b3688d527c01c7bbadb13235dfb7",
     "tools/rhino_oracle/fixtures/project_curve_surface.json": "903dda36dd3288d4b3332d2ea8aee460325dedd0a01f820fc809e43582a7abfe",
     "tools/rhino_oracle/observations/project_curve_surface_viboceros_native.json": "d338a5ff11b9c00203ed3a008133defe0eb98144ead97c6d426f27cb9fd42a1b",
-    "crates/viboceros-smlib/src/lib.rs": "3c7fa8dd8d944799b6eb94f842ab01eee66b02e6349ae927730f037efef0034b",
-    "crates/viboceros-smlib/src/native.rs": "109ec5d8f59ccbbf047123941eb86fe52ad9d8df9b4ff9bb94d75a274cef5483",
     "src/app/apply_curves.rs": "449a4f30e98e5a48bed8f7a37e75b3575762b3cc80f0f516167be578799cc9f0",
     "src/app/boolean_solids.rs": "694f39791209c8d9ae1a2c9cc3517be9ed80eb1dc1a28a0b623c0829dc85ea30"
   },
@@ -62,6 +59,9 @@
     "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-oracle/src/lib.rs": "f079fb5198bccfa05decd35efd37b126d0684e99def5cc1b2a65405a70c332be",
     "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:src/app/intersect_two_sets.rs": "8ec91322f7cc2128cb5563085c1c1323c9a89d89eafcf72c65114a5c172f3eb9",
     "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app.rs": "dc7aa18b7aa9988279c60f47935b8700c2ec39fa2ba1b49feacf6f6aecec742e",
-    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:crates/viboceros-command/src/lib.rs": "488e0e8b3fdf0b1fdc1b4dc652704e4c7617fa50d755b4338d542d4cbc030764"
+    "59a3e1cc8ca0e23376317b2b02768f8569a63b52:crates/viboceros-command/src/lib.rs": "488e0e8b3fdf0b1fdc1b4dc652704e4c7617fa50d755b4338d542d4cbc030764",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/native/surface_intersections.rs": "f633598897f6ebc62dacc00e54564d243a44dc933d850e2e004893692db3af01",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/lib.rs": "3c7fa8dd8d944799b6eb94f842ab01eee66b02e6349ae927730f037efef0034b",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/src/native.rs": "109ec5d8f59ccbbf047123941eb86fe52ad9d8df9b4ff9bb94d75a274cef5483"
   }
 }

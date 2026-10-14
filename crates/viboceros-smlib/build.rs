@@ -22,6 +22,9 @@ fn build_native() {
         "USD BRep source is missing"
     );
     println!("cargo:rerun-if-changed=native");
+    println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-surface-drop-start-normal.patch"
+    );
     for patch in [
         "usd-brep-curve-fillet-sides.patch",
         "usd-brep-curve-fillet-seed.patch",

@@ -8,6 +8,17 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Off-surface normal drops can lose boundary-crossing intervals.**
+  `SmSurfaceDropCurve::FindBoundaryStartPoints` used intersection seeds at two
+  interval-start queries even when the input was marked off the surface. A line
+  above a plane consequently returned success with no curves at tight tolerances.
+  The [generated-source patch](../third_party/patches/usd-brep-surface-drop-start-normal.patch)
+  uses normal seeds for off-surface inputs and retains intersection seeds for
+  on-surface inputs. Three crossing cases recover their expected intervals;
+  the other nine direct recipes remain unchanged. See the
+  [surface pull foundation](smlib-surface-pull.md) for baseline evidence, image
+  certification and outstanding branch/seam qualification.
+
 - **Knot removal reports a handled extremum-search failure as fatal.**
   `N_CrvRemoveKnot` explicitly substitutes the conservative bound one when
   `N_BasisFindGlobalMax` fails, then leaves `error` set while returning a valid

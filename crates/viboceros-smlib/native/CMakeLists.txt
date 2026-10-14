@@ -96,6 +96,19 @@ endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${CURVE_FILLET_PATCHED}")
 list(APPEND KERNEL_SOURCES "${CURVE_FILLET_SEEDED}")
 
+# Off-surface normal drops must seed with normal solutions, including when
+# a source interval starts above a finite surface boundary.
+set(DROP_SOURCE "${USD_BREP_ROOT}/source/SMLib/src/SmSurfaceDropCurve.cpp")
+set(DROP_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-surface-drop-start-normal.patch")
+set(DROP_PATCHED "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/SmSurfaceDropCurve.cpp")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${DROP_SOURCE}" "${DROP_PATCH}")
+execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${DROP_PATCHED}" "${DROP_SOURCE}" "${DROP_PATCH}" RESULT_VARIABLE DROP_PATCH_STATUS)
+if(NOT DROP_PATCH_STATUS EQUAL 0)
+    message(FATAL_ERROR "usd-brep surface normal-drop seed patch failed; review the pinned source")
+endif()
+list(REMOVE_ITEM KERNEL_SOURCES "${DROP_SOURCE}")
+list(APPEND KERNEL_SOURCES "${DROP_PATCHED}")
+
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib BEFORE PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
 target_compile_definitions(SMLib PUBLIC VIBOCEROS_CURVE_INTERSECTION_DISTANCE_PATCH=1)
@@ -118,3 +131,11 @@ add_executable(viboceros_smlib_surface_blend_curved_probe "${CMAKE_CURRENT_SOURC
 target_link_libraries(viboceros_smlib_surface_blend_curved_probe PRIVATE SM_API)
 target_compile_options(viboceros_smlib_surface_blend_curved_probe PRIVATE -Wall -Wextra -Werror)
 install(TARGETS viboceros_smlib SM_API SMLib ARCHIVE DESTINATION lib)
+# Reproduction targets are opt-in. The baseline object overrides the matching
+# static archive member, isolating this repair while keeping other fixes equal.
+add_executable(viboceros_smlib_surface_pull_probe EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_pull_probe.cpp")
+target_link_libraries(viboceros_smlib_surface_pull_probe PRIVATE SM_API)
+target_compile_options(viboceros_smlib_surface_pull_probe PRIVATE -Wall -Wextra -Werror)
+add_executable(viboceros_smlib_surface_pull_baseline EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/usd_brep/surface_pull_probe.cpp" "${DROP_SOURCE}")
+target_link_libraries(viboceros_smlib_surface_pull_baseline PRIVATE SM_API)
+target_compile_options(viboceros_smlib_surface_pull_baseline PRIVATE -Wno-write-strings)

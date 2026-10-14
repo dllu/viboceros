@@ -1195,6 +1195,47 @@ extern "C" int vb_surface_intersect(const VbNurbsData *first,const VbNurbsData *
         *out=result.release();
     });
 }
+// The high-level API fixes its fitting tolerance. Use the public surface
+// operation so both the normal-drop trace and lifted image honor the caller.
+extern "C" int vb_surface_pull(const VbCurve *curve,const VbNurbsData *surface,
+    double tolerance,VbSurfaceIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(curve && surface && out && std::isfinite(tolerance) && tolerance*0.125>0,
+                "Invalid surface pull input");
+        require(surface->degree[0]<=16 && surface->degree[1]<=16,"Surface pull degree limit");
+        std::unique_ptr<SmSurface> target(vb_import_query_surface(*surface));
+        struct OwnedSplines {
+            SmTArray<SmBSplineCurve*> values;
+            ~OwnedSplines() { for(ULONG i=0;i<values.GetSize();++i)delete values[i]; }
+        } uv;
+        const auto &context=*SmApiGetOrCreateContext();
+        double drop=0,gap=0;
+        const double approximation=tolerance*0.125;
+        check(target->DropAndTrimCurve(context,target->GetNaturalUVDomain(),
+            *curve->value,curve->value->GetNaturalInterval(),approximation,
+            drop,gap,uv.values,TRUE,FALSE),"pull curve along surface normals");
+        require(uv.values.GetSize()<=500000 && std::isfinite(drop) && drop>=0 &&
+                std::isfinite(gap) && gap>=0 && gap<=approximation,
+                "Invalid surface pull trace or normal deviation");
+        auto result=std::make_unique<VbSurfaceIntersections>();
+        for(ULONG i=0;i<uv.values.GetSize();++i) {
+            require(uv.values[i],"Missing surface pull UV curve");
+            SmBSplineCurve *lifted=nullptr;double deviation=0;
+            const auto status=target->LiftCurve(context,target->GetNaturalUVDomain(),
+                *uv.values[i],uv.values[i]->GetNaturalInterval(),approximation,deviation,lifted);
+            std::unique_ptr<SmBSplineCurve> owner(lifted);
+            check(status,"lift surface pull curve");
+            require(lifted && std::isfinite(deviation) && deviation>=0 && deviation<=approximation,
+                    "Invalid surface pull lift or deviation");
+            SurfaceIntersectionEntry entry{};
+            entry.curves[0].reset(vb_export_curve(*lifted));
+            entry.curves[1].reset(vb_export_curve(*uv.values[i]));
+            result->entries.push_back(std::move(entry));
+        }
+        *out=result.release();
+    });
+}
 extern "C" size_t vb_surface_intersections_count(const VbSurfaceIntersections *events) {
     std::lock_guard<std::mutex> lock(kernel_mutex);return events?events->entries.size():0;
 }

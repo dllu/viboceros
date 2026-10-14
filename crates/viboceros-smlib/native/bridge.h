@@ -114,6 +114,8 @@ int vb_curve_surface_intersections_copy(const VbCurveSurfaceIntersections *event
                                        VbCurveSurfaceIntersection *out, size_t count);
 void vb_curve_surface_intersections_free(VbCurveSurfaceIntersections *events);
 typedef struct VbSurfaceIntersections VbSurfaceIntersections;
+int vb_surface_pull(const VbCurve *curve, const VbNurbsData *surface, double tolerance,
+                    VbSurfaceIntersections **out, char *error, size_t capacity);
 int vb_surface_intersect(const VbNurbsData *first, const VbNurbsData *second,
                          double tolerance, double angle, VbSurfaceIntersections **out,
                          char *error, size_t capacity);

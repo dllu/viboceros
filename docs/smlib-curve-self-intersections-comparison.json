@@ -8,8 +8,6 @@
     "tools/usd_brep/qualify_curve_self_intersections.py": "3a7ca3a1d19ec540449af5679944e685c5ad72856085b1cb3d6328fb63fc50e5",
     "tools/usd_brep/self_intersection_adapter_probe.cpp": "a21a4757fe94bfcffcbc75b2a232d4a366dba0ba663f26a670d1ec23b1443952",
     "tools/usd_brep/self_intersection_range_probe.cpp": "fec46d302a01a469a36095942efbaee72469ab955a95a7ebede1a4672c8c3ae2",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "b62aecd84b666df3d7c7f8991270f6fe56afc82429c6a803208fcfa6c8ecc7c7",
-    "crates/viboceros-smlib/build.rs": "6f2e019eacc237cad02626e2b7445ab96291352ac1ea7bf9a4a92648560b1def",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
     "crates/viboceros-smlib/tests/curve_self_intersections.rs": "e1782b27ac2a2c2338a0d50653a580ac70e1c54709311de33fe4362a55b61d9f",
     "crates/viboceros-geometry/src/nurbs/intersection_backend.rs": "bf78fd136d04a54c7588e292dd9d43480567fc5eb4cbab2c2da7821835e08075",
@@ -11309,6 +11307,8 @@
     "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-smlib/native/bridge.h": "314e5627374699a76e16978b851e07c021d1e7bd1fcc7a472b7986cfa982ac0d",
     "3db642db91279c22d49d4f99265d5fe1cc0c18fc:crates/viboceros-smlib/src/native/working_curve.rs": "334ed2bd07b17255bf2c6f2fcddffc274cf913fbdebc529e9cdea4d40efb9615",
     "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-geometry/src/nurbs.rs": "46a148e5e39a7f545e1548fe661c886c19adddc4b0f7b4f5527408ecd1d2d748",
-    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-oracle/src/lib.rs": "61d0d87521a3b3b41ba685b0d89aa7d6bcacbb4b0c98d20b158a2bf6ced3b545"
+    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-oracle/src/lib.rs": "61d0d87521a3b3b41ba685b0d89aa7d6bcacbb4b0c98d20b158a2bf6ced3b545",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/native/CMakeLists.txt": "b62aecd84b666df3d7c7f8991270f6fe56afc82429c6a803208fcfa6c8ecc7c7",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/build.rs": "6f2e019eacc237cad02626e2b7445ab96291352ac1ea7bf9a4a92648560b1def"
   }
 }

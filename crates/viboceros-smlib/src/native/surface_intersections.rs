@@ -7,7 +7,7 @@ use viboceros_geometry::{
     surface_surface_intersection_events_with_operation,
 };
 #[repr(C)]
-struct NativeEvents {
+pub(super) struct NativeEvents {
     _private: [u8; 0],
 }
 unsafe extern "C" {
@@ -81,7 +81,7 @@ pub fn surface_face_intersection_events(
     })
 }
 
-fn uv_original(curve: NurbsCurve, source: &NurbsSurface) -> Result<NurbsCurve2, Error> {
+pub(super) fn uv_original(curve: NurbsCurve, source: &NurbsSurface) -> Result<NurbsCurve2, Error> {
     let u = source.domain_u();
     let v = source.domain_v();
     let points = curve
@@ -267,4 +267,19 @@ fn face_pair_events(
         }
         Err(error) => Err(error.into()),
     }
+}
+
+/// Own and decode spatial/UV pairs from a native operation using the shared
+/// snapshot carrier. Unclaimed snapshots are freed on every error path.
+pub(super) fn paired_curves(
+    pointer: *mut NativeEvents,
+) -> Result<Vec<(NurbsCurve, NurbsCurve)>, Error> {
+    let events = Events(NonNull::new(pointer).ok_or(Error::InvalidOutput)?);
+    let count = unsafe { vb_surface_intersections_count(events.0.as_ptr()) };
+    if count > 500_000 {
+        return Err(Error::InvalidOutput);
+    }
+    (0..count)
+        .map(|i| Ok((take(&events, i, 0)?, take(&events, i, 1)?)))
+        .collect()
 }

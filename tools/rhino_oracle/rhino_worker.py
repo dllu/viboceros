@@ -13322,6 +13322,37 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "pull_curve_surface":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        surface = brep = None
+        try:
+            surface = _nurbs_surface_from_definition(operation["surface"])
+            brep = surface.ToBrep()
+            if brep is None or brep.Faces.Count != 1:
+                raise ValueError("could not construct pull face")
+            def pull_curve_surface():
+                results = Rhino.Geometry.Curve.PullToBrepFace(source, brep.Faces[0], float(tolerance["absolute"]))
+                records = []
+                try:
+                    for result in results or []:
+                        parameters = result.DivideByCount(32, True)
+                        if parameters is None:
+                            raise ValueError("could not sample pulled curve")
+                        samples = [_xyz(result.PointAt(t)) for t in parameters]
+                        if result.IsClosed and len(samples) == 33:
+                            samples.pop()
+                        if tuple(samples[-1]) < tuple(samples[0]): samples.reverse()
+                        records.append(dict(samples=samples, length=float(result.GetLength()), closed=bool(result.IsClosed)))
+                    records.sort(key=lambda r: tuple(r['samples'][0]))
+                    return dict(curves=records)
+                finally:
+                    for result in results or []: result.Dispose()
+            return _measure(iterations, pull_curve_surface)
+        finally:
+            if brep is not None: brep.Dispose()
+            if surface is not None: surface.Dispose()
+            source.Dispose()
+
     if kind == "project_curve_surface":
         direction = _vector(operation["direction"])
         if not direction.Unitize():

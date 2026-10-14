@@ -94,6 +94,7 @@ mod edge_analysis;
 mod extract_surface;
 mod iplane;
 mod section_command;
+mod surface_pull;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
 mod curve_length_subcurve;
@@ -1565,6 +1566,11 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         direction: [f64; 3],
     },
+    PullCurveSurface {
+        id: String,
+        curve: NurbsCurveDefinition,
+        surface: NurbsSurfaceDefinition,
+    },
     ProjectCurveSurface {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2503,6 +2509,7 @@ impl Operation {
             | Self::SelfIntersectProbe { id, .. }
             | Self::ProjectCurveMesh { id, .. }
             | Self::ProjectPointMesh { id, .. }
+            | Self::PullCurveSurface { id, .. }
             | Self::ProjectCurveSurface { id, .. }
             | Self::ProjectCurvePlane { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
@@ -5663,6 +5670,9 @@ fn execute(
             direction,
             ..
         } => project::mesh_point(iterations, *point, vertices, faces, *direction, tolerance)?,
+        Operation::PullCurveSurface { curve, surface, .. } => {
+            surface_pull::run(iterations, curve, surface, tolerance)?
+        }
         Operation::ProjectCurveSurface {
             curve,
             surface,

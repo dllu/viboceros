@@ -8,8 +8,6 @@
     "tools/rhino_oracle/observations/native_curve_segment_commands.json": "0102bf592370b9c17af7cfc373d9d073c1f5d7a730db6d82668f1c9707d2eb8a",
     "tools/usd_brep/qualify_surface_trim_intersections.py": "74ea88f2516635b8e8d9ebaf96667203a884070344922fc6fd9ce29f00f9ea9a",
     "tools/usd_brep/surface_trim_adapter_probe.cpp": "ab0721fdc41528ef1f4e300bdfed11ad52aac511c215fd485af18a097c9a381c",
-    "crates/viboceros-smlib/native/bridge.cpp": "a2dce0763ac8f47a0a5d911ade6b0d5b1dcb6cd922eebf344254e25c8c0664c0",
-    "crates/viboceros-smlib/native/bridge.h": "0e9c8adfb8b489fc172454902dc493e964869a926f3dc2db83d79a39bdaebaa5",
     "crates/viboceros-smlib/native/brep_import.cpp": "d5b760d316f682f7065cc271167b136a83e143e4b40fbcd9abf2f2276479d0d0",
     "crates/viboceros-smlib/native/brep_data.h": "e5c095b805224a20d5f5c7933168f59d31950925f2e7fed0cc12159b8bfc60d6",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
@@ -189862,6 +189860,8 @@
     "2b0d305f91089141fed271245ec0b83fa0b159a1:crates/viboceros-geometry/src/intersection/surface_surface_backend/trim.rs": "90636c5d45d149fa486a3e571670527d0aa5e99f5e713912378d81e7072f39bb",
     "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-smlib/src/native/surface_intersections.rs": "b164b67b37c76fb5b656723a175a5d0d7bb2fbcd517343cb52fd998a863cd3a8",
     "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984",
-    "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-geometry/src/lib.rs": "5561212ddf704846f05b8a9cdb189e571cde8ce7ff51686f67936de9bb21669a"
+    "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-geometry/src/lib.rs": "5561212ddf704846f05b8a9cdb189e571cde8ce7ff51686f67936de9bb21669a",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/native/bridge.cpp": "a2dce0763ac8f47a0a5d911ade6b0d5b1dcb6cd922eebf344254e25c8c0664c0",
+    "fba37d76847c0679d8539644f0f571df6405ce53:crates/viboceros-smlib/native/bridge.h": "0e9c8adfb8b489fc172454902dc493e964869a926f3dc2db83d79a39bdaebaa5"
   }
 }

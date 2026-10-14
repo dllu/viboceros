@@ -965,6 +965,12 @@ and bypasses derivative integration and lookup construction for those spans.
 Endpoint-sign checks reject poles; direct geometric station sampling retains
 points beside heavily compressed native parameters.
 
+The [native surface pull producer](smlib-surface-pull.md) reuses usd-brep normal
+tracing and lifting with caller-controlled tolerances and shared whole-curve
+surface image certificates. A generated-source seed repair restores finite
+boundary crossings. The Pull command coordinator and broader target families
+remain pending.
+
 Directional `Project` reuses exact affine transforms for planar faces, shared
 curve/face clipping, and the existing usd-brep coupled surface intersector for
 curved targets. Its ruled source surface retains `C(u)+v*d` as a second source

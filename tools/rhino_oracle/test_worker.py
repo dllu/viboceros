@@ -11,6 +11,32 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_surface_pull_disposes_source_surface_face_and_results_on_failures(self):
+        for failure in (None, 'surface', 'brep', 'sdk', 'sampling'):
+            with self.subTest(failure=failure):
+                source=SimpleNamespace(Dispose=Mock())
+                brep=SimpleNamespace(Dispose=Mock(),Faces=SimpleNamespace(Count=1,__getitem__=lambda i:None))
+                class Faces:
+                    Count=1
+                    def __getitem__(self,index):return 'face'
+                brep.Faces=Faces()
+                surface=SimpleNamespace(Dispose=Mock(),ToBrep=Mock(return_value=None if failure=='brep' else brep))
+                results=[SimpleNamespace(Dispose=Mock(),DivideByCount=Mock(return_value=None if failure=='sampling' else [0.,1.]),PointAt=lambda t:SimpleNamespace(X=t,Y=0.,Z=0.),GetLength=lambda:1.,IsClosed=False)for _ in range(2)]
+                pull=Mock(side_effect=ValueError('sdk') if failure=='sdk' else [[results[0]],[results[1]]])
+                with patch.object(self.worker.Rhino,'Geometry',SimpleNamespace(Curve=SimpleNamespace(PullToBrepFace=pull)),create=True), \
+                     patch.object(self.worker,'_nurbs_curve_from_definition',return_value=source), \
+                     patch.object(self.worker,'_nurbs_surface_from_definition',return_value=surface,side_effect=ValueError('surface') if failure=='surface' else None):
+                    op=dict(op='pull_curve_surface',curve={},surface={})
+                    if failure:
+                        with self.assertRaises(ValueError):self.worker._execute(op,1,dict(absolute=1e-6))
+                    else:
+                        value,_=self.worker._execute(op,1,dict(absolute=1e-6));self.assertEqual(value['curves'][0]['samples'],[[0.,0.,0.],[1.,0.,0.]])
+                source.Dispose.assert_called_once()
+                self.assertEqual(surface.Dispose.call_count,int(failure!='surface'))
+                self.assertEqual(brep.Dispose.call_count,int(failure not in ('surface','brep')))
+                self.assertEqual(results[0].Dispose.call_count,int(failure in (None,'sampling')))
+                self.assertEqual(results[1].Dispose.call_count,int(failure is None))
+
     def test_infinite_plane_projection_disposes_source_and_duplicates_at_failure_boundaries(self):
         for failure in (None, 'duplicate', 'transform', 'record'):
             with self.subTest(failure=failure):
