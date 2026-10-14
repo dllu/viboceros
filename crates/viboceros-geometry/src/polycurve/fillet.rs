@@ -1,4 +1,5 @@
 use super::*;
+use crate::{CurveFilletContact, CurveFilletContactProducer, CurveFilletOperations};
 
 mod arc_arc;
 mod arc_line;
@@ -35,6 +36,25 @@ impl PolyCurve3 {
         tolerance: Tolerance,
         trim: &mut NurbsTrim<'_, E>,
     ) -> Result<Self, E> {
+        let mut contacts = |_: &CurveSegment3, _: &CurveSegment3, _, _| Ok(None);
+        self.try_fillet_corners_with_operations(
+            radius,
+            tolerance,
+            &mut CurveFilletOperations {
+                trim,
+                contacts: &mut contacts,
+            },
+        )
+    }
+
+    /// Preserve corner ordering and analytic leaves while delegating NURBS
+    /// contacts and exact extraction. Returned contacts are checked independently.
+    pub fn try_fillet_corners_with_operations<E: From<GeometryError>>(
+        &self,
+        radius: Real,
+        tolerance: Tolerance,
+        operations: &mut CurveFilletOperations<'_, E>,
+    ) -> Result<Self, E> {
         require_finite([radius], "fillet radius")?;
         if radius <= tolerance.absolute() {
             return Err(GeometryError::Degenerate {
@@ -42,26 +62,41 @@ impl PolyCurve3 {
             }
             .into());
         }
-        if let Some(split) = nurbs_internal::split_sharp_knots(self, tolerance, trim)? {
-            return split.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+        if let Some(split) = nurbs_internal::split_sharp_knots(self, tolerance, operations.trim)? {
+            return split.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
         if let Some(rounded) = arc_line::resolve_arc_line_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+            return rounded.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
         if let Some(rounded) = arc_arc::resolve_arc_arc_kinks(self, radius, tolerance)? {
-            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+            return rounded.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
-        if let Some(rounded) = nurbs_line::resolve_nurbs_line_kinks(self, radius, tolerance, trim)?
-        {
-            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+        if let Some(rounded) = nurbs_line::resolve_nurbs_line_kinks(
+            self,
+            radius,
+            tolerance,
+            operations.trim,
+            operations.contacts,
+        )? {
+            return rounded.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
-        if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(self, radius, tolerance, trim)? {
-            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+        if let Some(rounded) = nurbs_arc::resolve_nurbs_arc_kinks(
+            self,
+            radius,
+            tolerance,
+            operations.trim,
+            operations.contacts,
+        )? {
+            return rounded.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
-        if let Some(rounded) =
-            nurbs_nurbs::resolve_nurbs_nurbs_kinks(self, radius, tolerance, trim)?
-        {
-            return rounded.try_fillet_corners_with_nurbs(radius, tolerance, trim);
+        if let Some(rounded) = nurbs_nurbs::resolve_nurbs_nurbs_kinks(
+            self,
+            radius,
+            tolerance,
+            operations.trim,
+            operations.contacts,
+        )? {
+            return rounded.try_fillet_corners_with_operations(radius, tolerance, operations);
         }
         let mut parts = Vec::with_capacity(self.segments.len());
         for segment in &self.segments {
@@ -141,6 +176,74 @@ impl PolyCurve3 {
         append_preserved_or_rounded_run(&mut result, run, originals, radius, tolerance)?;
         Self::try_new(result).map_err(E::from)
     }
+}
+
+fn prepare_contacts<E: From<GeometryError>>(
+    before: &CurveSegment3,
+    after: &CurveSegment3,
+    contact: CurveFilletContact,
+    radius: Real,
+    tolerance: Tolerance,
+    trim: &mut NurbsTrim<'_, E>,
+) -> Result<(CurveSegment3, crate::CircularArc3, CurveSegment3), E> {
+    let [a, b] = contact.parameters;
+    if !(a > *before.domain().start()
+        && a < *before.domain().end()
+        && b > *after.domain().start()
+        && b < *after.domain().end())
+        || (contact.arc.radius() - radius).abs() > tolerance.absolute()
+    {
+        return Err(unsupported_curved_corner().into());
+    }
+    let first = before
+        .as_ref()
+        .evaluate_with_tangent_on_side(a, ParameterSide::Left)?;
+    let second = after
+        .as_ref()
+        .evaluate_with_tangent_on_side(b, ParameterSide::Right)?;
+    let arc = crate::CurveRef::Arc(&contact.arc);
+    let start = arc.evaluate_with_tangent(*arc.domain().start())?;
+    let end = arc.evaluate_with_tangent(*arc.domain().end())?;
+    if first.point().distance_to(start.point())? > tolerance.absolute()
+        || second.point().distance_to(end.point())? > tolerance.absolute()
+        || tangent_angle(first.tangent().as_vector(), start.tangent().as_vector())?
+            > tolerance.angular()
+        || tangent_angle(second.tangent().as_vector(), end.tangent().as_vector())?
+            > tolerance.angular()
+    {
+        return Err(unsupported_curved_corner().into());
+    }
+    let mut extract = |source: &CurveSegment3, interval| -> Result<CurveSegment3, E> {
+        Ok(match source {
+            CurveSegment3::NurbsCurve(curve) => CurveSegment3::NurbsCurve(trim(curve, interval)?),
+            _ => source.try_trimmed(interval)?,
+        })
+    };
+    let retained_first = extract(before, *before.domain().start()..=a)?;
+    let retained_second = extract(after, b..=*after.domain().end())?;
+    let first_actual = retained_first
+        .as_ref()
+        .evaluate_with_tangent_on_side(*retained_first.domain().end(), ParameterSide::Left)?;
+    let second_actual = retained_second
+        .as_ref()
+        .evaluate_with_tangent_on_side(*retained_second.domain().start(), ParameterSide::Right)?;
+    // Extracted control coordinates must also meet the contract. At a large
+    // origin-to-feature ratio, rounding can lose angular accuracy even when
+    // contacts evaluated on the original curves are accurate.
+    if first_actual.point().distance_to(start.point())? > tolerance.absolute()
+        || second_actual.point().distance_to(end.point())? > tolerance.absolute()
+        || tangent_angle(
+            first_actual.tangent().as_vector(),
+            start.tangent().as_vector(),
+        )? > tolerance.angular()
+        || tangent_angle(
+            second_actual.tangent().as_vector(),
+            end.tangent().as_vector(),
+        )? > tolerance.angular()
+    {
+        return Err(unsupported_curved_corner().into());
+    }
+    Ok((retained_first, contact.arc, retained_second))
 }
 
 fn fillet_closed_mixed_sharp_seam(

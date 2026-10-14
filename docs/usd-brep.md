@@ -48,6 +48,9 @@ and retained chamfer NURBS pieces.
 [Fillet contact extraction](smlib-fillet-contacts.md) also delegates retained
 NURBS intervals and FilletCorners internal sharp-knot preparation to the native
 segment producer, with shared contact selection and circular arcs.
+[Native fillet contacts](smlib-native-fillet-contacts.md) now reuse the curve
+filleting executive in a radius-scaled frame with explicit junction seeds,
+checked source/retained tangency and unsnapped contact parameters.
 [Directed segments and parameter splits](smlib-directed-segments.md) reuse it
 with shared curve reversal, closed-seam and composite-leaf policies.
 [Numeric-length and midpoint SubCrv](smlib-length-segments.md) also use the shared

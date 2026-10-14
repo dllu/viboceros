@@ -1,17 +1,15 @@
 //! Joined, trimmed fillets between selected ends of two open curves.
 
 use crate::{
-    Curve3, CurveArcExtensionStyle, CurveExtensionOperations, CurveOtherExtensionStyle,
-    CurveSegment3, GeometryError, NurbsCurve, Point3, PolyCurve3, Real, Tolerance,
+    Curve3, CurveArcExtensionStyle, CurveExtensionOperations, CurveFilletOperations,
+    CurveFilletPairOperations, CurveOtherExtensionStyle, CurveSegment3, GeometryError, NurbsCurve,
+    Point3, PolyCurve3, Real, Tolerance,
     curve_connect_pair::connected_ends_with_operations,
     curve_pair_support::{
         curve_from_segments, meeting_lines, oriented, original_direction, selected_end, unsupported,
     },
     nurbs::with_portable_extension_operations,
 };
-
-type NurbsTrim<'a, E> =
-    dyn FnMut(&NurbsCurve, std::ops::RangeInclusive<Real>) -> Result<NurbsCurve, E> + 'a;
 
 /// Styles used to extend nonmeeting curve ends before filleting.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -60,6 +58,27 @@ pub fn try_fillet_curves_joined_with_operations<E: From<GeometryError>>(
     tolerance: Tolerance,
     operations: &mut CurveExtensionOperations<'_, E>,
 ) -> Result<PolyCurve3, E> {
+    let mut contacts = |_: &CurveSegment3, _: &CurveSegment3, _, _| Ok(None);
+    let mut producers = CurveFilletPairOperations::new(operations, &mut contacts);
+    try_fillet_curves_joined_with_producers(
+        first,
+        second,
+        radius,
+        styles,
+        tolerance,
+        &mut producers,
+    )
+}
+
+/// Shared connection and fillet policy with delegated contact and edit producers.
+pub fn try_fillet_curves_joined_with_producers<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    radius: Real,
+    styles: CurveFilletExtensionStyles,
+    tolerance: Tolerance,
+    operations: &mut CurveFilletPairOperations<'_, E>,
+) -> Result<PolyCurve3, E> {
     Ok(fillet_with_operations(first, second, radius, styles, tolerance, operations)?.0)
 }
 
@@ -89,6 +108,29 @@ pub fn try_fillet_curves_parts_with_operations<E: From<GeometryError>>(
     tolerance: Tolerance,
     operations: &mut CurveExtensionOperations<'_, E>,
 ) -> Result<Vec<Curve3>, E> {
+    let mut contacts = |_: &CurveSegment3, _: &CurveSegment3, _, _| Ok(None);
+    let mut producers = CurveFilletPairOperations::new(operations, &mut contacts);
+    try_fillet_curves_parts_with_producers(
+        first,
+        second,
+        radius,
+        trim,
+        styles,
+        tolerance,
+        &mut producers,
+    )
+}
+
+/// Shared connection and fillet policy with delegated contact and edit producers.
+pub fn try_fillet_curves_parts_with_producers<E: From<GeometryError>>(
+    first: (&Curve3, Point3),
+    second: (&Curve3, Point3),
+    radius: Real,
+    trim: bool,
+    styles: CurveFilletExtensionStyles,
+    tolerance: Tolerance,
+    operations: &mut CurveFilletPairOperations<'_, E>,
+) -> Result<Vec<Curve3>, E> {
     let reverse_first = !selected_end(first.0, first.1, tolerance)?;
     let reverse_second = selected_end(second.0, second.1, tolerance)?;
     let (joined, first_count) =
@@ -111,7 +153,7 @@ fn fillet_with_operations<E: From<GeometryError>>(
     radius: Real,
     styles: CurveFilletExtensionStyles,
     tolerance: Tolerance,
-    operations: &mut CurveExtensionOperations<'_, E>,
+    operations: &mut CurveFilletPairOperations<'_, E>,
 ) -> Result<(PolyCurve3, usize), E> {
     let mut make = |arc_style| {
         let (connected, picks) = connected_ends_with_operations(
@@ -120,14 +162,17 @@ fn fillet_with_operations<E: From<GeometryError>>(
             arc_style,
             styles.other,
             tolerance,
-            operations,
+            &mut operations.extensions,
         )?;
         let joined = fillet_joined_with_nurbs(
             (&connected[0], picks[0]),
             (&connected[1], picks[1]),
             radius,
             tolerance,
-            operations.trim,
+            &mut CurveFilletOperations {
+                trim: &mut *operations.extensions.trim,
+                contacts: &mut *operations.contacts,
+            },
         )?;
         Ok::<_, E>((joined, connected[0].to_polycurve()?.segments().len()))
     };
@@ -207,7 +252,10 @@ pub fn try_fillet_curves_joined(
         (second, second_pick),
         radius,
         tolerance,
-        &mut NurbsCurve::try_trimmed,
+        &mut CurveFilletOperations {
+            trim: &mut NurbsCurve::try_trimmed,
+            contacts: &mut |_: &CurveSegment3, _: &CurveSegment3, _, _| Ok(None),
+        },
     )
 }
 
@@ -216,7 +264,7 @@ fn fillet_joined_with_nurbs<E: From<GeometryError>>(
     second: (&Curve3, Point3),
     radius: Real,
     tolerance: Tolerance,
-    trim: &mut NurbsTrim<'_, E>,
+    operations: &mut CurveFilletOperations<'_, E>,
 ) -> Result<PolyCurve3, E> {
     let (first, first_pick) = first;
     let (second, second_pick) = second;
@@ -263,7 +311,7 @@ fn fillet_joined_with_nurbs<E: From<GeometryError>>(
         segments.extend([first_terminal, second_terminal]);
     } else {
         let pair = PolyCurve3::try_new(vec![first_terminal, second_terminal])?;
-        let rounded = pair.try_fillet_corners_with_nurbs(radius, tolerance, trim)?;
+        let rounded = pair.try_fillet_corners_with_operations(radius, tolerance, operations)?;
         if rounded.segments().len() != 3 || !matches!(rounded.segments()[1], CurveSegment3::Arc(_))
         {
             return Err(unsupported().into());

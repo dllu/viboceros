@@ -1,5 +1,9 @@
 # Native NURBS fillet extraction
 
+[Native contact solving](smlib-native-fillet-contacts.md) builds on this
+extraction adapter. The records below retain the earlier implementation at
+commit `2cf12526` through immutable Git references.
+
 Linux `native-smlib` builds use the checked usd-brep segment producer for
 NURBS contact intervals in `Fillet` and `FilletCorners`. The shared contact
 solver retains its root selection, circular arcs and analytic leaf edits.
@@ -54,8 +58,8 @@ parameter charts. The repair restores the shifted-domain failures at scales
 `1` and `1e6`: six corrected cases pass. All three `1e-6` cases still return
 `SM_ERR_NULL_POINTER`; their full jobs are retained. AddressSanitizer checks
 the complete SMLib and SM_API on all nine corrected jobs, with only global
-context leak accounting disabled. This executive needs further scale,
-tolerance and branch qualification before replacing the shared contact solver.
+context leak accounting disabled. The later normalized native contact adapter
+addresses these scale failures with explicit seeds and checked contacts.
 Rational smooth Connect parity and whole-model performance also remain further
 work.
 

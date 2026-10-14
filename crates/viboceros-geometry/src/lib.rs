@@ -25,7 +25,12 @@ mod curve_connect_pair;
 mod curve_continuity;
 mod curve_edit;
 mod curve_evaluate;
+mod curve_fillet_operations;
 mod curve_fillet_pair;
+pub use curve_fillet_operations::{
+    CurveFilletContact, CurveFilletContactProducer, CurveFilletOperations,
+    CurveFilletPairOperations,
+};
 mod curve_fit;
 mod curve_frame;
 mod curve_join;
@@ -168,8 +173,9 @@ pub use curve_continuity::{CurveContinuityLevel, CurveContinuityReport, curve_en
 pub use curve_edit::{Curve3, CurveClosure};
 pub use curve_fillet_pair::{
     CurveFilletExtensionStyles, try_fillet_curves_joined, try_fillet_curves_joined_with_operations,
-    try_fillet_curves_joined_with_styles, try_fillet_curves_parts,
-    try_fillet_curves_parts_with_operations, try_fillet_curves_parts_with_styles,
+    try_fillet_curves_joined_with_producers, try_fillet_curves_joined_with_styles,
+    try_fillet_curves_parts, try_fillet_curves_parts_with_operations,
+    try_fillet_curves_parts_with_producers, try_fillet_curves_parts_with_styles,
 };
 pub use curve_fit::{
     CurveFitInterpolation, FixedInterpolationSystem, MAX_CURVE_FIT_CONTROL_POINTS,

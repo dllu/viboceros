@@ -34,26 +34,24 @@ pub(super) fn resolve_nurbs_nurbs_kinks<E: From<GeometryError>>(
     radius: Real,
     tolerance: Tolerance,
     trim: &mut NurbsTrim<'_, E>,
+    contacts: &mut CurveFilletContactProducer<'_, E>,
 ) -> Result<Option<PolyCurve3>, E> {
     let closed = source.is_closed()?;
     let mut segments = source.segments().to_vec();
     let mut changed = false;
     let mut index = 0;
     while index + 1 < segments.len() {
-        if let Some(solution) = fillet_pair(
+        if let Some((before, fillet, after)) = fillet_pair(
             &segments[index],
             &segments[index + 1],
             radius,
             tolerance,
             trim,
+            contacts,
         )? {
             segments.splice(
                 index..=index + 1,
-                [
-                    CurveSegment3::NurbsCurve(solution.first),
-                    CurveSegment3::Arc(solution.fillet),
-                    CurveSegment3::NurbsCurve(solution.second),
-                ],
+                [before, CurveSegment3::Arc(fillet), after],
             );
             changed = true;
             index += 2;
@@ -62,17 +60,18 @@ pub(super) fn resolve_nurbs_nurbs_kinks<E: From<GeometryError>>(
         }
     }
     if closed
-        && let Some(solution) = fillet_pair(
+        && let Some((before, fillet, after)) = fillet_pair(
             segments.last().unwrap(),
             &segments[0],
             radius,
             tolerance,
             trim,
+            contacts,
         )?
     {
-        segments[0] = CurveSegment3::NurbsCurve(solution.second);
-        *segments.last_mut().unwrap() = CurveSegment3::NurbsCurve(solution.first);
-        segments.insert(0, CurveSegment3::Arc(solution.fillet));
+        segments[0] = after;
+        *segments.last_mut().unwrap() = before;
+        segments.insert(0, CurveSegment3::Arc(fillet));
         changed = true;
     }
     if changed {
@@ -88,7 +87,8 @@ fn fillet_pair<E: From<GeometryError>>(
     radius: Real,
     tolerance: Tolerance,
     trim: &mut NurbsTrim<'_, E>,
-) -> Result<Option<NurbsNurbsSolution>, E> {
+    contacts: &mut CurveFilletContactProducer<'_, E>,
+) -> Result<Option<(CurveSegment3, CircularArc3, CurveSegment3)>, E> {
     let (CurveSegment3::NurbsCurve(first), CurveSegment3::NurbsCurve(second)) = (before, after)
     else {
         return Ok(None);
@@ -99,9 +99,17 @@ fn fillet_pair<E: From<GeometryError>>(
     {
         return Ok(None);
     }
-    Ok(Some(solve_nurbs_nurbs(
-        first, second, radius, tolerance, trim,
-    )?))
+    if let Some(contact) = contacts(before, after, radius, tolerance)? {
+        return Ok(Some(prepare_contacts(
+            before, after, contact, radius, tolerance, trim,
+        )?));
+    }
+    let solution = solve_nurbs_nurbs(first, second, radius, tolerance, trim)?;
+    Ok(Some((
+        CurveSegment3::NurbsCurve(solution.first),
+        solution.fillet,
+        CurveSegment3::NurbsCurve(solution.second),
+    )))
 }
 
 fn solve_nurbs_nurbs<E: From<GeometryError>>(

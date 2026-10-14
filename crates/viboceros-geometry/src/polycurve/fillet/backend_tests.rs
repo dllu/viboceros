@@ -119,3 +119,76 @@ fn smooth_unselected_straight_leaves_keep_original_classes_and_parameter_domains
         assert_eq!(result.segments().last(), source.segments().last());
     }
 }
+
+#[test]
+fn contact_failures_are_not_retried_and_wrong_parameters_loci_or_directions_are_rejected() {
+    let source = PolyCurve3::try_new(vec![
+        CurveSegment3::NurbsCurve(curve(
+            vec![p(0., 0.), p(2., 0.), p(2., 2.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )),
+        CurveSegment3::Line(
+            LineSegment::try_new(p(2., 2.), p(6., 2.), Tolerance::DEFAULT).unwrap(),
+        ),
+    ])
+    .unwrap();
+    let original = source.clone();
+    let mut contacts = |_: &CurveSegment3, _: &CurveSegment3, _, _| Err(Failure::Producer);
+    let mut trim = |_: &NurbsCurve, _| panic!("failed contacts must not extract any geometry");
+    assert_eq!(
+        source.try_fillet_corners_with_operations(
+            0.5,
+            Tolerance::DEFAULT,
+            &mut CurveFilletOperations {
+                trim: &mut trim,
+                contacts: &mut contacts
+            }
+        ),
+        Err(Failure::Producer)
+    );
+    let valid = source.try_fillet_corners(0.5, Tolerance::DEFAULT).unwrap();
+    let CurveSegment3::Arc(arc) = valid.segments()[1] else {
+        panic!("arc missing")
+    };
+    let a = *valid.segments()[0].domain().end();
+    let b = *valid.segments()[2].domain().start();
+    for kind in 0..4 {
+        let mut contacts = |_: &CurveSegment3, _: &CurveSegment3, _, _| {
+            Ok::<_, Failure>(Some(CurveFilletContact {
+                parameters: if kind == 0 {
+                    [Real::NAN, b]
+                } else if kind == 1 {
+                    [0., b]
+                } else {
+                    [a, b]
+                },
+                arc: if kind == 2 {
+                    arc.reversed(Tolerance::DEFAULT).unwrap()
+                } else if kind == 3 {
+                    arc.transformed_similarity(
+                        crate::AffineTransform3::from_translation(
+                            Vector3::try_new(1., 0., 0.).unwrap(),
+                        ),
+                        Tolerance::DEFAULT,
+                    )
+                    .unwrap()
+                    .unwrap()
+                } else {
+                    arc
+                },
+            }))
+        };
+        assert!(matches!(
+            source.try_fillet_corners_with_operations(
+                0.5,
+                Tolerance::DEFAULT,
+                &mut CurveFilletOperations {
+                    trim: &mut trim,
+                    contacts: &mut contacts
+                }
+            ),
+            Err(Failure::Geometry(_))
+        ));
+    }
+    assert_eq!(source, original);
+}

@@ -18,6 +18,7 @@ pub use boundary_extension::{
 };
 mod curve_connections;
 mod curve_extension;
+mod curve_fillet_contacts;
 pub use curve_connections::{
     chamfer_curves_joined, chamfer_curves_parts, connect_curves_joined, connect_curves_parts,
     fillet_corners, fillet_curves_joined, fillet_curves_parts,

@@ -1,0 +1,8 @@
+--- SmCurveFilletExecutive.h
++++ SmCurveFilletExecutive.h
+@@ -10,0 +11 @@
++#define VIBOCEROS_CURVE_FILLET_SEED_API 1
+@@ -81,0 +83,3 @@
++  // Explicit base-curve guesses, intersection tolerance and unsnapped contacts.
++  SmStatus DoFillet( SmBSplineCurve *& rpFilletCurve, double dGuess1,
++                    double dGuess2, double dTolerance, double *pContactParameters );

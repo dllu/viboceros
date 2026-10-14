@@ -3,7 +3,7 @@ use super::boundary_extension::with_native_operations;
 use super::*;
 use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle, CurveChamferExtensionStyles, CurveFilletExtensionStyles,
-    CurveOtherExtensionStyle, PolyCurve3,
+    CurveFilletOperations, CurveFilletPairOperations, CurveOtherExtensionStyle, PolyCurve3,
 };
 
 /// Shared corner selection and contact solve with native exact NURBS extraction.
@@ -13,7 +13,14 @@ pub fn fillet_corners(
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, Error> {
     with_native_operations(|operations| {
-        source.try_fillet_corners_with_nurbs(radius, tolerance, operations.trim)
+        source.try_fillet_corners_with_operations(
+            radius,
+            tolerance,
+            &mut CurveFilletOperations {
+                trim: operations.trim,
+                contacts: &mut super::curve_fillet_contacts::contacts,
+            },
+        )
     })
 }
 
@@ -64,8 +71,17 @@ pub fn fillet_curves_parts(
     tolerance: Tolerance,
 ) -> Result<Vec<Curve3>, Error> {
     with_native_operations(|operations| {
-        viboceros_geometry::try_fillet_curves_parts_with_operations(
-            first, second, radius, trim, styles, tolerance, operations,
+        viboceros_geometry::try_fillet_curves_parts_with_producers(
+            first,
+            second,
+            radius,
+            trim,
+            styles,
+            tolerance,
+            &mut CurveFilletPairOperations::new(
+                operations,
+                &mut super::curve_fillet_contacts::contacts,
+            ),
         )
     })
 }
@@ -78,8 +94,16 @@ pub fn fillet_curves_joined(
     tolerance: Tolerance,
 ) -> Result<PolyCurve3, Error> {
     with_native_operations(|operations| {
-        viboceros_geometry::try_fillet_curves_joined_with_operations(
-            first, second, radius, styles, tolerance, operations,
+        viboceros_geometry::try_fillet_curves_joined_with_producers(
+            first,
+            second,
+            radius,
+            styles,
+            tolerance,
+            &mut CurveFilletPairOperations::new(
+                operations,
+                &mut super::curve_fillet_contacts::contacts,
+            ),
         )
     })
 }

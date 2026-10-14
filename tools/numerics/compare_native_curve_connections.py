@@ -58,6 +58,13 @@ def main():
                     "crates/viboceros-command/src/fillet_corners.rs",
                     "crates/viboceros-smlib/native/CMakeLists.txt",
                     "third_party/patches/usd-brep-curve-fillet-sides.patch"]
+        sources += ["crates/viboceros-geometry/src/curve_fillet_operations.rs",
+                    "crates/viboceros-smlib/src/native/curve_fillet_contacts.rs",
+                    "crates/viboceros-smlib/native/bridge.cpp",
+                    "crates/viboceros-smlib/native/bridge.h",
+                    "crates/viboceros-smlib/build.rs",
+                    "third_party/patches/usd-brep-curve-fillet-seed.patch",
+                    "third_party/patches/usd-brep-curve-fillet-seed-header.patch"]
     records = []
     for fixture in FIXTURES + (("curve_fillet_corners",) if args.include_corners else ()):
         request_path = Path("tools/rhino_oracle/fixtures") / f"{fixture}.json"

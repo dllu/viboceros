@@ -11,9 +11,10 @@ both terminal spans, independently check intersection parameters and meeting
 positions, and extract the retained intervals with the same native producers.
 
 Chamfer also uses native extraction for partial retained NURBS leaves after
-measuring its two arc-length setbacks. Fillet's corner/contact solver remains
-shared geometry; [contact extraction](smlib-fillet-contacts.md) now uses native
-producers for retained NURBS and FilletCorners sharp-knot preparation. Picking, analytic
+measuring its two arc-length setbacks. Fillet uses
+[native NURBS contacts](smlib-native-fillet-contacts.md) and
+[contact extraction](smlib-fillet-contacts.md) with shared corner ordering and
+analytic policies. Picking, analytic
 arc/line policies, source directions, composite leaves, attributes, groups and
 Undo remain shared command behavior. Native geometry errors retain their
 command error type; preparation finishes before document mutation.

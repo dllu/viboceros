@@ -38,6 +38,15 @@ a generated `NL_CrvTool.cpp` copy. See [boundary extension](../../docs/smlib-bou
 `SmCurveFilletExecutive` must use the second curve's side-selection parameter
 for that curve. Reusing the first curve's parameter selects the wrong side
 when their domains differ. The native build compiles a generated source copy.
-The direct producer remains under qualification: scaled-down corners can
-still return `SM_ERR_NULL_POINTER`. Application curve fillets use the shared
-contact solver and native interval extraction.
+The original direct producer's scaled-down failures are retained in the
+historical comparison. Application curved NURBS contacts now run in a
+normalized radius frame with checked contacts and native interval extraction.
+
+`usd-brep-curve-fillet-seed.patch` and
+`usd-brep-curve-fillet-seed-header.patch` add an executive overload with base
+parameter guesses, a solver tolerance and unsnapped contact parameters.
+Known junctions skip the global base-intersection choice; existing overloads
+keep their previous search. Evaluation and arc-creation statuses propagate.
+The object layout is unchanged. Generated header/source copies are compiled
+with the earlier side repair; failed exact patch application stops the build.
+See [native contact qualification](../../docs/smlib-native-fillet-contacts.md).

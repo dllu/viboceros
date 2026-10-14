@@ -1,0 +1,67 @@
+--- SmCurveFilletExecutive.cpp
++++ SmCurveFilletExecutive.cpp
+@@ -15,0 +16 @@
++#include <cmath>
+@@ -53,0 +55,9 @@
++  return DoFillet( rpNewFilletCurve, SM_UNDEF_DOUBLE, SM_UNDEF_DOUBLE,
++                   SM_EFF_ZERO_SQRT, NULL );
++}
++
++// Explicit base-curve guesses avoid choosing a different crossing before
++// intersecting offsets. The caller can obtain unsnapped contact parameters.
++SmStatus SmCurveFilletExecutive::DoFillet( SmBSplineCurve *& rpNewFilletCurve,
++    double dGuess1, double dGuess2, double dTol, double *pContactParameters )
++{
+@@ -57 +67,5 @@
+-  if ( m_dRadius <= 0 ) { SER( SM_ERR_INVALID_INPUT ); }
++  if ( !std::isfinite(m_dRadius) || m_dRadius <= 0 ||
++       !std::isfinite(dTol) || dTol <= 0 ) { SER( SM_ERR_INVALID_INPUT ); }
++  const bool bSeeded = dGuess1 != SM_UNDEF_DOUBLE && dGuess2 != SM_UNDEF_DOUBLE;
++  if ( (dGuess1 != SM_UNDEF_DOUBLE) != (dGuess2 != SM_UNDEF_DOUBLE) )
++    { SER( SM_ERR_INVALID_INPUT ); }
+@@ -83,2 +97,4 @@
+-  double dTol = SM_EFF_ZERO_SQRT;  //cbiTol: check this.
+-  SmStatus eStat = m_pCurve1->GlobalCurveIntersect( sDom1, *m_pCurve2, sDom2, dTol, sSolutions, TRUE );
++  SmStatus eStat = SM_SUCCESS;
++  if ( !bSeeded )
++  {
++  eStat = m_pCurve1->GlobalCurveIntersect( sDom1, *m_pCurve2, sDom2, dTol, sSolutions, TRUE );
+@@ -133,2 +149,8 @@
+-  double dT1 = sSolutions[0].m_vStart[0];
+-  double dT2 = sSolutions[0].m_vStart[1];
++  }
++  else if ( !std::isfinite(dGuess1) || !std::isfinite(dGuess2) ||
++            dGuess1 < sDom1.GetMin() || dGuess1 > sDom1.GetMax() ||
++            dGuess2 < sDom2.GetMin() || dGuess2 > sDom2.GetMax() )
++    { SER( SM_ERR_INVALID_INPUT ); }
++
++  double dT1 = bSeeded ? dGuess1 : sSolutions[0].m_vStart[0];
++  double dT2 = bSeeded ? dGuess2 : sSolutions[0].m_vStart[1];
+@@ -144 +166 @@
+-  m_pCurve1->Evaluate( dT1, 1, !bHiSide1,  sEvals );
++  SER( m_pCurve1->Evaluate( dT1, 1, !bHiSide1, sEvals ) );
+@@ -147 +169 @@
+-  m_pCurve2->Evaluate( dT2, 1, !bHiSide2,  sEvals );
++  SER( m_pCurve2->Evaluate( dT2, 1, !bHiSide2, sEvals ) );
+@@ -182,0 +205,6 @@
++  if ( pContactParameters )
++  {
++      pContactParameters[0] = dOffT1;
++      pContactParameters[1] = dOffT2;
++  }
++
+@@ -185,3 +213,3 @@
+-  m_pCurve1->EvaluatePoint( dOffT1, sCrv1Pt );
+-  m_pCurve2->EvaluatePoint( dOffT2, sCrv2Pt );
+-  pOffCrv1->EvaluatePoint( dOffT1, sCenter );
++  SER( m_pCurve1->EvaluatePoint( dOffT1, sCrv1Pt ) );
++  SER( m_pCurve2->EvaluatePoint( dOffT2, sCrv2Pt ) );
++  SER( pOffCrv1->EvaluatePoint( dOffT1, sCenter ) );
+@@ -191 +219 @@
+-  pOffCrv2->EvaluatePoint( dOffT2, sTempPt );
++  SER( pOffCrv2->EvaluatePoint( dOffT2, sTempPt ) );
+@@ -198,2 +226,2 @@
+-  SmBSplineCurve::CreateArcFromPoints( *pCtxt, lDim,
+-     sCenter, sCrv1Pt, sCrv2Pt, SM_CO_QUADRATIC, m_pResult );
++  SER( SmBSplineCurve::CreateArcFromPoints( *pCtxt, lDim,
++     sCenter, sCrv1Pt, sCrv2Pt, SM_CO_QUADRATIC, m_pResult ) );

@@ -225,3 +225,102 @@ fn native_sharp_knot_preparation_matches_separate_leaves_and_degree_eighteen_fal
     .unwrap();
     check(&source, 0.5);
 }
+
+#[test]
+fn native_seed_uses_selected_junction_when_curves_also_cross_elsewhere() {
+    let radius = 0.2;
+    let first = S::NurbsCurve(curve(vec![p(-4., 1.), p(0., -1.5), p(0., 0.)], 1.));
+    let second = line(p(0., 0.), p(-4., 0.));
+    let source = PolyCurve3::try_new(vec![first, second]).unwrap();
+    let result = check(&source, radius);
+    // C(t)=(-4(1-t)^2,1-5t+4t^2) crosses the other source at t=1/4.
+    // The selected corner is at t=1; solve its offset-to-line equation.
+    let mut low = 0.625;
+    let mut high = 1.;
+    for _ in 0..80 {
+        let t: f64 = low + (high - low) * 0.5;
+        let dx = 8. * (1. - t);
+        let dy = 8. * t - 5.;
+        if 1. - 5. * t + 4. * t * t + radius * dx / dx.hypot(dy) + radius < 0. {
+            low = t;
+        } else {
+            high = t;
+        }
+    }
+    let t = low + (high - low) * 0.5;
+    let S::Arc(arc) = result.segments()[1] else {
+        panic!("fillet arc missing")
+    };
+    assert!(
+        arc.start()
+            .unwrap()
+            .distance_to(p(-4. * (1. - t).powi(2), 1. - 5. * t + 4. * t * t))
+            .unwrap()
+            < 1e-10
+    );
+    check(&source.reversed().unwrap(), radius);
+}
+
+#[test]
+fn native_radius_frames_preserve_tangencies_at_small_and_large_model_scales() {
+    for scale in [1e-6, 1., 1e6] {
+        // Unit changes scale the model's dimensional tolerance as well.
+        let tolerance = Tolerance::try_new(1e-9 * scale, 1e-12, 1e-10).unwrap();
+        for origin in [p(0., 0.), p(100. * scale, -100. * scale)] {
+            let q = |x, y| p(origin.x() + x * scale, origin.y() + y * scale);
+            let source = PolyCurve3::try_new(vec![
+                S::NurbsCurve(curve(vec![q(0., 0.), q(2., 0.), q(2., 2.)], 1.)),
+                line(q(2., 2.), q(6., 2.)),
+            ])
+            .unwrap();
+            let result = viboceros_smlib::fillet_corners(&source, 0.5 * scale, tolerance)
+                .unwrap_or_else(|error| panic!("scale {scale} origin {origin:?}: {error:?}"));
+            let S::Arc(arc) = result.segments()[1] else {
+                panic!("fillet arc missing")
+            };
+            assert!((arc.radius() - 0.5 * scale).abs() < tolerance.absolute());
+            for pair in result.segments().windows(2) {
+                let first = pair[0]
+                    .as_ref()
+                    .evaluate_with_tangent(*pair[0].domain().end())
+                    .unwrap();
+                let second = pair[1]
+                    .as_ref()
+                    .evaluate_with_tangent(*pair[1].domain().start())
+                    .unwrap();
+                assert!(first.point().distance_to(second.point()).unwrap() < tolerance.absolute());
+                assert!(
+                    first
+                        .tangent()
+                        .as_vector()
+                        .cross(second.tangent().as_vector())
+                        .unwrap()
+                        .length()
+                        .unwrap()
+                        < 1e-10
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn unrepresentable_retained_tangency_is_rejected_without_changing_sources() {
+    let q = |x, y| p(100. + x * 1e-6, -100. + y * 1e-6);
+    let source = PolyCurve3::try_new(vec![
+        S::NurbsCurve(curve(vec![q(0., 0.), q(2., 0.), q(2., 2.)], 1.)),
+        line(q(2., 2.), q(6., 2.)),
+    ])
+    .unwrap();
+    let original = source.clone();
+    assert!(
+        source
+            .try_fillet_corners(0.5e-6, Tolerance::DEFAULT)
+            .is_err()
+    );
+    assert!(matches!(
+        viboceros_smlib::fillet_corners(&source, 0.5e-6, Tolerance::DEFAULT),
+        Err(viboceros_smlib::Error::Geometry(_))
+    ));
+    assert_eq!(source, original);
+}

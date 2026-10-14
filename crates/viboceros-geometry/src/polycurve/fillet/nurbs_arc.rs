@@ -24,6 +24,7 @@ pub(super) fn resolve_nurbs_arc_kinks<E: From<GeometryError>>(
     radius: Real,
     tolerance: Tolerance,
     trim: &mut NurbsTrim<'_, E>,
+    contacts: &mut CurveFilletContactProducer<'_, E>,
 ) -> Result<Option<PolyCurve3>, E> {
     let closed = source.is_closed()?;
     let mut segments = source.segments().to_vec();
@@ -36,6 +37,7 @@ pub(super) fn resolve_nurbs_arc_kinks<E: From<GeometryError>>(
             radius,
             tolerance,
             trim,
+            contacts,
         )? {
             segments.splice(
                 index..=index + 1,
@@ -54,6 +56,7 @@ pub(super) fn resolve_nurbs_arc_kinks<E: From<GeometryError>>(
             radius,
             tolerance,
             trim,
+            contacts,
         )?
     {
         segments[0] = after;
@@ -74,6 +77,7 @@ fn fillet_pair<E: From<GeometryError>>(
     radius: Real,
     tolerance: Tolerance,
     trim: &mut NurbsTrim<'_, E>,
+    contacts: &mut CurveFilletContactProducer<'_, E>,
 ) -> Result<Option<(CurveSegment3, CircularArc3, CurveSegment3)>, E> {
     let (curve, arc, reversed) = match (before, after) {
         (CurveSegment3::NurbsCurve(curve), CurveSegment3::Arc(arc)) => (curve.clone(), *arc, false),
@@ -86,6 +90,11 @@ fn fillet_pair<E: From<GeometryError>>(
         || !arc_line::sharp_joint(before, after, tolerance)?
     {
         return Ok(None);
+    }
+    if let Some(contact) = contacts(before, after, radius, tolerance)? {
+        return Ok(Some(prepare_contacts(
+            before, after, contact, radius, tolerance, trim,
+        )?));
     }
     let solution = solve_nurbs_then_arc(&curve, arc, radius, tolerance, trim)?;
     if reversed {

@@ -33,6 +33,8 @@ NURBS curve.
 Linux `native-smlib` builds use [native interval extraction](../smlib-fillet-contacts.md)
 for the retained NURBS contacts and sharp internal knot pieces. Smooth
 unselected straight leaves retain their original classes and parameter domains.
+Curved NURBS-to-line/arc/NURBS contacts use the
+[native executive](../smlib-native-fillet-contacts.md) in a normalized geometry frame.
 For closed polycurves, a sharp seam between straight leaves also receives a
 fillet, and the result starts at that fillet's incoming tangent point.
 The same seam convention applies to a sharp curved NURBS junction.

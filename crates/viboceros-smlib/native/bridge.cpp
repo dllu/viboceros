@@ -21,6 +21,7 @@
 #include <SmStitch.h>
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
+#include <SmCurveFilletExecutive.h>
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
@@ -1003,6 +1004,40 @@ extern "C" int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t p
 extern "C" void vb_curve_free(VbCurve *curve) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete curve;
+}
+
+extern "C" int vb_curve_fillet_contacts(const VbCurve *first, const VbCurve *second,
+                                        double radius, double tolerance, double parameters[2],
+                                        double arc_samples[9], char *error, size_t capacity) {
+    return guarded(error,capacity,[&] {
+        require(first && second && parameters && arc_samples && std::isfinite(radius) && radius>0
+            && std::isfinite(tolerance) && tolerance>0,"Invalid fillet contact input");
+#ifdef VIBOCEROS_CURVE_FILLET_SEED_API
+        class Corner : public SmCurveFilletExecutive {
+        public:
+            Corner(SmBSplineCurve *a,SmBSplineCurve *b,double r)
+                : SmCurveFilletExecutive(a,b,r,FALSE,FALSE) {
+                m_dParam1=a->GetNaturalInterval().GetMin();
+                m_dParam2=b->GetNaturalInterval().GetMax();
+            }
+        };
+        Corner worker(first->value.get(),second->value.get(),radius);
+        SmBSplineCurve *raw=nullptr;
+        const auto a=first->value->GetNaturalInterval(),b=second->value->GetNaturalInterval();
+        const auto status=worker.DoFillet(raw,a.GetMax(),b.GetMin(),tolerance,parameters);
+        std::unique_ptr<SmBSplineCurve> result(raw?raw:worker.GetResult());
+        check(status,"solve native fillet contacts");
+        require(result!=nullptr,"Missing native fillet arc");
+        const auto domain=result->GetNaturalInterval();
+        for(size_t i=0;i<3;++i) {
+            SmPoint3d point;
+            check(result->EvaluatePoint(domain.Evaluate(i*0.5),point),"evaluate native fillet arc");
+            arc_samples[3*i]=point.x;arc_samples[3*i+1]=point.y;arc_samples[3*i+2]=point.z;
+        }
+#else
+        throw std::runtime_error("Seeded curve filleting is unavailable in this trial kernel build");
+#endif
+    });
 }
 
 extern "C" int vb_curve_extrude(const VbCurve *curve, const double displacement[3],

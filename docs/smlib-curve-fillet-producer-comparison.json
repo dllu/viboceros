@@ -26,11 +26,6 @@
     }
   ],
   "source_sha256": {
-    "tools/usd_brep/curve_fillet_probe.cpp": "8f6065095354317002682bc0af39b20078bb48ec7fb2b8635d243bc8de7ce391",
-    "tools/usd_brep/compare_curve_fillet_producer.py": "6f0db497815e5d86d558dc750566c12ac65c055584077f08761eddb20fcbbcd1",
-    "tools/usd_brep/CMakeLists.txt": "d68f104dee70331f044414e995e600e89c97cc4031db2a1e994bbd1d8e335c7b",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "10dcaa03645deef605841fbec2db3dee441398483c6c60daa8f7d5c2699ed7ac",
-    "third_party/patches/usd-brep-curve-fillet-sides.patch": "8c2aa6618b47a6e35c3e531c7d8662f6381300de7765b35bfcf1add3e197d6c3",
     "third_party/usd-brep/source/SMLib/src/SmCurveFilletExecutive.cpp": "b8baa240c205040b6e13f50ab047fea496a6f48b3fb2efdef571ca3c0c1aa79a"
   },
   "jobs": {
@@ -1231,5 +1226,12 @@
         }
       ]
     }
+  },
+  "source_git_sha256": {
+    "2cf12526e0d61ab2fac9868238c6f58de59a0809:tools/usd_brep/curve_fillet_probe.cpp": "8f6065095354317002682bc0af39b20078bb48ec7fb2b8635d243bc8de7ce391",
+    "2cf12526e0d61ab2fac9868238c6f58de59a0809:tools/usd_brep/compare_curve_fillet_producer.py": "6f0db497815e5d86d558dc750566c12ac65c055584077f08761eddb20fcbbcd1",
+    "2cf12526e0d61ab2fac9868238c6f58de59a0809:tools/usd_brep/CMakeLists.txt": "d68f104dee70331f044414e995e600e89c97cc4031db2a1e994bbd1d8e335c7b",
+    "2cf12526e0d61ab2fac9868238c6f58de59a0809:crates/viboceros-smlib/native/CMakeLists.txt": "10dcaa03645deef605841fbec2db3dee441398483c6c60daa8f7d5c2699ed7ac",
+    "2cf12526e0d61ab2fac9868238c6f58de59a0809:third_party/patches/usd-brep-curve-fillet-sides.patch": "8c2aa6618b47a6e35c3e531c7d8662f6381300de7765b35bfcf1add3e197d6c3"
   }
 }
