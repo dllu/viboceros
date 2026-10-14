@@ -30,6 +30,8 @@ fn build_native() {
         "usd-brep-curve-intersection-distance-solver.patch",
         "usd-brep-curve-intersection-distance-header.patch",
         "usd-brep-curve-intersection-distance.cmake",
+        "usd-brep-curve-self-intersection-pairs.patch",
+        "usd-brep-curve-self-intersection-pairs.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }

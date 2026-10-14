@@ -43,6 +43,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Native NURBS offsets and qualification](docs/smlib-curve-offset.md)
 - [Native curve intersections and qualification](docs/smlib-curve-intersections.md)
+- [Native curve self-intersections and qualification](docs/smlib-curve-self-intersections.md)
 - [Native lamp-well conversion regression](docs/native-lamp-well.md)
 - [Rhino oracle setup, Python API, and comparisons](docs/oracle.md)
 - [Large-model display mesh diagnostics](docs/display-mesh-diagnostics.md)

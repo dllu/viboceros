@@ -9,6 +9,7 @@ file(GLOB API_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SM_API/src/*.cp
 list(FILTER KERNEL_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 list(FILTER API_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-intersection-distance.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-self-intersection-pairs.cmake")
 # Keep upstream immutable. Compile the bounded kernel repairs from generated
 # copies, with the source/version and patches retained under third_party.
 find_program(PATCH_EXECUTABLE patch REQUIRED)

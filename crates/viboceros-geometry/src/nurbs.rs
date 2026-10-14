@@ -5227,6 +5227,8 @@ fn merge_adjacent_curve_overlaps(
     for overlap in overlaps {
         if let Some(previous) = merged.last_mut()
             && curve_intersections_match(previous.end, overlap.start, distance_tolerance)
+            && (previous.end.second_parameter > previous.start.second_parameter)
+                == (overlap.end.second_parameter > overlap.start.second_parameter)
         {
             previous.end = overlap.end;
             continue;

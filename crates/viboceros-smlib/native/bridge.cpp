@@ -1011,15 +1011,8 @@ extern "C" void vb_curve_free(VbCurve *curve) {
     delete curve;
 }
 
-extern "C" int vb_curve_intersect(const VbCurve *first,const VbCurve *second,double tolerance,
-                                  VbCurveIntersections **out,char *error,size_t capacity) {
-    if(out)*out=nullptr;
-    return guarded(error,capacity,[&] {
-        require(first && second && out && std::isfinite(tolerance) && tolerance>0,
-            "Invalid curve intersection input");
-        SmSolutionArray solutions;
-        const auto a=first->value->GetNaturalInterval(),b=second->value->GetNaturalInterval();
-        check(first->value->GlobalCurveIntersect(a,*second->value,b,tolerance,solutions),"intersect native curves");
+static std::unique_ptr<VbCurveIntersections> copy_curve_intersections(
+    SmSolutionArray &solutions, const SmExtent1d &a, const SmExtent1d &b) {
         require(solutions.GetSize()<=500000,"Curve intersection exceeds event budget");
         auto result=std::make_unique<VbCurveIntersections>();
         for(ULONG i=0;i<solutions.GetSize();++i) {
@@ -1035,7 +1028,30 @@ extern "C" int vb_curve_intersect(const VbCurve *first,const VbCurve *second,dou
                 "Invalid native curve intersection parameters");
             result->events.push_back({overlap?1:0,{ta,ea},{tb,eb}});
         }
-        *out=result.release();
+        return result;
+}
+extern "C" int vb_curve_intersect(const VbCurve *first,const VbCurve *second,double tolerance,
+                                  VbCurveIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(first && second && out && std::isfinite(tolerance) && tolerance>0,
+            "Invalid curve intersection input");
+        SmSolutionArray solutions;
+        const auto a=first->value->GetNaturalInterval(),b=second->value->GetNaturalInterval();
+        check(first->value->GlobalCurveIntersect(a,*second->value,b,tolerance,solutions),"intersect native curves");
+        *out=copy_curve_intersections(solutions,a,b).release();
+    });
+}
+extern "C" int vb_curve_self_intersect(const VbCurve *curve,double tolerance,
+                                       VbCurveIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(curve && out && std::isfinite(tolerance) && tolerance>0,
+            "Invalid curve self-intersection input");
+        SmSolutionArray solutions;
+        const auto interval=curve->value->GetNaturalInterval();
+        check(curve->value->GlobalCurveSelfIntersect(interval,tolerance,solutions),"intersect native curve with itself");
+        *out=copy_curve_intersections(solutions,interval,interval).release();
     });
 }
 extern "C" size_t vb_curve_intersections_count(const VbCurveIntersections *events) {

@@ -131,6 +131,19 @@ impl SelfContacts {
     }
 
     fn search(&mut self, curve: &NurbsCurve) -> Result<(), CommandError> {
+        #[cfg(feature = "native-smlib")]
+        if let Some(events) =
+            viboceros_smlib::curve_self_intersection_events(curve, self.tolerance)?
+        {
+            for event in events {
+                self.add_contact(curve, event, None, None, true)?;
+            }
+            return self.cull_overlap_points();
+        }
+        self.search_portable(curve)
+    }
+
+    fn search_portable(&mut self, curve: &NurbsCurve) -> Result<(), CommandError> {
         let spans = curve
             .spans()
             .map(|(start, end)| curve.try_trimmed(start..=end))
@@ -156,6 +169,10 @@ impl SelfContacts {
         for span in &spans {
             self.within(span, 0, spans.len() == 1)?;
         }
+        self.cull_overlap_points()
+    }
+
+    fn cull_overlap_points(&mut self) -> Result<(), CommandError> {
         let overlaps = self
             .output
             .iter()
@@ -230,37 +247,52 @@ impl SelfContacts {
                 maximum: MAX_SELF_PAIRS,
             });
         }
-        for event in first.intersection_events_with_curve(second, self.tolerance)? {
-            let geometry = match event {
-                CurveCurveIntersectionEvent::Point(contact) => {
-                    let point = contact.point();
-                    if junction
-                        .is_some_and(|shared| model_points_near(point, shared, self.tolerance))
-                        || seam
-                            .is_some_and(|shared| model_points_near(point, shared, self.tolerance))
-                    {
-                        continue;
-                    }
-                    Geometry::Point(point)
-                }
-                CurveCurveIntersectionEvent::Overlap(overlap) => {
-                    Geometry::NurbsCurve(first.try_trimmed(overlap.first_interval())?)
-                }
-            };
-            if self
-                .output
-                .iter()
-                .any(|existing| same_contact(existing, &geometry, self.tolerance))
-            {
-                continue;
-            }
-            if self.output.len() == MAX_INTERSECT_OUTPUTS {
-                return Err(CommandError::TooManyIntersectOutputs {
-                    maximum: MAX_INTERSECT_OUTPUTS,
-                });
-            }
-            self.output.push(geometry);
+        for event in crate::curve_intersections::events(first, second, self.tolerance)? {
+            self.add_contact(first, event, junction, seam, false)?;
         }
+        Ok(())
+    }
+
+    fn add_contact(
+        &mut self,
+        first: &NurbsCurve,
+        event: CurveCurveIntersectionEvent,
+        junction: Option<Point3>,
+        seam: Option<Point3>,
+        native_segments: bool,
+    ) -> Result<(), CommandError> {
+        let geometry = match event {
+            CurveCurveIntersectionEvent::Point(contact) => {
+                let point = contact.point();
+                if junction.is_some_and(|shared| model_points_near(point, shared, self.tolerance))
+                    || seam.is_some_and(|shared| model_points_near(point, shared, self.tolerance))
+                {
+                    return Ok(());
+                }
+                Geometry::Point(point)
+            }
+            CurveCurveIntersectionEvent::Overlap(overlap) => {
+                let curve = if native_segments {
+                    curve_segments::trim(first, overlap.first_interval())?
+                } else {
+                    first.try_trimmed(overlap.first_interval())?
+                };
+                Geometry::NurbsCurve(curve)
+            }
+        };
+        if self
+            .output
+            .iter()
+            .any(|existing| same_contact(existing, &geometry, self.tolerance))
+        {
+            return Ok(());
+        }
+        if self.output.len() == MAX_INTERSECT_OUTPUTS {
+            return Err(CommandError::TooManyIntersectOutputs {
+                maximum: MAX_INTERSECT_OUTPUTS,
+            });
+        }
+        self.output.push(geometry);
         Ok(())
     }
 }
@@ -457,5 +489,117 @@ mod tests {
         assert!(document.is_selected(crossing));
         assert!(document.is_selected(overlap));
         assert!(!document.is_selected(simple_closed));
+    }
+
+    #[test]
+    fn self_contact_outputs_preserve_sources_and_replay_one_history_step() {
+        let registry = CommandRegistry::with_builtins();
+        for construction in [
+            "Polyline 0,0,0 2,2,0 0,2,0 2,0,0",
+            "Polyline 0,0,0 2,0,0 1,0,0 1,2,0",
+        ] {
+            let mut document = Document::default();
+            registry.execute(&mut document, construction).unwrap();
+            let source = document.objects().next().unwrap().clone();
+            document
+                .select_objects_direct([source.id()], SelectionMode::Replace)
+                .unwrap();
+            registry.execute(&mut document, "IntersectSelf").unwrap();
+            assert_eq!(document.objects().count(), 2);
+            assert_eq!(
+                document.object(source.id()).unwrap().geometry(),
+                source.geometry()
+            );
+            assert_eq!(
+                document.object(source.id()).unwrap().attributes(),
+                source.attributes()
+            );
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().count(), 1);
+            assert_eq!(
+                document.object(source.id()).unwrap().geometry(),
+                source.geometry()
+            );
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.objects().count(), 2);
+            assert_eq!(
+                document.object(source.id()).unwrap().geometry(),
+                source.geometry()
+            );
+        }
+    }
+
+    #[test]
+    fn unsupported_native_degree_retains_portable_self_search() {
+        let curve = NurbsCurve::try_new(
+            18,
+            (0..=18).map(|i| point(i as Real, 0.)).collect(),
+            [vec![0.; 19], vec![1.; 19]].concat(),
+        )
+        .unwrap();
+        let mut document = Document::default();
+        let source = document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        assert_eq!(
+            registry.execute(&mut document, "IntersectSelf").unwrap(),
+            "Found 0 self-intersections."
+        );
+        assert_eq!(document.objects().count(), 1);
+    }
+
+    #[test]
+    fn unsupported_native_degree_keeps_portable_overlap_extraction() {
+        let controls = (0..=18)
+            .map(|i| point(i as Real / 9., 0.))
+            .chain((1..=18).map(|i| point(2. - i as Real / 18., 0.)))
+            .collect();
+        let curve = NurbsCurve::try_new(
+            18,
+            controls,
+            [vec![0.; 19], vec![1.; 18], vec![2.; 19]].concat(),
+        )
+        .unwrap();
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::NurbsCurve(curve.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        assert_eq!(
+            registry.execute(&mut document, "IntersectSelf").unwrap(),
+            "Found 1 self-intersection overlap."
+        );
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::NurbsCurve(curve)
+        );
+        let overlap = document
+            .selected_objects()
+            .next()
+            .unwrap()
+            .geometry()
+            .curve_ref()
+            .unwrap();
+        assert!(
+            overlap
+                .start_point()
+                .unwrap()
+                .distance_to(point(1., 0.))
+                .unwrap()
+                < 1e-8
+        );
+        assert!(
+            overlap
+                .end_point()
+                .unwrap()
+                .distance_to(point(2., 0.))
+                .unwrap()
+                < 1e-8
+        );
     }
 }

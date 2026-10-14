@@ -372,6 +372,9 @@ intervals of each selected curve. It creates point objects for crossings and
 NURBS curve segments for overlaps, leaving source curves intact. Rhino leaves
 point markers unselected and selects overlap curves; this command follows that
 selection behavior. Adjacent segment joints and a closed curve's seam are excluded.
+With `native-smlib`, the [native self-contact producer](../smlib-curve-self-intersections.md)
+replaces recursive span searching for eligible inputs and validates contacts on
+the original source. Unsupported native preparation retains the portable search.
 The [Rhino fixture](../../tools/rhino_oracle/fixtures/self_intersect.json)
 checks a crossing, a simple closed polyline, and a backtracking overlap.
 Nested overlapping segments remain a known discrepancy: Rhino reports only

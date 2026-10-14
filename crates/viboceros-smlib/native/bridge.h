@@ -95,6 +95,8 @@ typedef struct VbCurveIntersection {
 } VbCurveIntersection;
 int vb_curve_intersect(const VbCurve *first, const VbCurve *second, double tolerance,
                        VbCurveIntersections **out, char *error, size_t capacity);
+int vb_curve_self_intersect(const VbCurve *curve, double tolerance,
+                            VbCurveIntersections **out, char *error, size_t capacity);
 size_t vb_curve_intersections_count(const VbCurveIntersections *events);
 int vb_curve_intersections_copy(const VbCurveIntersections *events,
                                 VbCurveIntersection *out, size_t count);

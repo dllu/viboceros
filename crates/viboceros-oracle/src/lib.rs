@@ -65,6 +65,7 @@ mod interface;
 mod isocurves;
 mod mass_properties;
 mod parameter_bounds;
+mod self_intersect;
 mod surface_closest;
 mod surface_face_uv;
 pub use surface_face_uv::FaceUvQuery;
@@ -1537,6 +1538,11 @@ pub enum Operation {
         id: String,
         curves: Vec<NurbsCurveDefinition>,
     },
+    SelfIntersectProbe {
+        id: String,
+        #[serde(flatten)]
+        fixture: self_intersect::Fixture,
+    },
     CurveSurfaceIntersectCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2458,6 +2464,7 @@ impl Operation {
             | Self::SurfaceIsocurveGeometry { id, .. }
             | Self::SurfaceSplitCuttingCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
+            | Self::SelfIntersectProbe { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
@@ -5597,6 +5604,9 @@ fn execute(
         )?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
+        }
+        Operation::SelfIntersectProbe { fixture, .. } => {
+            self_intersect::run(iterations, fixture, tolerance)?
         }
         Operation::CurveSurfaceIntersectCommand { curve, surface, .. } => {
             curve_surface_intersect_command(iterations, curve, surface, tolerance)?

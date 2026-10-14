@@ -498,6 +498,10 @@ before applying additive selection and leaves model history unchanged.
 `Intersect` and the separate `intersect_two_sets` command share one curve,
 surface, and B-rep pair evaluator. The two-set command admits only cross-set
 pairs and stages all outputs before editing the document.
+The [native self-contact adapter](smlib-curve-self-intersections.md) replaces
+IntersectSelf and SelSelfIntersectingCrv's recursive search for eligible curves,
+sharing paired-parameter acceptance and segment extraction while preserving the
+document policies. Nested collinear Rhino parity remains under qualification.
 The app's two-set prompt snapshots the first picked set before clearing the
 transient selection for the second; both phases use the parametric-object filter.
 The geometry [shortness module](curve-shortness.md) keeps representation-dependent

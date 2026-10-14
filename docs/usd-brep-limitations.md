@@ -612,6 +612,16 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Adapter restrictions, not established upstream bugs
 
+- **Curve self-contact search has bounded qualification.** IntersectSelf and
+  SelSelfIntersectingCrv use the native global producer for eligible curves,
+  preserving source-space acceptance and portable preparation fallback. A
+  generated repair removes mirrored span pairs before solving; without it, a
+  backtracking range can span both visits across its turnaround. Analytic
+  contacts and basic command behavior are checked separately from the retained
+  nested-collinear Rhino command/API differences. No completeness, continuous
+  overlap or kernel-speed certificate is claimed. See
+  [self-intersection qualification](smlib-curve-self-intersections.md).
+
 - **Curve Match retains measured continuity policy around native preparation.**
   Trim-to-target, exact elevation, end-control refinement and six-control affine
   Greville interpolation now reuse native adapters. Shared G0/G1/G2 and rational

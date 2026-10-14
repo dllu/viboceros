@@ -1,0 +1,47 @@
+--- a/SmCurve.cpp
++++ b/SmCurve.cpp
+@@ -5050,6 +5050,10 @@
+   ULONG lAdjacency = 0;
+   if (m_bSelfIntersection)
+     {
++      // Visit each unordered span pair once. Mirrored range solutions can
++      // otherwise merge across the diagonal into a folded parameter interval.
++      if (sIvl1.GetMin() > sIvl2.GetMin())
++        { return SM_SUCCESS; }
+       if (pBezSpan1 == pBezSpan2)
+         { return SM_SUCCESS; }
+       if (pBezSpan1->m_lLeft == pBezSpan2->m_lLeft-1)
+@@ -6877,6 +6881,33 @@
+           // don't combine because ThisCurve is closed
+           bDoCombine = FALSE ;
+           goto CombineDecided ;
++        }
++
++      // Self-contact ranges must retain one direction of correspondence.
++      // Joining across a turnaround folds one parameter interval, potentially
++      // reducing it to a point while the other interval remains nonzero.
++      if (   bSelfIntersect
++          && rCurrSol.m_eSolutionType == SM_ST_RANGE_OF_VALUES
++          && rLastSol.m_eSolutionType == SM_ST_RANGE_OF_VALUES
++          && (   (rLastSol.m_vEnd[1] > rLastSol.m_vStart[1])
++              != (rCurrSol.m_vEnd[1] > rCurrSol.m_vStart[1])))
++        {
++          bDoCombine = FALSE;
++          goto CombineDecided;
++        }
++
++      // Joining self ranges at just one parameter jumps to a different visit
++      // on the other branch. Both paired endpoint parameters must agree.
++      if (   bSelfIntersect
++          && rCurrSol.m_eSolutionType == SM_ST_RANGE_OF_VALUES
++          && rLastSol.m_eSolutionType == SM_ST_RANGE_OF_VALUES
++          && (   SM_ARE_SAME((*pLastEnd)[0],rCurrStart[0])
++              || SM_ARE_SAME((*pLastEnd)[1],rCurrStart[1]))
++          && !(   SM_ARE_SAME((*pLastEnd)[0],rCurrStart[0])
++               && SM_ARE_SAME((*pLastEnd)[1],rCurrStart[1])))
++        {
++          bDoCombine = FALSE;
++          goto CombineDecided;
+         }
+ 
+       // When Solution endPoints touch on either curve - combine solutions.

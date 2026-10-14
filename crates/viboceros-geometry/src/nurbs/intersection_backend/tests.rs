@@ -111,3 +111,40 @@ fn shared_overlap_checks_accept_reversed_nonlinear_parameter_maps_and_reject_fal
         .is_err()
     );
 }
+
+#[test]
+fn adjacent_overlap_ranges_with_reversed_correspondence_remain_separate() {
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let first = NurbsCurve::try_new(
+        1,
+        vec![p(0., 0.), p(3., 0.), p(1., 0.)],
+        vec![0., 0., 1., 2., 2.],
+    )
+    .unwrap();
+    let second = NurbsCurve::try_new(1, vec![p(1., 0.), p(3., 0.)], vec![0., 0., 1., 1.]).unwrap();
+    let events = first
+        .intersection_events_with_curve_with_operation(
+            &second,
+            Tolerance::DEFAULT,
+            &mut |_, _, _| -> Result<_, GeometryError> {
+                Ok(Some(vec![
+                    CurveCurveIntersectionParameters {
+                        start: [1. / 3., 0.],
+                        end: Some([1., 1.]),
+                    },
+                    CurveCurveIntersectionParameters {
+                        start: [1., 1.],
+                        end: Some([2., 0.]),
+                    },
+                ]))
+            },
+        )
+        .unwrap();
+    assert_eq!(events.len(), 2);
+    for event in events {
+        let CurveCurveIntersectionEvent::Overlap(overlap) = event else {
+            panic!("expected overlap")
+        };
+        assert!(*overlap.second_interval().start() < *overlap.second_interval().end());
+    }
+}

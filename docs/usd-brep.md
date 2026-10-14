@@ -85,6 +85,9 @@ candidates; source fitting and region policy retain independent checks.
 [Curve intersections](smlib-curve-intersections.md) use the native global
 point/range producer for Intersect, curve cutting and offset joins/regions, with
 independent source-space acceptance and shared local contact polishing.
+[Curve self-intersections](smlib-curve-self-intersections.md) share that acceptance
+and native event ownership for IntersectSelf and SelSelfIntersectingCrv, with a
+scoped repair preventing mirrored ranges from merging across a turnaround.
 [Morph preview preparation](smlib-morph-preview.md) reuses checked native
 curve/surface elevation, isocurve extraction and interval trimming, including
 independent full-order pieces.
