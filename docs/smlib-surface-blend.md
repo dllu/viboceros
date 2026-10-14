@@ -75,7 +75,8 @@ diagnostics and compares native and portable paths on the same process.
 The [retained AArch64 measurements](smlib-blend-hermite-performance.json)
 include the initial unpinned run and three runs pinned to one CPU. For 64/512
 columns the native path costs about 3–6% more than the portable path; tiny
-three-column fixtures add roughly 5–8 microseconds per construction. Complete
+three-column fixtures add roughly 10–15 microseconds per construction in the
+pinned runs. Complete
 control nets agree within `3e-15` in position and `5e-16` in weight. These local
 measurements do not establish performance relative to Rhino.
 
