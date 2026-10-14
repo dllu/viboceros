@@ -1,0 +1,505 @@
+{
+  "architecture": "aarch64",
+  "cpu_affinity": 0,
+  "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope": "Same-process native/portable complete construction, including parent preparation and diagnostics; three independent process runs pinned to one CPU. This is not a Rhino timing comparison.",
+  "source_sha256": {
+    "crates/viboceros-geometry/src/surface_blend.rs": "a9e64eaaf25c95978565e0621339b4886e1560ed86ed920908bdbdbbb20b59aa",
+    "crates/viboceros-smlib/src/native/surface_blend.rs": "edecf035b6cd8f3b614f66269984f715552bfc7eb8a7f8fc892dd2afb3a19250",
+    "crates/viboceros-smlib/src/native/knot_refinement.rs": "c3aec5c446ebd7a3ad2af44562c7f02a3de0f019b3ed45790f2876e036707f50",
+    "crates/viboceros-smlib/native/knot_refinement.cpp": "611585a26337d927469335df66af1b508488840b20fc36502c3110be8adeca0a",
+    "crates/viboceros-smlib/native/knot_refinement.h": "37773fc72043006d03e9397a166da15a04a22736c95f1019b0a1979af9e4a18a",
+    "crates/viboceros-smlib/examples/blend_surface.rs": "f4aef454a93cc51560ee973ca203204f11c05efd09a5a1447ab89ff9b6fd37bf",
+    "crates/viboceros-geometry/src/surface_blend/tests.rs": "f6c058c540ce5aefed2f5151427700d0b3b81bbdf1f4f35385e3d4b7f64f3b04",
+    "crates/viboceros-smlib/tests/surface_blend.rs": "a63822d608fb283ba6d1e833122e5238bc2e77420ce355c2cdf9e11518793343"
+  },
+  "runs": [
+    [
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 42211,
+        "native_to_portable_ratio": 1.3351151315789473,
+        "portable_nanoseconds_per_construction": 31616,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 6.280369834735101e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 77066,
+        "native_to_portable_ratio": 1.2281629986135236,
+        "portable_nanoseconds_per_construction": 62749,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 4.440892098500626e-16,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 67405,
+        "native_to_portable_ratio": 1.240270852116952,
+        "portable_nanoseconds_per_construction": 54347,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 1924468,
+        "native_to_portable_ratio": 1.0536623931811113,
+        "portable_nanoseconds_per_construction": 1826456,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 1.790180836524724e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 3951247,
+        "native_to_portable_ratio": 1.0335940220093893,
+        "portable_nanoseconds_per_construction": 3822823,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 8.95090418262362e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 3407957,
+        "native_to_portable_ratio": 1.037607663048492,
+        "portable_nanoseconds_per_construction": 3284437,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 16012400,
+        "native_to_portable_ratio": 1.050244743807879,
+        "portable_nanoseconds_per_construction": 15246351,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 2.275280134513746e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 32759214,
+        "native_to_portable_ratio": 1.0327555616687296,
+        "portable_nanoseconds_per_construction": 31720201,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 1.7763568394002505e-15,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 28249447,
+        "native_to_portable_ratio": 1.033084851753993,
+        "portable_nanoseconds_per_construction": 27344750,
+        "repetitions": 20
+      }
+    ],
+    [
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 42550,
+        "native_to_portable_ratio": 1.3549660860427348,
+        "portable_nanoseconds_per_construction": 31403,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 6.280369834735101e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 77426,
+        "native_to_portable_ratio": 1.2380434608804107,
+        "portable_nanoseconds_per_construction": 62539,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 4.440892098500626e-16,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 67922,
+        "native_to_portable_ratio": 1.2544695626477542,
+        "portable_nanoseconds_per_construction": 54144,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 1929696,
+        "native_to_portable_ratio": 1.0564495731380839,
+        "portable_nanoseconds_per_construction": 1826586,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 1.790180836524724e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 3961003,
+        "native_to_portable_ratio": 1.038403601823772,
+        "portable_nanoseconds_per_construction": 3814512,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 8.95090418262362e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 3418018,
+        "native_to_portable_ratio": 1.0421310828136172,
+        "portable_nanoseconds_per_construction": 3279835,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 16058534,
+        "native_to_portable_ratio": 1.052061350603215,
+        "portable_nanoseconds_per_construction": 15263876,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 2.275280134513746e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 32826071,
+        "native_to_portable_ratio": 1.036597077614762,
+        "portable_nanoseconds_per_construction": 31667146,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 1.7763568394002505e-15,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 28357446,
+        "native_to_portable_ratio": 1.0393392344481824,
+        "portable_nanoseconds_per_construction": 27284110,
+        "repetitions": 20
+      }
+    ],
+    [
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 42663,
+        "native_to_portable_ratio": 1.3385310450851817,
+        "portable_nanoseconds_per_construction": 31873,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 6.280369834735101e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 77478,
+        "native_to_portable_ratio": 1.2318430424828288,
+        "portable_nanoseconds_per_construction": 62896,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 3,
+        "maximum_control_position_error": 4.440892098500626e-16,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 67737,
+        "native_to_portable_ratio": 1.2462421577465825,
+        "portable_nanoseconds_per_construction": 54353,
+        "repetitions": 1000
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 1952599,
+        "native_to_portable_ratio": 1.054616935560096,
+        "portable_nanoseconds_per_construction": 1851477,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 1.790180836524724e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 3979116,
+        "native_to_portable_ratio": 1.0375693996092865,
+        "portable_nanoseconds_per_construction": 3835036,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 64,
+        "maximum_control_position_error": 8.95090418262362e-16,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 3429376,
+        "native_to_portable_ratio": 1.0389916977638225,
+        "portable_nanoseconds_per_construction": 3300677,
+        "repetitions": 100
+      },
+      {
+        "continuity": [
+          0,
+          0
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 0.0,
+        "maximum_control_weight_error": 0.0,
+        "native_nanoseconds_per_construction": 16209486,
+        "native_to_portable_ratio": 1.051687983542021,
+        "portable_nanoseconds_per_construction": 15412828,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          2
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 2.275280134513746e-15,
+        "maximum_control_weight_error": 4.440892098500626e-16,
+        "native_nanoseconds_per_construction": 32944827,
+        "native_to_portable_ratio": 1.0351188171513097,
+        "portable_nanoseconds_per_construction": 31827097,
+        "repetitions": 20
+      },
+      {
+        "continuity": [
+          2,
+          1
+        ],
+        "edge_control_count": 512,
+        "maximum_control_position_error": 1.7763568394002505e-15,
+        "maximum_control_weight_error": 2.220446049250313e-16,
+        "native_nanoseconds_per_construction": 28436120,
+        "native_to_portable_ratio": 1.0373482839848962,
+        "portable_nanoseconds_per_construction": 27412317,
+        "repetitions": 20
+      }
+    ]
+  ],
+  "initial_unpinned_run": [
+    {
+      "continuity": [
+        0,
+        0
+      ],
+      "edge_control_count": 3,
+      "maximum_control_position_error": 0.0,
+      "maximum_control_weight_error": 0.0,
+      "native_nanoseconds_per_construction": 40780,
+      "native_to_portable_ratio": 2.749089928542537,
+      "portable_nanoseconds_per_construction": 14834,
+      "repetitions": 1000
+    },
+    {
+      "continuity": [
+        2,
+        2
+      ],
+      "edge_control_count": 3,
+      "maximum_control_position_error": 6.280369834735101e-16,
+      "maximum_control_weight_error": 2.220446049250313e-16,
+      "native_nanoseconds_per_construction": 35918,
+      "native_to_portable_ratio": 1.2208286598008224,
+      "portable_nanoseconds_per_construction": 29421,
+      "repetitions": 1000
+    },
+    {
+      "continuity": [
+        2,
+        1
+      ],
+      "edge_control_count": 3,
+      "maximum_control_position_error": 4.440892098500626e-16,
+      "maximum_control_weight_error": 0.0,
+      "native_nanoseconds_per_construction": 31234,
+      "native_to_portable_ratio": 1.23811788956277,
+      "portable_nanoseconds_per_construction": 25227,
+      "repetitions": 1000
+    },
+    {
+      "continuity": [
+        0,
+        0
+      ],
+      "edge_control_count": 64,
+      "maximum_control_position_error": 0.0,
+      "maximum_control_weight_error": 0.0,
+      "native_nanoseconds_per_construction": 898195,
+      "native_to_portable_ratio": 1.0526491583564894,
+      "portable_nanoseconds_per_construction": 853271,
+      "repetitions": 100
+    },
+    {
+      "continuity": [
+        2,
+        2
+      ],
+      "edge_control_count": 64,
+      "maximum_control_position_error": 1.790180836524724e-15,
+      "maximum_control_weight_error": 4.440892098500626e-16,
+      "native_nanoseconds_per_construction": 1838872,
+      "native_to_portable_ratio": 1.029267601897029,
+      "portable_nanoseconds_per_construction": 1786583,
+      "repetitions": 100
+    },
+    {
+      "continuity": [
+        2,
+        1
+      ],
+      "edge_control_count": 64,
+      "maximum_control_position_error": 8.95090418262362e-16,
+      "maximum_control_weight_error": 2.220446049250313e-16,
+      "native_nanoseconds_per_construction": 1573348,
+      "native_to_portable_ratio": 1.0329031288138553,
+      "portable_nanoseconds_per_construction": 1523229,
+      "repetitions": 100
+    },
+    {
+      "continuity": [
+        0,
+        0
+      ],
+      "edge_control_count": 512,
+      "maximum_control_position_error": 0.0,
+      "maximum_control_weight_error": 0.0,
+      "native_nanoseconds_per_construction": 7531181,
+      "native_to_portable_ratio": 1.044715987932024,
+      "portable_nanoseconds_per_construction": 7208831,
+      "repetitions": 20
+    },
+    {
+      "continuity": [
+        2,
+        2
+      ],
+      "edge_control_count": 512,
+      "maximum_control_position_error": 2.275280134513746e-15,
+      "maximum_control_weight_error": 4.440892098500626e-16,
+      "native_nanoseconds_per_construction": 15342074,
+      "native_to_portable_ratio": 1.0259821263835094,
+      "portable_nanoseconds_per_construction": 14953549,
+      "repetitions": 20
+    },
+    {
+      "continuity": [
+        2,
+        1
+      ],
+      "edge_control_count": 512,
+      "maximum_control_position_error": 1.7763568394002505e-15,
+      "maximum_control_weight_error": 2.220446049250313e-16,
+      "native_nanoseconds_per_construction": 13135613,
+      "native_to_portable_ratio": 1.0254314651861383,
+      "portable_nanoseconds_per_construction": 12809840,
+      "repetitions": 20
+    }
+  ],
+  "verification": {
+    "native_tests_passed": 216,
+    "native_tests_ignored": 1,
+    "portable_blend_tests_passed": 8,
+    "command_tests_passed": 6,
+    "app_preview_tests_passed": 2,
+    "orientation_continuity_direction_cases": 432,
+    "independent_hermite_jobs": 27,
+    "maximum_edge_control_count": 4096,
+    "clippy": "passed with -D warnings"
+  }
+}

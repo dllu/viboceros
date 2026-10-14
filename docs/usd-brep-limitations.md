@@ -714,12 +714,16 @@ issues reported by NVIDIA that have not all been reproduced here.
   1–11 and 1,000-point ceilings remain. Fresh Rhino capture, continuous fit
   error and performance relative to Rhino remain unqualified. See
   [native Rebuild](smlib-curve-rebuild.md).
-- **BlendSrf shares native parent edits around independent boundary constraints.**
+- **BlendSrf uses native parent edits and exact mixed endpoint interpolation.**
   Clamping, exact elevation, knot matching and rectangular parent restrictions
   now use the existing checked native adapters in command and GUI preparation.
-  Boundary jets, exact homogeneous Hermite controls, independent G0/G1/G2
-  targets, bulges, budgets and diagnostics stay shared. Degrees above 17 retain
-  portable editing; supported native errors propagate before document mutation.
+  Native derivative basis rows and one shared homogeneous factorization now
+  construct the exact control net for all nine G0/G1/G2 boundary pairs, including
+  independent bulges. Boundary jets, target policy, budgets and diagnostics stay
+  shared. Parent degrees above 17 retain portable editing; the blend's own
+  degree remains 1–5, so its interpolation uses the native solver throughout.
+  Native errors propagate before document mutation. Independent polynomial
+  checks cover the full 4,096-column budget and coordinates at `1e-280`/`1e280`.
   The topology blend convenience producer has one operation-wide blend flag,
   and its derivative definition has one tangency/curvature type; the SM_API
   wrapper forwards a null definition to its G2 default. Whole-producer shape

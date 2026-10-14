@@ -83,42 +83,40 @@ fn compare(a: &SurfaceBlendResult, b: &SurfaceBlendResult) {
 }
 
 #[test]
-fn native_parent_preparation_preserves_all_edge_orientations_and_mixed_jets() {
+fn native_boundary_interpolation_preserves_all_orientations_mixed_jets_and_directions() {
     let parents = parents();
     let before = parents.clone();
     for first in [Edge::West, Edge::South, Edge::East, Edge::North] {
         for second in [Edge::West, Edge::South, Edge::East, Edge::North] {
-            for continuity in [
-                [G::Position; 2],
-                [G::Tangency; 2],
-                [G::Curvature; 2],
-                [G::Position, G::Curvature],
-                [G::Curvature, G::Tangency],
-            ] {
-                let options = SurfaceBlendOptions {
-                    continuity,
-                    bulges: [0.3, 1.7],
-                    reverse_second: None,
-                };
-                let a = blend_surfaces(
-                    &parents[0],
-                    first,
-                    &parents[1],
-                    second,
-                    options,
-                    Tolerance::DEFAULT,
-                )
-                .unwrap();
-                let b = try_blend_nurbs_surfaces(
-                    &parents[0],
-                    first,
-                    &parents[1],
-                    second,
-                    options,
-                    Tolerance::DEFAULT,
-                )
-                .unwrap();
-                compare(&a, &b);
+            for continuity1 in [G::Position, G::Tangency, G::Curvature] {
+                for continuity2 in [G::Position, G::Tangency, G::Curvature] {
+                    for reverse_second in [None, Some(false), Some(true)] {
+                        let options = SurfaceBlendOptions {
+                            continuity: [continuity1, continuity2],
+                            bulges: [0.3, 1.7],
+                            reverse_second,
+                        };
+                        let a = blend_surfaces(
+                            &parents[0],
+                            first,
+                            &parents[1],
+                            second,
+                            options,
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap();
+                        let b = try_blend_nurbs_surfaces(
+                            &parents[0],
+                            first,
+                            &parents[1],
+                            second,
+                            options,
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap();
+                        compare(&a, &b);
+                    }
+                }
             }
         }
     }

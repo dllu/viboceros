@@ -69,14 +69,88 @@ fn error(context: &'static str) -> GeometryError {
     GeometryError::InvalidSurfaceBlend { context }
 }
 
-/// Delegate exact parent preparation while retaining the boundary jet and
-/// Hermite construction policies. Refinement acts on the oriented U basis.
+/// Delegate exact parent preparation and endpoint interpolation while retaining
+/// boundary jet policy. Refinement acts on the oriented U basis.
 type ElevateSurface<'a, E> = dyn FnMut(&NurbsSurface, [usize; 2]) -> Result<NurbsSurface, E> + 'a;
+type InterpolateBlend<'a, E> =
+    dyn FnMut(&SurfaceBlendInterpolation<'_>) -> Result<Vec<[Real; 4]>, E> + 'a;
+
+/// Exact homogeneous endpoint constraints for all cross-boundary Bezier rows.
+/// Each row contains `edge_control_count` four-channel targets. At the first
+/// endpoint, derivative orders increase from zero; at the second, they decrease
+/// to zero. Derivatives refer to the normalized cross parameter and already
+/// include each boundary's bulge. Coordinates use a common local origin.
+pub struct SurfaceBlendInterpolation<'a> {
+    pub continuity: [SurfaceBlendContinuity; 2],
+    pub edge_control_count: usize,
+    pub targets: &'a [[Real; 4]],
+}
+impl SurfaceBlendInterpolation<'_> {
+    pub fn degree(&self) -> usize {
+        self.continuity[0].order() + self.continuity[1].order() + 1
+    }
+    pub fn validate(&self) -> Result<(), GeometryError> {
+        if self.edge_control_count == 0
+            || self.edge_control_count > MAX_EDGE_CONTROLS
+            || self.targets.len() != self.edge_control_count * (self.degree() + 1)
+        {
+            return Err(error("invalid boundary interpolation dimensions"));
+        }
+        crate::require_finite(
+            self.targets.iter().flat_map(|h| *h),
+            "surface blend boundary targets",
+        )
+    }
+}
 
 pub struct SurfaceBlendOperations<'a, E> {
     pub clamp: &'a mut dyn FnMut(&NurbsSurface) -> Result<NurbsSurface, E>,
     pub elevate: &'a mut ElevateSurface<'a, E>,
     pub refine: &'a mut dyn FnMut(&NurbsSurface, Real, usize) -> Result<NurbsSurface, E>,
+    pub interpolate: &'a mut InterpolateBlend<'a, E>,
+}
+
+/// Portable exact endpoint interpolation. Native builds can replace this
+/// operation with their kernel's derivative basis and homogeneous solver.
+pub fn try_interpolate_surface_blend(
+    input: &SurfaceBlendInterpolation<'_>,
+) -> Result<Vec<[Real; 4]>, GeometryError> {
+    input.validate()?;
+    let degree = input.degree();
+    let count = input.edge_control_count;
+    let mut net = vec![[0.; 4]; input.targets.len()];
+    for end in 0..2 {
+        let row = if end == 0 { 0 } else { degree };
+        let direction = if end == 0 { 1. } else { -1. };
+        for u in 0..count {
+            let h = input.targets[row * count + u];
+            for order in 0..=input.continuity[end].order() {
+                let row = if end == 0 { order } else { degree - order };
+                for k in 0..4 {
+                    let d = if order > 0 {
+                        input.targets[if end == 0 {
+                            count + u
+                        } else {
+                            (degree - 1) * count + u
+                        }][k]
+                            * direction
+                    } else {
+                        0.
+                    };
+                    net[row * count + u][k] = match order {
+                        0 => h[k],
+                        1 => h[k] + d / degree as Real,
+                        2 => {
+                            let dd = input.targets[row * count + u][k];
+                            h[k] + 2. * d / degree as Real + dd / (degree * (degree - 1)) as Real
+                        }
+                        _ => unreachable!(),
+                    };
+                }
+            }
+        }
+    }
+    Ok(net)
 }
 
 fn portable_clamp(source: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {
@@ -123,11 +197,12 @@ pub fn try_blend_nurbs_surfaces(
             clamp: &mut portable_clamp,
             elevate: &mut portable_elevate,
             refine: &mut portable_refine,
+            interpolate: &mut try_interpolate_surface_blend,
         },
     )
 }
 
-/// Preserve blend policy with delegated clamping, exact elevation and refinement.
+/// Preserve blend policy with delegated parent edits and endpoint interpolation.
 pub fn try_blend_nurbs_surfaces_with_operations<E: From<GeometryError>>(
     first: &NurbsSurface,
     first_edge: SurfaceExtensionEdge,
@@ -179,10 +254,10 @@ pub fn try_blend_nurbs_surfaces_with_operations<E: From<GeometryError>>(
         boundary_jets(&parents[1], false, origin)?,
     ];
     let scales = options.bulges.map(|b| b * 0.5);
-    let mut net = vec![[0.; 4]; count_u * (degree + 1)];
+    let mut targets = vec![[0.; 4]; count_u * (degree + 1)];
     for end in 0..2 {
         for (u, jet) in jets[end].iter().enumerate() {
-            let scale = scales[end] * if end == 0 { 1. } else { -1. };
+            let scale = scales[end];
             for distance in 0..=options.continuity[end].order() {
                 let row = if end == 0 {
                     distance
@@ -190,18 +265,25 @@ pub fn try_blend_nurbs_surfaces_with_operations<E: From<GeometryError>>(
                     degree - distance
                 };
                 for k in 0..4 {
-                    let h = jet[0][k];
-                    let d = jet[1][k] * scale;
-                    let dd = jet[2][k] * scale * scale;
-                    net[row * count_u + u][k] = match distance {
-                        0 => h,
-                        1 => h + d / degree as Real,
-                        2 => h + 2. * d / degree as Real + dd / (degree * (degree - 1)) as Real,
+                    targets[row * count_u + u][k] = match distance {
+                        0 => jet[0][k],
+                        1 => jet[1][k] * scale,
+                        2 => jet[2][k] * scale * scale,
                         _ => unreachable!(),
                     };
                 }
             }
         }
+    }
+    let input = SurfaceBlendInterpolation {
+        continuity: options.continuity,
+        edge_control_count: count_u,
+        targets: &targets,
+    };
+    input.validate()?;
+    let net = (operations.interpolate)(&input)?;
+    if net.len() != targets.len() {
+        return Err(error("boundary interpolation returned an invalid control count").into());
     }
     let controls = net
         .into_iter()

@@ -407,3 +407,62 @@ fn excessive_edge_basis_is_rejected_before_refinement() {
         Err(GeometryError::InvalidSurfaceBlend { .. })
     ));
 }
+
+#[test]
+fn delegated_boundary_interpolation_rejects_bad_controls_and_retains_sources() {
+    let parents = [patch(0.), patch(3.)];
+    let before = parents.clone();
+    for failure in 0..3 {
+        let mut interpolate = |input: &SurfaceBlendInterpolation<'_>| {
+            let mut net = try_interpolate_surface_blend(input)?;
+            match failure {
+                0 => net.clear(),
+                1 => net[0][3] = 0.,
+                2 => net[0][0] += 1.,
+                _ => unreachable!(),
+            }
+            Ok::<_, GeometryError>(net)
+        };
+        let result = try_blend_nurbs_surfaces_with_operations(
+            &parents[0],
+            SurfaceExtensionEdge::North,
+            &parents[1],
+            SurfaceExtensionEdge::South,
+            Default::default(),
+            Tolerance::DEFAULT,
+            &mut SurfaceBlendOperations {
+                clamp: &mut portable_clamp,
+                elevate: &mut portable_elevate,
+                refine: &mut portable_refine,
+                interpolate: &mut interpolate,
+            },
+        );
+        assert!(matches!(
+            result,
+            Err(GeometryError::InvalidSurfaceBlend { .. })
+        ));
+        assert_eq!(parents, before);
+    }
+}
+
+#[test]
+fn boundary_interpolation_validates_dimensions_and_finite_jets() {
+    for count in [0, usize::MAX, MAX_EDGE_CONTROLS + 1, 1] {
+        let result = try_interpolate_surface_blend(&SurfaceBlendInterpolation {
+            continuity: [SurfaceBlendContinuity::Curvature; 2],
+            edge_control_count: count,
+            targets: &[],
+        });
+        assert!(result.is_err());
+    }
+    let mut targets = [[0., 0., 0., 1.]; 2];
+    targets[0][0] = Real::NAN;
+    assert!(
+        try_interpolate_surface_blend(&SurfaceBlendInterpolation {
+            continuity: [SurfaceBlendContinuity::Position; 2],
+            edge_control_count: 1,
+            targets: &targets,
+        })
+        .is_err()
+    );
+}

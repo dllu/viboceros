@@ -28,5 +28,9 @@ struct VbInterpolationSystem {
     // Retain nonuniform Greville phase and full pivoted storage for MakePeriodic.
     int nonuniform_periodic;
     size_t periodic_control_shift;
+    // Optional normalized Bezier endpoint Hermite constraints, in control-row
+    // order. Existing point interpolation leaves these fields empty.
+    const unsigned char *derivative_orders;
+    size_t derivative_count;
 };
 void vb_solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count);

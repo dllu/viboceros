@@ -1,4 +1,4 @@
-//! Exact edge blends around existing native parent preparation operations.
+//! Exact edge blends using native parent editing and Hermite interpolation.
 use super::*;
 use viboceros_geometry::{
     SurfaceBlendOperations, SurfaceBlendOptions, SurfaceBlendResult, SurfaceExtensionEdge,
@@ -17,8 +17,8 @@ fn clamp(source: &NurbsSurface) -> Result<NurbsSurface, Error> {
     Ok(result)
 }
 
-/// Preserve exact homogeneous Hermite constraints while delegating clamping,
-/// boundary degree elevation and knot matching to the qualified native edits.
+/// Preserve independent boundary jets using native parent editing and one
+/// batched native derivative-basis solve for the homogeneous control net.
 pub fn blend_surfaces(
     first: &NurbsSurface,
     first_edge: SurfaceExtensionEdge,
@@ -51,6 +51,7 @@ pub fn blend_surfaces(
                 }
                 insert_surface_knot(source, SurfaceKnotDirection::U, parameter, target)
             },
+            interpolate: &mut super::knot_refinement::interpolate_surface_blend,
         },
     )
 }

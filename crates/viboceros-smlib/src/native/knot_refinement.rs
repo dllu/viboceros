@@ -116,6 +116,8 @@ struct InterpolationSystem {
     amplification_count: usize,
     nonuniform_periodic: c_int,
     periodic_control_shift: usize,
+    derivative_orders: *const u8,
+    derivative_count: usize,
 }
 
 fn solve_cubic_system(
@@ -140,6 +142,8 @@ fn solve_cubic_system(
         amplification_count: 0,
         nonuniform_periodic: 0,
         periodic_control_shift: 0,
+        derivative_orders: std::ptr::null(),
+        derivative_count: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -307,12 +311,65 @@ fn solve_interpolation(
         amplification_count: 0,
         nonuniform_periodic: c_int::from(nonuniform_periodic.is_some()),
         periodic_control_shift: nonuniform_periodic.unwrap_or(0),
+        derivative_orders: std::ptr::null(),
+        derivative_count: 0,
     };
     let mut output = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
         vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
     })?;
     Ok(output)
+}
+
+/// Solve exact mixed endpoint jets for all blend columns in one native job.
+pub fn interpolate_surface_blend(
+    input: &viboceros_geometry::SurfaceBlendInterpolation<'_>,
+) -> Result<Vec<[f64; 4]>, Error> {
+    input.validate()?;
+    let degree = input.degree();
+    let first = input.continuity[0].order();
+    let second = input.continuity[1].order();
+    let parameters = std::iter::repeat_n(0., first + 1)
+        .chain(std::iter::repeat_n(1., second + 1))
+        .collect::<Vec<_>>();
+    let orders = (0..=first)
+        .chain((0..=second).rev())
+        .map(|order| order as u8)
+        .collect::<Vec<_>>();
+    let knots = std::iter::repeat_n(0., degree + 1)
+        .chain(std::iter::repeat_n(1., degree + 1))
+        .collect::<Vec<_>>();
+    let targets = input.targets.iter().flat_map(|h| *h).collect::<Vec<_>>();
+    let view = InterpolationSystem {
+        knots: knots.as_ptr(),
+        parameters: parameters.as_ptr(),
+        targets: targets.as_ptr(),
+        knot_count: knots.len(),
+        parameter_count: parameters.len(),
+        columns: input.edge_control_count * 4,
+        target_count: targets.len(),
+        degree,
+        closed: 0,
+        handles: 0,
+        uniform_periodic: 0,
+        fixed_rows: std::ptr::null(),
+        fixed_count: 0,
+        point_grid: 0,
+        amplification: std::ptr::null_mut(),
+        amplification_count: 0,
+        nonuniform_periodic: 0,
+        periodic_control_shift: 0,
+        derivative_orders: orders.as_ptr(),
+        derivative_count: orders.len(),
+    };
+    let mut output = vec![0.; targets.len()];
+    call(|error, capacity| unsafe {
+        vb_interpolation_solve(&view, output.as_mut_ptr(), output.len(), error, capacity)
+    })?;
+    Ok(output
+        .chunks_exact(4)
+        .map(|h| [h[0], h[1], h[2], h[3]])
+        .collect())
 }
 
 /// Smooth a closed curve through native nonuniform periodic collocation.
@@ -435,6 +492,8 @@ fn solve_point_grid(
         amplification_count: amplification.len(),
         nonuniform_periodic: 0,
         periodic_control_shift: 0,
+        derivative_orders: std::ptr::null(),
+        derivative_count: 0,
     };
     let mut controls = vec![0.; input.targets.len()];
     call(|error, capacity| unsafe {
@@ -1321,6 +1380,77 @@ pub fn insert_surface_knot(
 #[cfg(test)]
 mod interpolation_tests {
     use super::*;
+
+    #[test]
+    fn native_blend_hermite_rows_reproduce_independent_monomials_and_tiny_channels() {
+        use viboceros_geometry::{SurfaceBlendContinuity as G, SurfaceBlendInterpolation};
+        for first in [G::Position, G::Tangency, G::Curvature] {
+            for second in [G::Position, G::Tangency, G::Curvature] {
+                let p = first.order() + second.order() + 1;
+                for count in [1, 513, 4096] {
+                    let scales = [0., 1e-280, 1., 1e280];
+                    let mut targets = Vec::new();
+                    for (end, order) in (0..=first.order())
+                        .map(|order| (false, order))
+                        .chain((0..=second.order()).rev().map(|order| (true, order)))
+                    {
+                        // Polynomial channels contain v^p and linear functions.
+                        // Their Bernstein controls follow linear precision and
+                        // v^p=B[p,p]; no portable Hermite constructor is called.
+                        let monomial = match order {
+                            0 => f64::from(end),
+                            1 if end || p == 1 => p as f64,
+                            2 if end || p == 2 => (p * (p - 1)) as f64,
+                            _ => 0.,
+                        };
+                        let linear = match order {
+                            0 => f64::from(end),
+                            1 => 1.,
+                            _ => 0.,
+                        };
+                        let constant = f64::from(order == 0);
+                        for u in 0..count {
+                            let scale = scales[u % scales.len()];
+                            targets.push([
+                                scale * monomial,
+                                scale * (2. * constant + 3. * linear + monomial),
+                                -scale * (linear + monomial),
+                                constant + 0.25 * linear + 0.125 * monomial,
+                            ]);
+                        }
+                    }
+                    let output = interpolate_surface_blend(&SurfaceBlendInterpolation {
+                        continuity: [first, second],
+                        edge_control_count: count,
+                        targets: &targets,
+                    })
+                    .unwrap();
+                    assert_eq!(output.len(), (p + 1) * count);
+                    for row in 0..=p {
+                        for u in 0..count {
+                            let scale = scales[u % scales.len()];
+                            let t = row as f64 / p as f64;
+                            let monomial = f64::from(row == p);
+                            let expected = [
+                                scale * monomial,
+                                scale * (2. + 3. * t + monomial),
+                                -scale * (t + monomial),
+                                1. + 0.25 * t + 0.125 * monomial,
+                            ];
+                            for k in 0..4 {
+                                let magnitude = if k == 3 { 1. } else { scale };
+                                assert!(
+                                    (output[row * count + u][k] - expected[k]).abs()
+                                        <= 1e-12 * magnitude,
+                                    "{first:?}/{second:?} count={count} row={row} u={u} k={k}"
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn equal_station_rows_require_independent_fixed_constraints() {

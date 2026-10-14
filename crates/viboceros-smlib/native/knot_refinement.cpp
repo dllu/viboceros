@@ -822,8 +822,9 @@ VbSurfaceData *vb_surface_isocurve(const VbNurbsData &data,int varying,double pa
 namespace { struct InterpolationBandFailure {}; }
 
 static void solve_interpolation(const VbInterpolationSystem &input,double *output,size_t output_count,bool periodic_band) {
+    const bool hermite=input.derivative_orders!=nullptr;
     require(input.knots && input.parameters && input.targets && input.parameter_count>=2
-        && input.parameter_count<=(input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=2048 && input.columns%4==0
+        && input.parameter_count<=(hermite?6:input.point_grid?256:(input.fixed_rows?4096:(input.handles && input.columns==4?10000:1001))) && input.columns>0 && input.columns<=(hermite?16384:2048) && input.columns%4==0
         && input.degree>=1 && input.degree<=NL_MAXDEG
         && (input.closed==0 || input.closed==1) && (input.handles==0 || input.handles==1)
         && (input.uniform_periodic==0 || input.uniform_periodic==1)
@@ -831,6 +832,9 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
         && (!input.uniform_periodic || input.closed)
         && (input.point_grid==0 || input.point_grid==1)
         && (input.nonuniform_periodic==0 || input.nonuniform_periodic==1)
+        && (!hermite || (!input.closed && !input.handles && !input.fixed_rows && !input.point_grid
+            && input.degree<=5 && input.parameter_count==input.degree+1 && input.derivative_count==input.parameter_count))
+        && (hermite || input.derivative_count==0)
         && (!input.nonuniform_periodic || (input.closed && !input.uniform_periodic && !input.handles && !input.fixed_rows && !input.point_grid)),
         "Invalid interpolation dimensions");
     const size_t sections=input.parameter_count-(input.closed && !input.point_grid);
@@ -845,10 +849,23 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
     std::vector<double> basis(input.knots,input.knots+input.knot_count);
     for(size_t i=0;i<basis.size();++i)
         require(std::isfinite(basis[i]) && (!i || basis[i]>=basis[i-1]),"Invalid interpolation knot vector");
+    if(hermite) {
+        size_t first=0;
+        while(first<input.parameter_count && input.parameters[first]==0.) ++first;
+        require(first>=1 && first<=3 && input.parameter_count>first && input.parameter_count-first<=3,
+                "Invalid Hermite endpoint constraint counts");
+        for(size_t i=0;i<input.parameter_count;++i)
+            require(input.parameters[i]==(i<first?0.:1.)
+                && input.derivative_orders[i]==(i<first?i:input.parameter_count-1-i),
+                "Invalid Hermite endpoint derivative order");
+        for(size_t i=0;i<basis.size();++i)
+            require(basis[i]==(i<=input.degree?0.:1.),"Hermite basis must be a normalized Bezier interval");
+    }
     const BinaryChart chart(input.knots,input.knot_count,input.parameters,input.parameter_count);
     chart.scale(basis);
     for(size_t i=0;i<input.parameter_count;++i)
         require(std::isfinite(input.parameters[i]) && (!i || input.parameters[i]>input.parameters[i-1]
+            || (hermite && input.parameters[i]==input.parameters[i-1])
             || (input.nonuniform_periodic && i+1==input.parameter_count && input.parameters[i]==input.parameters[i-1])
             || (input.point_grid && input.closed && input.parameters[i]==input.parameters[i-1])
             || (input.fixed_rows && input.fixed_rows[i] && input.fixed_rows[i-1] && input.parameters[i]==input.parameters[i-1])),
@@ -898,11 +915,13 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
             require(input.fixed_rows[i]<=1,"Invalid fixed interpolation row");
             if(input.fixed_rows[i]) {values[i][half_width]=1.;continue;}
         }
-        double coefficients[NL_MAXDEG+1],*rows[]={coefficients};
+        double derivatives[3][NL_MAXDEG+1],*rows[]={derivatives[0],derivatives[1],derivatives[2]};
+        const size_t order=hermite?input.derivative_orders[i]:0;
         NL_INDEX span;
         const double parameter=chart.scaled(input.parameters[i]);
-        // Zeroth derivatives honor unclamped periodic endpoints.
-        check(N_BasisDerivs(&knots,input.degree,parameter,NL_LEFT,0,rows,&span),"Evaluate native interpolation basis failed");
+        // Value rows honor unclamped periodic endpoints; Hermite rows retain
+        // the requested one-sided endpoint derivative order.
+        check(N_BasisDerivs(&knots,input.degree,parameter,NL_LEFT,order,rows,&span),"Evaluate native interpolation basis failed");
         size_t expected;
         if(input.point_grid && parameter<=basis[input.degree]) {
             expected=input.degree;
@@ -917,17 +936,21 @@ static void solve_interpolation(const VbInterpolationSystem &input,double *outpu
         if(input.point_grid) input.amplification[i]=0;
         for(size_t j=0;j<=input.degree;++j) {
             const auto original_column=static_cast<size_t>(span-input.degree)+j;
-            require(original_column<controls && std::isfinite(coefficients[j]),"Invalid native interpolation basis coefficient");
-            if(input.point_grid) input.amplification[i]+=std::abs(coefficients[j]);
+            // Restore derivatives to the caller's parameter after binary chart
+            // scaling. Zeroth-order interpolation keeps the existing behavior.
+            const double coefficient=order?std::ldexp(derivatives[order][j],-chart.exponent*static_cast<int>(order)):
+                derivatives[0][j];
+            require(original_column<controls && std::isfinite(coefficient),"Invalid native interpolation basis coefficient");
+            if(input.point_grid) input.amplification[i]+=std::abs(coefficient);
             const auto folded=input.closed?original_column%sections:original_column;
             const size_t column=cyclic?inverse[(folded+sections-shift)%sections]:folded;
-            if(full) values[row][column]+=coefficients[j];
-            else if(coefficients[j]!=0) {
+            if(full) values[row][column]+=coefficient;
+            else if(coefficient!=0) {
                 const auto band_column=static_cast<ptrdiff_t>(column)-static_cast<ptrdiff_t>(row)+static_cast<ptrdiff_t>(half_width);
                 const bool inside=band_column>=0 && static_cast<size_t>(band_column)<matrix_width;
                 if(periodic_band && !inside) throw InterpolationBandFailure{};
                 require(inside,"Native interpolation exceeded its matrix band");
-                values[row][band_column]+=coefficients[j];
+                values[row][band_column]+=coefficient;
             }
         }
     }
