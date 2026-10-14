@@ -10,7 +10,6 @@
     "crates/viboceros-smlib/src/native/knot_refinement.rs": "c34853cf1f4863b6a2bd3b1b96e2d0eff1320a5e96b9ffab26d04f7651e2999c",
     "crates/viboceros-smlib/src/native/curve_blend.rs": "d5416e0fa9f145a5ddca046a0eb045c771d398469a6f007ea7076bd7d1eebb86",
     "crates/viboceros-oracle/src/blend_curve.rs": "387d7a3f79ce8938f40625c7a8d688ec82cac48336086e79456cab6b92307648",
-    "tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
     "tools/numerics/compare_native_curve_blends.py": "017f73a3eb18e74d7372cf4b1c9dcf16cd710c14f42d54e1b23adeb34f0f48f0",
     "tools/rhino_oracle/fixtures/blend_lines.json": "e84087fd1f2e308d4b49fce402bee133f1eb8aa1d2fb47fc79bb6fce432ba48b",
     "tools/rhino_oracle/observations/blend_lines.json": "254b80362c13ec57be8ec8661e8570f42c4c7d935c264141bd1d1227f3b7b884",
@@ -17283,5 +17282,8 @@
         ]
       }
     }
-  ]
+  ],
+  "source_git_sha256": {
+    "46a9b476e65045268c71b1797bac25b2cb4de969:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376"
+  }
 }

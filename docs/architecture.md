@@ -95,6 +95,11 @@ releases; native close-time warning choices are captured separately.
 queries through immutable member records, preserving root ownership and bounded
 insertion-point discovery.
 
+[IPlane](commands/iplane.md) reuses the Section intersection producer and
+Project plane picker for standalone unbounded cuts, with staged output and one
+history edit. Its Python oracle routes geometry to Rhino 8 public plane APIs;
+fresh native command/getter parity remains unqualified.
+
 [Section](commands/section.md) adds CPlane-aware plane cuts with staged output,
 property/group options and repeated two-point input. Surface/B-rep intersections
 reuse the kernel; mesh sections use exact dyadic edge intersections and shared

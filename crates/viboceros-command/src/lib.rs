@@ -11,6 +11,7 @@ mod create_unique_block;
 mod create_uv_curves;
 pub mod divide;
 pub mod edge_analysis;
+mod iplane;
 pub mod replace_block;
 pub mod section;
 mod uv_inputs;
@@ -590,6 +591,9 @@ impl CommandRegistry {
         registry
             .register(contour::ContourCommand)
             .expect("built-in command names are unique");
+        registry
+            .register(iplane::IPlaneCommand)
+            .expect("unique built-in command");
         registry
             .register(section::SectionCommand)
             .expect("unique built-in command");

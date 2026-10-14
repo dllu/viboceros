@@ -2,6 +2,8 @@ use super::*;
 use viboceros_document::SelectionMode;
 #[path = "project_plane.rs"]
 mod infinite;
+#[path = "iplane.rs"]
+mod iplane;
 #[path = "project_subcurve.rs"]
 mod subcurve;
 fn enter(app: &mut VibocerosApp, input: &str) {

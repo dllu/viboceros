@@ -92,6 +92,7 @@ mod document_brep;
 mod document_units;
 mod edge_analysis;
 mod extract_surface;
+mod iplane;
 mod section_command;
 pub use extract_surface::{ExtractFixture, ExtractFixtureDocument};
 mod apply_curves;
@@ -442,6 +443,12 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: edge_analysis::Fixture,
+    },
+    #[serde(rename = "iplane")]
+    IPlane {
+        id: String,
+        #[serde(flatten)]
+        fixture: iplane::Fixture,
     },
     SectionCommand {
         id: String,
@@ -2298,6 +2305,7 @@ impl Operation {
             | Self::TrimBoundaryBounds { id, .. }
             | Self::TrimmedBrepBounds { id, .. }
             | Self::PlaneArray { id, .. }
+            | Self::IPlane { id, .. }
             | Self::SectionCommand { id, .. }
             | Self::ContourCommand { id, .. }
             | Self::DivideCommand { id, .. }
@@ -2954,6 +2962,7 @@ fn execute(
         Operation::PointCloudCommand { fixture, .. } => {
             point_cloud_command::run(fixture, tolerance)?
         }
+        Operation::IPlane { fixture, .. } => iplane::run(fixture, iterations, tolerance)?,
         Operation::SectionCommand { fixture, .. } => section_command::run(fixture, tolerance)?,
         Operation::ContourCommand { fixture, .. } => contour_command::run(fixture, tolerance)?,
         Operation::DivideCommand { fixture, .. } => divide_command::run(fixture, tolerance)?,

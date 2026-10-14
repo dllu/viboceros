@@ -62,8 +62,8 @@ instead of admitting an image outside tolerance. General numerical conditioning,
 native getter parity and comparative performance remain unqualified.
 
 The current picker uses a text choice and typed named-plane selection. Named
-CPlane axis-icon/list picking, clipping-plane objects and standalone IPlane are
-pending. These local behaviors have not been captured from a live Rhino getter.
+CPlane axis-icon/list picking and clipping-plane objects are pending.
+[Standalone IPlane](iplane.md) shares this picker and creates intersections. These local behaviors have not been captured from a live Rhino getter.
 
 The Python `project_curve_plane` operation accepts a NURBS `curve`, world
 `origin`, nonzero `normal` and nonparallel `direction`. It returns complete

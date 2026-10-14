@@ -1,0 +1,245 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "iplane",
+      "id": "line-cross",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            10,
+            20,
+            -3
+          ],
+          "end": [
+            10,
+            20,
+            5
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "iplane",
+      "id": "line-miss",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            1
+          ],
+          "end": [
+            2,
+            0,
+            1
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "iplane",
+      "id": "line-contained",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "iplane",
+      "id": "surface-cross",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "knots_u": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "iplane",
+      "id": "mesh-cross",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              2,
+              0,
+              -1
+            ],
+            [
+              2,
+              3,
+              -1
+            ],
+            [
+              2,
+              3,
+              1
+            ],
+            [
+              2,
+              0,
+              1
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "op": "iplane",
+      "id": "box-cross",
+      "sources": [
+        {
+          "type": "box_brep",
+          "min": [
+            -1,
+            -1,
+            -1
+          ],
+          "max": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    }
+  ]
+}

@@ -19,7 +19,6 @@
     "crates/viboceros-command/src/chamfer.rs": "6c48dfc71565f3df6de8ecd815768d810697eb330096b0d686d1bc8102b8566c",
     "crates/viboceros-oracle/src/curve_connections.rs": "a00d65a3139caa9e24890916e8038587c6b466751acf34a2c14d9a765174fd81",
     "crates/viboceros-oracle/src/connect_command.rs": "5b79dcc19337b80be8f2572adf3f346ff57e7018ba84abe56059a787641d1fec",
-    "tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376",
     "tools/numerics/compare_native_curve_connections.py": "f95156c7890a889f4e420675c93c97a81365931cc03741dd436d9c417f6642c8",
     "crates/viboceros-geometry/src/polycurve/fillet.rs": "b63a4d6edde997fa567c4bae20d2e00fb1a5aacd321bf6d2366a0bae3adfd17f",
     "crates/viboceros-geometry/src/polycurve/fillet/nurbs_line.rs": "4b697232f0ffe24012d6290285bf336749c804ac5cc1cf12ca343008e50306ec",
@@ -20306,6 +20305,7 @@
     "957803e9c444158e8570b564226aee766b53c942:crates/viboceros-smlib/native/bridge.h": "b029f966bd0ea01dcd1d512c8038f58ca033aaad22243754e06f22380e66095a",
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-smlib/native/CMakeLists.txt": "0b386cad397be39b4b756ec98c464e8f38f32c92e070f6459a1d8153927351a7",
     "667eeb970c0e99e448c564efa90aaf9602864da4:crates/viboceros-smlib/build.rs": "dcac67f49ce04699e96f4bdb59aa8778a15fe7f8171888009b868798dfb5a99d",
-    "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-oracle/src/lib.rs": "b7776081d660dd521d24ecef67504f7df72a48024a22a04d3432f604237e2f9c"
+    "e5392f3bd8052c3c8692aaea9141c6daae6af14b:crates/viboceros-oracle/src/lib.rs": "b7776081d660dd521d24ecef67504f7df72a48024a22a04d3432f604237e2f9c",
+    "46a9b476e65045268c71b1797bac25b2cb4de969:tools/rhino_oracle/client.py": "8c78e2e3a8a583fcc1299f754c22c1aa43f40942bb5bff9560842a1fe8d98376"
   }
 }

@@ -57,8 +57,8 @@ impl BooleanOptions {
 
 impl TwoSetsPrompt {
     pub(super) fn name(&self) -> &'static str {
-        if self.projection.is_some() {
-            return "Project";
+        if let Some(session) = &self.projection {
+            return session.name();
         }
         if let Some(kind) = self.uv_mapping {
             kind.name()
@@ -78,6 +78,9 @@ impl TwoSetsPrompt {
         }
         if self.uv_subcurves.pending.is_some() {
             return ObjectSelectionFilter::Curves;
+        }
+        if self.projection.as_ref().is_some_and(|p| p.intersection) {
+            return ObjectSelectionFilter::Section;
         }
         if self.projection.is_some() {
             return if self.first.is_some() {
@@ -107,6 +110,9 @@ impl TwoSetsPrompt {
         }
         if self.projection.as_ref().is_some_and(|p| p.custom_requested) {
             return "Pick two points for the custom direction; Esc cancels";
+        }
+        if self.projection.as_ref().is_some_and(|p| p.intersection) {
+            return "Select curves, surfaces, B-reps or meshes; Enter chooses a plane, Esc cancels";
         }
         if self.projection.is_some() {
             return if self.first.is_some() {

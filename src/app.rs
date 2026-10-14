@@ -162,6 +162,7 @@ mod grid_settings;
 mod group_prompt;
 mod interface;
 mod intersect_two_sets;
+mod iplane;
 mod length;
 mod maelstrom_prompt;
 mod mesh_face_prompt;
@@ -309,6 +310,7 @@ impl InteractiveScaleKind {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     ProjectPlane {
+        command: &'static str,
         mode: project_plane::PlaneMode,
         step: usize,
         anchor: Option<Point3>,
@@ -732,7 +734,8 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
-            Self::ProjectDirection { .. } | Self::ProjectPlane { .. } => "Project",
+            Self::ProjectDirection { .. } => "Project",
+            Self::ProjectPlane { command, .. } => command,
             Self::Section { .. } => "Section",
             Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",

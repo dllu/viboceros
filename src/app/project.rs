@@ -11,16 +11,28 @@ pub(super) struct ProjectOptions {
     delete_input: bool,
     output_layer: &'static str,
 }
+/// Shared source selection and plane getter state for Project and IPlane.
 #[derive(Clone, Debug)]
 pub(super) struct ProjectSession {
-    options: ProjectOptions,
+    pub(super) intersection: bool,
+    pub(super) options: ProjectOptions,
     pub(super) custom_requested: bool,
-    finish_targets: Option<Vec<ObjectId>>,
+    pub(super) finish_targets: Option<Vec<ObjectId>>,
     pub(super) planes: Vec<String>,
     pub(super) plane_getter: Option<super::project_plane::PlaneGetter>,
 }
 impl ProjectSession {
+    pub(super) fn name(&self) -> &'static str {
+        if self.intersection {
+            "IPlane"
+        } else {
+            "Project"
+        }
+    }
     fn command(&self) -> String {
+        if self.intersection {
+            return "IPlane".into();
+        }
         self.options
             .command_with_direction(if self.custom_requested {
                 "Custom"
@@ -111,6 +123,9 @@ impl ProjectOptions {
 }
 impl VibocerosApp {
     pub(super) fn try_start_project_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_iplane_prompt(input) {
+            return true;
+        }
         let mut words = input.split_whitespace();
         if !words.next().is_some_and(|w| {
             w.trim_start_matches(['_', '-'])
@@ -175,6 +190,7 @@ impl VibocerosApp {
             uv_face: None,
             uv_subcurves: Default::default(),
             projection: Some(ProjectSession {
+                intersection: false,
                 options,
                 custom_requested,
                 finish_targets,
@@ -214,7 +230,8 @@ impl VibocerosApp {
         if self.continue_project_plane(&prompt, input) {
             return true;
         }
-        if !self.picking_project_direction()
+        if !prompt.projection.as_ref().unwrap().intersection
+            && !self.picking_project_direction()
             && prompt.first.is_none()
             && self.try_continue_uv_subcurve(&prompt, input)
         {
@@ -280,8 +297,13 @@ impl VibocerosApp {
             } else {
                 prompt.first = Some(selected);
                 self.document.clear_selection();
+                let intersection = prompt.projection.as_ref().unwrap().intersection;
                 self.intersection_prompt = Some(prompt);
-                self.log_intersection_prompt();
+                if intersection {
+                    self.begin_iplane_getter();
+                } else {
+                    self.log_intersection_prompt();
+                }
             }
         } else if input.contains('=')
             && !self.commands.recognizes(
@@ -293,7 +315,9 @@ impl VibocerosApp {
             )
         {
             let mut session = prompt.projection.clone().unwrap();
-            if custom_option(input) {
+            if session.intersection {
+                self.push_log("IPlane: choose a plane or press Esc to cancel".into());
+            } else if custom_option(input) {
                 self.clear_project_plane_state();
                 session.plane_getter = None;
                 session.custom_requested = true;
@@ -501,7 +525,7 @@ fn project_command(prompt: &TwoSetsPrompt, sources: &[ObjectId], targets: &[Obje
         planes,
     )
 }
-fn project_ids(ids: &[ObjectId]) -> String {
+pub(super) fn project_ids(ids: &[ObjectId]) -> String {
     ids.iter()
         .map(ToString::to_string)
         .collect::<Vec<_>>()

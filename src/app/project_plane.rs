@@ -20,13 +20,13 @@ pub(super) enum PlaneMode {
 impl PlaneMode {
     pub(super) const fn point_hint(self, step: usize) -> &'static str {
         match (self, step) {
-            (Self::Through, _) => "Project IP: pick the through point",
-            (Self::AroundCurve, _) => "Project IP: pick a point on the reference curve",
-            (_, 0) => "Project IP: pick the first corner",
-            (Self::Rectangle, _) => "Project IP: pick the opposite corner",
-            (_, 1) => "Project IP: pick the adjacent corner",
-            (Self::Vertical, _) => "Project IP: pick a height point",
-            _ => "Project IP: pick the third plane point",
+            (Self::Through, _) => "IP: pick the through point",
+            (Self::AroundCurve, _) => "IP: pick a point on the reference curve",
+            (_, 0) => "IP: pick the first corner",
+            (Self::Rectangle, _) => "IP: pick the opposite corner",
+            (_, 1) => "IP: pick the adjacent corner",
+            (Self::Vertical, _) => "IP: pick a height point",
+            _ => "IP: pick the third plane point",
         }
     }
 }
@@ -123,7 +123,9 @@ impl VibocerosApp {
             .and_then(|p| p.plane_getter.as_ref())
             && p.points_active()
         {
+            let command = self.intersection_prompt.as_ref().unwrap().name();
             self.active_command = Some(InteractiveCommand::ProjectPlane {
+                command,
                 mode: p.mode,
                 step: p.points.len(),
                 anchor: p.points.first().copied(),
@@ -131,6 +133,15 @@ impl VibocerosApp {
         }
     }
     fn add_project_plane(&mut self, definition: String) {
+        if self
+            .intersection_prompt
+            .as_ref()
+            .and_then(|p| p.projection.as_ref())
+            .is_some_and(|s| s.intersection)
+        {
+            self.finish_iplane(definition);
+            return;
+        }
         let s = self
             .intersection_prompt
             .as_mut()
@@ -146,6 +157,10 @@ impl VibocerosApp {
             "Added infinite plane target; Enter projects or select another target".into(),
         );
         self.log_intersection_prompt();
+    }
+    pub(super) fn begin_iplane_getter(&mut self) {
+        let prompt = self.intersection_prompt.clone().unwrap();
+        self.continue_project_plane(&prompt, "IP");
     }
     pub(super) fn continue_project_plane(&mut self, prompt: &TwoSetsPrompt, input: &str) -> bool {
         let input = input.trim();
@@ -204,6 +219,8 @@ impl VibocerosApp {
                 )
                 .unwrap();
                 self.add_project_plane(plane_value(p));
+            } else if prompt.projection.as_ref().unwrap().intersection {
+                self.begin_iplane_getter();
             } else {
                 self.intersection_prompt
                     .as_mut()

@@ -6395,6 +6395,9 @@ def _execute(operation, iterations, tolerance):
     if operation.get('op')=='contour_command':
         import contour_probe
         return contour_probe.run(operation,tolerance,globals())
+    if operation.get('op') == 'iplane':
+        import iplane_probe
+        return iplane_probe.run(operation, iterations, tolerance, globals())
     if operation.get('op')=='section_command':
         import section_probe
         return section_probe.run(operation,tolerance,globals())

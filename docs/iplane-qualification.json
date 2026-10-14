@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "command": "IPlane",
+  "aliases": [
+    "IP",
+    "InfinitePlane"
+  ],
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "fresh_rhino_observations": 0,
+  "qualification": "Local analytic intersections, command and shared getter history, source preservation, atomic decline and SDK ownership regressions. No fresh Rhino command/getter or SDK capture.",
+  "behavior": [
+    "One unbounded plane intersects selectable curve, surface, B-rep and mesh sources without editing the originals.",
+    "Shared Project plane picker supports axes, drawn planes, planar objects/faces, perpendicular curve planes and typed named CPlanes.",
+    "Accepted planes execute immediately; output uses the current layer in one Undo/Redo edit. Cancellation restores original selection.",
+    "Section supplies the existing validated intersection producers, including usd-brep when enabled and exact mesh edge predicates."
+  ],
+  "checks": {
+    "iplane_command_tests_per_backend": 9,
+    "iplane_app_tests_per_backend": 6,
+    "oracle_recipe_tests_per_backend": 1,
+    "oracle_recipes_per_backend": 6,
+    "python_worker_client_and_iplane_probe_tests": 143,
+    "portable_app_tests": 800,
+    "portable_app_excluded_tests": [
+      "app::tests::smooth::workflow::native_workflows_replay_admission_metadata_preferences_cancellation_and_trim_rebuilding"
+    ],
+    "native_project_app_tests": 30,
+    "portable_project_app_tests": 30,
+    "native_project_related_command_tests": 57,
+    "portable_project_related_command_tests": 54,
+    "native_and_portable_lint": "All targets, warnings denied",
+    "native_project_related_app_tests": 44,
+    "portable_project_related_app_tests": 44,
+    "python_final_geometry_protocol_and_provenance_tests": 149
+  },
+  "limitations": [
+    "No fresh Rhino output: the earlier architecture-checked Wine SSPI failure remains unresolved.",
+    "Native command/getter parity and comparative performance are unqualified. SDK comparison uses CurvePlane, MeshPlane and BrepPlane rather than running the native command.",
+    "Existing intersection producer surface-family and representability limits apply; unsupported geometry declines atomically.",
+    "Points, point clouds, instances, SubD and clipping-plane objects are excluded. Named-plane icon/list picking remains pending.",
+    "Closed-curve seams are not canonicalized; a strict SDK replay can expose seam differences.",
+    "Rust command/document timings and Rhino SDK/sampling timings cover different work and cannot establish kernel speed parity."
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/lib.rs": "9a12170efb55b18adb69540d820677c3ae465c5d690cc084312d45f1355ec74a",
+    "crates/viboceros-command/src/iplane.rs": "673836a5f566fd1a8b6c93c53a499bd8e9d3c9f31360593ab97370970e04dc01",
+    "crates/viboceros-command/src/iplane/tests.rs": "96e2253ae442dafd564a8e68022eeaace6948a5f11134328c4f4bec0a37d1d85",
+    "crates/viboceros-command/src/infinite_plane.rs": "76fa39f0811eda02fcc8187d5a63f5d3f4c4458290fb3067e626842bce0a1943",
+    "crates/viboceros-command/src/section.rs": "e27586227345f289dca55e0a2d8433745bf8d92befa52c96f88e234d0e304468",
+    "crates/viboceros-oracle/src/lib.rs": "c0f5a88625a263f5ab092bb3a45a64a5a89d12d3a9c565b6b802b240ab4f872a",
+    "crates/viboceros-oracle/src/iplane.rs": "f03aa5a2ee2858222ac38a3399250382a56f2b2a3a81c5afeb01fbb292b81f00",
+    "crates/viboceros-oracle/src/object_source.rs": "5f1a86ac6649e678b346f26b8a37d0d2041dc2ddace2ec77a594de95cf5e11f8",
+    "src/app.rs": "30630ff3f10e6826e8dd00fe4aa1e6c530ac15c15c3742c02964ab9dd2493a50",
+    "src/app/iplane.rs": "23c2898f8c55295c8a705b21b440b1cef041b6e07128bc94e95b93871b0aa440",
+    "src/app/project.rs": "f0bb9de07c882586a15fdf2a39a7784efe75647cc93238385ad4492e3a7becc1",
+    "src/app/project_plane.rs": "34366ea5512ed2dc419ec70cd14657138bbf8aee0aa3e6834ab9357c9eabb645",
+    "src/app/intersect_two_sets.rs": "2c3579b7bd2519454e4bee43e47335d0517ec5898ded5839604808621e95ee94",
+    "src/app/tests/iplane.rs": "a0c78c472630af207bbc665b9ef4e655fd87631b315e2cc3eaddf905761cc8c8",
+    "src/app/tests/project.rs": "59efb0f2eafbb546dc3b80e9df51a589d9cb4881a9162003876470b0cd4f848f",
+    "tools/rhino_oracle/client.py": "c629ff9272f91da75108557b56aacd0571e5f87cfd3f9316a442c1f11a7a0f16",
+    "tools/rhino_oracle/rhino_worker.py": "ec607ff5f875a4b27510c6ca926b657b7fc4e0d4afa7b0f29285b10892dfa66a",
+    "tools/rhino_oracle/iplane_probe.py": "748bc0b56db4dafc2e830c25bf5c30b4e38d7792e61c6da79952e6e66b3d8169",
+    "tools/rhino_oracle/test_iplane_probe.py": "280db558db9ec58470da42971a48520325728d155616b95eaf1d9173f212815c",
+    "tools/rhino_oracle/test_iplane.py": "aa18d5a302d6fa19d7ffd622079fe036e6b197815d4e816b5c1a2a31e084b311",
+    "tools/rhino_oracle/fixtures/iplane.json": "50165a251810e979be5a0c5fe8b908fba5ee76ceb55bccec6ad6144d4047e768"
+  },
+  "output_sha256": {
+    "tools/rhino_oracle/observations/iplane_viboceros_native.json": "bccf14177b0002763affa46ae6ce3e31004108ff5a0b5016be1333af3727ea06",
+    "tools/rhino_oracle/observations/iplane_viboceros_portable.json": "1ce9cfd06eb7551fb9bb712608fd44677991ab0d39fb2a0404216e5b1793d720"
+  }
+}

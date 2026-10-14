@@ -266,6 +266,10 @@ class OracleClient:
                 raise OracleProtocolError('Contour probes require a private scheme and one iteration')
             for op in request['operations']:
                 if op.get('op')=='contour_command':validate(op)
+        if any(op.get('op') == 'iplane' for op in request.get('operations', [])):
+            from .iplane_probe import validate
+            for op in request['operations']:
+                if op.get('op') == 'iplane': validate(op)
         if any(op.get('op')=='section_command' for op in request.get('operations',[])):
             from .section_probe import validate
             for op in request['operations']:
@@ -1085,6 +1089,8 @@ class OracleClient:
                     shutil.copyfile(worker_source.with_name('merge_edges_probe.py'), job_path / 'merge_edges_probe.py')
             if any(op.get('op')=='contour_command' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('contour_probe.py'),job_path/'contour_probe.py')
+            if any(op.get('op') == 'iplane' for op in request['operations']):
+                shutil.copyfile(worker_source.with_name('iplane_probe.py'), job_path / 'iplane_probe.py')
             if any(op.get('op')=='section_command' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('section_probe.py'),job_path/'section_probe.py')
             if any(op.get('op') == 'block_workflow' for op in request.get('operations', [])):
