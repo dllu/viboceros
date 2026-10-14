@@ -21,6 +21,10 @@ fn build_native() {
     println!("cargo:rerun-if-changed=native");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-interior-point.patch");
     println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-blend-rail-parameterization.patch"
+    );
+    println!("cargo:rerun-if-changed=../../tools/usd_brep/surface_blend_probe.cpp");
+    println!(
         "cargo:rerun-if-changed={}",
         upstream.join("source/SMLib").display()
     );
@@ -32,6 +36,12 @@ fn build_native() {
         .define("USD_BREP_ROOT", upstream)
         .profile("Release")
         .build();
+    println!(
+        "cargo:rustc-env=VIBOCEROS_NATIVE_SURFACE_BLEND_PROBE={}",
+        destination
+            .join("build/viboceros_smlib_surface_blend_probe")
+            .display()
+    );
     println!(
         "cargo:rustc-link-search=native={}",
         destination.join("lib").display()

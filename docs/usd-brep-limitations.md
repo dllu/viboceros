@@ -8,6 +8,22 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Whole surface blending misaligns unequal rail domains and can corrupt the heap.**
+  `SmBrep::CreateEdgeEdgeBlend` applies division to only part of its affine
+  offset numerator. `[2,5]` is mapped to `[90,110]` when the first rail is
+  `[10,30]`, then evaluated over `[10,30]`. Eight isolated unequal-domain
+  G1/G2 probes abort or crash in the unmodified release. It also reverses the
+  second rail twice for explicit end-to-start correspondence, while the ruled
+  branch ignores that flag; successful baseline outputs miss the requested
+  boundary correspondence by two model units. The native build now applies a
+  [bounded generated-source patch](../third_party/patches/usd-brep-blend-rail-parameterization.patch)
+  for the offset, single reversal and ruled flag, leaving tolerances and the
+  pinned submodule unchanged. All 24 cases pass with independent Hermite and
+  boundary checks, including an AddressSanitizer build of both complete native
+  libraries. Curved/rational fitting, extreme domains, automatic direction and
+  whole-command shape parity remain unqualified. See the
+  [direct qualification](smlib-surface-blend-producer.md) and
+  [retained outcomes](smlib-surface-blend-producer-probe.json).
 - **Intersection-curve trimming can accept an off-curve vertex projection.**
   `SmEdgeDefinition::IsInteriorPoint` checked that nearest-point projection
   succeeded but ignored its model-space distance. A boundary-crossing lamp

@@ -31,6 +31,8 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Native curve/tensor degree changes, exact elevation and homogeneous fitting](smlib-degree-change.md)
 - [Native knot removal, shared fitting and narrow endpoint-span conditioning](smlib-knot-removal.md)
 - [Native multiple-knot removal, ordered refits and sampled crease policy](smlib-multiple-knot-removal.md)
+- [Native BlendSrf parent preparation and exact boundary constraints](smlib-surface-blend.md)
+- [Native surface-blend producer domain and direction repairs](smlib-surface-blend-producer.md)
 - [Circular edge fillets, source indices and native qualification](fillet-edge.md)
 - [Native SMLib B-rep export, CAD interchange and STEP seam selection](smlib-brep-transfer.md)
 - [Certified STEP pole trims and native Rhino import evidence](step-poles.md)

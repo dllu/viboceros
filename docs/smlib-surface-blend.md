@@ -27,6 +27,11 @@ upstream numerical defect. Sources:
 [SmSurface.h](../third_party/usd-brep/source/SMLib/inc/SmSurface.h), and
 [SmApiPrimitives.cpp](../third_party/usd-brep/source/SM_API/src/SmApiPrimitives.cpp).
 
+Separate [direct producer qualification](smlib-surface-blend-producer.md) found
+and repaired unequal-domain heap corruption and ignored explicit reverse
+correspondence. Those repairs are applied to the native build; the shared
+command still retains its exact independent boundary construction.
+
 Native regressions compare complete control nets and 13×13 grids for 80
 combinations of all natural edge orientations, mixed continuity, unequal
 rational degrees, knot multiplicities and parameter domains. Independent

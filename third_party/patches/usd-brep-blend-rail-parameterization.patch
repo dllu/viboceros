@@ -1,0 +1,44 @@
+--- a/source/SMLib/src/SmBrep.cpp
++++ b/source/SMLib/src/SmBrep.cpp
+@@ -2828,6 +2828,8 @@
+   // to preserve previous behavior - use backward compatible style for ruled surfaces
+   if(lBlendFlag == 0)
+     {
++      // Honor explicit end-to-start correspondence in the early ruled branch.
++      if(lCurvesDirFlag == 2) { pRail2Curve->ReverseParameterization(sIvl2, sIvl2); }
+       // insert knots when needed to make knot spacing more regular
+       if(pRail1Curve->GetDegree() >= 3) { SER(pRail1Curve->DampenKnotSpacing(2.0,3)); }
+       if(pRail2Curve->GetDegree() >= 3) { SER(pRail2Curve->DampenKnotSpacing(2.0,3)); }
+@@ -2948,7 +2950,7 @@
+     {
+       // rescale Curve2
+       double dScale  = (sIvl1.GetMin() - sIvl1.GetMax()) / (sIvl2.GetMin() - sIvl2.GetMax()) ;
+-      double dOffset = (sIvl2.GetMin() * sIvl1.GetMax()) - (sIvl1.GetMin() * sIvl2.GetMax()) / (sIvl2.GetMin() - sIvl2.GetMax()) ;
++      double dOffset = ((sIvl2.GetMin() * sIvl1.GetMax()) - (sIvl1.GetMin() * sIvl2.GetMax())) / (sIvl2.GetMin() - sIvl2.GetMax()) ;
+
+       SmExtent1d sNewIvl = pRail2Curve->GetNaturalInterval() ;
+       sNewIvl.SetMinMax(sNewIvl.GetMin() * dScale + dOffset,
+@@ -3013,21 +3015,8 @@
+     }
+ #endif // SM_DEBUG_CODE
+
+-  // make sure two curve intervals run in the same direction and share a common parameterization
+-  if(bSameDirCurves == FALSE) { pRail2Curve->ReverseParameterization(sIvl2, sIvl2) ; }
+-  if(!sIvl1.AreEqual(sIvl2))
+-    {
+-      // rescale Curve2
+-      double dScale  = (sIvl1.GetMin() - sIvl1.GetMax()) / (sIvl2.GetMin() - sIvl2.GetMax()) ;
+-      double dOffset = (sIvl2.GetMin() * sIvl1.GetMax()) - (sIvl1.GetMin() * sIvl2.GetMax()) / (sIvl2.GetMin() - sIvl2.GetMax()) ;
+-
+-      SmExtent1d sNewIvl = pRail2Curve->GetNaturalInterval() ;
+-      sNewIvl.SetMinMax(sNewIvl.GetMin() * dScale + dOffset,
+-                        sNewIvl.GetMax() * dScale + dOffset) ;
+-      pRail2Curve->EditParameterization(sNewIvl, FALSE) ;
+-      sIvl2 = sIvl1 ;
+-
+-    } // end need to reparameterize Curve2 check
++  // Rail direction and interval were aligned above. Repeating reversal
++  // here would undo the requested correspondence.
+
+   // build blend surface
+   SER_MSG(pSurface1->CreateBlendSurface( crContext,           // in : context for new object construction
