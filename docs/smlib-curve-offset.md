@@ -17,7 +17,7 @@ breaks, unrepresentable normalized charts and normalized offset distances below
 `1e-12` retain the portable fitter. Native producer errors propagate. Analytic
 line/circle/arc offsets and ellipse approximation retain their existing paths.
 
-`CurveOffsetOperations` supplies optional smooth fitting plus trim, single-split,
+`CurveOffsetOperations` supplies optional smooth fitting, intersections, trim, single-split,
 multi-split and Bézier functions. Native editing covers source pieces, concave
 corner trims, cyclic seam pieces, single concave-loop trimming, sharp extension
 leaves and through-point candidates. OffsetMultiple region admission,
@@ -25,6 +25,11 @@ containment and nesting also reuse native Bézier decomposition and subdivision.
 Existing geometry methods retain portable defaults; `offset_curve_parts`,
 `offset_curve_through_point` and the native command/oracle paths select these
 operations.
+
+[Native curve intersections](smlib-curve-intersections.md) now supply concave and
+sharp-join contacts and region-piece intersections. Shared code validates their
+original source images and retains intersection/trim choice. Editing-only net
+regressions select portable fitting and intersections to isolate native edits.
 
 Shared code continues to decide source/region admission, poles, plane normal,
 signed side, stationary points, offset cusps, source kinks, intersection/trim

@@ -19,6 +19,8 @@ pub use boundary_extension::{
 mod curve_connections;
 mod curve_extension;
 mod curve_fillet_contacts;
+mod curve_intersections;
+pub use curve_intersections::curve_intersection_events;
 mod curve_offset_fit;
 mod working_curve;
 pub use curve_connections::{

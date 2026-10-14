@@ -82,6 +82,9 @@ and batches the same banded tensor interpolation across all rows of each axis.
 offset evaluator's generic parameter-matching approximation and checked trim/split
 operations for Offset and OffsetMultiple corner construction and through-point
 candidates; source fitting and region policy retain independent checks.
+[Curve intersections](smlib-curve-intersections.md) use the native global
+point/range producer for Intersect, curve cutting and offset joins/regions, with
+independent source-space acceptance and shared local contact polishing.
 [Morph preview preparation](smlib-morph-preview.md) reuses checked native
 curve/surface elevation, isocurve extraction and interval trimming, including
 independent full-order pieces.

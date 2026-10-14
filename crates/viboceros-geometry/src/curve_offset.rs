@@ -45,6 +45,13 @@ pub type CurveOffsetSmooth = fn(
     bool,
 ) -> Result<Option<crate::NurbsCurve>, GeometryError>;
 
+pub type CurveOffsetIntersections =
+    fn(
+        &crate::NurbsCurve,
+        &crate::NurbsCurve,
+        Tolerance,
+    ) -> Result<Vec<crate::CurveCurveIntersectionEvent>, GeometryError>;
+
 /// Optional producers for smooth NURBS offsets and structural edits.
 /// Admission, pointwise fit validation and corner/region policies remain shared.
 #[derive(Clone, Copy)]
@@ -53,6 +60,7 @@ pub struct CurveOffsetOperations {
     /// The final argument requests closure; pieces at a closed source's kink
     /// seam must remain open. Results must preserve the source parameter domain.
     pub smooth: CurveOffsetSmooth,
+    pub intersect: CurveOffsetIntersections,
     pub trim: fn(
         &crate::NurbsCurve,
         std::ops::RangeInclusive<Real>,
@@ -60,6 +68,19 @@ pub struct CurveOffsetOperations {
     pub split: CurveOffsetSplit,
     pub split_at: fn(&crate::NurbsCurve, &[Real]) -> Result<Vec<crate::NurbsCurve>, GeometryError>,
     pub bezier: fn(&crate::NurbsCurve) -> Result<Vec<crate::NurbsCurve>, GeometryError>,
+}
+
+fn offset_intersections(
+    first: &crate::NurbsCurve,
+    second: &crate::NurbsCurve,
+    tolerance: Tolerance,
+    operations: Option<CurveOffsetOperations>,
+) -> Result<Vec<crate::CurveCurveIntersectionEvent>, GeometryError> {
+    if let Some(operations) = operations {
+        (operations.intersect)(first, second, tolerance)
+    } else {
+        first.intersection_events_with_curve(second, tolerance)
+    }
 }
 
 fn offset_trim(

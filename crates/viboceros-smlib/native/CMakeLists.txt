@@ -8,6 +8,7 @@ file(GLOB KERNEL_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SMLib/src/*.
 file(GLOB API_SOURCES CONFIGURE_DEPENDS "${USD_BREP_ROOT}/source/SM_API/src/*.cpp")
 list(FILTER KERNEL_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
 list(FILTER API_SOURCES EXCLUDE REGEX "/StdAfx\\.cpp$")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/usd-brep-curve-intersection-distance.cmake")
 # Keep upstream immutable. Compile the bounded kernel repairs from generated
 # copies, with the source/version and patches retained under third_party.
 find_program(PATCH_EXECUTABLE patch REQUIRED)
@@ -96,6 +97,7 @@ list(APPEND KERNEL_SOURCES "${CURVE_FILLET_SEEDED}")
 
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib BEFORE PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
+target_compile_definitions(SMLib PUBLIC VIBOCEROS_CURVE_INTERSECTION_DISTANCE_PATCH=1)
 target_include_directories(SMLib SYSTEM PUBLIC "${USD_BREP_ROOT}/source/SMLib/inc")
 target_compile_definitions(SMLib PUBLIC NOMINMAX SM_GRAPHICS_CALLBACKS=1)
 target_compile_options(SMLib PRIVATE -Wno-write-strings)

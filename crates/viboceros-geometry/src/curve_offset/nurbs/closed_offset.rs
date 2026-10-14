@@ -61,7 +61,7 @@ pub(super) fn offset_nurbs_closed_gaps(
         let next = (index + 1) % sources.len();
         let corner = sources[index].evaluate(*sources[index].domain().end())?;
         let mut best = None;
-        for event in offsets[index].intersection_events_with_curve(&offsets[next], tolerance)? {
+        for event in offset_intersections(&offsets[index], &offsets[next], tolerance, operations)? {
             let CurveCurveIntersectionEvent::Point(hit) = event else {
                 return Err(GeometryError::Degenerate {
                     context: "overlapping closed NURBS offset corner",
@@ -142,7 +142,7 @@ fn trim_single_concave_loop(
     let (early, late) = offset_split(offset, middle, operations)?;
     let corner = source.evaluate(*source.domain().start())?;
     let mut best = None;
-    for event in early.intersection_events_with_curve(&late, tolerance)? {
+    for event in offset_intersections(&early, &late, tolerance, operations)? {
         let CurveCurveIntersectionEvent::Point(hit) = event else {
             return Err(GeometryError::Degenerate {
                 context: "overlapping single-corner NURBS offset",

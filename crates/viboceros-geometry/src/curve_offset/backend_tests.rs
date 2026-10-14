@@ -16,6 +16,7 @@ fn source() -> NurbsCurve {
 fn operations() -> CurveOffsetOperations {
     CurveOffsetOperations {
         smooth: |_, _, _, _, _| Ok(None),
+        intersect: NurbsCurve::intersection_events_with_curve,
         trim: |c, range| c.try_trimmed(range),
         split: NurbsCurve::try_split,
         split_at: NurbsCurve::try_split_at_parameters,

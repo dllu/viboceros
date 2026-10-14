@@ -1,0 +1,190 @@
+--- a/src/SmCurve.cpp
++++ b/src/SmCurve.cpp
+@@ -4507,6 +4507,7 @@
+                       SmBoolean          bDoProjection = FALSE,
+                       SmProjectionType   eProjectionType = SM_PT_PARALLEL);
+ 
++    SmSolutionPairType IdenticalSolutions(const SmSolution&,const SmSolution&,const SmSolution*&) const override;
+     virtual SmStatus LocalSolve(SmTreeNode * apBranch[SM_GS_MAX_TREES],
+                                 SmBoolean  & rbNeedsMoreSubdivision);
+ 
+@@ -4539,6 +4540,33 @@
+   m_bSelfIntersection = (pCurve1Tree == pCurve2Tree) ? TRUE : FALSE ;
+ 
+ } // end SmCCIGlobalSolver::SmCCIGlobalSolver constructor
++
++// Parameter proximity alone (1/10000 of a domain) can merge distinct crossings.
++// Compare physical uncertainty scaled by the intersection angle for point pairs.
++SmSolutionPairType SmCCIGlobalSolver::IdenticalSolutions(
++    const SmSolution &a,const SmSolution &b,const SmSolution *&preferred) const {
++  const auto kind=SmGlobalSolver::IdenticalSolutions(a,b,preferred);
++  if(kind!=SM_SP_IDENTICAL || m_bDoProjection || a.m_lNumObjects!=2
++      || a.m_eSolutionType!=SM_ST_SINGLE_VALUE)return kind;
++  const auto *first=SM_CAST_PTR(SmCurve,a.m_apObjects[0]);
++  const auto *second=SM_CAST_PTR(SmCurve,a.m_apObjects[1]);
++  if(!first || !second) {preferred=NULL;return SM_SP_DIFFPARAMETERS;}
++  SmPoint3d pa[2],pb[2],qa[2],qb[2];
++  if(first->Evaluate(a.m_vStart[0],1,TRUE,pa,TRUE)!=SM_SUCCESS
++      || first->Evaluate(b.m_vStart[0],1,TRUE,pb,TRUE)!=SM_SUCCESS
++      || second->Evaluate(a.m_vStart[1],1,TRUE,qa,TRUE)!=SM_SUCCESS
++      || second->Evaluate(b.m_vStart[1],1,TRUE,qb,TRUE)!=SM_SUCCESS) {preferred=NULL;return SM_SP_DIFFPARAMETERS;}
++  SmVector3d ta=pa[1],tb=qa[1],ua=pb[1],ub=qb[1];
++  if(ta.Unitize()!=SM_SUCCESS || tb.Unitize()!=SM_SUCCESS
++      || ua.Unitize()!=SM_SUCCESS || ub.Unitize()!=SM_SUCCESS) {preferred=NULL;return SM_SP_DIFFPARAMETERS;}
++  const double uncertainty=m_d3dTolerance/smos_Max((ta*tb).Length(),SM_EFF_ZERO_SQRT)
++      + m_d3dTolerance/smos_Max((ua*ub).Length(),SM_EFF_ZERO_SQRT);
++  if(pa[0].DistanceBetween(pb[0])>uncertainty || qa[0].DistanceBetween(qb[0])>uncertainty) {
++    preferred=NULL;return SM_SP_DIFFPARAMETERS;
++  }
++  return kind;
++}
++
+ 
+ /*******************************************************************//**
+ PURPOSE: Helper function, mainly to avoid error messages from Unitize().
+@@ -5627,7 +5655,7 @@
+ 
+     } // end multiple intersection possible check
+ 
+-  double daGuess1[10], daGuess2[10];
++  double daGuess1[14], daGuess2[14];
+   ULONG lNumGuess = 0;
+ 
+   // Do a little testing to see if we are just barely intersecting
+@@ -5928,7 +5956,13 @@
+       // Now an end point
+       daGuess1[4] = sIvl1.Evaluate(1.0);
+       daGuess2[4] = sIvl2.Evaluate(1.0);
+-      lNumGuess = 5;
++      // Endpoint/midpoint guesses can all converge to a singular stationary
++      // point. Interior quarter guesses give the same native solver other starts.
++      daGuess1[5]=sIvl1.Evaluate(0.25); daGuess2[5]=sIvl2.Evaluate(0.25);
++      daGuess1[6]=sIvl1.Evaluate(0.25); daGuess2[6]=sIvl2.Evaluate(0.75);
++      daGuess1[7]=sIvl1.Evaluate(0.75); daGuess2[7]=sIvl2.Evaluate(0.25);
++      daGuess1[8]=sIvl1.Evaluate(0.75); daGuess2[8]=sIvl2.Evaluate(0.75);
++      lNumGuess = 9;
+     }
+ 
+   // exit condition: when either curve is degenerate
+@@ -16506,14 +16540,15 @@
+   const SmTArray<SmBoolean> * m_cpPeriodicities; // NULL or sized:[2]
+                                                  // ivl[i] == TRUE = Interval[i] is periodic and values get wrapped
+                                                  // ivl[i] == FALSE= Interval[i] is NOT periodic and values get clamped
+-  double m_dSquaredTolerance;                    // Currently not used
++  SmBoolean m_bAllowTangentObjective;
++  double m_dIntersectionTolerance;                    // Required model-space contact distance
+ 
+  // SumOfAllErrors = 0 when difference vector zero, or is
+  //                 perpendicular to both tangent vectors
+ public:
+   SmCCIntersectENFO(const SmCurve    & crCurve1,            // in : 1st Curve
+                     const SmCurve    & crCurve2,            // in : 2nd Curve
+-                    double             dSquaredTolerance);  // in : currently not used
++                    double             dIntersectionTolerance, SmBoolean allowTangent=FALSE);  // in : required model-space contact distance
+  virtual ~SmCCIntersectENFO() { }
+ 
+   virtual SmBoolean HasIntervals()                  { return TRUE ; }
+@@ -16545,7 +16580,7 @@
+ SmCCIntersectENFO::SmCCIntersectENFO
+   (const SmCurve    & crCurve1,            // in : 1st Curve
+    const SmCurve    & crCurve2,            // in : 2nd Curve
+-   double             dSquaredTolerance)   // in : currently not used
++   double             dIntersectionTolerance, SmBoolean allowTangent)   // in : required model-space contact distance
+ 
+  // SumOfAllErrors = 0 when Curve1/Curve2 gap is zero, or is
+  // perpendicular to both tangent vectors.
+@@ -16554,7 +16589,8 @@
+    m_crCurve2(crCurve2),
+    m_cpIntervals    (NULL),
+    m_cpPeriodicities(NULL),
+-   m_dSquaredTolerance(dSquaredTolerance)
++   m_bAllowTangentObjective(allowTangent),
++   m_dIntersectionTolerance(dIntersectionTolerance)
+ {
+ } // end SmCCIntersectENFO::SmCCIntersectENFO constructor
+ 
+@@ -16613,8 +16649,20 @@
+   // get the gap - save the SolutionSize
+   SmVector3d sGapVec = sPVV1[0] - sPVV2[0];
+   m_dSolutionSize    = sGapVec.Length() ;
+-  m_dScaledZero      = SM_EFF_ZERO * (1.0 + smos_Max(sPVV1[0].GetMaxDimension(),
+-                                                     sPVV2[0].GetMaxDimension())) ;
++  m_dScaledZero = SM_EFF_ZERO * (1.0 + smos_Max(sPVV1[0].GetMaxDimension(),sPVV2[0].GetMaxDimension()));
++  if(m_dIntersectionTolerance>0.0)m_dScaledZero=smos_Min(m_dIntersectionTolerance,m_dScaledZero);
++  // Small normal-equation residuals do not imply spatial coincidence near tangency.
++  // Once the physical gap converges, return zero equations and a terminal answer.
++  if (IsConverged())
++    {
++      rF[0]=rF[1]=0.0;
++      if(pOptJacobian) {
++        (*pOptJacobian)[0][0]=(*pOptJacobian)[1][1]=1.0;
++        (*pOptJacobian)[0][1]=(*pOptJacobian)[1][0]=0.0;
++      }
++      rbFoundAnswer=TRUE;
++      return SM_SUCCESS;
++    }
+ 
+ #ifdef SM_DEBUG_CODE
+ SmBoolean bDebugMe1 = FALSE;
+@@ -16663,7 +16711,7 @@
+   // B567 says <= 0.00362.  So for now we'll do that; should work on making
+   // it work without switching at all.
+ 
+-  constexpr SmBoolean bSwitchToTanFcns = TRUE;
++  const SmBoolean bSwitchToTanFcns = m_bAllowTangentObjective;
+ 
+   // (Note, for debugging, temporarily make this static.)
+   double dAngLimDeg = 0.001;   // See note above.
+@@ -16915,7 +16963,7 @@
+ 
+   // create a newton raphson solver object containing a curve/curve evaluator.
+   SmCCIntersectENFO sEvalFun(*this, crOtherCurve,
+-                             SM_EFF_ZERO*SM_EFF_ZERO/10000.0);
++                             dDistTol);
+   SmLocalSolveNd sLS(sEvalFun,          // in : Define Eqns to set to Zero (defines the DOF COUNT)
+                      &sIntervals,       // in : NULL or sized:[N], N = this rEvalFun DOF count
+                                         //      bounds on problem parameters.
+@@ -16925,6 +16973,7 @@
+                                         //      ivl[i] == FALSE= Interval[i] is NOT periodic and values get clamped
+ 
+   // Pick up close solutions and then test them
++  sLS.RequireSpatialConvergence();
+   sLS.SetDesiredAccuracy(SM_EFF_ZERO/10.0);
+   sLS.SetBoundaryHandler(SM_BH_HITS_ALL_BOUNDARIES);
+ 
+@@ -16934,6 +16983,18 @@
+                   dDistTol*2.0,
+                   bFoundSolution,
+                   sSolutionVector));
++
++  // A separate tangent-objective attempt avoids changing objectives while
++  // Newton is resolving two nearly tangent crossings. Both attempts require
++  // physical coincidence; a nearby nonzero-distance extremum is not a hit.
++  if(!bFoundSolution) {
++    SmCCIntersectENFO tangentEval(*this,crOtherCurve,dDistTol,TRUE);
++    SmLocalSolveNd tangentSolve(tangentEval,&sIntervals,&sPeriodicities);
++    tangentSolve.RequireSpatialConvergence();
++    tangentSolve.SetDesiredAccuracy(SM_EFF_ZERO/10.0);
++    tangentSolve.SetBoundaryHandler(SM_BH_HITS_ALL_BOUNDARIES);
++    SER(tangentSolve.SolveIt(sGuessT,dDistTol*2.0,bFoundSolution,sSolutionVector));
++  }
+ 
+   // when a solution was found
+   if ( bFoundSolution )
+@@ -16979,7 +17040,7 @@
+ 
+                   // create a second NewtonRaphson Solver
+                   SmCCIntersectENFO sEvalFun2( *this, crOtherCurve,
+-                                               SM_EFF_ZERO*SM_EFF_ZERO/10000.0 );
++                                               dDistTol );
+                   SmLocalSolveNd sLS2( sEvalFun2,        // in : Define Eqns to set to Zero (defines the DOF COUNT)
+                                       &sIntervals,       // in : NULL or sized:[N], N = this rEvalFun DOF count
+                                                          //      bounds on problem parameters.
+@@ -16989,6 +17050,7 @@
+                                                          //      ivl[i] == FALSE= Interval[i] is NOT periodic and values get clamped
+ 
+                   // Pick up close solutions and then test them
++                  sLS2.RequireSpatialConvergence();
+                   sLS2.SetDesiredAccuracy(SM_EFF_ZERO/10.0);
+                   sLS2.SetBoundaryHandler(SM_BH_HITS_ALL_BOUNDARIES);
+ 

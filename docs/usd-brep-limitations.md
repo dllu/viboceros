@@ -539,6 +539,19 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Observed compatibility differences
 
+- **Curve intersection equation convergence and parameter merging can miss
+  nearby crossings.** The original global solver reports no contacts for
+  `C(t)=(2t,4t(1-t),0)` against `Y=1-1e-10` at tolerance `1e-12`. Small normal
+  equations can stop before physical coincidence; generic duplicate comparison
+  also uses `1e-4` of a parameter domain. Shallow off-center tangencies can exhaust
+  endpoint/midpoint guesses. Generated scoped repairs add physical convergence,
+  separate tangent retries, physical point comparison and quarter guesses.
+  Shared source-space polishing removes rounded multiple-knot tangent families.
+  [Qualification](smlib-curve-intersections.md) retains original and patched
+  diagnostics, ASan, independent analytic cases and saved SDK replays. The pinned
+  kernel stays unchanged; general event completeness remains unqualified.
+  Source: [SmCurve.cpp](../third_party/usd-brep/source/SMLib/src/SmCurve.cpp).
+
 - **Whole-domain curve trims preserve source outer entries in Viboceros.**
   The raw `trim-rational-whole` record has source outer values `-2` and `4` in
   Viboceros and padded neighboring values `-1` and `3` in Rhino. OpenNURBS
@@ -648,8 +661,8 @@ issues reported by NVIDIA that have not all been reproduced here.
   portable producers; the earlier mixed-degree interpolation limit remains.
   These are display approximations, not accepted or continuously certified
   model geometry. See [native preview preparation](smlib-morph-preview.md).
-- **Curve offset retains fitting/corner policy around native editing.** Offset
-  and OffsetMultiple now use the checked native curve trim and split adapters
+- **Curve offset retains admission/corner policy around native producers.** Offset
+  and OffsetMultiple use native pointwise smooth fitting and checked trim/split adapters
   for NURBS corner construction, including cyclic seams, concave trims, sharp
   extension leaves and through-point candidates. The native-feature offset
   oracle selects the same producer. OffsetMultiple closed-region admission and
@@ -657,11 +670,14 @@ issues reported by NVIDIA that have not all been reproduced here.
   hull, endpoint, intersection, orientation and containment predicates remain
   shared, including the 8,192-piece limit and ambiguous-boundary rejection.
   Source/region admission, side/nesting,
-  analytic offsets, adaptive Hermite fitting, cusp checks, intersection choice,
+  analytic offsets, independent fit acceptance, cusp checks, intersection choice,
   corner joins and source attributes/history remain shared. Unsupported source
   degrees above 17 retain existing portable edits; errors at supported degrees
-  propagate. No native sampling-fit or Rhino-speed qualification is implied.
-  See [native offset editing](smlib-curve-offset.md).
+  propagate. Native global curve intersections supply join and region contacts,
+  retaining source-space acceptance and shared local polishing. The convenience
+  point-sampling offset producer is still excluded; no Rhino speed claim is implied.
+  See [native offsets](smlib-curve-offset.md) and
+  [native curve intersections](smlib-curve-intersections.md).
 - **Morph fitting retains shared approximation policy around native solving.**
   Bend, Twist, Taper, Maelstrom and deformable OrientOnSrf reuse native fixed-row
   banded interpolation for adaptive cubic and rational degree-3/6/9 candidates,

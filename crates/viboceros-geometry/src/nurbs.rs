@@ -163,6 +163,9 @@ pub enum CurveCurveIntersectionEvent {
     Overlap(CurveCurveOverlap),
 }
 
+mod intersection_backend;
+pub use intersection_backend::CurveCurveIntersectionParameters;
+
 #[derive(Clone, Debug)]
 struct CurveIntersectionNode {
     curve: NurbsCurve,
@@ -1397,15 +1400,8 @@ impl NurbsCurve {
         const MAX_NODE_PAIRS: usize = 500_000;
         const MAX_DEPTH: u8 = 56;
 
-        let coordinate_scale = self
-            .control_points
-            .iter()
-            .chain(&other.control_points)
-            .flat_map(|control| control.point.to_array())
-            .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
-        let distance_tolerance = tolerance
-            .absolute()
-            .max(tolerance.relative() * coordinate_scale);
+        let (coordinate_scale, distance_tolerance) =
+            intersection_backend::distance_tolerance(self, other, tolerance);
         let refinement_tolerance =
             (distance_tolerance * 1.0e-4).max(Real::EPSILON * coordinate_scale * 64.0);
         let leaf_size = distance_tolerance * 2.0;
@@ -1587,29 +1583,11 @@ impl NurbsCurve {
                 return Err(GeometryError::CurveIntersectionDidNotConverge);
             }
         }
-        overlaps.sort_by(compare_curve_overlaps);
-        let overlaps = merge_adjacent_curve_overlaps(overlaps, distance_tolerance);
-        intersections.retain(|intersection| {
-            !overlaps
-                .iter()
-                .any(|overlap| curve_overlap_contains_intersection(*overlap, *intersection))
-        });
-        intersections.sort_by(compare_curve_intersections);
-
-        let mut events = intersections
-            .into_iter()
-            .map(CurveCurveIntersectionEvent::Point)
-            .chain(
-                overlaps
-                    .into_iter()
-                    .map(CurveCurveIntersectionEvent::Overlap),
-            )
-            .collect::<Vec<_>>();
-        events.sort_by(|left, right| {
-            curve_intersection_event_parameter(*left)
-                .total_cmp(&curve_intersection_event_parameter(*right))
-        });
-        Ok(events)
+        Ok(intersection_backend::finalize(
+            intersections,
+            overlaps,
+            distance_tolerance,
+        ))
     }
 
     /// Reverses direction by reversing the controls and negating the full

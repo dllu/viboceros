@@ -1,0 +1,49 @@
+--- a/src/SmLocalSolveNd.cpp
++++ b/src/SmLocalSolveNd.cpp
+@@ -358,7 +358,7 @@
+           if(dStepSize < m_dDesiredAccuracy*m_dDesiredAccuracy) 
+             {
+               // success - sum of deltas and sum of Fns are small
+-              if (dSumF < m_dAcceptableAccuracy) 
++              if (dSumF < m_dAcceptableAccuracy && (!m_bRequireSpatialConvergence || m_rFunctionEvaluator.IsConverged())) 
+                 {
+                   rbFoundSolution      = TRUE;
+                   m_eTerminationReason = SM_TR_FOUND_ANSWER_CLOSE;
+@@ -596,7 +596,8 @@
+           // Note: most Evaluate() functions never set bFoundAnswer == TRUE
+ 
+           // If small enough, call it good.
+-          bFoundAnswer |= ( dNextSumF < m_dDesiredAccuracy );
++          bFoundAnswer |= ( dNextSumF < m_dDesiredAccuracy
++              && (!m_bRequireSpatialConvergence || m_rFunctionEvaluator.IsConverged()) );
+ 
+           if ( bFoundAnswer )
+             {
+@@ -675,7 +676,8 @@
+       //  bit round-off
+       if (   m_lCurrentIteration > 2
+           && dNextSumF  >= dSumF 
+-          && dSumF      < m_dAcceptableAccuracy/100.0 )
++          && dSumF      < m_dAcceptableAccuracy/100.0
++          && (!m_bRequireSpatialConvergence || m_rFunctionEvaluator.IsConverged()) )
+         {
+           m_eTerminationReason = SM_TR_FOUND_ANSWER_CLOSE;  // SM_TR_UNABLE_TO_CONVERGE;
+           SM_DBG_MSG(lDebugLevel>0, _T("Breaking iteration: Functions increasing, and Acceptable.\n") );
+@@ -810,7 +812,7 @@
+     }
+ 
+   // return converged case
+-  if(dSumF < m_dDesiredAccuracy)
++  if(dSumF < m_dDesiredAccuracy && (!m_bRequireSpatialConvergence || m_rFunctionEvaluator.IsConverged()))
+     { 
+       rbFoundSolution      = TRUE;
+       m_eTerminationReason = SM_TR_FOUND_ANSWER_CONVERGED;
+@@ -820,7 +822,7 @@
+     }
+ 
+   // return nearly converged case
+-  if(dSumF < m_dAcceptableAccuracy) 
++  if(dSumF < m_dAcceptableAccuracy && (!m_bRequireSpatialConvergence || m_rFunctionEvaluator.IsConverged())) 
+     {
+       rbFoundSolution      = TRUE;
+       m_eTerminationReason = SM_TR_FOUND_ANSWER_CLOSE;

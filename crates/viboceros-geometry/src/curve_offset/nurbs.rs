@@ -1,6 +1,8 @@
 //! Tolerance-checked cubic approximations of smooth planar NURBS offsets.
 
-use super::{CurveOffsetOperations, offset_split, offset_split_at, offset_trim};
+use super::{
+    CurveOffsetOperations, offset_intersections, offset_split, offset_split_at, offset_trim,
+};
 use crate::{
     Brep, Circle3, CircularArc3, Curve3, CurveCurveIntersectionEvent, CurveSegment3, GeometryError,
     LineSegment, NurbsCurve, ParameterSide, Point3, PolyCurve3, Polyline3, Real, Tolerance,
@@ -454,7 +456,7 @@ pub(super) fn offset_nurbs_open_gaps(
         let corner = sources[index].evaluate(*sources[index].domain().end())?;
         let mut best = None;
         for event in
-            offsets[index].intersection_events_with_curve(&offsets[index + 1], tolerance)?
+            offset_intersections(&offsets[index], &offsets[index + 1], tolerance, operations)?
         {
             let CurveCurveIntersectionEvent::Point(hit) = event else {
                 return Err(GeometryError::Degenerate {
@@ -892,7 +894,7 @@ fn simple_region_pieces(
             }) {
                 continue;
             }
-            let events = pieces[i].intersection_events_with_curve(&pieces[j], tolerance)?;
+            let events = offset_intersections(&pieces[i], &pieces[j], tolerance, operations)?;
             if !adjacent && !events.is_empty() {
                 return Err(GeometryError::SelfIntersectingOffsetRegion);
             }

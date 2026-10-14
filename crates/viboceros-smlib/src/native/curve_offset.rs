@@ -15,6 +15,9 @@ fn geometry_error(error: Error) -> GeometryError {
 const NATIVE_DEGREE_LIMIT: usize = 17;
 pub fn curve_offset_operations() -> CurveOffsetOperations {
     CurveOffsetOperations {
+        intersect: |first, second, tolerance| {
+            curve_intersection_events(first, second, tolerance).map_err(geometry_error)
+        },
         bezier: |curve| {
             if curve.degree() > NATIVE_DEGREE_LIMIT {
                 curve.try_bezier_spans()

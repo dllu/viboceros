@@ -257,6 +257,7 @@ pub mod circle_input;
 mod context;
 mod control_points;
 mod curve_cut;
+mod curve_intersections;
 pub mod interface;
 pub mod mirror;
 mod plane_primitives;
@@ -10981,18 +10982,20 @@ fn intersect_pair(
     tolerance: Tolerance,
 ) -> Result<Vec<Geometry>, CommandError> {
     Ok(match (first, second) {
-        (IntersectInput::Curve(first), IntersectInput::Curve(second)) => first
-            .intersection_events_with_curve(second, tolerance)?
-            .into_iter()
-            .map(|event| match event {
-                CurveCurveIntersectionEvent::Point(intersection) => {
-                    Ok(Geometry::Point(intersection.point()))
-                }
-                CurveCurveIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
-                    curve_segments::trim(second, overlap.second_interval())?,
-                )),
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?,
+        (IntersectInput::Curve(first), IntersectInput::Curve(second)) => {
+            let events = curve_intersections::events(first, second, tolerance)?;
+            events
+                .into_iter()
+                .map(|event| match event {
+                    CurveCurveIntersectionEvent::Point(intersection) => {
+                        Ok(Geometry::Point(intersection.point()))
+                    }
+                    CurveCurveIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
+                        curve_segments::trim(second, overlap.second_interval())?,
+                    )),
+                })
+                .collect::<Result<Vec<_>, CommandError>>()?
+        }
         (IntersectInput::Curve(curve), IntersectInput::Surface(surface))
         | (IntersectInput::Surface(surface), IntersectInput::Curve(curve)) => {
             curve_surface_intersection_events(curve, surface, tolerance)?

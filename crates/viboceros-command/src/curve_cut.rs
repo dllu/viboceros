@@ -302,16 +302,26 @@ fn append_curve_cutter_intersections(
             } else {
                 cutter.clone()
             };
-            for intersection in
-                intersection_source.intersections_with_curve(&intersection_cutter, tolerance)?
-            {
-                push_curve_cut_intersection(
-                    intersections,
-                    source,
-                    intersection.first_parameter(),
-                    tolerance,
-                    limit,
-                )?;
+            for event in crate::curve_intersections::events(
+                intersection_source,
+                &intersection_cutter,
+                tolerance,
+            )? {
+                let points = match event {
+                    crate::CurveCurveIntersectionEvent::Point(point) => [Some(point), None],
+                    crate::CurveCurveIntersectionEvent::Overlap(overlap) => {
+                        [Some(overlap.start()), Some(overlap.end())]
+                    }
+                };
+                for intersection in points.into_iter().flatten() {
+                    push_curve_cut_intersection(
+                        intersections,
+                        source,
+                        intersection.first_parameter(),
+                        tolerance,
+                        limit,
+                    )?;
+                }
             }
         }
         CurveCutterInput::Surface(surface) => {

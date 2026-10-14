@@ -9,6 +9,7 @@
 #include <SmApiQueries.h>
 #include <SmApiSurfaces.h>
 #include <SmBSplineCurve.h>
+#include <SmSolutionArray.h>
 #include <SmBSplineSurface.h>
 #include <NL_Nurbsdef.h>
 #include <SmAxis2Placement.h>
@@ -52,6 +53,9 @@ struct VbCurve {
     std::unique_ptr<SmBSplineCurve> evaluation;
     size_t degree;
     std::vector<double> points, knots;
+};
+struct VbCurveIntersections {
+    std::vector<VbCurveIntersection> events;
 };
 struct VbMesh {
     std::vector<double> points;
@@ -1005,6 +1009,47 @@ extern "C" int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t p
 extern "C" void vb_curve_free(VbCurve *curve) {
     std::lock_guard<std::mutex> lock(kernel_mutex);
     delete curve;
+}
+
+extern "C" int vb_curve_intersect(const VbCurve *first,const VbCurve *second,double tolerance,
+                                  VbCurveIntersections **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(first && second && out && std::isfinite(tolerance) && tolerance>0,
+            "Invalid curve intersection input");
+        SmSolutionArray solutions;
+        const auto a=first->value->GetNaturalInterval(),b=second->value->GetNaturalInterval();
+        check(first->value->GlobalCurveIntersect(a,*second->value,b,tolerance,solutions),"intersect native curves");
+        require(solutions.GetSize()<=500000,"Curve intersection exceeds event budget");
+        auto result=std::make_unique<VbCurveIntersections>();
+        for(ULONG i=0;i<solutions.GetSize();++i) {
+            const auto &s=solutions[i];
+            require(s.m_eSolutionType==SM_ST_SINGLE_VALUE || s.m_eSolutionType==SM_ST_RANGE_OF_VALUES,
+                "Unsupported native curve intersection solution");
+            const bool overlap=s.m_eSolutionType==SM_ST_RANGE_OF_VALUES;
+            const double ta=s.m_vStart[0],tb=s.m_vStart[1];
+            const double ea=overlap?s.m_vEnd[0]:ta,eb=overlap?s.m_vEnd[1]:tb;
+            require(std::isfinite(ta) && std::isfinite(tb) && std::isfinite(ea) && std::isfinite(eb)
+                && ta>=a.GetMin() && ta<=a.GetMax() && ea>=a.GetMin() && ea<=a.GetMax()
+                && tb>=b.GetMin() && tb<=b.GetMax() && eb>=b.GetMin() && eb<=b.GetMax(),
+                "Invalid native curve intersection parameters");
+            result->events.push_back({overlap?1:0,{ta,ea},{tb,eb}});
+        }
+        *out=result.release();
+    });
+}
+extern "C" size_t vb_curve_intersections_count(const VbCurveIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    return events?events->events.size():0;
+}
+extern "C" int vb_curve_intersections_copy(const VbCurveIntersections *events,VbCurveIntersection *out,size_t count) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);
+    if(!events || count!=events->events.size() || (count && !out))return 1;
+    if(count)std::copy(events->events.begin(),events->events.end(),out);
+    return 0;
+}
+extern "C" void vb_curve_intersections_free(VbCurveIntersections *events) {
+    std::lock_guard<std::mutex> lock(kernel_mutex);delete events;
 }
 
 extern "C" int vb_curve_offset_approx(const VbCurve *source,const double normal[3],

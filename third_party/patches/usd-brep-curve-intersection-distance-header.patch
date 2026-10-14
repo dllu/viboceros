@@ -1,0 +1,19 @@
+--- a/inc/SmLocalSolveNd.h
++++ b/inc/SmLocalSolveNd.h
+@@ -283,6 +283,7 @@
+                                                        //       SM_SA_BRENT_MINIMIZE
+ 
+   SmEvalNFunctionsObject    & m_rFunctionEvaluator;    // provides the evaluate function
++  SmBoolean                   m_bRequireSpatialConvergence = FALSE;
+   double                      m_dDesiredAccuracy;      // very tight tol used for stopping
+   double                      m_dAcceptableAccuracy;   // looser tol used to accept answers that don't completely converge
+   ULONG                       m_lMaximumIterations;    // stopping criteria for failures
+@@ -331,6 +332,8 @@
+   SmTerminationReasonType GetTerminationReason() const        { return m_eTerminationReason; } 
+ 
+   void SetStepCuttingEnabled(SmBoolean bStepCuttingEnabled)   { m_bStepCuttingEnabled = bStepCuttingEnabled; }
++  // Intersection solves require the evaluator physical distance to converge.
++  void RequireSpatialConvergence(SmBoolean required=TRUE) { m_bRequireSpatialConvergence=required; }
+   void SetDesiredAccuracy   (double dDesiredAccuracy)         { m_dDesiredAccuracy = dDesiredAccuracy; }
+   void SetAcceptableAccuracy(double dAcceptableAccuracy)      { m_dAcceptableAccuracy = dAcceptableAccuracy; }
+   void SetMaximumIterations (ULONG lMaximumIterations)        { m_lMaximumIterations = lMaximumIterations; }

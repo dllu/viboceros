@@ -87,6 +87,18 @@ int vb_curve_sizes(const VbCurve *curve, size_t *degree, size_t *points, size_t 
 int vb_curve_copy(const VbCurve *curve, double *points_xyzw, size_t point_count, double *knots,
                   size_t knot_count);
 void vb_curve_free(VbCurve *curve);
+typedef struct VbCurveIntersections VbCurveIntersections;
+typedef struct VbCurveIntersection {
+    int overlap;
+    double first[2];
+    double second[2];
+} VbCurveIntersection;
+int vb_curve_intersect(const VbCurve *first, const VbCurve *second, double tolerance,
+                       VbCurveIntersections **out, char *error, size_t capacity);
+size_t vb_curve_intersections_count(const VbCurveIntersections *events);
+int vb_curve_intersections_copy(const VbCurveIntersections *events,
+                                VbCurveIntersection *out, size_t count);
+void vb_curve_intersections_free(VbCurveIntersections *events);
 int vb_curve_offset_approx(const VbCurve *source, const double normal[3],
                            double distance, double tolerance, VbCurve **out,
                            char *error, size_t capacity);

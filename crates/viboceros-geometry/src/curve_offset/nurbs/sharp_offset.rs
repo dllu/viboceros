@@ -230,7 +230,7 @@ fn intersect_sharp_extensions(
         let left_extended = tail.try_extended_to(tail_start..=*left_domain.end() + left_reach)?;
         let right_extended =
             head.try_extended_to(*right_domain.start() - right_reach..=head_end)?;
-        for event in left_extended.intersection_events_with_curve(&right_extended, tolerance)? {
+        for event in offset_intersections(&left_extended, &right_extended, tolerance, operations)? {
             let CurveCurveIntersectionEvent::Point(hit) = event else {
                 continue;
             };

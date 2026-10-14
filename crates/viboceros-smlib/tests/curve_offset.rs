@@ -66,6 +66,7 @@ fn editing_operations() -> viboceros_geometry::CurveOffsetOperations {
     let mut operations = viboceros_smlib::curve_offset_operations();
     // Keep the original structural editing contract independent of fitting.
     operations.smooth = |_, _, _, _, _| Ok(None);
+    operations.intersect = NurbsCurve::intersection_events_with_curve;
     operations
 }
 #[test]

@@ -26,6 +26,10 @@ fn build_native() {
         "usd-brep-curve-fillet-sides.patch",
         "usd-brep-curve-fillet-seed.patch",
         "usd-brep-curve-fillet-seed-header.patch",
+        "usd-brep-curve-intersection-distance.patch",
+        "usd-brep-curve-intersection-distance-solver.patch",
+        "usd-brep-curve-intersection-distance-header.patch",
+        "usd-brep-curve-intersection-distance.cmake",
     ] {
         println!("cargo:rerun-if-changed=../../third_party/patches/{patch}");
     }
