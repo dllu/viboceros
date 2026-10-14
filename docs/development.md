@@ -32,6 +32,7 @@ python3 -m unittest discover -s tools/rhino_oracle -t .
 - [Native knot removal, shared fitting and narrow endpoint-span conditioning](smlib-knot-removal.md)
 - [Native multiple-knot removal, ordered refits and sampled crease policy](smlib-multiple-knot-removal.md)
 - [Native exact BlendSrf construction and mixed boundary interpolation](smlib-surface-blend.md)
+- [Native curve Blend through shared endpoint interpolation and Rhino replay](smlib-curve-blend.md)
 - [Native surface-blend producer domain and direction repairs](smlib-surface-blend-producer.md)
 - [Native curved blend derivative scaling and fitting diagnostics](smlib-blend-derivative-scaling.md)
 - [Circular edge fillets, source indices and native qualification](fillet-edge.md)

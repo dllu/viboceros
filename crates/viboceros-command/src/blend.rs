@@ -1,9 +1,9 @@
 //! Creates an independent blend between two selected curve ends.
 
 use super::*;
-use viboceros_geometry::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
+use viboceros_geometry::{CurveBlendContinuity, CurveBlendOptions};
 
-const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=Position|Tangency|Curvature] [Continuity2=Position|Tangency|Curvature] [Handle1=length|Bulge1=factor] [Handle2=length|Bulge2=factor]";
+const USAGE: &str = "Blend [Pick1=x,y,z] [Pick2=x,y,z] [Continuity1=G0|G1|G2|Position|Tangency|Curvature] [Continuity2=G0|G1|G2|Position|Tangency|Curvature] [Handle1=length|Bulge1=factor] [Handle2=length|Bulge2=factor]";
 
 pub(super) struct BlendCurveCommand;
 
@@ -35,7 +35,11 @@ impl Command for BlendCurveCommand {
             return Err(CommandError::BlendRequiresTwoCurves);
         };
         let (default_first, default_second) = super::fillet::nearest_ends(first, second)?;
-        let blend = try_blend_curve(
+        #[cfg(feature = "native-smlib")]
+        let construct = viboceros_smlib::blend_curve;
+        #[cfg(not(feature = "native-smlib"))]
+        let construct = viboceros_geometry::try_blend_curve;
+        let blend = construct(
             first,
             options.picks[0].unwrap_or(default_first),
             second,
@@ -94,11 +98,12 @@ fn parse(arguments: &[&str]) -> Result<BlendOptions, CommandError> {
             }
             picks[index] = Some(point);
         } else if option_name_eq(stem, "Continuity") {
-            let mode = if value.eq_ignore_ascii_case("Position") {
+            let mode = if value.eq_ignore_ascii_case("Position") || value.eq_ignore_ascii_case("G0")
+            {
                 CurveBlendContinuity::Position
-            } else if value.eq_ignore_ascii_case("Tangency") {
+            } else if value.eq_ignore_ascii_case("Tangency") || value.eq_ignore_ascii_case("G1") {
                 CurveBlendContinuity::Tangency
-            } else if value.eq_ignore_ascii_case("Curvature") {
+            } else if value.eq_ignore_ascii_case("Curvature") || value.eq_ignore_ascii_case("G2") {
                 CurveBlendContinuity::Curvature
             } else {
                 return Err(CommandError::Usage(USAGE));
@@ -156,8 +161,11 @@ mod tests {
             })
             .expect("selected blend curve");
         assert_eq!(blend.degree(), 3);
+        let blended = document.objects().cloned().collect::<Vec<_>>();
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), blended);
     }
 
     #[test]
@@ -181,6 +189,22 @@ mod tests {
                 .is_err()
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn continuity_degree_aliases_preserve_mixed_endpoint_constraints() {
+        let options = parse(&["Continuity1=g0", "Continuity2=G2"]).unwrap();
+        assert_eq!(
+            options.continuity,
+            [
+                CurveBlendContinuity::Position,
+                CurveBlendContinuity::Curvature
+            ]
+        );
+        assert_eq!(
+            parse(&["Continuity1=G1"]).unwrap().continuity[0],
+            CurveBlendContinuity::Tangency
+        );
     }
 
     #[test]

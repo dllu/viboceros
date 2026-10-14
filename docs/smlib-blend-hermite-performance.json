@@ -3,16 +3,6 @@
   "cpu_affinity": 0,
   "upstream_commit": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
   "scope": "Same-process native/portable complete construction, including parent preparation and diagnostics; three independent process runs pinned to one CPU. This is not a Rhino timing comparison.",
-  "source_sha256": {
-    "crates/viboceros-geometry/src/surface_blend.rs": "a9e64eaaf25c95978565e0621339b4886e1560ed86ed920908bdbdbbb20b59aa",
-    "crates/viboceros-smlib/src/native/surface_blend.rs": "edecf035b6cd8f3b614f66269984f715552bfc7eb8a7f8fc892dd2afb3a19250",
-    "crates/viboceros-smlib/src/native/knot_refinement.rs": "c3aec5c446ebd7a3ad2af44562c7f02a3de0f019b3ed45790f2876e036707f50",
-    "crates/viboceros-smlib/native/knot_refinement.cpp": "611585a26337d927469335df66af1b508488840b20fc36502c3110be8adeca0a",
-    "crates/viboceros-smlib/native/knot_refinement.h": "37773fc72043006d03e9397a166da15a04a22736c95f1019b0a1979af9e4a18a",
-    "crates/viboceros-smlib/examples/blend_surface.rs": "f4aef454a93cc51560ee973ca203204f11c05efd09a5a1447ab89ff9b6fd37bf",
-    "crates/viboceros-geometry/src/surface_blend/tests.rs": "f6c058c540ce5aefed2f5151427700d0b3b81bbdf1f4f35385e3d4b7f64f3b04",
-    "crates/viboceros-smlib/tests/surface_blend.rs": "a63822d608fb283ba6d1e833122e5238bc2e77420ce355c2cdf9e11518793343"
-  },
   "runs": [
     [
       {
@@ -501,5 +491,15 @@
     "independent_hermite_jobs": 27,
     "maximum_edge_control_count": 4096,
     "clippy": "passed with -D warnings"
+  },
+  "source_git_sha256": {
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-geometry/src/surface_blend.rs": "a9e64eaaf25c95978565e0621339b4886e1560ed86ed920908bdbdbbb20b59aa",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/src/native/surface_blend.rs": "edecf035b6cd8f3b614f66269984f715552bfc7eb8a7f8fc892dd2afb3a19250",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/src/native/knot_refinement.rs": "c3aec5c446ebd7a3ad2af44562c7f02a3de0f019b3ed45790f2876e036707f50",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/native/knot_refinement.cpp": "611585a26337d927469335df66af1b508488840b20fc36502c3110be8adeca0a",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/native/knot_refinement.h": "37773fc72043006d03e9397a166da15a04a22736c95f1019b0a1979af9e4a18a",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/examples/blend_surface.rs": "f4aef454a93cc51560ee973ca203204f11c05efd09a5a1447ab89ff9b6fd37bf",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-geometry/src/surface_blend/tests.rs": "f6c058c540ce5aefed2f5151427700d0b3b81bbdf1f4f35385e3d4b7f64f3b04",
+    "b870e120e93e11ff4c5828fe433185090e6b2729:crates/viboceros-smlib/tests/surface_blend.rs": "a63822d608fb283ba6d1e833122e5238bc2e77420ce355c2cdf9e11518793343"
   }
 }

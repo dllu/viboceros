@@ -4,7 +4,6 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use viboceros_geometry::{
     Curve3, CurveBlendContinuity, CurveBlendOptions, LineSegment, Point3, Tolerance,
-    try_blend_curve,
 };
 
 use crate::{ProbeError, curve_join_close::CurveInput};
@@ -104,7 +103,14 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
     };
     let first_pick = first_reference.evaluate(first_parameter)?;
     let second_pick = second_reference.evaluate(second_parameter)?;
-    let blend = try_blend_curve(
+    #[cfg(feature = "native-smlib")]
+    let construct = |a, p, b, q, options, tolerance| {
+        viboceros_smlib::blend_curve(a, p, b, q, options, tolerance)
+            .map_err(viboceros_command::CommandError::from)
+    };
+    #[cfg(not(feature = "native-smlib"))]
+    let construct = viboceros_geometry::try_blend_curve;
+    let blend = construct(
         &first,
         first_pick,
         &second,

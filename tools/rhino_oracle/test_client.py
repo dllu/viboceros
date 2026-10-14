@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import os
 import subprocess
 import sys
@@ -36,6 +37,32 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_native_kernel_feature_reaches_cargo_in_regular_and_audit_probes(self):
+        for enabled in (False, True):
+            for audit in (False, True):
+                with self.subTest(enabled=enabled, audit=audit):
+                    client = OracleClient(native_smlib=enabled)
+                    def execute(arguments, repo, timeout):
+                        Path(arguments[-1]).write_text(json.dumps({"completed": True}))
+                        return subprocess.CompletedProcess(arguments, 0, stdout="", stderr="")
+                    with patch("tools.rhino_oracle.client._run", side_effect=execute) as run:
+                        self.assertEqual(client._run_native({}, 30, audit=audit), {"completed": True})
+                    arguments = run.call_args.args[0]
+                    separator = arguments.index("--")
+                    if enabled:
+                        feature = arguments.index("--features")
+                        self.assertLess(feature, separator)
+                        self.assertEqual(arguments[feature + 1], "native-smlib")
+                    else:
+                        self.assertNotIn("--features", arguments)
+                    self.assertEqual("--audit" in arguments[separator + 1:], audit)
+
+    def test_native_kernel_option_requires_an_explicit_boolean(self):
+        self.assertFalse(OracleClient().native_smlib)
+        for invalid in (None, 0, 1, "native-smlib"):
+            with self.subTest(invalid=invalid), self.assertRaises(OracleProtocolError):
+                OracleClient(native_smlib=invalid)
+
     def test_started_worker_prevents_startup_macro_from_being_resent(self):
         client = OracleClient(launcher="/bin/true")
         def launch(*args):

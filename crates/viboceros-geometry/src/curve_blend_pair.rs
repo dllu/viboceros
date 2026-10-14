@@ -1,8 +1,8 @@
 //! Endpoint blends with independent position, tangent, or curvature constraints.
 
 use crate::{
-    Curve3, GeometryError, NurbsCurve, ParameterSide, Point3, Real, Tolerance, UnitVector3,
-    Vector3, curve_pair_support::selected_end,
+    Curve3, EndpointInterpolation, GeometryError, NurbsCurve, ParameterSide, Point3, Real,
+    Tolerance, UnitVector3, Vector3, curve_pair_support::selected_end,
 };
 
 /// Continuity imposed at one end of a blend.
@@ -49,6 +49,28 @@ pub fn try_blend_curve(
     options: CurveBlendOptions,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, GeometryError> {
+    try_blend_curve_with_interpolation(
+        first,
+        first_pick,
+        second,
+        second_pick,
+        options,
+        tolerance,
+        &mut crate::try_interpolate_endpoints,
+    )
+}
+
+/// Preserve Blend's endpoint selection, handle policy and domain while
+/// delegating its exact minimum-degree endpoint interpolation to a backend.
+pub fn try_blend_curve_with_interpolation<E: From<GeometryError>>(
+    first: &Curve3,
+    first_pick: Point3,
+    second: &Curve3,
+    second_pick: Point3,
+    options: CurveBlendOptions,
+    tolerance: Tolerance,
+    interpolate: &mut impl FnMut(&EndpointInterpolation<'_>) -> Result<Vec<[Real; 4]>, E>,
+) -> Result<NurbsCurve, E> {
     let first_end = selected_end(first, first_pick, tolerance)?;
     let second_end = selected_end(second, second_pick, tolerance)?;
     let endpoint_specific = options.endpoint_specific
@@ -62,7 +84,8 @@ pub fn try_blend_curve(
     if chord_length <= tolerance.absolute() {
         return Err(GeometryError::Degenerate {
             context: "curve blend endpoints",
-        });
+        }
+        .into());
     }
     let default_handle = |continuity| match continuity {
         CurveBlendContinuity::Position => chord_length / 3.0,
@@ -76,7 +99,8 @@ pub fn try_blend_curve(
     {
         return Err(GeometryError::Degenerate {
             context: "curve blend bulge",
-        });
+        }
+        .into());
     }
     let mut first_handle =
         options.handles[0].unwrap_or_else(|| default_handle(options.continuity[0]));
@@ -89,11 +113,13 @@ pub fn try_blend_curve(
     {
         return Err(GeometryError::Degenerate {
             context: "curve blend handle length",
-        });
+        }
+        .into());
     }
     if options.continuity == [CurveBlendContinuity::Position; 2] {
         let domain_end = if endpoint_specific { 1.0 } else { chord_length };
-        return NurbsCurve::try_new(1, vec![start, end], vec![0.0, 0.0, domain_end, domain_end]);
+        return NurbsCurve::try_new(1, vec![start, end], vec![0.0, 0.0, domain_end, domain_end])
+            .map_err(E::from);
     }
     let degree = continuity_control_count(options.continuity[0])
         + continuity_control_count(options.continuity[1])
@@ -105,7 +131,7 @@ pub fn try_blend_curve(
             tangent.opposite()
         }),
         Err(_) if options.continuity[0] == CurveBlendContinuity::Position => None,
-        Err(error) => return Err(error),
+        Err(error) => return Err(error.into()),
     };
     let second_direction = match endpoint_tangent(second, second_end) {
         Ok(tangent) => Some(if second_end {
@@ -114,7 +140,7 @@ pub fn try_blend_curve(
             tangent
         }),
         Err(_) if options.continuity[1] == CurveBlendContinuity::Position => None,
-        Err(error) => return Err(error),
+        Err(error) => return Err(error.into()),
     };
     if endpoint_specific
         && let (Some(first_direction), Some(second_direction)) = (first_direction, second_direction)
@@ -142,46 +168,111 @@ pub fn try_blend_curve(
     if !first_handle.is_finite() || !second_handle.is_finite() {
         return Err(GeometryError::Degenerate {
             context: "curve blend handle length",
-        });
+        }
+        .into());
     }
-    let mut controls = vec![start; degree + 1];
+    let orders = options
+        .continuity
+        .map(|g| (continuity_control_count(g) - 1) as u8);
+    let mut targets = vec![[0.; 4]; degree + 1];
+    targets[0] = [0., 0., 0., 1.];
+    let xyz = chord.to_array();
+    targets[degree] = [xyz[0], xyz[1], xyz[2], 1.];
+    for (side, (source, at_end, direction, handle)) in [
+        (first, first_end, first_direction, first_handle),
+        (second, second_end, second_direction, second_handle),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        if orders[side] == 0 {
+            continue;
+        }
+        let direction = direction.expect("constrained blend end has a tangent");
+        let derivative = direction
+            .as_vector()
+            .scaled(handle)?
+            .scaled(degree as Real)?
+            .to_array();
+        let row = if side == 0 { 1 } else { degree - 1 };
+        targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
+        if orders[side] == 2 {
+            let speed = degree as Real * handle;
+            let derivative = endpoint_curvature(source, at_end)?
+                .to_array()
+                .map(|c| c * speed * speed);
+            let row = if side == 0 { 2 } else { degree - 2 };
+            targets[row] = [derivative[0], derivative[1], derivative[2], 0.];
+        }
+    }
+    let input = EndpointInterpolation {
+        orders,
+        column_count: 1,
+        targets: &targets,
+    };
+    input.validate()?;
+    let net = interpolate(&input)?;
+    if net.len() != degree + 1
+        || net
+            .iter()
+            .any(|h| h.iter().any(|v| !v.is_finite()) || (h[3] - 1.).abs() > 1e-12)
+    {
+        return Err(GeometryError::InvalidEndpointInterpolation {
+            context: "curve backend returned invalid polynomial controls",
+        }
+        .into());
+    }
+    let controls = net
+        .iter()
+        .map(|h| Point3::try_new(h[0], h[1], h[2]))
+        .collect::<Result<Vec<_>, _>>()?;
+    let knots = std::iter::repeat_n(0., degree + 1)
+        .chain(std::iter::repeat_n(1., degree + 1))
+        .collect();
+    let local = NurbsCurve::try_new(degree, controls, knots)?;
+    for (end, &end_order) in orders.iter().enumerate() {
+        let (point, first, second) = local.evaluate_with_second_derivative_on_side(
+            end as Real,
+            if end == 0 {
+                ParameterSide::Right
+            } else {
+                ParameterSide::Left
+            },
+        )?;
+        let actual = [point.to_array(), first.to_array(), second.to_array()];
+        for order in 0..=usize::from(end_order) {
+            let row = if end == 0 { order } else { degree - order };
+            for (k, actual) in actual[order].into_iter().enumerate() {
+                let target = targets[row][k];
+                if (actual - target).abs() > 1e-9 * actual.abs().max(target.abs()).max(1.) {
+                    return Err(GeometryError::InvalidEndpointInterpolation {
+                        context: "curve backend did not preserve the requested endpoint jets",
+                    }
+                    .into());
+                }
+            }
+        }
+    }
+    let mut controls = local
+        .control_points()
+        .iter()
+        .map(|h| {
+            let p = h.point();
+            Point3::try_new(start.x() + p.x(), start.y() + p.y(), start.z() + p.z())
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    // Retain the original endpoint bits after the common-origin solve.
+    controls[0] = start;
     controls[degree] = end;
-    if options.continuity[0] != CurveBlendContinuity::Position {
-        let first_direction = first_direction.expect("constrained blend end has a tangent");
-        controls[1] = start.translated(first_direction.as_vector().scaled(first_handle)?)?;
-        if options.continuity[0] == CurveBlendContinuity::Curvature {
-            controls[2] = second_control_from_endpoint(
-                start,
-                first_direction,
-                first_handle,
-                endpoint_curvature(first, first_end)?,
-                degree,
-                true,
-            )?;
-        }
-    }
-    if options.continuity[1] != CurveBlendContinuity::Position {
-        let second_direction = second_direction.expect("constrained blend end has a tangent");
-        controls[degree - 1] =
-            end.translated(second_direction.as_vector().scaled(-second_handle)?)?;
-        if options.continuity[1] == CurveBlendContinuity::Curvature {
-            controls[degree - 2] = second_control_from_endpoint(
-                end,
-                second_direction,
-                second_handle,
-                endpoint_curvature(second, second_end)?,
-                degree,
-                false,
-            )?;
-        }
-    }
     let mut knots = vec![0.0; degree + 1];
     knots.extend(vec![1.0; degree + 1]);
     let blend = NurbsCurve::try_new(degree, controls, knots)?;
     if endpoint_specific {
         Ok(blend)
     } else {
-        blend.try_reparameterized(0.0..=blend.length(tolerance)?)
+        blend
+            .try_reparameterized(0.0..=blend.length(tolerance)?)
+            .map_err(E::from)
     }
 }
 
@@ -201,28 +292,6 @@ fn endpoint_curvature(curve: &Curve3, at_end: bool) -> Result<Vector3, GeometryE
         *reference.domain().start()
     };
     reference.curvature_vector(parameter)
-}
-
-/// A degree-n Bézier endpoint has speed `n*h` and second derivative
-/// `n*(n-1)*(P0 - 2P1 + P2)`. The normal acceleration required by the source
-/// is speed squared times its curvature vector. Tangential acceleration is zero.
-fn second_control_from_endpoint(
-    endpoint: Point3,
-    direction: UnitVector3,
-    handle: Real,
-    curvature: Vector3,
-    degree: usize,
-    at_start: bool,
-) -> Result<Point3, GeometryError> {
-    let tangent_offset = direction.as_vector().scaled(if at_start {
-        2.0 * handle
-    } else {
-        -2.0 * handle
-    })?;
-    let curvature_offset =
-        curvature.scaled((degree as Real / (degree - 1) as Real) * handle * handle)?;
-    let tangent = endpoint.translated(tangent_offset)?;
-    tangent.translated(curvature_offset)
 }
 
 fn endpoint_point(curve: &Curve3, at_end: bool) -> Result<Point3, GeometryError> {
@@ -263,6 +332,43 @@ mod tests {
 
     fn line(start: Point3, end: Point3) -> Curve3 {
         Curve3::Line(LineSegment::try_new(start, end, Tolerance::DEFAULT).unwrap())
+    }
+
+    #[test]
+    fn bad_interpolation_results_and_backend_errors_preserve_the_source_curves() {
+        let first = line(p(0., 0.), p(1., 0.));
+        let second = line(p(4., 1.), p(4., 2.));
+        let before = [first.clone(), second.clone()];
+        for failure in 0..4 {
+            let mut interpolate = |input: &EndpointInterpolation<'_>| {
+                if failure == 3 {
+                    return Err(GeometryError::InterpolationBackendFailed {
+                        message: "injected failure".into(),
+                    });
+                }
+                let mut net = crate::try_interpolate_endpoints(input)?;
+                match failure {
+                    0 => net.clear(),
+                    1 => net[1][3] = 0.5,
+                    2 => net[1][0] += 1.,
+                    _ => unreachable!(),
+                }
+                Ok(net)
+            };
+            assert!(
+                try_blend_curve_with_interpolation(
+                    &first,
+                    p(1., 0.),
+                    &second,
+                    p(4., 1.),
+                    CurveBlendOptions::default(),
+                    Tolerance::DEFAULT,
+                    &mut interpolate
+                )
+                .is_err()
+            );
+            assert_eq!([first.clone(), second.clone()], before);
+        }
     }
 
     #[test]

@@ -8,6 +8,8 @@ preview both call the same readonly preparation function. Exact mixed endpoint
 interpolation also uses the native kernel: `N_BasisDerivs` supplies the
 requested derivative rows, and the existing homogeneous matrix solver shares
 one factorization across the entire control net.
+Curve [Blend](smlib-curve-blend.md) uses the same shared endpoint interface and
+native solver.
 
 The shared core retains edge orientation, normalized parameter domains,
 independent G0/G1/G2 targets, positive bulges, exact homogeneous boundary jets,

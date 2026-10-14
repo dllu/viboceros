@@ -11,6 +11,20 @@ from .__main__ import headless_wrapper_argv
 
 
 class HeadlessCliTests(unittest.TestCase):
+    def test_native_kernel_flag_reaches_the_viboceros_client(self):
+        from .__main__ import main
+        with tempfile.TemporaryDirectory() as temporary:
+            request = Path(temporary) / "request.json"
+            output = Path(temporary) / "response.json"
+            request.write_text(json.dumps(dict(protocol_version=1, iterations=1, operations=[])))
+            argv = ["oracle", "viboceros", str(request), "--native-smlib", "--output", str(output)]
+            response = dict(protocol_version=1, engine="viboceros", results=[])
+            with patch("sys.argv", argv), patch("tools.rhino_oracle.__main__.OracleClient") as client:
+                client.return_value.run_viboceros.return_value = response
+                self.assertEqual(main(), 0)
+            self.assertTrue(client.call_args.kwargs["native_smlib"])
+            self.assertEqual(json.loads(output.read_text()), response)
+
     def test_private_scheme_and_output_file_reach_the_isolated_client(self):
         from .__main__ import main
         with tempfile.TemporaryDirectory() as temporary:

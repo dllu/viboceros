@@ -322,13 +322,13 @@ fn solve_interpolation(
 }
 
 /// Solve exact mixed endpoint jets for all blend columns in one native job.
-pub fn interpolate_surface_blend(
-    input: &viboceros_geometry::SurfaceBlendInterpolation<'_>,
+pub fn interpolate_endpoints(
+    input: &viboceros_geometry::EndpointInterpolation<'_>,
 ) -> Result<Vec<[f64; 4]>, Error> {
     input.validate()?;
     let degree = input.degree();
-    let first = input.continuity[0].order();
-    let second = input.continuity[1].order();
+    let first = usize::from(input.orders[0]);
+    let second = usize::from(input.orders[1]);
     let parameters = std::iter::repeat_n(0., first + 1)
         .chain(std::iter::repeat_n(1., second + 1))
         .collect::<Vec<_>>();
@@ -346,7 +346,7 @@ pub fn interpolate_surface_blend(
         targets: targets.as_ptr(),
         knot_count: knots.len(),
         parameter_count: parameters.len(),
-        columns: input.edge_control_count * 4,
+        columns: input.column_count * 4,
         target_count: targets.len(),
         degree,
         closed: 0,
@@ -370,6 +370,13 @@ pub fn interpolate_surface_blend(
         .chunks_exact(4)
         .map(|h| [h[0], h[1], h[2], h[3]])
         .collect())
+}
+
+/// Exact surface boundary interpolation through the shared endpoint solver.
+pub fn interpolate_surface_blend(
+    input: &viboceros_geometry::SurfaceBlendInterpolation<'_>,
+) -> Result<Vec<[f64; 4]>, Error> {
+    interpolate_endpoints(&input.endpoint_interpolation())
 }
 
 /// Smooth a closed curve through native nonuniform periodic collocation.

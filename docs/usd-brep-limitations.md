@@ -714,6 +714,16 @@ issues reported by NVIDIA that have not all been reproduced here.
   1–11 and 1,000-point ceilings remain. Fresh Rhino capture, continuous fit
   error and performance relative to Rhino remain unqualified. See
   [native Rebuild](smlib-curve-rebuild.md).
+- **Curve Blend shares the native exact endpoint interpolator with BlendSrf.**
+  Native builds use derivative basis rows and homogeneous back solving for
+  independent G0/G1/G2 constraints. Picking, tangent/curvature queries, default
+  handles, bulges and domain policy remain shared; G0/G0 retains its direct line.
+  Portable builds use the same common endpoint interface. The Python oracle can
+  select `native_smlib=True`, and all 282 retained Rhino SDK definitions preserve
+  degree, weights and control coordinates within `1e-12`, with the existing
+  arc-length domain ceiling of `5e-8`. Native command history and readonly source
+  behavior are checked. Interactive handles, G3/G4 and general conditioning
+  remain unqualified. See [native curve Blend](smlib-curve-blend.md).
 - **BlendSrf uses native parent edits and exact mixed endpoint interpolation.**
   Clamping, exact elevation, knot matching and rectangular parent restrictions
   now use the existing checked native adapters in command and GUI preparation.

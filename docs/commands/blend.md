@@ -10,8 +10,9 @@ blend is selected, and `Undo` removes it. `Pick1=x,y,z` and `Pick2=x,y,z`
 choose other source ends. Alternate end picks use Rhino's endpoint-specific
 default blend shape and a normalized `[0,1]` parameter domain.
 
-`Continuity1` and `Continuity2` independently accept `Position`, `Tangency`, or
-`Curvature`; both default to `Tangency`. The blend uses the minimum degree for
+`Continuity1` and `Continuity2` independently accept `Position`/`G0`,
+`Tangency`/`G1`, or `Curvature`/`G2`; both default to `Tangency`.
+The blend uses the minimum degree for
 the requested endpoint constraints: degree 1 for position/position, degree 3
 for tangency/tangency, degree 5 for curvature/curvature, and the intervening
 degrees for mixed choices. Curvature ends match the source curvature vector.
@@ -33,3 +34,7 @@ Blend Bulge1=0.5 Bulge2=1.5
 For `Blend`, G3 and higher continuity, interactive curve-handle adjustment,
 curve trimming and joining are pending. [BlendSrf](blend-srf.md) provides
 surface-edge selection, preview, rectangular trimming and joining.
+
+With `native-smlib`, exact endpoint interpolation uses usd-brep's derivative
+basis and homogeneous solver. Handle defaults and domain policy stay shared;
+see [native construction and replay](../smlib-curve-blend.md).

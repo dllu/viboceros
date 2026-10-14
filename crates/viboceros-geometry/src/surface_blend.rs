@@ -90,16 +90,15 @@ impl SurfaceBlendInterpolation<'_> {
         self.continuity[0].order() + self.continuity[1].order() + 1
     }
     pub fn validate(&self) -> Result<(), GeometryError> {
-        if self.edge_control_count == 0
-            || self.edge_control_count > MAX_EDGE_CONTROLS
-            || self.targets.len() != self.edge_control_count * (self.degree() + 1)
-        {
-            return Err(error("invalid boundary interpolation dimensions"));
+        self.endpoint_interpolation().validate()
+    }
+    /// Shared endpoint system used by curve and surface construction backends.
+    pub fn endpoint_interpolation(&self) -> crate::EndpointInterpolation<'_> {
+        crate::EndpointInterpolation {
+            orders: self.continuity.map(|g| g.order() as u8),
+            column_count: self.edge_control_count,
+            targets: self.targets,
         }
-        crate::require_finite(
-            self.targets.iter().flat_map(|h| *h),
-            "surface blend boundary targets",
-        )
     }
 }
 
@@ -115,42 +114,7 @@ pub struct SurfaceBlendOperations<'a, E> {
 pub fn try_interpolate_surface_blend(
     input: &SurfaceBlendInterpolation<'_>,
 ) -> Result<Vec<[Real; 4]>, GeometryError> {
-    input.validate()?;
-    let degree = input.degree();
-    let count = input.edge_control_count;
-    let mut net = vec![[0.; 4]; input.targets.len()];
-    for end in 0..2 {
-        let row = if end == 0 { 0 } else { degree };
-        let direction = if end == 0 { 1. } else { -1. };
-        for u in 0..count {
-            let h = input.targets[row * count + u];
-            for order in 0..=input.continuity[end].order() {
-                let row = if end == 0 { order } else { degree - order };
-                for k in 0..4 {
-                    let d = if order > 0 {
-                        input.targets[if end == 0 {
-                            count + u
-                        } else {
-                            (degree - 1) * count + u
-                        }][k]
-                            * direction
-                    } else {
-                        0.
-                    };
-                    net[row * count + u][k] = match order {
-                        0 => h[k],
-                        1 => h[k] + d / degree as Real,
-                        2 => {
-                            let dd = input.targets[row * count + u][k];
-                            h[k] + 2. * d / degree as Real + dd / (degree * (degree - 1)) as Real
-                        }
-                        _ => unreachable!(),
-                    };
-                }
-            }
-        }
-    }
-    Ok(net)
+    crate::try_interpolate_endpoints(&input.endpoint_interpolation())
 }
 
 fn portable_clamp(source: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {

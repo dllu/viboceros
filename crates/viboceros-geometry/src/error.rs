@@ -7,6 +7,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 pub enum GeometryError {
     #[error("interpolation backend failed: {message}")]
     InterpolationBackendFailed { message: String },
+    #[error("endpoint interpolation failed: {context}")]
+    InvalidEndpointInterpolation { context: &'static str },
     #[error("surface blend failed: {context}")]
     InvalidSurfaceBlend { context: &'static str },
     #[error("{operation} is unsupported for block instances")]

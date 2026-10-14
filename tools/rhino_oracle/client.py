@@ -115,6 +115,7 @@ class OracleClient:
         repo_root: str | os.PathLike[str] | None = None,
         launcher: str | os.PathLike[str] | None = None,
         settings_scheme: str | None = None,
+        native_smlib: bool = False,
     ) -> None:
         if settings_scheme is not None and (
             not isinstance(settings_scheme, str)
@@ -122,6 +123,9 @@ class OracleClient:
         ):
             raise OracleProtocolError("invalid private Rhino settings scheme")
         self.settings_scheme = settings_scheme
+        if not isinstance(native_smlib, bool):
+            raise OracleProtocolError("native_smlib must be a boolean")
+        self.native_smlib = native_smlib
         self.repo_root = (
             Path(repo_root).resolve()
             if repo_root is not None
@@ -180,6 +184,7 @@ class OracleClient:
                 "--release",
                 "--package",
                 "viboceros-oracle",
+                *(["--features", "native-smlib"] if self.native_smlib else []),
                 "--",
                 *(["--audit"] if audit else []),
                 str(request_path),

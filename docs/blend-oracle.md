@@ -85,6 +85,11 @@ checks the degree, controls, weights, knots, and domain against these saved
 definitions. Control points differ by less than `1e-12`; independently
 computed curve-length domains differ by less than `5e-8`.
 
+Linux `native-smlib` builds also replay the complete corpus through the
+[shared native endpoint solver](smlib-curve-blend.md). The retained 282-case
+[native result](smlib-curve-blend-comparison.json) uses the Python client's
+explicit `native_smlib=True` setting. The original Rhino captures are unchanged.
+
 ```sh
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/blend_lines.json --timeout 600
 cargo test -p viboceros-oracle --lib blend_curve::tests

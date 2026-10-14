@@ -45,7 +45,9 @@ pub use surface_rebuild::{
     NurbsInterpolationSystem, UniformInterpolationSystem, try_rebuild_nurbs_surface,
     try_rebuild_nurbs_surface_with_operations, try_rebuild_open_nurbs_surface_with_operations,
 };
+mod endpoint_interpolation;
 mod surface_blend;
+pub use endpoint_interpolation::{EndpointInterpolation, try_interpolate_endpoints};
 mod surface_tween;
 pub use surface_blend::{
     SurfaceBlendContinuity, SurfaceBlendDiagnostics, SurfaceBlendInterpolation,
@@ -146,7 +148,9 @@ pub use circular::CircularArc3;
 pub use curve::{
     CurveDivisionPoint, CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS, try_control_polygon_plane,
 };
-pub use curve_blend_pair::{CurveBlendContinuity, CurveBlendOptions, try_blend_curve};
+pub use curve_blend_pair::{
+    CurveBlendContinuity, CurveBlendOptions, try_blend_curve, try_blend_curve_with_interpolation,
+};
 pub use curve_chamfer_pair::{
     CurveChamferExtensionStyles, try_chamfer_curves_joined, try_chamfer_curves_joined_with_styles,
     try_chamfer_curves_parts, try_chamfer_curves_parts_with_styles,

@@ -1906,6 +1906,21 @@ report = OracleClient().compare(load_request("tools/rhino_oracle/fixtures/core.j
 assert report.passed
 ```
 
+Set `OracleClient(native_smlib=True)` or pass `--native-smlib` to the Python CLI
+to enable the optional usd-brep backend for Viboceros probes. The selection
+applies to ordinary runs, audit, saved replay and live comparison. It requires
+the [native kernel setup](../README.md); the default uses the portable build.
+
+```python
+client = OracleClient(native_smlib=True)
+report = client.replay(
+    load_request("tools/rhino_oracle/fixtures/blend_lines.json"),
+    load_request("tools/rhino_oracle/observations/blend_lines.json"),
+    absolute_epsilon=5e-8, timeout=600,
+)
+assert report.passed
+```
+
 Set `VIBOCEROS_RHINO_LAUNCHER` to use another launcher. McNeel's documented
 `/runscript` startup interface is tried first; this project's Wine path also
 has an owned-window fallback that requires `wmctrl` and `xdotool` and never
