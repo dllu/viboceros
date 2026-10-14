@@ -83,9 +83,12 @@ fn block_manager_renders_a_definition_table_with_natural_name_order() {
     let ctx = egui::Context::default();
     let mut output = None;
     for _ in 0..2 {
-        output = Some(ctx.run_ui(egui::RawInput::default(), |ui| {
+        let mut frame = ctx.run_ui(egui::RawInput::default(), |ui| {
             app.show_block_manager(ui.ctx())
-        }));
+        });
+        // No renderer applies texture updates in this shape-inspection test.
+        frame.textures_delta.clear();
+        output = Some(frame);
     }
     let labels = output
         .unwrap()

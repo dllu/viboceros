@@ -307,6 +307,9 @@ impl InteractiveScaleKind {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
+    ProjectDirection {
+        start: Option<Point3>,
+    },
     Contour {
         base: Option<Point3>,
         direction: Option<Point3>,
@@ -723,6 +726,7 @@ enum InteractiveCommand {
 impl InteractiveCommand {
     const fn name(self) -> &'static str {
         match self {
+            Self::ProjectDirection { .. } => "Project",
             Self::Section { .. } => "Section",
             Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
@@ -839,6 +843,12 @@ impl InteractiveCommand {
 
     const fn prompt(self) -> &'static str {
         match self {
+            Self::ProjectDirection { start: None } => {
+                "Project: pick the custom direction start (Esc cancels)"
+            }
+            Self::ProjectDirection { start: Some(_) } => {
+                "Project: pick the custom direction end (Undo revises start; Esc cancels)"
+            }
             Self::Contour { base: None, .. } => {
                 "Contour: pick the base point (Range sets the picked interval; Esc cancels)"
             }
@@ -1606,6 +1616,7 @@ impl InteractiveCommand {
 
     const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::ProjectDirection { start } => start,
             Self::Section { start, .. } => start,
             Self::Contour {
                 base,
@@ -5304,6 +5315,7 @@ impl VibocerosApp {
         if let Some(command) = command
             && announce
             && command != InteractiveCommand::Points
+            && !matches!(command, InteractiveCommand::ProjectDirection { .. })
         {
             let action =
                 if transform_applied || matches!(command, InteractiveCommand::EvaluateUv { .. }) {
@@ -5338,6 +5350,9 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
+            InteractiveCommand::ProjectDirection { start } => {
+                return self.accept_project_direction_point(start, point);
+            }
             InteractiveCommand::Section { .. } | InteractiveCommand::Contour { .. } => {
                 return false;
             }

@@ -769,7 +769,7 @@ fn block_edit_controls_frame(
     context: &egui::Context,
     events: Vec<egui::Event>,
 ) -> egui::FullOutput {
-    context.run_ui(
+    let mut output = context.run_ui(
         egui::RawInput {
             screen_rect: Some(egui::Rect::from_min_size(
                 egui::Pos2::ZERO,
@@ -779,7 +779,10 @@ fn block_edit_controls_frame(
             ..Default::default()
         },
         |ui| app.show_block_edit(ui.ctx()),
-    )
+    );
+    // These headless frames inspect shapes without uploading font textures.
+    output.textures_delta.clear();
+    output
 }
 fn block_edit_controls_click(
     app: &mut VibocerosApp,

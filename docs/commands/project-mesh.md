@@ -3,6 +3,8 @@
 [Project](project.md) accepts mesh targets for point and curve inputs in both
 portable and `native-smlib` builds. Picking, preselection, direction, output
 layers and DeleteInput use the same workflow as surface targets.
+`Direction=Custom` uses the shared two-point drafting getter described in the
+[Project reference](project.md).
 
 Each target gets one reusable bounding-volume index. Point queries intersect
 both directions of the infinite line, admit closed triangle barycentrics with

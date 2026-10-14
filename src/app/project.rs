@@ -11,6 +11,32 @@ pub(super) struct ProjectOptions {
     delete_input: bool,
     output_layer: &'static str,
 }
+#[derive(Clone, Debug)]
+pub(super) struct ProjectSession {
+    options: ProjectOptions,
+    pub(super) custom_requested: bool,
+    finish_targets: Option<Vec<ObjectId>>,
+}
+impl ProjectSession {
+    fn command(&self) -> String {
+        self.options
+            .command_with_direction(if self.custom_requested {
+                "Custom"
+            } else {
+                &self.options.direction
+            })
+    }
+}
+fn custom_option(argument: &str) -> bool {
+    argument
+        .trim_start_matches('_')
+        .split_once('=')
+        .is_some_and(|(key, value)| {
+            key.eq_ignore_ascii_case("Direction")
+                && value.trim_start_matches('_').eq_ignore_ascii_case("Custom")
+        })
+}
+
 impl Default for ProjectOptions {
     fn default() -> Self {
         Self {
@@ -69,10 +95,13 @@ impl ProjectOptions {
         }
         true
     }
-    fn command(&self) -> String {
+    pub(super) fn command(&self) -> String {
+        self.command_with_direction(&self.direction)
+    }
+    fn command_with_direction(&self, direction: &str) -> String {
         format!(
             "Project Direction={} DeleteInput={} OutputLayer={}",
-            self.direction,
+            direction,
             if self.delete_input { "Yes" } else { "No" },
             self.output_layer
         )
@@ -88,14 +117,20 @@ impl VibocerosApp {
             return false;
         }
         let mut options = self.project_options.clone();
+        let mut custom_requested = false;
         let mut seen = std::collections::BTreeSet::new();
         for argument in words {
             let Some((key, _)) = argument.split_once('=') else {
                 return false;
             };
-            if !seen.insert(key.trim_start_matches('_').to_ascii_lowercase())
-                || !options.argument(argument)
-            {
+            if !seen.insert(key.trim_start_matches('_').to_ascii_lowercase()) {
+                return false;
+            }
+            if custom_option(argument) {
+                custom_requested = true;
+                continue;
+            }
+            if !options.argument(argument) {
                 return false;
             }
         }
@@ -114,7 +149,7 @@ impl VibocerosApp {
             .collect::<Vec<_>>();
         self.cancel_interactive_command(false);
         self.project_options = options.clone();
-        if !first.is_empty() && !targets.is_empty() {
+        if !custom_requested && !first.is_empty() && !targets.is_empty() {
             self.try_execute_command(&format!(
                 "{} Sources={} Targets={}",
                 options.command(),
@@ -124,7 +159,11 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
-        self.document.clear_selection();
+        if !custom_requested || first.is_empty() || targets.is_empty() {
+            self.document.clear_selection();
+        }
+        let finish_targets =
+            (custom_requested && !first.is_empty() && !targets.is_empty()).then_some(targets);
         self.intersection_prompt = Some(TwoSetsPrompt {
             first: (!first.is_empty()).then_some(first),
             original_selection,
@@ -133,18 +172,34 @@ impl VibocerosApp {
             uv_mapping: None,
             uv_face: None,
             uv_subcurves: Default::default(),
-            projection: Some(options),
+            projection: Some(ProjectSession {
+                options,
+                custom_requested,
+                finish_targets,
+            }),
         });
         self.command_input.clear();
         self.push_log(format!("> {input}"));
-        self.log_intersection_prompt();
+        if custom_requested {
+            self.begin_project_direction();
+        } else {
+            self.log_intersection_prompt();
+        }
         true
     }
     pub(super) fn log_project_prompt(&mut self, prompt: &TwoSetsPrompt) {
         self.push_log(format!(
             "{}: {}",
             prompt.projection.as_ref().unwrap().command(),
-            prompt.hint()
+            if self.picking_project_direction() {
+                self.active_command
+                    .unwrap()
+                    .prompt()
+                    .strip_prefix("Project: ")
+                    .unwrap_or(self.active_command.unwrap().prompt())
+            } else {
+                prompt.hint()
+            }
         ));
     }
     pub(super) fn continue_project_prompt(
@@ -152,6 +207,40 @@ impl VibocerosApp {
         mut prompt: TwoSetsPrompt,
         input: &str,
     ) -> bool {
+        if self.picking_project_direction() {
+            if input.trim_start_matches('_').eq_ignore_ascii_case("Undo") {
+                self.active_command = Some(InteractiveCommand::ProjectDirection { start: None });
+                self.point_filter = None;
+                self.point_constraint = None;
+                self.drafting_plane = None;
+                self.command_input.clear();
+                self.log_intersection_prompt();
+                return true;
+            }
+            if input
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Cancel")
+            {
+                self.cancel_interactive_command(true);
+                return true;
+            }
+            if self.try_continue_point_constraint(input)
+                || self.try_continue_point_filter(input)
+                || self.try_continue_point_input(input)
+            {
+                return true;
+            }
+            if input.is_empty()
+                || matches!(
+                    input.trim_start_matches('_').to_ascii_lowercase().as_str(),
+                    "selall" | "selnone"
+                )
+            {
+                self.command_input.clear();
+                self.log_intersection_prompt();
+                return true;
+            }
+        }
         if input.is_empty() {
             let selected = self
                 .document
@@ -189,14 +278,31 @@ impl VibocerosApp {
                     .trim_start_matches(['_', '-']),
             )
         {
-            let mut options = prompt.projection.clone().unwrap();
-            if options.argument(input) {
-                self.project_options = options.clone();
-                prompt.projection = Some(options);
+            let mut session = prompt.projection.clone().unwrap();
+            if custom_option(input) {
+                session.custom_requested = true;
+                prompt.projection = Some(session);
                 self.intersection_prompt = Some(prompt);
-                self.log_intersection_prompt();
+                self.begin_project_direction();
+            } else if session.options.argument(input) {
+                let direction_changed = input
+                    .trim_start_matches('_')
+                    .split_once('=')
+                    .is_some_and(|(key, _)| key.eq_ignore_ascii_case("Direction"));
+                if direction_changed {
+                    session.custom_requested = false;
+                    self.clear_project_direction();
+                }
+                self.project_options = session.options.clone();
+                prompt.projection = Some(session);
+                self.intersection_prompt = Some(prompt.clone());
+                if direction_changed {
+                    self.finish_deferred_project(prompt);
+                } else {
+                    self.log_intersection_prompt();
+                }
             } else {
-                self.push_log("Project options: Direction=CPlaneZ|View|x,y,z, DeleteInput=Yes|No, OutputLayer=Current|Input|TargetObject".into());
+                self.push_log("Project options: Direction=CPlaneZ|View|Custom|x,y,z, DeleteInput=Yes|No, OutputLayer=Current|Input|TargetObject".into());
             }
         } else if input
             .trim_start_matches('_')
@@ -226,17 +332,98 @@ impl VibocerosApp {
             .collect::<Result<Vec<_>, _>>()
         {
             self.select_project_objects(ids, SelectionMode::Add);
+        } else if self.picking_project_direction() {
+            self.log_intersection_prompt();
         } else {
             self.push_log("Pick objects, type object IDs, or press Enter to continue".into());
         }
         self.command_input.clear();
         true
     }
+    pub(super) fn picking_project_direction(&self) -> bool {
+        matches!(
+            self.active_command,
+            Some(InteractiveCommand::ProjectDirection { .. })
+        )
+    }
+    fn clear_project_direction(&mut self) {
+        if self.picking_project_direction() {
+            self.active_command = None;
+            self.drafting_plane = None;
+            self.point_constraint = None;
+            self.point_filter = None;
+            self.snaps.model_override = None;
+        }
+    }
+    fn begin_project_direction(&mut self) {
+        self.active_command = Some(InteractiveCommand::ProjectDirection { start: None });
+        self.drafting_plane = None;
+        self.point_constraint = None;
+        self.point_filter = None;
+        self.command_input.clear();
+        self.log_intersection_prompt();
+    }
+    pub(super) fn accept_project_direction_point(
+        &mut self,
+        start: Option<Point3>,
+        point: Point3,
+    ) -> bool {
+        let Some(mut prompt) = self
+            .intersection_prompt
+            .clone()
+            .filter(|p| p.projection.is_some())
+        else {
+            return false;
+        };
+        if let Some(start) = start {
+            let direction = match start.direction_to(point) {
+                Ok(d) => d.as_vector(),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            };
+            let session = prompt.projection.as_mut().unwrap();
+            let [x, y, z] = direction.to_array();
+            session.options.direction = format!("{x},{y},{z}");
+            session.custom_requested = false;
+            self.project_options = session.options.clone();
+            self.clear_project_direction();
+            self.intersection_prompt = Some(prompt.clone());
+            self.finish_deferred_project(prompt);
+        } else {
+            self.active_command = Some(InteractiveCommand::ProjectDirection { start: Some(point) });
+            self.log_intersection_prompt();
+        }
+        true
+    }
+
+    fn finish_deferred_project(&mut self, mut prompt: TwoSetsPrompt) {
+        if let Some(targets) = prompt.projection.as_mut().unwrap().finish_targets.take() {
+            let command = format!(
+                "{} Sources={} Targets={}",
+                prompt.projection.as_ref().unwrap().command(),
+                project_ids(prompt.first.as_ref().unwrap()),
+                project_ids(&targets)
+            );
+            if !self.try_execute_command(&command) {
+                self.intersection_prompt = Some(prompt);
+                self.log_intersection_prompt();
+            }
+        } else {
+            self.intersection_prompt = Some(prompt);
+            self.log_intersection_prompt();
+        }
+    }
+
     pub(super) fn select_project_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
+        if self.picking_project_direction() {
+            return;
+        }
         let Some(prompt) = &self.intersection_prompt else {
             return;
         };

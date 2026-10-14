@@ -573,3 +573,54 @@ fn project_mesh_shared_diagonal_does_not_duplicate_the_same_curve() {
     r.execute(&mut d, "Project").unwrap();
     assert_eq!(d.selected_object_count(), 1);
 }
+
+#[test]
+fn project_two_point_custom_direction_matches_world_vector_and_handles_overflow() {
+    let (mut d, r, a, b) = setup(
+        Geometry::Point(point(5., 5., 3.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    r.execute(&mut d,&format!("Project Sources={a} Targets={b} Direction=Custom DirectionStart=9,7,5 DirectionEnd=10,7,6")).unwrap();
+    let Geometry::Point(p) = outputs(&d)[0] else {
+        panic!()
+    };
+    assert!(p.distance_to(point(2., 5., 0.)).unwrap() < 1e-8);
+    let (mut d, r, _, _) = setup(
+        Geometry::Point(point(2., 3., 4.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    r.execute(
+        &mut d,
+        "Project _Direction=_Custom DirectionStart=-1e308,0,1e308 DirectionEnd=1e308,1e308,-1e308",
+    )
+    .unwrap();
+    let Geometry::Point(p) = outputs(&d)[0] else {
+        panic!()
+    };
+    assert!(p.distance_to(point(6., 5., 0.)).unwrap() < 1e-8);
+}
+#[test]
+fn project_custom_point_validation_preserves_document_and_redo() {
+    let (mut d, r, _, _) = setup(
+        Geometry::Point(point(5., 5., 3.)),
+        Geometry::NurbsSurface(plane()),
+    );
+    d.add_geometry(Geometry::Point(point(99., 99., 99.)))
+        .unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    let before = format!("{d:?}");
+    for options in [
+        "Direction=Custom",
+        "Direction=Custom DirectionStart=0,0,0",
+        "Direction=Custom DirectionStart=0,0,0 DirectionEnd=0,0,0",
+        "DirectionStart=0,0,0 DirectionEnd=1,1,1",
+        "Direction=View DirectionStart=0,0,0 DirectionEnd=1,1,1 ViewDirection=0,0,1",
+        "Direction=Custom DirectionStart=0,0,0 DirectionStart=1,1,1 DirectionEnd=2,2,2",
+    ] {
+        assert!(
+            r.execute(&mut d, &format!("Project {options} DeleteInput=Yes"))
+                .is_err()
+        );
+        assert_eq!(before, format!("{d:?}"));
+    }
+}

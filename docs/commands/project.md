@@ -11,17 +11,27 @@ See [mesh projection](project-mesh.md) for triangle conventions and qualificatio
 Start `Project`, select curves and points, press Enter, select targets, and press
 Enter again. Curves/points can be preselected; mixed source and target
 preselection completes immediately. Picking and typed IDs use the current
-stage's filter. Esc restores the selection from before the prompt.
+stage's filter. With Custom direction, preselection waits for two direction
+points before projecting. Esc restores the selection from before the prompt.
 
 ```text
 Project [Sources=id[,id...]] [Targets=id[,id...]]
-        [Direction=CPlaneZ|View|x,y,z] [DeleteInput=Yes|No]
+        [Direction=CPlaneZ|View|Custom|x,y,z] [DeleteInput=Yes|No]
         [OutputLayer=Current|Input|TargetObject]
 ```
 
-`Direction=View` uses the active camera at completion. An explicit vector
-supplies a custom direction; its length and sign do not affect the bidirectional
-projection. Outside the app, View requires `ViewDirection=x,y,z`.
+`Direction=View` uses the active camera at completion. `Direction=Custom` picks
+a start and an end point through the shared drafting input: object snaps,
+coordinate filters, distance/angle constraints, units, and world/relative
+coordinates are available. Coincident points keep the end prompt active. Undo
+during this getter revises the start without changing document history. The
+accepted direction persists for the session; cancelling an incomplete
+replacement preserves the last accepted direction.
+
+An explicit vector also supplies a custom direction; its length and sign do
+not affect the bidirectional projection. Outside a point prompt, Custom requires
+`DirectionStart=x,y,z DirectionEnd=x,y,z` in world coordinates. Outside the app,
+View requires `ViewDirection=x,y,z`.
 `DeleteInput=No` and `OutputLayer=Current` are the initial defaults. Prompt
 options persist during the application session. Output objects have default
 attributes on the chosen layer and become selected. Inputs are deleted only
@@ -42,14 +52,14 @@ both source relations, clips original face trims, and certifies the retained
 spans again. Finite sweep bounds require nonzero common-sign rational weights.
 No additional projection solver or vendor-source patch is introduced.
 
-SubD targets, grips, edge subobjects, Loose projection, and the interactive
-two-point Custom option are pending. Curved source kinks and distinct target
-faces can produce separate objects. Coincident, collapsed or singular source
-relations can be declined by existing contact/preparation checks. Continuous
+SubD targets, grips, edge subobjects and Loose projection are pending. Curved
+source kinks and distinct target faces can produce separate objects. Coincident,
+collapsed or singular source relations can be declined by existing
+contact/preparation checks. Continuous
 acceptance certifies admitted curves; it does not establish complete discovery,
 branch topology, broad Rhino parity or comparative performance.
 
-The local regressions (12 native and ten portable command tests, five app
+The initial local regressions (12 native and ten portable command tests, five app
 tests, two native protocol tests and 112 Python worker tests) cover finite planes,
 oblique and nearly parallel directions, bidirectional point projection, solid
 multiple hits, holes, polylines, collapsed inputs, curved graph targets, partial
@@ -60,6 +70,13 @@ RhinoCommon's directional `Curve.ProjectToBrep`. A fresh isolated Rhino run
 on 2026-10-14 timed out before the worker responded; these recipes have no
 fresh Rhino observations yet. [Qualification record](../project-qualification.json)
 retains the local response and source hashes.
+
+The custom-direction increment passes 21 native and 19 portable command tests
+and 13 Project app tests, including actual viewport clicks with endpoint snaps,
+mixed preselection, typed coordinates, transient Undo/Cancel, saved direction,
+and atomic validation of headless custom points. These are local checks;
+interactive Rhino parity has not been measured. See the
+[direction qualification record](../project-direction-qualification.json).
 
 ```sh
 cargo test -p viboceros-command --features native-smlib project::tests

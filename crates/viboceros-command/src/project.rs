@@ -6,7 +6,7 @@ mod tests;
 #[cfg(feature = "native-smlib")]
 use viboceros_geometry::{SurfaceIntersectionInput, SurfaceSurfaceIntersectionEvent};
 
-pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [Direction=CPlaneZ|View|x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
+pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject]";
 pub(super) struct ProjectCommand;
 #[derive(Clone, Copy)]
 enum Layer {
@@ -232,6 +232,9 @@ impl Command for ProjectCommand {
         let mut targets = None;
         let mut direction = context.construction_plane.z_axis().as_vector();
         let mut view = false;
+        let mut custom = false;
+        let mut direction_start = None;
+        let mut direction_end = None;
         let mut view_direction = None;
         let mut delete = false;
         let mut layer = Layer::Current;
@@ -254,10 +257,16 @@ impl Command for ProjectCommand {
                             view = true;
                             direction
                         }
+                        "custom" => {
+                            custom = true;
+                            direction
+                        }
                         _ => Vector3::try_from(parse_point(&[value])?.0.to_array())?,
                     }
                 }
                 "viewdirection" => view_direction = Some(parse_axis_option(value, PROJECT_USAGE)?),
+                "directionstart" => direction_start = Some(parse_point(&[value])?.0),
+                "directionend" => direction_end = Some(parse_point(&[value])?.0),
                 "deleteinput" => {
                     delete = parse_yes_no(value).ok_or(CommandError::Usage(PROJECT_USAGE))?
                 }
@@ -271,6 +280,14 @@ impl Command for ProjectCommand {
                 }
                 _ => return Err(CommandError::Usage(PROJECT_USAGE)),
             }
+        }
+        if custom {
+            let (start, end) = direction_start.zip(direction_end).ok_or(CommandError::Usage(
+                "Project Direction=Custom requires DirectionStart=x,y,z and DirectionEnd=x,y,z outside a point prompt",
+            ))?;
+            direction = start.direction_to(end)?.as_vector();
+        } else if direction_start.is_some() || direction_end.is_some() {
+            return Err(CommandError::Usage(PROJECT_USAGE));
         }
         if view {
             direction = view_direction.ok_or(CommandError::Usage(

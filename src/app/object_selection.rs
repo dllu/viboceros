@@ -210,6 +210,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.picking_project_direction() {
+            return None;
+        }
         if self.blend_surface_prompt.is_some() {
             return None;
         }

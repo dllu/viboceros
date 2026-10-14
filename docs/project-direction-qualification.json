@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "command": "Project two-point Custom direction",
+  "qualification": "Local command and shared drafting-input regressions. No new Rhino measurements for the interactive Custom getter.",
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "behavior": [
+    "Two world points define a direction using the existing robust Point3 direction helper; vector length and sign do not alter bidirectional projection.",
+    "Mixed source/target preselection defers projection until a valid second point.",
+    "Viewport endpoint snaps and typed world/relative coordinates, units, point filters and constraints use shared drafting input.",
+    "Undo within the getter revises its start without modifying document history. Cancel restores original selection and preserves the last accepted custom direction.",
+    "Headless Direction=Custom requires explicit DirectionStart and DirectionEnd world points; invalid or conflicting inputs preserve document and redo history."
+  ],
+  "checks": {
+    "native_project_command_tests": 21,
+    "portable_project_command_tests": 19,
+    "project_app_tests_per_backend": 13,
+    "python_response_and_provenance_tests": 8,
+    "portable_app_tests": 783,
+    "portable_app_excluded_tests": [
+      "app::tests::smooth::workflow::native_workflows_replay_admission_metadata_preferences_cancellation_and_trim_rebuilding"
+    ],
+    "portable_app_exclusion_reason": "Stopped the optional broad run after this unrelated test continued for several minutes; reran the remaining app suite successfully.",
+    "native_and_portable_lint": "All targets, warnings denied"
+  },
+  "limitations": [
+    "Interactive Rhino parity and comparative performance remain unqualified.",
+    "Existing Project geometry discovery, clipping, topology and feature limitations still apply."
+  ],
+  "references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm"
+  ],
+  "source_sha256": {
+    "crates/viboceros-command/src/project.rs": "2625ecb2565779fb85571ed5ed345dcf40bf1f197265ce9f7c8e35930a7d4d59",
+    "crates/viboceros-command/src/project_tests.rs": "f6cb92758e28fbec2c961e27faf2c03c433b9426a416b7e4f2676c151e65aa97",
+    "src/app.rs": "d1f925a1cf0616f58a02661bc265e266332feb5dd499839b6dca5fe09801ef6a",
+    "src/app/project.rs": "8129ff2c83f1691ff4164ecdb08bbc74d6d7a240a48dc72d316db204a7fafe85",
+    "src/app/intersect_two_sets.rs": "11ed9de29ef31e0b1ddd2cb40178d5c60ee7cf7c32b18afcdb6a38400a0e037b",
+    "src/app/object_selection.rs": "87546c98bfa7fddaa6e4dc0d97c8888deaa14fb082da03f1fd47517e7fc19ccd",
+    "src/app/tests/project.rs": "21095450c60e0aec28e9b03fd0cf5ea8a8f1f65d19e7ecb9f84b2a992259e5df",
+    "docs/commands/project.md": "5e894890b79f410921be595f50b2d6fbbe3efd0594ee39dc03c543f8e50affb0",
+    "src/app/tests/blocks.rs": "c9a77d134c3044a5c8692b07aedaac792bd1708702e2aa784fa0b5071d1630ce",
+    "src/app/tests/block_manager.rs": "0ed9e5a47011deaf339acb4d288881deea2a64f4284e0568263796c0b0e47e68"
+  },
+  "test_harness_fix": {
+    "baseline_commit": "988f430c4c94bb0a87268a2f4f84616c15a3dc0d",
+    "baseline_block_edit_tests": {
+      "passed": 8,
+      "failed": 1
+    },
+    "baseline_block_manager_test": {
+      "passed": 0,
+      "failed": 1
+    },
+    "cause": "Headless egui tests dropped unapplied texture deltas. Discard them explicitly after producing inspection frames.",
+    "fixed_block_edit_tests": 9,
+    "fixed_block_manager_tests": 1
+  },
+  "baseline_git_sha256": {
+    "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/blocks.rs": "213fb4a09741842f819824563cdbc430b2c8ab154897242f8d688ed3f1fe04e4",
+    "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d"
+  }
+}

@@ -52,7 +52,6 @@
   "sha256": {
     "crates/viboceros-command/src/create_unique_block.rs": "76a888ed4b8bad03f2680e44c6f5c39253ed137ab863c68fa0e35c7d208b6f72",
     "crates/viboceros-command/src/create_unique_block/tests.rs": "b6567900a627470b66106a3f0287b52c12826ea25f82813e9987920ec55bc60b",
-    "src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d",
     "tools/rhino_oracle/fixtures/block_unique.json": "217b1818ba058cc4e9d7c333960d7a5f5a63a36a193d7c31182d709a3e97a6ea",
     "tools/rhino_oracle/fixtures/block_unique_followup.json": "e8446ef573a55b740f875875cb66614a43121fcacc9adcc321cdb385d08a7073",
     "tools/rhino_oracle/observations/block_unique.json": "5067af2db5e8b42d3cae48e895ffdb93db6bc70172ff17664d6e677ce91d68c0",
@@ -99,5 +98,8 @@
     "crates/viboceros-command/src/lib.rs": "docs/block-replace-prior-source/crates/viboceros-command/src/lib.rs",
     "crates/viboceros-oracle/tests/block_workflow.rs": "docs/block-replace-prior-source/crates/viboceros-oracle/tests/block_workflow.rs",
     "src/app/block_manager.rs": "docs/block-replace-input-prior-source/src/app/block_manager.rs"
+  },
+  "git_sha256": {
+    "988f430c4c94bb0a87268a2f4f84616c15a3dc0d:src/app/tests/block_manager.rs": "fe2dc509db82c7977381ea4b85f06be6228c6027bd20d7e744a3901ebee1ba8d"
   }
 }

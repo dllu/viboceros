@@ -13,7 +13,7 @@ pub(super) struct TwoSetsPrompt {
     pub(super) uv_mapping: Option<super::apply_curves::UvMappingKind>,
     pub(super) uv_face: Option<usize>,
     pub(super) uv_subcurves: super::uv_subcurve_input::SubcurveInputs,
-    pub(super) projection: Option<super::project::ProjectOptions>,
+    pub(super) projection: Option<super::project::ProjectSession>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -88,6 +88,9 @@ impl TwoSetsPrompt {
         }
     }
     pub(super) fn hint(&self) -> &'static str {
+        if self.projection.as_ref().is_some_and(|p| p.custom_requested) {
+            return "Pick two points for the custom direction; Esc cancels";
+        }
         if self.projection.is_some() {
             return if self.first.is_some() {
                 "Select target surfaces, B-reps or meshes; Enter projects, Esc cancels"
