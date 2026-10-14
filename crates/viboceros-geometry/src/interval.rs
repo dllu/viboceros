@@ -1,8 +1,9 @@
 //! Finite outward-rounded arithmetic. Subnormal operations fall back to rationals.
-use super::*;
+use crate::Real;
+use crate::exact_scalar::{Rational, rational, scalar};
 
 #[derive(Clone, Copy, Debug)]
-pub(super) struct I {
+pub(crate) struct I {
     pub lo: Real,
     pub hi: Real,
 }

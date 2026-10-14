@@ -36,7 +36,6 @@
   ],
   "full_native_parity": false,
   "source_sha256": {
-    "crates/viboceros-command/src/object_selection.rs": "390d1ae732a3780648970f9e794af5733aa07306681baafbda7112cb0de613c6",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/fixtures/edge_mark_workflow.json": "88fc351eb8ed2b6df837f2b02e6a185800aad2d891b610439e7d4ce3f0d1c343",
     "tools/rhino_oracle/observations/edge_mark_workflow.json": "54d987bf32aeec99cd212c07a7af3db39e6b9ee8bb601dfafb525f5479b380fd",
@@ -98,5 +97,8 @@
       "/tmp/viboceros-edge-mark-workflow-idle-launch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "rejected_traversal_run": "An earlier full run passed 5613 tests and failed only the new native workflow replay; corrected-source full run passes."
+  },
+  "source_git_sha256": {
+    "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-command/src/object_selection.rs": "390d1ae732a3780648970f9e794af5733aa07306681baafbda7112cb0de613c6"
   }
 }

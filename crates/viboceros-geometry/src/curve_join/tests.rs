@@ -458,3 +458,37 @@ fn rejected_parameters_and_extreme_coordinate_fallback_are_bounded() {
         })
     ));
 }
+
+#[test]
+fn provenance_filter_keeps_nonadjacent_coincident_sources_out_of_both_join_styles() {
+    let input = [
+        line([0., 0.], [1., 0.]),
+        line([1., 0.], [1., 1.]),
+        line([1., 0.], [2., 0.]),
+    ];
+    for style in [CurveJoinStyle::Batch, CurveJoinStyle::Seeded] {
+        let joined = join_curves_with_endpoint_filter(
+            &input,
+            CurveJoinOptions {
+                tolerance: 0.,
+                preserve_direction: true,
+                style,
+            },
+            Tolerance::DEFAULT,
+            |a, _, b, _| (a == 0 && b == 2) || (a == 2 && b == 0),
+        )
+        .unwrap();
+        assert_eq!(joined.len(), 2);
+        assert!(joined.iter().any(|c| c.source_indices() == [0, 2]));
+        assert!(joined.iter().any(|c| c.source_indices() == [1]));
+        let source = input[1].as_ref();
+        let lone = joined
+            .iter()
+            .find(|c| c.source_indices() == [1])
+            .unwrap()
+            .curve()
+            .as_ref();
+        assert_eq!(lone.start_point().unwrap(), source.start_point().unwrap());
+        assert_eq!(lone.end_point().unwrap(), source.end_point().unwrap());
+    }
+}

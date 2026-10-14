@@ -109,7 +109,7 @@ impl VibocerosApp {
         let targets = self
             .document
             .selected_objects()
-            .filter(|o| ObjectSelectionFilter::SurfaceComponents.accepts_object(o))
+            .filter(|o| ObjectSelectionFilter::ProjectTargets.accepts_object(o))
             .map(|o| o.id())
             .collect::<Vec<_>>();
         self.cancel_interactive_command(false);

@@ -969,3 +969,11 @@ common-sign rational weights for finite sweep bounds. The app supplies source
 and target picking, session options, and finishing-view CPlane/camera directions.
 See [Project](commands/project.md) for supported behavior and qualifications;
 mesh/SubD targets, Loose, grips, and edge subobjects are pending.
+
+Mesh Project targets reuse a borrowed bounding-volume index, conservative
+interval slabs and exact point/triangle admission. The existing shorter quad
+diagonal and planar region/triangle conversion feed shared curve clipping.
+The shared Join coordinator now accepts an optional source-provenance predicate.
+The outward interval arithmetic formerly private to surface certificates moved
+to one internal geometry module and is reused by both certificates and mesh
+queries. See [mesh projection qualification](commands/project-mesh.md).

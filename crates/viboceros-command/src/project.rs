@@ -69,6 +69,7 @@ fn bounded_weights(weights: impl IntoIterator<Item = Real>) -> Result<(), Comman
 
 fn bounded_target(target: &Geometry) -> Result<(), CommandError> {
     match target {
+        Geometry::Mesh(_) => Ok(()),
         Geometry::NurbsSurface(s) => bounded_weights(s.control_points().iter().map(|p| p.weight())),
         Geometry::Brep(b) => {
             for f in b.faces() {
@@ -153,22 +154,9 @@ fn curve_output(
         // The complete planar source needs no kink splitting: this is an exact
         // affine image, clipped with the existing curve/face overlap query.
         if let Some(plane) = face.faces()[0].surface().plane(tolerance)? {
-            let Some(projected) = projection_plane(curve, plane, direction)? else {
-                continue;
-            };
-            for event in curve_intersections::brep_events(&projected, &face, None, tolerance)? {
-                match event {
-                    CurveBrepIntersectionEvent::Overlap(overlap) => {
-                        output.push(Geometry::NurbsCurve(curve_segments::trim(
-                            &projected,
-                            overlap.curve_interval(),
-                        )?))
-                    }
-                    CurveBrepIntersectionEvent::Point(hit) => {
-                        output.push(Geometry::Point(hit.point()))
-                    }
-                }
-            }
+            output.extend(planar_output(
+                curve, &face, plane, direction, tolerance, false,
+            )?);
             if output.len() > MAX_INTERSECT_OUTPUTS {
                 return Err(CommandError::TooManyIntersectOutputs {
                     maximum: MAX_INTERSECT_OUTPUTS,
@@ -311,7 +299,10 @@ impl Command for ProjectCommand {
                 .copied()
                 .filter(|id| {
                     document.object(*id).is_some_and(|o| {
-                        matches!(o.geometry(), Geometry::NurbsSurface(_) | Geometry::Brep(_))
+                        matches!(
+                            o.geometry(),
+                            Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+                        )
                     })
                 })
                 .collect()
@@ -321,6 +312,21 @@ impl Command for ProjectCommand {
             || source_ids.len().saturating_mul(target_ids.len()) > MAX_INTERSECT_PAIRS
         {
             return Err(CommandError::Usage(PROJECT_USAGE));
+        }
+        // Borrow and build each mesh target once; output admission happens
+        // only after these caches and all source queries have been released.
+        let mut mesh_indexes = BTreeMap::new();
+        for id in &target_ids {
+            let object = document
+                .object(*id)
+                .ok_or(DocumentError::ObjectNotFound(*id))?;
+            if !document.is_object_selectable(*id) {
+                return Err(CommandError::Usage(PROJECT_USAGE));
+            }
+            bounded_target(object.geometry())?;
+            if let Geometry::Mesh(mesh) = object.geometry() {
+                mesh_indexes.insert(*id, viboceros_geometry::MeshProjectionIndex::new(mesh)?);
+            }
         }
         let mut staged = Vec::new();
         let tolerance = document.tolerance();
@@ -338,34 +344,51 @@ impl Command for ProjectCommand {
                 let target = document
                     .object(*target_id)
                     .ok_or(DocumentError::ObjectNotFound(*target_id))?;
-                bounded_target(target.geometry())?;
                 let output = if let Geometry::Point(point) = source.geometry() {
-                    let ray = line(*point, target.geometry(), direction, tolerance)?;
-                    match target.geometry() {
-                        Geometry::NurbsSurface(surface) => {
-                            curve_intersections::surface_events(&ray, surface, tolerance)?
-                                .into_iter()
-                                .filter_map(|e| match e {
-                                    CurveSurfaceIntersectionEvent::Point(p) => {
-                                        Some(Geometry::Point(p.point()))
-                                    }
-                                    _ => None,
-                                })
-                                .collect()
+                    if let Some(index) = mesh_indexes.get(target_id) {
+                        index
+                            .project_point(*point, direction, tolerance)?
+                            .into_iter()
+                            .map(Geometry::Point)
+                            .collect()
+                    } else {
+                        let ray = line(*point, target.geometry(), direction, tolerance)?;
+                        match target.geometry() {
+                            Geometry::NurbsSurface(surface) => {
+                                curve_intersections::surface_events(&ray, surface, tolerance)?
+                                    .into_iter()
+                                    .filter_map(|e| match e {
+                                        CurveSurfaceIntersectionEvent::Point(p) => {
+                                            Some(Geometry::Point(p.point()))
+                                        }
+                                        _ => None,
+                                    })
+                                    .collect()
+                            }
+                            Geometry::Brep(brep) => {
+                                curve_intersections::brep_events(&ray, brep, None, tolerance)?
+                                    .into_iter()
+                                    .filter_map(|e| match e {
+                                        CurveBrepIntersectionEvent::Point(p) => {
+                                            Some(Geometry::Point(p.point()))
+                                        }
+                                        _ => None,
+                                    })
+                                    .collect()
+                            }
+                            _ => return Err(CommandError::Usage(PROJECT_USAGE)),
                         }
-                        Geometry::Brep(brep) => {
-                            curve_intersections::brep_events(&ray, brep, None, tolerance)?
-                                .into_iter()
-                                .filter_map(|e| match e {
-                                    CurveBrepIntersectionEvent::Point(p) => {
-                                        Some(Geometry::Point(p.point()))
-                                    }
-                                    _ => None,
-                                })
-                                .collect()
-                        }
-                        _ => return Err(CommandError::Usage(PROJECT_USAGE)),
                     }
+                } else if let Geometry::Mesh(_) = target.geometry() {
+                    mesh_curve_output(
+                        &source
+                            .geometry()
+                            .nurbs_curve_representation()?
+                            .ok_or(CommandError::Usage(PROJECT_USAGE))?,
+                        &mesh_indexes[target_id],
+                        direction,
+                        tolerance,
+                    )?
                 } else {
                     curve_output(
                         &source
@@ -390,6 +413,7 @@ impl Command for ProjectCommand {
                 }
             }
         }
+        drop(mesh_indexes);
         if staged.is_empty() {
             return Ok("Projection missed the target objects".into());
         }
@@ -406,4 +430,123 @@ impl Command for ProjectCommand {
         document.select_command_results(output_ids.iter().copied())?;
         Ok(format!("Created {} projected object(s)", output_ids.len()))
     }
+}
+
+fn planar_output(
+    curve: &NurbsCurve,
+    face: &Brep,
+    plane: Plane,
+    direction: Vector3,
+    tolerance: Tolerance,
+    known_plane_image: bool,
+) -> Result<Vec<Geometry>, CommandError> {
+    let Some(projected) = projection_plane(curve, plane, direction)? else {
+        return Ok(vec![]);
+    };
+    let events = if known_plane_image {
+        // The affine image is already planar. Use the established analytic
+        // natural-domain query and retain the selected native edge producer;
+        // no numerical curve/surface solve is needed to discover that relation.
+        viboceros_geometry::curve_brep_intersection_events_with_operations(
+            &projected,
+            face,
+            None,
+            tolerance,
+            &mut |c, s, t| {
+                Ok::<_, CommandError>(viboceros_geometry::curve_surface_intersection_events(
+                    c, s, t,
+                )?)
+            },
+            &mut curve_intersections::events,
+        )?
+    } else {
+        curve_intersections::brep_events(&projected, face, None, tolerance)?
+    };
+    events
+        .into_iter()
+        .map(|event| match event {
+            CurveBrepIntersectionEvent::Overlap(overlap) => Ok(Geometry::NurbsCurve(
+                curve_segments::trim(&projected, overlap.curve_interval())?,
+            )),
+            CurveBrepIntersectionEvent::Point(hit) => Ok(Geometry::Point(hit.point())),
+        })
+        .collect()
+}
+
+fn mesh_curve_output(
+    curve: &NurbsCurve,
+    index: &viboceros_geometry::MeshProjectionIndex<'_>,
+    direction: Vector3,
+    tolerance: Tolerance,
+) -> Result<Vec<Geometry>, CommandError> {
+    bounded_weights(curve.control_points().iter().map(|p| p.weight()))?;
+    let mut output = Vec::new();
+    for target in index.curve_faces(curve, direction, tolerance)? {
+        let plane = target.faces()[0].surface().plane(tolerance)?.ok_or(
+            GeometryError::AmbiguousMeshProjection {
+                context: "triangle plane preparation",
+            },
+        )?;
+        output.extend(planar_output(
+            curve, &target, plane, direction, tolerance, true,
+        )?);
+        if output.len() > MAX_INTERSECT_OUTPUTS {
+            return Err(CommandError::TooManyIntersectOutputs {
+                maximum: MAX_INTERSECT_OUTPUTS,
+            });
+        }
+    }
+    // Join only exactly identical endpoints. Existing Join's zero-tolerance
+    // policy preserves every source endpoint and control image. Approximate
+    // contacts remain separate rather than moving certified payloads.
+    let mut curves = Vec::new();
+    let mut points = Vec::new();
+    let mut seen_curves = BTreeSet::new();
+    let bits = |n: Real| if n == 0. { 0 } else { n.to_bits() };
+    for geometry in output {
+        // A curve input produces curve images, as Curve.ProjectToMesh does.
+        // Isolated zero-dimensional triangle contacts produce no curve object.
+        if let Geometry::NurbsCurve(c) = geometry {
+            let mut key = vec![c.degree() as u64, c.control_points().len() as u64];
+            key.extend(
+                c.control_points()
+                    .iter()
+                    .flat_map(|p| p.point().to_array().into_iter().chain([p.weight()]))
+                    .map(bits),
+            );
+            key.extend(c.knots().iter().copied().map(bits));
+            if seen_curves.insert(key) {
+                curves.push(viboceros_geometry::Curve3::NurbsCurve(c));
+            }
+        }
+    }
+    for joined in viboceros_geometry::join_curves_with_endpoint_filter(
+        &curves,
+        viboceros_geometry::CurveJoinOptions {
+            tolerance: 0.,
+            preserve_direction: true,
+            style: viboceros_geometry::CurveJoinStyle::Batch,
+        },
+        tolerance,
+        |a, start_a, b, start_b| {
+            let interval_a = curves[a].as_ref().domain();
+            let interval_b = curves[b].as_ref().domain();
+            let a = if start_a {
+                *interval_a.start()
+            } else {
+                *interval_a.end()
+            };
+            let b = if start_b {
+                *interval_b.start()
+            } else {
+                *interval_b.end()
+            };
+            a == b
+                || (a == *curve.domain().start() && b == *curve.domain().end())
+                || (b == *curve.domain().start() && a == *curve.domain().end())
+        },
+    )? {
+        points.push(Geometry::from(joined.into_curve()));
+    }
+    Ok(points)
 }

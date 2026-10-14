@@ -363,3 +363,213 @@ fn project_nearly_parallel_direction_keeps_finite_planar_image() {
     assert!(ends[0].distance_to(point(0., 5., 0.)).unwrap() < 1e-7);
     assert!(ends[1].distance_to(point(1., 5., 0.)).unwrap() < 1e-7);
 }
+
+fn mesh_target(corners: [Point3; 4]) -> Geometry {
+    Geometry::Mesh(
+        TriangleMesh::try_new_faces(
+            corners.to_vec(),
+            vec![viboceros_geometry::MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap(),
+    )
+}
+#[test]
+fn project_mesh_points_are_bidirectional_and_shared_faces_deduplicate() {
+    let (mut d, r, a, b) = setup(
+        Geometry::Point(point(0.5, 0.5, 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project DeleteInput=Yes").unwrap();
+    assert!(d.object(a).is_none());
+    assert!(d.object(b).is_some());
+    assert_eq!(outputs(&d), [Geometry::Point(point(0.5, 0.5, 0.))]);
+    r.execute(&mut d, "Undo").unwrap();
+    assert_eq!(d.objects().len(), 2);
+    r.execute(&mut d, "Redo").unwrap();
+    assert_eq!(d.selected_object_count(), 1);
+}
+#[test]
+fn project_mesh_line_clips_and_stitches_a_shared_triangle_crossing() {
+    let (mut d, r, _, _) = setup(
+        line(point(-1., 0.25, 3.), point(2., 0.25, 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project").unwrap();
+    let out = outputs(&d);
+    assert_eq!(out.len(), 1, "{out:?}");
+    let mut ends = curve_ends(&out[0]);
+    ends.sort_by(|a, b| a.x().total_cmp(&b.x()));
+    assert!(ends[0].distance_to(point(0., 0.25, 0.)).unwrap() < 1e-8);
+    assert!(ends[1].distance_to(point(1., 0.25, 0.)).unwrap() < 1e-8);
+}
+#[test]
+fn project_mesh_warped_quad_uses_triangles_and_not_a_bilinear_patch() {
+    let (mut d, r, _, _) = setup(
+        Geometry::Point(point(0.25, 0.75, 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 1.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project").unwrap();
+    assert_eq!(outputs(&d), [Geometry::Point(point(0.25, 0.75, 0.))]);
+    let (mut d, r, _, _) = setup(
+        line(point(0.25, 0., 3.), point(0.25, 1., 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 1.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project").unwrap();
+    for g in outputs(&d) {
+        let c = g.nurbs_curve_representation().unwrap().unwrap();
+        for i in 0..=64 {
+            let p = c
+                .parameter_sampler()
+                .unwrap()
+                .evaluate(i as f64 / 64.)
+                .unwrap();
+            assert!((p.z() - (p.x() + p.y() - 1.).max(0.)).abs() < 1e-8);
+        }
+    }
+}
+#[test]
+fn project_mesh_rational_curve_keeps_exact_planar_source_image() {
+    use viboceros_geometry::WeightedPoint3;
+    let c = NurbsCurve::try_new_rational(
+        2,
+        vec![
+            WeightedPoint3::try_new(point(0.1, 0.1, 3.), 1.).unwrap(),
+            WeightedPoint3::try_new(point(0.5, 0.9, 3.), 0.75).unwrap(),
+            WeightedPoint3::try_new(point(0.9, 0.1, 3.), 1.).unwrap(),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let (mut d, r, _, _) = setup(
+        Geometry::NurbsCurve(c.clone()),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project").unwrap();
+    assert!(d.selected_object_count() > 0);
+    for g in outputs(&d) {
+        let out = g.nurbs_curve_representation().unwrap().unwrap();
+        for i in 0..=64 {
+            let p = out
+                .parameter_sampler()
+                .unwrap()
+                .evaluate(i as f64 / 64.)
+                .unwrap();
+            let lifted = point(p.x(), p.y(), 3.);
+            let parameter = c.closest_parameter(lifted, Tolerance::DEFAULT).unwrap();
+            assert!(c.evaluate(parameter).unwrap().distance_to(lifted).unwrap() < 1e-8);
+            assert!(p.z().abs() < 1e-8);
+        }
+    }
+}
+#[test]
+fn project_mesh_miss_and_ambiguous_later_target_preserve_redo_and_inputs() {
+    let (mut d, r, a, b) = setup(
+        Geometry::Point(point(2., 2., 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    d.add_geometry(Geometry::Point(point(9., 9., 9.))).unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    d.select_objects_direct([a, b], SelectionMode::Replace)
+        .unwrap();
+    let before = format!("{d:?}");
+    assert!(
+        r.execute(&mut d, "Project DeleteInput=Yes")
+            .unwrap()
+            .contains("missed")
+    );
+    assert_eq!(before, format!("{d:?}"));
+    let (mut d, r, a, b) = setup(
+        Geometry::Point(point(0.5, 0.5, 0.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    let valid = d
+        .add_geometry(Geometry::NurbsSurface(
+            NurbsSurface::try_bilinear([
+                point(0., 0., 0.),
+                point(0., 1., 0.),
+                point(0., 1., 1.),
+                point(0., 0., 1.),
+            ])
+            .unwrap(),
+        ))
+        .unwrap();
+    let before = format!("{d:?}");
+    assert!(
+        r.execute(
+            &mut d,
+            &format!("Project Sources={a} Targets={valid},{b} Direction=1,0,0 DeleteInput=Yes")
+        )
+        .is_err()
+    );
+    assert_eq!(before, format!("{d:?}"));
+}
+
+#[test]
+fn project_mesh_curve_vertex_touch_produces_no_zero_dimensional_object() {
+    let (mut d, r, _, _) = setup(
+        line(point(-1., 1., 3.), point(1., -1., 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    let before = format!("{d:?}");
+    assert!(
+        r.execute(&mut d, "Project DeleteInput=Yes")
+            .unwrap()
+            .contains("missed")
+    );
+    assert_eq!(before, format!("{d:?}"));
+}
+#[test]
+fn project_mesh_shared_diagonal_does_not_duplicate_the_same_curve() {
+    let (mut d, r, _, _) = setup(
+        line(point(0.1, 0.1, 3.), point(0.9, 0.9, 3.)),
+        mesh_target([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(1., 1., 0.),
+            point(0., 1., 0.),
+        ]),
+    );
+    r.execute(&mut d, "Project").unwrap();
+    assert_eq!(d.selected_object_count(), 1);
+}

@@ -21,7 +21,6 @@
     "crates/viboceros-smlib/tests/surface_intersections/trim.rs": "aee0dab4a49fdd7e4b99ead45c51d843b7cafa860d93107bfe644d1e12b56495",
     "crates/viboceros-smlib/src/native/curve_intersections.rs": "d942beebc304c0585784dfa83323518f7fdd9175a895f9d8fbdc67d019eae882",
     "crates/viboceros-geometry/src/intersection.rs": "c3f90546d450b5c8b2207d855bdd94c0e8d105a9be717b9a104c02e7aac39c75",
-    "crates/viboceros-geometry/src/lib.rs": "5561212ddf704846f05b8a9cdb189e571cde8ce7ff51686f67936de9bb21669a",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "f8a5d2acae791f574207d29572e0b6526e4439607abb1d28bd52c003fdee42ab",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/trim.rs": "021c3592b251114d32cbc4f191e974f163a2645bbeef20a64a2f4e3b44c3dc68",
     "crates/viboceros-geometry/src/intersection/surface_surface_backend/trim/boundary_span.rs": "5bfa9de5f4b3e9bbe65415f7c92bd650d7cb60d299e2d19071b70c09c3552480",
@@ -190168,6 +190167,7 @@
   ],
   "source_git_sha256": {
     "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-smlib/src/native/surface_intersections.rs": "b164b67b37c76fb5b656723a175a5d0d7bb2fbcd517343cb52fd998a863cd3a8",
-    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984"
+    "8b29c81c85f1f6729d02b1dba6f5bab5513b3d7f:crates/viboceros-command/src/lib.rs": "0f58e601dfd3354bf3121d3e40de843aefa97145d4578c20a7c5021fd22dd984",
+    "9aa3afd396872d873c2aad1f58d7cfe7321c3de0:crates/viboceros-geometry/src/lib.rs": "5561212ddf704846f05b8a9cdb189e571cde8ce7ff51686f67936de9bb21669a"
   }
 }

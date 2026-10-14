@@ -1544,6 +1544,20 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: self_intersect::Fixture,
     },
+    ProjectCurveMesh {
+        id: String,
+        curve: NurbsCurveDefinition,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        direction: [f64; 3],
+    },
+    ProjectPointMesh {
+        id: String,
+        point: [f64; 3],
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        direction: [f64; 3],
+    },
     ProjectCurveSurface {
         id: String,
         curve: NurbsCurveDefinition,
@@ -2472,6 +2486,8 @@ impl Operation {
             | Self::SurfaceSplitCuttingCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::SelfIntersectProbe { id, .. }
+            | Self::ProjectCurveMesh { id, .. }
+            | Self::ProjectPointMesh { id, .. }
             | Self::ProjectCurveSurface { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
@@ -5616,6 +5632,20 @@ fn execute(
         Operation::SelfIntersectProbe { fixture, .. } => {
             self_intersect::run(iterations, fixture, tolerance)?
         }
+        Operation::ProjectCurveMesh {
+            curve,
+            vertices,
+            faces,
+            direction,
+            ..
+        } => project::mesh_curve(iterations, curve, vertices, faces, *direction, tolerance)?,
+        Operation::ProjectPointMesh {
+            point,
+            vertices,
+            faces,
+            direction,
+            ..
+        } => project::mesh_point(iterations, *point, vertices, faces, *direction, tolerance)?,
         Operation::ProjectCurveSurface {
             curve,
             surface,

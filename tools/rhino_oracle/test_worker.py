@@ -11,6 +11,40 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_mesh_curve_projection_disposes_sources_results_and_target_on_failures(self):
+        for failure in (None,"curve","sdk","sampling"):
+            with self.subTest(failure=failure):
+                mesh,source=Mock(),Mock()
+                results=[SimpleNamespace(DivideByCount=Mock(return_value=None if failure=="sampling" else [0.,1.]),
+                    PointAt=lambda t:SimpleNamespace(X=t,Y=0.,Z=0.),GetLength=lambda:1.,IsClosed=False,Dispose=Mock())for _ in range(2)]
+                project=Mock(side_effect=ValueError("sdk") if failure=="sdk" else [[results[0]],[results[1]]])
+                with patch.object(self.worker.Rhino,"Geometry",SimpleNamespace(Curve=SimpleNamespace(ProjectToMesh=project)),create=True), \
+                     patch.object(self.worker,"_vector",return_value=SimpleNamespace(Unitize=lambda:True)), \
+                     patch.object(self.worker,"_polygon_mesh",return_value=mesh), \
+                     patch.object(self.worker,"_nurbs_curve_from_definition",return_value=source,side_effect=ValueError("curve")if failure=="curve"else None):
+                    op=dict(op="project_curve_mesh",direction=[0.,0.,1.],curve={},vertices=[],faces=[])
+                    if failure:
+                        with self.assertRaises(ValueError):self.worker._execute(op,1,dict(absolute=1e-6))
+                    else:
+                        value,_=self.worker._execute(op,1,dict(absolute=1e-6));self.assertEqual(value['curves'][0]['samples'],[[0.,0.,0.],[1.,0.,0.]])
+                mesh.Dispose.assert_called_once();self.assertEqual(source.Dispose.call_count,int(failure!="curve"))
+                self.assertEqual(results[0].Dispose.call_count,int(failure in (None,"sampling")));self.assertEqual(results[1].Dispose.call_count,int(failure is None))
+
+    def test_mesh_point_projection_disposes_target_and_normalizes_output_order(self):
+        mesh=Mock();points=[SimpleNamespace(X=0.,Y=0.,Z=2.),SimpleNamespace(X=0.,Y=0.,Z=0.)]
+        for failure in (None,"sdk"):
+            mesh.reset_mock();project=Mock(return_value=points,side_effect=ValueError("sdk")if failure else None)
+            with patch.object(self.worker.Rhino,"Geometry",SimpleNamespace(Intersect=SimpleNamespace(Intersection=SimpleNamespace(ProjectPointsToMeshes=project))),create=True), \
+                 patch.object(self.worker,"_vector",return_value=SimpleNamespace(Unitize=lambda:True)), \
+                 patch.object(self.worker,"_polygon_mesh",return_value=mesh), \
+                 patch.object(self.worker,"_point",return_value=points[0]):
+                op=dict(op="project_point_mesh",direction=[0.,0.,1.],point=[0.,0.,3.],vertices=[],faces=[])
+                if failure:
+                    with self.assertRaises(ValueError):self.worker._execute(op,1,dict(absolute=1e-6))
+                else:
+                    value,_=self.worker._execute(op,1,dict(absolute=1e-6));self.assertEqual(value,dict(points=[[0.,0.,0.],[0.,0.,2.]]))
+            mesh.Dispose.assert_called_once()
+
     def test_directional_projection_disposes_sources_and_all_results_on_failures(self):
         for failure in (None, "surface", "target", "sdk", "sampling"):
             with self.subTest(failure=failure):

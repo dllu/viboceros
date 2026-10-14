@@ -71,7 +71,7 @@ impl TwoSetsPrompt {
     pub(super) fn filter(&self) -> ObjectSelectionFilter {
         if self.projection.is_some() {
             return if self.first.is_some() {
-                ObjectSelectionFilter::SurfaceComponents
+                ObjectSelectionFilter::ProjectTargets
             } else {
                 ObjectSelectionFilter::ApplyCurves
             };
@@ -90,7 +90,7 @@ impl TwoSetsPrompt {
     pub(super) fn hint(&self) -> &'static str {
         if self.projection.is_some() {
             return if self.first.is_some() {
-                "Select target surfaces or B-reps; Enter projects, Esc cancels"
+                "Select target surfaces, B-reps or meshes; Enter projects, Esc cancels"
             } else {
                 "Select curves and points; Enter continues, Esc cancels"
             };

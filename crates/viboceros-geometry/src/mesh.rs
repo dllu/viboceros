@@ -19,6 +19,8 @@ mod containment;
 mod section;
 pub use containment::{MeshSolid, SolidPointLocation};
 mod closest;
+mod projection;
+pub use projection::MeshProjectionIndex;
 mod edge_collapse;
 mod edge_split;
 mod extrude;

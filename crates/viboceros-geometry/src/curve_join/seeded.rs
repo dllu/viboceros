@@ -1,11 +1,22 @@
 //! One-pass individual-pick connectivity, without a global candidate graph.
 use super::*;
 
+#[cfg(test)]
 pub(super) fn connect(
     curves: &[Curve3],
     endpoints: &[Endpoint],
     ends: &[Option<[usize; 2]>],
     options: CurveJoinOptions,
+) -> Result<SeededConnections, GeometryError> {
+    connect_with_filter(curves, endpoints, ends, options, &mut |_, _| true)
+}
+
+pub(super) fn connect_with_filter(
+    curves: &[Curve3],
+    endpoints: &[Endpoint],
+    ends: &[Option<[usize; 2]>],
+    options: CurveJoinOptions,
+    allow: &mut impl FnMut(usize, usize) -> bool,
 ) -> Result<SeededConnections, GeometryError> {
     let mut connections = SeededConnections {
         partners: vec![None; endpoints.len()],
@@ -28,7 +39,9 @@ pub(super) fn connect(
         let mut sides: [Option<(Candidate, usize)>; 2] = [None, None];
         for side in 0..2 {
             for &other in source_ends {
-                if let Some(candidate) = search::candidate(endpoints, free[side], other, options)?
+                if allow(free[side], other)
+                    && let Some(candidate) =
+                        search::candidate(endpoints, free[side], other, options)?
                     && sides[side].is_none_or(|(previous, _)| candidate.compare(&previous).is_lt())
                 {
                     sides[side] = Some((candidate, other));
@@ -68,7 +81,9 @@ pub(super) fn connect(
             .zip(assembly::linear_vertex_count(curves[source].as_ref()))
             .and_then(|(a, b)| a.checked_add(b - 1));
         free[side] = source_ends[usize::from(endpoints[other].start)];
-        if search::candidate(endpoints, free[0], free[1], options)?.is_some() {
+        if allow(free[0], free[1])
+            && search::candidate(endpoints, free[0], free[1], options)?.is_some()
+        {
             connections.partners[free[0]] = Some(free[1]);
             connections.partners[free[1]] = Some(free[0]);
             connections.closing_edge = Some(free);

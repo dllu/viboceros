@@ -2748,3 +2748,12 @@ metadata parity or establish a continuous correspondence between engines.
 See [Project qualification](commands/project.md) and
 `tools/rhino_oracle/fixtures/project_curve_surface.json`. No fresh Rhino
 response is retained: the 2026-10-14 isolated attempt timed out during startup.
+
+`project_curve_mesh` accepts `curve`, `vertices`, polygon `faces` and `direction`;
+`project_point_mesh` accepts `point` with the same target fields. Local probes
+execute Project in a fresh document. SDK probes own temporary mesh/curve inputs
+and dispose all projection results. Curve records use the existing 33
+arc-length samples, length and closure; point records are sorted lexicographically.
+The thirteen `project_mesh.json` recipes include shared edges, misses, rational
+curves, two sheets and warped quads. Native/portable agreement is a local check,
+not proof of Rhino parity; the fresh Rhino startup attempt timed out.

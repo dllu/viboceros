@@ -7,7 +7,9 @@ mod seeded;
 mod tests;
 
 use assembly::{assemble, endpoint_is_linear, is_linear, linear_form};
+#[cfg(test)]
 use search::find_candidates;
+use search::find_candidates_with_filter;
 
 use crate::{
     Curve3, CurveRef, GeometryError, Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3,
@@ -105,6 +107,18 @@ pub fn join_curves(
     options: CurveJoinOptions,
     validation: Tolerance,
 ) -> Result<Vec<JoinedCurve3>, GeometryError> {
+    join_curves_with_endpoint_filter(curves, options, validation, |_, _, _, _| true)
+}
+
+/// Join with an additional source-provenance predicate. The callback receives
+/// both source indices and whether each candidate is its source's start end.
+/// Rejected connections never participate in ranking or endpoint assembly.
+pub fn join_curves_with_endpoint_filter(
+    curves: &[Curve3],
+    options: CurveJoinOptions,
+    validation: Tolerance,
+    mut allow: impl FnMut(usize, bool, usize, bool) -> bool,
+) -> Result<Vec<JoinedCurve3>, GeometryError> {
     if !options.tolerance.is_finite() || options.tolerance < 0.0 {
         return Err(GeometryError::InvalidCurveJoinTolerance);
     }
@@ -135,11 +149,19 @@ pub fn join_curves(
             outward_tangent: endpoint_tangent(curve.as_ref(), false)?,
         });
     }
+    let mut permit = |a: usize, b: usize| {
+        allow(
+            endpoints[a].curve,
+            endpoints[a].start,
+            endpoints[b].curve,
+            endpoints[b].start,
+        )
+    };
     let (partners, closing_edge) = if options.style == CurveJoinStyle::Seeded {
-        let seeded = seeded::connect(curves, &endpoints, &ends, options)?;
+        let seeded = seeded::connect_with_filter(curves, &endpoints, &ends, options, &mut permit)?;
         (seeded.partners, seeded.closing_edge)
     } else {
-        let mut candidates = find_candidates(&endpoints, options)?;
+        let mut candidates = find_candidates_with_filter(&endpoints, options, &mut permit)?;
         candidates.sort_by(Candidate::compare);
         let mut partners = vec![None; endpoints.len()];
         for candidate in candidates {

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "command": "Project mesh targets",
+  "recipes": 13,
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "qualification": "Local exact membership, independent image, conservative index, command, UI, ownership and protocol regressions; native/portable payload comparison. No fresh Rhino outputs.",
+  "quad_policy": "Existing shortest-diagonal splitter, exact chord comparison on uncertain distances or ties; displayed quads may use the fixed 0-2 diagonal.",
+  "curve_policy": "Exact-verified coplanar candidate groups and trimmed triangle faces; established planar overlap, selected edge contact and trim producers; zero endpoint tolerance and source-parameter adjacency filter for joining.",
+  "point_policy": "Infinite bidirectional line, outward interval rejection with exact fallback, exact closed triangle barycentrics and coordinate deduplication, final XYZ rounding bounded by absolute tolerance.",
+  "limits": {
+    "maximum_triangles": 1000000,
+    "other_limits": "Existing preparation, clipping and Join work budgets."
+  },
+  "limitations": [
+    "SubD, Loose, grips, edge subobjects and interactive two-point Custom pending",
+    "Coplanar point line/region overlaps decline atomically",
+    "Unmerged coplanar groups, holes and approximate endpoint contacts can retain separate curve objects",
+    "Arbitrary conditioning, discovery, topology parity and comparative performance remain unqualified"
+  ],
+  "checks": {
+    "mesh_core_tests": 11,
+    "join_tests": 29,
+    "join_ignored_benchmarks": 2,
+    "interval_tests": 6,
+    "native_project_command_tests": 19,
+    "portable_project_command_tests": 17,
+    "app_tests": 6,
+    "mesh_protocol_tests_per_backend": 1,
+    "python_worker_tests": 114,
+    "python_mesh_response_tests": 3,
+    "native_and_portable_lint": "warnings denied"
+  },
+  "rhino_attempt": {
+    "status": "startup_timeout",
+    "timeout_seconds": 180,
+    "worker_response": false,
+    "owned_window": null,
+    "private_xvfb": true,
+    "settings_scheme": "VibocerosOracleProjectMesh20261014",
+    "fresh_observations": 0
+  },
+  "references": [
+    "https://docs.mcneel.com/rhino/8/help/en-us/commands/project.htm",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/projecttomesh?overload=2",
+    "https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.intersect.intersection/projectpointstomeshes",
+    "https://discourse.mcneel.com/t/v6-quad-mesh-triangulation-vs-opengl-differ/53802"
+  ],
+  "source_sha256": {
+    "crates/viboceros-geometry/src/mesh/projection.rs": "74c3caa24bf7f43e4413c5f4157c139f67831d13029596d8c9ae72601704eba2",
+    "crates/viboceros-geometry/src/mesh/projection/tests.rs": "fffaa44f5d4def2445567770f62039741851db0e399494c5dc02c9421e338c25",
+    "crates/viboceros-geometry/src/mesh/mass_triangles.rs": "e1a1d9b9384fad8bb981a522a11d2e0624d1aa4266c849a1e6827aa5f50b3fa6",
+    "crates/viboceros-geometry/src/mesh/planar_ngons.rs": "d3601b9e9e4693bb2576fa57b08ba38a1ca46fa552be25fe0776eeb5dc628fe2",
+    "crates/viboceros-geometry/src/interval.rs": "b040c1dc4ed91bf38a87bc55fbc1e7b57df6d337e1615d7dcd367d923c34ff69",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/interval.rs": "76eb873e5dda8230edd42446d79ad46c35f867e9979122129ef3f7a088ea0bef",
+    "crates/viboceros-geometry/src/curve_join.rs": "98f56fd84a4efacfc7b7590a3fb78f996cb8ad6ab6f4f63649a0349844367629",
+    "crates/viboceros-geometry/src/curve_join/search.rs": "87ee6289858f67aea002c91db7ac73cc109c390abf37bc095d36e26cf40d7106",
+    "crates/viboceros-geometry/src/curve_join/seeded.rs": "31ac013308f7559517cb4c826d5c99e0b97b0fdc2f5235ed0fa82f70b190400e",
+    "crates/viboceros-geometry/src/curve_join/tests.rs": "e542daadfc4bcb5a1c0ed3f4b0aef0e1437960e791d23d2fc2b0b40adb613ac2",
+    "crates/viboceros-geometry/src/lib.rs": "bf77c5e2545fe957a6e706c5a5852cab5eb93026b22f8e9a4b306c71c1d2d2bb",
+    "crates/viboceros-geometry/src/error.rs": "03e8913cb16e0e5c8009ce3857820237a83c9a7f9a55b036924750b79e0ca525",
+    "crates/viboceros-command/src/project.rs": "aac5dddd0e283684fc54dbb1b6b3583d4e76b4da429ac8055ed06a2e8cbccbf2",
+    "crates/viboceros-command/src/project_tests.rs": "d5553dddad5793ccc03e6cdcc534e157855d94223b77162a2360f01badb47e25",
+    "crates/viboceros-command/src/object_selection.rs": "689701a9baa9cf797bce08409ec94f963dc25b521f681fd25661bdd4e0a2964e",
+    "crates/viboceros-oracle/src/lib.rs": "2f5c86a08449b2da894df33457e191809450b55312f110b660449f8cef69aa78",
+    "crates/viboceros-oracle/src/project.rs": "74da4de824a692d92c0503c98458e0692526b7af96a8b5d3e89dfef8fab7f34c",
+    "src/app/project.rs": "323328f052e39cefb5d510667efd84d912ca38d17630079437d46117326817e6",
+    "src/app/intersect_two_sets.rs": "0d425b93f0f690b36120a036a541bbefbe467937df59d24b4b22cf8ee86979b8",
+    "src/app/tests/project.rs": "8f1ace869a619677efbaedfebef4fec8fc1fb2c77c4b55d93caabf005ad99169",
+    "tools/rhino_oracle/rhino_worker.py": "09369d3346efbd2558ecde795154d9c3380ae0950089b0b34d5fed6cf046b9fd",
+    "tools/rhino_oracle/test_worker.py": "7d5c888e70373160edf36e5537bbf950986db3a4ab0c83e4e12998f4fed62fca",
+    "tools/rhino_oracle/test_project_mesh.py": "56a2c919d2cf023ca94c44a0c3df6076a3be00fb93d8f098b4b6456da04f644f",
+    "tools/rhino_oracle/fixtures/project_mesh.json": "f7c4df57eca09d521ba6d3adde9f3048cc9a7aac43bb428711dd21bbd37fed69",
+    "tools/rhino_oracle/observations/project_mesh_viboceros_native.json": "ab16f496d1de01f997b186cfea0e701131d04eece9a1deae43c3b38486a15673",
+    "tools/rhino_oracle/observations/project_mesh_viboceros_portable.json": "9e1dde9c4c20290a9c32d9f9526fe9325362c01a1efba0b840a14df865fbf3fe"
+  }
+}

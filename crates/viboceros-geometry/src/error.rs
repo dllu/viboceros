@@ -5,6 +5,12 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("mesh projection is ambiguous: {context}")]
+    AmbiguousMeshProjection { context: &'static str },
+    #[error("mesh projection exceeds the limit of {maximum} triangles")]
+    MeshProjectionLimit { maximum: usize },
+    #[error("mesh projection cannot represent a hit within absolute tolerance")]
+    UnrepresentableMeshProjection,
     #[error("interpolation backend failed: {message}")]
     InterpolationBackendFailed { message: String },
     #[error("endpoint interpolation failed: {context}")]

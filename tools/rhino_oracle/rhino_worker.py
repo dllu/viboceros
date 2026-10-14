@@ -13257,6 +13257,42 @@ def _execute(operation, iterations, tolerance):
             for curve in curves:
                 curve.Dispose()
 
+    if kind in ("project_curve_mesh", "project_point_mesh"):
+        direction = _vector(operation["direction"])
+        if not direction.Unitize():
+            raise ValueError("projection requires a nonzero finite direction")
+        mesh = _polygon_mesh(operation["vertices"], operation["faces"])
+        curve = None
+        try:
+            if kind == "project_point_mesh":
+                point = _point(operation["point"])
+                def project_point():
+                    points = Rhino.Geometry.Intersect.Intersection.ProjectPointsToMeshes(
+                        [mesh], [point], direction, float(tolerance["absolute"]))
+                    return dict(points=sorted([_xyz(p) for p in points or []]))
+                return _measure(iterations, project_point)
+            curve = _nurbs_curve_from_definition(operation["curve"])
+            def project_curve():
+                results = Rhino.Geometry.Curve.ProjectToMesh(
+                    curve, mesh, direction, float(tolerance["absolute"]))
+                records = []
+                try:
+                    for result in results or []:
+                        parameters = result.DivideByCount(32, True)
+                        if parameters is None:
+                            raise ValueError("could not divide projection result")
+                        samples = [_xyz(result.PointAt(t)) for t in parameters]
+                        if tuple(samples[-1]) < tuple(samples[0]): samples.reverse()
+                        records.append(dict(samples=samples,length=float(result.GetLength()),closed=bool(result.IsClosed)))
+                    records.sort(key=lambda r: tuple(r['samples'][0]))
+                    return dict(curves=records)
+                finally:
+                    for result in results or []: result.Dispose()
+            return _measure(iterations, project_curve)
+        finally:
+            if curve is not None: curve.Dispose()
+            mesh.Dispose()
+
     if kind == "project_curve_surface":
         direction = _vector(operation["direction"])
         if not direction.Unitize():

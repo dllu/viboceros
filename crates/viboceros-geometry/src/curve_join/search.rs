@@ -12,9 +12,18 @@ use std::collections::HashMap;
 
 const LEAF_SIZE: usize = 8;
 
+#[cfg(test)]
 pub(super) fn find_candidates(
     endpoints: &[Endpoint],
     options: CurveJoinOptions,
+) -> Result<Vec<Candidate>, GeometryError> {
+    find_candidates_with_filter(endpoints, options, &mut |_, _| true)
+}
+
+pub(super) fn find_candidates_with_filter(
+    endpoints: &[Endpoint],
+    options: CurveJoinOptions,
+    allow: &mut impl FnMut(usize, usize) -> bool,
 ) -> Result<Vec<Candidate>, GeometryError> {
     let mut candidates = Vec::new();
     let mut scans = 0;
@@ -23,7 +32,9 @@ pub(super) fn find_candidates(
         if scans > MAX_JOIN_SCANS {
             return Err(limit("endpoint comparisons"));
         }
-        if let Some(candidate) = candidate(endpoints, left, right, options)? {
+        if allow(left, right)
+            && let Some(candidate) = candidate(endpoints, left, right, options)?
+        {
             if candidates.len() == MAX_JOIN_CANDIDATES {
                 return Err(GeometryError::CurveJoinLimit {
                     resource: "endpoint candidates",

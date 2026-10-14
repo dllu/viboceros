@@ -1,9 +1,8 @@
 //! Continuous Bernstein bounds using finite intervals, followed by exact fallback.
 use super::*;
 mod crossing;
-mod number;
+use crate::interval::I;
 pub(super) use crossing::Boxes;
-use number::I;
 #[cfg(test)]
 mod tests;
 

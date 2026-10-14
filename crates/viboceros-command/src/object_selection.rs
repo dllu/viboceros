@@ -21,6 +21,7 @@ pub enum ObjectSelectionFilter {
     PolygonCount,
     Curves,
     ApplyCurves,
+    ProjectTargets,
     Join,
     ToNurbs,
     Beziers,
@@ -116,6 +117,10 @@ impl ObjectSelectionFilter {
                 matches!(geometry, Geometry::NurbsSurface(_))
                     || matches!(geometry, Geometry::Brep(brep) if brep.faces().len() == 1)
             }
+            Self::ProjectTargets => matches!(
+                geometry,
+                Geometry::NurbsSurface(_) | Geometry::Brep(_) | Geometry::Mesh(_)
+            ),
             Self::SurfaceComponents => {
                 matches!(geometry, Geometry::NurbsSurface(_) | Geometry::Brep(_))
             }

@@ -10,14 +10,32 @@ pub(super) fn run(
 ) -> Result<(Value, u64), ProbeError> {
     let source = nurbs_curve_from_definition(curve)?;
     let target = nurbs_surface_from_definition(surface)?;
+    run_geometry(
+        iterations,
+        Geometry::NurbsCurve(source),
+        Geometry::NurbsSurface(target),
+        direction,
+        tolerance,
+        false,
+    )
+}
+
+fn run_geometry(
+    iterations: u32,
+    source: Geometry,
+    target: Geometry,
+    direction: [f64; 3],
+    tolerance: Tolerance,
+    point_output: bool,
+) -> Result<(Value, u64), ProbeError> {
     let direction = Vector3::try_from(direction)?
         .normalized_nonzero()?
         .as_vector()
         .to_array();
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
-        let a = doc.add_geometry(Geometry::NurbsCurve(source.clone()))?;
-        let b = doc.add_geometry(Geometry::NurbsSurface(target.clone()))?;
+        let a = doc.add_geometry(source.clone())?;
+        let b = doc.add_geometry(target.clone())?;
         doc.select_objects_direct([a, b], SelectionMode::Replace)?;
         CommandRegistry::with_builtins().execute(
             &mut doc,
@@ -27,7 +45,22 @@ pub(super) fn run(
             ),
         )?;
         let mut curves = Vec::new();
+        let mut points = Vec::new();
         for o in doc.objects().filter(|o| o.id() != a && o.id() != b) {
+            if let Geometry::Point(p) = o.geometry() {
+                if !point_output {
+                    return Err(ProbeError::FixtureInvariant(
+                        "curve projection produced a point",
+                    ));
+                }
+                points.push(p.to_array());
+                continue;
+            }
+            if point_output {
+                return Err(ProbeError::FixtureInvariant(
+                    "point projection produced a curve",
+                ));
+            }
             let c =
                 o.geometry()
                     .nurbs_curve_representation()?
@@ -50,8 +83,63 @@ pub(super) fn run(
             let point = |v: &Value| std::array::from_fn(|i| v["samples"][0][i].as_f64().unwrap());
             compare_point(&point(a), &point(b))
         });
-        Ok::<_, ProbeError>(json!({"curves":curves}))
+        points.sort_by(compare_point);
+        Ok::<_, ProbeError>(if point_output {
+            json!({"points":points})
+        } else {
+            json!({"curves":curves})
+        })
     })
+}
+
+fn target_mesh(
+    vertices: &[[f64; 3]],
+    faces: &[Vec<u32>],
+    tolerance: Tolerance,
+) -> Result<Geometry, ProbeError> {
+    Ok(Geometry::Mesh(TriangleMesh::try_new_faces(
+        vertices
+            .iter()
+            .copied()
+            .map(Point3::try_from)
+            .collect::<Result<Vec<_>, _>>()?,
+        polygon_mesh_faces(faces)?,
+        tolerance,
+    )?))
+}
+pub(super) fn mesh_curve(
+    iterations: u32,
+    curve: &NurbsCurveDefinition,
+    vertices: &[[f64; 3]],
+    faces: &[Vec<u32>],
+    direction: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    run_geometry(
+        iterations,
+        Geometry::NurbsCurve(nurbs_curve_from_definition(curve)?),
+        target_mesh(vertices, faces, tolerance)?,
+        direction,
+        tolerance,
+        false,
+    )
+}
+pub(super) fn mesh_point(
+    iterations: u32,
+    point: [f64; 3],
+    vertices: &[[f64; 3]],
+    faces: &[Vec<u32>],
+    direction: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    run_geometry(
+        iterations,
+        Geometry::Point(Point3::try_from(point)?),
+        target_mesh(vertices, faces, tolerance)?,
+        direction,
+        tolerance,
+        true,
+    )
 }
 
 #[cfg(test)]
@@ -98,5 +186,56 @@ mod tests {
             panic!()
         }
         assert!(run_request(&request).is_err());
+    }
+}
+
+#[cfg(test)]
+mod mesh_tests {
+    use super::*;
+    #[test]
+    fn mesh_projection_protocol_checks_points_curves_warped_quads_and_misses() {
+        let q: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/project_mesh.json"
+        ))
+        .unwrap();
+        let response = run_request(&q).unwrap();
+        assert_eq!(response.results.len(), 13);
+        for row in response.results {
+            if let Some(points) = row.value["points"].as_array() {
+                let count = if row.id.ends_with("miss") {
+                    0
+                } else if row.id.ends_with("two_sheets") {
+                    2
+                } else {
+                    1
+                };
+                assert_eq!(points.len(), count);
+                if row.id.ends_with("warped") {
+                    assert_eq!(points[0], json!([0.25, 0.75, 0.]));
+                }
+            } else {
+                let curves = row.value["curves"].as_array().unwrap();
+                assert_eq!(
+                    curves.len(),
+                    usize::from(!row.id.ends_with("miss") && !row.id.ends_with("vertex_touch")),
+                    "{}",
+                    row.id
+                );
+                for c in curves {
+                    assert_eq!(c["samples"].as_array().unwrap().len(), 33);
+                    for p in c["samples"].as_array().unwrap() {
+                        let x = p[0].as_f64().unwrap();
+                        let y = p[1].as_f64().unwrap();
+                        let z = p[2].as_f64().unwrap();
+                        let expected = if row.id.ends_with("warped") {
+                            (x + y - 1.).max(0.)
+                        } else {
+                            0.
+                        };
+                        assert!((z - expected).abs() < q.tolerance.absolute);
+                    }
+                }
+            }
+        }
     }
 }

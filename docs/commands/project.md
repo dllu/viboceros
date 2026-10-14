@@ -1,10 +1,12 @@
 # Project
 
 Project curves and points in both directions along the finishing viewport's
-construction-plane Z axis onto finite NURBS surfaces or B-rep faces. Face
+construction-plane Z axis onto finite NURBS surfaces, B-rep faces or meshes. Face
 boundaries and holes clip the results. The default build supports planar curve
 targets and the existing analytic point contact queries; `native-smlib` adds
 curved curve targets and general point contacts.
+
+See [mesh projection](project-mesh.md) for triangle conventions and qualification.
 
 Start `Project`, select curves and points, press Enter, select targets, and press
 Enter again. Curves/points can be preselected; mixed source and target
@@ -40,7 +42,7 @@ both source relations, clips original face trims, and certifies the retained
 spans again. Finite sweep bounds require nonzero common-sign rational weights.
 No additional projection solver or vendor-source patch is introduced.
 
-Mesh/SubD targets, grips, edge subobjects, Loose projection, and the interactive
+SubD targets, grips, edge subobjects, Loose projection, and the interactive
 two-point Custom option are pending. Curved source kinks and distinct target
 faces can produce separate objects. Coincident, collapsed or singular source
 relations can be declined by existing contact/preparation checks. Continuous

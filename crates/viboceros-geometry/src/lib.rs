@@ -70,6 +70,7 @@ pub use edge_surface::arrange_edge_surface_curves;
 mod ellipse;
 mod error;
 mod exact_scalar;
+mod interval;
 pub use exact_scalar::{interpolate_scalar, remap_scalar, scaled_quotient};
 mod finite_sum;
 mod frame;
@@ -182,7 +183,9 @@ pub use curve_fit::{
     MAX_CURVE_FIT_DEGREE, try_fit_curve, try_fit_curve_with_solver,
 };
 pub use curve_frame::FrameTransportOptions;
-pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
+pub use curve_join::{
+    CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves, join_curves_with_endpoint_filter,
+};
 pub use curve_match::{
     CurveMatchOperations, CurveMatchPreserveEnd, try_average_match_curve_ends,
     try_average_match_curve_ends_with_operations, try_match_curve_end,
@@ -233,6 +236,7 @@ pub use loft::{
     prepare_loft_sections_with_operations, try_loft_nurbs_curves,
     try_loft_nurbs_curves_with_operations, try_loft_nurbs_curves_with_preparation,
 };
+pub use mesh::MeshProjectionIndex;
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,

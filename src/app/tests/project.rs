@@ -135,3 +135,31 @@ fn project_prompt_can_be_replaced_by_a_command_with_options() {
     assert_eq!(app.document.objects().len(), 4);
     assert_eq!(app.document.undo_label(), Some("ProjectToCPlane"));
 }
+
+#[test]
+fn project_mesh_target_is_pickable_and_mixed_preselection_completes() {
+    let mut app = test_app();
+    enter(&mut app, "MeshPlane 0,0 2,2 XCount=2 YCount=2");
+    enter(&mut app, "Point 1,1,3");
+    let ids = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    assert_eq!(ids.len(), 2);
+    app.document
+        .select_objects_direct([ids[1]], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Project");
+    app.apply_selection_click(SelectionClick {
+        object_id: Some(ids[0]),
+        mode: SelectionMode::Replace,
+    });
+    enter(&mut app, "");
+    assert!(app.intersection_prompt.is_none());
+    assert_eq!(app.document.objects().len(), 3);
+    assert_eq!(app.document.selected_object_count(), 1);
+    enter(&mut app, "Undo");
+    app.document
+        .select_objects_direct(ids.iter().copied(), SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "Project");
+    assert!(app.intersection_prompt.is_none());
+    assert_eq!(app.document.objects().len(), 3);
+}
