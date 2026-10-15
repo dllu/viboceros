@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "implementation_base_revision": "f95624657441d23eee72bc0e1ecc9f65fe0107d7",
+  "check_implemented": true,
+  "sel_bad_objects_implemented": true,
+  "checking_profile": "OpenNURBS IsValid on exact transferred equivalents; structural checks only",
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "general_validity_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "recipes": 18,
+  "scope_notes": [
+    "Check uses the ordinary Any-object confirmation getter with preselection, postselection, cancellation and command-history diagnostics. It changes neither geometry/attributes/groups/selection nor Undo/Redo. SelBadObjects scans selectable model objects and adds only native-invalid matches directly to the selection, preserving existing selections without group expansion. Object and layer visibility/locking restrictions apply. Both commands accept no arguments and create no geometry history entry.",
+    "The shared OpenNURBS archive supplies the native checker. The I/O adapter reuses its existing payload codec and exact geometry constructors; the command reuses its existing document-to-interchange conversion. Geometry remains independent of I/O. Only the final native validity gate is deferred for the diagnostic path so invalid copies can be inspected with IsValid and a bounded text log. Ordinary file construction keeps its existing default validation path; all transfer/layout/ownership guards remain active.",
+    "Three outcomes remain separate: valid, invalid and not checked. Native IsValid must actually run before an invalid result is reported. Unsupported/unrepresentable copies, constructor failures, malformed C ABI views and the native 256 MiB transfer limit are not badness. A valid Rust rational curve whose positive weights and Cartesian controls cannot share a representable native homogeneous gauge is not checked and is never selected as bad. The payload limit applies after Rust payload preparation; it is not a global allocation certificate.",
+    "Native diagnostics retain at most 8192 bytes plus a truncation marker; the Rust result buffer is larger. The aggregate Check report retains at most 128 KiB of per-object text, still counts all selected objects and reports omitted entries. Direct native regressions distinguish an invalid nonmonotone knot vector from rejected construction and check output capacities zero, one, four and 512 without changing bytes beyond the declared buffer or source knots.",
+    "Instance references use their actual definition UUID and placement. Native reference validity does not expand definition members or resolve the catalog. The document separately validates its catalog/reference graph. A reference to a definition containing a collapsed mesh remains a valid reference, consistent with this structural profile; its member geometry can be checked separately.",
+    "Independent actual-command fixtures cover points, point clouds, lines, arcs, circles, ellipses, polylines, polycurves, rational curves, surfaces, closed box B-reps, mesh-derived B-reps, ordinary/stored meshes, coincident triangle corners, a collapsed quad, collinear corners and remote coordinates. Sixteen pass and two report invalid. Collinear zero-area faces can be structurally valid, unlike normal-dependent modeling admission. The remote triangle retains sub-float double-coordinate distinctions. These checks do not certify absence of surface self-intersections, duplicate mesh faces or nonmanifold topology.",
+    "The native private-copy tests pass under AddressSanitizer instrumentation of the OpenNURBS static modeling archive and C ABI. They cover exact families, invalid stored positions, unclassified input, instance UUIDs, precision, invalid knot ordering and bounded diagnostic buffers. Leak detection and optional stack-use-after-return detection are disabled; bundled allocator/font/compression dependencies are not separately instrumented. No general memory-safety certificate is claimed.",
+    "Public SDK probes call Duplicate and IsValidWithLog on owned copies, dispose every copy/source, normalize a missing invalid diagnostic to a present diagnostic and report structural status plus diagnostic presence. Stored mesh recipes preserve double coordinates and collapsed positions instead of rejecting or repairing them before the check. Mocks cover strict numeric/stored-record inputs, copy aliases/nulls, native failures, cleanup and worker routing. They are not fresh licensed Rhino evidence.",
+    "Host launch-path review found missing companion staging for the recent whole/selected coplanar SDK probes. A small shared registry now validates and stages those two families and geometry_validity, including transitive helpers. Tests use actual OracleClient staging with launch intercepted, import all staged modules in an isolated Python process, verify temporary-job cleanup and reject local selected-mesh requests before launching. Existing legacy helper routes are retained.",
+    "No Rhino.exe process was running at the read-only process check. Fresh licensed captures were not attempted in this increment; the latest recorded startup problem remains the Wine SSPI diagnostic in docs/oracle-sspi.md. Native getter/selection parity and comparative performance remain unqualified.",
+    "Four verifiable historical records retain twelve original source hashes through immutable Git references. Their non-hash fields are unchanged; 69 pre-existing unverifiable records remain untouched. No earlier parity or performance claim is upgraded."
+  ],
+  "validation": {
+    "portable_commands_ui": {
+      "command": "cargo test -p viboceros-command -p viboceros geometry_check -- --nocapture",
+      "passed": 8,
+      "log": "docs/geometry-check-portable.log"
+    },
+    "native_commands_ui_oracle": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib geometry_check -- --nocapture",
+      "passed": 9,
+      "log": "docs/geometry-check-native.log"
+    },
+    "native_sanitizer": {
+      "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-io --lib three_dm::check -- --nocapture",
+      "passed": 6,
+      "log": "docs/geometry-check-asan.log"
+    },
+    "help": {
+      "command": "cargo test -p viboceros-command --features native-smlib reports_sorted_help -- --nocapture",
+      "passed": 1,
+      "log": "docs/geometry-check-help.log"
+    },
+    "io_regression": {
+      "command": "cargo test -p viboceros-io --tests",
+      "passed": 231,
+      "library": 229,
+      "integration": 2,
+      "log": "docs/geometry-check-io-summary.log",
+      "note": "This complete run includes the first five check tests. The additional direct native knot-order and bounded-buffer test passes in the final six-test sanitizer run; no implementation changes intervene."
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_geometry_validity tools.rhino_oracle.test_worker tools.rhino_oracle.test_coplanar_faces tools.rhino_oracle.test_coplanar_mesh tools.rhino_oracle.test_selected_coplanar_faces tools.rhino_oracle.test_client -q",
+      "passed": 158,
+      "log": "docs/geometry-check-python.log"
+    },
+    "clippy": {
+      "command": "cargo clippy -p viboceros-opennurbs -p viboceros-io -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings",
+      "status": "passed",
+      "log": "docs/geometry-check-clippy.log"
+    },
+    "cpp_warnings": {
+      "command": "c++ -std=c++17 -DON_CMAKE_BUILD -isystem third_party/opennurbs -Icrates/viboceros-opennurbs/native -Wall -Wextra -Werror -fsyntax-only crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp",
+      "status": "passed"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    "cli_capture": {
+      "command": "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/geometry_validity.json tools/rhino_oracle/observations/geometry_validity_viboceros.json",
+      "recipes_completed": 18
+    }
+  },
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "a52ce1966b5cd6eb3d4ef0f6a2eedfff3473b87a61b9aeaf83c9166dc19f578f",
+    "crates/viboceros-command/src/geometry_check.rs": "49c9c4761fa288c4ebbe845e6d9fdc24440cd3b47029977e08d8e15a1b2e51ff",
+    "crates/viboceros-command/src/geometry_check/tests.rs": "32aa6e9047a74b9c31d696508b3d5303a78a388b3a10dc9052e7b87cb6e7f11a",
+    "crates/viboceros-command/src/interchange.rs": "336571c9da4a1cbff2bbd3066668aacf18d711f052b3ef6212c08c7c9cb9e39a",
+    "crates/viboceros-command/src/lib.rs": "f72368168505b6c2b0134847b658ea0fadc2130e25e0d6f013032f94d7722d49",
+    "crates/viboceros-io/src/lib.rs": "88fb1236dfd45ac8bf04000466c7e7d8ed0e2c02cb6dc1cc412098f1041af083",
+    "crates/viboceros-io/src/three_dm.rs": "3266ee75a1019975959537102e7afc497bd7c0bf27193cf820502d9ee5dc3052",
+    "crates/viboceros-io/src/three_dm/check.rs": "27af6e4b24a863762fb5708e0905ade0cb0a0a78b1e5003417842b21abafe38f",
+    "crates/viboceros-io/src/three_dm/check/tests.rs": "93138f534ba5f150dc7531936d0e98966411c880b5232d8f9a2d1695ad459d5a",
+    "crates/viboceros-io/src/three_dm_curves.rs": "ac3b799e54edcc8c84a8e0efb2ec5b4176a6b7880e4139f49e34970c62809834",
+    "crates/viboceros-io/src/three_dm_geometry.rs": "279ed1a5858009efa745d9f64344f83edd01faf759e0e565c430f0245f8f19ef",
+    "crates/viboceros-opennurbs/build.rs": "a7693ef68ba1049d144b0186590574e6da2ea1fa6bbb20f32dce7248e6cb5e85",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "16c59be64e7363f10760f19af8a389f6ef0f9e5a761bffba02e9e4cb8e2e40bc",
+    "crates/viboceros-opennurbs/native/geometry_check.h": "6734d33583ebba6807e861f83b1b3c6bee6dcc78fbc7c3772d81f1dfcf237e15",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "f86d9b7cd8d7e0274037065ceb5665e746d03c8a5984105bd90404b5d044bd3b",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "9b4f5299b5e6347f84e1a710c9262c6e1c09a7fd196addf73862c31ece8f0b05",
+    "crates/viboceros-oracle/src/geometry_validity.rs": "a91a2e771db0c48a7b8d657e1c711d3435a59b354a6e2b5d7a753a27da8c9d13",
+    "crates/viboceros-oracle/src/lib.rs": "326a3748039bb09335bb181ef639c063b7b32d83216c39469d66bf182c1bf7c3",
+    "crates/viboceros-oracle/src/object_source.rs": "7a1c48fc3d32b9ddc16c96902cd927f951e1f6ce3b6bf385849dbe3345f3b8c1",
+    "docs/commands/README.md": "13f1d95ef24816232283a68c7c8c6f23ece3c23d07788a6c54b0cd53d9e95394",
+    "docs/commands/check.md": "e4659b8896d8beeeb530e58fc80c0e255685ef59ef73232629b80e1c70a99e4b",
+    "src/app.rs": "b3580a42f9ad89ddb2f734bd2735d73e04e5ac386112f959f1371ed43f2a5ce0",
+    "src/app/tests/geometry_check.rs": "8ec23e46af845e1e90d762cc406193b25f80c6d6a18d79f9cbcaea8180eff197",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/fixtures/geometry_validity.json": "f19f51b06d3f67ddf873fb5d28b478b4b39c6442fbb769cc6205efc0cab43756",
+    "tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff",
+    "tools/rhino_oracle/rhino_worker.py": "8a2b10523201fbfabdb2e1d02e3b652dbc63ae0338dbcec12d2a46bb663b166b",
+    "tools/rhino_oracle/structural_sdk.py": "e394663125104d111f1655494d203c9c1f70832542ebc6131849c92cd5e69e43",
+    "tools/rhino_oracle/test_geometry_validity.py": "aa3c4b57150563d52affa67b28f7780d8b2e8d27adb0216554ea25f0f7a84cee",
+    "tools/rhino_oracle/test_structural_sdk.py": "dba3af77698ba3de841969733778635f453dfaddc32349aaac768a2098f505bd"
+  },
+  "evidence_sha256": {
+    "docs/geometry-check-asan.log": "d12b55fae78d6aecafb6293325b734ff42cd453a45bbc5b3817c8b491bd77449",
+    "docs/geometry-check-clippy.log": "705adc072f29774f8c4b30254518cfb486503cfed78364e90554e9356d3c1231",
+    "docs/geometry-check-help.log": "4d064c26cfed2eb1a2eccf200724ed0b890f5cea92ba3aec36028195fff98e1d",
+    "docs/geometry-check-io-summary.log": "ad85720ff13b37fedbf9cbeeb260c35955035d5c0f3e45d84639057f9e217a3e",
+    "docs/geometry-check-native.log": "1670bd0acba3391ee1e5ee2897b2f0e014131b31a9ab4c9d884e70055f665e9f",
+    "docs/geometry-check-portable.log": "f9ddefdd8563d737ff926e3a380d4b38696a1eacfc9cc026b6bb3c75a58f9b0b",
+    "docs/geometry-check-python.log": "b8954c9e5ac72cfabc428dc43229eecd4db39992723a9ae37778387a09e1a329",
+    "tools/rhino_oracle/observations/geometry_validity_viboceros.json": "4154a3a4c6f7c65d1f912a3b6f9db3af799c5f78d99b8fa85bc0d8cf7ecd57f0"
+  }
+}

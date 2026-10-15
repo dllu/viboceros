@@ -132,7 +132,6 @@
     "third_party/usd-brep/source/SMLib/src/SmFilletStandardSolver.cpp": "14837a8f3a279906470ab9c67478dc2fba316952c8ee41043ec67d8662af175f",
     "tools/rhino_oracle/blend_edge_probe.py": "b008ef5985ca79c4655f84d071a3d155de243765f866c667392c7af03116f471",
     "tools/rhino_oracle/chamfer_edge_probe.py": "ec57cdb42de043e5185e37884f0a038c548ddacfc8d6bcc89d0866ebcc424530",
-    "tools/rhino_oracle/client.py": "3698030689edf250a474f95d3aa7f3c2cbcf87fae6d826d9c62a42fd4cd1278f",
     "tools/rhino_oracle/edge_blend_probe.py": "bc837ebdd6a2ba2e0ef2d3656df7111ad2e55c76b93f55b22a580f59cae3c380",
     "tools/rhino_oracle/fixtures/blend_edge.json": "bfe1869a9b6b906aa4a68e4626714298a384749192a9b40b4b92e8d43eede1b7",
     "tools/rhino_oracle/observations/blend_edge_viboceros_native.json": "b93e4373892943b9fdccbba3dfceae9e1c92de7377636873359fb7d304a0380e",
@@ -162,6 +161,7 @@
     "1255ea14473b1e1484f8020c528961fa8a0bc150:crates/viboceros-smlib/src/native.rs": "ffd54e99d36f18648d15941a19b78bf014ca24e45388eff8f5ba59b40ba5718d",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:docs/commands/README.md": "f96003b34e278c67aa63a616bf70c91e949a5e8e116df98a8631ae49699489e6",
     "1255ea14473b1e1484f8020c528961fa8a0bc150:src/app.rs": "ec40ff1d30b7801bd0eb65ce68e54d877a5751a8ae7e8e66d976dfa04791c27a",
-    "1255ea14473b1e1484f8020c528961fa8a0bc150:tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88"
+    "1255ea14473b1e1484f8020c528961fa8a0bc150:tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88",
+    "f95624657441d23eee72bc0e1ecc9f65fe0107d7:tools/rhino_oracle/client.py": "3698030689edf250a474f95d3aa7f3c2cbcf87fae6d826d9c62a42fd4cd1278f"
   }
 }

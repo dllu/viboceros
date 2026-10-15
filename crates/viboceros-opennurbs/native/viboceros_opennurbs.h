@@ -151,6 +151,12 @@ typedef struct ViboWriteObject {
   size_t geometry_user_text_count;
 } ViboWriteObject;
 
+// Return 1 only when native IsValid ran; valid is then 0 or 1.
+// Construction/transfer failures return 0 and leave valid at -1.
+int32_t vibo_geometry_check(const ViboWriteObject* source,
+    const char* instance_definition_uuid, int32_t* valid,
+    char* diagnostics, size_t capacity);
+
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);
 void vibo_3dm_free(ViboThreeDmModel* model);

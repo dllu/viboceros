@@ -1,0 +1,152 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "point",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 914658
+    },
+    {
+      "id": "point_cloud",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 770370
+    },
+    {
+      "id": "line",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 766738
+    },
+    {
+      "id": "arc",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 758386
+    },
+    {
+      "id": "circle",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 810194
+    },
+    {
+      "id": "ellipse",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 772610
+    },
+    {
+      "id": "polyline",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 766322
+    },
+    {
+      "id": "polycurve",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 757858
+    },
+    {
+      "id": "rational_curve",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 751666
+    },
+    {
+      "id": "surface",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 753234
+    },
+    {
+      "id": "box_brep",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 2093557
+    },
+    {
+      "id": "mesh_brep",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 852882
+    },
+    {
+      "id": "mesh",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 758994
+    },
+    {
+      "id": "stored_mesh",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 755170
+    },
+    {
+      "id": "coincident_triangle",
+      "value": {
+        "has_diagnostics": true,
+        "status": "invalid"
+      },
+      "elapsed_ns": 768770
+    },
+    {
+      "id": "collinear_triangle",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 765186
+    },
+    {
+      "id": "remote_triangle",
+      "value": {
+        "has_diagnostics": false,
+        "status": "valid"
+      },
+      "elapsed_ns": 761538
+    },
+    {
+      "id": "collapsed_quad",
+      "value": {
+        "has_diagnostics": true,
+        "status": "invalid"
+      },
+      "elapsed_ns": 766370
+    }
+  ]
+}

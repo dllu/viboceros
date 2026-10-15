@@ -10030,6 +10030,7 @@ mod tests {
     mod extrude_surface_path;
     mod extrude_surface_tapered;
     mod extrude_tapered;
+    mod geometry_check;
     mod grip_transform;
     mod group_prompt;
     mod interface;

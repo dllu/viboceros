@@ -32,6 +32,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 ## Documentation
 
 - [Command reference and examples](docs/commands/README.md)
+- [Native geometry checks and bad-object selection](docs/commands/check.md)
 - [Directional projection, custom points and subcurves](docs/commands/project.md)
 - [Infinite-plane projection and input](docs/commands/project-infinite-plane.md)
 - [IPlane intersections and shared plane picking](docs/commands/iplane.md)

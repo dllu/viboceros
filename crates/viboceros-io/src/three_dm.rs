@@ -20,7 +20,11 @@ pub use blocks::{
     read_3dm_file_with_blocks, read_3dm_file_with_blocks_in_units,
     read_3dm_file_with_blocks_model_tolerance,
 };
+mod check;
 mod mesh_ngon;
+pub use check::{
+    GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_instance_reference,
+};
 mod point_cloud_data;
 
 const ERROR_CAPACITY: usize = 4096;
@@ -2133,6 +2137,7 @@ mod ffi {
     }
 
     #[repr(C)]
+    #[derive(Default)]
     pub struct ViboWriteObject {
         pub id: *const c_char,
         pub object_type: c_int,
@@ -2168,6 +2173,13 @@ mod ffi {
     }
 
     unsafe extern "C" {
+        pub fn vibo_geometry_check(
+            source: *const ViboWriteObject,
+            instance_definition_uuid: *const c_char,
+            valid: *mut c_int,
+            diagnostics: *mut c_char,
+            capacity: usize,
+        ) -> c_int;
         pub fn vibo_3dm_read_mode(
             path: *const c_char,
             structural: u8,

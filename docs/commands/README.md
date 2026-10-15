@@ -4,6 +4,7 @@ Commands are case-insensitive. Enter `Help` in the application to list registere
 commands. These pages describe implemented behavior and known limitations;
 Rhino's complete command set is still a work in progress.
 
+- [Check and SelBadObjects](check.md)
 - [ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](show-edges.md)
 - [Divide by count, arc length and chord length; Split and output groups](divide.md)
 - [Block definition management](block-manager.md)

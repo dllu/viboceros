@@ -18,6 +18,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
+from .structural_sdk import stage_helpers as stage_structural_sdk_helpers
+from .structural_sdk import validate_operations as validate_structural_sdk_operations
+
 if TYPE_CHECKING:
     from .audit import AuditReport
 
@@ -219,6 +222,7 @@ class OracleClient:
 
         if not self.launcher.is_file():
             raise OracleError(f"Rhino launcher not found: {self.launcher}")
+        validate_structural_sdk_operations(request)
         worker_source = Path(__file__).with_name("rhino_worker.py")
         if any(op.get('op') == 'fillet_edge_reference' for op in request.get('operations', [])):
             from .fillet_edge_probe import validate
@@ -1097,6 +1101,7 @@ class OracleClient:
             request_path = job_path / "request.json"
             response_path = job_path / "response.json"
             worker_path = job_path / "rhino_worker.py"
+            stage_structural_sdk_helpers(request, worker_source.parent, job_path)
             if any(op.get('op') == 'fillet_edge_reference' for op in request['operations']):
                 shutil.copyfile(worker_source.with_name('fillet_edge_probe.py'), job_path / 'fillet_edge_probe.py')
             if any(op.get('op') in ('step_poles', 'step_regions') for op in request['operations']):

@@ -1057,7 +1057,8 @@ std::unique_ptr<ON_NurbsSurface> read_nurbs_surface(ByteReader& reader,
   return surface;
 }
 
-ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
+ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error,
+                  bool validate = true) {
   if (bytes == nullptr || count == 0) {
     error = "B-rep payload is empty";
     return nullptr;
@@ -1244,7 +1245,7 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
   }
   ON_wString diagnostics;
   ON_TextLog log(diagnostics);
-  if (!brep->IsValid(&log)) {
+  if (validate && !brep->IsValid(&log)) {
     error = "B-rep is invalid in OpenNURBS";
     const std::string details = utf8(diagnostics);
     if (!details.empty()) {
@@ -1325,7 +1326,7 @@ std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& er
 }
 
 ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
-                           std::string& error) {
+                           std::string& error, bool validate = true) {
   if (bytes == nullptr || count == 0) {
     error = "polycurve payload is empty";
     return nullptr;
@@ -1363,14 +1364,15 @@ ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
     segment.release();  // Ownership transfers only after a successful append.
   }
   if (!reader.Finished() || !curve->SetParameterization(parameters.data()) ||
-      !curve->IsValid()) {
+      (validate && !curve->IsValid())) {
     error = "polycurve is invalid in OpenNURBS";
     return nullptr;
   }
   return curve.release();
 }
 
-ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
+ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
+                        bool validate = true) {
   if (!finite_coordinates(source.coordinates, source.coordinate_count) ||
       !finite_coordinates(source.knots_u, source.knot_u_count) ||
       !finite_coordinates(source.knots_v, source.knot_v_count)) {
@@ -1516,7 +1518,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         }
         cloud->SetOrdered((flags & kPointCloudOrdered) != 0);
       }
-      if (!cloud->IsValid()) {
+      if (validate && !cloud->IsValid()) {
         delete cloud;
         error = "point cloud is not valid in OpenNURBS";
         return nullptr;
@@ -1541,7 +1543,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         curve->m_pline.Append(ON_3dPoint(point[0], point[1], point[2]));
         curve->m_t.Append(source.knots_u[index]);
       }
-      if (!curve->IsValid()) {
+      if (validate && !curve->IsValid()) {
         error = "polyline is not valid in OpenNURBS";
         return nullptr;
       }
@@ -1583,7 +1585,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
           return nullptr;
         }
       }
-      if (!curve->IsValid()) {
+      if (validate && !curve->IsValid()) {
         delete curve;
         error = "NURBS curve is not valid in OpenNURBS";
         return nullptr;
@@ -1646,7 +1648,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
           }
         }
       }
-      if (!surface->IsValid()) {
+      if (validate && !surface->IsValid()) {
         delete surface;
         error = "NURBS surface is not valid in OpenNURBS";
         return nullptr;
@@ -1666,7 +1668,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         return nullptr;
       }
       if (source.object_type == VIBO_OBJECT_POLYCURVE) {
-        return polycurve_for(source.geometry_data, source.geometry_data_count, error);
+        return polycurve_for(source.geometry_data, source.geometry_data_count, error, validate);
       }
       if (source.object_type == VIBO_OBJECT_ARC) {
         ByteReader reader(source.geometry_data, source.geometry_data_count);
@@ -1678,7 +1680,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         }
         return arc.release();
       }
-      return brep_for(source.geometry_data, source.geometry_data_count, error);
+      return brep_for(source.geometry_data, source.geometry_data_count, error, validate);
     }
     case VIBO_OBJECT_TRIANGLE_MESH: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
@@ -1881,6 +1883,8 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
 #include "structural_blocks.h"
 
 }  // namespace
+
+#include "geometry_check.h"
 
 struct ViboThreeDmModel {
   std::vector<BridgeDefinition> definitions;

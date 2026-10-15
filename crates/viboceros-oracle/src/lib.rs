@@ -121,6 +121,8 @@ mod blend_edge;
 mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
+mod geometry_validity;
+pub use geometry_validity::Fixture as GeometryValidityFixture;
 mod selected_coplanar_faces;
 pub use selected_coplanar_faces::Fixture as SelectedCoplanarFacesFixture;
 mod edge_blend;
@@ -1637,6 +1639,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SelectedCoplanarFacesFixture,
     },
+    GeometryValidity {
+        id: String,
+        #[serde(flatten)]
+        fixture: GeometryValidityFixture,
+    },
     MergeCoplanarFaces {
         id: String,
         #[serde(flatten)]
@@ -2615,6 +2622,7 @@ impl Operation {
             | Self::SurfacePathExtrusion { id, .. }
             | Self::SurfaceApexExtrusion { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
+            | Self::GeometryValidity { id, .. }
             | Self::MergeCoplanarFaces { id, .. }
             | Self::BlendEdge { id, .. }
             | Self::ChamferEdge { id, .. }
@@ -5816,6 +5824,9 @@ fn execute(
         }
         Operation::SelectedCoplanarFaces { fixture, .. } => {
             selected_coplanar_faces::run(fixture, iterations, tolerance)?
+        }
+        Operation::GeometryValidity { fixture, .. } => {
+            geometry_validity::run(fixture, iterations, tolerance)?
         }
         Operation::MergeCoplanarFaces { fixture, .. } => {
             coplanar_faces::run(fixture, iterations, tolerance)?

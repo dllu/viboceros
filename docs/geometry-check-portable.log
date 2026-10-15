@@ -1,0 +1,29 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 59s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 2 tests
+test app::tests::geometry_check::native_geometry_check_cancel_and_bad_object_selection_share_existing_ui_flows ... ok
+test app::tests::geometry_check::native_geometry_check_getter_accepts_preselection_or_picks_and_leaves_redo ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1216 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 6 tests
+test geometry_check::tests::check_has_a_readonly_any_object_getter_and_requires_a_selection ... ok
+test geometry_check::tests::unrepresentable_native_copy_is_reported_separately_and_never_selected_as_bad ... ok
+test geometry_check::tests::structural_checks_do_not_misclassify_collinear_faces_and_noop_preserves_redo ... ok
+test geometry_check::tests::check_reports_native_errors_and_preserves_geometry_selection_and_redo ... ok
+test geometry_check::tests::bad_selection_is_additive_direct_and_respects_object_and_layer_restrictions ... ok
+test geometry_check::tests::native_instance_reference_check_does_not_expand_bad_definition_members ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 1376 filtered out; finished in 0.02s

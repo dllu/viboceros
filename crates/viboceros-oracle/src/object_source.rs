@@ -36,6 +36,11 @@ pub enum VertexSource {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
     },
+    /// Stored import records retain collapsed positions for diagnostics/repair.
+    MeshRecords {
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
 }
 
 impl ObjectSource {
@@ -73,7 +78,8 @@ impl ObjectSource {
             }
             Self::Vertices(
                 source @ (VertexSource::Mesh { vertices, faces }
-                | VertexSource::MeshBrep { vertices, faces }),
+                | VertexSource::MeshBrep { vertices, faces }
+                | VertexSource::MeshRecords { vertices, faces }),
             ) => {
                 let faces = faces
                     .iter()
@@ -85,7 +91,11 @@ impl ObjectSource {
                         )),
                     })
                     .collect::<Result<Vec<_>, _>>()?;
-                let mesh = TriangleMesh::try_new_faces(points(vertices)?, faces, tolerance)?;
+                let mesh = if matches!(source, VertexSource::MeshRecords { .. }) {
+                    TriangleMesh::try_from_face_records(points(vertices)?, faces)?
+                } else {
+                    TriangleMesh::try_new_faces(points(vertices)?, faces, tolerance)?
+                };
                 if matches!(source, VertexSource::MeshBrep { .. }) {
                     Geometry::Brep(Brep::try_from_mesh(&mesh, true, tolerance)?)
                 } else {

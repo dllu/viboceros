@@ -220,9 +220,12 @@ def _set_surface_controls(surface, controls, count_u, count_v):
                 raise ValueError("invalid NURBS surface control point")
 
 
-def _polygon_mesh(vertices, faces):
+def _polygon_mesh(vertices, faces, validate=True):
     mesh = Rhino.Geometry.Mesh()
     try:
+        if not validate:
+            # Stored records must retain double coordinates, including bad faces.
+            mesh.Vertices.UseDoublePrecisionVertices = True
         for vertex in vertices:
             if mesh.Vertices.Add(_point(vertex)) < 0:
                 raise ValueError("could not add mesh vertex")
@@ -243,7 +246,7 @@ def _polygon_mesh(vertices, faces):
             )
             if added < 0:
                 raise ValueError("could not add mesh face")
-        if not mesh.IsValid:
+        if validate and not mesh.IsValid:
             raise ValueError("mesh is invalid")
         return mesh
     except Exception:
@@ -5386,6 +5389,8 @@ def _object_source(definition, tolerance):
         except Exception:
             cloud.Dispose()
             raise
+    if kind == "mesh_records":
+        return _polygon_mesh(definition["vertices"], definition["faces"], validate=False)
     if kind == "mesh":
         return _polygon_mesh(definition["vertices"], definition["faces"])
     if kind == "mesh_brep":
@@ -13410,6 +13415,10 @@ def _execute(operation, iterations, tolerance):
 
     if kind == 'surface_apex_extrusion':
         from surface_apex_extrusion_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
+    if kind == 'geometry_validity':
+        from geometry_validity_probe import run
         return run(operation, globals(), iterations, tolerance)
 
     if kind == 'selected_coplanar_faces':
