@@ -11,6 +11,9 @@ fn main() {
     }
 
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=native/mesh_modeling.cpp");
+    println!("cargo:rerun-if-changed=../../third_party/patches/opennurbs-merge-face-holes.cmake");
+    println!("cargo:rerun-if-changed=native/mesh_modeling.h");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.cpp");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.h");
     println!("cargo:rerun-if-changed=native/rational_coordinates.h");
@@ -18,9 +21,27 @@ fn main() {
     println!("cargo:rerun-if-changed=native/structural_blocks.h");
     println!("cargo:rerun-if-changed={}", open_nurbs.display());
 
+    println!("cargo:rerun-if-env-changed=VIBOCEROS_OPENNURBS_ASAN");
+    let sanitize = match env::var("VIBOCEROS_OPENNURBS_ASAN").as_deref() {
+        Ok("1") => true,
+        Ok("0") | Err(_) => false,
+        _ => panic!("VIBOCEROS_OPENNURBS_ASAN must be 0 or 1"),
+    };
+    if sanitize {
+        assert_eq!(
+            env::var("CARGO_CFG_TARGET_OS").unwrap(),
+            "linux",
+            "OpenNURBS ASan builds currently support Linux"
+        );
+        println!("cargo:rustc-link-lib=dylib=asan");
+    }
     let destination = cmake::Config::new(crate_dir.join("native"))
         .define("OPENNURBS_ROOT", absolute(&open_nurbs))
         .define("BUILD_TESTING", "OFF")
+        .define(
+            "VIBOCEROS_OPENNURBS_ASAN",
+            if sanitize { "ON" } else { "OFF" },
+        )
         .profile("Release")
         .build_target("viboceros_opennurbs")
         .build();

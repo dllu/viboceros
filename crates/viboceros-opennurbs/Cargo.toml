@@ -1,0 +1,13 @@
+[package]
+name = "viboceros-opennurbs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+links = "viboceros_opennurbs"
+
+[dependencies]
+thiserror.workspace = true
+
+[build-dependencies]
+cmake = "0.1.58"

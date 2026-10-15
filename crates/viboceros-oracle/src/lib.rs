@@ -120,6 +120,7 @@ pub use surface_path_extrusion::Fixture as SurfacePathExtrusionFixture;
 mod blend_edge;
 mod chamfer_edge;
 mod coplanar_faces;
+mod coplanar_mesh;
 mod edge_blend;
 pub use blend_edge::Fixture as BlendEdgeFixture;
 pub use chamfer_edge::Fixture as ChamferEdgeFixture;

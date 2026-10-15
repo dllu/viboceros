@@ -12,8 +12,8 @@ def validate(operation):
             or not isinstance(operation['source'], dict)):
         raise ValueError('invalid coplanar merge fields')
     source = operation['source']
-    if set(source) != {'type', 'vertices', 'faces'} or source['type'] != 'mesh_brep':
-        raise ValueError('coplanar recipes require a mesh_brep source')
+    if set(source) != {'type', 'vertices', 'faces'} or source['type'] not in ('mesh_brep','mesh'):
+        raise ValueError('coplanar recipes require a mesh or mesh_brep source')
     vertices, faces = source['vertices'], source['faces']
     if (not isinstance(vertices, list) or not 3 <= len(vertices) <= 100000
             or any(not isinstance(p, list) or len(p) != 3
@@ -35,6 +35,12 @@ def run(operation, host, iterations, tolerance):
     G = host['Rhino'].Geometry
     source = host['_object_source'](operation['source'], tolerance)
     try:
+        if operation['source']['type']=='mesh':
+            try:
+                from .coplanar_mesh_probe import run_mesh
+            except ImportError:
+                from coplanar_mesh_probe import run_mesh
+            return run_mesh(source,host,iterations,tolerance)
         if not isinstance(source, G.Brep) or not source.IsValid:
             raise ValueError('coplanar merge requires a valid B-rep')
         before = int(source.Faces.Count)

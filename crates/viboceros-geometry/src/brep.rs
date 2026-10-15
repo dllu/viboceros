@@ -7219,6 +7219,9 @@ fn planar_mesh_ngon(
             }
         }
     }
+    if mesh.ngon_boundary_loops(ngon.faces())?.len() > 1 {
+        return planar_mesh_region_with_holes(mesh, ngon.faces(), frame, tolerance);
+    }
     let project = |frame: Frame3| {
         boundary
             .iter()

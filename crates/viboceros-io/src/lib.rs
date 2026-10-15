@@ -1,5 +1,8 @@
 //! CAD file-format readers and writers.
 
+// The native archive supplies the file bridge symbols used by three_dm::ffi.
+use viboceros_opennurbs as _;
+
 mod staged_file;
 mod step;
 mod stl;

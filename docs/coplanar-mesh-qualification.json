@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "mesh_merge_all_coplanar_faces_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "subd_implemented": false,
+  "general_geometry_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "implementation_base_revision": "ef94479d0c780100fe5a5cabdb249bf160157539",
+  "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "recipes": 7,
+  "limits": {
+    "vertices": 4000000,
+    "faces": 1000000,
+    "charged_face_checks": 32000000
+  },
+  "scope_notes": [
+    "MergeAllCoplanarFaces now accepts whole meshes in default and native-smlib builds. B-reps retain the usd-brep path and its native-feature requirement; surfaces remain no-ops. Existing source snapshots, tolerance freshness checks, identity-preserving replacements and batch Undo/Redo cover both geometry types. SubD representation and merging, component-face selection and MergeCoplanarFace remain future work.",
+    "The new viboceros-opennurbs crate owns the existing OpenNURBS C ABI, build script and native sources previously in viboceros-io. Its safe mesh payload API depends on neither geometry nor file formats. Geometry and I/O link one shared native archive per Cargo configuration, avoiding a dependency cycle. File-format Rust APIs and the existing binary C ABI remain in their prior modules. All legacy native files are moved, not independently reimplemented.",
+    "The OpenNURBS topology and MergeFaceSets executive perform welding, face coalescing, n-gon construction and cleanup. A bounded prepass computes double-precision native face normals, treats existing n-gons as complete units, and grows edge-connected regions against one fixed seed plane and angular cutoff. Only compatibly oriented two-face topology edges are candidates; nonmanifold edges are not traversed. Source vertices must fit the seed plane within the requested distance tolerance, preventing cumulative plane drift. Nearby edges without existing shared topology are not sewn across gaps. Degenerate faces fail before document mutation.",
+    "Two triangles can become a quadrilateral; larger regions retain their underlying facets with n-gon overlays. Native welding can join exact-location unwelded seams in the merged region and compact unused vertices. It can choose one of the colors at a welded seam; corner-color parity is not claimed for differently colored duplicate vertices. Already welded grids retain colors and interior vertices. The default planar n-gon command now calls OpenNURBS AddPlanarNgons, removing its separate Rust discovery engine while retaining its single-boundary policy and separate tolerance semantics.",
+    "The upstream face-set helper uses the no-holes AddNgon overload, so a planar annulus reports no merge. The generated CMake adaptation replaces that one boundary-construction call with the existing FindNgonBoundaries API and explicit outer-loop AddNgon overload. Native welding and cleanup remain in use. The pinned checkout stays immutable, the source anchor must match exactly once, and generated files are rewritten only when their contents change. The retained early baseline passes the rectangle and concave controls but returns zero removed faces on the annulus instead of seven; the same annulus passes after adapting the helper.",
+    "Mesh n-gon validation still requires compatible internal edge uses, face connectivity, closed disjoint boundary cycles, unique membership and the correctly oriented stored outer loop. Multiple cycles now retain holes through the underlying face table; OpenNURBS classifies their outer boundary using a compact copy of only the referenced vertices. Existing wire display/picking hides only edges shared inside one n-gon, so hole boundaries remain visible. MeshToNURB routes multi-loop planar regions through its existing hole-aware converter rather than filling the inner boundary.",
+    "Independent regressions check rectangle area 12, annulus area 8 with eight visible boundary edges and one two-loop NURBS face, a triangulated box with six regions/area 52/volume 24, a grid retaining colors and interior vertices, all nine rotations of a concave triangle pair, existing neighboring n-gons, strict angular rejection despite loose distance tolerance, exact-location unwelded seams, and no-op source preservation. A further 24-triangle ring starts its inner boundary at a collinear vertex and retains the 16-edge outer loop. The native payload regression repeats that classification in all three coordinate planes. A remote-origin 1e-4 gap at coordinate 1e6 remains unmerged at tolerance 1e-9, demonstrating that float vertex rounding does not invent shared edges.",
+    "Actual-command observations cover seven mesh recipes: rectangle, translated rectangle, annulus, triangulated box, disconnected regions, concave pair and unwelded seam. Their logical face counts, removed counts and analytic areas match; the box volume is 24. Raw facet/vertex records are retained for future shape comparison. The merged annulus round-trips through 3DM with vertex colors and converts to a NURBS face with two loops and area eight.",
+    "The UI filter accepts meshes, surfaces and B-reps, with whole-object preselection or click selection, confirmation, cancellation and one Undo/Redo transaction. A later degenerate-mesh failure preserves an earlier staged mesh and Redo. Existing native B-rep history, stale-source and tolerance checks still pass. No-op commands preserve Redo.",
+    "Public SDK mesh probes call DuplicateMesh and Mesh.MergeAllCoplanarFaces(distance, angle), record logical and raw face counts, n-gon memberships, mass properties, bounds and raw mesh data, and dispose owned copies and mass objects. Strict inputs, no-ops, invalid/null outputs and partial failures are covered by mocks. These are not licensed Rhino parity evidence. Fresh licensed capture remains pending the recorded Wine SSPI startup blocker.",
+    "OpenNURBS static modeling sources and the C ABI are instrumented with AddressSanitizer in the optimized geometry harness. Seven geometry cases pass, followed by all three native payload/admission/precision tests after the additional boundary and remote-gap regressions. Leak detection and optional stack-use-after-return detection are disabled; bundled allocator/font/compression dependencies are not separately instrumented. No production geometric validation is bypassed. This does not establish a general memory-safety or geometry-validity certificate.",
+    "Historical source records retain their original hashes through immutable Git references, including paths moved out of viboceros-io. Eight verifiable records migrate 18 matching original hashes; 69 already-unverifiable records are unchanged. No prior parity or performance claim is upgraded."
+  ],
+  "validation": {
+    "full_geometry_io_libraries": {
+      "command": "cargo test -p viboceros-geometry -p viboceros-io -p viboceros-opennurbs --lib",
+      "geometry_passed": 2269,
+      "geometry_ignored": 8,
+      "io_passed": 224,
+      "native_admission_passed": 1,
+      "log": "docs/coplanar-mesh-regression-summary.log",
+      "note": "Summary preserves harness completion/results lines from the successful complete run. The added collinear-boundary geometry test and two additional native payload tests run separately afterward."
+    },
+    "final_boundary_geometry": {
+      "command": "cargo test -p viboceros-geometry hole_boundary_starting -- --nocapture",
+      "passed": 1,
+      "log": "docs/coplanar-mesh-boundary.log"
+    },
+    "io_all_tests": {
+      "command": "cargo test -p viboceros-io --tests",
+      "passed": 226,
+      "library": 224,
+      "integration": 2,
+      "log": "docs/coplanar-mesh-io-summary.log"
+    },
+    "portable_ui_commands": {
+      "command": "cargo test -p viboceros-command -p viboceros coplanar_faces:: -- --nocapture",
+      "passed": 7,
+      "command_tests": 4,
+      "ui": 3,
+      "log": "docs/coplanar-mesh-ui.log"
+    },
+    "native_ui_commands": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib coplanar_faces:: -- --nocapture",
+      "passed": 12,
+      "command_tests": 8,
+      "ui": 3,
+      "brep_oracle": 1,
+      "log": "docs/coplanar-mesh-native-ui.log"
+    },
+    "mesh_oracle": {
+      "command": "cargo test -p viboceros-oracle --lib coplanar_mesh:: -- --nocapture",
+      "passed": 1,
+      "recipes": 7
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_coplanar_mesh tools.rhino_oracle.test_coplanar_faces tools.rhino_oracle.test_chamfer_edge tools.rhino_oracle.test_blend_edge tools.rhino_oracle.test_shell tools.rhino_oracle.test_fillet_edge_probe tools.rhino_oracle.test_client -q",
+      "passed": 38
+    },
+    "clippy": {
+      "command": "cargo clippy -p viboceros-opennurbs -p viboceros-geometry -p viboceros-io -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings",
+      "status": "passed",
+      "final_native_test_recheck": "passed"
+    },
+    "cpp_warnings": {
+      "command": "c++ -std=c++17 -DON_CMAKE_BUILD -isystem third_party/opennurbs -Icrates/viboceros-opennurbs/native -Wall -Wextra -Werror -fsyntax-only crates/viboceros-opennurbs/native/mesh_modeling.cpp",
+      "status": "passed"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    "native_sanitizer": {
+      "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-geometry -p viboceros-opennurbs coplanar_merge:: -- --nocapture",
+      "passed": 7,
+      "log": "docs/coplanar-mesh-asan.log",
+      "leak_detection": false,
+      "stack_use_after_return_detection": false
+    },
+    "final_native_sanitizer": {
+      "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-opennurbs --lib -- --nocapture",
+      "passed": 3,
+      "log": "docs/coplanar-mesh-admission-asan.log"
+    },
+    "cli_capture": {
+      "command": "cargo run -p viboceros-oracle -- tools/rhino_oracle/fixtures/coplanar_mesh.json tools/rhino_oracle/observations/coplanar_mesh_viboceros.json",
+      "recipes_completed": 7
+    }
+  },
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "3d9de2fecd4d226d3f35ad2fcc0a83311dc3c39d74177db1bfe3ca4ce3720815",
+    "crates/viboceros-command/src/coplanar_faces.rs": "a6ad386ad81a59b9dd70b7c2c7c4563938fa73beecdcecfe71ba3d7f29f533ee",
+    "crates/viboceros-command/src/coplanar_faces/tests.rs": "c8a5e6b7269692b7610156b04174c69a8ed5ec0d79d02e92be4bcbc3f01da36b",
+    "crates/viboceros-command/src/lib.rs": "d9fce7b967800abdc4d8f1b6f3804ebe44d9a13f2d5981a4de14e04cd47adab9",
+    "crates/viboceros-command/src/object_selection.rs": "78e7c0c8b48bd3f8e38dc30e9c43051deab0c1fa67db1c1bc82b399269269b13",
+    "crates/viboceros-geometry/Cargo.toml": "d94db7dfc20e4c5cc4a375cd77d197d11ee10d51054ac6551c1cb69e9316ee5c",
+    "crates/viboceros-geometry/src/brep.rs": "d16111047e0cde91449d52eeb84ec250553e440e2c4d0f8fe3beee87bb69d614",
+    "crates/viboceros-geometry/src/error.rs": "fb3af2bc623a781134de4d83c3839d3732074b03ecb4b117185057f8eb9b3403",
+    "crates/viboceros-geometry/src/mesh.rs": "cb1aedce230c4987aab9db6e3ffafbaf1536ad0540d78ee4aff9dedbad5b38b6",
+    "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "8868c335df2e47c4e7ec1619e072569df3101c37592180fd6ec79fc28da68b6d",
+    "crates/viboceros-geometry/src/mesh/coplanar_merge/tests.rs": "f19c9997340c4a98c219cc37e95e07ff2dc19db87b83c37b5ba274e1ff0d28ae",
+    "crates/viboceros-geometry/src/mesh/ngon.rs": "2dcd7295247c7a899b42e278096dfcdefe20851c091c0d61280dc421428f5aae",
+    "crates/viboceros-geometry/src/mesh/planar_ngons.rs": "40c4935fcf02147ca1d30407cffcfe0547b54b370aba12498b31d337cb440444",
+    "crates/viboceros-io/Cargo.toml": "870fbde2f3e35fb119d12df6c61c0a1a7b809f85005bf6a9583f3c04c7802484",
+    "crates/viboceros-io/src/lib.rs": "1beea54ccc578b02b3a05425abef8fed737d62c7b5b7ed555ce08f6ecb530fcb",
+    "crates/viboceros-io/tests/coplanar_mesh.rs": "43030b4f948bf930c19d9c32fd9ded4180c5b77a0fa0b651f0ce998ff59787e9",
+    "crates/viboceros-opennurbs/Cargo.toml": "9b668e8fae591bcb025e5286981dd05289192abff586834fe219a578c9e1af30",
+    "crates/viboceros-opennurbs/build.rs": "a2c0acc2fa3edecd21634997589c9d8dd9c285afe865785214a87d478d1e5b7b",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "16c59be64e7363f10760f19af8a389f6ef0f9e5a761bffba02e9e4cb8e2e40bc",
+    "crates/viboceros-opennurbs/native/instance_read.h": "3ed51ad31eb99dba15b7a6141815610b8ac4ab6b8c642a6d4855fc5121049246",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "6096f85f6c8540f541f5bfa0b3c2d4614f937b70b982063e55b284c9ee5cd5d3",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "9de0680f213363cd4bbf89fa3b373cd5060ae536c31be4b7bb22a63376f8ef33",
+    "crates/viboceros-opennurbs/native/rational_coordinates.h": "17e5de0eeca81533cbe324ad27d42f75af400eb1dec1b0c1b2827b676cc2e565",
+    "crates/viboceros-opennurbs/native/structural_blocks.h": "6505a2fc0916ad05da67db6d42202bd4cc8d5ed92779dc0e177141defd231078",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.cpp": "f0e9c377c1edb7fce3663d82a8640cc0bced90dd7ec2067b2ecd106ce4350921",
+    "crates/viboceros-opennurbs/native/viboceros_opennurbs.h": "36d1fbc6bbad0fee104e35aef1b1367bede4cffabeab271ff4755f663f51afc9",
+    "crates/viboceros-opennurbs/src/lib.rs": "25aff4664516d0fc07e744f1bda3268397341fbdef7624a98262bfa29cee5871",
+    "crates/viboceros-opennurbs/src/mesh.rs": "46a77b0909d6fd919d266b7f69047567722a5f520c88ce9971153663acf13131",
+    "crates/viboceros-oracle/src/coplanar_faces.rs": "4187db205c2f62008a30a3662945b28c66434337ba9156e00afc9a71e8cabc43",
+    "crates/viboceros-oracle/src/coplanar_mesh.rs": "39f7f1270517e18c43e5b43b1deceedfcfcd502d1b2e4f360759cf253151aa4c",
+    "crates/viboceros-oracle/src/lib.rs": "92ae431b87f97ef080946778882745f7fb23898ba296bf7ee00ab1783416f8d1",
+    "docs/architecture.md": "02d47721106ce617b1ceb822f25fef7f05b1937a7cc2cc2822642be4f39b58dc",
+    "docs/commands/merge-all-coplanar-faces.md": "aa04b24c29242a3c15087f6213945747bcd7d59c1453a7e6a103ea48c2da0e10",
+    "src/app/tests/coplanar_faces.rs": "9c17c479d67559168e64d366e9ffc2b810fc257c8d410ee8aa280225afd8966d",
+    "third_party/patches/opennurbs-merge-face-holes.cmake": "69bd08fff51aae006a0c8bd02c153aa1f054ab62c02bc1c5250442475dabae8e",
+    "tools/rhino_oracle/coplanar_faces_probe.py": "07d192737974514ac82bb6fbe673ae11586e33e2179c467ad67844d29e682f3a",
+    "tools/rhino_oracle/coplanar_mesh_probe.py": "2f045f33b962cc63ebc63291f8397915e37a20a0c694b8d25620cc8acb866393",
+    "tools/rhino_oracle/fixtures/coplanar_mesh.json": "888c5fd2817a1fbfed9921ba3819d341cf48cdc5cd514c29dc2c7649d1952b45",
+    "tools/rhino_oracle/test_coplanar_mesh.py": "acd18b1a5a31a8b7b24e2570fc8951f6bf532bad317383664f1a23e0d3c8b566"
+  },
+  "evidence_sha256": {
+    "docs/coplanar-mesh-admission-asan.log": "ac787d58d6ea757a20eca13e514f72296277cf498b3c6df9e61b7d7bcd7e77bf",
+    "docs/coplanar-mesh-asan.log": "e9b0c56fa1a3748922a3800e95a851b9147f46a54bb24a87b465fececf8a0fe3",
+    "docs/coplanar-mesh-boundary.log": "1347f2554dfa6326b0c44b302b785953be83d1b79eb6b42ece8b63942f5bd23e",
+    "docs/coplanar-mesh-hole-baseline.log": "d81af14a089ab7a36c221e1417fa58a590e725d8ce0b7f5ea1be61a28ef6bd93",
+    "docs/coplanar-mesh-io-summary.log": "74f25e143a13cb16302e29b9cecfa6a9bf08ac62b7df6a9b181016a2e148e04f",
+    "docs/coplanar-mesh-native-ui.log": "d18cf0b2c15e417ae423af3f3651b64573367f8adef18e685a6d5f7a2db1e0c3",
+    "docs/coplanar-mesh-regression-summary.log": "9f62df2c577de51b6f7e1d32a65a161b5d0e0a0fcde5cb200aea4ed130219d25",
+    "docs/coplanar-mesh-ui.log": "9cfa419c2a894501b00351c3f568827771b23e927139f92fad67363b5e3953d8",
+    "tools/rhino_oracle/observations/coplanar_mesh_viboceros.json": "76214c6eb51cf266de6c22e1d243bd294a0baf84c3bf237a1db00b9ab4b5c966"
+  }
+}

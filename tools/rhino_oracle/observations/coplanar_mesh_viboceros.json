@@ -1,0 +1,571 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "rectangle",
+      "value": {
+        "area": 12.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_closed": false,
+        "logical_face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "ngon_count": 1,
+        "ngon_face_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "vertex_count": 4,
+        "volume": null
+      },
+      "elapsed_ns": 1823030
+    },
+    {
+      "id": "shifted",
+      "value": {
+        "area": 12.0,
+        "bounds": [
+          [
+            1000000.0,
+            -2000000.0,
+            3000000.0
+          ],
+          [
+            1000004.0,
+            -1999997.0,
+            3000000.0
+          ]
+        ],
+        "face_count": 1,
+        "is_closed": false,
+        "logical_face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              1000000.0,
+              -2000000.0,
+              3000000.0
+            ],
+            [
+              1000004.0,
+              -2000000.0,
+              3000000.0
+            ],
+            [
+              1000004.0,
+              -1999997.0,
+              3000000.0
+            ],
+            [
+              1000000.0,
+              -1999997.0,
+              3000000.0
+            ]
+          ]
+        },
+        "ngon_count": 1,
+        "ngon_face_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "vertex_count": 4,
+        "volume": null
+      },
+      "elapsed_ns": 1576709
+    },
+    {
+      "id": "annulus",
+      "value": {
+        "area": 8.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            3.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 8,
+        "is_closed": false,
+        "logical_face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              5
+            ],
+            [
+              0,
+              5,
+              4
+            ],
+            [
+              1,
+              2,
+              6
+            ],
+            [
+              1,
+              6,
+              5
+            ],
+            [
+              2,
+              3,
+              7
+            ],
+            [
+              2,
+              7,
+              6
+            ],
+            [
+              3,
+              0,
+              4
+            ],
+            [
+              3,
+              4,
+              7
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              1.0,
+              2.0,
+              0.0
+            ]
+          ]
+        },
+        "ngon_count": 1,
+        "ngon_face_counts": [
+          8
+        ],
+        "removed_faces": 7,
+        "vertex_count": 8,
+        "volume": null
+      },
+      "elapsed_ns": 1691205
+    },
+    {
+      "id": "box",
+      "value": {
+        "area": 52.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0,
+            4.0
+          ]
+        ],
+        "face_count": 6,
+        "is_closed": true,
+        "logical_face_count": 6,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              3,
+              2,
+              1
+            ],
+            [
+              4,
+              5,
+              6,
+              7
+            ],
+            [
+              0,
+              1,
+              5,
+              4
+            ],
+            [
+              1,
+              2,
+              6,
+              5
+            ],
+            [
+              2,
+              3,
+              7,
+              6
+            ],
+            [
+              3,
+              0,
+              4,
+              7
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              4.0
+            ],
+            [
+              2.0,
+              0.0,
+              4.0
+            ],
+            [
+              2.0,
+              3.0,
+              4.0
+            ],
+            [
+              0.0,
+              3.0,
+              4.0
+            ]
+          ]
+        },
+        "ngon_count": 6,
+        "ngon_face_counts": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "removed_faces": 6,
+        "vertex_count": 8,
+        "volume": 24.0
+      },
+      "elapsed_ns": 1844054
+    },
+    {
+      "id": "disconnected",
+      "value": {
+        "area": 2.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "face_count": 2,
+        "is_closed": false,
+        "logical_face_count": 2,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              5,
+              6,
+              7
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              1.0,
+              0.0
+            ],
+            [
+              3.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "ngon_count": 2,
+        "ngon_face_counts": [
+          1,
+          1
+        ],
+        "removed_faces": 2,
+        "vertex_count": 8,
+        "volume": null
+      },
+      "elapsed_ns": 863746
+    },
+    {
+      "id": "concave",
+      "value": {
+        "area": 1.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            2.0,
+            2.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_closed": false,
+        "logical_face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.5,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              2.0,
+              0.0
+            ]
+          ]
+        },
+        "ngon_count": 1,
+        "ngon_face_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "vertex_count": 4,
+        "volume": null
+      },
+      "elapsed_ns": 818738
+    },
+    {
+      "id": "seam",
+      "value": {
+        "area": 12.0,
+        "bounds": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            3.0,
+            0.0
+          ]
+        ],
+        "face_count": 1,
+        "is_closed": false,
+        "logical_face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.0,
+              3.0,
+              0.0
+            ],
+            [
+              0.0,
+              3.0,
+              0.0
+            ]
+          ]
+        },
+        "ngon_count": 1,
+        "ngon_face_counts": [
+          1
+        ],
+        "removed_faces": 1,
+        "vertex_count": 4,
+        "volume": null
+      },
+      "elapsed_ns": 811442
+    }
+  ]
+}

@@ -19,6 +19,7 @@ pub enum ObjectSelectionFilter {
     Mesh,
     Smooth,
     PolygonCount,
+    CoplanarFaces,
     Curves,
     ApplyCurves,
     ProjectTargets,
@@ -86,7 +87,7 @@ impl ObjectSelectionFilter {
             Self::HiddenObjects => !object.attributes().is_visible(),
             Self::LockedObjects => object.attributes().is_locked(),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
-            Self::PolygonCount => matches!(
+            Self::PolygonCount | Self::CoplanarFaces => matches!(
                 geometry,
                 Geometry::Mesh(_) | Geometry::NurbsSurface(_) | Geometry::Brep(_)
             ),

@@ -1,0 +1,10 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.71s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_geometry-f7a44ebfd2db35f0)
+
+running 1 test
+test mesh::coplanar_merge::tests::hole_boundary_starting_at_a_collinear_vertex_cannot_be_the_outer_loop ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2277 filtered out; finished in 0.01s

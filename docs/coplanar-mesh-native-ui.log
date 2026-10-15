@@ -1,0 +1,95 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 06s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ee58e91200cf7db8)
+
+running 3 tests
+test app::tests::coplanar_faces::coplanar_mesh_getter_preselection_picks_cancel_and_history ... ok
+test app::tests::coplanar_faces::coplanar_getter_filters_picks_rejects_options_and_cancels ... ok
+test app::tests::coplanar_faces::coplanar_getter_commits_once_for_postselection_and_preselection ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1219 filtered out; finished in 0.05s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-b6b3368de7d6e19b)
+
+running 8 tests
+test coplanar_faces::tests::coplanar_merge_options_and_source_filter_are_strict ... ok
+test coplanar_faces::tests::mesh_coplanar_merge_preserves_colors_groups_and_atomic_history ... ok
+test coplanar_faces::tests::later_degenerate_mesh_failure_preserves_staged_mesh_and_redo ... ok
+test coplanar_faces::tests::coplanar_merge_native_failure_does_not_commit_earlier_sources ... ok
+test coplanar_faces::tests::coplanar_merge_later_failure_and_stale_sources_preserve_history ... ok
+test coplanar_faces::tests::coplanar_merge_noop_and_stale_tolerance_preserve_history ... ok
+test coplanar_faces::tests::coplanar_merge_preserves_attributes_groups_selection_and_one_history_step ... ok
+test coplanar_faces::tests::coplanar_merge_bounds_work_before_native_import ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 1439 filtered out; finished in 0.35s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_oracle-e5396afe9629b735)
+
+running 1 test
+test coplanar_faces::tests::coplanar_fixtures_match_independent_regions_and_integrals ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 515 filtered out; finished in 0.49s
+
+     Running unittests src/main.rs (target/debug/deps/viboceros_oracle-b25d546aa82046f5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/block_workflow.rs (target/debug/deps/block_workflow-6258385fbdf5da31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+     Running tests/contour_brep.rs (target/debug/deps/contour_brep-4b327d1a5f58e251)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/contour_command.rs (target/debug/deps/contour_command-4cc885fae4e6fd58)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide.rs (target/debug/deps/divide-c7402d1576b6b99c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_curved.rs (target/debug/deps/divide_curved-96e72cf353fdfd45)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/divide_rational_line.rs (target/debug/deps/divide_rational_line-41f0d062de178d1b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/divide_turnaround.rs (target/debug/deps/divide_turnaround-70f07473a9cb4699)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/edge_analysis.rs (target/debug/deps/edge_analysis-5716370d26691a31)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/section_command.rs (target/debug/deps/section_command-58d0002325d62559)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s

@@ -7,8 +7,9 @@ impl TriangleMesh {
     }
 
     /// Attaches logical polygons without changing the underlying mesh faces.
-    /// An n-gon must cover an edge-connected face group with one oriented
-    /// boundary cycle; no mesh face may belong to more than one n-gon.
+    /// An n-gon covers an edge-connected, compatibly oriented face group.
+    /// The stored cycle is its outer boundary; holes remain in the face table.
+    /// No mesh face may belong to more than one n-gon.
     pub fn try_with_ngons(mut self, ngons: Vec<MeshNgon>) -> Result<Self, GeometryError> {
         let mut occupied_faces = BTreeSet::new();
         for (index, ngon) in ngons.iter().enumerate() {
@@ -83,8 +84,8 @@ impl TriangleMesh {
         self.try_with_ngons(ngons)
     }
 
-    /// Keeps overlays whose unchanged face memberships still form one valid
-    /// raw-edge-connected boundary after a vertex or face rewrite.
+    /// Keeps overlays whose unchanged face memberships still form a valid
+    /// raw-edge-connected, oriented region after a vertex or face rewrite.
     pub(super) fn retain_valid_ngons_for_same_faces(mut self, source: &[MeshNgon]) -> Self {
         if source.is_empty() {
             return self;
@@ -121,6 +122,46 @@ impl TriangleMesh {
     }
 
     fn ngon_boundary(&self, faces: &[u32]) -> Option<Vec<u32>> {
+        let loops = self.ngon_boundary_loops(faces)?;
+        if loops.len() == 1 {
+            return loops.into_iter().next();
+        }
+        // Reuse OpenNURBS' outer-loop classification for regions with holes.
+        // Only copy the used vertices, avoiding mesh-sized work per n-gon.
+        let mut map = BTreeMap::<u32, u32>::new();
+        let mut originals = Vec::new();
+        let mut native_faces = Vec::new();
+        for &f in faces {
+            let mut face = [0; 4];
+            let indices = self.faces[f as usize].indices();
+            for j in 0..4 {
+                let raw = indices[j.min(indices.len() - 1)];
+                let next = map.len() as u32;
+                face[j] = *map.entry(raw).or_insert_with(|| {
+                    originals.push(raw);
+                    next
+                });
+            }
+            native_faces.push(face);
+        }
+        let data = viboceros_opennurbs::MeshData {
+            vertices: originals
+                .iter()
+                .map(|&v| self.vertices[v as usize].to_array())
+                .collect(),
+            faces: native_faces,
+            ..Default::default()
+        };
+        let boundary = viboceros_opennurbs::mesh_outer_boundary(&data).ok()?;
+        Some(
+            boundary
+                .into_iter()
+                .map(|v| originals[v as usize])
+                .collect(),
+        )
+    }
+
+    pub(crate) fn ngon_boundary_loops(&self, faces: &[u32]) -> Option<Vec<Vec<u32>>> {
         if faces.is_empty() || faces.iter().copied().collect::<BTreeSet<_>>().len() != faces.len() {
             return None;
         }
@@ -159,17 +200,25 @@ impl TriangleMesh {
         if next.len() < 3 || next.len() != incoming.len() {
             return None;
         }
-        let start = *next.keys().next()?;
-        let mut boundary = Vec::with_capacity(next.len());
-        let mut current = start;
-        for _ in 0..next.len() {
-            boundary.push(current);
-            current = *next.get(&current)?;
-        }
-        if current != start
-            || boundary.iter().copied().collect::<BTreeSet<_>>().len() != boundary.len()
-        {
-            return None;
+        let mut unseen = next.keys().copied().collect::<BTreeSet<_>>();
+        let mut loops = Vec::new();
+        while let Some(&start) = unseen.first() {
+            let mut current = start;
+            let mut boundary = Vec::new();
+            loop {
+                if !unseen.remove(&current) {
+                    return None;
+                }
+                boundary.push(current);
+                current = *next.get(&current)?;
+                if current == start {
+                    break;
+                }
+            }
+            if boundary.len() < 3 {
+                return None;
+            }
+            loops.push(boundary);
         }
         let mut visited = BTreeSet::from([faces[0]]);
         let mut pending = VecDeque::from([faces[0]]);
@@ -180,7 +229,7 @@ impl TriangleMesh {
                 }
             }
         }
-        (visited.len() == faces.len()).then_some(boundary)
+        (visited.len() == faces.len()).then_some(loops)
     }
 }
 

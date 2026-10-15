@@ -13,6 +13,7 @@ members = [
     "crates/viboceros-drafting",
     "crates/viboceros-geometry",
     "crates/viboceros-io",
+    "crates/viboceros-opennurbs",
     "crates/viboceros-oracle",
     "crates/viboceros-smlib",
 ]
@@ -43,6 +44,7 @@ viboceros-document = { path = "crates/viboceros-document" }
 viboceros-drafting = { path = "crates/viboceros-drafting" }
 viboceros-geometry = { path = "crates/viboceros-geometry" }
 viboceros-io = { path = "crates/viboceros-io" }
+viboceros-opennurbs = { path = "crates/viboceros-opennurbs" }
 
 [patch.crates-io]
 monstertruck-io = { path = "third_party/monstertruck-io" }

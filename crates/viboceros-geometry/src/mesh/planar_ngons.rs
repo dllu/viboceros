@@ -1,6 +1,5 @@
 //! Find single-boundary planar n-gons without changing mesh faces or vertices.
-//! Raw-edge adjacency and first-face plane checks follow the public
-//! ON_MeshNgon::FindPlanarNgons algorithm in third_party/opennurbs.
+//! Uses the public ON_MeshNgon::FindPlanarNgons implementation in OpenNURBS.
 
 use super::*;
 
@@ -13,94 +12,15 @@ impl TriangleMesh {
         if !planar_tolerance.is_finite() || planar_tolerance < 0.0 {
             return Err(GeometryError::InvalidMeshNgonPlanarityTolerance);
         }
-        let mut occupied = vec![false; self.faces.len()];
-        for ngon in &self.ngons {
-            for &face in ngon.faces() {
-                occupied[face as usize] = true;
-            }
-        }
-        let normals = self.polygon_face_normals()?;
-        let mut edges = BTreeMap::<(u32, u32), Vec<(usize, bool)>>::new();
-        for (face_index, face) in self.faces.iter().enumerate() {
-            if occupied[face_index] {
-                continue;
-            }
-            let indices = face.indices();
-            for (&from, &to) in indices
-                .iter()
-                .zip(indices.iter().cycle().skip(1))
-                .take(indices.len())
-            {
-                edges
-                    .entry((from.min(to), from.max(to)))
-                    .or_default()
-                    .push((face_index, from < to));
-            }
-        }
-        let mut neighbors = vec![Vec::<usize>::new(); self.faces.len()];
-        for uses in edges.values() {
-            if let [(first, first_forward), (second, second_forward)] = uses.as_slice()
-                && first_forward != second_forward
-                && first != second
-            {
-                neighbors[*first].push(*second);
-                neighbors[*second].push(*first);
-            }
-        }
-        let mut visited = occupied;
-        let mut additions = Vec::new();
-        for seed in 0..self.faces.len() {
-            if visited[seed] {
-                continue;
-            }
-            let normal = normals[seed].as_vector();
-            let origin = self.vertices[self.faces[seed].indices()[0] as usize];
-            if !self.face_fits_ngon_plane(seed, normal, origin, planar_tolerance) {
-                continue;
-            }
-            let mut queue = VecDeque::from([seed]);
-            let mut faces = Vec::new();
-            visited[seed] = true;
-            while let Some(face) = queue.pop_front() {
-                faces.push(face as u32);
-                for &other in &neighbors[face] {
-                    if visited[other]
-                        || normals[other].as_vector().dot(normal)? <= 0.0
-                        || !self.face_fits_ngon_plane(other, normal, origin, planar_tolerance)
-                    {
-                        continue;
-                    }
-                    visited[other] = true;
-                    queue.push_back(other);
-                }
-            }
-            if faces.len() >= 2 {
-                faces.sort_unstable();
-                if let Some(ngon) = self.ngon_from_faces(faces) {
-                    additions.push(ngon);
-                }
-            }
-        }
-        if additions.is_empty() {
+        if self.faces.is_empty() {
             return Ok((self.clone(), 0));
         }
-        let count = additions.len();
-        let mut ngons = self.ngons.clone();
-        ngons.extend(additions);
-        self.clone().try_with_ngons(ngons).map(|mesh| (mesh, count))
-    }
-
-    fn face_fits_ngon_plane(
-        &self,
-        face: usize,
-        normal: crate::Vector3,
-        origin: Point3,
-        tolerance: Real,
-    ) -> bool {
-        self.faces[face].indices().iter().all(|&index| {
-            let distance = normal.dot_point_difference(self.vertices[index as usize], origin);
-            distance.is_finite() && distance.abs() <= tolerance
-        })
+        let (result, count) =
+            viboceros_opennurbs::add_planar_mesh_ngons(&self.open_nurbs_data(), planar_tolerance)?;
+        if count == 0 {
+            return Ok((self.clone(), 0));
+        }
+        Ok((Self::from_open_nurbs_data(result)?, count))
     }
 
     /// Removes all logical n-gon overlays, retaining the stored triangles,

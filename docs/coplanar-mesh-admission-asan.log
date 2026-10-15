@@ -1,0 +1,10 @@
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+    Finished `release` profile [optimized] target(s) in 3.50s
+     Running unittests src/lib.rs (target/release/deps/viboceros_opennurbs-ee3335b2f4a5a06d)
+
+running 3 tests
+test mesh::precision_tests::sub_float_gaps_at_remote_origins_do_not_become_shared_edges ... ok
+test mesh::tests::malformed_native_inputs_fail_without_mutating_the_source ... ok
+test mesh::hole_tests::collinear_inner_boundary_starts_choose_the_outer_loop_in_all_planes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

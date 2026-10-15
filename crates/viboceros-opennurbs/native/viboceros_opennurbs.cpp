@@ -80,11 +80,7 @@ struct BridgeObject {
 
 struct BridgeDefinition { std::string name; size_t first_object=0; size_t object_count=0; };
 
-std::once_flag g_open_nurbs_once;
-
-void begin_open_nurbs() {
-  std::call_once(g_open_nurbs_once, [] { ON::Begin(); });
-}
+void begin_open_nurbs() { vibo_begin_open_nurbs(); }
 
 std::string utf8(const ON_wString& value) {
   const ON_String converted(value);

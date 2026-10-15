@@ -11,6 +11,9 @@ pub(super) fn run(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let source = f.source.geometry(tolerance)?;
+    if matches!(&source, Geometry::Mesh(_)) {
+        return crate::coplanar_mesh::run(&source, iterations, tolerance);
+    }
     let Geometry::Brep(before) = &source else {
         return Err(ProbeError::FixtureInvariant(
             "Coplanar merge requires a B-rep",

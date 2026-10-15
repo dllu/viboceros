@@ -1,4 +1,5 @@
 use super::*;
+use viboceros_geometry::MeshFace;
 fn split_rectangle() -> Brep {
     let t = Tolerance::DEFAULT;
     let mesh = TriangleMesh::try_new(
@@ -21,7 +22,7 @@ fn coplanar_merge_options_and_source_filter_are_strict() {
         .object_selection_prompt("MergeAllCoplanarFaces")
         .unwrap()
         .unwrap();
-    assert_eq!(p.filter, ObjectSelectionFilter::SurfaceComponents);
+    assert_eq!(p.filter, ObjectSelectionFilter::CoplanarFaces);
     assert!(
         r.object_selection_prompt("MergeAllCoplanarFaces Tolerance=1")
             .is_err()
@@ -196,4 +197,83 @@ fn coplanar_merge_bounds_work_before_native_import() {
         .unwrap_err();
     assert!(error.to_string().contains("362 faces"));
     assert_eq!(format!("{d:?}"), before);
+}
+
+#[test]
+fn mesh_coplanar_merge_preserves_colors_groups_and_atomic_history() {
+    let mut d = Document::default();
+    let mesh = TriangleMesh::try_new(
+        vec![
+            Point3::try_new(0., 0., 0.).unwrap(),
+            Point3::try_new(4., 0., 0.).unwrap(),
+            Point3::try_new(4., 3., 0.).unwrap(),
+            Point3::try_new(0., 3., 0.).unwrap(),
+        ],
+        vec![[0, 1, 2], [0, 2, 3]],
+        d.tolerance(),
+    )
+    .unwrap()
+    .try_with_vertex_colors(Some(vec![[1, 2, 3, 4]; 4]))
+    .unwrap();
+    let id = d.add_geometry(Geometry::Mesh(mesh)).unwrap();
+    let group = d.add_group(Some("Panel".into()), [id]).unwrap();
+    d.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let before = d.object(id).unwrap().clone();
+    let r = CommandRegistry::with_builtins();
+    r.execute(&mut d, "MergeAllCoplanarFaces").unwrap();
+    let after = d.object(id).unwrap().clone();
+    let Geometry::Mesh(m) = after.geometry() else {
+        panic!()
+    };
+    assert_eq!(m.face_count(), 1);
+    assert_eq!(m.vertex_colors().unwrap(), &[[1, 2, 3, 4]; 4]);
+    assert_eq!(before.attributes(), after.attributes());
+    assert!(d.is_selected(id));
+    assert_eq!(
+        d.group(group).unwrap().members().collect::<Vec<_>>(),
+        vec![id]
+    );
+    assert_eq!(d.undo_label(), Some("MergeAllCoplanarFaces"));
+    r.execute(&mut d, "Undo").unwrap();
+    assert_eq!(d.object(id), Some(&before));
+    r.execute(&mut d, "Redo").unwrap();
+    assert_eq!(d.object(id), Some(&after));
+    r.execute(&mut d, "Point 9,9,9").unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    d.select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    let state = format!("{d:?}");
+    r.execute(&mut d, "MergeAllCoplanarFaces").unwrap();
+    assert_eq!(format!("{d:?}"), state);
+    assert!(d.can_redo());
+}
+
+#[test]
+fn later_degenerate_mesh_failure_preserves_staged_mesh_and_redo() {
+    let mut d = Document::default();
+    let t = d.tolerance();
+    let p = |x, y| Point3::try_new(x, y, 0.).unwrap();
+    let good = TriangleMesh::try_new(
+        vec![p(0., 0.), p(1., 0.), p(1., 1.), p(0., 1.)],
+        vec![[0, 1, 2], [0, 2, 3]],
+        t,
+    )
+    .unwrap();
+    let bad = TriangleMesh::try_from_face_records(
+        vec![p(0., 0.), p(1., 0.), p(2., 0.), p(0., 1.)],
+        vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Triangle([0, 2, 3])],
+    )
+    .unwrap();
+    let first = d.add_geometry(Geometry::Mesh(good)).unwrap();
+    let second = d.add_geometry(Geometry::Mesh(bad)).unwrap();
+    let r = CommandRegistry::with_builtins();
+    r.execute(&mut d, "Point 9,9,9").unwrap();
+    r.execute(&mut d, "Undo").unwrap();
+    d.select_objects_direct([first, second], SelectionMode::Replace)
+        .unwrap();
+    let before = format!("{d:?}");
+    assert!(r.execute(&mut d, "MergeAllCoplanarFaces").is_err());
+    assert_eq!(format!("{d:?}"), before);
+    assert!(d.can_redo());
 }

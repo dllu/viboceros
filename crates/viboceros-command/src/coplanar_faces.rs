@@ -19,18 +19,21 @@ impl CoplanarMergeSelection {
             if !doc.is_object_selectable(object.id()) {
                 return Err(CommandError::Usage(USAGE));
             }
-            let source = match object.geometry() {
-                Geometry::Brep(b) => Some(b),
-                Geometry::NurbsSurface(_) => None,
+            let merged = match object.geometry() {
+                Geometry::Brep(b) if b.faces().len() > 1 => {
+                    merge(b, doc.tolerance())?.map(|(b, n)| (Geometry::Brep(b), n))
+                }
+                Geometry::Brep(_) | Geometry::NurbsSurface(_) => None,
+                Geometry::Mesh(m) => {
+                    let (result, n) = m.merge_coplanar_faces(doc.tolerance())?;
+                    (n > 0).then_some((Geometry::Mesh(result), n))
+                }
                 _ => return Err(CommandError::UnsupportedCoplanarMergeGeometry),
             };
             sources.push((object.id(), object.geometry_snapshot().clone()));
-            if let Some(b) = source
-                && b.faces().len() > 1
-                && let Some((result, count)) = merge(b, doc.tolerance())?
-            {
-                removed += count;
-                replacements.push((object.id(), Geometry::Brep(result)));
+            if let Some((geometry, n)) = merged {
+                removed += n;
+                replacements.push((object.id(), geometry));
             }
         }
         if sources.is_empty() {
@@ -114,7 +117,7 @@ impl Command for MergeAllCoplanarFacesCommand {
         require_consumed(args, 0, USAGE)?;
         Ok(Some(ObjectSelectionPrompt {
             command: USAGE,
-            filter: ObjectSelectionFilter::SurfaceComponents,
+            filter: ObjectSelectionFilter::CoplanarFaces,
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
             options: vec![],
             menus: vec![],

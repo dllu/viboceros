@@ -6,6 +6,12 @@ The dependency direction runs from mathematical primitives through document
 state and commands to the user interface. Geometry does not depend on the UI,
 file formats, or command parsing.
 
+The `viboceros-opennurbs` crate owns the shared OpenNURBS build and C ABI.
+Its mesh adapters have no dependency on the Rust geometry or file-format crates;
+geometry uses them for planar n-gons and coplanar face merging. File readers and
+writers remain in `viboceros-io`, which links the same native archive. This avoids
+a geometry-to-I/O dependency and builds OpenNURBS once per Cargo configuration.
+
 Native modeling uses the separate `viboceros-smlib` adapter around usd-brep's
 SMLib kernel. Rust retains document geometry and metadata; the adapter transfers
 validated NURBS topology, serializes kernel calls and uses copied operands.

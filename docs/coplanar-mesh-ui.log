@@ -1,0 +1,27 @@
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+   Compiling viboceros-document v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-document)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-drafting v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-drafting)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 17s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 3 tests
+test app::tests::coplanar_faces::coplanar_getter_filters_picks_rejects_options_and_cancels ... ok
+test app::tests::coplanar_faces::coplanar_mesh_getter_preselection_picks_cancel_and_history ... ok
+test app::tests::coplanar_faces::coplanar_getter_retains_picks_when_native_kernel_is_unavailable ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1209 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 4 tests
+test coplanar_faces::tests::coplanar_merge_options_and_source_filter_are_strict ... ok
+test coplanar_faces::tests::mesh_coplanar_merge_preserves_colors_groups_and_atomic_history ... ok
+test coplanar_faces::tests::later_degenerate_mesh_failure_preserves_staged_mesh_and_redo ... ok
+test coplanar_faces::tests::coplanar_merge_portable_decline_preserves_document ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1369 filtered out; finished in 0.02s

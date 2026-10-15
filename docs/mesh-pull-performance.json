@@ -52,8 +52,6 @@
     "Fresh Rhino comparison remains unavailable because of the existing Wine SSPI issue."
   ],
   "source_sha256": {
-    "Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
-    "Cargo.lock": "eccc1b22dbb16e80b61bd03d8f7d98dffbfc882b8c13dd594f199754cec05d15",
     "crates/viboceros-geometry/src/mesh/projection/pull.rs": "b1cc846d6bc8be2467f102d8839b6b3f92de6f0b242a278fd9292054eebcb856",
     "crates/viboceros-geometry/src/mesh/projection/pull/linear.rs": "89cf67edd423e655bfad4a65e8f7706597247f436b471a945a3995b778befba6",
     "crates/viboceros-geometry/src/mesh/projection/pull/partition.rs": "1f055db51f8d8990032b21a8e5c878e302389763bbb5f90a953adf23bc507d0d",
@@ -74,5 +72,9 @@
   "output_sha256": {
     "tools/rhino_oracle/observations/mesh_pull_performance_before.json": "9f6d4662e359ffb6f6148810fbb6a9635a2f9abcf892625dd81380a2f10c7236",
     "tools/rhino_oracle/observations/mesh_pull_performance_after.json": "74213c6022e29dacacd2ddee9b969877b9310e2dc5024f8ababf4c1c61fdfd90"
+  },
+  "source_git_sha256": {
+    "ef94479d0c780100fe5a5cabdb249bf160157539:Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
+    "ef94479d0c780100fe5a5cabdb249bf160157539:Cargo.lock": "eccc1b22dbb16e80b61bd03d8f7d98dffbfc882b8c13dd594f199754cec05d15"
   }
 }

@@ -36,6 +36,7 @@ mod nonplanar_quads;
 mod normals;
 mod smoothing;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
+mod coplanar_merge;
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;
@@ -438,7 +439,7 @@ fn interpolated_vertex_color(colors: &[[u8; 4]], endpoints: [u32; 2], parameter:
 }
 
 /// One logical polygon over a connected set of triangle or quad mesh faces.
-/// The oriented boundary uses raw mesh vertex indices and excludes its repeated
+/// The oriented outer boundary uses raw mesh vertex indices and excludes its repeated
 /// closing vertex. Its face indices refer to the underlying face table.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MeshNgon {

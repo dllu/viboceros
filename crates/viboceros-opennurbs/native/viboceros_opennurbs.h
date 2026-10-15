@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+void vibo_begin_open_nurbs(void);
+
 enum ViboObjectType {
   VIBO_OBJECT_POINT = 1,
   VIBO_OBJECT_LINE = 2,

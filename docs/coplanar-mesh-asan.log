@@ -1,0 +1,21 @@
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 6m 17s
+     Running unittests src/lib.rs (target/release/deps/viboceros_geometry-b224b5d66ce6650b)
+
+running 7 tests
+test mesh::coplanar_merge::tests::angular_cutoff_and_unwelded_seams_use_native_topology ... ok
+test mesh::coplanar_merge::tests::triangles_merge_as_a_quad_and_second_pass_is_unchanged ... ok
+test mesh::coplanar_merge::tests::neighboring_existing_ngons_merge_and_reversed_holes_remain_valid ... ok
+test mesh::coplanar_merge::tests::grid_keeps_interior_vertices_and_colors_and_all_boundary_wires ... ok
+test mesh::coplanar_merge::tests::cube_retains_closed_boundary_volume_and_six_regions ... ok
+test mesh::coplanar_merge::tests::concave_triangle_pairs_retain_area_for_every_face_rotation ... ok
+test mesh::coplanar_merge::tests::annulus_retains_hole_wires_and_mesh_to_nurbs_hole ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 2270 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/release/deps/viboceros_opennurbs-ee3335b2f4a5a06d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s

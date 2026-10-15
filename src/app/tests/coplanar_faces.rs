@@ -35,7 +35,7 @@ fn coplanar_getter_filters_picks_rejects_options_and_cancels() {
     assert!(app.object_prompt.is_some());
     assert_eq!(
         app.viewport_object_filter(),
-        Some(viboceros_command::ObjectSelectionFilter::SurfaceComponents)
+        Some(viboceros_command::ObjectSelectionFilter::CoplanarFaces)
     );
     for object_id in [peer, id] {
         app.apply_selection_click(SelectionClick {
@@ -91,6 +91,56 @@ fn coplanar_getter_commits_once_for_postselection_and_preselection() {
         assert!(app.object_prompt.is_none());
         let after = app.document.object(id).unwrap().clone();
         assert!(matches!(after.geometry(),Geometry::Brep(b) if b.faces().len()==1));
+        assert_eq!(app.document.undo_label(), Some("MergeAllCoplanarFaces"));
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.object(id), Some(&before));
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.object(id), Some(&after));
+    }
+}
+
+#[test]
+fn coplanar_mesh_getter_preselection_picks_cancel_and_history() {
+    for (pre, cancel) in [(false, false), (false, true), (true, false)] {
+        let mut app = test_app();
+        let t = app.document.tolerance();
+        let mesh = viboceros_geometry::TriangleMesh::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(4., 0., 0.),
+                point(4., 3., 0.),
+                point(0., 3., 0.),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            t,
+        )
+        .unwrap();
+        let id = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let before = app.document.object(id).unwrap().clone();
+        if pre {
+            app.document
+                .select_objects_direct([id], SelectionMode::Replace)
+                .unwrap();
+        }
+        enter(&mut app, "MergeAllCoplanarFaces");
+        if !pre {
+            assert!(app.object_prompt.is_some());
+            app.apply_selection_click(SelectionClick {
+                object_id: Some(id),
+                mode: SelectionMode::Replace,
+            });
+            assert_eq!(app.document.object(id), Some(&before));
+            enter(&mut app, if cancel { "Cancel" } else { "" });
+        }
+        assert!(app.object_prompt.is_none());
+        if cancel {
+            assert_eq!(app.document.object(id), Some(&before));
+            continue;
+        }
+        let after = app.document.object(id).unwrap().clone();
+        assert!(
+            matches!(after.geometry(),Geometry::Mesh(m) if m.face_count()==1 && m.visible_wireframe_lines(t).unwrap().len()==4)
+        );
         assert_eq!(app.document.undo_label(), Some("MergeAllCoplanarFaces"));
         enter(&mut app, "Undo");
         assert_eq!(app.document.object(id), Some(&before));

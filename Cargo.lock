@@ -3736,13 +3736,13 @@ dependencies = [
  "serde_json",
  "spade",
  "thiserror 2.0.20",
+ "viboceros-opennurbs",
 ]
 
 [[package]]
 name = "viboceros-io"
 version = "0.1.0"
 dependencies = [
- "cmake",
  "monstertruck",
  "num-rational",
  "num-traits",
@@ -3751,7 +3751,16 @@ dependencies = [
  "thiserror 2.0.20",
  "uuid",
  "viboceros-geometry",
+ "viboceros-opennurbs",
  "viboceros-smlib",
+]
+
+[[package]]
+name = "viboceros-opennurbs"
+version = "0.1.0"
+dependencies = [
+ "cmake",
+ "thiserror 2.0.20",
 ]
 
 [[package]]

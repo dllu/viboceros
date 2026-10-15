@@ -16956,9 +16956,7 @@ pub enum CommandError {
     ChamferEdgeRequiresNativeKernel,
     #[error("MergeAllCoplanarFaces requires the native-smlib feature for polysurfaces")]
     CoplanarMergeRequiresNativeKernel,
-    #[error(
-        "MergeAllCoplanarFaces currently supports surfaces and B-reps; mesh and SubD merging are not implemented"
-    )]
+    #[error("MergeAllCoplanarFaces requires meshes, surfaces or polysurfaces")]
     UnsupportedCoplanarMergeGeometry,
     #[error("BlendEdge requires the native-smlib feature")]
     BlendEdgeRequiresNativeKernel,
