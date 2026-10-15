@@ -55,22 +55,11 @@
     "cargo fmt --all -- --check": "passed"
   },
   "source_sha256": {
-    "crates/viboceros-command/src/lib.rs": "1fad9f3a10a96aa10a0c7c3ccf311c312a6a6ad8f634050c18569dd60df29345",
-    "crates/viboceros-command/src/extrude_surface.rs": "8de79be73c8705a98a9bafced85a6160c649c3846e1fee951bbba6472e6ce468",
     "crates/viboceros-command/src/extrude_surface/tests.rs": "4ca9d3387ead3a8a54afedffa0236f560d229a933980842968a96b11717503cc",
-    "crates/viboceros-oracle/src/lib.rs": "efbd7afa0fc2f170277bd866fbbb23409e23fef0d7bfedb0f21461f13bb9addb",
     "crates/viboceros-oracle/src/surface_extrusion.rs": "a968680accb45aa3bd3c2ebb6594d06824b9c2c8eaf50ee7c3dfbdf123d326ed",
-    "crates/viboceros-smlib/native/bridge.cpp": "4837c454a70b442e61f077ea13d15cae656a06d5e8076f2c2dcd9865c36cdbbc",
-    "crates/viboceros-smlib/native/bridge.h": "dfeb850f8b262633a37bd454d1a47259e45ad064e31c46c7ffae9508982cca4f",
     "crates/viboceros-smlib/src/native.rs": "2fbe02a60066268cc08b07afc57f4737656d6912ad6f5bbec52cae91a0432948",
-    "crates/viboceros-smlib/src/native/surface_extrusion.rs": "3bb33a2ac81e43ebf18a197e9b4bae38f56f846d9997bbe28a0b93d8415bda3e",
     "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
-    "src/app.rs": "b5729500f067eed28d890c33d5516aed2acd666c19b04f71c70d0f767ff6e655",
-    "src/app/object_selection.rs": "90c8b3e9eb242360d9655a5adffde0672917fccd0d0efa7256f44a886f9df65b",
-    "src/app/extrude_surface.rs": "e6480c045af7ba2b71888286ef2e6ef0d73ab786dccf726f1956915af65f786a",
     "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
-    "tools/rhino_oracle/client.py": "e8689fc7daedd66dcb7e974b81586364a8bcaebc7e6745ef3bc0638b5aa31961",
-    "tools/rhino_oracle/rhino_worker.py": "803f78fe3c1e664c087ab53863accc5a2d1e64931b69c2435588f904f9fa96aa",
     "tools/rhino_oracle/surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
     "tools/rhino_oracle/test_surface_extrusion.py": "404edb06e62ed8a8f33c57bf0d28edd422f5251ea30f90044297bb4b9679ab86",
     "tools/rhino_oracle/fixtures/surface_extrusion.json": "887758f1582a588200bd762b9753c68eb2becdd8a4a9b713e8e1e54e68055f8c",
@@ -81,5 +70,18 @@
   },
   "observation_sha256": {
     "tools/rhino_oracle/observations/surface_extrusion_viboceros_native.json": "fc13713fadc8ae30ca537790baf0d05e61e1aee3c2e3dff82ed3ad98f39c91e2"
+  },
+  "source_git_sha256": {
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-command/src/lib.rs": "1fad9f3a10a96aa10a0c7c3ccf311c312a6a6ad8f634050c18569dd60df29345",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-command/src/extrude_surface.rs": "8de79be73c8705a98a9bafced85a6160c649c3846e1fee951bbba6472e6ce468",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-oracle/src/lib.rs": "efbd7afa0fc2f170277bd866fbbb23409e23fef0d7bfedb0f21461f13bb9addb",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-smlib/native/bridge.cpp": "4837c454a70b442e61f077ea13d15cae656a06d5e8076f2c2dcd9865c36cdbbc",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-smlib/native/bridge.h": "dfeb850f8b262633a37bd454d1a47259e45ad064e31c46c7ffae9508982cca4f",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:crates/viboceros-smlib/src/native/surface_extrusion.rs": "3bb33a2ac81e43ebf18a197e9b4bae38f56f846d9997bbe28a0b93d8415bda3e",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:src/app.rs": "b5729500f067eed28d890c33d5516aed2acd666c19b04f71c70d0f767ff6e655",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:src/app/object_selection.rs": "90c8b3e9eb242360d9655a5adffde0672917fccd0d0efa7256f44a886f9df65b",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:src/app/extrude_surface.rs": "e6480c045af7ba2b71888286ef2e6ef0d73ab786dccf726f1956915af65f786a",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:tools/rhino_oracle/client.py": "e8689fc7daedd66dcb7e974b81586364a8bcaebc7e6745ef3bc0638b5aa31961",
+    "de1cf3030ed1e4bdb18142395d746392a0f135d1:tools/rhino_oracle/rhino_worker.py": "803f78fe3c1e664c087ab53863accc5a2d1e64931b69c2435588f904f9fa96aa"
   }
 }

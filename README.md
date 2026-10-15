@@ -53,6 +53,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Native parallel-view silhouettes](docs/commands/silhouette.md)
 - [Native tapered curve extrusion](docs/commands/extrude-crv-tapered.md)
 - [Native surface extrusion](docs/commands/extrude-srf.md)
+- [Surface extrusion along curves](docs/commands/extrude-srf-along-crv.md)
 - [Native surface-normal pulling foundation](docs/smlib-surface-pull.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Native NURBS offsets and qualification](docs/smlib-curve-offset.md)

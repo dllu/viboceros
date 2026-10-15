@@ -1,0 +1,183 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "path_planar",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -4.806501386148017e-17
+              ],
+              [
+                2.0,
+                3.5,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 74460717
+    },
+    {
+      "id": "path_warped",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -4.806501386148017e-17
+              ],
+              [
+                2.0,
+                3.5,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 11.999999999999998
+          }
+        ]
+      },
+      "elapsed_ns": 78542347
+    },
+    {
+      "id": "path_reversed",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -2.0
+              ],
+              [
+                2.0,
+                3.5,
+                1.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 11.999999999999995
+          }
+        ]
+      },
+      "elapsed_ns": 175244275
+    },
+    {
+      "id": "path_ring_hole",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                -5.328959616054435e-17
+              ],
+              [
+                3.0,
+                3.4999999999999996,
+                2.0
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 50.26548245743669
+          }
+        ]
+      },
+      "elapsed_ns": 131209517
+    },
+    {
+      "id": "path_ring_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                -5.328959616054435e-17
+              ],
+              [
+                3.0,
+                3.4999999999999996,
+                2.0
+              ]
+            ],
+            "face_count": 2,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 34153076
+    },
+    {
+      "id": "path_half_line",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 6.0
+          }
+        ]
+      },
+      "elapsed_ns": 53725894
+    },
+    {
+      "id": "path_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                9999.999999999998,
+                -30000.0,
+                50000.0
+              ],
+              [
+                10002.0,
+                -29996.5,
+                50002.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 69105786
+    }
+  ]
+}

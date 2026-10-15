@@ -40,6 +40,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && self.active_command.is_none()
+            && self.surface_path_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
@@ -183,6 +184,8 @@ impl VibocerosApp {
                         "BlendSrf"
                     } else if self.tween_surfaces_prompt.is_some() {
                         "TweenSurfaces"
+                    } else if self.surface_path_prompt.is_some() {
+                        "ExtrudeSrfAlongCrv"
                     } else if let Some(p) = &self.planar_boolean_prompt {
                         p.command
                     } else if self.boolean_two_prompt.is_some() {
@@ -271,6 +274,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if let Some(p)=&self.tween_surfaces_prompt {
                                 p.hint()
+                            } else if self.surface_path_prompt.is_some() {
+                                "Select path curve; Solid / DeleteInput / Reverse / PathLength; Esc cancels"
                             } else if self.planar_boolean_prompt.is_some() {
                                 "Pick a planar surface; Esc cancels"
                             } else if let Some(prompt) = &self.boolean_two_prompt {

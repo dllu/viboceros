@@ -299,6 +299,9 @@ class OracleClient:
             if op.get('op') == 'silhouette_parallel':
                 from .silhouette_probe import validate
                 validate(op)
+            elif op.get('op') == 'surface_path_extrusion':
+                from .surface_path_extrusion_probe import validate
+                validate(op)
             elif op.get('op') == 'surface_extrusion':
                 from .surface_extrusion_probe import validate
                 validate(op)
@@ -1302,6 +1305,8 @@ class OracleClient:
             if any(op.get('op') == 'apply_uv_curves_command' for op in request.get('operations', [])):
                 for name in ('apply_uv_curves_probe.py', 'join_probe.py', 'merge_edges_probe.py'):
                     shutil.copyfile(worker_source.with_name(name), job_path/name)
+            if any(op.get('op') == 'surface_path_extrusion' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('surface_path_extrusion_probe.py'), job_path/'surface_path_extrusion_probe.py')
             if any(op.get('op') == 'surface_extrusion' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('surface_extrusion_probe.py'), job_path/'surface_extrusion_probe.py')
             if any(op.get('op') == 'tapered_extrusion' for op in request.get('operations', [])):

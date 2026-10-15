@@ -1611,6 +1611,72 @@ extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displac
     });
 }
 
+extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const VbCurve *path,
+    int cap_ends, double tolerance, VbSolid **out, char *error, size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && path && path->value && out
+            && (cap_ends==0 || cap_ends==1) && std::isfinite(tolerance) && tolerance>0,
+            "Invalid surface path extrusion input");
+        require(!shape->value->IsManifoldSolid(),"Surface path extrusion requires an open sheet");
+        require(!path->value->IsDegenerate(tolerance),"Degenerate surface extrusion path");
+        require(!path->value->IsClosed(path->value->GetNaturalInterval()),"Closed surface extrusion paths are not supported");
+        SmTArray<SmFace*> source_faces;shape->value->GetFaces(source_faces);
+        require(source_faces.GetSize()>0 && source_faces.GetSize()<=100000,"Surface path extrusion face limit");
+        SmTArray<SmEdge*> all_edges,edges;shape->value->GetEdges(all_edges);
+        const size_t path_controls=path->points.size()/4;
+        require(path_controls>0,"Missing surface extrusion path controls");
+        size_t profile_controls=0,max_degree=1;
+        for(ULONG i=0;i<all_edges.GetSize();++i)if(all_edges[i]->IsLamina()) {
+            auto *curve=all_edges[i]->GetCurve();
+            require(curve && curve->IsKindOf(SmBSplineCurve_TYPE),"Surface path extrusion requires NURBS edges");
+            const auto *nurbs=static_cast<SmBSplineCurve*>(curve);
+            const size_t count=nurbs->GetNumberControlPoints();
+            require(count<limit && profile_controls<limit-count,"Surface path extrusion profile resource limit");
+            profile_controls+=count+1; // Allow a gap segment when native chains are assembled.
+            max_degree=std::max(max_degree,static_cast<size_t>(nurbs->GetDegree()));
+            edges.Add(all_edges[i]);
+        }
+        require(edges.GetSize()>0,"Surface path extrusion requires a boundary");
+        // The producer combines each chain into one NURBS before sweeping.
+        // Budget all chains conservatively, including Bezier decomposition and
+        // elevation to a common degree, before allocating tensor-product nets.
+        require(profile_controls<=limit/path_controls/(max_degree+1),
+                "Surface path extrusion control-net resource limit");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
+        owner->value->SetTolerance(tolerance,FALSE);
+        SmSweepOptions options;
+        options.bTranslationalSweep=TRUE;options.bMoveToProfile=TRUE;
+        // Build only walls here; the primitive cap builder fits planar regions.
+        // Copy actual source faces below to retain curved caps and trim holes.
+        options.bCapEndsArg=FALSE;
+        SmTArray<SmFace*> start,side,end;
+        auto working_path=copy_curve(*path);
+        SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
+        check(producer.CreateCurveSweepFromEdges(edges,working_path.get(),nullptr,nullptr,tolerance,
+              &options,start,side,end),"create translational surface path walls");
+        SmPoint3d a,b;
+        const auto interval=path->value->GetNaturalInterval();
+        check(path->value->EvaluatePoint(interval.GetMin(),a),"evaluate surface path start");
+        check(path->value->EvaluatePoint(interval.GetMax(),b),"evaluate surface path end");
+        if(cap_ends) {
+            check(shape->value->CopyFaces(source_faces,owner->value.get(),nullptr,FALSE),"copy source surface caps");
+            std::unique_ptr<SmBrep> translated(vb_copy_brep(*shape->value));
+            SmAxis2Placement move;move.Translate(b-a);
+            check(translated->Transform(move),"translate surface path caps");
+            SmTArray<SmFace*> caps;translated->GetFaces(caps);
+            check(translated->CopyFaces(caps,owner->value.get(),nullptr,FALSE),"copy translated surface caps");
+        }
+        check(owner->value->StitchAndOrient(),"stitch surface path extrusion");
+        SmTArray<SmFace*> result_faces;owner->value->GetFaces(result_faces);
+        require(result_faces.GetSize()>0 && result_faces.GetSize()<=100000,"Surface path extrusion output face limit");
+        require(!cap_ends || owner->value->IsManifoldSolid(),"Surface path extrusion did not close");
+        check(SmApiTurnToNurbs(owner->value.get()),"convert surface path extrusion to NURBS");
+        *out=owner.release();
+    });
+}
+
 extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
     double height, double angle_degrees, int round_corners, int cap_ends, double tolerance,
     VbSolid **out, char *error, size_t capacity) {

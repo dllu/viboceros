@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "surface_path_extrusion_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "recipes": 7,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope_notes": [
+    "ExtrudeSrfAlongCrv uses native boundary chains and exact translational NURBS wall construction via SmPrimitiveCreation::CreateCurveSweepFromEdges with bTranslationalSweep and bMoveToProfile. Only lamina boundary edges are used. The native primitive planar cap builder is disabled: the adapter copies actual source faces and translated copies, retaining curved caps and trim holes.",
+    "The source stays at its original position; path position is independent. Original and endpoint-translated cap images are checked across UV orientations and parameter domains. Interior curved-wall samples distinguish the path sweep from a straight displacement. Planar and warped analytic volumes and rational holes pass. Source and path remain unchanged.",
+    "Closed or degenerate prepared paths, closed/no-boundary source shapes, invalid source references and unsupported imports decline. Aggregate profile/path control-net budgets account conservatively for composite construction and degree elevation before allocating tensor-product surfaces. A 50000-control-point rail exercises the guard and preserves its source.",
+    "Solid, DeleteInput, Reverse, PathLength, Face/Faces/FaceRefs, explicit Path and unique PathName selectors are supported. Reverse is applied before arc-length trimming from the prepared start. Outputs and source remainders stage before one command batch. DeleteInput preserves the path; remaining source faces retain identity, attributes and groups. A later tangent face failure preserves document state, picks, history and Redo.",
+    "The application freezes face references and source snapshots, accepts object/face-component preselection or source picking, then filters path picking to curves. Inline source selectors/options survive source selection. Picker options accept document units for PathLength. Invalid options are atomic; kernel failure and changed source geometry retain the picker. Cancellation releases it without geometry edits. Command history/completion and component preselection recognize the active path picker.",
+    "Seven independent fixtures run the actual command and measure volumes, face counts, solid flags and native tight geometric bounds. The geometric bound distinguishes a quadratic path locus from its larger control hull. Pending Rhino recipes use public BrepFace.CreateExtrusion, Reverse, LengthParameter and Trim, copying/discarding all owned geometry. Python mock tests check dispatch/ownership, not native parity.",
+    "Automatic path direction from the clicked endpoint, native SubCurve point picking, ToBoundary, SplitAtTangents control, live previews, saved option defaults and full native getter behavior remain future work. General self-intersection, folding and near-degenerate surfaces require broader qualification.",
+    "No new licensed Rhino capture or launch was attempted because of the documented Wine SSPI startup failure. Retained observations are local debug-profile Viboceros output. Timings include command, document and diagnostic work (including tight-bound reimport) and do not establish comparative kernel performance."
+  ],
+  "validation": {
+    "cargo test -p viboceros-smlib --features native --test surface_path_extrusion --quiet": {
+      "passed": 4
+    },
+    "cargo test -p viboceros-smlib --features native --test surface_extrusion --quiet": {
+      "passed": 4
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib extrude_surface --quiet": {
+      "passed": 17
+    },
+    "cargo test -p viboceros-command -p viboceros extrude_surface --quiet": {
+      "passed": 9
+    },
+    "cargo test -p viboceros --features native-smlib object_selection --quiet": {
+      "passed": 51
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "python3 -m unittest tools.rhino_oracle.test_surface_path_extrusion tools.rhino_oracle.test_surface_extrusion tools.rhino_oracle.test_client -q": {
+      "passed": 27
+    },
+    "cargo test -p viboceros-oracle --features native-smlib surface_path_pending --quiet": {
+      "passed": 1,
+      "completed_recipes": 7,
+      "tight_path_bounds_checked": true
+    },
+    "cargo clippy -p viboceros-smlib --features native --all-targets -- -D warnings": "passed",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/surface_path_extrusion.json tools/rhino_oracle/observations/surface_path_extrusion_viboceros_native.json": {
+      "completed_operations": 7,
+      "profile": "debug",
+      "performance_qualified": false
+    },
+    "cargo clippy -p viboceros-oracle --features native-smlib --all-targets -- -D warnings": "passed after tight-bounds diagnostic change"
+  },
+  "source_sha256": {
+    "README.md": "ecc8a7e9063e4f4447052f11752536e6f5d9121dd1a83306cc6f5759f2e39432",
+    "crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a",
+    "crates/viboceros-command/src/extrude_surface/tests.rs": "4ca9d3387ead3a8a54afedffa0236f560d229a933980842968a96b11717503cc",
+    "crates/viboceros-command/src/extrude_surface_path.rs": "ea26c86f3f19cd1597fb88c48649be3217fe19ec40689e1b4b06e55e6cc61844",
+    "crates/viboceros-command/src/extrude_surface_path/tests.rs": "28baad35d4f4342245c89957863a394de192d42e7e51895af320ebb8e4f26129",
+    "crates/viboceros-command/src/lib.rs": "9f12169bf600142f06e3805fcd88cc2b4e0ff11e13b6a96f6bd9c251f9c4957c",
+    "crates/viboceros-oracle/src/lib.rs": "c769226170953fd82f2c3553745b0e1ab29e8ffa71e516c3ce7de2dd8ae08984",
+    "crates/viboceros-oracle/src/surface_path_extrusion.rs": "17ce0dbf4452aafa73781363893aeb7a7be97ac31663753d05a30080dcf38e14",
+    "crates/viboceros-smlib/native/bridge.cpp": "c2b8c9ae2fbf41c11fccf829aa3003ba4c6a8090030ea6788f0f5ac3057d4c60",
+    "crates/viboceros-smlib/native/bridge.h": "f60e65a605f53a90f66ec8b302b722d26427472e50940eaf6d112f094da16da8",
+    "crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
+    "crates/viboceros-smlib/src/native/surface_extrusion.rs": "79539767e64bcc6811557697baba4adb7589f8a9332a4dd7700dda0adf09039c",
+    "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
+    "crates/viboceros-smlib/tests/surface_path_extrusion.rs": "887efe1172b179ef07e940d3f94c79d16e2ea3dcfc4a1d2e9b3539c2f621ccfa",
+    "docs/commands/README.md": "85d1e4d2b8b0bb33d1843e548e470f66a31a5784b8404e4e85e38a1b603288f6",
+    "docs/commands/extrude-srf-along-crv.md": "2e5006cf0eb1247f27b3ec7808f07ab1077250e8526614aab5a46cd631b59509",
+    "src/app.rs": "f8c70f08eeb83c28c4d5b30f17c667e18634e34354079fe314a629acefc5e4ee",
+    "src/app/command_line.rs": "51946fae891a62370c635e9a16ae4e7feb073c355d61fad7f9ad579a5cce6a7b",
+    "src/app/component_selection.rs": "f1843ca81a52fc602e8b8b300a89aa283436da7be78944668f10a0674381b92f",
+    "src/app/extrude_surface.rs": "ad37e25cff613765b24b1a622395eeda866a8994c55a39b2bff03fbee5dcd79e",
+    "src/app/extrude_surface_path.rs": "3a371c50b00ae04066e46ce856a1b63225ad02b078dcb002f84457c05e67b4c8",
+    "src/app/object_selection.rs": "dc963c2f32a3747533b021adf2963cd93ceb530c313edf1f429d12947530935d",
+    "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
+    "src/app/tests/extrude_surface_path.rs": "b9e82fba8d60a402478bd593e5ef2c8dc24b33d79cdbf0ade13fce92c162e9a3",
+    "third_party/usd-brep/source/SMLib/inc/SmPrimitiveCreation.h": "f4b7ad8d52464fe2018f5f0631048fe950f6189d5575cfd493a9c6a677bf00a5",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
+    "third_party/usd-brep/source/SMLib/src/SmPrimitiveCreation.cpp": "38a15b60587059687c13923ba0b22a6a139b0b931997d0650898d866be8b692c",
+    "tools/rhino_oracle/client.py": "541566a8b468e46089b75d2589ce47b2cd7d884a12d96f90d4453daf83868ac8",
+    "tools/rhino_oracle/fixtures/surface_path_extrusion.json": "a8fec0aba7ceafc862987b74ee20209506dc0abf8993ff94c2994f0886abb7f7",
+    "tools/rhino_oracle/rhino_worker.py": "08b1bcdad19a5341467e465429a08b8f461274a4e4c4b401be43425a16d519a6",
+    "tools/rhino_oracle/surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
+    "tools/rhino_oracle/surface_path_extrusion_probe.py": "3971318d93ecd411da2d7b4fb80fb931817a05352dcabb53f6dfafd29dea5ebe",
+    "tools/rhino_oracle/test_surface_extrusion.py": "404edb06e62ed8a8f33c57bf0d28edd422f5251ea30f90044297bb4b9679ab86",
+    "tools/rhino_oracle/test_surface_path_extrusion.py": "5b6ed3db255d45859cd8c6f4432547e1e9e270d41c87e4b5ce977313d850b423"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/surface_path_extrusion_viboceros_native.json": "f55ab61df204c8a75197d41061d9883a4c5fa6c55f64c8a37c19dcbba7f3c2c6"
+  }
+}

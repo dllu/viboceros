@@ -1,6 +1,15 @@
 //! Native topology sweep preserves the source faces as curved or trimmed caps.
 use super::*;
 unsafe extern "C" {
+    fn vb_shape_extrude_faces_along_curve(
+        shape: *const NativeSolid,
+        path: *const NativeCurve,
+        cap_ends: c_int,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_single_face_plane_normal(
         shape: *const NativeSolid,
         tolerance: f64,
@@ -20,6 +29,34 @@ unsafe extern "C" {
     ) -> c_int;
 }
 impl Shape {
+    /// Translate an open sheet along a curve while preserving profile orientation.
+    /// The source stays at its original position. Caps copy its actual faces;
+    /// closed or degenerate paths decline. Both source and path remain unchanged.
+    pub fn extruded_faces_along_curve(
+        &self,
+        path: &KernelCurve,
+        cap_ends: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_extrude_faces_along_curve(
+                self.model.handle.as_ptr(),
+                path.handle.as_ptr(),
+                c_int::from(cap_ends),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
     /// Query the native plane classifier for a single face; curved faces return None.
     pub fn single_face_plane_normal(
         &self,

@@ -159,6 +159,7 @@ mod edge_fillet;
 mod evaluate_point;
 mod evaluate_uv;
 mod extrude_surface;
+mod extrude_surface_path;
 mod extrude_tapered;
 mod grid_settings;
 mod group_prompt;
@@ -2143,6 +2144,7 @@ pub struct VibocerosApp {
     translation_session: Option<translation_prompt::TranslationSession>,
     set_point_sources: Option<set_point::SetPointSources>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
+    surface_path_prompt: Option<extrude_surface_path::SurfacePathSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
@@ -2252,6 +2254,7 @@ impl VibocerosApp {
             translation_session: None,
             set_point_sources: None,
             surface_extrusion_sources: None,
+            surface_path_prompt: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -2461,7 +2464,8 @@ impl VibocerosApp {
         if self.try_continue_point_grid_height(&input) {
             return;
         }
-        if self.try_continue_surface_extrusion(&input)
+        if self.try_continue_surface_path(&input)
+            || self.try_continue_surface_extrusion(&input)
             || self.try_continue_tapered_extrusion(&input)
             || self.try_continue_set_point_option(&input)
             || self.try_finish_set_point(&input)
@@ -2494,7 +2498,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_surface_extrusion_input(&input)
+        if self.try_start_surface_path_input(&input)
+            || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
@@ -3015,7 +3020,8 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.try_start_surface_extrusion_input(input) {
+        if self.try_start_surface_path_input(input) || self.try_start_surface_extrusion_input(input)
+        {
             return true;
         }
         if self.try_start_contour_input(input) {
@@ -5339,6 +5345,7 @@ impl VibocerosApp {
     fn cancel_interactive_command(&mut self, announce: bool) {
         self.set_point_sources = None;
         self.surface_extrusion_sources = None;
+        self.surface_path_prompt = None;
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
@@ -8092,6 +8099,9 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.pick_surface_extrusion_path(click.object_id) {
+            return;
+        }
         if self.blend_surface_prompt.is_some() {
             return;
         }
@@ -8984,6 +8994,8 @@ impl VibocerosApp {
             // Escape dismisses the rename editor without canceling a modeling prompt.
         } else if self.selection_menu.take().is_some() {
             // Escape dismisses the choice without changing the selection.
+        } else if self.surface_path_prompt.take().is_some() {
+            self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
             self.push_log("CopyCPlane source pick canceled".into());
         } else if self.blend_surface_prompt.is_some() {
@@ -9187,7 +9199,7 @@ impl eframe::App for VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if end_analysis_picking {
+        let object_filter = if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
         } else {
             self.viewport_object_filter()
@@ -9663,7 +9675,8 @@ impl eframe::App for VibocerosApp {
                                 object_filter
                             },
                             selection_excluded_object,
-                            selection_preview: if plane_object_pick
+                            selection_preview: if self.surface_path_prompt.is_some()
+                                || plane_object_pick
                                 || end_analysis_picking
                                 || curve_region_pick
                                 || volume_object_pick
@@ -9917,6 +9930,7 @@ mod tests {
     mod evaluate_uv;
     mod extract_surface;
     mod extrude_surface;
+    mod extrude_surface_path;
     mod extrude_tapered;
     mod grip_transform;
     mod group_prompt;
@@ -10061,6 +10075,7 @@ mod tests {
             translation_session: None,
             set_point_sources: None,
             surface_extrusion_sources: None,
+            surface_path_prompt: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),

@@ -5,55 +5,39 @@ use viboceros_command::extrude_surface::{
 };
 
 pub(super) struct SurfaceExtrusionSources {
-    targets: Vec<(ObjectId, usize)>,
-    snapshots: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
+    pub(super) targets: Vec<(ObjectId, usize)>,
+    pub(super) snapshots: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
 }
 impl VibocerosApp {
-    pub(super) fn try_start_surface_extrusion_input(&mut self, input: &str) -> bool {
-        let mut words = input.split_whitespace();
-        if !words.next().is_some_and(|s| {
-            s.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("ExtrudeSrf")
-        }) {
-            return false;
-        }
-        let Ok(mut parsed) = SurfaceExtrusionInput::parse(&words.collect::<Vec<_>>()) else {
-            return false;
-        };
-        if matches!(parsed.faces, SurfaceFaces::Single) {
-            let picks = match self.component_selection.checked_picks(&self.document) {
-                Ok(p) => p,
-                Err(e) => {
-                    self.push_log(format!("Error: {e}"));
-                    return true;
-                }
-            };
+    pub(super) fn prepare_surface_extrusion_sources(
+        &self,
+        mut faces: SurfaceFaces,
+    ) -> Result<Option<SurfaceExtrusionSources>, String> {
+        if matches!(faces, SurfaceFaces::Single) {
+            let picks = self
+                .component_selection
+                .checked_picks(&self.document)
+                .map_err(str::to_string)?;
             if !picks.is_empty() {
                 if picks
                     .iter()
                     .any(|p| p.kind != viboceros_command::ComponentSelectionKind::BrepFace)
                 {
-                    self.push_log("Error: ExtrudeSrf requires surface faces".into());
-                    return true;
+                    return Err("surface extrusion requires surface faces".into());
                 }
-                parsed.faces =
+                faces =
                     SurfaceFaces::References(picks.iter().map(|p| (p.object, p.index)).collect());
             }
         }
-        if !matches!(parsed.faces, SurfaceFaces::References(_))
+        if !matches!(faces, SurfaceFaces::References(_))
             && !self.document.selected_objects().any(|o| {
                 viboceros_command::ObjectSelectionFilter::SurfaceComponents.accepts_object(o)
             })
         {
-            return false;
+            return Ok(None);
         }
-        let targets = match surface_extrusion_targets(&self.document, &parsed.faces) {
-            Ok(t) => t,
-            Err(e) => {
-                self.push_log(format!("Error: {e}"));
-                return true;
-            }
-        };
+        let targets =
+            surface_extrusion_targets(&self.document, &faces).map_err(|e| e.to_string())?;
         let objects = targets
             .iter()
             .map(|(id, _)| *id)
@@ -71,8 +55,30 @@ impl VibocerosApp {
                 )
             })
             .collect();
+        Ok(Some(SurfaceExtrusionSources { targets, snapshots }))
+    }
+
+    pub(super) fn try_start_surface_extrusion_input(&mut self, input: &str) -> bool {
+        let mut words = input.split_whitespace();
+        if !words.next().is_some_and(|s| {
+            s.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("ExtrudeSrf")
+        }) {
+            return false;
+        }
+        let Ok(parsed) = SurfaceExtrusionInput::parse(&words.collect::<Vec<_>>()) else {
+            return false;
+        };
+        let sources = match self.prepare_surface_extrusion_sources(parsed.faces) {
+            Ok(Some(s)) => s,
+            Ok(None) => return false,
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return true;
+            }
+        };
         self.cancel_interactive_command(false);
-        self.surface_extrusion_sources = Some(SurfaceExtrusionSources { targets, snapshots });
+        self.surface_extrusion_sources = Some(sources);
         self.active_command = Some(InteractiveCommand::ExtrudeSurface {
             base: None,
             options: parsed.options,
