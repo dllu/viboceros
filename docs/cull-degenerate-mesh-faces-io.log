@@ -1,0 +1,9 @@
+Blocking waiting for file lock on artifact directory
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 02s
+     Running tests/coplanar_mesh.rs (target/debug/deps/coplanar_mesh-72211854d91085b1)
+
+running 1 test
+test merged_mesh_hole_and_colors_survive_three_dm_and_nurbs_conversion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s

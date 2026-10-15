@@ -244,12 +244,12 @@ pub use mesh::{
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MeshAlignSelection,
     MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshDiagnosticEdge, MeshEdgeFilter,
     MeshEdgeMatchOptions, MeshEdgeMatchResult, MeshEdgePick, MeshEllipsoidOptions,
-    MeshExtrudeDirection, MeshExtrudeSelection, MeshFace, MeshFaceExtraction, MeshHoleFill,
-    MeshJoinComponent, MeshJoinOptions, MeshNgon, MeshOffsetDirection, MeshPartBoundary,
-    MeshSingleFaceComponents, MeshSolid, MeshSubdivisionSphereOptions, MeshTopology,
-    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NonPlanarQuadCriterion,
-    QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices, join_meshes,
-    match_mesh_edges,
+    MeshExtrudeDirection, MeshExtrudeSelection, MeshFace, MeshFaceCullResult, MeshFaceExtraction,
+    MeshHoleFill, MeshJoinComponent, MeshJoinOptions, MeshNgon, MeshOffsetDirection,
+    MeshPartBoundary, MeshSingleFaceComponents, MeshSolid, MeshSubdivisionSphereOptions,
+    MeshTopology, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NonPlanarQuadCriterion, QuadSplitMethod, SolidPointLocation, TriangleMesh, align_mesh_vertices,
+    join_meshes, match_mesh_edges,
 };
 pub use mesh::{MeshClosestLocation, MeshProjectionIndex};
 pub use morph::{

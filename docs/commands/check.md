@@ -30,7 +30,9 @@ These are data-structure checks, like Rhino's `Check`. A passing result does not
 prove absence of folded/self-intersecting surfaces, duplicate mesh faces or
 nonmanifold topology. For example, coincident corners can make a stored mesh
 face invalid, while distinct collinear corners can pass despite zero area.
-Normal-dependent modeling commands may reject the latter. Use the existing
+Normal-dependent modeling commands may reject the latter.
+[CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md) removes degenerate mesh
+faces and repairs collapsed quads. Use the existing
 [edge diagnostics](show-edges.md) and mesh tools for further inspection.
 
 The [qualification record](../geometry-check-qualification.json) links actual

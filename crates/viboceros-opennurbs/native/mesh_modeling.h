@@ -18,6 +18,7 @@ typedef struct ViboMeshResult ViboMeshResult;
 int vibo_mesh_edit(const ViboMeshView*,uint32_t,double,double,ViboMeshResult**,char*,size_t);
 int vibo_mesh_merge_selected(const ViboMeshView*, const size_t*, size_t, int, double, double, ViboMeshResult**, char*, size_t);
 int vibo_mesh_result_view(const ViboMeshResult*,ViboMeshView*,size_t*);
+int vibo_mesh_cleanup_counts(const ViboMeshResult*,size_t*,size_t*,size_t*);
 void vibo_mesh_result_free(ViboMeshResult*);
 #ifdef __cplusplus
 }

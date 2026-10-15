@@ -14,6 +14,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/mesh_modeling.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/opennurbs-merge-face-holes.cmake");
     println!("cargo:rerun-if-changed=native/mesh_modeling.h");
+    println!("cargo:rerun-if-changed=native/mesh_cleanup.h");
     println!("cargo:rerun-if-changed=native/geometry_check.h");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.cpp");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.h");

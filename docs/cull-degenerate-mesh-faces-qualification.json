@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "implementation_base_revision": "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6",
+  "command_implemented": true,
+  "all_builds": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "general_validity_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "opennurbs_revision": "23fc677ba06e49212296ca75fab7fb6c2851b4ce",
+  "recipes": 13,
+  "scope_notes": [
+    "CullDegenerateMeshFaces accepts no arguments, reuses the Mesh confirmation getter, and stages every native result before one transaction. Surviving object IDs/attributes/groups/selection remain attached. Meshes losing all faces are deleted. Undo/Redo restores replacements/deletions together. No-ops and staging/stale-source failures preserve history and Redo. UI tests cover preselection, clicked postselection, Mesh filtering, cancellation, and the SelBadObjects-to-cleanup workflow.",
+    "A private-copy OpenNURBS DeleteComponents call uses the same degenerate-face executive as CullDegenerateFaces, with unused-vertex and empty-n-gon cleanup enabled. The explicit policy removes all unused vertex occurrences, including preexisting ones. Original-to-new face maps distinguish quad repairs from face removals; repairs can remove no face. Double coordinates and surviving color occurrences are retained without welding. Native classification is independent of document tolerance, including a 1e-36 cross-product-length floor and 1e-8 relative quad-diagonal criterion.",
+    "Only repair admission defers geometric validity and permits invalid raw face indices and finite native-unset coordinates. Pointer/count/span/finite/ownership and n-gon membership bounds remain checked; ordinary operations retain their validity gate. Native tests exercise repeated/out-of-range/UINT_MAX raw indices, fully empty results, no-op cleanup, mixed repairs/removals/orphans, colors, and small/remote/unwelded coordinates. The Rust document mesh API still requires distinct in-range stored indices.",
+    "Native deletion can leave a stale n-gon boundary when a repaired quad corner is still used elsewhere. The adapter refreshes invalid overlays with the shared native boundary routine. Existing Rust n-gon retention rebuilds or drops groups that no longer meet its topology rules. Tests retain the corrected single-face boundary, dissolve a disconnected group without welding facets, and preserve an unaffected annular hole through visible edges and MeshToNurb. This does not claim universal n-gon retention or SDK raw-overlay parity.",
+    "Thirteen actual-command oracle recipes use independent count/area expectations: valid triangles/quads, collinear/coincident triangles, collapsed/opposite-coincident/partial-zero-area quads, mixed bad faces, preexisting orphan vertices, unwelded duplicate panels, sub-float features at remote origins, and tiny faces on both sides of the native cutoff. CLI observations are freshly generated local results, not comparative timing evidence.",
+    "The public SDK profile copies an owned double-precision stored mesh, calls Faces.CullDegenerateFaces and then Vertices.CullUnused, and observes raw double-coordinate records plus before/after counts and area. It does not infer quad repairs from the removal return value, normalize n-gons, or emulate Rhino document deletion/getters. Empty output reports empty geometry, not document parity. SDK mocks cover copy/null/alias and native/mass/observation failures, disposal, zero-return repairs, no-op/empty/orphan post-counts, strict input, actual worker routing, and isolated host staging of transitive helper modules.",
+    "AddressSanitizer instruments the shared OpenNURBS modeling archive and C ABI. Eleven bridge tests and five geometry cleanup tests pass; leak detection and optional stack-use-after-return detection are disabled. Bundled allocator/font/compression dependencies are not separately instrumented. This is targeted evidence, not a general memory-safety certificate.",
+    "No fresh licensed Rhino capture was attempted in this increment. The latest recorded launch problem remains docs/oracle-sspi.md. Full command/getter parity and comparative performance remain unqualified. usd-brep is unchanged; this operation is polygon mesh cleanup using the existing shared OpenNURBS archive.",
+    "Fifteen historical source hashes in four verifiable qualification records are retained through immutable Git references. Their non-hash fields are unchanged; 69 pre-existing unverifiable records remain untouched. Earlier parity/performance claims are not upgraded."
+  ],
+  "validation": {
+    "native_bridge": {
+      "command": "cargo test -p viboceros-opennurbs --lib -- --nocapture",
+      "passed": 11,
+      "log": "docs/cull-degenerate-mesh-faces-native-final.log"
+    },
+    "portable_commands_ui": {
+      "command": "cargo test -p viboceros-command -p viboceros cull_degenerate -- --nocapture",
+      "passed": 6,
+      "log": "docs/cull-degenerate-mesh-faces-integration.log"
+    },
+    "native_commands_ui_oracle": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib --lib --bins cull_degenerate -- --nocapture",
+      "passed": 7,
+      "log": "docs/cull-degenerate-mesh-faces-native-integration.log"
+    },
+    "mesh_regression": {
+      "command": "cargo test -p viboceros-geometry --lib mesh::",
+      "passed": 270,
+      "log": "docs/cull-degenerate-mesh-faces-geometry-suite.log",
+      "note": "Includes the first four cleanup tests. The fifth disconnected-overlay regression passes in the final five-test geometry sanitizer run; no implementation changes intervene."
+    },
+    "io_regression": {
+      "command": "cargo test -p viboceros-io --test coplanar_mesh",
+      "passed": 1,
+      "log": "docs/cull-degenerate-mesh-faces-io.log"
+    },
+    "native_sanitizer": {
+      "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-opennurbs --lib",
+      "passed": 11,
+      "log": "docs/cull-degenerate-mesh-faces-asan.log"
+    },
+    "geometry_sanitizer": {
+      "command": "VIBOCEROS_OPENNURBS_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-geometry --lib mesh::degenerate_faces",
+      "passed": 5,
+      "log": "docs/cull-degenerate-mesh-faces-geometry-asan.log"
+    },
+    "help": {
+      "command": "cargo test -p viboceros-command --features native-smlib reports_sorted_help -- --nocapture",
+      "passed": 1,
+      "log": "docs/cull-degenerate-mesh-faces-help.log"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_cull_degenerate tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_geometry_validity tools.rhino_oracle.test_worker tools.rhino_oracle.test_coplanar_faces tools.rhino_oracle.test_coplanar_mesh tools.rhino_oracle.test_selected_coplanar_faces tools.rhino_oracle.test_client -q",
+      "passed": 164,
+      "log": "docs/cull-degenerate-mesh-faces-python.log"
+    },
+    "clippy": {
+      "command": "cargo clippy -p viboceros-opennurbs -p viboceros-geometry -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings",
+      "status": "passed",
+      "log": "docs/cull-degenerate-mesh-faces-clippy.log"
+    },
+    "cpp_warnings": {
+      "command": "c++ -std=c++17 -DON_CMAKE_BUILD -isystem third_party/opennurbs -Icrates/viboceros-opennurbs/native -Wall -Wextra -Werror -fsyntax-only crates/viboceros-opennurbs/native/mesh_modeling.cpp",
+      "status": "passed"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    "cli_capture": {
+      "command": "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/cull_degenerate_mesh_faces.json tools/rhino_oracle/observations/cull_degenerate_mesh_faces_viboceros.json",
+      "recipes_completed": 13,
+      "log": "docs/cull-degenerate-mesh-faces-capture.log"
+    },
+    "stale_ngon_development_regression": {
+      "expected_status": "failed before the adapter refresh fix",
+      "passed": 3,
+      "failed": 1,
+      "log": "docs/cull-degenerate-mesh-faces-native-baseline.log",
+      "note": "Development log demonstrating a real stale n-gon boundary after native quad repair, before the refresh was added. This is not a published baseline source snapshot; final implementation hashes and passing runs are recorded separately."
+    }
+  },
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "b27a4d79ac3f9685484d9ee3418a3946e832d2224794e87e4110e3cc74249a7b",
+    "crates/viboceros-command/src/cull_degenerate.rs": "2583ab655ab3ea6fd80b00b8aa3c6cdcc108960996bfa02e0be3ba3de7cf481c",
+    "crates/viboceros-command/src/cull_degenerate/tests.rs": "5119fb03bf58f55c20a688e6ce40c367cc54041a2d6587d040e0c13a52aaa417",
+    "crates/viboceros-command/src/lib.rs": "c62ff106b1d8581aaf5eb11b4289e5b79321725e43d84071e9f162a4afb9beae",
+    "crates/viboceros-geometry/src/lib.rs": "39ded796a7c9e7fcf5a8bc33ecf809c33041c776d11e3022fe7c7a7d5f5355e7",
+    "crates/viboceros-geometry/src/mesh.rs": "13adcc0e70f0e955fb1e52274855cbbca4857cfaaf38320047d3296f03fcc469",
+    "crates/viboceros-geometry/src/mesh/degenerate_faces.rs": "1c5e499536cd986cb314c07e5e31e335e1250bb77a4f0fa6b43d1cdc61d2020d",
+    "crates/viboceros-geometry/src/mesh/degenerate_faces/tests.rs": "bbbe8e985d892fd36178a1ebc3e85364cddf7fed2ae38f48ec8716e22bb160d1",
+    "crates/viboceros-geometry/src/mesh/ngon.rs": "2dcd7295247c7a899b42e278096dfcdefe20851c091c0d61280dc421428f5aae",
+    "crates/viboceros-opennurbs/build.rs": "7d0ac68e8b0f973fd6eb1663e0795d22e9c315b1ed6259bccd1186dcd6e64870",
+    "crates/viboceros-opennurbs/native/CMakeLists.txt": "16c59be64e7363f10760f19af8a389f6ef0f9e5a761bffba02e9e4cb8e2e40bc",
+    "crates/viboceros-opennurbs/native/mesh_cleanup.h": "ed12204a444348716b7d9fd3170f264ac65c5d34d8b9c5748ef695a0137eb312",
+    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "7779289ee7156dffa28990a9de5f0de03283bf9439a5f4a5b0dcdfb717733932",
+    "crates/viboceros-opennurbs/native/mesh_modeling.h": "ead8577b54ac20be03fbe0a6ba1812478fa46b25a26c1d19f1d84d513954d134",
+    "crates/viboceros-opennurbs/src/mesh.rs": "321bf52d681610b8dba76ab5d87189292e34b795f2926e0d26ad09f2209e8794",
+    "crates/viboceros-opennurbs/src/mesh/cleanup_tests.rs": "bda984fb0268eac0e54c32f0000cc44e17923f1212338211fc75bc15b2551f2e",
+    "crates/viboceros-oracle/src/cull_degenerate.rs": "957a643b5f915ccc7d85a8bc5f7bde7c26f2196dbb37de2e1c50f3a5948d7eb0",
+    "crates/viboceros-oracle/src/lib.rs": "bb324faa018363df6a5c44cf8a0d2e46a260d8af8d13d1c7c268dc701aebfedd",
+    "crates/viboceros-oracle/src/object_source.rs": "7a1c48fc3d32b9ddc16c96902cd927f951e1f6ce3b6bf385849dbe3345f3b8c1",
+    "docs/commands/README.md": "40d112e155d4efdf625a66cb7a3264ccd4854677339e00712add3331de2561dc",
+    "docs/commands/check.md": "dc4a33e784d465d68d920ca09d6db58e354567002d4ebaddd0760f2f7c3d8095",
+    "docs/commands/cull-degenerate-mesh-faces.md": "b5876d4f4848280a80f7e38076f08819d55dbd2944b9d5e88b269a58e613ce79",
+    "src/app.rs": "3b6d81ac768f5e2e790f3d37e45f247ccac4c74b92bbb3057ed29b86dcea97e5",
+    "src/app/tests/cull_degenerate.rs": "8cfa21ea799c217ba5ed719dee4a655b55639434148da7b1093c354e4c701251",
+    "third_party/opennurbs/opennurbs_mesh.cpp": "3b10dffc566abe18e0dbf971aedd8f2bf11939c6f9559d21a8dd1e02404ade7a",
+    "third_party/opennurbs/opennurbs_mesh_ngon.cpp": "85af18f065c432fad06482d8c7451f1971721bd41dbb30db90fd388642951d9e",
+    "third_party/patches/opennurbs-merge-face-holes.cmake": "69bd08fff51aae006a0c8bd02c153aa1f054ab62c02bc1c5250442475dabae8e",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/cull_degenerate_probe.py": "9d8112d09a1f989ad9f2ad78a7674f7cc591a64794794498d40d7e34c69233f8",
+    "tools/rhino_oracle/fixtures/cull_degenerate_mesh_faces.json": "1cad47461127c78eed088e83dc2be637f91010947882f2f9da539c2afbda6e79",
+    "tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff",
+    "tools/rhino_oracle/rhino_worker.py": "15cae3af3d8b97b644653de9dbf6293723614f55bfe3715af0a5d1165669169a",
+    "tools/rhino_oracle/structural_sdk.py": "094d641cf566ee8d94846d0c847f9c437b367f51b5711c52ed97e926844340a8",
+    "tools/rhino_oracle/test_cull_degenerate.py": "8a23fa26b5ed9a213ff1b20d8ac5be748794169329f84a17d5dea8ec05e5d081",
+    "tools/rhino_oracle/test_structural_sdk.py": "afe1e8d44407fbefe46c83ef2d6a58c68421c7613099110224c15cc225ac3a39"
+  },
+  "evidence_sha256": {
+    "docs/cull-degenerate-mesh-faces-asan.log": "57da82302c1ecd4b77203894c2f2c9f2490f9ef75196d52e91a289cb25d004fd",
+    "docs/cull-degenerate-mesh-faces-capture.log": "cd680404ab2986e78ca517104f923b7a9eeba6d4b1ab9191a3c353dd89662750",
+    "docs/cull-degenerate-mesh-faces-clippy.log": "71d77a2c319385d543da8a913ad76d24bd04af31718fd3723d4e7f4307a11b19",
+    "docs/cull-degenerate-mesh-faces-geometry-asan.log": "c17f22c39a2389d1e1e8ff0a90d1865ae9daaf8da4eeb52859f01eab4d8b6454",
+    "docs/cull-degenerate-mesh-faces-geometry-suite.log": "a1d9897aac54b1e8a7732837e8fbb5181a7146db8707e656454d1dbb7cf9551e",
+    "docs/cull-degenerate-mesh-faces-help.log": "7fbe434081eb4f7e9a4cc99f49a8604cb19a4b0de604e51e860de7bd8e67dc93",
+    "docs/cull-degenerate-mesh-faces-integration.log": "9b86e9d03a1fd8ba6b0451a701dbe205e8c6a6d012493473e8bd11675a8773a9",
+    "docs/cull-degenerate-mesh-faces-io.log": "f901d9e49afa21b3ca490ee0ff2e087a3c4574a7e552cbc6e287ea10d38dd7f7",
+    "docs/cull-degenerate-mesh-faces-native-baseline.log": "22bfbc45dd29f5f02cba1583bd55e8e904c43bd92022b194118619e4236ed143",
+    "docs/cull-degenerate-mesh-faces-native-final.log": "68a2f41422f8097de38535f73fac775dfccf4266c2787b4c36b5e6369db293b2",
+    "docs/cull-degenerate-mesh-faces-native-integration.log": "e39f002a7b11583836142244ef25e8e9662399d5dc5bca3bb74871971e605691",
+    "docs/cull-degenerate-mesh-faces-python.log": "957a34defeffd88c278db5f85f7cd34e2bf8e444dbc9a908440ec2434b0aa4be",
+    "tools/rhino_oracle/observations/cull_degenerate_mesh_faces_viboceros.json": "c553b12ca788154adbc38afbf387cc21503df2660a3446cee9a872768c357692"
+  }
+}

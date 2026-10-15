@@ -1,0 +1,13 @@
+Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+   Compiling viboceros-geometry v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-geometry)
+    Finished `release` profile [optimized] target(s) in 4m 21s
+     Running unittests src/lib.rs (target/release/deps/viboceros_geometry-b224b5d66ce6650b)
+
+running 5 tests
+test mesh::degenerate_faces::tests::empty_and_finite_native_unset_faces_have_explicit_absence ... ok
+test mesh::degenerate_faces::tests::repair_preserves_actual_area_attributes_and_native_validity ... ok
+test mesh::degenerate_faces::tests::repaired_ngon_boundary_and_hole_free_region_remain_consistent ... ok
+test mesh::degenerate_faces::tests::disconnected_ngon_dissolves_without_welding_remaining_facets ... ok
+test mesh::degenerate_faces::tests::cleanup_keeps_unaffected_annulus_hole_and_unrelated_remote_faces ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 2278 filtered out; finished in 0.01s

@@ -109,9 +109,6 @@
     "crates/viboceros-command/src/merge_coplanar_face.rs": "46e60524753a42712923566be8ac0136c201936424bada59218bb7849b85c584",
     "crates/viboceros-command/src/merge_coplanar_face/tests.rs": "b24fb044a54079a1d22887bf9d695d89a4c1f3fd1a87ed9ff37c64c292e20aa5",
     "crates/viboceros-geometry/src/mesh/coplanar_merge.rs": "ee50bd69a2d7ea1e9e5e173afb9ec704704fa60aa1995ce09cc15fa9d7efe303",
-    "crates/viboceros-opennurbs/native/mesh_modeling.cpp": "e68a4e5a267383109b7c270f8f862c701028d57f562a8970a98b37580640343b",
-    "crates/viboceros-opennurbs/native/mesh_modeling.h": "1dba5ee4e0820f908ea7cc41ee62979ad1fa6947f43d07c2b41041fa87e372f1",
-    "crates/viboceros-opennurbs/src/mesh.rs": "26abdb7267413cfb504292d161aa2245a4ca28fc82a233c3780cb1444c674ae4",
     "crates/viboceros-oracle/src/selected_coplanar_faces.rs": "3c88573afdb216b423f21022455ed4091e1d1cbeb984771f9bc7ce29395e6592",
     "crates/viboceros-smlib/native/brep_data.h": "cb26b4a63a481eb70b824c402cf219e9aa9fefc9027b2d6d0965b245baf5e176",
     "crates/viboceros-smlib/native/bridge.cpp": "b873864a9829b519c6d54fac27bc52930afab8fd879c6c2955dc636d23a832f3",
@@ -157,6 +154,9 @@
     "f95624657441d23eee72bc0e1ecc9f65fe0107d7:crates/viboceros-oracle/src/lib.rs": "dc5dcddf65c4a25f90f8a42ffe027834f97cfb1cf2b87f5f680a85eb9a66c8d2",
     "f95624657441d23eee72bc0e1ecc9f65fe0107d7:docs/commands/README.md": "ecd7f0f13b4a20ac1c9dfd09fa3e11a5b4550a525a50662bae70221f928c25ad",
     "f95624657441d23eee72bc0e1ecc9f65fe0107d7:src/app.rs": "a6909dc2dc5d2fa75375a43efea86363f4b5034773419d7467c101c1fea6467a",
-    "f95624657441d23eee72bc0e1ecc9f65fe0107d7:tools/rhino_oracle/rhino_worker.py": "8d9a0630673b84ce3ecd5b2def504048c02bd98abae8a7f93d149919734edb90"
+    "f95624657441d23eee72bc0e1ecc9f65fe0107d7:tools/rhino_oracle/rhino_worker.py": "8d9a0630673b84ce3ecd5b2def504048c02bd98abae8a7f93d149919734edb90",
+    "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:crates/viboceros-opennurbs/native/mesh_modeling.cpp": "e68a4e5a267383109b7c270f8f862c701028d57f562a8970a98b37580640343b",
+    "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:crates/viboceros-opennurbs/native/mesh_modeling.h": "1dba5ee4e0820f908ea7cc41ee62979ad1fa6947f43d07c2b41041fa87e372f1",
+    "cb9b1145c859ec5bd4b6c21c2912de891d2e9af6:crates/viboceros-opennurbs/src/mesh.rs": "26abdb7267413cfb504292d161aa2245a4ca28fc82a233c3780cb1444c674ae4"
   }
 }

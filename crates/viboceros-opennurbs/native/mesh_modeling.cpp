@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <limits>
 #include <mutex>
 #include <stdexcept>
 #include <vector>
@@ -17,12 +18,12 @@ struct ViboMeshResult {
   std::vector<uint32_t> faces,ngon_vertices,ngon_faces;
   std::vector<uint8_t> colors;
   std::vector<ViboNgonSpan> ngons;
-  size_t changed=0;
+  size_t changed=0,removed_faces=0,repaired_faces=0,removed_vertices=0;
 };
 namespace {
 void require(bool b,const char *s){if(!b)throw std::runtime_error(s);}
 constexpr size_t vertex_limit=4000000,face_limit=1000000;
-void import_mesh(const ViboMeshView &v,ON_Mesh &m){
+void import_mesh(const ViboMeshView &v,ON_Mesh &m,bool repair=false){
   require(v.vertex_count>=3 && v.vertex_count<=vertex_limit && v.face_count>0 && v.face_count<=face_limit && v.vertices && v.faces,"Mesh resource limit or missing arrays");
   require(v.color_count==0 || (v.color_count==v.vertex_count && v.colors),"Invalid mesh colors");
   require(v.ngon_count<=v.face_count && v.ngon_vertex_count<=8*face_limit && v.ngon_face_count<=face_limit,"N-gon resource limit");
@@ -30,13 +31,13 @@ void import_mesh(const ViboMeshView &v,ON_Mesh &m){
   for(size_t i=0;i<v.vertex_count;++i){
     const auto *p=v.vertices+3*i;
     const ON_3dPoint point(p[0],p[1],p[2]);
-    require(point.IsValid() && m.SetVertex(static_cast<int>(i),point),"Invalid mesh vertex");
+    require(std::isfinite(p[0]) && std::isfinite(p[1]) && std::isfinite(p[2]) && (repair || point.IsValid()) && m.SetVertex(static_cast<int>(i),point),"Invalid mesh vertex");
     if(v.color_count){const auto *c=v.colors+4*i;m.m_C.Append(ON_Color(c[0],c[1],c[2],c[3]));}
   }
   for(size_t i=0;i<v.face_count;++i){
     ON_MeshFace f;
-    for(int j=0;j<4;++j){const auto k=v.faces[4*i+j];require(k<v.vertex_count,"Invalid face index");f.vi[j]=static_cast<int>(k);}
-    require(f.IsValid(static_cast<int>(v.vertex_count)),"Invalid mesh face");m.m_F.Append(f);
+    for(int j=0;j<4;++j){const auto k=v.faces[4*i+j];require(repair || k<v.vertex_count,"Invalid face index");f.vi[j]=k<=static_cast<uint32_t>(std::numeric_limits<int>::max())?static_cast<int>(k):-1;}
+    require(repair || f.IsValid(static_cast<int>(v.vertex_count)),"Invalid mesh face");m.m_F.Append(f);
   }
   std::vector<bool> occupied(v.face_count,false);
   for(size_t i=0;i<v.ngon_count;++i){
@@ -46,7 +47,7 @@ void import_mesh(const ViboMeshView &v,ON_Mesh &m){
     for(size_t k=0;k<g.face_count;++k){const auto f=v.ngon_faces[g.first_face+k];require(f<v.face_count && !occupied[f],"Invalid or overlapping n-gon face index");occupied[f]=true;}
     require(m.AddNgon(static_cast<unsigned>(g.vertex_count),v.ngon_vertices+g.first_vertex,static_cast<unsigned>(g.face_count),v.ngon_faces+g.first_face)>=0,"Invalid input n-gon");
   }
-  require(m.IsValid(),"Invalid native input mesh");
+  require(repair || m.IsValid(),"Invalid native input mesh");
 }
 size_t logical_count(const ON_Mesh &m){
   size_t count=m.FaceCount();
@@ -128,6 +129,14 @@ size_t merge(ON_Mesh &m,double tolerance,double angle,const size_t *selected=nul
   const size_t after=logical_count(m);require(after<=before,"Coplanar merge increased the logical face count");
   return before-after;
 }
+// Shared native outer-loop classification retains inner loops in the face set.
+int add_face_region_ngon(ON_Mesh &mesh,const ON_SimpleArray<unsigned> &faces){
+  ON_SimpleArray<unsigned> vertices,counts;
+  const auto count=ON_MeshNgon::FindNgonBoundaries(ON_3dPointListRef(&mesh),ON_MeshFaceList(&mesh),nullptr,faces.UnsignedCount(),faces.Array(),vertices,counts);
+  if(count<3 || counts.Count()==0 || counts[0]<3 || counts[0]>vertices.UnsignedCount())return -1;
+  return mesh.AddNgon(counts[0],vertices.Array(),faces.UnsignedCount(),faces.Array());
+}
+#include "mesh_cleanup.h"
 void export_mesh(const ON_Mesh &m,ViboMeshResult &r){
   const ON_3dPointListRef points(&m);
   for(int i=0;i<m.VertexCount();++i){const auto p=points[i];r.vertices.insert(r.vertices.end(),{p.x,p.y,p.z});}
@@ -143,17 +152,15 @@ static int edit_mesh(const ViboMeshView *input,uint32_t operation,double distanc
   if(out)*out=nullptr;
   try{
     require(input && out,"Missing mesh arguments");vibo_begin_open_nurbs();
-    ON_Mesh mesh;import_mesh(*input,mesh);auto result=std::make_unique<ViboMeshResult>();
+    ON_Mesh mesh;import_mesh(*input,mesh,operation==4);auto result=std::make_unique<ViboMeshResult>();
     if(operation==1)result->changed=merge(mesh,distance,angle,selected,selected_count,region);
     else if(operation==2){require(std::isfinite(distance)&&distance>=0,"Invalid planar tolerance");result->changed=mesh.AddPlanarNgons(nullptr,distance,3,2,false);}
     else if(operation==3){
       require(mesh.NgonCount()==0,"Outer boundary query expects undecorated faces");
       ON_SimpleArray<unsigned> faces;for(int f=0;f<mesh.FaceCount();++f)faces.Append(static_cast<unsigned>(f));
-      ON_SimpleArray<unsigned> vertices,counts;
-      const auto count=ON_MeshNgon::FindNgonBoundaries(ON_3dPointListRef(&mesh),ON_MeshFaceList(&mesh),nullptr,faces.UnsignedCount(),faces.Array(),vertices,counts);
-      require(count>=3 && counts.Count()>0 && counts[0]>=3 && counts[0]<=vertices.UnsignedCount(),"No valid outer boundary");
-      require(mesh.AddNgon(counts[0],vertices.Array(),faces.UnsignedCount(),faces.Array())>=0,"Invalid outer boundary");
-    }else throw std::runtime_error("Unknown mesh operation");
+      require(add_face_region_ngon(mesh,faces)>=0,"No valid outer boundary");
+    }else if(operation==4)cull_degenerate_faces(mesh,*result);
+    else throw std::runtime_error("Unknown mesh operation");
     export_mesh(mesh,*result);*out=result.release();return 1;
   }catch(const std::exception &e){if(error && capacity){std::strncpy(error,e.what(),capacity-1);error[capacity-1]=0;}return 0;}
   catch(...){if(error && capacity){std::strncpy(error,"Unknown native mesh error",capacity-1);error[capacity-1]=0;}return 0;}
@@ -168,5 +175,9 @@ extern "C" int vibo_mesh_merge_selected(const ViboMeshView *input,const size_t *
 extern "C" int vibo_mesh_result_view(const ViboMeshResult *r,ViboMeshView *v,size_t *changed){
   if(!r || !v || !changed)return 0;
   *v={r->vertices.size()/3,r->faces.size()/4,r->colors.size()/4,r->ngons.size(),r->ngon_vertices.size(),r->ngon_faces.size(),r->vertices.data(),r->faces.data(),r->colors.data(),r->ngons.data(),r->ngon_vertices.data(),r->ngon_faces.data()};*changed=r->changed;return 1;
+}
+extern "C" int vibo_mesh_cleanup_counts(const ViboMeshResult *r,size_t *removed,size_t *repaired,size_t *vertices){
+  if(!r || !removed || !repaired || !vertices)return 0;
+  *removed=r->removed_faces;*repaired=r->repaired_faces;*vertices=r->removed_vertices;return 1;
 }
 extern "C" void vibo_mesh_result_free(ViboMeshResult *r){delete r;}

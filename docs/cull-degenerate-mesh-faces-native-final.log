@@ -1,0 +1,19 @@
+Blocking waiting for file lock on artifact directory
+   Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.53s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_opennurbs-588d919dd36e8bbe)
+
+running 11 tests
+test mesh::cleanup_tests::all_degenerate_and_invalid_raw_indices_become_empty_without_out_of_bounds_reads ... ok
+test mesh::cleanup_tests::repaired_ngon_that_loses_edge_connectivity_can_dissolve_without_welding ... ok
+test mesh::hole_tests::collinear_inner_boundary_starts_choose_the_outer_loop_in_all_planes ... ok
+test mesh::precision_tests::sub_float_gaps_at_remote_origins_do_not_become_shared_edges ... ok
+test mesh::selected_tests::every_member_of_an_existing_ngon_uses_the_same_region_anchor ... ok
+test mesh::cleanup_tests::cleanup_repairs_quads_culls_lines_and_orphans_without_welding_colors ... ok
+test mesh::cleanup_tests::tiny_remote_and_unreferenced_vertex_cases_follow_native_double_precision_policy ... ok
+test mesh::cleanup_tests::repaired_ngon_corner_used_elsewhere_does_not_leave_invalid_overlay ... ok
+test mesh::selected_tests::invalid_selected_indices_fail_without_native_mutation ... ok
+test mesh::selected_tests::selected_pair_only_and_seeded_region_share_one_native_executive ... ok
+test mesh::tests::malformed_native_inputs_fail_without_mutating_the_source ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

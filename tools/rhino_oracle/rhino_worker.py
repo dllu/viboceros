@@ -13417,6 +13417,9 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'cull_degenerate_mesh_faces':
+        from cull_degenerate_probe import run
+        return run(operation, globals(), iterations, tolerance)
     if kind == 'geometry_validity':
         from geometry_validity_probe import run
         return run(operation, globals(), iterations, tolerance)

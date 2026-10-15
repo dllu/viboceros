@@ -37,6 +37,8 @@ mod normals;
 mod smoothing;
 pub use nonplanar_quads::{NonPlanarQuadCriterion, QuadSplitMethod};
 mod coplanar_merge;
+mod degenerate_faces;
+pub use degenerate_faces::MeshFaceCullResult;
 mod offset;
 mod planar_ngons;
 pub use offset::MeshOffsetDirection;

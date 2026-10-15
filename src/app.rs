@@ -10014,6 +10014,7 @@ mod tests {
     mod coplanar_faces;
     mod copy_options;
     mod create_uv_curves;
+    mod cull_degenerate;
     mod curve_rebuild_preview;
     mod distance;
     mod distribute;

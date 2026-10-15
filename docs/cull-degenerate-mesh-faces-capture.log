@@ -1,0 +1,7 @@
+Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 44.44s
+     Running `target/debug/viboceros-oracle tools/rhino_oracle/fixtures/cull_degenerate_mesh_faces.json tools/rhino_oracle/observations/cull_degenerate_mesh_faces_viboceros.json`

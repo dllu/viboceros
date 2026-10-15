@@ -1,0 +1,466 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "valid_triangle",
+      "value": {
+        "area": 0.5,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 0,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 917809
+    },
+    {
+      "id": "collinear_triangle",
+      "value": {
+        "area": 0.0,
+        "empty": true,
+        "face_count": 0,
+        "mesh": {
+          "faces": [],
+          "vertices": []
+        },
+        "quad_count": 0,
+        "removed_faces": 1,
+        "removed_vertices": 3,
+        "triangle_count": 0,
+        "vertex_count": 0
+      },
+      "elapsed_ns": 773937
+    },
+    {
+      "id": "coincident_triangle",
+      "value": {
+        "area": 0.0,
+        "empty": true,
+        "face_count": 0,
+        "mesh": {
+          "faces": [],
+          "vertices": []
+        },
+        "quad_count": 0,
+        "removed_faces": 1,
+        "removed_vertices": 3,
+        "triangle_count": 0,
+        "vertex_count": 0
+      },
+      "elapsed_ns": 761489
+    },
+    {
+      "id": "collapsed_quad",
+      "value": {
+        "area": 0.5,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 1,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 791633
+    },
+    {
+      "id": "opposite_coincident_quad",
+      "value": {
+        "area": 0.0,
+        "empty": true,
+        "face_count": 0,
+        "mesh": {
+          "faces": [],
+          "vertices": []
+        },
+        "quad_count": 0,
+        "removed_faces": 1,
+        "removed_vertices": 4,
+        "triangle_count": 0,
+        "vertex_count": 0
+      },
+      "elapsed_ns": 750465
+    },
+    {
+      "id": "partial_zero_area_quad",
+      "value": {
+        "area": 0.5,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 1,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 773521
+    },
+    {
+      "id": "mixed_with_orphan",
+      "value": {
+        "area": 0.5,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 1,
+        "removed_vertices": 4,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 775953
+    },
+    {
+      "id": "preexisting_orphan",
+      "value": {
+        "area": 0.5,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 1,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 760513
+    },
+    {
+      "id": "unwelded_duplicates",
+      "value": {
+        "area": 1.0,
+        "empty": false,
+        "face_count": 2,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 0,
+        "triangle_count": 2,
+        "vertex_count": 6
+      },
+      "elapsed_ns": 760785
+    },
+    {
+      "id": "remote_sub_float_triangle",
+      "value": {
+        "area": 4.9999946542098506e-9,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              1000000.0,
+              1000000.0,
+              1000000.0
+            ],
+            [
+              1000000.0001,
+              1000000.0,
+              1000000.0
+            ],
+            [
+              1000000.0,
+              1000000.0001,
+              1000000.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 0,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 751137
+    },
+    {
+      "id": "tiny_kept",
+      "value": {
+        "area": 5.000000000000001e-35,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1e-17,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1e-17,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 0,
+        "removed_faces": 0,
+        "removed_vertices": 0,
+        "triangle_count": 1,
+        "vertex_count": 3
+      },
+      "elapsed_ns": 751553
+    },
+    {
+      "id": "tiny_culled",
+      "value": {
+        "area": 0.0,
+        "empty": true,
+        "face_count": 0,
+        "mesh": {
+          "faces": [],
+          "vertices": []
+        },
+        "quad_count": 0,
+        "removed_faces": 1,
+        "removed_vertices": 3,
+        "triangle_count": 0,
+        "vertex_count": 0
+      },
+      "elapsed_ns": 750769
+    },
+    {
+      "id": "valid_quad",
+      "value": {
+        "area": 1.0,
+        "empty": false,
+        "face_count": 1,
+        "mesh": {
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "quad_count": 1,
+        "removed_faces": 0,
+        "removed_vertices": 0,
+        "triangle_count": 0,
+        "vertex_count": 4
+      },
+      "elapsed_ns": 752321
+    }
+  ]
+}

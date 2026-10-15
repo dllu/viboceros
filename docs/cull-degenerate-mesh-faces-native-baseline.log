@@ -1,0 +1,22 @@
+Compiling viboceros-opennurbs v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-opennurbs)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.34s
+     Running unittests src/lib.rs (target/debug/deps/viboceros_opennurbs-588d919dd36e8bbe)
+
+running 4 tests
+test mesh::cleanup_tests::all_degenerate_and_invalid_raw_indices_become_empty_without_out_of_bounds_reads ... ok
+test mesh::cleanup_tests::cleanup_repairs_quads_culls_lines_and_orphans_without_welding_colors ... ok
+test mesh::cleanup_tests::tiny_remote_and_unreferenced_vertex_cases_follow_native_double_precision_policy ... ok
+
+thread 'mesh::cleanup_tests::repaired_ngon_corner_used_elsewhere_does_not_leave_invalid_overlay' (3325995) panicked at crates/viboceros-opennurbs/src/mesh/cleanup_tests.rs:140:54:
+called `Result::unwrap()` on an `Err` value: MeshError("Invalid native cleanup output mesh")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test mesh::cleanup_tests::repaired_ngon_corner_used_elsewhere_does_not_leave_invalid_overlay ... FAILED
+
+failures:
+
+failures:
+    mesh::cleanup_tests::repaired_ngon_corner_used_elsewhere_does_not_leave_invalid_overlay
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p viboceros-opennurbs --lib`

@@ -44,7 +44,28 @@ struct MeshView {
 struct NativeResult {
     _private: [u8; 0],
 }
+#[derive(Clone, Debug, PartialEq)]
+pub struct MeshFaceCullResult {
+    pub mesh: MeshData,
+    pub removed_faces: usize,
+    pub repaired_faces: usize,
+    pub removed_vertices: usize,
+}
+struct EditResult {
+    mesh: MeshData,
+    changed: usize,
+    removed_faces: usize,
+    repaired_faces: usize,
+    removed_vertices: usize,
+}
 unsafe extern "C" {
+    fn vibo_mesh_cleanup_counts(
+        result: *const NativeResult,
+        removed: *mut usize,
+        repaired: *mut usize,
+        vertices: *mut usize,
+    ) -> c_int;
+
     fn vibo_mesh_merge_selected(
         input: *const MeshView,
         indices: *const usize,
@@ -98,7 +119,26 @@ pub fn merge_selected_coplanar_mesh(
     if faces.len() != if region { 1 } else { 2 } || faces.iter().any(|&f| f >= data.faces.len()) {
         return Err(MeshError("Invalid selected mesh faces".into()));
     }
-    edit_selection(data, 1, distance, angle, Some((faces, region)))
+    edit_selection(data, 1, distance, angle, Some((faces, region))).map(|r| (r.mesh, r.changed))
+}
+/// Repair/cull degenerate faces and remove unreferenced vertices. The native
+/// result can be empty; callers decide how to represent an empty model object.
+pub fn cull_degenerate_mesh_faces(data: &MeshData) -> Result<MeshFaceCullResult, MeshError> {
+    let r = edit_selection(data, 4, 0., 0., None)?;
+    if r.mesh.faces.len() > data.faces.len()
+        || r.removed_faces != data.faces.len() - r.mesh.faces.len()
+        || r.repaired_faces > r.mesh.faces.len()
+        || r.mesh.vertices.len() > data.vertices.len()
+        || r.removed_vertices != data.vertices.len() - r.mesh.vertices.len()
+    {
+        return Err(MeshError("Inconsistent native cleanup counts".into()));
+    }
+    Ok(MeshFaceCullResult {
+        mesh: r.mesh,
+        removed_faces: r.removed_faces,
+        repaired_faces: r.repaired_faces,
+        removed_vertices: r.removed_vertices,
+    })
 }
 /// Call OpenNURBS' planar n-gon finder, retaining existing overlays.
 pub fn add_planar_mesh_ngons(
@@ -122,7 +162,7 @@ fn edit(
     distance: f64,
     angle: f64,
 ) -> Result<(MeshData, usize), MeshError> {
-    edit_selection(data, op, distance, angle, None)
+    edit_selection(data, op, distance, angle, None).map(|r| (r.mesh, r.changed))
 }
 fn edit_selection(
     data: &MeshData,
@@ -130,7 +170,7 @@ fn edit_selection(
     distance: f64,
     angle: f64,
     selection: Option<(&[usize], bool)>,
-) -> Result<(MeshData, usize), MeshError> {
+) -> Result<EditResult, MeshError> {
     if data.vertices.len() > 4_000_000
         || data.faces.len() > 1_000_000
         || data.ngons.len() > data.faces.len()
@@ -257,7 +297,26 @@ fn edit_selection(
                 .to_vec(),
         });
     }
-    Ok((result, changed))
+    let (mut removed_faces, mut repaired_faces, mut removed_vertices) = (0, 0, 0);
+    if op == 4
+        && unsafe {
+            vibo_mesh_cleanup_counts(
+                owner.0.as_ptr(),
+                &mut removed_faces,
+                &mut repaired_faces,
+                &mut removed_vertices,
+            )
+        } == 0
+    {
+        return Err(MeshError("Missing cleanup counts".into()));
+    }
+    Ok(EditResult {
+        mesh: result,
+        changed,
+        removed_faces,
+        repaired_faces,
+        removed_vertices,
+    })
 }
 
 #[cfg(test)]
@@ -438,3 +497,6 @@ mod selected_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod cleanup_tests;

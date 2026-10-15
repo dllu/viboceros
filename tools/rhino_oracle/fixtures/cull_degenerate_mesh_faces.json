@@ -1,0 +1,488 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-09,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "valid_triangle",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "collinear_triangle",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "coincident_triangle",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "collapsed_quad",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "opposite_coincident_quad",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "partial_zero_area_quad",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0.5,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "mixed_with_orphan",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            5,
+            0,
+            0
+          ],
+          [
+            8,
+            8,
+            8
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            3,
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "preexisting_orphan",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            8,
+            8,
+            8
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "unwelded_duplicates",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ],
+          [
+            3,
+            4,
+            5
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "remote_sub_float_triangle",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            1000000.0,
+            1000000.0,
+            1000000.0
+          ],
+          [
+            1000000.0001,
+            1000000.0,
+            1000000.0
+          ],
+          [
+            1000000.0,
+            1000000.0001,
+            1000000.0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "tiny_kept",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1e-17,
+            0,
+            0
+          ],
+          [
+            0,
+            1e-17,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "tiny_culled",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1e-19,
+            0,
+            0
+          ],
+          [
+            0,
+            1e-19,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "op": "cull_degenerate_mesh_faces",
+      "id": "valid_quad",
+      "source": {
+        "type": "mesh_records",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ]
+        ],
+        "faces": [
+          [
+            0,
+            1,
+            2,
+            3
+          ]
+        ]
+      }
+    }
+  ]
+}
