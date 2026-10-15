@@ -22,6 +22,7 @@ fn build_native() {
         "USD BRep source is missing"
     );
     println!("cargo:rerun-if-changed=native");
+    println!("cargo:rerun-if-changed=native/face_creases.cpp");
     println!("cargo:rerun-if-changed=../../tools/usd_brep/planarity_zone_probe.cpp");
     println!("cargo:rerun-if-changed=../../third_party/patches/usd-brep-protected-topology.patch");
     println!(

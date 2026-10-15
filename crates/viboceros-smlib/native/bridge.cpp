@@ -727,6 +727,19 @@ extern "C" int vb_shape_face_count(const VbSolid *shape, size_t *count, char *er
     });
 }
 
+extern "C" int vb_imported_shape_divide_creases(VbSolid *shape,int kinks,int tangents,double tolerance,
+                                                size_t *added,char *error,size_t capacity){
+    if(added)*added=0;
+    return guarded(error,capacity,[&]{
+        require(shape && shape->value && added && (kinks==0 || kinks==1) &&
+                (tangents==0 || tangents==1) && std::isfinite(tolerance) && tolerance>0,"Invalid crease division arguments");
+        const bool solid=shape->value->IsManifoldSolid();
+        shape->source_faces.clear();shape->source_edges.clear();
+        *added=vb_divide_face_creases(*shape->value,kinks!=0,tangents!=0,tolerance);
+        require(!solid || shape->value->IsManifoldSolid(),"Crease division opened a solid");
+    });
+}
+
 extern "C" int vb_imported_shape_merge_coplanar_subset(VbSolid *shape,const size_t *indices,size_t count,
                                      int region,double tolerance,double angle,size_t *removed,char *error,size_t capacity) {
     if(removed)*removed=0;

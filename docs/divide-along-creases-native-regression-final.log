@@ -1,0 +1,26 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.81s
+     Running tests/coplanar_merge.rs (target/debug/deps/coplanar_merge-0b0511b03e1fcf4d)
+
+running 7 tests
+test overlapping_sheet_interiors_are_rejected_before_merging ... ok
+test annulus_preserves_inner_hole_and_original_vertices ... ok
+test adjacent_triangles_merge_without_changing_area_or_source ... ok
+test disconnected_regions_merge_independently ... ok
+test kinked_faces_and_cylindrical_seam_are_noops ... ok
+test triangulated_closed_box_merges_only_planar_interfaces ... ok
+test rational_closed_interface_merges_without_rebuilding_outer_trims ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/face_creases.rs (target/debug/deps/face_creases-3d22fcf592c93825)
+
+running 6 tests
+test a_smooth_geometric_plane_with_a_repeated_or_speed_change_knot_is_unchanged ... ok
+test crossing_u_v_creases_form_four_joined_faces ... ok
+test kinks_in_either_direction_create_shared_topology_without_rebuilding_geometry ... ok
+test asymmetric_domains_and_trimmed_faces_keep_their_active_geometry ... ok
+test tangent_curvature_jumps_are_independent_of_kinks ... ok
+test a_crease_crossing_a_trim_hole_keeps_the_hole_and_sheet_orientation ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s

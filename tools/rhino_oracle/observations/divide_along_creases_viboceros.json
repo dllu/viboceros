@@ -1,0 +1,295 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "kink_u",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 14325053
+    },
+    {
+      "id": "kink_v",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 12701190
+    },
+    {
+      "id": "kink_not_tangent",
+      "value": {
+        "added_faces": 0,
+        "area": 4.0,
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "naked_edges": 4,
+        "shared_edges": 0,
+        "valid": true
+      },
+      "elapsed_ns": 10302460
+    },
+    {
+      "id": "tangent_u",
+      "value": {
+        "added_faces": 1,
+        "area": 4.957885715089195,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 21988798
+    },
+    {
+      "id": "tangent_v",
+      "value": {
+        "added_faces": 1,
+        "area": 4.957885715089195,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 24304664
+    },
+    {
+      "id": "tangent_not_kink",
+      "value": {
+        "added_faces": 0,
+        "area": 4.957885715089195,
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "naked_edges": 4,
+        "shared_edges": 0,
+        "valid": true
+      },
+      "elapsed_ns": 15188945
+    },
+    {
+      "id": "both_disabled",
+      "value": {
+        "added_faces": 0,
+        "area": 4.0,
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "naked_edges": 4,
+        "shared_edges": 0,
+        "valid": true
+      },
+      "elapsed_ns": 5895482
+    },
+    {
+      "id": "crossing_u_v",
+      "value": {
+        "added_faces": 3,
+        "area": 5.5604779323150675,
+        "face_count": 4,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "naked_edges": 8,
+        "shared_edges": 4,
+        "valid": true
+      },
+      "elapsed_ns": 22120910
+    },
+    {
+      "id": "smooth_speed_change",
+      "value": {
+        "added_faces": 0,
+        "area": 6.0,
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "naked_edges": 4,
+        "shared_edges": 0,
+        "valid": true
+      },
+      "elapsed_ns": 10270012
+    },
+    {
+      "id": "smooth_bilinear",
+      "value": {
+        "added_faces": 0,
+        "area": 4.0,
+        "face_count": 1,
+        "is_solid": false,
+        "loop_counts": [
+          1
+        ],
+        "naked_edges": 4,
+        "shared_edges": 0,
+        "valid": true
+      },
+      "elapsed_ns": 5052662
+    },
+    {
+      "id": "remote_kink",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 14121293
+    },
+    {
+      "id": "asymmetric_u",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 12588710
+    },
+    {
+      "id": "asymmetric_v",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 14007100
+    },
+    {
+      "id": "mixed_both",
+      "value": {
+        "added_faces": 2,
+        "area": 6.957885715089195,
+        "face_count": 3,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1,
+          1
+        ],
+        "naked_edges": 8,
+        "shared_edges": 2,
+        "valid": true
+      },
+      "elapsed_ns": 29208765
+    },
+    {
+      "id": "mixed_kinks_only",
+      "value": {
+        "added_faces": 1,
+        "area": 6.957885715089195,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 28392906
+    },
+    {
+      "id": "mixed_tangents_only",
+      "value": {
+        "added_faces": 1,
+        "area": 6.957885715089195,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 26115712
+    },
+    {
+      "id": "rational_kink",
+      "value": {
+        "added_faces": 1,
+        "area": 4.0,
+        "face_count": 2,
+        "is_solid": false,
+        "loop_counts": [
+          1,
+          1
+        ],
+        "naked_edges": 6,
+        "shared_edges": 1,
+        "valid": true
+      },
+      "elapsed_ns": 14058940
+    }
+  ]
+}

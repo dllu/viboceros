@@ -6,6 +6,7 @@ Rhino's complete command set is still a work in progress.
 
 - [Check and SelBadObjects](check.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
+- [DivideAlongCreases](divide-along-creases.md)
 - [ShowEdges, ShowEdgesOff, ZoomNaked and ZoomNonManifold](show-edges.md)
 - [Divide by count, arc length and chord length; Split and output groups](divide.md)
 - [Block definition management](block-manager.md)

@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "implementation_base_revision": "4ce2bbfc59ccb870f925028d7ad135395a07b1b4",
+  "command_implemented": true,
+  "native_smlib_required": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "general_validity_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "usd_brep_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "recipes": 17,
+  "scope_notes": [
+    "DivideAlongCreases accepts surfaces and polysurfaces, with independent remembered SplitAtKinks and SplitAtTangents Yes/No options. Both initially default to Yes; these local defaults are not a fresh observation of Rhino preference state. Shared SurfaceComponents picking provides preselection, clicked postselection, option edits, filtering and cancellation. Changed surfaces become joined B-reps on the same object ID; metadata, groups and selection are retained. One transaction covers all sources. No-ops preserve Redo and original representation, including both options disabled in portable builds. Other operations require native-smlib with an explicit error in portable builds.",
+    "The adapter imports an independent B-rep and delegates classification to SmSurface::CalculateContinuities and exact spatial isocurves to SmBSplineSurface::CreateIsoParametricCurve. Kinks select SM_CT_C0. Tangent discontinuities select SM_CT_G1, SM_CT_G1R and SM_CT_C1, leaving curvature-continuous classifications unchanged. It does not infer geometry solely from knot multiplicity. Native geometric criteria determine continuity; document absolute tolerance controls subdivision. A local spatial frame keeps remote input near the origin for command construction. This is not certification of every pathological discontinuity or a match to every Rhino tolerance boundary.",
+    "Source inspection found the pinned SubdivideFaceAtDiscontinuities convenience method uses the U-cut count for the V loop. Its related SmIsoCurve::CreateUVIsoLine repeats the U branch, selects the constant rather than varying interval and does not provide the required shared parameter mapping. The adapter bypasses these convenience methods, constructing independently selected U/V cuts using the exact BSpline isocurve override, native two-dimensional BSpline line segments and matching their domains. SmBrep::MergeCurvesOnSurface preserves trimmed regions and shared topology. The exact export gate remains active; no fitted replacement surface or approximate spatial export is used. Upstream sources are unchanged.",
+    "The imported shape owns every edit and clears original face/edge correspondence before changing topology. A scoped native editing flag is restored on return or exception. Rust prepares all selected results before document mutation and checks source snapshots, selectability and tolerance before a prepared commit. Native solid inputs must remain manifold solids. Resource guards bound input faces (512), total input/output surface controls (2000000), unique knots per direction (2048), selected lines (1024), per-surface patch grid and total output faces (16384). Shared native transfer limits also apply. Output control counts include repeated underlying surfaces so export cannot expand a modest source into unbounded repeated control payloads.",
+    "Six native crease tests cover kinks and tangent curvature jumps in either parameter direction, crossing U/V creases, independent options, smooth geometric planes with parameter-speed changes, asymmetric nonzero parameter domains, partial rectangular trims, no-op repetition and a crease crossing a trim hole. Hole tests retain area 3.5, shared connectivity and annulus Euler characteristic, and compare oriented world normals on both original and reversed sheets. Sheet import can encode reversal through SwapUV, so representation flags are not used as orientation evidence. Seven prior coplanar merge regressions also pass.",
+    "Command tests cover staged mixed-source failure, unchanged sources and history, stale geometry/tolerance, remembered option isolation, shared topology, native structural Check, object identity/metadata/groups/selection and Undo/Redo. Portable tests keep explicit kernel unavailability separate from both-options-off no-ops. Native getter parity is not inferred from these local UI tests.",
+    "Seventeen actual-command oracle recipes compare independent face, naked/shared edge, loop, validity and analytic area expectations. Cases include U/V kink and tangent surfaces, each option separately, both options off, crossing creases, smooth bilinear and speed-change surfaces, a remote origin, asymmetric parameter domains, mixed kink/tangent locations and positive rational weights. Fixtures alternate surface and B-rep document input locally. SDK comparison always wraps the same underlying surface as an owned B-rep; it does not exercise document object type/selection/history policy. Native structural validity is a diagnostic, not a general geometry certificate. Local elapsed times are not comparative performance evidence.",
+    "The public Rhino 8 SDK companion copies an owned B-rep, calls SplitKinkyFaces(angular_tolerance, True) and/or SplitFacesAtTangents, and observes post-operation topology/area. Surface, source, copies and mass objects are disposed. Mocks cover strict finite basis/control/options inputs, independent calls, per-iteration copies, null/alias/native/mass/observation failures, actual worker routing and isolated host staging of transitive dependencies. These mocks are not licensed Rhino evidence.",
+    "AddressSanitizer instrumentation is enabled for the SMLib, SM_API and adapter archives; generated release compiler flags were inspected. The final six-test run passes. Leak detection and optional stack-use-after-return detection are disabled; Rust and separately bundled dependencies are not separately instrumented. No general memory-safety certificate is claimed.",
+    "No fresh licensed Rhino capture was attempted in this increment. The latest recorded launch issue remains docs/oracle-sspi.md. Full command/getter parity, arbitrary trim/solid coverage, Rhino representation parity and comparative performance remain unqualified.",
+    "Thirteen historical source hashes in three verifiable qualification records are retained through immutable Git references. Their non-hash fields are unchanged; 69 pre-existing unverifiable records remain untouched. No earlier result or parity/performance claim is upgraded."
+  ],
+  "validation": {
+    "native_geometry_regression": {
+      "command": "cargo test -p viboceros-smlib --features native --test face_creases --test coplanar_merge -- --nocapture",
+      "passed": 13,
+      "log": "docs/divide-along-creases-native-regression-final.log",
+      "note": "Six crease tests and seven existing coplanar merge regressions. The final sanitizer run includes the final normal comparison using an angular epsilon; no implementation changes intervene."
+    },
+    "native_commands_ui_oracle": {
+      "command": "cargo test -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib --lib --bins divide_creases -- --nocapture",
+      "passed": 6,
+      "log": "docs/divide-along-creases-integration-final.log"
+    },
+    "portable_commands_ui": {
+      "command": "cargo test -p viboceros-command -p viboceros --lib --bins divide_creases -- --nocapture",
+      "passed": 4,
+      "log": "docs/divide-along-creases-portable.log"
+    },
+    "native_sanitizer": {
+      "command": "VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test face_creases -- --nocapture",
+      "passed": 6,
+      "log": "docs/divide-along-creases-asan-final.log"
+    },
+    "help": {
+      "command": "cargo test -p viboceros-command --features native-smlib reports_sorted_help -- --nocapture",
+      "passed": 1,
+      "log": "docs/divide-along-creases-help.log"
+    },
+    "python": {
+      "command": "python3 -m unittest tools.rhino_oracle.test_divide_creases tools.rhino_oracle.test_cull_degenerate tools.rhino_oracle.test_structural_sdk tools.rhino_oracle.test_geometry_validity tools.rhino_oracle.test_worker tools.rhino_oracle.test_client -q",
+      "passed": 159,
+      "log": "docs/divide-along-creases-python.log"
+    },
+    "clippy": {
+      "command": "cargo clippy -p viboceros-smlib -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings",
+      "status": "passed",
+      "log": "docs/divide-along-creases-clippy.log"
+    },
+    "cpp_warnings": {
+      "command": "c++ -std=c++17 -isystem third_party/usd-brep/source/SMLib/inc -isystem third_party/usd-brep/source/SM_API/inc -Icrates/viboceros-smlib/native -Wall -Wextra -Werror -fsyntax-only crates/viboceros-smlib/native/face_creases.cpp",
+      "status": "passed"
+    },
+    "format": {
+      "command": "cargo fmt --all -- --check",
+      "status": "passed"
+    },
+    "cli_capture": {
+      "command": "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/divide_along_creases.json tools/rhino_oracle/observations/divide_along_creases_viboceros.json",
+      "recipes_completed": 17,
+      "log": "docs/divide-along-creases-capture.log"
+    }
+  },
+  "source_sha256": {
+    "Cargo.lock": "0be222add16bb2e7868ea22503b8ac4ee06be6e0435b227113b234f549404991",
+    "Cargo.toml": "38b5a4b94cda8a02db70c097645582017814f7167b2ed07cf9589a64d1e209ce",
+    "README.md": "1e857356e931924f3a5d92f57e3e3e4ec5d0dbe961d9ae760462897a4c189f53",
+    "crates/viboceros-command/src/divide_creases.rs": "4175140df5a1f670a1c88d50c9a33c35ee4796eb3d39a5ca5874a55084a43e6e",
+    "crates/viboceros-command/src/divide_creases/tests.rs": "9cbcd59effbf19150765e1d89d8613dbfd2ee05ab573ac05776b5de7b848bbbd",
+    "crates/viboceros-command/src/lib.rs": "da7b2d462ae0c2c39ace0924a4253cccd8200f9b6e9212534d096e7ce040b597",
+    "crates/viboceros-command/src/object_selection.rs": "78e7c0c8b48bd3f8e38dc30e9c43051deab0c1fa67db1c1bc82b399269269b13",
+    "crates/viboceros-command/src/remembered.rs": "15b833247616e15af01130abbcde742ba210aeac08acb398f6268de88d0d2e53",
+    "crates/viboceros-oracle/src/divide_creases.rs": "28d7d821bc5676ba841585b1cedf9ab5eac7cb026f91e69fc974d52cb8a9cab4",
+    "crates/viboceros-oracle/src/lib.rs": "45c1040012667edffa7e2be0139539a4d7fd689340bf844afe0bd9e6519cf0a3",
+    "crates/viboceros-smlib/build.rs": "43c50428a1b79fa8938f7cdfcc2ff8408b38be9116ae044f8ec6555af0bcc0d6",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f95c0926473ddfee8d05888607f86efb385c4be0868295070b4f1276c3b04bb1",
+    "crates/viboceros-smlib/native/brep_data.h": "40facf94d48c651085cc32a02a30e39884b8c16c39e0ec056005734bb8eb6897",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "crates/viboceros-smlib/native/bridge.cpp": "36870bed62f436e16ec72729d328dc87d819087b4fc657c2f857d5d70735175d",
+    "crates/viboceros-smlib/native/face_creases.cpp": "8ec04f7f63ed365247f4bec1777ef115a11b5906117735e5b45fcd72c4020477",
+    "crates/viboceros-smlib/src/native.rs": "f5bda635643eddb4598ee4fab3f5de2a112f7546c86f6a248595ca20634346c8",
+    "crates/viboceros-smlib/src/native/face_creases.rs": "eee367d755a3a2cd038dc4a540f3d4f0e36664a5f66d6e704122883f6606a2f1",
+    "crates/viboceros-smlib/src/native/shape.rs": "4a9c365449c182ae112cfc1a124c0646efde497dc175bf019928d933e7ecbb63",
+    "crates/viboceros-smlib/tests/face_creases.rs": "0de1de68bab504ac7f4131cd8291b1807f04047a81e6734c44fee3b82145fd41",
+    "docs/commands/README.md": "2ddcb8dd870d819a25013578b9f97314239746b030a63cf8fadf9b9b31007c54",
+    "docs/commands/divide-along-creases.md": "4529049fb8a032d3b01e83aff3b853e012a00dadd9125116f388f7f998156596",
+    "src/app.rs": "2e08864c6d4128fe31349b83e0dfc007d2115e13456c2fa78f4779a1c6cb1047",
+    "src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2",
+    "src/app/tests/divide_creases.rs": "c171fb4c5d3ce3d1555620d7da93902eac81b32b339a1ca497ce432405af3851",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurface.cpp": "f99a3b406641889e17d117e7d76ef45e24a5ec3b291adbca963f9b773057598a",
+    "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
+    "third_party/usd-brep/source/SMLib/src/SmIsoCurve.cpp": "b3e0a1ff9ed8d80d4975c74609370c91684f74eae583a4fd9c4585aca6cdc2c9",
+    "third_party/usd-brep/source/SMLib/src/SmSurface.cpp": "218a360a80b68d4dec70a7b3e1cab5d8d89a375f41cd5564e2e058c6629740be",
+    "tools/rhino_oracle/client.py": "a14111f5d56726fc55d082afc48c624ffaf6667a0e2acaca7fcdc997dfe05a9d",
+    "tools/rhino_oracle/divide_creases_probe.py": "3ad3615a533b1351a8415a7aed97ebfe50adcbefbbd50154f295981be61b406b",
+    "tools/rhino_oracle/fixtures/divide_along_creases.json": "55fd50a663775a90dbf80caed5756ea1f0f9dd247be6430dbffd98bf30d08018",
+    "tools/rhino_oracle/geometry_validity_probe.py": "057d9220939f40b131c8777ee8ebefce8236cedca2604bca0b625c3c49c14cff",
+    "tools/rhino_oracle/rhino_worker.py": "2691b938937931406c3f2bcdf42e4a6be171143a4c3fceef5374ed8df2b98a35",
+    "tools/rhino_oracle/structural_sdk.py": "8a7cbfc25f90a41a80324aa9ada9198a0a5ee92399f55bb31e3bb4bae497a065",
+    "tools/rhino_oracle/test_divide_creases.py": "c341712a33f665018394b455eb3f385b7ae64a0c9e4efc9aea8fad145ca3c933",
+    "tools/rhino_oracle/test_structural_sdk.py": "d290410f601bb313ed305c3ccdfa9d2dc03cd0d3e7cf88de712304872e29a504"
+  },
+  "evidence_sha256": {
+    "docs/divide-along-creases-asan-final.log": "bf898984cc1ae1a169f0272ab49339274c5c31b1e46540d49d84afdcc0ff34b4",
+    "docs/divide-along-creases-capture.log": "d21ba3f129f05418ad94a3fd5c1e9a8d2d5859a2dea896a8b39a2f2b042419c5",
+    "docs/divide-along-creases-clippy.log": "4037a706d474b2b6602f3170c3410aad1bf3e4450347708e0fe9f6443ec64462",
+    "docs/divide-along-creases-help.log": "a589b4619663dbe3f7d73f13a086ec0057e4ee22ed7c8c8c080df4d1c6ffee58",
+    "docs/divide-along-creases-integration-final.log": "e239bf2730dc3f70e80e8d5768ecd9647124f844abd1351c4bd9a33c2ff05c09",
+    "docs/divide-along-creases-native-regression-final.log": "840e2d3210ee31c7039748b17f69abf2bddea27f5d79b2d447ad786dedb85d6f",
+    "docs/divide-along-creases-portable.log": "ebc9a1dca4151f878655e85322f7c933f404c97f3b55b8ddc9447024fe392a6b",
+    "docs/divide-along-creases-python.log": "7f2e378da8998b4498bcf0dd383a375d87c9c53c143e2b610d1b7aef6a4db662",
+    "tools/rhino_oracle/observations/divide_along_creases_viboceros.json": "be5a493c37028688336f95ea562ad7275ac58db866dc16fcaecbb96a5e1a0881"
+  }
+}

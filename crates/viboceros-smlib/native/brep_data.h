@@ -61,6 +61,7 @@ VbSurfaceData *vb_copy_nurbs_payload(const VbNurbsData &data);
 // Clamped query geometry, owned by the caller; use under the shared kernel lock.
 SmSurface *vb_import_query_surface(const VbNurbsData &data);
 SmBrep *vb_copy_brep(const SmBrep &source);
+size_t vb_divide_face_creases(SmBrep &brep, bool kinks, bool tangents, double tolerance);
 size_t vb_merge_coplanar_faces(SmBrep &brep, double tolerance, double angle_tolerance,
                                const std::vector<SmFace*> *selected = nullptr, bool region = false);
 void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets = false);

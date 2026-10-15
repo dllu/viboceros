@@ -1,0 +1,19 @@
+Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 43.70s
+     Running unittests src/main.rs (target/debug/deps/viboceros-ecd5c5b6564f248c)
+
+running 2 tests
+test app::tests::divide_creases::crease_division_picker_filters_objects_edits_options_and_cancels ... ok
+test app::tests::divide_creases::crease_division_without_native_keeps_the_getter_and_source_available ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1220 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-7d1b644388fcdd03)
+
+running 2 tests
+test divide_creases::tests::division_options_are_strict_typed_remembered_and_independent_between_registries ... ok
+test divide_creases::tests::division_requires_native_kernel_without_changing_sources_or_history ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1386 filtered out; finished in 0.02s

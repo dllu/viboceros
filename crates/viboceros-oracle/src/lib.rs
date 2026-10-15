@@ -121,6 +121,8 @@ mod blend_edge;
 mod chamfer_edge;
 mod coplanar_faces;
 mod coplanar_mesh;
+mod divide_creases;
+pub use divide_creases::Fixture as DivideCreasesFixture;
 mod cull_degenerate;
 pub use cull_degenerate::Fixture as CullDegenerateFixture;
 mod geometry_validity;
@@ -1641,6 +1643,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SelectedCoplanarFacesFixture,
     },
+    DivideAlongCreases {
+        id: String,
+        #[serde(flatten)]
+        fixture: DivideCreasesFixture,
+    },
     CullDegenerateMeshFaces {
         id: String,
         #[serde(flatten)]
@@ -2629,6 +2636,7 @@ impl Operation {
             | Self::SurfacePathExtrusion { id, .. }
             | Self::SurfaceApexExtrusion { id, .. }
             | Self::SelectedCoplanarFaces { id, .. }
+            | Self::DivideAlongCreases { id, .. }
             | Self::CullDegenerateMeshFaces { id, .. }
             | Self::GeometryValidity { id, .. }
             | Self::MergeCoplanarFaces { id, .. }
@@ -5832,6 +5840,9 @@ fn execute(
         }
         Operation::SelectedCoplanarFaces { fixture, .. } => {
             selected_coplanar_faces::run(fixture, iterations, tolerance)?
+        }
+        Operation::DivideAlongCreases { fixture, .. } => {
+            divide_creases::run(fixture, iterations, tolerance)?
         }
         Operation::CullDegenerateMeshFaces { fixture, .. } => {
             cull_degenerate::run(fixture, iterations, tolerance)?

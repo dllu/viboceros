@@ -72,6 +72,7 @@ pub use knot_refinement::{
     sweep_model, sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
 mod coplanar_merge;
+mod face_creases;
 mod shape;
 mod silhouette;
 mod surface_extrusion;

@@ -10018,6 +10018,7 @@ mod tests {
     mod curve_rebuild_preview;
     mod distance;
     mod distribute;
+    mod divide_creases;
     mod domain;
     mod draft_angle;
     mod edge_analysis;
