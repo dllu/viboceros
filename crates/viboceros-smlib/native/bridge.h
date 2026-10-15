@@ -13,6 +13,8 @@ typedef struct VbParts VbParts;
 typedef struct VbCurveList VbCurveList;
 int vb_shape_extrude_faces(const VbSolid *shape, const double displacement[3], int cap_ends,
     double tolerance, VbSolid **out, char *error, size_t capacity);
+int vb_shape_extrude_faces_to_point(const VbSolid *shape, const double apex[3],
+    int cap_base, double tolerance, VbSolid **out, char *error, size_t capacity);
 int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const VbCurve *path, int cap_ends,
     double tolerance, VbSolid **out, char *error, size_t capacity);
 int vb_shape_single_face_plane_normal(const VbSolid *shape, double tolerance, int *has_plane,

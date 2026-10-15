@@ -159,6 +159,7 @@ mod edge_fillet;
 mod evaluate_point;
 mod evaluate_uv;
 mod extrude_surface;
+mod extrude_surface_apex;
 mod extrude_surface_path;
 mod extrude_tapered;
 mod grid_settings;
@@ -731,6 +732,9 @@ enum InteractiveCommand {
         base: Option<Point3>,
         options: viboceros_command::extrude_surface::SurfaceExtrusionOptions,
     },
+    ExtrudeSurfaceToPoint {
+        options: viboceros_command::extrude_surface_apex::SurfaceApexOptions,
+    },
     ExtrudeCurveToPoint {
         delete_input: bool,
         solid: bool,
@@ -859,6 +863,7 @@ impl InteractiveCommand {
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveTapered { .. } => "ExtrudeCrvTapered",
             Self::ExtrudeSurface { .. } => "ExtrudeSrf",
+            Self::ExtrudeSurfaceToPoint { .. } => "ExtrudeSrfToPoint",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
         }
@@ -1637,6 +1642,9 @@ impl InteractiveCommand {
             Self::ExtrudeSurface { base: Some(_), .. } => {
                 "ExtrudeSrf: pick the direction target (Esc to cancel)"
             }
+            Self::ExtrudeSurfaceToPoint { .. } => {
+                "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput; Esc to cancel)"
+            }
             Self::ExtrudeCurveToPoint { .. } => {
                 "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
             }
@@ -1802,6 +1810,7 @@ impl InteractiveCommand {
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveTapered { base: None, .. }
             | Self::ExtrudeSurface { base: None, .. }
+            | Self::ExtrudeSurfaceToPoint { .. }
             | Self::ExtrudeCurveToPoint { .. }
             | Self::Revolve {
                 axis_start: None, ..
@@ -2464,7 +2473,8 @@ impl VibocerosApp {
         if self.try_continue_point_grid_height(&input) {
             return;
         }
-        if self.try_continue_surface_path(&input)
+        if self.try_continue_surface_apex(&input)
+            || self.try_continue_surface_path(&input)
             || self.try_continue_surface_extrusion(&input)
             || self.try_continue_tapered_extrusion(&input)
             || self.try_continue_set_point_option(&input)
@@ -2498,7 +2508,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_surface_path_input(&input)
+        if self.try_start_surface_apex_input(&input)
+            || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
             || self.start_tween_surfaces(&input)
@@ -3020,7 +3031,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.try_start_surface_path_input(input) || self.try_start_surface_extrusion_input(input)
+        if self.try_start_surface_apex_input(input)
+            || self.try_start_surface_path_input(input)
+            || self.try_start_surface_extrusion_input(input)
         {
             return true;
         }
@@ -5236,6 +5249,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveTapered { .. }
                 | InteractiveCommand::ExtrudeSurface { .. }
+                | InteractiveCommand::ExtrudeSurfaceToPoint { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::Curvature { .. }
@@ -7983,6 +7997,13 @@ impl VibocerosApp {
                     options,
                 );
             }
+            InteractiveCommand::ExtrudeSurfaceToPoint { options } => {
+                return self.finish_surface_face_command(&format!(
+                    "ExtrudeSrfToPoint {} {}",
+                    format_model_point(point),
+                    options.command_options()
+                ));
+            }
             InteractiveCommand::ExtrudeCurveToPoint {
                 delete_input,
                 solid,
@@ -9930,6 +9951,7 @@ mod tests {
     mod evaluate_uv;
     mod extract_surface;
     mod extrude_surface;
+    mod extrude_surface_apex;
     mod extrude_surface_path;
     mod extrude_tapered;
     mod grip_transform;

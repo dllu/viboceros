@@ -191,20 +191,28 @@ std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, co
     return result;
 }
 
+std::unique_ptr<SmBSplineSurface> apex_ruled_surface(const SmBSplineCurve &curve,const SmPoint3d &point) {
+    auto *context=SmApiGetOrCreateContext();
+    const size_t count=curve.GetNumberControlPoints();
+    require(count>0 && count<=limit/2,"Apex ruled-surface control-net resource limit");
+    std::unique_ptr<SmBSplineCurve> collapsed(new (*context) SmBSplineCurve(curve));
+    vb_preserve_curve_basis(*collapsed,vb_curve_full_knots(curve));
+    for(ULONG i=0;i<count;++i) {
+        SmPoint3d control;double weight;
+        check(curve.GetControlPoint(SM_CP_EUCLIDIAN_RATIONAL,i,control,weight),"read apex profile weight");
+        check(collapsed->SetControlPoint(SM_CP_EUCLIDIAN_RATIONAL,i,point,weight),"collapse apex boundary");
+    }
+    SmBSplineSurface *raw=nullptr;
+    const auto status=SmBSplineSurface::CreateRuledSurface(*context,curve,*collapsed,SM_SP_U,raw);
+    std::unique_ptr<SmBSplineSurface> result(raw);
+    check(status,"create apex ruled surface");require(raw,"Missing apex ruled surface");
+    return result;
+}
 std::unique_ptr<SmBSplineSurface> apex_surface(const VbCurve &curve, const double apex[3]) {
     require(finite3(apex), "Invalid apex coordinates");
-    auto *context = SmApiGetOrCreateContext();
-    auto collapsed = copy_curve(curve);
-    const SmPoint3d point(apex[0], apex[1], apex[2]);
-    for (size_t i = 0; i < curve.points.size() / 4; ++i)
-        check(collapsed->SetControlPoint(SM_CP_EUCLIDIAN_RATIONAL, i, point,
-                                         curve.points[4 * i + 3]), "collapse apex boundary");
-    SmBSplineSurface *raw = nullptr;
-    const auto status = SmBSplineSurface::CreateRuledSurface(*context, *curve.value, *collapsed,
-                                                           SM_SP_U, raw);
-    std::unique_ptr<SmBSplineSurface> result(raw);
-    check(status, "create apex ruled surface");
-    require(raw, "Missing apex ruled surface");
+    const SmPoint3d point(apex[0],apex[1],apex[2]);
+    auto result=apex_ruled_surface(*curve.value,point);
+    auto *raw=result.get();
     vb_preserve_surface_basis(*raw, {std::vector<double>{0, 0, 1, 1}, curve.knots});
     const auto start = curve_start(curve);
     const double length = start.DistanceBetween(point);
@@ -1607,6 +1615,75 @@ extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displac
         require(faces.GetSize()>0,"Empty surface extrusion");
         require(!cap_ends || owner->value->IsManifoldSolid(),"Surface extrusion did not close");
         check(SmApiTurnToNurbs(owner->value.get()),"convert surface extrusion to NURBS");
+        *out=owner.release();
+    });
+}
+
+extern "C" int vb_shape_extrude_faces_to_point(const VbSolid *shape, const double apex[3],
+    int cap_base, double tolerance, VbSolid **out, char *error, size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && out && finite3(apex) && (cap_base==0 || cap_base==1)
+            && std::isfinite(tolerance) && tolerance>0,"Invalid surface apex extrusion input");
+        require(!shape->value->IsManifoldSolid(),"Surface apex extrusion requires an open sheet");
+        auto *context=SmApiGetOrCreateContext();
+        SmTArray<SmFace*> faces;shape->value->GetFaces(faces);
+        require(faces.GetSize()>0 && faces.GetSize()<=100000,"Surface apex extrusion face limit");
+        const SmPoint3d point(apex[0],apex[1],apex[2]);
+        for(ULONG i=0;i<faces.GetSize();++i) {
+            SmVector3d normal;
+            if(surface_control_plane_normal(*faces[i]->GetSurface(),tolerance,normal)) {
+                SmPoint3d base;
+                check(faces[i]->GetSurface()->EvaluatePoint(faces[i]->GetSurface()->GetNaturalUVDomain().GetMin(),base),"evaluate planar apex source");
+                require(std::abs((point-base).Dot(normal))>tolerance,"Apex must leave the source plane");
+            }
+        }
+        SmTArray<SmEdge*> edges;shape->value->GetEdges(edges);
+        size_t controls=0,boundaries=0;
+        for(ULONG i=0;i<edges.GetSize();++i)if(edges[i]->IsLamina()) {
+            auto *curve=edges[i]->GetCurve();
+            require(curve && curve->IsKindOf(SmBSplineCurve_TYPE),"Surface apex extrusion requires NURBS edges");
+            const size_t count=static_cast<SmBSplineCurve*>(curve)->GetNumberControlPoints();
+            require(count<=limit/2 && controls<=limit/2-count,"Surface apex extrusion control-net resource limit");
+            controls+=count;++boundaries;
+        }
+        require(boundaries>0,"Surface apex extrusion requires a boundary");
+        auto owner=std::make_unique<VbSolid>();
+        owner->value.reset(new (*context) SmBrep());owner->value->SetTolerance(tolerance,FALSE);
+        size_t wall_controls=0,wall_count=0;
+        for(ULONG i=0;i<edges.GetSize();++i)if(edges[i]->IsLamina()) {
+            auto *original=static_cast<SmBSplineCurve*>(edges[i]->GetCurve());
+            std::unique_ptr<SmBSplineCurve> profile(new (*context) SmBSplineCurve(*original));
+            vb_preserve_curve_basis(*profile,vb_curve_full_knots(*original));
+            auto interval=edges[i]->GetInterval();
+            check(profile->Trim(interval,FALSE),"trim apex source edge");
+            SmTArray<SmBSplineCurve*> segments;SmObjsDelete<SmBSplineCurve*> cleanup(&segments);
+            check(profile->SubdivideAtDiscontinuity(*context,SM_CT_G1,segments),"split apex source at tangents");
+            require(segments.GetSize()>0 && segments.GetSize()<=100000,"Surface apex boundary segment limit");
+            if(segments.GetSize()==1 && segments[0]->GetDegree()==profile->GetDegree()
+               && segments[0]->GetNumberControlPoints()==profile->GetNumberControlPoints())
+                vb_preserve_curve_basis(*segments[0],vb_curve_full_knots(*profile));
+            for(ULONG j=0;j<segments.GetSize();++j) {
+                auto *section=segments[j];
+                const size_t count=section->GetNumberControlPoints();
+                require(count<=limit/2 && wall_controls<=limit/2-count,"Surface apex split control-net resource limit");
+                wall_controls+=count;
+                require(++wall_count<=100000-(cap_base?faces.GetSize():0),"Surface apex output face resource limit");
+                auto wall=apex_ruled_surface(*section,point);auto *raw=wall.get();
+                SmFace *face=nullptr;
+                const auto face_status=owner->value->CreateFaceFromSurface(raw,raw->GetNaturalUVDomain(),face);
+                // The native face constructor attaches the surface once it is
+                // adopted. Keep ownership if an earlier validation failed.
+                if(raw->GetOwner())wall.release();
+                check(face_status,"create apex wall topology");require(face,"Missing apex wall face");
+            }
+        }
+        if(cap_base)check(shape->value->CopyFaces(faces,owner->value.get(),nullptr,FALSE),"copy actual apex base caps");
+        check(owner->value->StitchAndOrient(),"stitch surface apex extrusion");
+        SmTArray<SmFace*> output;owner->value->GetFaces(output);
+        require(output.GetSize()>0 && output.GetSize()<=100000,"Surface apex extrusion output face limit");
+        require(!cap_base || owner->value->IsManifoldSolid(),"Surface apex extrusion did not close");
+        check(SmApiTurnToNurbs(owner->value.get()),"convert surface apex extrusion to NURBS");
         *out=owner.release();
     });
 }

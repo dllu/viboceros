@@ -1,0 +1,233 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "apex_planar",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                6.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 61751376
+    },
+    {
+      "id": "apex_planar_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              [
+                2.0,
+                3.0,
+                0.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 12.0
+          }
+        ]
+      },
+      "elapsed_ns": 42570468
+    },
+    {
+      "id": "apex_warped",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                6.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 11.5
+          }
+        ]
+      },
+      "elapsed_ns": 64967705
+    },
+    {
+      "id": "apex_warped_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -6.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 12.5
+          }
+        ]
+      },
+      "elapsed_ns": 44632091
+    },
+    {
+      "id": "apex_warped_off_axis",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                4.0,
+                3.0,
+                6.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 10.833333333333332
+          }
+        ]
+      },
+      "elapsed_ns": 65271707
+    },
+    {
+      "id": "apex_ring_hole",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                6.0
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": true,
+            "volume": 50.2654824574367
+          }
+        ]
+      },
+      "elapsed_ns": 128529535
+    },
+    {
+      "id": "apex_ring_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                6.000000000000001
+              ]
+            ],
+            "face_count": 2,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 22006900
+    },
+    {
+      "id": "apex_box_face",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                2.0,
+                2.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 0.6666666666666666
+          }
+        ]
+      },
+      "elapsed_ns": 55220859
+    },
+    {
+      "id": "apex_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                10000.0,
+                -30000.0,
+                49999.99999999999
+              ],
+              [
+                10002.0,
+                -29997.0,
+                50006.0
+              ]
+            ],
+            "face_count": 5,
+            "is_solid": true,
+            "volume": 11.5
+          }
+        ]
+      },
+      "elapsed_ns": 65641099
+    }
+  ]
+}

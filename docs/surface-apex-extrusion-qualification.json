@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "surface_apex_extrusion_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "vertex_manifold_qualified": false,
+  "fresh_rhino_captures": 0,
+  "recipes": 9,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope_notes": [
+    "ExtrudeSrfToPoint sweeps lamina source boundaries to an explicit apex using the native SmBSplineSurface::CreateRuledSurface primitive, retaining each profile control weight in a collapsed copy. Actual source faces copy as optional caps, retaining curved surfaces and trim holes. Shared interior edges on connected sheets generate no walls. Native face creation handles singular apex topology, followed by stitching, orientation and Rust B-rep validation.",
+    "Curve and surface apex construction share one native ruled-surface helper. The curve API keeps its established parameter-domain and basis-preservation wrapper. Control-net limits budget both ruled rows; surface construction additionally budgets aggregate boundary controls, post-G1-split controls and final face count. Input curves/faces remain owned by their sources; copied curves, split segments and adopted surfaces have explicit native cleanup. The native copy constructor can regroup very short knots. Copied boundary/profile bases are restored with the existing basis-preservation helper; an unsplit segment retains its input basis when its degree/control layout matches. The extreme-chart rational apex regression detected and verifies this correction.",
+    "Native tests cover planar and warped bases, targets above/below/off-axis, sampled retained cap and affine wall points, analytic volumes, rational trim holes, uncapped walls, source reuse after invalid coplanar targets, closed-source rejection and connected two-face sheets without internal walls. Curve apex regression samples test affine interpolation across rational profiles, and modeling-basis regressions cover the shared primitive wrapper.",
+    "For the independent 2-by-3 planar patch, apex volume is abs(2*az). For its bilinear warp z=x*y/6, the oriented divergence integral gives abs(2*az + 0.5 - 0.5*ax - ay/3). The centered upper/lower fixtures therefore expect 11.5 and 12.5; the off-axis fixture expects 65/6. An annular base with radii 3 and 1 at height 6 has volume 16*pi. The box-face fixture expects 2/3.",
+    "Solid, DeleteInput and original Face/Faces/FaceRefs selection are supported. Targets deduplicate; products and input remainders stage before document edits. Remaining faces preserve object identity, attributes and groups. One Undo/Redo operation includes all outputs/removals. A later coplanar face failure preserves the full batch, selection, history and Redo.",
+    "The application freezes original face references and source snapshots before a shared point getter. Object/face-component preselection and source picking work. Inline face selectors/options survive source selection. Solid/DeleteInput edits validate atomically; stale source geometry and geometry failure retain the getter for retry. A failed coplanar point followed by a valid clicked target uses the same sources. Straight surface extrusion shares the finish helper and has regression coverage.",
+    "Nine independent fixtures exercise the actual Rust command and record volumes, solid flags, face counts and native tight geometric bounds. The public Rhino recipe duplicates the selected face, builds walls with Surface.CreateExtrusionToPoint, joins the pieces and appends disconnected uncapped shells into one B-rep. Python mocks check ownership and success/failure dispatch, including alias-safe disposal; they are not licensed native captures.",
+    "Coplanar targets for planar sources, closed sources without a boundary, invalid indices and unsupported imports decline. General self-intersections, folding and near-degenerate source/target configurations require broader qualification. Hole walls converge to a singular apex; edge/solid closure tests do not establish vertex-manifold or downstream meshing guarantees.",
+    "Numeric distance shortcuts, ToBoundary, SplitAtTangents controls, live previews, saved option defaults and full native getter behavior remain future work. Explicit apex point input is implemented. No continuous geometry error or comparative performance certificate is claimed.",
+    "No new licensed Rhino capture or launch was attempted because of the recorded Wine SSPI startup failure. Retained observations are local debug-profile Viboceros results. Timings include command, document, tight-bound reimport and diagnostic work; they do not establish native kernel speedups."
+  ],
+  "validation": {
+    "cargo test -p viboceros-smlib --features native --test surface_apex_extrusion --test surface_extrusion --test surface_path_extrusion --test apex --quiet": {
+      "passed": 15,
+      "surface_apex_tests": 4
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib extrude_surface --quiet": {
+      "passed": 25
+    },
+    "cargo test -p viboceros-command -p viboceros extrude_surface --quiet": {
+      "passed": 14
+    },
+    "cargo test -p viboceros-oracle --features native-smlib surface_apex_pending --quiet": {
+      "passed": 1,
+      "completed_recipes": 9
+    },
+    "cargo test -p viboceros --features native-smlib object_selection --quiet": {
+      "passed": 51
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "python3 -m unittest tools.rhino_oracle.test_surface_apex_extrusion tools.rhino_oracle.test_surface_path_extrusion tools.rhino_oracle.test_surface_extrusion tools.rhino_oracle.test_client -q": {
+      "passed": 31
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --features native-smlib --all-targets -- -D warnings": "passed",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "cargo clippy -p viboceros-smlib --features native --all-targets -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "cargo test -p viboceros-smlib --features native --test modeling_basis --test surface_apex_extrusion --test apex --quiet": {
+      "passed": 11,
+      "modeling_basis_tests": 4,
+      "after_exact_copy_basis_fix": true
+    },
+    "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/surface_apex_extrusion.json tools/rhino_oracle/observations/surface_apex_extrusion_viboceros_native.json": {
+      "completed_operations": 9,
+      "profile": "debug",
+      "performance_qualified": false,
+      "after_exact_copy_basis_fix": true
+    }
+  },
+  "source_sha256": {
+    "README.md": "2d9c0c06a985fac924c38904459a673f53dc753cefd0eb57952b7ff4aa80b0a9",
+    "crates/viboceros-command/src/extrude_surface/tests.rs": "4ca9d3387ead3a8a54afedffa0236f560d229a933980842968a96b11717503cc",
+    "crates/viboceros-command/src/extrude_surface_apex.rs": "0a67df79ccd8cf2a83ff5a0ca918960ac15d0c19767980710b775d0993d7374f",
+    "crates/viboceros-command/src/extrude_surface_apex/tests.rs": "5c79de373b2033a08564e81af0a50438484fe17916339c5baa448da29a2e6828",
+    "crates/viboceros-command/src/extrude_surface_path/tests.rs": "28baad35d4f4342245c89957863a394de192d42e7e51895af320ebb8e4f26129",
+    "crates/viboceros-command/src/lib.rs": "3796a479d10e5dde2dba40b491dd5ce8aa3a0150f1f1f695512100f6b6ba2ca1",
+    "crates/viboceros-oracle/src/lib.rs": "a54aa81c0b3133cda8c3fa24f077f500b1a78e7cc817bedc801c0ad3e9a31356",
+    "crates/viboceros-oracle/src/surface_apex_extrusion.rs": "4b51641e366046915a79b25bf166ed9f3bdfa58a2523f33264a3b7662c12f7f1",
+    "crates/viboceros-smlib/native/basis_preservation.cpp": "206361751ffe7c92dc33656eaf312d57a32223f6b57c8ba649b38560b98f3136",
+    "crates/viboceros-smlib/native/basis_preservation.h": "35a6bca9baa5952e54e520827a0fd9bef0c52f3958fd8aa7725d0e1e5fdb44bc",
+    "crates/viboceros-smlib/native/bridge.cpp": "d22b4a86c30fe2089a7aa06c514ec18743bdfeb66794f15e10a8e23ad3ef972b",
+    "crates/viboceros-smlib/native/bridge.h": "2425fbb5be74944167904163fb6ec1b09c66619b4c2035812330595888f8ec6e",
+    "crates/viboceros-smlib/src/native/surface_extrusion.rs": "a5e8b80629ded9461e40755b70dc21882e35d2eda03b410ee2ae0f5d5bea1ecc",
+    "crates/viboceros-smlib/tests/apex.rs": "212bbeee0f88dc85d0edb714089c7d0c5a63f29f006abaf118afb3d10486b9eb",
+    "crates/viboceros-smlib/tests/modeling_basis.rs": "9c8cf7ffb68ae55c1f708f9126e54964318f7f3f598564983100ab7a803dd5e9",
+    "crates/viboceros-smlib/tests/surface_apex_extrusion.rs": "2ac01542fad4755057b1943b80037a8449c66a6642f51143530f341cd9b3a6ea",
+    "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
+    "crates/viboceros-smlib/tests/surface_path_extrusion.rs": "887efe1172b179ef07e940d3f94c79d16e2ea3dcfc4a1d2e9b3539c2f621ccfa",
+    "docs/commands/README.md": "17539b1587c3f41cb0bc56dca4cd942be20cd9891d1c42a8194a3eb60f32af38",
+    "docs/commands/extrude-srf-to-point.md": "f3c71ad7abda67b6e9a0073a42c1bf4da7f557f4f98ea44ecc80beb1428edf03",
+    "src/app.rs": "a6ea11218dc5660eda697e7be8c941d27d7393333a36c2033e96b22171ce4404",
+    "src/app/extrude_surface.rs": "2e935d70d53d044b9e551ce3c4f6eef4778d86280a1d1c2a34400e3d26f1c0e3",
+    "src/app/extrude_surface_apex.rs": "ccf58e3780ab54192dd3c4d99e5beddba015f98dfdbe04073dabf6f1bec7f46b",
+    "src/app/object_selection.rs": "395388117d3f72825404dafb252f2e1e7cbb8153a1a1c121253deaeb41b5092f",
+    "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
+    "src/app/tests/extrude_surface_apex.rs": "8ece54d84b5c1448c4d302b82fe8083e11f9551a9f6595e26c1e7d378917715d",
+    "src/app/tests/extrude_surface_path.rs": "b9e82fba8d60a402478bd593e5ef2c8dc24b33d79cdbf0ade13fce92c162e9a3",
+    "third_party/usd-brep/source/SMLib/inc/SmBSplineCurve.h": "0e12036dda5f5439d3cbc5a2daf4253779ed4dfa73167031587d9ff5eb12dfb2",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineSurfaceNLib.cpp": "b971fc6c381f25805d6b5fec6463359bd20850f0e50fb0c75510c4e563061b1b",
+    "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
+    "tools/rhino_oracle/client.py": "884818c02a1590cf38b6dcbe998bbb62be67e297e9203caed3edfbcbb9985e02",
+    "tools/rhino_oracle/fixtures/surface_apex_extrusion.json": "ef7f7cc4995b31095cf999236aa12ee766990c244f73e7f76a353930b4d9c898",
+    "tools/rhino_oracle/rhino_worker.py": "8c4f313da3b544c5b2b04b13bf93cddce385f956627b969e752491c86881259d",
+    "tools/rhino_oracle/surface_apex_extrusion_probe.py": "e2f57c0622b077483bb6073c79a6b6efb2f3b72169fc88185e78653323dba040",
+    "tools/rhino_oracle/surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
+    "tools/rhino_oracle/test_surface_apex_extrusion.py": "7f719604a1250f2bceb8e5c54181c999b072ac9f0f9d4fd576046b842045a217",
+    "tools/rhino_oracle/test_surface_extrusion.py": "404edb06e62ed8a8f33c57bf0d28edd422f5251ea30f90044297bb4b9679ab86",
+    "tools/rhino_oracle/test_surface_path_extrusion.py": "5b6ed3db255d45859cd8c6f4432547e1e9e270d41c87e4b5ce977313d850b423"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/surface_apex_extrusion_viboceros_native.json": "ee5ee3d4dd30abf1ff1100e588aaeb7655a9dde5d658da605824925194e9dc6b"
+  }
+}

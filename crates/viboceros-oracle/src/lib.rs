@@ -117,6 +117,8 @@ mod shrink_trimmed;
 mod silhouette;
 mod surface_path_extrusion;
 pub use surface_path_extrusion::Fixture as SurfacePathExtrusionFixture;
+mod surface_apex_extrusion;
+pub use surface_apex_extrusion::Fixture as SurfaceApexExtrusionFixture;
 mod surface_extrusion;
 pub use surface_extrusion::Fixture as SurfaceExtrusionFixture;
 mod tapered_extrusion;
@@ -1611,6 +1613,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: SurfacePathExtrusionFixture,
     },
+    SurfaceApexExtrusion {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceApexExtrusionFixture,
+    },
     SurfaceExtrusion {
         id: String,
         #[serde(flatten)]
@@ -2562,6 +2569,7 @@ impl Operation {
             | Self::PullCurveSurface { id, .. }
             | Self::ProjectCurveSurface { id, .. }
             | Self::SurfacePathExtrusion { id, .. }
+            | Self::SurfaceApexExtrusion { id, .. }
             | Self::SurfaceExtrusion { id, .. }
             | Self::TaperedExtrusion { id, .. }
             | Self::SilhouetteParallel { id, .. }
@@ -5752,6 +5760,9 @@ fn execute(
         } => project::run(iterations, curve, surface, *direction, tolerance, *loose)?,
         Operation::SurfacePathExtrusion { fixture, .. } => {
             surface_path_extrusion::run(fixture, iterations, tolerance)?
+        }
+        Operation::SurfaceApexExtrusion { fixture, .. } => {
+            surface_apex_extrusion::run(fixture, iterations, tolerance)?
         }
         Operation::SurfaceExtrusion { fixture, .. } => {
             surface_extrusion::run(fixture, iterations, tolerance)?

@@ -1,6 +1,15 @@
 //! Native topology sweep preserves the source faces as curved or trimmed caps.
 use super::*;
 unsafe extern "C" {
+    fn vb_shape_extrude_faces_to_point(
+        shape: *const NativeSolid,
+        apex: *const f64,
+        cap_base: c_int,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_extrude_faces_along_curve(
         shape: *const NativeSolid,
         path: *const NativeCurve,
@@ -29,6 +38,35 @@ unsafe extern "C" {
     ) -> c_int;
 }
 impl Shape {
+    /// Sweep an open sheet's boundary to an apex using native ruled surfaces.
+    /// The optional base cap retains the actual source faces and trim holes.
+    /// Source geometry remains unchanged; capped output must close as a solid.
+    pub fn extruded_faces_to_point(
+        &self,
+        apex: Point3,
+        cap_base: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_extrude_faces_to_point(
+                self.model.handle.as_ptr(),
+                apex.to_array().as_ptr(),
+                c_int::from(cap_base),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
+
     /// Translate an open sheet along a curve while preserving profile orientation.
     /// The source stays at its original position. Caps copy its actual faces;
     /// closed or degenerate paths decline. Both source and path remain unchanged.

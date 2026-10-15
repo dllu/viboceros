@@ -92,6 +92,12 @@ impl VibocerosApp {
         distance: &str,
         options: SurfaceExtrusionOptions,
     ) -> bool {
+        self.finish_surface_face_command(&format!(
+            "ExtrudeSrf {distance} {}",
+            options.command_options()
+        ))
+    }
+    pub(super) fn finish_surface_face_command(&mut self, command: &str) -> bool {
         let Some(sources) = self.surface_extrusion_sources.take() else {
             return false;
         };
@@ -110,10 +116,7 @@ impl VibocerosApp {
             .map(|(id, index)| format!("{id}:{index}"))
             .collect::<Vec<_>>()
             .join(",");
-        let command = format!(
-            "ExtrudeSrf {distance} {} FaceRefs={refs}",
-            options.command_options()
-        );
+        let command = format!("{command} FaceRefs={refs}");
         let saved = self.active_command;
         let plane = self.drafting_plane;
         let constraint = self.point_constraint.take();
