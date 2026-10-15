@@ -45,6 +45,7 @@ Rhino's complete command set is still a work in progress.
 - [Surface and face extrusion](extrude-srf.md)
 - [Surface extrusion along curves](extrude-srf-along-crv.md)
 - [Surface extrusion to a point](extrude-srf-to-point.md)
+- [Tapered surface extrusion](extrude-srf-tapered.md)
 - [Intermediate surface construction and limits](tween-surfaces.md)
 - [Apply World-XY curves and points onto surfaces](apply-curves.md)
 - [Create UV curves from a surface and spatial inputs](create-uv-curves.md)

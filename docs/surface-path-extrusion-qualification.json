@@ -57,7 +57,6 @@
     "cargo clippy -p viboceros-oracle --features native-smlib --all-targets -- -D warnings": "passed after tight-bounds diagnostic change"
   },
   "source_sha256": {
-    "crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a",
     "crates/viboceros-command/src/extrude_surface/tests.rs": "4ca9d3387ead3a8a54afedffa0236f560d229a933980842968a96b11717503cc",
     "crates/viboceros-command/src/extrude_surface_path.rs": "ea26c86f3f19cd1597fb88c48649be3217fe19ec40689e1b4b06e55e6cc61844",
     "crates/viboceros-command/src/extrude_surface_path/tests.rs": "28baad35d4f4342245c89957863a394de192d42e7e51895af320ebb8e4f26129",
@@ -95,6 +94,7 @@
     "cacb3f610632555af8698b87b61f535a4f6fa286:src/app/extrude_surface.rs": "ad37e25cff613765b24b1a622395eeda866a8994c55a39b2bff03fbee5dcd79e",
     "cacb3f610632555af8698b87b61f535a4f6fa286:src/app/object_selection.rs": "dc963c2f32a3747533b021adf2963cd93ceb530c313edf1f429d12947530935d",
     "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/client.py": "541566a8b468e46089b75d2589ce47b2cd7d884a12d96f90d4453daf83868ac8",
-    "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/rhino_worker.py": "08b1bcdad19a5341467e465429a08b8f461274a4e4c4b401be43425a16d519a6"
+    "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/rhino_worker.py": "08b1bcdad19a5341467e465429a08b8f461274a4e4c4b401be43425a16d519a6",
+    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a"
   }
 }

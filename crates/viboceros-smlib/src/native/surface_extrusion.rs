@@ -1,6 +1,18 @@
 //! Native topology sweep preserves the source faces as curved or trimmed caps.
 use super::*;
 unsafe extern "C" {
+    fn vb_shape_tapered_face(
+        shape: *const NativeSolid,
+        direction: *const f64,
+        height: f64,
+        angle_degrees: f64,
+        round_corners: c_int,
+        cap_ends: c_int,
+        tolerance: f64,
+        out: *mut *mut NativeSolid,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
     fn vb_shape_extrude_faces_to_point(
         shape: *const NativeSolid,
         apex: *const f64,
@@ -38,6 +50,58 @@ unsafe extern "C" {
     ) -> c_int;
 }
 impl Shape {
+    /// Draft a single face's boundary, preserving its actual base and trim holes.
+    /// Positive draft contracts the material; hole boundaries expand. Nonzero
+    /// draft can cap an offset end only when its curves are coplanar. The source
+    /// remains unchanged. Zero draft delegates to the exact face translation.
+    pub fn tapered_face(
+        &self,
+        displacement: viboceros_geometry::Vector3,
+        angle_degrees: f64,
+        round_corners: bool,
+        cap_ends: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
+        if !angle_degrees.is_finite() || angle_degrees.abs() >= 90. {
+            return Err(Error::Kernel(
+                "Draft angle must be finite and between -90 and 90 degrees".into(),
+            ));
+        }
+        if angle_degrees == 0. {
+            return self.extruded_faces(displacement, cap_ends, tolerance);
+        }
+        let height = displacement.length()?;
+        let direction = displacement.normalized_nonzero()?.as_vector();
+        if let Some(normal) = self.single_face_plane_normal(tolerance)?
+            && direction.cross(normal)?.length()? > tolerance.angular()
+        {
+            return Err(Error::Kernel(
+                "Nonzero draft requires extrusion normal to a planar source face".into(),
+            ));
+        }
+        let mut pointer = std::ptr::null_mut();
+        call(|error, capacity| unsafe {
+            vb_shape_tapered_face(
+                self.model.handle.as_ptr(),
+                direction.to_array().as_ptr(),
+                height,
+                angle_degrees,
+                c_int::from(round_corners),
+                c_int::from(cap_ends),
+                tolerance.absolute(),
+                &mut pointer,
+                error,
+                capacity,
+            )
+        })?;
+        Ok(Self {
+            model: Solid {
+                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                _thread_local: PhantomData,
+            },
+        })
+    }
+
     /// Sweep an open sheet's boundary to an apex using native ruled surfaces.
     /// The optional base cap retains the actual source faces and trim holes.
     /// Source geometry remains unchanged; capped output must close as a solid.

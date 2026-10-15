@@ -1,0 +1,283 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "surface_taper_planar",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 63.86794443666847
+          }
+        ]
+      },
+      "elapsed_ns": 69876376
+    },
+    {
+      "id": "surface_taper_planar_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0000000000000004,
+                -2.0
+              ],
+              [
+                3.0000000000000004,
+                3.0,
+                0.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 63.86794443666848
+          }
+        ]
+      },
+      "elapsed_ns": 68703380
+    },
+    {
+      "id": "surface_taper_bump",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.0,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 59.86794443666847
+          }
+        ]
+      },
+      "elapsed_ns": 94126365
+    },
+    {
+      "id": "surface_taper_bump_down",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0000000000000004,
+                -2.0
+              ],
+              [
+                3.0000000000000004,
+                3.0,
+                0.25
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 67.86794443666848
+          }
+        ]
+      },
+      "elapsed_ns": 74796694
+    },
+    {
+      "id": "surface_taper_ring_inner",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.000000000000001,
+                -3.0000000000000004,
+                -2.7504634826762045e-16
+              ],
+              [
+                3.0,
+                3.0,
+                2.000000000000001
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 41.40232170186202
+          }
+        ]
+      },
+      "elapsed_ns": 214643478
+    },
+    {
+      "id": "surface_taper_ring_outer",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.3526539614168627,
+                -3.352653961416862,
+                -2.4393127624134104e-16
+              ],
+              [
+                3.35265396141693,
+                3.352653961416862,
+                2.0000000000000004
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 59.12864321300584
+          }
+        ]
+      },
+      "elapsed_ns": 133062717
+    },
+    {
+      "id": "surface_taper_ring_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.000000000000001,
+                -3.0000000000000004,
+                -2.7504634826762045e-16
+              ],
+              [
+                3.0,
+                3.0,
+                2.000000000000001
+              ]
+            ],
+            "face_count": 2,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 34521010
+    },
+    {
+      "id": "surface_taper_round_outward",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.35265396141693,
+                -3.352653961416932,
+                0.0
+              ],
+              [
+                3.3526539614169453,
+                3.35265396141693,
+                2.0
+              ]
+            ],
+            "face_count": 10,
+            "is_solid": true,
+            "volume": 80.72416413659877
+          }
+        ]
+      },
+      "elapsed_ns": 107967765
+    },
+    {
+      "id": "surface_taper_zero_warped",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                6.0,
+                6.0,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 72.0
+          }
+        ]
+      },
+      "elapsed_ns": 59367722
+    },
+    {
+      "id": "surface_taper_nonplanar_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -4.054770132301456e-18,
+                -4.054770132301456e-18,
+                -2.578889709576198e-16
+              ],
+              [
+                6.0,
+                6.0,
+                2.9412243397638447
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      },
+      "elapsed_ns": 30978489
+    },
+    {
+      "id": "surface_taper_shifted_bump",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                9996.999999999998,
+                -30003.000000000004,
+                49999.99999999999
+              ],
+              [
+                10003.000000000002,
+                -29997.0,
+                50002.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 59.86794443665606
+          }
+        ]
+      },
+      "elapsed_ns": 91606294
+    }
+  ]
+}

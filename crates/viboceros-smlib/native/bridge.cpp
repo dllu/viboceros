@@ -15,6 +15,7 @@
 #include <SmAxis2Placement.h>
 #include <SmBrep.h>
 #include <SmFace.h>
+#include <SmLoop.h>
 #include <SmEdge.h>
 #include <SmFaceuse.h>
 #include <SmRegion.h>
@@ -1751,6 +1752,95 @@ extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const Vb
         require(!cap_ends || owner->value->IsManifoldSolid(),"Surface path extrusion did not close");
         check(SmApiTurnToNurbs(owner->value.get()),"convert surface path extrusion to NURBS");
         *out=owner.release();
+    });
+}
+
+extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction[3],
+    double height,double angle_degrees,int round_corners,int cap_ends,double tolerance,
+    VbSolid **out,char *error,size_t capacity) {
+    if(out)*out=nullptr;
+    return guarded(error,capacity,[&] {
+        require(shape && shape->value && out && finite3(direction) && std::isfinite(height) && height>0
+            && std::isfinite(angle_degrees) && std::abs(angle_degrees)<90 && angle_degrees!=0
+            && (round_corners==0 || round_corners==1) && (cap_ends==0 || cap_ends==1)
+            && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered surface extrusion input");
+        const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
+        require(std::isfinite(offset) && offset!=0,"Unrepresentable surface taper offset");
+        auto *context=SmApiGetOrCreateContext();SmVector3d normal(direction[0],direction[1],direction[2]);
+        check(normal.Unitize(),"normalize surface taper direction");
+        SmTArray<SmFace*> source_faces;shape->value->GetFaces(source_faces);
+        require(source_faces.GetSize()==1 && !shape->value->IsManifoldSolid(),"Surface taper requires one open face");
+        auto *source=source_faces[0];SmTArray<SmLoop*> loops;source->GetLoops(loops);
+        require(loops.GetSize()>0 && loops.GetSize()<=100000,"Surface taper loop resource limit");
+        auto owner=std::make_unique<VbSolid>();owner->value.reset(new (*context) SmBrep());
+        owner->value->SetTolerance(tolerance,FALSE);size_t controls=0,total_faces=0;
+        for(ULONG i=0;i<loops.GetSize();++i) {
+            SmTArray<SmEdge*> edges;loops[i]->GetEdges(edges);
+            require(edges.GetSize()>0,"Surface taper does not support vertex loops");
+            for(ULONG j=0;j<edges.GetSize();++j) {
+                require(edges[j]->IsLamina(),"Surface taper does not support seam loops");
+                auto *curve=edges[j]->GetCurve();
+                require(curve && curve->IsKindOf(SmBSplineCurve_TYPE),"Surface taper requires NURBS boundaries");
+                const size_t count=static_cast<SmBSplineCurve*>(curve)->GetNumberControlPoints();
+                require(count<=limit/2 && controls<=limit/2-count,"Surface taper control-net resource limit");controls+=count;
+            }
+            SmOrientType orientation;
+            check(source->ComputeLoopOrientation(loops[i],orientation),"classify taper hole loops");
+            require(orientation==SM_OT_SAME || orientation==SM_OT_OPPOSITE,"Unclassified surface taper boundary");
+            SmTArray<ULONG> sizes;SmTArray<SmBSplineCurve*> boundary;
+            SmObjsDelete<SmBSplineCurve*> boundary_cleanup(&boundary);
+            check(source->CreateOrientedTrimBoundary(*context,FALSE,FALSE,sizes,boundary,loops[i]),"copy taper trim boundary");
+            require(boundary.GetSize()>0 && boundary.GetSize()<=100000,"Surface taper boundary resource limit");
+            SmTArray<SmCurve*> profiles;for(ULONG j=0;j<boundary.GetSize();++j)profiles.Add(boundary[j]);
+            boundary_cleanup.Clear();SmObjsDelete<SmCurve*> input_cleanup(&profiles);
+            SmTArray<ULONG> chains;
+            require(SmCurve::FixChainCurvesList(profiles,chains,2*tolerance,TRUE)==1,"Surface taper boundary must be one closed chain");
+            std::unique_ptr<SmBrep> walls(new (*context) SmBrep());walls->SetTolerance(tolerance,FALSE);
+            SmPrimitiveCreation producer(walls->GetInfiniteRegion(),0,TRUE);
+            SmVector3d loop_normal=normal;
+            check(producer.CreateTaperExtrude(profiles,height,orientation==SM_OT_OPPOSITE?-angle_degrees:angle_degrees,
+                0,loop_normal,round_corners?SM_OC_FILLET_CORNER:SM_OC_LINEAR_EXTENSION),"create tapered surface boundary walls");
+            input_cleanup.Clear(); // successful producer consumes its copied profiles
+            SmTArray<SmFace*> faces;walls->GetFaces(faces);total_faces+=faces.GetSize();
+            require(faces.GetSize()>0 && total_faces<=100000,"Surface taper wall resource limit");
+            check(walls->CopyFaces(faces,owner->value.get(),nullptr,FALSE),"collect surface taper walls");
+        }
+        if(cap_ends) {
+            check(shape->value->CopyFaces(source_faces,owner->value.get(),nullptr,FALSE),"retain original taper base cap");
+            check(owner->value->StitchAndOrient(),"stitch surface taper base");
+            // With the actual base attached, only the offset end stays naked.
+            // The native planar-face builder classifies nested top loops together.
+            SmTArray<SmEdge*> edges;owner->value->GetEdges(edges);
+            SmTArray<SmCurve*> profiles;std::vector<std::unique_ptr<SmCurve>> copies;
+            size_t cap_controls=0;
+            for(ULONG i=0;i<edges.GetSize();++i)if(edges[i]->IsLamina()) {
+                auto *original=edges[i]->GetCurve();
+                require(original && original->IsKindOf(SmBSplineCurve_TYPE),"Taper top requires NURBS edges");
+                auto *spline=static_cast<SmBSplineCurve*>(original);
+                const size_t count=spline->GetNumberControlPoints();
+                require(count<=limit && cap_controls<=limit-count,"Surface taper cap resource limit");cap_controls+=count;
+                std::unique_ptr<SmBSplineCurve> copy(new (*context) SmBSplineCurve(*spline));
+                vb_preserve_curve_basis(*copy,vb_curve_full_knots(*spline));
+                auto interval=edges[i]->GetInterval();check(copy->Trim(interval,FALSE),"trim tapered top edge");
+                profiles.Add(copy.get());copies.emplace_back(std::move(copy));
+            }
+            require(profiles.GetSize()>0,"Surface taper has no offset boundary");
+            SmTArray<SmFace*> caps;
+            const auto status=owner->value->CreatePlanarFacesWith3DCurves(owner->value->GetInfiniteRegion(),profiles,tolerance,caps);
+            if(status!=SM_SUCCESS) {
+                SmTArray<SmEdge*> attached;owner->value->GetEdges(attached);
+                for(ULONG i=0;i<attached.GetSize();++i)for(ULONG j=0;j<profiles.GetSize();++j)
+                    if(attached[i]->GetCurve()==profiles[j]){attached[i]->SetCurve(nullptr,FALSE,FALSE,FALSE);break;}
+                check(status,"cap tapered surface offset boundary");
+            }
+            for(auto &copy:copies)copy.release();
+            require(caps.GetSize()>0,"Surface taper could not cap its offset end");
+        }
+        check(owner->value->StitchAndOrient(),"stitch tapered surface extrusion");
+        SmTArray<SmFace*> result_faces;owner->value->GetFaces(result_faces);
+        require(result_faces.GetSize()>0 && result_faces.GetSize()<=100000,"Surface taper output resource limit");
+        require(!cap_ends || owner->value->IsManifoldSolid(),"Tapered surface extrusion did not close");
+        check(SmApiTurnToNurbs(owner->value.get()),"convert surface taper to NURBS");*out=owner.release();
     });
 }
 

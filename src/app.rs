@@ -161,6 +161,7 @@ mod evaluate_uv;
 mod extrude_surface;
 mod extrude_surface_apex;
 mod extrude_surface_path;
+mod extrude_surface_tapered;
 mod extrude_tapered;
 mod grid_settings;
 mod group_prompt;
@@ -732,6 +733,10 @@ enum InteractiveCommand {
         base: Option<Point3>,
         options: viboceros_command::extrude_surface::SurfaceExtrusionOptions,
     },
+    ExtrudeSurfaceTapered {
+        base: Option<Point3>,
+        options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
+    },
     ExtrudeSurfaceToPoint {
         options: viboceros_command::extrude_surface_apex::SurfaceApexOptions,
     },
@@ -863,6 +868,7 @@ impl InteractiveCommand {
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveTapered { .. } => "ExtrudeCrvTapered",
             Self::ExtrudeSurface { .. } => "ExtrudeSrf",
+            Self::ExtrudeSurfaceTapered { .. } => "ExtrudeSrfTapered",
             Self::ExtrudeSurfaceToPoint { .. } => "ExtrudeSrfToPoint",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
@@ -1642,6 +1648,12 @@ impl InteractiveCommand {
             Self::ExtrudeSurface { base: Some(_), .. } => {
                 "ExtrudeSrf: pick the direction target (Esc to cancel)"
             }
+            Self::ExtrudeSurfaceTapered { base: None, .. } => {
+                "ExtrudeSrfTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"
+            }
+            Self::ExtrudeSurfaceTapered { base: Some(_), .. } => {
+                "ExtrudeSrfTapered: pick the direction target (Esc to cancel)"
+            }
             Self::ExtrudeSurfaceToPoint { .. } => {
                 "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput; Esc to cancel)"
             }
@@ -1810,6 +1822,7 @@ impl InteractiveCommand {
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveTapered { base: None, .. }
             | Self::ExtrudeSurface { base: None, .. }
+            | Self::ExtrudeSurfaceTapered { base: None, .. }
             | Self::ExtrudeSurfaceToPoint { .. }
             | Self::ExtrudeCurveToPoint { .. }
             | Self::Revolve {
@@ -1842,6 +1855,7 @@ impl InteractiveCommand {
             | Self::ExtrudeCurve { base: start, .. }
             | Self::ExtrudeCurveTapered { base: start, .. }
             | Self::ExtrudeSurface { base: start, .. }
+            | Self::ExtrudeSurfaceTapered { base: start, .. }
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
@@ -2508,7 +2522,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_surface_apex_input(&input)
+        if self.try_start_surface_tapered_input(&input)
+            || self.try_start_surface_apex_input(&input)
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
             || self.start_blend_surface(&input)
@@ -3031,7 +3046,8 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.try_start_surface_apex_input(input)
+        if self.try_start_surface_tapered_input(input)
+            || self.try_start_surface_apex_input(input)
             || self.try_start_surface_path_input(input)
             || self.try_start_surface_extrusion_input(input)
         {
@@ -5249,6 +5265,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveTapered { .. }
                 | InteractiveCommand::ExtrudeSurface { .. }
+                | InteractiveCommand::ExtrudeSurfaceTapered { .. }
                 | InteractiveCommand::ExtrudeSurfaceToPoint { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
@@ -7997,6 +8014,26 @@ impl VibocerosApp {
                     options,
                 );
             }
+            InteractiveCommand::ExtrudeSurfaceTapered {
+                base: None,
+                options,
+            } => {
+                self.active_command = Some(InteractiveCommand::ExtrudeSurfaceTapered {
+                    base: Some(point),
+                    options,
+                });
+                self.push_log("ExtrudeSrfTapered: pick the direction target".into());
+            }
+            InteractiveCommand::ExtrudeSurfaceTapered {
+                base: Some(base),
+                mut options,
+            } => {
+                options.direction = None;
+                return self.finish_tapered_extrusion(
+                    &format!("{} {}", format_model_point(base), format_model_point(point)),
+                    options,
+                );
+            }
             InteractiveCommand::ExtrudeSurfaceToPoint { options } => {
                 return self.finish_surface_face_command(&format!(
                     "ExtrudeSrfToPoint {} {}",
@@ -9953,6 +9990,7 @@ mod tests {
     mod extrude_surface;
     mod extrude_surface_apex;
     mod extrude_surface_path;
+    mod extrude_surface_tapered;
     mod extrude_tapered;
     mod grip_transform;
     mod group_prompt;

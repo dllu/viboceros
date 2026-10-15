@@ -234,22 +234,8 @@ impl Command for ExtrudeSurfaceCommand {
         let (positional, words): (Vec<_>, Vec<_>) =
             args.iter().copied().partition(|s| !s.contains('='));
         let input = SurfaceExtrusionInput::parse(&words)?;
-        let distance = if positional.len() == 1 {
-            let h = parse_finite_real(positional[0])?;
-            if h == 0. {
-                return Err(CommandError::Usage(USAGE));
-            }
-            Distance::Numeric(h)
-        } else {
-            let (a, n) = parse_point(&positional)?;
-            let (b, m) = parse_point(&positional[n..])?;
-            if n + m != positional.len() || input.options.direction.is_some() {
-                return Err(CommandError::Usage(USAGE));
-            }
-            let v = a.vector_to(b)?;
-            v.normalized_nonzero()?;
-            Distance::Explicit(v)
-        };
+        let distance =
+            parse_face_extrusion_distance(&positional, input.options.direction.is_some(), USAGE)?;
         let count = apply_face_extrusions(
             doc,
             &input.faces,
@@ -324,9 +310,54 @@ pub(super) fn apply_face_extrusions(
     Ok(count)
 }
 #[derive(Clone, Copy)]
-enum Distance {
+pub(super) enum Distance {
     Numeric(f64),
     Explicit(Vector3),
+}
+pub(super) fn parse_face_extrusion_distance(
+    positional: &[&str],
+    has_direction: bool,
+    usage: &'static str,
+) -> Result<Distance, CommandError> {
+    if positional.len() == 1 {
+        let h = parse_finite_real(positional[0])?;
+        if h == 0. {
+            return Err(CommandError::Usage(usage));
+        }
+        Ok(Distance::Numeric(h))
+    } else {
+        let (a, n) = parse_point(positional)?;
+        let (b, m) = parse_point(&positional[n..])?;
+        if n + m != positional.len() || has_direction {
+            return Err(CommandError::Usage(usage));
+        }
+        let v = a.vector_to(b)?;
+        v.normalized_nonzero()?;
+        Ok(Distance::Explicit(v))
+    }
+}
+#[cfg(feature = "native-smlib")]
+pub(super) fn face_extrusion_direction(
+    source: &viboceros_smlib::Shape,
+    direction: Option<Vector3>,
+    cplane: Frame3,
+    tolerance: Tolerance,
+) -> Result<Vector3, CommandError> {
+    if let Some(v) = direction {
+        Ok(v)
+    } else if let Some(normal) = source.single_face_plane_normal(tolerance)? {
+        let c = normal.to_array();
+        let i = (0..3)
+            .max_by(|&a, &b| c[a].abs().total_cmp(&c[b].abs()))
+            .unwrap();
+        Ok(if c[i] < 0. {
+            normal.scaled(-1.)?
+        } else {
+            normal
+        })
+    } else {
+        Ok(cplane.z_axis().as_vector())
+    }
 }
 fn produce(
     brep: &Brep,
@@ -352,21 +383,8 @@ fn produce(
         let vector = match distance {
             Distance::Explicit(v) => v,
             Distance::Numeric(h) => {
-                let normal = if let Some(v) = options.direction {
-                    v
-                } else if let Some(normal) = source.single_face_plane_normal(tolerance)? {
-                    let c = normal.to_array();
-                    let i = (0..3)
-                        .max_by(|&a, &b| c[a].abs().total_cmp(&c[b].abs()))
-                        .unwrap();
-                    if c[i] < 0. {
-                        normal.scaled(-1.)?
-                    } else {
-                        normal
-                    }
-                } else {
-                    cplane.z_axis().as_vector()
-                };
+                let normal =
+                    face_extrusion_direction(&source, options.direction, cplane, tolerance)?;
                 normal.scaled(h)?
             }
         };

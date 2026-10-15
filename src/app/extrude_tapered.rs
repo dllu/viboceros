@@ -7,6 +7,15 @@ impl VibocerosApp {
         distance: &str,
         options: TaperedExtrusionOptions,
     ) -> bool {
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::ExtrudeSurfaceTapered { .. })
+        ) {
+            return self.finish_surface_face_command(&format!(
+                "ExtrudeSrfTapered {distance} {}",
+                options.command_options()
+            ));
+        }
         let saved = self.active_command;
         let saved_plane = self.drafting_plane;
         let saved_constraint = self.point_constraint.take();
@@ -27,12 +36,21 @@ impl VibocerosApp {
         }
     }
     pub(super) fn try_continue_tapered_extrusion(&mut self, input: &str) -> bool {
-        let Some(InteractiveCommand::ExtrudeCurveTapered {
-            mut base,
-            mut options,
-        }) = self.active_command
-        else {
-            return false;
+        let (surface, mut base, mut options) = match self.active_command {
+            Some(InteractiveCommand::ExtrudeCurveTapered { base, options }) => {
+                (false, base, options)
+            }
+            Some(InteractiveCommand::ExtrudeSurfaceTapered { base, options }) => {
+                (true, base, options)
+            }
+            _ => return false,
+        };
+        let interactive = |base, options| {
+            if surface {
+                InteractiveCommand::ExtrudeSurfaceTapered { base, options }
+            } else {
+                InteractiveCommand::ExtrudeCurveTapered { base, options }
+            }
         };
         let words = input.split_whitespace().collect::<Vec<_>>();
         if words.is_empty() {
@@ -44,11 +62,20 @@ impl VibocerosApp {
         {
             match options.update(&words) {
                 Ok(()) => {
-                    self.active_command =
-                        Some(InteractiveCommand::ExtrudeCurveTapered { base, options });
+                    self.active_command = Some(interactive(base, options));
                     self.push_log(options.command_options());
                 }
-                Err(error) => self.push_log(format!("Error: {error}")),
+                Err(error) => {
+                    let error = match error {
+                        viboceros_command::CommandError::Usage(_) if surface => {
+                            viboceros_command::CommandError::Usage(
+                                viboceros_command::extrude_surface_tapered::USAGE,
+                            )
+                        }
+                        e => e,
+                    };
+                    self.push_log(format!("Error: {error}"));
+                }
             }
             self.command_input.clear();
             return true;
@@ -64,9 +91,16 @@ impl VibocerosApp {
         {
             base = None;
             options.direction = None;
-            self.active_command = Some(InteractiveCommand::ExtrudeCurveTapered { base, options });
+            self.active_command = Some(interactive(base, options));
             self.command_input.clear();
-            self.push_log("ExtrudeCrvTapered: pick two direction points".into());
+            self.push_log(format!(
+                "{}: pick two direction points",
+                if surface {
+                    "ExtrudeSrfTapered"
+                } else {
+                    "ExtrudeCrvTapered"
+                }
+            ));
             return true;
         }
         if base.is_none()

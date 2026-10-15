@@ -13399,6 +13399,10 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'surface_tapered_extrusion':
+        from surface_tapered_extrusion_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
     if kind == 'surface_extrusion':
         from surface_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)

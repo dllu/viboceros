@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "surface_tapered_extrusion_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "recipes": 11,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope_notes": [
+    "ExtrudeSrfTapered delegates trim boundary copying, loop classification, tapered offsets, corner construction, face copying and stitching to usd-brep. CreateTaperExtrude accepts one chain, so each source loop is processed independently. Hole loops reverse the draft to contract material by expanding the void. Walls are copied into one result B-rep; original source faces are the base cap. After base stitching, the remaining lamina edges feed one native planar-face builder, which classifies nested top boundaries together.",
+    "The nonzero-draft adapter requires one open face, supports Sharp and Round corners and applies explicit document tolerance. It rejects seam/vertex loops and bounds input controls, boundary counts, output faces and cap controls. Native input copies are consumed only on successful taper construction; partial planar-cap attachment is detached before caller-owned copies are destroyed on failure. Source snapshots remain unchanged on success and cap failure. The existing generated-source sliver-domain patch is used, without changing the pinned upstream submodule.",
+    "Zero draft delegates to the existing exact sheet translation and retains curved end caps. Nonzero draft supports raised curved bases when boundary/offset loops are planar. Nonplanar boundaries produce walls with Solid=No; requesting a nonplanar offset cap declines atomically, and the same source remains reusable for zero-draft solid translation. Nonzero planar face extrusion currently requires direction normal to its plane.",
+    "Native tests verify sharp rectangular frustum volumes, raised Bezier base integrals, positive/negative height, radial samples on shrinking outer walls and expanding holes, reversed draft on holes, rounded outward corners, zero draft and invalid input/source preservation. For a 6-by-6 square and height 2, k=tan(10 degrees) gives sharp inward volume 72-48*k+32*k*k/3. The degree-2 center-control bump integrates to 4 volume units, subtracted above and added below. Annular radii 3 and 1 give 16*pi*(1-k) for contraction and 16*pi*(1+k) for expansion.",
+    "The command reuses staged original-face admission and source remainder handling. Face/Faces/FaceRefs deduplicate; DeleteInput preserves remainder identity, attributes and groups. One Undo/Redo operation includes products and removals. A later oblique face failure retains the whole batch, selection, history and Redo. Straight and tapered surface commands share the same distance parser and native direction policy: positive dominant world plane normal, or CPlane normal for curved sources.",
+    "The application freezes surface faces and snapshots before using shared curve/surface taper distance input. Object/face-component preselection and source picking work. DraftAngle, Solid, Corners, DeleteInput, Direction and FlipAngle edits are atomic; Direction/SetBasePoint restart point input. Typed distances use shared unit parsing. Two picked points give displacement while retained cap samples verify original source placement. Failed directions and changed sources preserve the getter. Curve taper and straight/apex/path surface workflows have regression coverage.",
+    "Eleven independent fixtures run the actual Rust command and record volumes, face counts, solid flags and native tight bounds. They include inward/outward material draft, expanding/contracting holes, rounded corners, reversed extrusion, raised bases, zero draft, nonplanar walls and translated sources. Pending public SDK recipes duplicate/orient actual trim edges and join them as profiles, call Brep.CreateFromTaperedExtrude with reversed hole angles, retain the actual base and cap only the planar offset end. Zero draft uses BrepFace.CreateExtrusion. Python mocks verify orientation/radian conversion, dispatch, partial-failure cleanup and alias-safe disposal, not native Rhino parity.",
+    "A command test observed a maximum normalized UV endpoint gap of 2.220446049250313e-16 on the raised-base result. Such native trims can be tolerance-closed without defining an exactly closed parameter-space region. The pure certified bounds routine deliberately declines this representation. It was not weakened, and trim geometry was not snapped. Native tight bounds remain available for diagnostics; source-image samples verify UI result placement. No continuous geometry error certificate is claimed.",
+    "Smooth corners, nonzero oblique planar sweeps, nonplanar offset caps, ToBoundary, saved defaults, live previews and full native getter parity remain future work. General self-intersections, collapsing offsets, touching holes and near-degenerate configurations require broader qualification.",
+    "No new licensed Rhino launch or capture was attempted because of the recorded Wine SSPI startup failure. Retained observations are local debug-profile Viboceros output. Timings include command, document, geometry transfer and tight-bound/volume diagnostics and do not establish native kernel speedups."
+  ],
+  "validation": {
+    "cargo test -p viboceros-smlib --features native --test surface_tapered_extrusion --test tapered --test surface_extrusion --quiet": {
+      "passed": 14,
+      "surface_taper_tests": 5
+    },
+    "cargo test -p viboceros-command --features native-smlib extrude_ --quiet": {
+      "passed": 36
+    },
+    "cargo test -p viboceros --features native-smlib extrude_ --quiet": {
+      "passed": 19
+    },
+    "cargo test -p viboceros-command -p viboceros extrude_ --quiet": {
+      "passed": 33
+    },
+    "cargo test -p viboceros-oracle --features native-smlib surface_taper_pending --quiet": {
+      "passed": 1,
+      "completed_recipes": 11
+    },
+    "cargo test -p viboceros-command --features native-smlib surface_taper_curved_base -- --nocapture": {
+      "passed": 1,
+      "max_normalized_uv_endpoint_gap": 2.220446049250313e-16,
+      "pure_certified_bounds": "declines exact UV closure"
+    },
+    "python3 -m unittest tools.rhino_oracle.test_surface_tapered_extrusion tools.rhino_oracle.test_surface_apex_extrusion tools.rhino_oracle.test_surface_path_extrusion tools.rhino_oracle.test_surface_extrusion tools.rhino_oracle.test_tapered_extrusion tools.rhino_oracle.test_client -q": {
+      "passed": 39
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets --features native-smlib -- -D warnings": "passed before final test-only spatial/gap checks",
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "cargo clippy -p viboceros-smlib --features native --all-targets -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/surface_tapered_extrusion.json tools/rhino_oracle/observations/surface_tapered_extrusion_viboceros_native.json": {
+      "completed_operations": 11,
+      "profile": "debug",
+      "performance_qualified": false
+    },
+    "cargo test -p viboceros --features native-smlib object_selection --quiet": {
+      "passed": 51
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "cargo clippy -p viboceros-command -p viboceros --all-targets --features native-smlib -- -D warnings": "passed after final test spatial/gap checks"
+  },
+  "source_sha256": {
+    "README.md": "2bdc8646bf74a2f643e9e3c0e6e66f1824e75678f167c3ff2108776b07cae5d0",
+    "crates/viboceros-command/src/extrude_surface.rs": "3c8a25c46c65c4ebfa459479eb1cb0b1472634faaf939fa6aa41b7e651a9d8cd",
+    "crates/viboceros-command/src/extrude_surface/tests.rs": "4ca9d3387ead3a8a54afedffa0236f560d229a933980842968a96b11717503cc",
+    "crates/viboceros-command/src/extrude_surface_tapered.rs": "ef8a547422579713b3f6a6572b20a5204a8d9e285ef788bcf2280bac2b8615c0",
+    "crates/viboceros-command/src/extrude_surface_tapered/tests.rs": "7368f350c3b728d65bf7bf4036bad69d2c48e92889144743c6984dea09a12dae",
+    "crates/viboceros-command/src/extrude_tapered/tests.rs": "0ba72c2e5089f6e9809d973dbd5918723f62c01aa7524a07b7178a60ec8bca6c",
+    "crates/viboceros-command/src/lib.rs": "ae7a25af5b1db59caf72844b7e42a4ba14c5de0ede065bd0a0e24878e49207df",
+    "crates/viboceros-geometry/src/bounds/trim_region.rs": "35afed978d1c709939459f6960169d824a97b295bdcab1af6e1b530b16914dca",
+    "crates/viboceros-oracle/src/lib.rs": "9ebd1d2428a820ec82d5bfc3d4454f1dd102c3c05b08e29f222c900bffd788b1",
+    "crates/viboceros-oracle/src/surface_tapered_extrusion.rs": "9e83826f5c95e1ce3ba8055ba76ba029e14a89d182115dafedb04512b4dbb2a6",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "d9678228b65fd83dbe6720246c85058ec3103b7528a72271b527c3f27795c969",
+    "crates/viboceros-smlib/native/bridge.cpp": "ca4de5544dbf1d058dfc4597419b6877f76fda7aa3bcf4aec24f3229ef5bff72",
+    "crates/viboceros-smlib/native/bridge.h": "4bf23cf17c1850295b9a28d069964aa225d1b1c160803eaf8e56f894d6b401e1",
+    "crates/viboceros-smlib/src/native/surface_extrusion.rs": "75403a5eee65c0228a846b6b941ef819ae194e13718adc2799b6ea9a936b413c",
+    "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
+    "crates/viboceros-smlib/tests/surface_tapered_extrusion.rs": "b9b2b7b4ab1a7b8ae68b1945a98c35b28be124a1bb6175d81e237c07c590e75b",
+    "crates/viboceros-smlib/tests/tapered.rs": "bf5229eab3063227151708f5310c06ad8bff9f598ab1107a41b5748ceae9d7cf",
+    "docs/commands/README.md": "02c849353ba3b673165b223fd9175187eaa2cd29c5959a468eda5610a2ba7226",
+    "docs/commands/extrude-srf-tapered.md": "df8a14e641e95f1962bc9a0f506f7ea69c36308a315c0e2210baf2118c87b6fb",
+    "src/app.rs": "4abff83fba642dc410881cf6d5c915d7b22089aa4b72b9cbe3a3a8e4e0fec393",
+    "src/app/extrude_surface_tapered.rs": "11d5c30569b07508a2ee5c206907bfd631a9665d4bc793b2c4a7ce031dedeeab",
+    "src/app/extrude_tapered.rs": "93cde405b6341aa1050be8a6af187f0c006e67708a30a577044f066f5f088104",
+    "src/app/object_selection.rs": "a56275678378148b9537bd06c56bac6012788b2c5d1c970852914544c0080fd2",
+    "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
+    "src/app/tests/extrude_surface_tapered.rs": "cec5f804affc0b71f0cd2009a946594d54946082cdceb10bb721c93d0f5a98a2",
+    "src/app/tests/extrude_tapered.rs": "2fd70bacebf53c8d72160c35d254103004b0db9b146ed044eee2c6bc8ea18954",
+    "third_party/patches/usd-brep-tapered-sliver-domains.patch": "41ad362923b9ed868f56e49d3052eb89992304c989a3f81af3511170910e674a",
+    "third_party/usd-brep/source/SMLib/inc/SmBrep.h": "7826cddbc8816cb51bba8349f5fedee42070ab63c0a33018c1875134c0d9ab73",
+    "third_party/usd-brep/source/SMLib/inc/SmCurveTypes.h": "0e97ffc71078ddfbfd7e72eeefd52985f4283929d738e840d95576cf850fe96a",
+    "third_party/usd-brep/source/SMLib/inc/SmFace.h": "18f5e444999df0fe3508d3a9fb6922ea773620255b5f1db3b54715670bda38a3",
+    "third_party/usd-brep/source/SMLib/inc/SmPrimitiveCreation.h": "f4b7ad8d52464fe2018f5f0631048fe950f6189d5575cfd493a9c6a677bf00a5",
+    "third_party/usd-brep/source/SMLib/src/SmPrimitiveCreation.cpp": "38a15b60587059687c13923ba0b22a6a139b0b931997d0650898d866be8b692c",
+    "tools/rhino_oracle/client.py": "b03ab6cde3f0583902b0178dd4612f650d2e17546ad333887f2f0091793f13d5",
+    "tools/rhino_oracle/fixtures/surface_tapered_extrusion.json": "437213eeb27cd3b452750db210cd088d0252073d9fa10f9e50b23fa41a6e2619",
+    "tools/rhino_oracle/rhino_worker.py": "4a4ad3b23057c8c68fdd20203c6942b4b78c35b4681503e01f65550f0eb6f04e",
+    "tools/rhino_oracle/surface_extrusion_probe.py": "fab60f7305636e9cb2bd406b2d9e4a7e58ca9563b36b93e363e29060e0d771c1",
+    "tools/rhino_oracle/surface_tapered_extrusion_probe.py": "8692805b7b1e0c3510913aca9a9b0169b7289e7cd5cae7f4c0da01ffdc20d742",
+    "tools/rhino_oracle/test_surface_extrusion.py": "404edb06e62ed8a8f33c57bf0d28edd422f5251ea30f90044297bb4b9679ab86",
+    "tools/rhino_oracle/test_surface_tapered_extrusion.py": "601923cbef54779c9d6ec1fad17d091366db537cc21aceaa466a70359fe777e9",
+    "tools/rhino_oracle/test_tapered_extrusion.py": "b449bcd36c4c0749321a920e14452870268eb7e9a8b205ec1640f1243bb86785"
+  },
+  "observation_sha256": {
+    "tools/rhino_oracle/observations/surface_tapered_extrusion_viboceros_native.json": "c5756ddf6356680b70c11b704f342d774f2514e64e6a91526b81e093b4870655"
+  }
+}

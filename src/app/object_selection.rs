@@ -590,6 +590,7 @@ impl VibocerosApp {
                     | "ExtrudeSrf"
                     | "ExtrudeSrfAlongCrv"
                     | "ExtrudeSrfToPoint"
+                    | "ExtrudeSrfTapered"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
             .then(|| input.to_owned());
@@ -869,6 +870,7 @@ impl VibocerosApp {
                     | "ExtrudeSrf"
                     | "ExtrudeSrfAlongCrv"
                     | "ExtrudeSrfToPoint"
+                    | "ExtrudeSrfTapered"
             ) {
                 // Accept the picked sources before starting a point getter;
                 // cancellation otherwise restores the pre-prompt selection.
