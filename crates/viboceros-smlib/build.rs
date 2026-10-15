@@ -26,6 +26,8 @@ fn build_native() {
         "cargo:rerun-if-changed=../../third_party/patches/usd-brep-surface-drop-start-normal.patch"
     );
     for patch in [
+        "usd-brep-proto-edge-endpoint-links.patch",
+        "usd-brep-isolated-loop-owner.patch",
         "usd-brep-tapered-sliver-domains.patch",
         "usd-brep-curve-fillet-sides.patch",
         "usd-brep-curve-fillet-seed.patch",
@@ -59,8 +61,15 @@ fn build_native() {
         "cargo:rerun-if-changed={}",
         upstream.join("source/SM_API").display()
     );
+    println!("cargo:rerun-if-env-changed=VIBOCEROS_SMLIB_ASAN");
+    let sanitize = match env::var("VIBOCEROS_SMLIB_ASAN").as_deref() {
+        Ok("1") => true,
+        Ok("0") | Err(_) => false,
+        _ => panic!("VIBOCEROS_SMLIB_ASAN must be 0 or 1"),
+    };
     let destination = cmake::Config::new(root.join("native"))
         .define("USD_BREP_ROOT", upstream)
+        .define("VIBOCEROS_SMLIB_ASAN", if sanitize { "ON" } else { "OFF" })
         .profile("Release")
         .build();
     println!(
@@ -81,6 +90,9 @@ fn build_native() {
     );
     for library in ["viboceros_smlib", "SM_API", "SMLib"] {
         println!("cargo:rustc-link-lib=static={library}");
+    }
+    if sanitize {
+        println!("cargo:rustc-link-lib=dylib=asan");
     }
     println!("cargo:rustc-link-lib=dylib=stdc++");
     println!("cargo:rustc-link-lib=dylib=tbb");

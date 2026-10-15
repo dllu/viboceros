@@ -35,6 +35,7 @@
 #include <cmath>
 #include <cstdio>
 #include <memory>
+#include <limits>
 #include <mutex>
 #include <stdexcept>
 #include <string>
@@ -46,6 +47,7 @@ struct VbSolid {
     // Only fresh imports retain source indices. Mutating operations clear this
     // correspondence before topology changes; copies and Boolean results have none.
     std::vector<SmEdge *> source_edges;
+    std::vector<SmFace *> source_faces;
 };
 struct VbParts {
     std::vector<std::unique_ptr<VbSolid>> values;
@@ -601,7 +603,8 @@ extern "C" int vb_solid_from_brep(const VbBrepView *view, double tolerance,
     return guarded(error, capacity, [&] {
         require(view && out, "Invalid B-rep import");
         auto owner = std::make_unique<VbSolid>();
-        owner->value.reset(vb_import_brep(*view, tolerance, components, component_count, inward));
+        owner->value.reset(vb_import_brep(*view, tolerance, components, component_count, inward,
+                                         nullptr,nullptr,false,&owner->source_faces));
         *out = owner.release();
     });
 }
@@ -618,6 +621,63 @@ extern "C" int vb_sheet_from_brep(const VbBrepView *view, double tolerance,
         auto owner = std::make_unique<VbSolid>();
         owner->value.reset(vb_import_brep(*view, tolerance, components, component_count,
                                          inward.data(), nullptr, nullptr, true));
+        *out = owner.release();
+    });
+}
+
+extern "C" int vb_shape_shell_faces(const VbSolid *shape, const size_t *indices, size_t count,
+                                     double thickness, VbSolid **out, char *error, size_t capacity) {
+    if (out)
+        *out = nullptr;
+    return guarded(error, capacity, [&] {
+        require(shape && shape->value && out && indices && count > 0 && count <= 100000 &&
+                    std::isfinite(thickness) && thickness > 0, "Invalid solid shell input");
+        require(shape->value->IsManifoldSolid(), "Shell requires a closed manifold solid");
+        require(!shape->source_faces.empty() && shape->source_faces.size() <= 100000,
+                "Shell requires original imported face identities within the resource limit");
+        SmTArray<const SmFace *> faces;
+        std::vector<bool> seen(shape->source_faces.size(), false);
+        for (size_t i = 0; i < count; ++i) {
+            require(indices[i] < shape->source_faces.size(), "Shell face index is out of range");
+            if (!seen[indices[i]]) {
+                seen[indices[i]] = true;
+                faces.Add(shape->source_faces[indices[i]]);
+            }
+        }
+        require(faces.GetSize() < shape->source_faces.size(),
+                "Shell must retain at least one source face");
+        auto owner = std::make_unique<VbSolid>();
+        SmBrep *raw = nullptr;
+        // Public API copies both topology and selected-face identities before mutation.
+        const auto status = SmApiShellBrepFull(shape->value.get(), -thickness,
+                                               TRUE, TRUE, TRUE, faces, raw);
+        require(raw != shape->value.get(), "Shell returned its original source");
+        owner->value.reset(raw);
+        check(status, "shell selected solid faces");
+        require(owner->value && owner->value->IsManifoldSolid(),
+                "Shell did not produce a closed wall volume");
+        SmTArray<SmFace *> output;
+        owner->value->GetFaces(output);
+        require(output.GetSize() > 0 && output.GetSize() <= 100000,
+                "Shell output face resource limit");
+        // A collapsed offset can report a closed copy of the original body.
+        // Inward shelling must remove a cavity and retain material inside the source.
+        SmPoint3d source_lo, source_hi, result_lo, result_hi;
+        check(SmApiBrepBoundingBox(shape->value.get(), TRUE, source_lo, source_hi), "shell source bounds");
+        check(SmApiBrepBoundingBox(owner->value.get(), TRUE, result_lo, result_hi), "shell result bounds");
+        for (int axis = 0; axis < 3; ++axis) {
+            const double scale = std::max({1.0, std::abs(source_lo[axis]), std::abs(source_hi[axis])});
+            const double slack = shape->value->GetTolerance() + 64 * std::numeric_limits<double>::epsilon() * scale;
+            require(std::isfinite(result_lo[axis]) && std::isfinite(result_hi[axis]) &&
+                        result_lo[axis] >= source_lo[axis] - slack && result_hi[axis] <= source_hi[axis] + slack,
+                    "Shell wall volume extends outside its source");
+        }
+        double source_volume = 0, wall_volume = 0;
+        check(SmApiBrepComputeVolume(shape->value.get(), 1e-8, source_volume), "shell source volume");
+        check(SmApiBrepComputeVolume(owner->value.get(), 1e-8, wall_volume), "shell wall volume");
+        require(std::isfinite(source_volume) && std::isfinite(wall_volume) && source_volume > 0 &&
+                    wall_volume > 0 && wall_volume < source_volume * (1.0 - 1e-7),
+                "Shell did not remove a resolvable cavity");
         *out = owner.release();
     });
 }
@@ -743,7 +803,7 @@ extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
         std::vector<size_t> plan;
         owner->value.reset(
             vb_import_brep(*view, tolerance, components, component_count, inward, &plan,
-                           &owner->source_edges));
+                           &owner->source_edges,false,&owner->source_faces));
         require(plan.size() == component_count, "Incomplete native shell plan");
         std::copy(plan.begin(), plan.end(), parents);
         *out = owner.release();
@@ -769,6 +829,7 @@ extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indi
         }
         vb_validate_boundary_intersections(*solid->value,10*accuracy);
         solid->source_edges.clear();
+        solid->source_faces.clear();
         SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
         check(executive.SetFilletParameters(solid->value.get(), edges, SM_FSG_CIRCULAR,
               SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), 1, 1.0),

@@ -8,6 +8,21 @@ issues reported by NVIDIA that have not all been reproduced here.
 
 ## Native API behavior verified during integration
 
+- **Offset intersection cleanup can retain deleted topology.**
+  Shell failure tests exposed three temporary-topology lifetime errors:
+  combining edges records the wrong edge at changed endpoints; a closed edge
+  destructor removes only one of its two incidences at a shared endpoint; and
+  common-edge processing reuses a vertex consumed by a prior squeeze. The
+  [generated-source repair](../third_party/patches/usd-brep-proto-edge-endpoint-links.patch)
+  preserves those endpoint relationships and uses surviving vertices. A fourth
+  error promotes isolated-loop vertexuses onto a loop that is then deleted.
+  The [loop-owner repair](../third_party/patches/usd-brep-isolated-loop-owner.patch)
+  assigns them to the selected surviving loop and its mate. The pinned
+  third-party checkout is unchanged. See the [Shell qualification](shell-qualification.json),
+  [cleanup baseline](shell-asan-baseline.log),
+  [squeezed-vertex baseline](shell-asan-squeezed-vertex-baseline.log) and
+  [isolated-loop baseline](shell-asan-isolated-loop-baseline.log).
+
 - **Tapered extrusion tests slivers on unrelated parameter intervals.**
   The ruling helper measured its two rails over intervals from the first two
   source segments. A rectangle parameterized over `[0,4]` consequently lost two

@@ -10,7 +10,6 @@
   },
   "capture_source_sha256": {
     "tools/rhino_oracle/orientation_probe.py": "bad5aff26093c576c53c74fbd24f0342ad006930950ba64950e6621eb803abda",
-    "tools/rhino_oracle/rhino_worker.py": "46f0637a7d4cedbef70deaf51d70f9a640fd7d51cc67f828670dea1eab5ed563",
     "tools/rhino_oracle/references/orientation_audit.py": "b78585385b4163d411424fc3720a417d30d1cd3a970d0418245566deb5032a71"
   },
   "notes": [
@@ -21,5 +20,8 @@
     "Four repeated X-axis sources retain exactly the earlier compound definitions and orientation records, excluding the explicitly unmeasured volume field.",
     "The minimum-X observation applies only to these bounded fixtures. It does not establish a general classifier, equal-extremum tie policy, or behavior for curved, trimmed, or intersecting shells.",
     "These are public-API behavioral witnesses, not actual Flip command runs, identical-source native replay, or performance measurements."
-  ]
+  ],
+  "capture_source_git_sha256": {
+    "634b42921c03cc310724e26d1ab40cc4b5df1a2a:tools/rhino_oracle/rhino_worker.py": "46f0637a7d4cedbef70deaf51d70f9a640fd7d51cc67f828670dea1eab5ed563"
+  }
 }

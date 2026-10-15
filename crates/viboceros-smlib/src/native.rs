@@ -10,6 +10,7 @@ use viboceros_geometry::{
 };
 mod brep;
 mod construction;
+mod shell;
 
 mod boundary_extension;
 mod curve_blend;

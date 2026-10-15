@@ -1,0 +1,24 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+   Compiling viboceros-io v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-io)
+   Compiling viboceros-command v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-command)
+   Compiling viboceros-oracle v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-oracle)
+   Compiling viboceros v0.1.0 (/home/dllu/proj/viboceros)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 58.55s
+     Running unittests src/main.rs (target/debug/deps/viboceros-68b69c4c99d1362b)
+
+running 3 tests
+test app::tests::shell::shell_face_picker_options_units_and_cancel_preserve_geometry ... ok
+test app::tests::shell::shell_empty_and_stale_faces_keep_the_picker ... ok
+test app::tests::shell::shell_component_preselection_and_thickness_failure_repair_commit_one_history_step ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1212 filtered out; finished in 3.01s
+
+     Running unittests src/lib.rs (target/debug/deps/viboceros_command-fc0dbb6fb475d981)
+
+running 4 tests
+test shell::tests::shell_options_are_atomic_and_invalid_face_sets_decline ... ok
+test shell::tests::shell_deletes_source_copies_attributes_groups_and_replays_history ... ok
+test shell::tests::shell_disconnected_walls_inherit_source_groups_as_separate_solids ... ok
+test shell::tests::shell_preserves_input_when_requested_and_later_failure_rolls_back ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 1429 filtered out; finished in 8.64s

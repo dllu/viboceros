@@ -48,8 +48,9 @@
     "tools/rhino_oracle/snap_environment.py": "89a0b04cefbed09d6bdd72d0d2ff393276fa7c5a7f7ed3f144922789ea26690f",
     "tools/rhino_oracle/group_picking.py": "86f5f6d9599f5da827b792ca06d1b1b62decac68d595f57fa5b94215bd462afa"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "b816eed007683f5aacaff915c98156c6d61b3c14fe47f3c91212781e16c01e77",
-    "tools/rhino_oracle/rhino_worker.py": "514dd725df038fa04dd12ea5716df223889fef30e734c4154bff07a150d79096"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "9956d58ec81eac0ee6ae4bd1f85e507ac101a643:tools/rhino_oracle/client.py": "b816eed007683f5aacaff915c98156c6d61b3c14fe47f3c91212781e16c01e77",
+    "9956d58ec81eac0ee6ae4bd1f85e507ac101a643:tools/rhino_oracle/rhino_worker.py": "514dd725df038fa04dd12ea5716df223889fef30e734c4154bff07a150d79096"
   }
 }

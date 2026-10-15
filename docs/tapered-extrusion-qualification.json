@@ -72,8 +72,6 @@
     "crates/viboceros-command/src/extrude_tapered.rs": "89a766904a3ccdec18296402aedebe7ae52ea17ba4f3359c133b790aa79cc86d",
     "crates/viboceros-command/src/extrude_tapered/tests.rs": "0ba72c2e5089f6e9809d973dbd5918723f62c01aa7524a07b7178a60ec8bca6c",
     "crates/viboceros-oracle/src/tapered_extrusion.rs": "ab86a4b4848a1838b7cafd3bd2d1837cbc0f265d1b01fe24837662e2f45736cf",
-    "crates/viboceros-smlib/build.rs": "839a2e9373ed523f3ba24d2dc3c2ad8def529af884457a6f5f6496b187586477",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "d9678228b65fd83dbe6720246c85058ec3103b7528a72271b527c3f27795c969",
     "crates/viboceros-smlib/src/native/tapered.rs": "169d83f3d221ab149fd03c012c86c3ac460c119ed56510af57d36bf281e82064",
     "crates/viboceros-smlib/tests/tapered.rs": "bf5229eab3063227151708f5310c06ad8bff9f598ab1107a41b5748ceae9d7cf",
     "crates/viboceros-smlib/tests/extrusion.rs": "a0ad4b24ad017f3534c1a5a036dfae3abbdd547dc95ae6f374053298f6fd474d",
@@ -84,8 +82,7 @@
     "tools/rhino_oracle/test_tapered_extrusion.py": "b449bcd36c4c0749321a920e14452870268eb7e9a8b205ec1640f1243bb86785",
     "tools/rhino_oracle/fixtures/tapered_extrusion.json": "0a36d509e2c6460bb55bdee1c72c903dd5195c74e50911fe8963cb120b10e661",
     "docs/tapered-extrusion-baseline.log": "d92ababf16568b3d68ace4418f71cf6bd531ef813059c21ea39bf4be9f6948ee",
-    "docs/commands/extrude-crv-tapered.md": "08ab2001d59ba7635e9e60107b708dfd43f6c32b2a281ddcf4f5737e1daa8b05",
-    "docs/usd-brep-limitations.md": "b101477b4dcb06cdd541b21333f11ca9db8bcf9ebe926703b1c36dc0ddb738a9"
+    "docs/commands/extrude-crv-tapered.md": "08ab2001d59ba7635e9e60107b708dfd43f6c32b2a281ddcf4f5737e1daa8b05"
   },
   "observation_sha256": {
     "tools/rhino_oracle/observations/tapered_extrusion_viboceros_native.json": "7ad006a2e37b8a239095adaa823963c389ab5544b28effa4cd164abee725892f"
@@ -100,6 +97,9 @@
     "8f03246020594bd215f06c0f4247551f2805d13f:src/app/object_selection.rs": "5b6e3db6a326b87869096bbfbe36881ca0f5bc437735abcf2623da048d8e119a",
     "8f03246020594bd215f06c0f4247551f2805d13f:tools/rhino_oracle/client.py": "243b580b0cf04b0dbec99e33de7b562455680777ba9a6476745a82b6df58ff82",
     "8f03246020594bd215f06c0f4247551f2805d13f:tools/rhino_oracle/rhino_worker.py": "b42c9e30f1ee41b7f91757974da95a9034c9ce27d9cf8dc96ccd3a8bc22b8c4d",
-    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:src/app/extrude_tapered.rs": "738876b39726b0ab20b644bce0b5f55c1807cc6c224c7e94ca6c19d18e9d844b"
+    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:src/app/extrude_tapered.rs": "738876b39726b0ab20b644bce0b5f55c1807cc6c224c7e94ca6c19d18e9d844b",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:crates/viboceros-smlib/build.rs": "839a2e9373ed523f3ba24d2dc3c2ad8def529af884457a6f5f6496b187586477",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:crates/viboceros-smlib/native/CMakeLists.txt": "d9678228b65fd83dbe6720246c85058ec3103b7528a72271b527c3f27795c969",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:docs/usd-brep-limitations.md": "b101477b4dcb06cdd541b21333f11ca9db8bcf9ebe926703b1c36dc0ddb738a9"
   }
 }

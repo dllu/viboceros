@@ -31,8 +31,9 @@
     "tools/rhino_oracle/fixtures/scale_by_plane_object.json": "3fe7747ce4cbb7b2aa3d68cec81f404e722bca5163b310a98ed849a867ce4fc3",
     "tools/rhino_oracle/observations/scale_by_plane_object.json": "40596ffc1991a6ca8983a49fe45023a490b3e0f847ee362378591dc438cd2c7e"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "9d7c3e1d9b19e4be5d928016cf7dd08307d44fc0c189ddd8980306bd48efc3bb",
-    "tools/rhino_oracle/rhino_worker.py": "b7ec569ed22e48d1137e450bdf86f746a28a86c74707bf02a99d71681a354f0d"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "a14b1df9c06dbbf328c3edfb68dc0f48642e8ac0:tools/rhino_oracle/client.py": "9d7c3e1d9b19e4be5d928016cf7dd08307d44fc0c189ddd8980306bd48efc3bb",
+    "a14b1df9c06dbbf328c3edfb68dc0f48642e8ac0:tools/rhino_oracle/rhino_worker.py": "b7ec569ed22e48d1137e450bdf86f746a28a86c74707bf02a99d71681a354f0d"
   }
 }

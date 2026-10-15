@@ -40,10 +40,7 @@
     "tools/rhino_oracle/fixtures/solid_orientation_translation_repeat.json": "ab5fef970a3bd63b7f11fbd83d853697c13851cc412db0f80e526d5ecaac569f",
     "tools/rhino_oracle/observations/solid_orientation_translation_repeat.json": "7078debdfa2a54fe37bb4b51f8f1f306dce35c9f957d34f6eb0b354c71b47054"
   },
-  "capture_source_sha256": {
-    "tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
-    "tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f"
-  },
+  "capture_source_sha256": {},
   "reproduction_recipe_sha256": {
     "tools/rhino_oracle/references/solid_orientation_polyhedra.py": "4a490623c5dd020ffc3ac239157553e339d13f86a5e409fb6ee460481b8f7606"
   },
@@ -56,5 +53,9 @@
     "Independent Fraction-based polyhedral integrals verify the input shells and determinant signs without native or Rhino outputs. The native classifier uses exact ray intersections and trim winding, not volume integration.",
     "Raw observations and known compatibility differences are retained unchanged. Compaction was recursively checked including IEEE-754 numeric bit patterns and negative zero.",
     "This work does not normalize document objects, change Cap, validate non-self-intersection, or establish a general curved-surface classifier or coincident-shell tie rule. Timing fields are zero and are not performance evidence."
-  ]
+  ],
+  "capture_source_git_sha256": {
+    "27f6887da3e12db8b10e9c1ca45e6146f97f2841:tools/rhino_oracle/rhino_worker.py": "181a35a143f422762ec9aa0cb247e5791f893149e9c164379211c7814a263850",
+    "27f6887da3e12db8b10e9c1ca45e6146f97f2841:tools/rhino_oracle/client.py": "5d7ba19054855fb4e95414de0b77e7a43807f98b043b2117b809fd47356ba21f"
+  }
 }

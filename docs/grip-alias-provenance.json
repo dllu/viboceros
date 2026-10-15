@@ -21,11 +21,12 @@
     "tools/rhino_oracle/fixtures/grip_alias.json": "5eccbca39c31992dea2d049cd819bda004d532a2798b2af519a26d7cd23eca71",
     "tools/rhino_oracle/observations/grip_alias.json": "a83e7f154ddc13c617b1e7f86fc960a8252f49029338b0b8172f6bb6fcddb255"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "247058bf8b668ea7fa7e29eddc5b946f5e551b433292b3a3e888e02b7826f3a8",
-    "tools/rhino_oracle/rhino_worker.py": "0918a3484204e2ac7b93b9176a81107d97c21a3e2b2942977041257504516162"
-  },
+  "historical_dispatch_sha256": {},
   "git_sha256": {
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
+  },
+  "historical_dispatch_git_sha256": {
+    "cb6b4fe5036530a0b5c410f8360d0d0aeee59cf9:tools/rhino_oracle/client.py": "247058bf8b668ea7fa7e29eddc5b946f5e551b433292b3a3e888e02b7826f3a8",
+    "cb6b4fe5036530a0b5c410f8360d0d0aeee59cf9:tools/rhino_oracle/rhino_worker.py": "0918a3484204e2ac7b93b9176a81107d97c21a3e2b2942977041257504516162"
   }
 }

@@ -33,8 +33,9 @@
     "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
     "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "1b4d2cec09963ffefd64bbe9d48759bbf2353662fd7adc76f056f6d519435c37",
-    "tools/rhino_oracle/rhino_worker.py": "042c66d2881214983fd67fb28643c9fef650e4ec4ac2912a4eadc5b35bb57676"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "01feb80bc48d3b001ee1a208bcecb5f8a97792b2:tools/rhino_oracle/client.py": "1b4d2cec09963ffefd64bbe9d48759bbf2353662fd7adc76f056f6d519435c37",
+    "01feb80bc48d3b001ee1a208bcecb5f8a97792b2:tools/rhino_oracle/rhino_worker.py": "042c66d2881214983fd67fb28643c9fef650e4ec4ac2912a4eadc5b35bb57676"
   }
 }

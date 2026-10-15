@@ -131,6 +131,7 @@ mod command_line;
 mod component_selection;
 mod copy_options;
 mod extract_surface;
+mod shell;
 mod shrink_trimmed;
 #[cfg(test)]
 use command_line::command_completions;
@@ -2155,6 +2156,7 @@ pub struct VibocerosApp {
     edge_prompt: Option<edge_commands::EdgePrompt>,
     hole_prompt: Option<untrim_holes::HolePrompt>,
     unjoin_prompt: Option<Tolerance>,
+    shell_prompt: Option<shell::ShellPrompt>,
     edge_fillet_prompt: Option<edge_fillet::Prompt>,
     component_selection: component_selection::ComponentSelection,
     curve_points: Vec<Point3>,
@@ -2265,6 +2267,7 @@ impl VibocerosApp {
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
+            shell_prompt: None,
             edge_fillet_prompt: None,
             component_selection: Default::default(),
             curve_points: Vec::new(),
@@ -2456,6 +2459,9 @@ impl VibocerosApp {
         if self.continue_subcurve_prompt(&input) {
             return;
         }
+        if self.try_continue_shell(&input) {
+            return;
+        }
         if self.try_continue_component_choice(&input)
             || self.try_continue_extract_faces(&input)
             || self.try_continue_edge_fillet(&input)
@@ -2522,7 +2528,8 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_surface_tapered_input(&input)
+        if self.try_start_shell_input(&input)
+            || self.try_start_surface_tapered_input(&input)
             || self.try_start_surface_apex_input(&input)
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)
@@ -5377,6 +5384,7 @@ impl VibocerosApp {
         self.set_point_sources = None;
         self.surface_extrusion_sources = None;
         self.surface_path_prompt = None;
+        self.cancel_shell_prompt(false);
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
@@ -9052,6 +9060,8 @@ impl VibocerosApp {
             // Escape dismisses the rename editor without canceling a modeling prompt.
         } else if self.selection_menu.take().is_some() {
             // Escape dismisses the choice without changing the selection.
+        } else if self.shell_prompt.is_some() {
+            self.cancel_shell_prompt(true);
         } else if self.surface_path_prompt.take().is_some() {
             self.push_log("ExtrudeSrfAlongCrv canceled".into());
         } else if self.copy_cplane_source.take().is_some() {
@@ -9164,6 +9174,7 @@ impl eframe::App for VibocerosApp {
             && self.edge_prompt.is_none()
             && self.hole_prompt.is_none()
             && self.unjoin_prompt.is_none()
+            && self.shell_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.set_view_prompt.is_none()
@@ -9371,6 +9382,7 @@ impl eframe::App for VibocerosApp {
             .as_ref()
             .is_some_and(untrim_holes::HolePrompt::picking_faces)
             || self.picking_extract_faces()
+            || self.shell_prompt.is_some()
         {
             Some(FacePickMode::SurfaceAndBrepAny)
         } else if matches!(
@@ -9464,6 +9476,7 @@ impl eframe::App for VibocerosApp {
             edge_highlights.extend(prompt.highlights());
         }
         if self.unjoin_prompt.is_none()
+            && self.shell_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && self.shrink_prompt_mode().is_none()
             && !self.picking_extract_faces()
@@ -9495,7 +9508,7 @@ impl eframe::App for VibocerosApp {
                     .then_some(crate::viewport::ComponentPickFilter::Edges)
             });
         let component_pick = component_pick.or_else(|| {
-            (self.picking_extract_faces()
+            ((self.picking_extract_faces() || self.shell_prompt.is_some())
                 && model_input_active
                 && self.plane_prompt.is_none()
                 && !end_analysis_picking)
@@ -10025,6 +10038,7 @@ mod tests {
     mod set_point;
     mod set_point_preview;
     mod set_view;
+    mod shell;
     mod shrink_trimmed;
     mod silhouette;
     mod single_span_selection;
@@ -10124,6 +10138,7 @@ mod tests {
             edge_prompt: None,
             hole_prompt: None,
             unjoin_prompt: None,
+            shell_prompt: None,
             edge_fillet_prompt: None,
             component_selection: Default::default(),
             points_session: None,

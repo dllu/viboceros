@@ -72,6 +72,8 @@ int vb_solid_census(const VbSolid *solid, size_t counts[2], char *error, size_t 
 int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, size_t capacity);
 int vb_sheet_from_brep(const VbBrepView *view, double tolerance, const size_t *components,
                        size_t component_count, VbSolid **out, char *error, size_t capacity);
+int vb_shape_shell_faces(const VbSolid *shape,const size_t *indices,size_t count,double thickness,
+    VbSolid **out,char *error,size_t capacity);
 int vb_shape_offset(const VbSolid *shape, double distance, int wall, double accuracy,
                      VbSolid **out, char *error, size_t capacity);
 int vb_shape_brep(const VbSolid *shape, double approximation, VbBrep **out,

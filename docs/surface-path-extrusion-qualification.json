@@ -65,8 +65,6 @@
     "crates/viboceros-smlib/tests/surface_extrusion.rs": "e18babe166cd2c3958acab073e55c7fb561a02c53efa935c0cb7bf1e6bce1b44",
     "crates/viboceros-smlib/tests/surface_path_extrusion.rs": "887efe1172b179ef07e940d3f94c79d16e2ea3dcfc4a1d2e9b3539c2f621ccfa",
     "docs/commands/extrude-srf-along-crv.md": "2e5006cf0eb1247f27b3ec7808f07ab1077250e8526614aab5a46cd631b59509",
-    "src/app/command_line.rs": "51946fae891a62370c635e9a16ae4e7feb073c355d61fad7f9ad579a5cce6a7b",
-    "src/app/component_selection.rs": "f1843ca81a52fc602e8b8b300a89aa283436da7be78944668f10a0674381b92f",
     "src/app/extrude_surface_path.rs": "3a371c50b00ae04066e46ce856a1b63225ad02b078dcb002f84457c05e67b4c8",
     "src/app/tests/extrude_surface.rs": "2b321819a3b6347cb51633562c2e70057e03a9e694d68dfa8c5ce93f274eb393",
     "src/app/tests/extrude_surface_path.rs": "b9e82fba8d60a402478bd593e5ef2c8dc24b33d79cdbf0ade13fce92c162e9a3",
@@ -95,6 +93,8 @@
     "cacb3f610632555af8698b87b61f535a4f6fa286:src/app/object_selection.rs": "dc963c2f32a3747533b021adf2963cd93ceb530c313edf1f429d12947530935d",
     "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/client.py": "541566a8b468e46089b75d2589ce47b2cd7d884a12d96f90d4453daf83868ac8",
     "cacb3f610632555af8698b87b61f535a4f6fa286:tools/rhino_oracle/rhino_worker.py": "08b1bcdad19a5341467e465429a08b8f461274a4e4c4b401be43425a16d519a6",
-    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a"
+    "a588dbb7bdc462f35d99301569f31eb4d7c34eb5:crates/viboceros-command/src/extrude_surface.rs": "52d6bf0f65d8e351c04aea255e1f563d4f1ea02fb55a1ae83c6b05e76f29b00a",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app/command_line.rs": "51946fae891a62370c635e9a16ae4e7feb073c355d61fad7f9ad579a5cce6a7b",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:src/app/component_selection.rs": "f1843ca81a52fc602e8b8b300a89aa283436da7be78944668f10a0674381b92f"
   }
 }

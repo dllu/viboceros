@@ -31,10 +31,7 @@
     "tools/rhino_oracle/fixtures/surface_curve_image.json": "004ba5eb50eb0ab333d665abcf8d817d4573e716bbcf87d6390cd5ad3b0d8e19",
     "tools/rhino_oracle/observations/surface_curve_image.json": "71c2a91712471f6507c265262e93ea50e9f5b0ab7d6ee4031e54837317dcf4b3"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "ef21bbd0c429cbeea1115e42edda9e1ddec1fea13955d7b740ef3f7923ff10a6",
-    "tools/rhino_oracle/rhino_worker.py": "9a04da47d78dcf6f7e3fcdc5076b036bfc58e97629debb3d8d2249656435ba6a"
-  },
+  "historical_dispatch_sha256": {},
   "local_verification": {
     "release_workspace": {
       "passed": 5068,
@@ -49,5 +46,9 @@
       "baseline_commit": "e87ae71a",
       "warning_categories_and_counts_unchanged": true
     }
+  },
+  "historical_dispatch_git_sha256": {
+    "0a7e354956f1eb33ef6c69e3e6d5d33c3c73e59f:tools/rhino_oracle/client.py": "ef21bbd0c429cbeea1115e42edda9e1ddec1fea13955d7b740ef3f7923ff10a6",
+    "0a7e354956f1eb33ef6c69e3e6d5d33c3c73e59f:tools/rhino_oracle/rhino_worker.py": "9a04da47d78dcf6f7e3fcdc5076b036bfc58e97629debb3d8d2249656435ba6a"
   }
 }

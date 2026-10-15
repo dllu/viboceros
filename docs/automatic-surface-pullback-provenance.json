@@ -41,10 +41,11 @@
     "docs/automatic-surface-pullback-performance.json": "c1dea0875b69242a28e7aba09b84ec19da882ce4bde7a8ca4397b476501ed63d",
     "tools/rhino_oracle/observations/surface_pullback_linear_certified.json": "ede897f1d01088e7363d222219303678e2a1fd8b4a1f2b292cac34bd037c68ef"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "1b005965e14a5cb1a3182f3b92d5543cb04aeeb6979b8a7c14089211b683f321",
-    "tools/rhino_oracle/rhino_worker.py": "8c4e9c71e7f0968fe932400dc622e28d96b75b2ad1baef4433b41d34065b57fc"
-  },
+  "historical_dispatch_sha256": {},
   "local_certified_records": 24,
-  "maximum_local_bound": 8.852363856723912e-16
+  "maximum_local_bound": 8.852363856723912e-16,
+  "historical_dispatch_git_sha256": {
+    "3cbe2b1bec00b6ea23fbfd771f977e8d43c93a9d:tools/rhino_oracle/client.py": "1b005965e14a5cb1a3182f3b92d5543cb04aeeb6979b8a7c14089211b683f321",
+    "3cbe2b1bec00b6ea23fbfd771f977e8d43c93a9d:tools/rhino_oracle/rhino_worker.py": "8c4e9c71e7f0968fe932400dc622e28d96b75b2ad1baef4433b41d34065b57fc"
+  }
 }

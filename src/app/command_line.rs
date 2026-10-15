@@ -41,6 +41,7 @@ impl VibocerosApp {
             && self.snap_size_pending.is_none()
             && self.active_command.is_none()
             && self.surface_path_prompt.is_none()
+            && self.shell_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
@@ -184,6 +185,8 @@ impl VibocerosApp {
                         "BlendSrf"
                     } else if self.tween_surfaces_prompt.is_some() {
                         "TweenSurfaces"
+                    } else if self.shell_prompt.is_some() {
+                        "Shell"
                     } else if self.surface_path_prompt.is_some() {
                         "ExtrudeSrfAlongCrv"
                     } else if let Some(p) = &self.planar_boolean_prompt {
@@ -274,6 +277,8 @@ impl VibocerosApp {
                                 p.hint()
                             } else if let Some(p)=&self.tween_surfaces_prompt {
                                 p.hint()
+                            } else if let Some(p)=self.shell_prompt {
+                                if p.awaiting_thickness{"Shell thickness; Enter a distance with optional units"}else{"Select faces to remove; Thickness / DeleteInput; Enter applies, Esc cancels"}
                             } else if self.surface_path_prompt.is_some() {
                                 "Select path curve; Solid / DeleteInput / Reverse / PathLength; Esc cancels"
                             } else if self.planar_boolean_prompt.is_some() {

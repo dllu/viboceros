@@ -147,6 +147,7 @@ impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
         self.active_command.is_none()
             && self.surface_path_prompt.is_none()
+            && self.shell_prompt.is_none()
             && self.boolean_two_prompt.is_none()
             && self.planar_boolean_prompt.is_none()
             && self.tween_surfaces_prompt.is_none()
@@ -176,6 +177,7 @@ impl VibocerosApp {
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
         if !click.preselection
             && self.unjoin_prompt.is_none()
+            && self.shell_prompt.is_none()
             && self.edge_fillet_prompt.is_none()
             && !self.picking_extract_faces()
             && !self.picking_subcurve_edge()
@@ -223,6 +225,8 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
                 .collect()
+        } else if self.shell_prompt.is_some() {
+            self.shellable_picks(click.picks)
         } else if self.picking_extract_faces() {
             click
                 .picks
@@ -312,9 +316,12 @@ impl VibocerosApp {
             }
         } else if self.unjoin_prompt.is_some()
             || self.edge_fillet_prompt.is_some()
+            || self.shell_prompt.is_some()
             || self.picking_extract_faces()
         {
-            let picks = if self.picking_extract_faces() {
+            let picks = if self.shell_prompt.is_some() {
+                self.shellable_picks(window.picks)
+            } else if self.picking_extract_faces() {
                 window
                     .picks
                     .into_iter()

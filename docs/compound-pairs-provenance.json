@@ -37,10 +37,7 @@
     "tools/rhino_oracle/observations/polyhedral_boolean_command.json": "3d1714a83ba41f9c1d3cc511dc992f72cb021dd7ab6d671b08c2a7894511070a",
     "docs/polyhedral-command-partitions.json": "2d51f16ad340f9d72f41007ecc0c8522420f316aa120000b46308dfd962f2289"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "067c757b3c5153ebebc9ff936f48fb0bd7c980a1a662aa5003c76615924a8389",
-    "tools/rhino_oracle/rhino_worker.py": "cd5d611a8d81016976a285feb0de7a14a1670d4549c57608f84b98009dd8d5a2"
-  },
+  "historical_dispatch_sha256": {},
   "previous_capture_physical_replays": 65,
   "previous_capture_non_solid_outputs": 1,
   "local_verification": {
@@ -58,5 +55,9 @@
   },
   "git_sha256": {
     "1ca3325bcb15d16c2cb18b329eeac83606e55b41:tools/rhino_oracle/compound_recipe_probe.py": "e432722d32ab05d2fd28cc8664c5317220f9df2b97cf0784677cba57e183f4b3"
+  },
+  "historical_dispatch_git_sha256": {
+    "06ec22fa63df9f48e488330e23e809bb0821da6c:tools/rhino_oracle/client.py": "067c757b3c5153ebebc9ff936f48fb0bd7c980a1a662aa5003c76615924a8389",
+    "06ec22fa63df9f48e488330e23e809bb0821da6c:tools/rhino_oracle/rhino_worker.py": "cd5d611a8d81016976a285feb0de7a14a1670d4549c57608f84b98009dd8d5a2"
   }
 }

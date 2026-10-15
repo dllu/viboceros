@@ -1,0 +1,175 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "shell_top",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 11,
+            "is_solid": true,
+            "volume": 239.99999999999991
+          }
+        ]
+      },
+      "elapsed_ns": 128826776
+    },
+    {
+      "id": "shell_opposite",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 10,
+            "is_solid": true,
+            "volume": 191.9999999999999
+          }
+        ]
+      },
+      "elapsed_ns": 120754851
+    },
+    {
+      "id": "shell_adjacent",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 10,
+            "is_solid": true,
+            "volume": 209.99999999999994
+          }
+        ]
+      },
+      "elapsed_ns": 123566890
+    },
+    {
+      "id": "shell_side",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 11,
+            "is_solid": true,
+            "volume": 263.99999999999994
+          }
+        ]
+      },
+      "elapsed_ns": 129682747
+    },
+    {
+      "id": "shell_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                10000.0,
+                -30000.0,
+                50000.0
+              ],
+              [
+                10010.0,
+                -29992.0,
+                50006.0
+              ]
+            ],
+            "face_count": 11,
+            "is_solid": true,
+            "volume": 239.99999999999997
+          }
+        ]
+      },
+      "elapsed_ns": 127855893
+    },
+    {
+      "id": "shell_disconnected",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0000000000000075,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 48.00000000000008
+          },
+          {
+            "bounds": [
+              [
+                9.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 48.0
+          }
+        ]
+      },
+      "elapsed_ns": 182230599
+    }
+  ]
+}

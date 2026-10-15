@@ -21,8 +21,9 @@
     "tools/rhino_oracle/fixtures/boolean_intersection_command.json": "4e06232c76bf3188812597ada004e64d92f4b8035e172c41f1ee54582c2ab27a",
     "tools/rhino_oracle/observations/boolean_intersection_command.json": "7985823a0627c9871828e9ce7f9437d586c72b962097a86a6e80a132f63c247d"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "59e68f701c85e48fb9ba46d3a102be5fafe6aa195e211b899594b43016d35b18",
-    "tools/rhino_oracle/rhino_worker.py": "18057feb4c0891df53b199a3e3ca14f015e3e64969d0ce8b800aa3c13010d659"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "7defe5c1c7ca0f9bfb0ee03e33d599e0db86ab8e:tools/rhino_oracle/client.py": "59e68f701c85e48fb9ba46d3a102be5fafe6aa195e211b899594b43016d35b18",
+    "7defe5c1c7ca0f9bfb0ee03e33d599e0db86ab8e:tools/rhino_oracle/rhino_worker.py": "18057feb4c0891df53b199a3e3ca14f015e3e64969d0ce8b800aa3c13010d659"
   }
 }

@@ -27,9 +27,10 @@
     "tools/rhino_oracle/observations/polyhedral_boolean_command.json": "3d1714a83ba41f9c1d3cc511dc992f72cb021dd7ab6d671b08c2a7894511070a",
     "docs/polyhedral-command-partitions.json": "2d51f16ad340f9d72f41007ecc0c8522420f316aa120000b46308dfd962f2289"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "1fa3a31e4cc5b06dcb9719e763f5d6df1fd9d04091db3839e0fe3ccd67d1a6b8",
-    "tools/rhino_oracle/rhino_worker.py": "0cbcfdf759add85d5fc6eaeae9a7650af3a1442e10b5b553f03f96b5300327db"
-  },
-  "output_partition_differences": 7
+  "historical_dispatch_sha256": {},
+  "output_partition_differences": 7,
+  "historical_dispatch_git_sha256": {
+    "8fc573004ea40ff79e46a6f2b5757c41c7e4c678:tools/rhino_oracle/client.py": "1fa3a31e4cc5b06dcb9719e763f5d6df1fd9d04091db3839e0fe3ccd67d1a6b8",
+    "8fc573004ea40ff79e46a6f2b5757c41c7e4c678:tools/rhino_oracle/rhino_worker.py": "0cbcfdf759add85d5fc6eaeae9a7650af3a1442e10b5b553f03f96b5300327db"
+  }
 }

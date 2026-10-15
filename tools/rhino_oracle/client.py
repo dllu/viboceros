@@ -305,6 +305,9 @@ class OracleClient:
             elif op.get('op') == 'surface_apex_extrusion':
                 from .surface_apex_extrusion_probe import validate
                 validate(op)
+            elif op.get('op') == 'shell':
+                from .shell_probe import validate
+                validate(op)
             elif op.get('op') == 'surface_tapered_extrusion':
                 from .surface_tapered_extrusion_probe import validate
                 validate(op)
@@ -1315,6 +1318,8 @@ class OracleClient:
                 shutil.copyfile(worker_source.with_name('surface_path_extrusion_probe.py'), job_path/'surface_path_extrusion_probe.py')
             if any(op.get('op') == 'surface_apex_extrusion' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('surface_apex_extrusion_probe.py'), job_path/'surface_apex_extrusion_probe.py')
+            if any(op.get('op') == 'shell' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('shell_probe.py'), job_path/'shell_probe.py')
             if any(op.get('op') == 'surface_tapered_extrusion' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('surface_tapered_extrusion_probe.py'), job_path/'surface_tapered_extrusion_probe.py')
             if any(op.get('op') == 'surface_extrusion' for op in request.get('operations', [])):

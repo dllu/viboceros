@@ -9,8 +9,6 @@
     "tools/usd_brep/qualify_surface_trim_tangencies.py": "4281acbdc735d689810baf732f98d56fba508fd6c76526d72fab5024f7f5e948",
     "tools/usd_brep/surface_tangent_adapter_probe.cpp": "e778befdc28f354d792fc809da61b48d33844efcde13137886f80a26f882183e",
     "tools/usd_brep/CMakeLists.txt": "31bb746265a2ac95df29887c523e1a1f6de11d6ad73a1043fd2ed1c2894f5ab4",
-    "crates/viboceros-smlib/native/brep_import.cpp": "d5b760d316f682f7065cc271167b136a83e143e4b40fbcd9abf2f2276479d0d0",
-    "crates/viboceros-smlib/native/brep_data.h": "e5c095b805224a20d5f5c7933168f59d31950925f2e7fed0cc12159b8bfc60d6",
     "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
     "crates/viboceros-smlib/src/native/working_curve.rs": "866871b90fbd7e21e87b084f3702e29284b3855e52b8222a0984a9d14301ba11",
     "crates/viboceros-smlib/src/native/curve_surface_intersections.rs": "1dcb976798e8a1b79c2e8e379f859e87b2526b326924fd93ebb548e0d717d14e",
@@ -190168,6 +190166,8 @@
     "a77cc1701c27141cdb4b7b55a5f4959282e73d0c:crates/viboceros-geometry/src/intersection/surface_surface_backend.rs": "f8a5d2acae791f574207d29572e0b6526e4439607abb1d28bd52c003fdee42ab",
     "0e6b430ef487df6626b39891c4e9a4add814d44b:crates/viboceros-geometry/src/surface_pullback/certificate.rs": "3261b2144600a79614c8e273881108ae96f59238e05d66a2124a0ad1257fa6b2",
     "2b0d305f91089141fed271245ec0b83fa0b159a1:crates/viboceros-geometry/src/intersection/surface_surface_backend/tests/trim.rs": "c2729ab97e37ff947cb19d86604833362a2fbf1d84c7dea62c67079e5d0b9a04",
-    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/native/knot_refinement.rs": "312ae2527631a8a80020951de18b1aa2f0f03b460c1804e2d969b00120812e83"
+    "bb494e80248bf084734d4c9529deed40a6961b2f:crates/viboceros-smlib/src/native/knot_refinement.rs": "312ae2527631a8a80020951de18b1aa2f0f03b460c1804e2d969b00120812e83",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:crates/viboceros-smlib/native/brep_import.cpp": "d5b760d316f682f7065cc271167b136a83e143e4b40fbcd9abf2f2276479d0d0",
+    "a077e3bcef2cd29816e5f404a9b989ceddc9a125:crates/viboceros-smlib/native/brep_data.h": "e5c095b805224a20d5f5c7933168f59d31950925f2e7fed0cc12159b8bfc60d6"
   }
 }

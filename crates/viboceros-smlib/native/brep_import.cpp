@@ -106,7 +106,7 @@ SmSurface *vb_import_query_surface(const VbNurbsData &data) {
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
                        std::vector<size_t> *parents, std::vector<SmEdge *> *source_edges,
-                       bool sheet) {
+                       bool sheet, std::vector<SmFace *> *source_faces) {
     require(std::isfinite(tolerance) && tolerance > 0, "Invalid import tolerance");
     require(view.vertex_count && view.edge_count && view.face_count && view.vertices &&
                 view.edges && view.faces && view.loops && view.trims,
@@ -388,6 +388,11 @@ SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *c
         source_edges->reserve(view.edge_count);
         for (size_t i = 0; i < view.edge_count; ++i)
             source_edges->push_back(data.m_vEdges[i].m_pEdge);
+    }
+    if (source_faces) {
+        source_faces->reserve(view.face_count);
+        for (size_t i = 0; i < view.face_count; ++i)
+            source_faces->push_back(data.m_vFaces[i].m_pFace);
     }
     return result.release();
 }

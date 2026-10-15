@@ -27,8 +27,9 @@
     "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
     "tools/rhino_oracle/observations/surface_pullback_endpoints.json": "71593c8aa90b81679ed1a196a5a25fd9738ecd9febdc71cd237934a3e0e436a0"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "ca18a4dd0733411dac0b08a3cbff90263156eebc20defb9ca3c9475942d04165",
-    "tools/rhino_oracle/rhino_worker.py": "d3e3f4d67ff64ba450806fcd0f764dda031e8cedaf3e6e4bf5a181910f532ebb"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "3a6ebee585f71ec4f869bb16d31a9a33f912f3bd:tools/rhino_oracle/client.py": "ca18a4dd0733411dac0b08a3cbff90263156eebc20defb9ca3c9475942d04165",
+    "3a6ebee585f71ec4f869bb16d31a9a33f912f3bd:tools/rhino_oracle/rhino_worker.py": "d3e3f4d67ff64ba450806fcd0f764dda031e8cedaf3e6e4bf5a181910f532ebb"
   }
 }

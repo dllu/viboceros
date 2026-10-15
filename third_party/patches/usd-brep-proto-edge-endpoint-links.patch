@@ -1,0 +1,56 @@
+--- a/SmProtoTopology.cpp
++++ b/SmProtoTopology.cpp
+@@ -2655,8 +2655,9 @@
+ 
+   // Remove PE from its End PV->PE lists
+   if(    m_pStartPV)              { m_pStartPV->RemoveProtoEdge(this) ; }
+-  if(    m_pEndPV 
+-     && (m_pEndPV != m_pStartPV)) { m_pEndPV->RemoveProtoEdge(this) ; }
++  // A closed proto-edge is registered twice at its shared endpoint.
++  // Remove both incidences before the edge is freed.
++  if(    m_pEndPV)                { m_pEndPV->RemoveProtoEdge(this) ; }
+ 
+   // clear contained objects
+   m_pXSectInterval.Init() ;
+@@ -3314,7 +3315,7 @@
+       pOtherPE->SetStartProtoVertex( pThisStartPV) ;
+ 
+       pOtherStartPV->RemoveProtoEdge( pOtherPE) ;
+-      pThisStartPV->AddProtoEdge( this) ;
++      pThisStartPV->AddProtoEdge( pOtherPE) ;
+   }
+ 
+   SmProtoVertex *pThisEndPV  = this->GetEndProtoVertex();
+@@ -3324,7 +3325,7 @@
+       pOtherPE->SetEndProtoVertex( pThisEndPV) ;
+ 
+       pOtherEndPV->RemoveProtoEdge( pOtherPE) ;
+-      pThisEndPV->AddProtoEdge( this) ;
++      pThisEndPV->AddProtoEdge( pOtherPE) ;
+   }
+ 
+   // Add in other PE's EdgeDefinitions, and remove them from pOtherPE.
+@@ -6068,6 +6069,11 @@
+                       }
+                   }
+ 
++                  // Squeeze/Glue can consume the second vertex on the first edge.
++                  // Subsequent common edges now have the surviving endpoint.
++                  if (sDeletedVertices1.IsIn(pBrep1Vtx2))
++                    pBrep1Vtx2 = pBrep1Vtx1;
++
+               } // end loop kk on common Edges
+ 
+           } // end else (at least one common Edge)
+@@ -6159,6 +6165,11 @@
+                           bDeleted2 = TRUE;
+                       }
+                   }
++
++                  // Squeeze/Glue can consume the second vertex on the first edge.
++                  // Subsequent common edges now have the surviving endpoint.
++                  if (sDeletedVertices2.IsIn(pBrep2Vtx2))
++                    pBrep2Vtx2 = pBrep2Vtx1;
+ 
+               } // end loop kk on common Edges
+ 

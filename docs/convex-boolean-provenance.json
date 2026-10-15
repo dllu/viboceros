@@ -22,8 +22,9 @@
     "tools/rhino_oracle/fixtures/convex_boolean.json": "01a1fc8703c3aff038459461a95332e3770d2928fc32f38cf9f58bef3d2c023b",
     "tools/rhino_oracle/observations/convex_boolean.json": "d75b86c098ed5464c8d6363e189ac7a548da464f8314387bf388ba041999bc87"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "b68763dcc74746e1775779d9bad7654b5b09e9cac33fd71ea9f1662092d84d85",
-    "tools/rhino_oracle/rhino_worker.py": "ac1a3e1fb9e57859c9d13b9d89dcb3f1657d79c8cfc72875180af36dd59362ed"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "716afd8ad2003891c4cf44cd227a4bf20c4390cb:tools/rhino_oracle/client.py": "b68763dcc74746e1775779d9bad7654b5b09e9cac33fd71ea9f1662092d84d85",
+    "716afd8ad2003891c4cf44cd227a4bf20c4390cb:tools/rhino_oracle/rhino_worker.py": "ac1a3e1fb9e57859c9d13b9d89dcb3f1657d79c8cfc72875180af36dd59362ed"
   }
 }

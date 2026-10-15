@@ -38,11 +38,12 @@
     "tools/rhino_oracle/observations/scale_by_plane.json": "caf0fe79c6f04409da430e915901719e0ad09cfb56e3c3332cffa40dce44872d",
     "tools/rhino_oracle/observations/scale_by_plane_boundary.json": "729341651bfa63dbd6839db80b5c839a7661137cbd5a9e43d009121e3a7cffd4"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "717751eb54631d5e154e64ad2a55ab812f6fc5f42f38c6ec8db1e48ad094a901",
-    "tools/rhino_oracle/rhino_worker.py": "a072f257e5c46f8ad0c47f8f025e96f200365a2dc4f4f3780fd79c5fed8ef2b9"
-  },
+  "historical_dispatch_sha256": {},
   "git_sha256": {
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
+  },
+  "historical_dispatch_git_sha256": {
+    "e59ba04964c8d5adb9c58b7cff2e045d322289a5:tools/rhino_oracle/client.py": "717751eb54631d5e154e64ad2a55ab812f6fc5f42f38c6ec8db1e48ad094a901",
+    "e59ba04964c8d5adb9c58b7cff2e045d322289a5:tools/rhino_oracle/rhino_worker.py": "a072f257e5c46f8ad0c47f8f025e96f200365a2dc4f4f3780fd79c5fed8ef2b9"
   }
 }

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "shell_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_error_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "recipes": 6,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "scope_notes": [
+    "Shell opens selected original faces of a closed manifold polysurface and hollows retained faces inward. Thickness is finite and positive, defaults to one model unit, and DeleteInput defaults to Yes. At least one original face must remain per source. Face/Faces/FaceRefs deduplicate. Native face pointers are retained in original import order for the actual from_brep_with_regions path; imported edge and face identities are cleared together before in-place filleting.",
+    "The adapter calls the public pure SmApiShellBrepFull with negative thickness, extended sharp offsets, self-intersection merging and solid wall creation. The kernel copies both input topology and selected-face identities. The wrapper requires a fresh import, manifold input/output and bounded face counts; it exports native approximated surfaces at min(document absolute tolerance, 1e-8), without substituting portable hand-built shell geometry. Postconditions require native tight bounds inside the source envelope within model/floating tolerance and positive wall volume below source volume by a relative margin of 1e-7, using native volume integration at relative accuracy 1e-8. Near-collapsed cavities below that resolution decline conservatively. Envelope and volume checks do not prove general set containment or wall thickness.",
+    "Commands localize source coordinates, stage every output before document mutation, copy source attributes and groups, and remove originals only after all geometry succeeds. Native material-region nesting separates disconnected wall objects while retaining inward cavity boundaries with their enclosing material. Undo/Redo covers the whole batch. A successful first shell followed by a failed thin source preserves both sources, selection, history and Redo.",
+    "The UI reuses frozen face-component snapshots, click/window and ambiguity selection. Thickness accepts document units and unit suffixes; DeleteInput edits are atomic. Empty/stale sources, invalid thickness and kernel failures keep the getter for correction. Cancel and command changes release it without geometry edits. Whole-object selection does not substitute for an opening face.",
+    "Independent box tests identify all six original faces by geometry, deduplicate face references, cover adjacent/opposite openings, reordered face arrays and disconnected walls. For outer dimensions 10 by 8 by 6, thickness one gives volume 480 minus cavity width times depth times height. Top, opposite top/bottom, adjacent top/right and right openings give 240, 192, 210 and 264 respectively; two disconnected end walls total 96. A radius-five, height-eight cylinder with one cap removed has volume 88*pi.",
+    "Full native AddressSanitizer instrumentation exposed four lifetime errors, retained as failure logs with trailing whitespace and blank EOF lines normalized. The generated SmProtoTopology repair updates the correct edge in changed-endpoint lists, removes both closed-edge incidences and refreshes consumed vertices before subsequent common-edge work. The generated SmBrep repair promotes isolated-loop vertexuses into the selected surviving loop and its mate. Pinned upstream sources remain unchanged. The six native Shell regressions pass under the repaired instrumented libraries and adapter. Leak detection was disabled; leak freedom and all kernel memory paths are not certified. The retained sanitizer success logs precede the final volume/envelope postcondition and staging-helper refactor; normal-build tests cover those final changes.",
+    "Six independent Python fixtures invoke the actual Rust command and record solid flags, face counts, wall volumes and native tight bounds. Physical opening points resolve each engine's own face indices. The SDK recipe calls Brep.CreateShell with negative thickness. Disconnected outputs sort by minimum bounds. Opening-point fixtures currently qualify face interiors of boxes; the resolver does not certify arbitrary trimmed-face membership. SDK mocks check signed distance, selection, invalid/null results and owned-object disposal, not licensed parity.",
+    "Licensed Rhino capture remains blocked by the previously documented Wine SSPI startup failure; no new launch was attempted. Observations are local debug-profile Viboceros results. No comparative speedup or continuous geometry error certificate is claimed. Complex self-intersections, singularities, collapsed offsets, touching shells, native History editing, live preview and saved native defaults require further work.",
+    "Historical SHA maps in previously verifiable qualification records use matching immutable Git blobs when shared dispatch/native sources change. Earlier records with already missing or stale evidence were left unchanged. Non-SHA observations and qualification claims are preserved."
+  ],
+  "validation": {
+    "native AddressSanitizer Shell integration tests": {
+      "passed": 6,
+      "leak_detection": false
+    },
+    "python3 -m unittest tools.rhino_oracle.test_shell tools.rhino_oracle.test_client tools.rhino_oracle.test_surface_extrusion tools.rhino_oracle.test_surface_tapered_extrusion -q": {
+      "passed": 32
+    },
+    "native AddressSanitizer command/UI tests": {
+      "passed": 7,
+      "command": 4,
+      "ui": 3,
+      "leak_detection": false,
+      "note": "before final envelope/volume postcondition and staging-helper refactor"
+    },
+    "cargo test -p viboceros-command -p viboceros shell:: --quiet": {
+      "passed": 5,
+      "command": 2,
+      "ui": 3
+    },
+    "native B-rep import and transfer regressions": {
+      "passed": 13,
+      "import": 10,
+      "transfer": 3
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed",
+    "cargo test -p viboceros-smlib --features native --test shell --quiet": {
+      "passed": 6,
+      "note": "final envelope/volume postconditions enabled"
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros -p viboceros-smlib --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo test -p viboceros-oracle --features native-smlib --lib shell:: --quiet": {
+      "passed": 1,
+      "recipes": 6
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "normal_native_instrumentation": "VIBOCEROS_SMLIB_ASAN=OFF; test binary has no libasan dependency",
+    "cargo run -p viboceros-oracle --features native-smlib -- tools/rhino_oracle/fixtures/shell.json tools/rhino_oracle/observations/shell_viboceros_native.json": {
+      "completed_operations": 6,
+      "profile": "debug",
+      "performance_qualified": false
+    },
+    "cargo fmt --all -- --check": "passed",
+    "git diff --check": "passed",
+    "cargo test -p viboceros-command -p viboceros --features native-smlib shell:: --quiet": {
+      "passed": 7,
+      "command": 4,
+      "ui": 3,
+      "note": "final envelope/volume postconditions and staging helper"
+    },
+    "cargo test -p viboceros --features native-smlib object_selection --quiet": {
+      "passed": 51
+    },
+    "patch composition": "Both new patches apply with --fuzz=0 after the existing repairs and reproduce tested generated C++ byte for byte."
+  },
+  "source_sha256": {
+    "README.md": "0f5fefe391f01dc3a1d6593b54c3a5fbdac56b55d06f577dd21b9fd6241d9a0c",
+    "crates/viboceros-command/src/lib.rs": "de88ef06c89122f4171c265ae05a2c0d681e457251be1a9147b9f4f7a3298471",
+    "crates/viboceros-command/src/shell.rs": "d0a0e0547f08b79443317dd3102751ddaf33561d8d51dd1615362e76e5d7b153",
+    "crates/viboceros-command/src/shell/tests.rs": "01b2e072b6b760f893b04d33884a3d92aa1914332e88d86653dc2e1b5a7ad7c7",
+    "crates/viboceros-oracle/src/lib.rs": "78bcb306949035206fcac784fd35cbe87d119d4381b2b872b15e6aa52ffd8b39",
+    "crates/viboceros-oracle/src/shell.rs": "cce2bc70953f2a53217218674a7f843bf6b2361112a1cc1653e741905b9d8bb9",
+    "crates/viboceros-smlib/build.rs": "80914510c366cc3cc3deffed5ed039eace93d2fadc57e6f359710878bce341da",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b",
+    "crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
+    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "crates/viboceros-smlib/native/bridge.cpp": "0ac8201c1dcff3481e6253343597bc26d5c4ce4fc6f3a3a5b2be1ba687bdd0b6",
+    "crates/viboceros-smlib/native/bridge.h": "56f6e7abc658659979e88e8b784d1304c74bede1639a336266888136d2a76e66",
+    "crates/viboceros-smlib/src/native.rs": "768365cdb0fb6c61fc39bf788fbc07ad430ed258577509d0c136fc67c66f3ea3",
+    "crates/viboceros-smlib/src/native/shell.rs": "9816e73fb176677fa8f0ab7fde9520badd8a423e01b0fb6f1e58e409fd6759cc",
+    "crates/viboceros-smlib/tests/shell.rs": "05f6b46aa18efa609cd19cc1930899f2fcdb7ee1aaa7221478a0fe2f74b540d5",
+    "docs/commands/README.md": "c18a292b1c7a1e942a340932cf98fa00d7f3756e747be936b66ee58e5a927ca0",
+    "docs/commands/shell.md": "053f81166748f14817f9967338c421065d1dc3cc3cdd98c3b83f3c0e8186356a",
+    "docs/shell-asan-baseline.log": "9a7d52160840ebc86ea7b7b7cd0a0353f4ad2c85927b17d683c7088b99937465",
+    "docs/shell-asan-fixed.log": "632a536bdff944878d7e9b5b224a2d2fe5334a5b6f5a857c354da8c049c47ee9",
+    "docs/shell-asan-isolated-loop-baseline.log": "a6f2e569ceceaacaf9c45811efe4136d82abc45ddc762a7f0467f51bd93a6109",
+    "docs/shell-asan-squeezed-vertex-baseline.log": "ef56cc123044214920319240e9533da92268bf529f917816aca10ef6cb80416d",
+    "docs/shell-command-asan-fixed.log": "6cf711dba4ccc2d9943e73241ed26d1e817a36073732b7274e500976623a1a3a",
+    "docs/usd-brep-limitations.md": "b5b08a42150304b2d4307698b928083442a4cd4116da0272900e017f0e20252b",
+    "src/app.rs": "169bde36e63688a88a781e4d12abeacdb7a384e8abb20dcf2bbc2aa4b9d4c15b",
+    "src/app/command_line.rs": "e825215efccabb86ae8859306de43b1f5210c44e0cd1fa97f056b3a37cf8313e",
+    "src/app/component_selection.rs": "9a6b16f7e8266992e560531d1d1595c9cefc909550eccc80fec1fc71b773df82",
+    "src/app/shell.rs": "fa592d9a9745db9400816a7b8f55e472fe0adec8e971721d22ea80c33fb93334",
+    "src/app/tests/shell.rs": "838271db23ba5ed5532e51a1538185a450013ead3630dcd6794859284899a1a0",
+    "third_party/patches/usd-brep-isolated-loop-owner.patch": "226da89868d24b4b7ccdf9ae3725d7cb931cba913e7daba66bd1d2d325c946d6",
+    "third_party/patches/usd-brep-proto-edge-endpoint-links.patch": "2216eaf4a8983629f5965baac562142110483e856f668aaa15f54b2e4f9a54ed",
+    "third_party/usd-brep/source/SMLib/inc/SmProtoTopology.h": "ae7d0f502f9fd79d07c738c667a66924609a3267a82886e147f49c36f61c3658",
+    "third_party/usd-brep/source/SMLib/src/SmBrep.cpp": "5d44d6ac347fa42e4e83fead8bbde82ce46c5ff48e0a973b5c7cddc778a2fca1",
+    "third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp": "bab1c05058ed3607775671791c76bbb28d29695f675e863632b39084c9980d27",
+    "third_party/usd-brep/source/SMLib/src/SmProtoTopology.cpp": "71465513ce3e17276672096e5a6eb5e8bc72ee69931202d92d6dd46ff4ab4563",
+    "third_party/usd-brep/source/SM_API/inc/SmApiBrep.h": "ca08db54ad2211c4c98eb229bb875573e799fe731b9226288737181705fb4296",
+    "third_party/usd-brep/source/SM_API/inc/SmApiQueries.h": "59e8a99a62b7dfc4663c8b2f3e9e23a62b9477a15223a71347dd5e394575e4ee",
+    "third_party/usd-brep/source/SM_API/src/SmApiBrep.cpp": "c1dcdf9899a386199dd9cc3ee3bef9626d324d5558a8b7b6132b19e18fb70df1",
+    "tools/rhino_oracle/client.py": "31adabdab99a4e8914935373992f62ed1837a88cb590085807d3c0d2631ad726",
+    "tools/rhino_oracle/fixtures/shell.json": "ff25c95a3b8051d470c02a695a4dac9d930bdd84be017356c506891a08af1016",
+    "tools/rhino_oracle/observations/shell_viboceros_native.json": "f9ffa43f20d62caa6db012228dbde426822da0f6a00d9f27218a96f811eb4cd9",
+    "tools/rhino_oracle/rhino_worker.py": "daa6ac7a085f3cd330c1062f23d202b79b16681d08b5a511dc6705d2a60cc673",
+    "tools/rhino_oracle/shell_probe.py": "6e6a088433eda9189c39a07ee11ed4f1079769ea584fa484b96496ffdc7c9fd6",
+    "tools/rhino_oracle/test_shell.py": "0c52350b3e645ec2dd7b60e94e6abe4d0925f3ee0a683500cb27a7bf404b811a",
+    ".gitattributes": "b62924c60939dd436f140dd0812a7df35ae083fbdd442a5dc87e7f65057cedb7"
+  },
+  "box_fixture_max_volume_error": 1.1368683772161603e-13
+}

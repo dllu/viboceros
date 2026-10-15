@@ -21,8 +21,9 @@
     "tools/rhino_oracle/fixtures/polyhedral_boolean.json": "2477638561e3278772dfe7084b81e77b241ad698352406b1f3db49fc8ce8f999",
     "tools/rhino_oracle/observations/polyhedral_boolean.json": "dc401b84093a01f1f6c67f3566d75ed533b077e6d71d50afc667712410e9aff4"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "b13dd949c680c2392db85d1e6ca0d7a3700eb031f99295ecd42ddc645a33ba6e",
-    "tools/rhino_oracle/rhino_worker.py": "288a2c1f01956bd6c56778c761d7dd68a428bd7021e2d3d4114de827bb0fd347"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "b1b26de2af7f6b8b87a718a7ce4c36f0a7655215:tools/rhino_oracle/client.py": "b13dd949c680c2392db85d1e6ca0d7a3700eb031f99295ecd42ddc645a33ba6e",
+    "b1b26de2af7f6b8b87a718a7ce4c36f0a7655215:tools/rhino_oracle/rhino_worker.py": "288a2c1f01956bd6c56778c761d7dd68a428bd7021e2d3d4114de827bb0fd347"
   }
 }

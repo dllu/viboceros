@@ -63,7 +63,6 @@
   ],
   "source_sha256": {
     "crates/viboceros-command/examples/curved_difference.rs": "fcc3a2eb96c5d2ea7d6c55bd4cc98754e8d0a150d39de28eb9524adc7f038126",
-    "crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6",
     "crates/viboceros-smlib/examples/export_breps.rs": "5730f23dfee698d4a07db72d5cc123b56c483ac13169f1d46563c9709b089690",
     "crates/viboceros-smlib/examples/perforated_plate.rs": "a097a4dee5098bc4063ed109d562eead4d71399db2982f9f3c49833ff3bd659a",
     "crates/viboceros-smlib/examples/reference.rs": "e000e34301d30c6b65d0fd7ea26033d040fa94e64c245ec9f46bdafdc55baeef",
@@ -128,6 +127,7 @@
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:crates/viboceros-smlib/native/CMakeLists.txt": "bc7f078173bd4cd79d8e339f22e0df9095fbe218c79e019d009c3a922a04c8b9",
     "cf33557bb9a19f4c90543ea8bd1244ad66353e0d:crates/viboceros-command/src/boolean_difference.rs": "80dca17d3871a7980e4fa0fa365845772e21662db80c6bae76749e4815ec5bb6",
     "cf33557bb9a19f4c90543ea8bd1244ad66353e0d:docs/commands/boolean-difference.md": "6dbe969fbf519b3852d03ed995f2a04527805afbcc7e489321f5e737a1756063",
-    "6885d332c18167eff168f7f626a80de5380b7957:crates/viboceros-smlib/native/brep_export.cpp": "20c3433e43c1446a320a573c6d16a703df7081fb5df88e693185081734e7df1c"
+    "6885d332c18167eff168f7f626a80de5380b7957:crates/viboceros-smlib/native/brep_export.cpp": "20c3433e43c1446a320a573c6d16a703df7081fb5df88e693185081734e7df1c",
+    "65bcb9f29eaba5d7b09c070ac88b08bd3103734d:crates/viboceros-smlib/build.rs": "85174cd3f7b4c7312376e48414fce972061ae08914c4ac064053625499f24bf6"
   }
 }

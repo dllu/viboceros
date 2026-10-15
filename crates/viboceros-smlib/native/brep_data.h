@@ -49,6 +49,7 @@ void vb_surface_data_free(VbSurfaceData *surface);
 }
 class SmBrep;
 class SmEdge;
+class SmFace;
 class SmBSplineSurface;
 class SmBSplineCurve;
 class SmSurface;
@@ -64,6 +65,7 @@ void vb_validate_boundary_intersections(SmBrep &solid, double tolerance);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
                        std::vector<size_t> *parents = nullptr,
-                       std::vector<SmEdge *> *source_edges = nullptr, bool sheet = false);
+                       std::vector<SmEdge *> *source_edges = nullptr, bool sheet = false,
+                       std::vector<SmFace *> *source_faces = nullptr);
 #endif
 #endif

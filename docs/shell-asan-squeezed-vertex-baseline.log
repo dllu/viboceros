@@ -1,0 +1,153 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 14s
+     Running tests/shell.rs (target/debug/deps/shell-9f8fff7bd4bd84e3)
+
+running 6 tests
+=================================================================
+==2182810==ERROR: AddressSanitizer: heap-use-after-free on address 0x51000003d440 at pc 0xbbe3eff51bc8 bp 0xea1e47be1080 sp 0xea1e47be1070
+READ of size 8 at 0x51000003d440 thread T2
+    #0 0xbbe3eff51bc4 in sm_RmFromSpatialTree(SmTopology*, SmBrep*) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:23744
+    #1 0xbbe3eff90c0c in SmBrep::Notify(SmNotifyOperation, SmObject*, SmObject*, SmObject*) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:23904
+    #2 0xbbe3eff90c0c in SmBrep::GlueVertices(SmVertex*, SmVertex*, SmTArray<SmEdge*>*) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:9590
+    #3 0xbbe3eff2f2fc in SmProtoTopologyManager::GlueCoincidentBrepVertices() /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmProtoTopologyLinked.cpp:6161
+    #4 0xbbe3efcf76f8 in SmTopologyIntersector::ImprintIntersections() /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmTopologyIntersector.cpp:2387
+    #5 0xbbe3efd1e0b4 in SmTopologyIntersector::IntersectInsertRelate() /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmTopologyIntersector.cpp:1233
+    #6 0xbbe3ef8eeae8 in SmMerge::ManifoldBoolean(SmBooleanOperationType, SmBrep*&, SmNewMarkAndLock*) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:2661
+    #7 0xbbe3ef8fcbd8 in SmMerge::PiecewiseMerge(SmRelation<SmSurface, SmSurface>*, int, int, SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:664
+    #8 0xbbe3ef96d514 in SmOffsetExecutive::PiecewiseMerge(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:2469
+    #9 0xbbe3ef971b14 in SmOffsetExecutive::DoExtendedOffset(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:1738
+    #10 0xbbe3ef975fbc in SmOffsetExecutive::DoSolidOffset(SmBrep*&, int) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:414
+    #11 0xbbe3ef97a118 in SmOffsetExecutive::ShellBrep(SmContext const&, SmBrep*, double, int, int, int, SmTArray<SmFace*> const&, SmBrep*&, int&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:232
+    #12 0xbbe3ef3b53ec in SmApiShellBrepFull(SmBrep const*, double, int, int, int, SmTArray<SmFace const*> const&, SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SM_API/src/SmApiBrep.cpp:2408
+    #13 0xbbe3ef38cb30 in operator() /home/dllu/proj/viboceros/crates/viboceros-smlib/native/bridge.cpp:651
+    #14 0xbbe3ef38cb30 in guarded<vb_shape_shell_faces(const VbSolid*, const size_t*, size_t, double, VbSolid**, char*, size_t)::<lambda()> > /home/dllu/proj/viboceros/crates/viboceros-smlib/native/bridge.cpp:102
+    #15 0xbbe3ef38cb30 in vb_shape_shell_faces /home/dllu/proj/viboceros/crates/viboceros-smlib/native/bridge.cpp:631
+    #16 0xbbe3f01c9830 in viboceros_smlib::native::shell::_$LT$impl$u20$viboceros_smlib..native..Shape$GT$::shelled_faces::_$u7b$$u7b$closure$u7d$$u7d$::he41341da74ec44d8 crates/viboceros-smlib/src/native/shell.rs:22
+    #17 0xbbe3ef36f458 in viboceros_smlib::native::call::hb139480d154ac52a crates/viboceros-smlib/src/native.rs:193
+    #18 0xbbe3ef366d98 in viboceros_smlib::native::shell::_$LT$impl$u20$viboceros_smlib..native..Shape$GT$::shelled_faces::h3fdb769088421ad7 crates/viboceros-smlib/src/native/shell.rs:21
+    #19 0xbbe3ef3258a4 in shell::native_shell_default_tolerance_excessive_thickness_recovers::h1dbb865acf9b4781 crates/viboceros-smlib/tests/shell.rs:174
+    #20 0xbbe3ef32a450 in shell::native_shell_default_tolerance_excessive_thickness_recovers::_$u7b$$u7b$closure$u7d$$u7d$::h1e84da3fe99a6b3f crates/viboceros-smlib/tests/shell.rs:171
+    #21 0xbbe3ef32c530 in core::ops::function::FnOnce::call_once::h673a483ece732608 /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:250
+    #22 0xbbe3ef330fbc in _RNvYFEINtNtCs6Hz1PecaLG4_4core6result6ResultuNtNtCs3U9RWQJh2dM_5alloc6string6StringEINtNtNtB9_3ops8function6FnOnceuE9call_onceCsem7ffUkqVWz_4test library/core/src/ops/function.rs:250
+    #23 0xbbe3ef330fbc in _RINvCsem7ffUkqVWz_4test28___rust_begin_short_backtraceINtNtCs6Hz1PecaLG4_4core6result6ResultuNtNtCs3U9RWQJh2dM_5alloc6string6StringEFEBQ_EB2_ library/test/src/lib.rs:663
+    #24 0xbbe3ef33b0ec in _RNCNvCsem7ffUkqVWz_4test19run_test_in_process0B3_ library/test/src/lib.rs:686
+    #25 0xbbe3ef33b0ec in _RNvXsn_NtNtCs6Hz1PecaLG4_4core5panic11unwind_safeINtB5_16AssertUnwindSafeNCNvCsem7ffUkqVWz_4test19run_test_in_process0EINtNtNtB9_3ops8function6FnOnceuE9call_onceB1d_ library/core/src/panic/unwind_safe.rs:274
+    #26 0xbbe3ef33b0ec in _RINvNvNtCshxTglP3SOjd_3std9panicking12catch_unwind7do_callINtNtNtCs6Hz1PecaLG4_4core5panic11unwind_safe16AssertUnwindSafeNCNvCsem7ffUkqVWz_4test19run_test_in_process0EINtNtB11_6result6ResultuNtNtCs3U9RWQJh2dM_5alloc6string6StringEEB1Z_ library/std/src/panicking.rs:581
+    #27 0xbbe3ef33b0ec in _RINvNtCshxTglP3SOjd_3std9panicking12catch_unwindINtNtCs6Hz1PecaLG4_4core6result6ResultuNtNtCs3U9RWQJh2dM_5alloc6string6StringEINtNtNtBP_5panic11unwind_safe16AssertUnwindSafeNCNvCsem7ffUkqVWz_4test19run_test_in_process0EEB2P_ library/std/src/panicking.rs:544
+    #28 0xbbe3ef33b0ec in _RINvNtCshxTglP3SOjd_3std5panic12catch_unwindINtNtNtCs6Hz1PecaLG4_4core5panic11unwind_safe16AssertUnwindSafeNCNvCsem7ffUkqVWz_4test19run_test_in_process0EINtNtBN_6result6ResultuNtNtCs3U9RWQJh2dM_5alloc6string6StringEEB1L_ library/std/src/panic.rs:359
+    #29 0xbbe3ef33b0ec in _RNvCsem7ffUkqVWz_4test19run_test_in_process library/test/src/lib.rs:686
+    #30 0xbbe3ef33b0ec in _RNCNvCsem7ffUkqVWz_4test8run_test0B3_ library/test/src/lib.rs:607
+    #31 0xbbe3ef33799c in _RNCNvCsem7ffUkqVWz_4test8run_tests_0B3_ library/test/src/lib.rs:637
+    #32 0xbbe3ef33799c in _RINvNtNtCshxTglP3SOjd_3std3sys9backtrace28___rust_begin_short_backtraceNCNvCsem7ffUkqVWz_4test8run_tests_0uEB1b_ library/std/src/sys/backtrace.rs:166
+    #33 0xbbe3ef33d434 in _RNCNCINvNtNtCshxTglP3SOjd_3std6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_00B14_ library/std/src/thread/lifecycle.rs:91
+    #34 0xbbe3ef33d434 in _RNvXsn_NtNtCs6Hz1PecaLG4_4core5panic11unwind_safeINtB5_16AssertUnwindSafeNCNCINvNtNtCshxTglP3SOjd_3std6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_00EINtNtNtB9_3ops8function6FnOnceuE9call_onceB2e_ library/core/src/panic/unwind_safe.rs:274
+    #35 0xbbe3ef33d434 in _RINvNvNtCshxTglP3SOjd_3std9panicking12catch_unwind7do_callINtNtNtCs6Hz1PecaLG4_4core5panic11unwind_safe16AssertUnwindSafeNCNCINvNtNtB6_6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_00EuEB2L_ library/std/src/panicking.rs:581
+    #36 0xbbe3ef33d434 in _RINvNtCshxTglP3SOjd_3std9panicking12catch_unwinduINtNtNtCs6Hz1PecaLG4_4core5panic11unwind_safe16AssertUnwindSafeNCNCINvNtNtB4_6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_00EEB2C_ library/std/src/panicking.rs:544
+    #37 0xbbe3ef33d434 in _RINvNtCshxTglP3SOjd_3std5panic12catch_unwindINtNtNtCs6Hz1PecaLG4_4core5panic11unwind_safe16AssertUnwindSafeNCNCINvNtNtB4_6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_00EuEB2x_ library/std/src/panic.rs:359
+    #38 0xbbe3ef33d434 in _RNCINvNtNtCshxTglP3SOjd_3std6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_0B12_ library/std/src/thread/lifecycle.rs:89
+    #39 0xbbe3ef33d434 in _RNSNvYNCINvNtNtCshxTglP3SOjd_3std6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEs_0INtNtNtCs6Hz1PecaLG4_4core3ops8function6FnOnceuE9call_once6vtableB17_ library/core/src/ops/function.rs:250
+    #40 0xbbe3f04bdad8 in _RNvXst_NtCs3U9RWQJh2dM_5alloc5boxedINtB5_3BoxDINtNtNtCs6Hz1PecaLG4_4core3ops8function6FnOnceuEp6OutputuNtNtBP_6marker4SendEL_EIBJ_uE9call_onceCshxTglP3SOjd_3std library/alloc/src/boxed.rs:2240
+    #41 0xbbe3f04bdad8 in _RNvNvMs0_NtNtNtCshxTglP3SOjd_3std3sys6thread4unixNtB7_6Thread3new12thread_start library/std/src/sys/thread/unix.rs:118
+    #42 0xea1e4abff3d0 in asan_thread_start ../../../../src/libsanitizer/asan/asan_interceptors.cpp:234
+    #43 0xea1e4a6b5828 in start_thread nptl/pthread_create.c:447
+    #44 0xea1e4a71bb48 in thread_start ../sysdeps/unix/sysv/linux/aarch64/clone3.S:76
+
+0x51000003d440 is located 0 bytes inside of 192-byte region [0x51000003d440,0x51000003d500)
+freed by thread T2 here:
+    #0 0xea1e4ac861b4 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0xbbe3eff59e6c in SmTopology::operator delete(void*) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/inc/SmTopology.h:233
+    #2 0xbbe3eff59e6c in SmVertex::~SmVertex() /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/inc/SmVertex.h:132
+    #3 0xbbe3eff59e6c in SmBrep::SqueezeEdge(SmEdge*, SmVertex*) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:26969
+    #4 0xbbe3eff2fbc0 in SmProtoTopologyManager::GlueCoincidentBrepVertices() /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmProtoTopologyLinked.cpp:6114
+    #5 0xbbe3efcf76f8 in SmTopologyIntersector::ImprintIntersections() /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmTopologyIntersector.cpp:2387
+    #6 0xbbe3efd1e0b4 in SmTopologyIntersector::IntersectInsertRelate() /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmTopologyIntersector.cpp:1233
+    #7 0xbbe3ef8eeae8 in SmMerge::ManifoldBoolean(SmBooleanOperationType, SmBrep*&, SmNewMarkAndLock*) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:2661
+    #8 0xbbe3ef8fcbd8 in SmMerge::PiecewiseMerge(SmRelation<SmSurface, SmSurface>*, int, int, SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:664
+    #9 0xbbe3ef96d514 in SmOffsetExecutive::PiecewiseMerge(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:2469
+    #10 0xbbe3ef971b14 in SmOffsetExecutive::DoExtendedOffset(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:1738
+    #11 0xbbe3ef975fbc in SmOffsetExecutive::DoSolidOffset(SmBrep*&, int) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:414
+    #12 0xbbe3ef97a118 in SmOffsetExecutive::ShellBrep(SmContext const&, SmBrep*, double, int, int, int, SmTArray<SmFace*> const&, SmBrep*&, int&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:232
+    #13 0xbbe3ef3b53ec in SmApiShellBrepFull(SmBrep const*, double, int, int, int, SmTArray<SmFace const*> const&, SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SM_API/src/SmApiBrep.cpp:2408
+
+previously allocated by thread T2 here:
+    #0 0xea1e4ac8709c in calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:77
+    #1 0xbbe3ef8d8018 in smos_Calloc(unsigned long, unsigned long) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMemory.cpp:138
+    #2 0xbbe3ef923f98 in SmObject::operator new(unsigned long, SmContext const&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmObject.cpp:343
+    #3 0xbbe3eff4b0e8 in SmBrep::MakeShellVertexTopology(SmRegion*, SmShell*&, SmVertex*&) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:18719
+    #4 0xbbe3eff4dc7c in SmBrep::MakeShellVertex(SmRegion*, SmVector3d const&, SmShell*&, SmVertex*&) /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:19066
+    #5 0xbbe3ef8dad78 in SmMerge::MergeVertex(SmVertex*, SmRegion*, SmVertex*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:6799
+    #6 0xbbe3ef8e6bc8 in SmMerge::MakeFaceuse(SmFaceuse*, SmRegion*&, SmRegion*&, SmRegion*, SmTArray<SmFace*>*) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:6965
+    #7 0xbbe3ef8f7898 in SmMerge::ManifoldBoolean(SmBooleanOperationType, SmBrep*&, SmNewMarkAndLock*) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:4367
+    #8 0xbbe3ef8fc898 in SmMerge::PiecewiseMerge(SmRelation<SmSurface, SmSurface>*, int, int, SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmMerge.cpp:520
+    #9 0xbbe3ef96d514 in SmOffsetExecutive::PiecewiseMerge(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:2469
+    #10 0xbbe3ef971b14 in SmOffsetExecutive::DoExtendedOffset(SmBrep*&) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:1738
+    #11 0xbbe3ef975fbc in SmOffsetExecutive::DoSolidOffset(SmBrep*&, int) /home/dllu/proj/viboceros/third_party/usd-brep/source/SMLib/src/SmOffsetExecutive.cpp:414
+
+Thread T2 created by T0 here:
+    #0 0xea1e4ac7edfc in pthread_create ../../../../src/libsanitizer/asan/asan_interceptors.cpp:245
+    #1 0xbbe3f04a74f0 in _RNvMs0_NtNtNtCshxTglP3SOjd_3std3sys6thread4unixNtB5_6Thread3new library/std/src/sys/thread/unix.rs:98
+    #2 0xbbe3ef33f3b0 in _RINvNtNtCshxTglP3SOjd_3std6thread9lifecycle15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEB10_ library/std/src/thread/lifecycle.rs:137
+    #3 0xbbe3ef33f3b0 in _RINvMNtNtCshxTglP3SOjd_3std6thread7builderNtB3_7Builder15spawn_uncheckedNCNvCsem7ffUkqVWz_4test8run_tests_0uEB1c_ library/std/src/thread/builder.rs:261
+    #4 0xbbe3ef33f3b0 in _RINvMNtNtCshxTglP3SOjd_3std6thread7builderNtB3_7Builder5spawnNCNvCsem7ffUkqVWz_4test8run_tests_0uEB11_ library/std/src/thread/builder.rs:191
+    #5 0xbbe3ef33f3b0 in _RNvCsem7ffUkqVWz_4test8run_test library/test/src/lib.rs:637
+    #6 0xbbe3ef34df7c in _RINvCsem7ffUkqVWz_4test9run_testsNCNvNtB2_7console17run_tests_consoles0_0EB2_ library/test/src/lib.rs:447
+    #7 0xbbe3ef34df7c in _RNvNtCsem7ffUkqVWz_4test7console17run_tests_console library/test/src/console.rs:327
+    #8 0xbbe3ef33fe98 in _RINvCsem7ffUkqVWz_4test28test_main_with_exit_callbackNCNvB2_9test_main0EB2_ library/test/src/lib.rs:160
+    #9 0xbbe3ef33fe98 in _RNvCsem7ffUkqVWz_4test9test_main library/test/src/lib.rs:101
+    #10 0xbbe3ef33e0a4 in _RNvCsem7ffUkqVWz_4test16test_main_static library/test/src/lib.rs:183
+    #11 0xbbe3ef3245c0 in shell::main::hc6b2a3d9ccf41b3e crates/viboceros-smlib/tests/shell.rs:1
+    #12 0xbbe3ef32c65c in core::ops::function::FnOnce::call_once::hfaff44e25ecec025 /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:250
+    #13 0xbbe3ef329f44 in std::sys::backtrace::__rust_begin_short_backtrace::h04dfdd425c59d99e /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/backtrace.rs:166
+    #14 0xbbe3ef32c998 in std::rt::lang_start::_$u7b$$u7b$closure$u7d$$u7d$::h0a20716c4d4269cc /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:206
+    #15 0xbbe3f04b62e4 in _RNvXs0_NtNtNtCs6Hz1PecaLG4_4core3ops8function5implsRDINtB7_2FnuEp6OutputlNtNtNtBb_5panic11unwind_safe13RefUnwindSafeNtNtBb_6marker4SyncEL_INtB7_6FnOnceuE9call_onceCshxTglP3SOjd_3std library/core/src/ops/function.rs:287
+    #16 0xbbe3f04b62e4 in _RINvNvNtCshxTglP3SOjd_3std9panicking12catch_unwind7do_callRDINtNtNtCs6Hz1PecaLG4_4core3ops8function2FnuEp6OutputlNtNtNtB13_5panic11unwind_safe13RefUnwindSafeNtNtB13_6marker4SyncEL_lEB6_ library/std/src/panicking.rs:581
+    #17 0xbbe3f04b62e4 in _RINvNtCshxTglP3SOjd_3std9panicking12catch_unwindlRDINtNtNtCs6Hz1PecaLG4_4core3ops8function2FnuEp6OutputlNtNtNtBU_5panic11unwind_safe13RefUnwindSafeNtNtBU_6marker4SyncEL_EB4_ library/std/src/panicking.rs:544
+    #18 0xbbe3f04b62e4 in _RINvNtCshxTglP3SOjd_3std5panic12catch_unwindRDINtNtNtCs6Hz1PecaLG4_4core3ops8function2FnuEp6OutputlNtNtNtBP_5panic11unwind_safe13RefUnwindSafeNtNtBP_6marker4SyncEL_lEB4_ library/std/src/panic.rs:359
+    #19 0xbbe3f04b62e4 in _RNCNvNtCshxTglP3SOjd_3std2rt19lang_start_internal0B5_ library/std/src/rt.rs:175
+    #20 0xbbe3f04b62e4 in _RINvNvNtCshxTglP3SOjd_3std9panicking12catch_unwind7do_callNCNvNtB6_2rt19lang_start_internal0iEB6_ library/std/src/panicking.rs:581
+    #21 0xbbe3f04b62e4 in _RINvNtCshxTglP3SOjd_3std9panicking12catch_unwindiNCNvNtB4_2rt19lang_start_internal0EB4_ library/std/src/panicking.rs:544
+    #22 0xbbe3f04b62e4 in _RINvNtCshxTglP3SOjd_3std5panic12catch_unwindNCNvNtB4_2rt19lang_start_internal0iEB4_ library/std/src/panic.rs:359
+    #23 0xbbe3f04b62e4 in _RNvNtCshxTglP3SOjd_3std2rt19lang_start_internal library/std/src/rt.rs:171
+    #24 0xbbe3ef32c970 in std::rt::lang_start::h6abe1725f2395861 /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/rt.rs:205
+    #25 0xbbe3ef327fec in main (/home/dllu/proj/viboceros/target/debug/deps/shell-9f8fff7bd4bd84e3+0x127fec) (BuildId: dbe375e33a8b9e434970b55664777f91d54e0c2d)
+    #26 0xea1e4a6584c0 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #27 0xea1e4a658594 in __libc_start_main_impl ../csu/libc-start.c:360
+    #28 0xbbe3ef323c2c in _start (/home/dllu/proj/viboceros/target/debug/deps/shell-9f8fff7bd4bd84e3+0x123c2c) (BuildId: dbe375e33a8b9e434970b55664777f91d54e0c2d)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/dllu/proj/viboceros/target/debug/build/viboceros-smlib-e982af202de3f65b/out/build/usd-brep-patched/SmBrep.cpp:23744 in sm_RmFromSpatialTree(SmTopology*, SmBrep*)
+Shadow bytes around the buggy address:
+  0x51000003d180: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x51000003d200: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+  0x51000003d280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x51000003d300: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+  0x51000003d380: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x51000003d400: fa fa fa fa fa fa fa fa[fd]fd fd fd fd fd fd fd
+  0x51000003d480: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x51000003d500: fa fa fa fa fa fa fa fa fd fd fd fd fd fd fd fd
+  0x51000003d580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x51000003d600: fa fa fa fa fa fa fa fa 00 00 00 00 00 00 00 00
+  0x51000003d680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==2182810==ABORTING
+error: test failed, to rerun pass `-p viboceros-smlib --test shell`
+
+Caused by:
+  process didn't exit successfully: `env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 'ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12' /home/dllu/proj/viboceros/target/debug/deps/shell-9f8fff7bd4bd84e3 --nocapture` (exit status: 1)

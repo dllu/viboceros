@@ -32,9 +32,10 @@
     "tools/rhino_oracle/observations/compound_intersection.json": "8628778b280df9e607af0f2dd3f0b7bda2a1a957752cae2ba6090680c62b95aa",
     "docs/compound-intersection-partitions.json": "5cae0966d337d7df46a640564f7e9e7bb32f1d854a21b874180729a7e0532321"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "6592df7c045e216278050f8adb2218551d166786cb4bc82573b240b12a091e85",
-    "tools/rhino_oracle/rhino_worker.py": "c3a0343704f1ff43a5028e8ce8b5049a9011b272710f3715f79efbd2c6010084"
-  },
-  "output_partition_differences": 1
+  "historical_dispatch_sha256": {},
+  "output_partition_differences": 1,
+  "historical_dispatch_git_sha256": {
+    "10c83ea6adaabb5546ed4554947015c34e6f5c4b:tools/rhino_oracle/client.py": "6592df7c045e216278050f8adb2218551d166786cb4bc82573b240b12a091e85",
+    "10c83ea6adaabb5546ed4554947015c34e6f5c4b:tools/rhino_oracle/rhino_worker.py": "c3a0343704f1ff43a5028e8ce8b5049a9011b272710f3715f79efbd2c6010084"
+  }
 }

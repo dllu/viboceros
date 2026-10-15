@@ -55,6 +55,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - Native surface extrusion: [straight](docs/commands/extrude-srf.md),
   [along curves](docs/commands/extrude-srf-along-crv.md), [to a point](docs/commands/extrude-srf-to-point.md)
   and [tapered](docs/commands/extrude-srf-tapered.md)
+- [Shell solid walls and face openings](docs/commands/shell.md)
 - [Native surface-normal pulling foundation](docs/smlib-surface-pull.md)
 - [USD BRep limitations and bugs](docs/usd-brep-limitations.md)
 - [Native NURBS offsets and qualification](docs/smlib-curve-offset.md)

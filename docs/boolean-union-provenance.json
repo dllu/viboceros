@@ -20,8 +20,9 @@
     "tools/rhino_oracle/fixtures/boolean_union_command.json": "e492a4dba5fa06821cb1659039ea049c5eafa9771656f497db530f51164ea492",
     "tools/rhino_oracle/observations/boolean_union_command.json": "61595e0c5506d41d649b5eaa4b9fc13ab596c1360cb8a28c7e789a37992ee336"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "b05da71767fffb7f2dea48126e3991c99e0136b0898362dea8de23bc19f287b4",
-    "tools/rhino_oracle/rhino_worker.py": "34a914d9cd2fefbf460327c270ded27bca710cdb2e8f113b046ddc01803a5171"
+  "historical_dispatch_sha256": {},
+  "historical_dispatch_git_sha256": {
+    "a5b25c193e7af8ee857c7560b284655e37842d4b:tools/rhino_oracle/client.py": "b05da71767fffb7f2dea48126e3991c99e0136b0898362dea8de23bc19f287b4",
+    "a5b25c193e7af8ee857c7560b284655e37842d4b:tools/rhino_oracle/rhino_worker.py": "34a914d9cd2fefbf460327c270ded27bca710cdb2e8f113b046ddc01803a5171"
   }
 }

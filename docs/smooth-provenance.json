@@ -55,19 +55,21 @@
     "tools/rhino_oracle/fixtures/smooth_object_selected.json": "1659a16a8482e564785de5cf215e5b03983da867c8e101b78fe09a6ca1b663ed",
     "tools/rhino_oracle/observations/smooth_object_selected.json": "1bcd4cc508de0613347b8f892c932c1917f1fc6496196030129648cd9ac269db"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "69fc941c9b232d9c0c44a707a2df62042888c68a358b568862927cb5ecff2a70",
-    "tools/rhino_oracle/rhino_worker.py": "3dd98f578f2c49f9f470e3d8877e6e299290ab81778e114db54e8fa31008412e"
-  },
+  "historical_dispatch_sha256": {},
   "uvn_sdk_witnesses": 76,
   "accepted_uvn_sdk_predictions": 64,
   "rejected_uvn_neighbor_predictions": 12,
-  "uvn_historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "30bab883b7f36b60d7bfa0e6ad82f28a3e0137a389c0b4793e720a0f701bf39c",
-    "tools/rhino_oracle/rhino_worker.py": "14dc0a035792aba80ad101674e033b0360a62d3a301dc8739d05bb533609064a"
-  },
+  "uvn_historical_dispatch_sha256": {},
   "object_selected_recipes": 96,
   "git_sha256": {
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
+  },
+  "historical_dispatch_git_sha256": {
+    "412d9d5cd8470816ce1615427b22d6308ba54ffe:tools/rhino_oracle/client.py": "69fc941c9b232d9c0c44a707a2df62042888c68a358b568862927cb5ecff2a70",
+    "412d9d5cd8470816ce1615427b22d6308ba54ffe:tools/rhino_oracle/rhino_worker.py": "3dd98f578f2c49f9f470e3d8877e6e299290ab81778e114db54e8fa31008412e"
+  },
+  "uvn_historical_dispatch_git_sha256": {
+    "81a8f496bd7ed7c66a630ce58ae36c722400f672:tools/rhino_oracle/client.py": "30bab883b7f36b60d7bfa0e6ad82f28a3e0137a389c0b4793e720a0f701bf39c",
+    "81a8f496bd7ed7c66a630ce58ae36c722400f672:tools/rhino_oracle/rhino_worker.py": "14dc0a035792aba80ad101674e033b0360a62d3a301dc8739d05bb533609064a"
   }
 }

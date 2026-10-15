@@ -49,11 +49,12 @@
     "tools/rhino_oracle/observations/scale_positions_origin.json": "ef2d083b377ea28f1723d8d5d5f0ddd4f0558e1e07e8cdf5fcd856213be5e711",
     "tools/rhino_oracle/observations/scale_positions_boundary_diagnostic.json": "d4674496ae0637c38ffdb2aef12d0ad5f13f665042c89b1aba415eaa6eb7a4f2"
   },
-  "historical_dispatch_sha256": {
-    "tools/rhino_oracle/client.py": "7ab4b6556b89598b161fb20f7d563daf3ba6e1a81aa0c61ed7ea6abd02d77616",
-    "tools/rhino_oracle/rhino_worker.py": "3b7faddeb8d1c3beb6716ef1c8c87c1038e165bb476494c3fde3b9ad4ad3b4a8"
-  },
+  "historical_dispatch_sha256": {},
   "git_sha256": {
     "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
+  },
+  "historical_dispatch_git_sha256": {
+    "d144ddc4a6ecaeb046fbb2fdc55502e853c29d78:tools/rhino_oracle/client.py": "7ab4b6556b89598b161fb20f7d563daf3ba6e1a81aa0c61ed7ea6abd02d77616",
+    "d144ddc4a6ecaeb046fbb2fdc55502e853c29d78:tools/rhino_oracle/rhino_worker.py": "3b7faddeb8d1c3beb6716ef1c8c87c1038e165bb476494c3fde3b9ad4ad3b4a8"
   }
 }

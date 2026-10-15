@@ -1,0 +1,59 @@
+--- a/SmBrep.cpp
++++ b/SmBrep.cpp
+@@ -5962,6 +5962,10 @@
+                                              && pEU->   GetCCWEdgeuse() == pEU      // both inner and outer are single.
+                                              && pEURad->GetCCWEdgeuse() == pEURad) ;
+ 
++      // Isolated loops need a surviving face before promoting their vertexuses.
++      if (bSingleClosedLoopIsolated && pSurvLU == NULL)
++        { SER(SM_ERR); }
++
+       // notify the face of upcoming edit
+       pFace->Notify(SM_NO_PRE_EDIT, pFace, this, NULL);
+ 
+@@ -6306,18 +6310,14 @@
+           pVU->m_tVertexuseType = SmLoopuse_TYPE;
+ 
+           // Turn vertex into loop vertices.
+-          if(   bSingleClosedLoopIsolated
+-               && pLU->GetOrientation() == SM_OT_SAME // Outer Loop
+-             )
++          if (bSingleClosedLoopIsolated)
+             {
+-              // The edge is an entire loop and no other edges come into the
+-              // (lone) vertex.  And since LU is an outer loop, that means
+-              // that pEU is on the 'inside' of the edge.  We want to leave
+-              // everything on the 'outside' of the edge, so work with Rad.
+-
+-              pVU->m_pSorLUorEU      = pLURad;
+-              pLURad->m_tLoopuseType = SmVertexuse_TYPE;
+-              pLURad->m_pEUorVU      = pVU;
++              // The face-selection step decides which loop survives, even
++              // when both loops are outer. Never retain the deleted owner.
++
++              pVU->m_pSorLUorEU      = pSurvLU;
++              pSurvLU->m_tLoopuseType = SmVertexuse_TYPE;
++              pSurvLU->m_pEUorVU      = pVU;
+             }
+           else
+             {
+@@ -6331,14 +6331,12 @@
+           SmVertexuse *pVURadMate      = pEURadMate->GetVertexuse(); NER(pVURadMate);
+           pVURadMate->m_tVertexuseType = SmLoopuse_TYPE;
+ 
+-          if(  bSingleClosedLoopIsolated
+-              && pLURadMate->GetOrientation() == SM_OT_SAME
+-             )
++          if (bSingleClosedLoopIsolated)
+             {
+-              // The 'inside' of an isolated single closed loop.
+-              pVURadMate->m_pSorLUorEU   = pLUMate;
+-              pLUMate->m_tLoopuseType    = SmVertexuse_TYPE;
+-              pLUMate->m_pEUorVU         = pVURadMate;
++              // Keep the mate vertexuse on the surviving mate loop.
++              pVURadMate->m_pSorLUorEU   = pSurvLU->GetOtherLoopuse();
++              pSurvLU->GetOtherLoopuse()->m_tLoopuseType    = SmVertexuse_TYPE;
++              pSurvLU->GetOtherLoopuse()->m_pEUorVU         = pVURadMate;
+             }
+           else
+             {

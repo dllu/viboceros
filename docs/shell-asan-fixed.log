@@ -1,0 +1,13 @@
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2m 15s
+     Running tests/shell.rs (target/debug/deps/shell-9f8fff7bd4bd84e3)
+
+running 6 tests
+test native_shell_face_reordering_and_disconnected_walls ... ok
+test native_shell_default_tolerance_excessive_thickness_recovers ... ok
+test native_shell_cylinder_cap_produces_curved_wall_volume ... ok
+test native_shell_invalid_requests_and_excessive_thickness_preserve_reusable_source ... ok
+test native_shell_opposite_and_adjacent_openings_have_correct_wall_volume ... ok
+test native_shell_respects_every_original_box_face_and_preserves_source ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.17s
