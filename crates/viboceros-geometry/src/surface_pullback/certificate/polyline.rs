@@ -48,9 +48,9 @@ fn approximate(curve: &NurbsCurve, tolerance: Tolerance) -> Result<Polyline3, Ge
     let mut points = Vec::new();
     // Stream spans instead of putting a second copy of every control on a stack.
     for (left, right) in curve.spans() {
-        let mut pending = vec![(left, right, 0)];
-        while let Some((a, b, depth)) = pending.pop() {
-            let net = spline.extract(&normalized(a), &normalized(b), &mut budget)?;
+        let net = spline.extract(&normalized(left), &normalized(right), &mut budget)?;
+        let mut pending = vec![(left, right, net, 0)];
+        while let Some((a, b, net, depth)) = pending.pop() {
             let first = point(&net[0])?;
             let last = point(net.last().unwrap())?;
             let line = [first, last].map(|p| {
@@ -93,8 +93,20 @@ fn approximate(curve: &NurbsCurve, tolerance: Tolerance) -> Result<Polyline3, Ge
                 if depth == MAX_DEPTH || middle <= a || middle >= b {
                     return Err(GeometryError::CurveApproximationLimit);
                 }
-                pending.push((middle, b, depth + 1));
-                pending.push((a, middle, depth + 1));
+                // Reuse exact de Casteljau nets when the stored native midpoint
+                // is exactly halfway. A rounded midpoint instead needs direct
+                // restriction at its actual parameter to retain the certificate.
+                let (left, right) = if rational(middle) * rational(2.) == rational(a) + rational(b)
+                {
+                    algebra::split(&net, &mut budget)?
+                } else {
+                    (
+                        spline.extract(&normalized(a), &normalized(middle), &mut budget)?,
+                        spline.extract(&normalized(middle), &normalized(b), &mut budget)?,
+                    )
+                };
+                pending.push((middle, b, right, depth + 1));
+                pending.push((a, middle, left, depth + 1));
             }
         }
     }

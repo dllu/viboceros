@@ -4,6 +4,8 @@ use crate::Polyline3;
 use num_traits::One;
 
 mod feature;
+mod linear;
+mod partition;
 #[cfg(test)]
 mod tests;
 
@@ -48,6 +50,12 @@ impl MeshProjectionIndex<'_> {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<Option<Polyline3>, GeometryError> {
+        if curve.degree() == 1 {
+            return match linear::source(curve)? {
+                Some(polyline) => self.pull_polyline(&polyline, tolerance),
+                None => Ok(None),
+            };
+        }
         let source_tolerance = Tolerance::try_new(
             tolerance.absolute() / 4.,
             tolerance.relative(),
@@ -81,42 +89,15 @@ impl MeshProjectionIndex<'_> {
             let candidates = self.pull_candidates([pair[0], pair[1]], foot, &mut budget)?;
             let origin = exact(pair[0]);
             let delta = sub(&exact(pair[1]), &origin);
-            let mut features = Vec::new();
-            for triangle in candidates {
-                feature::append(
-                    self.triangle_points(triangle).unwrap(),
-                    &origin,
-                    &delta,
-                    &mut features,
-                    &mut budget,
-                )?;
-            }
-            let mut cuts = vec![Rational::zero(), Rational::one()];
-            for f in &features {
-                cuts.extend(f.range.iter().cloned());
-            }
-            budget.charge(cuts.len())?;
-            cuts.sort();
-            cuts.dedup();
-            for interval in cuts.windows(2) {
-                budget.charge(features.len())?;
-                let middle = (&interval[0] + &interval[1]) / rational(2.);
-                let active = features
-                    .iter()
-                    .filter(|f| f.range[0] < middle && middle < f.range[1])
-                    .collect::<Vec<_>>();
-                if active.is_empty() {
-                    return Err(GeometryError::AmbiguousMeshPull);
-                }
-                trace(
-                    &active,
-                    interval[0].clone(),
-                    interval[1].clone(),
-                    tolerance.absolute(),
-                    &mut output,
-                    &mut budget,
-                )?;
-            }
+            partition::trace(
+                self,
+                [&origin, &delta],
+                candidates,
+                foot,
+                tolerance.absolute(),
+                &mut output,
+                &mut budget,
+            )?;
         }
         if output.len() < 2 {
             return Ok(None);
@@ -138,7 +119,15 @@ impl MeshProjectionIndex<'_> {
         } else {
             [foot, source[1]]
         };
-        let source = BoundingBox3::from_points(source)?;
+        self.pull_candidates_in_box(BoundingBox3::from_points(source)?, upper, budget)
+    }
+
+    fn pull_candidates_in_box(
+        &self,
+        source: BoundingBox3,
+        upper: [Point3; 2],
+        budget: &mut Budget,
+    ) -> Result<Vec<usize>, GeometryError> {
         let mut pending = if self.nodes.is_empty() {
             vec![]
         } else {

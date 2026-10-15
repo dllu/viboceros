@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "feature": "Mesh Pull query partitioning, exact linear spans and reused curve subdivision",
+  "baseline_revision": "151fd7d5f9dfa7eeb836466e015c06abc4af067e",
+  "full_rhino_parity": false,
+  "performance_qualified": false,
+  "fresh_rhino_observations": 0,
+  "environment": {
+    "architecture": "aarch64",
+    "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+    "build": [
+      "cargo",
+      "build",
+      "--release",
+      "-p",
+      "viboceros-oracle",
+      "--features",
+      "native-smlib"
+    ],
+    "repeats": 3,
+    "iterations_per_request": 1,
+    "absolute_tolerance": 0.0001
+  },
+  "baseline_binary_sha256": "200204995f67da92d9a4655f8527984197564309c811913084e09c6b2678b57f",
+  "after_binary_sha256": "d2b4c2daecc597c5df54d63fa4a44b788218cb3d7886c403d8c73e1ccd0d632e",
+  "request_sha256": "da4c38d1caef95defa468df0ca2e4045863627306d9b260cf404cc036292791f",
+  "behavior": [
+    "Common-sign rational degree-one spans traverse exact source chords. Reversals and nonempty span boundaries remain in order; constant spans collapse. Mixed signs and discontinuities decline.",
+    "Conservative BVH query partitioning keeps the exact original rational source chord, outward endpoint bounds and feasible mesh-vertex upper distances. It targets 64 candidates to depth 16 and retains the full path when the largest candidate set does not shrink.",
+    "General curve approximation reuses exact de Casteljau subdivision only when the stored native midpoint is exactly halfway. Other midpoints use exact direct restriction at the actual parameter.",
+    "Existing tolerance, work, rational-size and output limits remain in force. No sampled acceptance or widened error bound is introduced."
+  ],
+  "checks": {
+    "mesh_index_regressions": 14,
+    "mesh_pull_geometry_tests": 15,
+    "shared_certificate_regressions": 39,
+    "approximation_tests_including_rounded_midpoint": 11,
+    "portable_pull_command_tests": 9,
+    "native_pull_command_tests": 11,
+    "portable_mesh_pull_protocol_tests": 1,
+    "geometry_lint": "All targets, warnings denied",
+    "native_mesh_pull_protocol_tests": 1,
+    "native_command_and_oracle_lint": "All targets, warnings denied",
+    "python_geometry_and_provenance_tests": 10,
+    "formatting_and_diff_whitespace": "Passed"
+  },
+  "limitations": [
+    "The prior 24x24 grid workload failed its work budget; the new version succeeds at unchanged limits. This does not establish support for every dense mesh.",
+    "Three-run local medians are not statistical or Rhino speed qualification. The smaller grid did not improve; dense meshes and curved sources still have substantial cost.",
+    "Global closest-branch stability for the original curved source, branch discontinuities, native command/vertex-count parity and the existing precision/resource limits remain unqualified.",
+    "Fresh Rhino comparison remains unavailable because of the existing Wine SSPI issue."
+  ],
+  "source_sha256": {
+    "Cargo.toml": "65cd249a8eec605e6cd1cd2f528c44af2943bd4b22e0b626922588d665670a28",
+    "Cargo.lock": "eccc1b22dbb16e80b61bd03d8f7d98dffbfc882b8c13dd594f199754cec05d15",
+    "crates/viboceros-geometry/src/mesh/projection/pull.rs": "b1cc846d6bc8be2467f102d8839b6b3f92de6f0b242a278fd9292054eebcb856",
+    "crates/viboceros-geometry/src/mesh/projection/pull/linear.rs": "89cf67edd423e655bfad4a65e8f7706597247f436b471a945a3995b778befba6",
+    "crates/viboceros-geometry/src/mesh/projection/pull/partition.rs": "1f055db51f8d8990032b21a8e5c878e302389763bbb5f90a953adf23bc507d0d",
+    "crates/viboceros-geometry/src/mesh/projection/pull/tests.rs": "14d25107b047a4e316d30f6d7f4f4dc0f31c3f7ffaa7651cf3635f55e8744c6a",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "9ff46c78989c9a7d5f9c4d269842d9fea9ddd6ad6da83d32d338d45e0c787046",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/polyline/tests.rs": "136b91932e3467602788560ae092172c2df0793fcd1612655c9ee544b45b4363",
+    "crates/viboceros-geometry/src/surface_pullback/certificate/algebra.rs": "cd7a9c398d153a30e976308a834cde8a4f2ffb0ba798c80a4f487497685ceec9",
+    "tools/rhino_oracle/mesh_pull_performance.py": "b52287549c83c46799c8c201e63a6d7aae5697bb7e181ea40b67d76dbbcd6ca7",
+    "tools/rhino_oracle/test_mesh_pull_performance.py": "ffc5c9547cba101eee8aaf0b49c6077baa73b669a839104ec275381a14f9a7d3",
+    "docs/commands/pull-mesh.md": "43c000b9b8909ab5006980dcd3810665b50ba5859940b20c2e345f44e1009d3e",
+    "docs/curve-approximation.md": "099237fcbd527ed04bc5a76b5c009475d15066662890791c4e57463e5a54c9bf",
+    "docs/mesh-pull-performance.md": "a65563a9bb4ceeff9e1df693d11df54bb18389849c2a3a5e5e411c684b5436ab"
+  },
+  "baseline_git_sha256": {
+    "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/mesh/projection/pull.rs": "a0220cc0f79b20f67db455b6936c1b7cc93f9632c1737665462bc8da40068d23",
+    "151fd7d5f9dfa7eeb836466e015c06abc4af067e:crates/viboceros-geometry/src/surface_pullback/certificate/polyline.rs": "1fe66c6f212f3f1131ab39ee31ba6abdef1a7283b627c232e9110049d90cf3d0"
+  },
+  "output_sha256": {
+    "tools/rhino_oracle/observations/mesh_pull_performance_before.json": "9f6d4662e359ffb6f6148810fbb6a9635a2f9abcf892625dd81380a2f10c7236",
+    "tools/rhino_oracle/observations/mesh_pull_performance_after.json": "74213c6022e29dacacd2ddee9b969877b9310e2dc5024f8ababf4c1c61fdfd90"
+  }
+}

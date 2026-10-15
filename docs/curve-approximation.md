@@ -7,9 +7,10 @@ absolute tolerance. Knot boundaries remain vertices. Rational parameter speed,
 collinear reversals and closed curves are retained within that positional bound.
 
 The implementation reuses the exact rational span extractor and Bernstein
-difference algebra from the surface correspondence certificates. It restricts
-the original spline directly at each representable parameter interval; rounded
-knot insertion and sampled checks do not decide acceptance. Rounded output
+difference algebra from the surface correspondence certificates. Extracted nets
+reuse exact subdivision when the stored native midpoint is exactly halfway;
+otherwise they restrict the original spline at the actual stored parameter.
+Rounded knot insertion and sampled checks do not decide acceptance. Rounded output
 endpoints participate in the certificate. The bound describes the stored curve
 and polyline mathematically; ordinary evaluation still has floating-point error.
 

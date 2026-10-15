@@ -174,6 +174,31 @@ fn unsplittable_native_parameter_interval_declines_instead_of_accepting_a_chord(
 }
 
 #[test]
+fn a_rounded_native_midpoint_restricts_at_its_actual_parameter() {
+    let a = 1.;
+    let middle = 1_f64.next_up().next_up();
+    let b = middle.next_up();
+    let curve = NurbsCurve::try_new(
+        2,
+        vec![p(0., 0.), p(1., 2.), p(2., 0.)],
+        vec![a, a, a, b, b, b],
+    )
+    .unwrap();
+    let output = curve.try_approximate_polyline(tolerance(0.2)).unwrap();
+    let index = output
+        .parameters()
+        .iter()
+        .position(|&t| t == middle)
+        .unwrap();
+    assert!(
+        output.vertices()[index]
+            .distance_to(p(4. / 3., 8. / 9.))
+            .unwrap()
+            < 1e-14
+    );
+}
+
+#[test]
 fn large_coordinates_account_for_endpoint_rounding() {
     let base = 2_f64.powi(50);
     let curve = NurbsCurve::try_new(

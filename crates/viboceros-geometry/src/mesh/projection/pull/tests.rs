@@ -267,3 +267,124 @@ fn unrepresentable_closest_edge_coordinates_decline_at_absolute_tolerance() {
     );
     assert_eq!(result, Err(GeometryError::UnrepresentableMeshProjection));
 }
+
+#[test]
+fn weighted_degree_one_sources_keep_chords_reversals_and_constant_spans() {
+    let mesh = square();
+    let index = MeshProjectionIndex::new(&mesh).unwrap();
+    for weights in [[1., 1e6, 0.5, 2.], [-1., -1e6, -0.5, -2.]] {
+        let curve = NurbsCurve::try_new_rational(
+            1,
+            [p(-2., 0., 2.), p(2., 0., 2.), p(2., 0., 2.), p(-1., 0., 2.)]
+                .into_iter()
+                .zip(weights)
+                .map(|(p, w)| crate::WeightedPoint3::try_new(p, w).unwrap())
+                .collect(),
+            vec![0., 0., 0.2, 0.7, 1., 1.],
+        )
+        .unwrap();
+        let output = index
+            .pull_curve(&curve, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert!((output.length().unwrap() - 7.).abs() < 1e-10);
+        assert_eq!(output.vertices().first(), Some(&p(-2., 0., 0.)));
+        assert_eq!(output.vertices().last(), Some(&p(-1., 0., 0.)));
+        assert!(output.vertices().len() < 16);
+    }
+}
+
+#[test]
+fn degree_one_fast_path_declines_poles_and_discontinuities() {
+    let mesh = square();
+    let index = MeshProjectionIndex::new(&mesh).unwrap();
+    let pole = NurbsCurve::try_new_rational(
+        1,
+        vec![
+            crate::WeightedPoint3::try_new(p(-1., 0., 2.), 1.).unwrap(),
+            crate::WeightedPoint3::try_new(p(1., 0., 2.), -1.).unwrap(),
+        ],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let discontinuous = NurbsCurve::try_new(
+        1,
+        vec![p(-2., 0., 2.), p(-1., 0., 2.), p(1., 0., 2.), p(2., 0., 2.)],
+        vec![0., 0., 0.5, 0.5, 1., 1.],
+    )
+    .unwrap();
+    for c in [pole, discontinuous] {
+        assert!(matches!(
+            index.pull_curve(&c, tol()),
+            Err(GeometryError::UnsupportedCurveApproximation { .. })
+        ));
+    }
+    let constant = NurbsCurve::try_new(1, vec![p(1., 0., 2.); 2], vec![-1., 0., 1., 2.]).unwrap();
+    assert_eq!(index.pull_curve(&constant, tol()).unwrap(), None);
+}
+
+fn grid(n: u32, origin: f64) -> TriangleMesh {
+    let vertices = (0..=n)
+        .flat_map(|y| {
+            (0..=n).map(move |x| {
+                p(
+                    origin - 4. + 8. * x as f64 / n as f64,
+                    -4. + 8. * y as f64 / n as f64,
+                    0.,
+                )
+            })
+        })
+        .collect();
+    let mut faces = Vec::new();
+    for y in 0..n {
+        for x in 0..n {
+            let a = y * (n + 1) + x;
+            faces.extend([[a, a + 1, a + n + 2], [a, a + n + 2, a + n + 1]]);
+        }
+    }
+    TriangleMesh::try_new(vertices, faces, Tolerance::DEFAULT).unwrap()
+}
+
+#[test]
+fn partitioned_long_chord_crosses_a_dense_mesh_within_the_original_budget() {
+    for origin in [0., 1e12] {
+        let mesh = grid(24, origin);
+        let tolerance = if origin == 0. {
+            tol()
+        } else {
+            Tolerance::try_new(1e-2, 1e-12, 1e-10).unwrap()
+        };
+        let output = MeshProjectionIndex::new(&mesh)
+            .unwrap()
+            .pull_polyline(
+                &path(vec![p(origin - 3.5, 0.25, 2.), p(origin + 3.5, 0.25, 2.)]),
+                tolerance,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(output.vertices().first(), Some(&p(origin - 3.5, 0.25, 0.)));
+        assert_eq!(output.vertices().last(), Some(&p(origin + 3.5, 0.25, 0.)));
+        assert!((output.length().unwrap() - 7.).abs() < 1e-10);
+    }
+}
+
+#[test]
+fn partitioning_keeps_a_thin_nearer_sheet_and_declines_the_branch_jump() {
+    let base = grid(24, 0.);
+    let mut vertices = base.vertices().to_vec();
+    let mut faces = base.triangles().to_vec();
+    let start = vertices.len() as u32;
+    vertices.extend([
+        p(0.01, -1., 1.99),
+        p(0.01000001, -1., 1.99),
+        p(0.01, 1., 1.99),
+    ]);
+    faces.push([start, start + 1, start + 2]);
+    let mesh = TriangleMesh::try_new(vertices, faces, Tolerance::MESH_VALIDATION).unwrap();
+    assert!(matches!(
+        MeshProjectionIndex::new(&mesh)
+            .unwrap()
+            .pull_polyline(&path(vec![p(-3.5, 0.25, 2.), p(3.5, 0.25, 2.)]), tol()),
+        Err(GeometryError::AmbiguousMeshPull)
+    ));
+}

@@ -7,9 +7,12 @@ portable and native builds. A fully collapsed curve image creates no curve and
 preserves the source, including with DeleteInput=Yes.
 
 The geometry entry points are `MeshProjectionIndex::pull_curve` and
-`pull_polyline`. A supplied polyline keeps its source chords and corners. Other
-curves use the shared exact [bounded approximation](../curve-approximation.md)
-at one quarter of absolute model tolerance.
+`pull_polyline`. A supplied polyline keeps its source chords and corners.
+Degree-one NURBS curves use their exact span chords, including rational weights,
+reversals and constant spans. Their nonuniform parameter speed needs no extra
+vertices in the geometric mesh image. Other curves use the shared exact
+[bounded approximation](../curve-approximation.md) at one quarter of absolute
+model tolerance.
 
 For each source chord, the existing BVH conservatively prunes triangles using
 exact distance ordering and a feasible mesh vertex as an upper bound. Each
@@ -20,6 +23,14 @@ endpoint or midpoint sampling alone cannot admit a path. Small unresolved
 transitions require a common spatial bound. Shared-edge transitions therefore
 follow folded faces instead of connecting distant feet through empty space.
 Quads retain the existing shorter spatial diagonal.
+
+Large candidate sets can partition the source parameter interval into smaller
+queries. The original rational chord remains unchanged. Outward endpoint boxes
+and exact comparisons against feasible vertices preserve conservative pruning.
+Partitioning targets 64 candidates, stops at depth 16, and falls back to the
+original path when it cannot reduce the largest local candidate set. The same
+global work and error limits still apply. See the
+[local performance measurements](../mesh-pull-performance.md).
 
 Output segments remain within absolute model tolerance of the mesh, accounting
 for rounded coordinates and small transition bridges. The nearest image is
