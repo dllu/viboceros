@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from unittest import TestCase, mock
 
-from .grip_transform_probe import request, run, validate
+from .grip_transform_probe import command_macro, request, run, validate
 from .client import OracleClient, OracleError, OracleProtocolError
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,6 +16,25 @@ def read(folder):
 
 
 class GripTransformTests(TestCase):
+    def test_pending_set_point_recipes_use_bounded_commands_without_changing_old_captures(self):
+        path = ROOT / 'tools/rhino_oracle/fixtures/set_point_grips.json'
+        pending = json.loads(path.read_text())
+        self.assertEqual(len(pending['operations']), 12)
+        self.assertEqual(len({op['id'] for op in pending['operations']}), 12)
+        self.assertEqual({op['source'] for op in pending['operations']},
+                         {'curve', 'rational', 'periodic', 'line', 'surface', 'mesh'})
+        for op in pending['operations']:
+            validate(op)
+            name, script = command_macro(op)
+            self.assertEqual(name, 'SetPt')
+            self.assertIn('_XSet=_No _YSet=_No _ZSet=_Yes _Alignment=_World', script)
+            self.assertEqual(script.endswith(' _Enter'), op['command'] == 'setpt_copy')
+            self.assertNotIn('_Cancel', script)
+        all_grips = dict(pending['operations'][0], selected=[], parent=False, point=False, inputs='all')
+        self.assertEqual(command_macro(all_grips)[1],
+                         '_-SetPt _SelAll _Enter _XSet=_No _YSet=_No _ZSet=_Yes _Alignment=_World _Copy=_No w0,0,9')
+        self.assertEqual(request(), read('fixtures'))
+
     def test_closed_schema_and_owned_empty_document(self):
         q = request()
         self.assertEqual(q, read('fixtures'))

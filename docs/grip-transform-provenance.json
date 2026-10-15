@@ -21,7 +21,6 @@
     "Preview caching, rendering in three display modes, mouse grip selection, automatic Scale center and repeated Copy are independent implementation regressions. Native mouse-preview fidelity, large control-net performance, grouped grip copy policy, arbitrary trimmed/composite edits, other transform commands and full parity are unproven."
   ],
   "sha256": {
-    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
     "tools/rhino_oracle/fixtures/grip_transform.json": "a7a596d32e567184d4f9c7b4117975e785598994ff4c46f4f53b69e4346c175c",
     "tools/rhino_oracle/observations/grip_transform.json": "97bc5ca97cb05e449f956d6dc51302b90f33d9a83fb47c14c0f490e50ab40179",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
@@ -38,5 +37,8 @@
       "ids": "grip-transform-30 and grip-transform-31",
       "recipes": 2
     }
-  ]
+  ],
+  "git_sha256": {
+    "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
+  }
 }

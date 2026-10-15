@@ -73,6 +73,9 @@ target in a viewport; the same options can be given when starting the prompt
 or changed at the prompt. With `Copy=Yes`, keep picking targets and press Enter
 to finish.
 
+[`SetPt` also accepts selected control and curve edit grips](set-point.md),
+including command-first selection and repeated copies from the original picks.
+
 Rotate, Mirror, Scale2D, ScaleNU, ScalePositions in 2D, Shear, ProjectToCPlane, and SetPt are construction-plane aware.
 Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)
 for geometry policy, viewport changes, verification, and remaining limitations.

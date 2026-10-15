@@ -1,0 +1,172 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "grip_transform",
+      "id": "setpt-curve-move",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-curve-copy",
+      "source": "curve",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-rational-move",
+      "source": "rational",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": true,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-rational-copy",
+      "source": "rational",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": true,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-periodic-move",
+      "source": "periodic",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-periodic-copy",
+      "source": "periodic",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-line-move",
+      "source": "line",
+      "selected": [
+        0
+      ],
+      "parent": false,
+      "point": false,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-line-copy",
+      "source": "line",
+      "selected": [
+        0
+      ],
+      "parent": true,
+      "point": false,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-surface-move",
+      "source": "surface",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-surface-copy",
+      "source": "surface",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-mesh-move",
+      "source": "mesh",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": false,
+      "point": false,
+      "command": "setpt",
+      "off": false,
+      "inputs": "auto"
+    },
+    {
+      "op": "grip_transform",
+      "id": "setpt-mesh-copy",
+      "source": "mesh",
+      "selected": [
+        0,
+        2
+      ],
+      "parent": true,
+      "point": false,
+      "command": "setpt_copy",
+      "off": false,
+      "inputs": "auto"
+    }
+  ]
+}

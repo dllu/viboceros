@@ -7,6 +7,7 @@ pub(super) fn allows_grips(command: &str) -> bool {
     matches!(
         command,
         "Move"
+            | "SetPt"
             | "Copy"
             | "Scale"
             | "Scale1D"
@@ -78,6 +79,10 @@ impl VibocerosApp {
             return false;
         };
         let command = pending.description.command;
+        let start_input = pending
+            .command_override
+            .clone()
+            .unwrap_or_else(|| command.into());
         let word = input.trim_start_matches('_');
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_object_prompt(true);
@@ -94,7 +99,7 @@ impl VibocerosApp {
                 // Accept GetObject picks without invoking cancellation's
                 // selection cleanup. Point-phase Escape retains them.
                 self.object_prompt = None;
-                self.try_start_interactive_command_with_sources(command, Some(sources));
+                self.try_start_interactive_command_with_sources(&start_input, Some(sources));
             }
             self.command_input.clear();
             return true;

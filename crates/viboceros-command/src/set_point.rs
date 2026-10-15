@@ -107,10 +107,10 @@ impl Command for SetPointCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
+        let (arguments, selected) = affine_transform_arguments(document, arguments, USAGE)?;
         let mut positional = Vec::new();
         let mut option_arguments = Vec::new();
-        for argument in arguments {
+        for argument in &arguments {
             if !argument.contains('=') {
                 positional.push(*argument);
                 continue;
@@ -131,8 +131,11 @@ impl Command for SetPointCommand {
             frame,
             options.axes.map(|enabled| if enabled { 0.0 } else { 1.0 }),
         )?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
+        let (transformed, copied) = if selected.grips.is_empty() {
+            apply_transform_or_copy(document, &selected.ids, transform, options.copy)?
+        } else {
+            apply_transform_with_renewal(document, &selected, transform, options.copy)?
+        };
         Ok(format!(
             "Set coordinates of {transformed} object(s), creating {copied} copy object(s)"
         ))
@@ -142,6 +145,7 @@ impl Command for SetPointCommand {
 #[cfg(test)]
 mod tests {
     use super::*;
+    mod grips;
 
     #[test]
     fn sets_selected_world_or_cplane_coordinates_and_retains_copy_selection() {

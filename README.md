@@ -38,6 +38,7 @@ CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
 - [Pull curves and points toward surfaces and meshes](docs/commands/pull.md)
 - [Loose projection and pulling through edit points](docs/commands/projection-loose.md)
 - [Display and transform curve edit points](docs/commands/edit-points.md)
+- [SetPt coordinate alignment for objects and grips](docs/commands/set-point.md)
 - [Mesh curve pulling and qualifications](docs/commands/pull-mesh.md)
 - [Mesh projection and qualification](docs/commands/project-mesh.md)
 - [Bounded curve approximation and mesh Pull preparation](docs/curve-approximation.md)

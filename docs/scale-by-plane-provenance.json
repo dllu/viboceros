@@ -26,7 +26,6 @@
   "sha256": {
     "tools/rhino_oracle/scale_by_plane_probe.py": "8db87e4f4e7ba3a289479a1615643375a70acad0c042bd8b7834a1e06ddcb358",
     "tools/rhino_oracle/scale_by_plane_input.py": "c6e241d4cd11b401ecba2103451dd70a6a97767cdc83d07e6ba0823811b9f84a",
-    "tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
@@ -42,5 +41,8 @@
   "historical_dispatch_sha256": {
     "tools/rhino_oracle/client.py": "717751eb54631d5e154e64ad2a55ab812f6fc5f42f38c6ec8db1e48ad094a901",
     "tools/rhino_oracle/rhino_worker.py": "a072f257e5c46f8ad0c47f8f025e96f200365a2dc4f4f3780fd79c5fed8ef2b9"
+  },
+  "git_sha256": {
+    "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:tools/rhino_oracle/grip_transform_probe.py": "cae901c08e376776243226414f8ccd34fc180b17edb3b58d666684ec06f57aea"
   }
 }

@@ -4,7 +4,8 @@
 
 Run `PointsOn`, select control points, and use Move, Copy, Scale, Scale1D,
 Scale2D, [ScaleNU](commands/scale-nu.md), Rotate, Rotate3D, Mirror or Shear. The command acts on the selected
-controls. Other controls on the same object retain their positions. If the
+controls. [`SetPt`](commands/set-point.md) constrains selected grip coordinates.
+Other controls on the same object retain their positions. If the
 parent is also selected, its selected grips determine the edit. Ordinary
 selected objects can be transformed alongside grip owners.
 

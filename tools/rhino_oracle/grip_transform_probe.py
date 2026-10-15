@@ -13,6 +13,8 @@ COMMANDS = {
     "scale": ("Scale", "_Scale _Copy=_No 0,0,0 2"),
     "mirror": ("Mirror", "_Mirror _Copy=_No 0,0,0 0,1,0"),
     "copy": ("Copy", "_Copy 0,0,0 1,2,3 _Enter"),
+    "setpt": ("SetPt", "_-SetPt _XSet=_No _YSet=_No _ZSet=_Yes _Alignment=_World _Copy=_No w0,0,9"),
+    "setpt_copy": ("SetPt", "_-SetPt _XSet=_No _YSet=_No _ZSet=_Yes _Alignment=_World _Copy=_Yes w0,0,9 _Enter"),
 }
 
 
@@ -63,6 +65,14 @@ def request():
     for op in operations:
         validate(op)
     return dict(protocol_version=1, iterations=1, operations=operations)
+
+
+def command_macro(op):
+    validate(op)
+    name, macro = COMMANDS[op["command"]]
+    if op["inputs"] == "all":
+        macro = macro.replace(name+" ", name+" _SelAll _Enter ", 1)
+    return name, macro
 
 
 def create_source(kind, host):
@@ -162,9 +172,7 @@ def run(op, host):
         if op["point"]:
             doc.Objects.Select(point_id)
         before = snapshot()
-        name, macro = COMMANDS[op["command"]]
-        if op["inputs"] == "all":
-            macro = macro.replace("_"+name+" ", "_"+name+" _SelAll _Enter ", 1)
+        name, macro = command_macro(op)
         host["_record_progress"](op["id"]+" "+macro)
         success, after, events = observe_command(Rhino.Commands.Command, name,
             lambda: Rhino.RhinoApp.RunScript(macro, True), snapshot, lambda: [], True)

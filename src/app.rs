@@ -2112,6 +2112,7 @@ pub struct VibocerosApp {
     taper_session: Option<taper_prompt::TaperSession>,
     maelstrom_session: Option<maelstrom_prompt::MaelstromSession>,
     translation_session: Option<translation_prompt::TranslationSession>,
+    set_point_sources: Option<set_point::SetPointSources>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
     sidebar: DocumentSidebar,
@@ -2219,6 +2220,7 @@ impl VibocerosApp {
             taper_session: None,
             maelstrom_session: None,
             translation_session: None,
+            set_point_sources: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),
@@ -5124,6 +5126,7 @@ impl VibocerosApp {
         }
         if (transform_prompt::supports(command)
             || translation_prompt::supports(command)
+            || matches!(command, InteractiveCommand::SetPoint { .. })
             || matches!(
                 command,
                 InteractiveCommand::Twist { .. }
@@ -5136,6 +5139,9 @@ impl VibocerosApp {
                 && self.document.selected_control_points().next().is_some())
         {
             self.start_transform_source_prompt(command.name());
+            if matches!(command, InteractiveCommand::SetPoint { .. }) {
+                self.object_prompt.as_mut().unwrap().command_override = Some(input.to_owned());
+            }
             if has_start_arguments {
                 self.push_log("Select objects first; Enter continues to transform options".into());
             }
@@ -5236,6 +5242,8 @@ impl VibocerosApp {
             if !self.start_taper_session(picked_sources) {
                 return true;
             }
+        } else if matches!(command, InteractiveCommand::SetPoint { .. }) {
+            self.start_set_point_sources(picked_sources);
         } else if translation_prompt::supports(command)
             && !self.start_translation_session(
                 command,
@@ -5270,6 +5278,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.set_point_sources = None;
         self.finish_edge_zoom_options(announce);
         self.cancel_block_add_input();
         self.block_session = None;
@@ -7481,11 +7490,7 @@ impl VibocerosApp {
                 return self.apply_translation_step(point);
             }
             InteractiveCommand::SetPoint { options } => {
-                let succeeded = self.try_execute_command(&format!(
-                    "SetPt {} {}",
-                    format_model_point(point),
-                    options.command_options()
-                ));
+                let succeeded = self.apply_set_point(point, options);
                 if !succeeded {
                     self.active_command = Some(InteractiveCommand::SetPoint { options });
                     return false;
@@ -9944,6 +9949,7 @@ mod tests {
             taper_session: None,
             maelstrom_session: None,
             translation_session: None,
+            set_point_sources: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
             sidebar: DocumentSidebar::default(),

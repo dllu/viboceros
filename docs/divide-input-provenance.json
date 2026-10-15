@@ -52,7 +52,6 @@
   ],
   "prior_source_policy": "Existing provenance keys move to exact immutable source snapshots without changing their recorded hashes.",
   "source_sha256": {
-    "src/app/transform_sources.rs": "025b6730a06222598bb36f2bc56f449b77a5a6fb8723da3cd17441af366d1bc3",
     "crates/viboceros-oracle/tests/divide.rs": "4345b39bb34c3efb79558b26043e76efb59f2d8dd86abce227bc7af28cbfe057",
     "tools/rhino_oracle/fixtures/divide_command.json": "24d6906950d0fcb01cca55b5c471dd9c6b67ab3fa79ba18817ed9bc26fd8c4d6",
     "tools/rhino_oracle/observations/divide_command.json": "b472327e34a60607d03a274dc557bec4c273c63f014199f710398f5dbed53674",
@@ -67,6 +66,7 @@
   },
   "source_git_sha256": {
     "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app.rs": "4774deb33d700123899a55d798bcf19b9be7df8db927fd4afe1c833e7d377d23",
-    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b"
+    "b1ac34798baf6503d4c1673c879bf3721ad09b65:docs/fillet-edge-prior-source/src/app/object_selection.rs": "b0828bec3f40d87eed0aac7c77eb37cc9023d755c7f26e35275b9cca7488797b",
+    "3f93bcc9228bc858d4ca3c93168f7c6ba635d0b1:src/app/transform_sources.rs": "025b6730a06222598bb36f2bc56f449b77a5a6fb8723da3cd17441af366d1bc3"
   }
 }

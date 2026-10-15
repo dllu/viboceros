@@ -79,5 +79,6 @@ native affine-map and document-history coverage. Rigid Shear and singular
 projections that collapse validated geometry remain incomplete. Other transforms
 retain their individually documented coordinate policies; rectangular and polar
 arrays now have a separate [construction-plane policy](plane-arrays.md).
-`SetPt` currently edits whole selected objects; selecting and editing individual
-control-point grips is not yet available in the UI.
+[`SetPt` also edits selected control and curve edit grips](commands/set-point.md).
+Its grip workflow has implementation regressions; the retained point-witness
+comparisons above do not qualify native grip editing or history behavior.

@@ -31,7 +31,8 @@ repeated tails, degree at most 17 and at most 1000 stored controls. Weights must
 have a common sign. Periodic edit points omit repeated tail stations. Full-order
 knots retain separate left/right stations. Unsupported or ill-conditioned
 layouts decline without a partial edit. Smooth with selected edit grips also
-declines; switch to `PointsOn` to smooth controls. SetPt does not yet accept grips.
+declines; switch to `PointsOn` to smooth controls.
+[`SetPt`](set-point.md) can align selected edit grips to World or CPlane coordinates.
 
 This is a curve implementation. SubD edit points, closed-curve seam aliases,
 native grip ordering and exact Rhino editing behavior need qualification.
