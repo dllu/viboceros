@@ -1,0 +1,20 @@
+--- a/source/SMLib/src/SmFilletCorner.cpp
++++ b/source/SMLib/src/SmFilletCorner.cpp
+@@ -7306,11 +7306,17 @@
+   // There will be two FilletGeoms, but they are the same.
+   // It contains the Fillet surface, rails, etc.
+   SmTArray< SmFilletGeom* > sFilletGeoms;
++  if (m_vVertices.GetSize() == 0 || !m_vVertices[0]) SER(SM_ERR);
+   m_vVertices[0]->GetFilletGeoms( sFilletGeoms );
++  if (sFilletGeoms.GetSize() != 2 || !sFilletGeoms[0] ||
++      sFilletGeoms[0] != sFilletGeoms[1]) SER(SM_ERR);
+   SM_ASSERT( sFilletGeoms.GetSize() == 2 ); // We know we're a 4x2 tangent corner.
+   SM_ASSERT( sFilletGeoms[0] == sFilletGeoms[1] );
+   SmFilletGeom *pOrigFG = sFilletGeoms[0];  // Call it 'Original' because we might split it.
+   SmSurface *pFilletSrf = pOrigFG->GetFilletSurface();
++  // A failed surface computation must propagate as an operation failure,
++  // before the corner attempts a virtual call through the missing surface.
++  if (!pFilletSrf) SER(SM_ERR);
+ 
+   SmExtent2d sSrfDomain = pFilletSrf->GetNaturalUVDomain();
+   // u runs the long way, v goes across the fillet.

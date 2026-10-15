@@ -10,11 +10,11 @@
 mod native;
 #[cfg(feature = "native")]
 pub use native::{
-    BooleanOperation, ChamferRailType, Error, KernelCurve, Shape, Solid, SolidProperties,
-    StitchResult, SurfacePullCurve, Tessellation, average_match_curve_ends, blend_curve,
-    blend_surfaces, brep_intersection_events, chamfer_curves_joined, chamfer_curves_parts,
-    change_curve_degree, change_curve_seam, change_surface_degree, change_surface_seam,
-    connect_curves_joined, connect_curves_parts, curve_bezier_spans,
+    BooleanOperation, ChamferRailType, EdgeBlendRailType, Error, KernelCurve, Shape, Solid,
+    SolidProperties, StitchResult, SurfacePullCurve, Tessellation, average_match_curve_ends,
+    blend_curve, blend_surfaces, brep_intersection_events, chamfer_curves_joined,
+    chamfer_curves_parts, change_curve_degree, change_curve_seam, change_surface_degree,
+    change_surface_seam, connect_curves_joined, connect_curves_parts, curve_bezier_spans,
     curve_brep_intersection_events, curve_edit_point_interpolation, curve_intersection_events,
     curve_offset_operations, curve_self_intersection_events, curve_surface_intersection_events,
     curve_tweens, extend_curve, extend_curve_by_length, extend_curve_naturally_by_length,

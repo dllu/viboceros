@@ -812,8 +812,9 @@ extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
 }
 
 namespace {
+enum class EdgeBlend { Circular, Chamfer, Curvature };
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
-                          double radius, double accuracy, bool chamfer, bool between_rails) {
+                          double radius, double accuracy, EdgeBlend kind, bool between_rails) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
             "Invalid edge blend parameters");
     require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
@@ -832,18 +833,22 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     solid->source_edges.clear();
     solid->source_faces.clear();
     SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
-    check(executive.SetFilletParameters(solid->value.get(), edges, chamfer ? SM_FSG_LINEAR : SM_FSG_CIRCULAR,
-          between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), 1, 1.0),
+    const auto cross_section = kind == EdgeBlend::Chamfer ? SM_FSG_LINEAR :
+        kind == EdgeBlend::Curvature ? SM_FSG_BLEND_CURVE : SM_FSG_CIRCULAR;
+    check(executive.SetFilletParameters(solid->value.get(), edges, cross_section,
+          between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), kind == EdgeBlend::Curvature ? 2 : 1, 1.0),
           "configure precise edge fillet");
-    executive.SetDoGlobalMerge(TRUE);
-    if (chamfer) {
+    executive.SetDoGlobalMerge(kind == EdgeBlend::Curvature ? FALSE : TRUE);
+    if (kind == EdgeBlend::Chamfer) {
         check(executive.CreateFilletCorners(), "create chamfer corners");
         auto &corners = executive.GetFilletCorners();
         for (ULONG i = 0; i < corners.GetSize(); ++i)
             corners[i]->SetBevel(TRUE);
         check(executive.DoFilleting(), "chamfer source edges");
     } else {
-        check(executive.DoFillet(), "fillet source edges");
+        const auto status = executive.DoFillet();
+        if (status != SM_SUCCESS)
+            throw std::runtime_error("Edge blend failed (" + std::to_string(status) + "): " + executive.GetFilletErrorInfo()->m_cComment);
     }
     require(executive.GetFilletErrorInfo()->GetErrorCode() == SM_FILERR_OK,
             "Fillet executive reported an incomplete or failed operation");
@@ -855,7 +860,7 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
 extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                               double radius, double accuracy, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        blend_imported_edges(solid, indices, count, radius, accuracy, false, false);
+        blend_imported_edges(solid, indices, count, radius, accuracy, EdgeBlend::Circular, false);
     });
 }
 extern "C" int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_t count,
@@ -863,7 +868,15 @@ extern "C" int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *ind
                                                char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
         require(rail_type == 0 || rail_type == 1, "Invalid chamfer rail type");
-        blend_imported_edges(solid, indices, count, distance, accuracy, true, rail_type == 0);
+        blend_imported_edges(solid, indices, count, distance, accuracy, EdgeBlend::Chamfer, rail_type == 0);
+    });
+}
+extern "C" int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indices, size_t count,
+                                             double radius, double accuracy, int rail_type,
+                                             char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(rail_type == 0 || rail_type == 1, "Invalid blend rail type");
+        blend_imported_edges(solid, indices, count, radius, accuracy, EdgeBlend::Curvature, rail_type == 0);
     });
 }
 

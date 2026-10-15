@@ -1,0 +1,10 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.34s
+     Running tests/blend_edges.rs (target/debug/deps/blend_edges-67ef0f141a580eba)
+
+running 1 test
+coarse native zone=0.00001, RollingBall: ideal volume error=0.000053094408826837025, threshold=0.024
+coarse native zone=0.00001, DistanceBetweenRails: ideal volume error=0.000031760303954797564, threshold=0.024
+test native_primitive_notch_respects_declared_topology_accuracy ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 2.04s

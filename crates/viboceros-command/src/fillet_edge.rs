@@ -1,4 +1,4 @@
-//! Stage exact owned edge fillets before committing any document geometry.
+//! Stage owned circular, chamfer and G2 edge blends before document edits.
 use super::*;
 use viboceros_document::GeometrySnapshot;
 #[cfg(test)]
@@ -20,18 +20,21 @@ pub type FilletEdgeSelection = EdgeBlendSelection;
 enum EdgeBlendKind {
     Fillet,
     Chamfer(crate::chamfer_edge::ChamferRailType),
+    Curvature(crate::blend_edge::BlendRailType),
 }
 impl EdgeBlendKind {
     fn usage(self) -> &'static str {
         match self {
             Self::Fillet => USAGE,
             Self::Chamfer(_) => crate::chamfer_edge::USAGE,
+            Self::Curvature(_) => crate::blend_edge::USAGE,
         }
     }
     fn command(self) -> &'static str {
         match self {
             Self::Fillet => "FilletEdge",
             Self::Chamfer(_) => "ChamferEdge",
+            Self::Curvature(_) => "BlendEdge",
         }
     }
 }
@@ -50,6 +53,14 @@ impl EdgeBlendSelection {
         rail: crate::chamfer_edge::ChamferRailType,
     ) -> Result<Self, CommandError> {
         Self::prepare_blend(document, picks, distance, EdgeBlendKind::Chamfer(rail))
+    }
+    pub fn prepare_curvature(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize)>,
+        radius: Real,
+        rail: crate::blend_edge::BlendRailType,
+    ) -> Result<Self, CommandError> {
+        Self::prepare_blend(document, picks, radius, EdgeBlendKind::Curvature(rail))
     }
     fn prepare_blend(
         document: &Document,
@@ -147,20 +158,25 @@ fn blend(
             EdgeBlendKind::Fillet => {
                 viboceros_smlib::Solid::fillet_brep_edges(&local, edges, radius, tolerance)?
             }
-            EdgeBlendKind::Chamfer(rail) => viboceros_smlib::Solid::chamfer_brep_edges(
-                &local,
-                edges,
-                radius,
-                match rail {
+            EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
+                let rail = match rail {
                     crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
-                        viboceros_smlib::ChamferRailType::DistanceBetweenRails
+                        viboceros_smlib::EdgeBlendRailType::DistanceBetweenRails
                     }
                     crate::chamfer_edge::ChamferRailType::RollingBall => {
-                        viboceros_smlib::ChamferRailType::RollingBall
+                        viboceros_smlib::EdgeBlendRailType::RollingBall
                     }
-                },
-                tolerance,
-            )?,
+                };
+                if matches!(kind, EdgeBlendKind::Curvature(_)) {
+                    viboceros_smlib::Solid::blend_brep_edges(
+                        &local, edges, radius, rail, tolerance,
+                    )?
+                } else {
+                    viboceros_smlib::Solid::chamfer_brep_edges(
+                        &local, edges, radius, rail, tolerance,
+                    )?
+                }
+            }
         };
         Ok(solid.to_brep(tolerance)?.transformed(
             AffineTransform3::from_translation(zero.vector_to(origin)?),
@@ -175,6 +191,10 @@ fn blend(
             EdgeBlendKind::Chamfer(rail) => {
                 let _ = rail;
                 CommandError::ChamferEdgeRequiresNativeKernel
+            }
+            EdgeBlendKind::Curvature(rail) => {
+                let _ = rail;
+                CommandError::BlendEdgeRequiresNativeKernel
             }
         })
     }

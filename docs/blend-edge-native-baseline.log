@@ -1,0 +1,28 @@
+Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.96s
+     Running tests/blend_edges.rs (target/debug/deps/blend_edges-67ef0f141a580eba)
+
+running 3 tests
+
+thread 'cylinder_rim_matches_parent_curvature_on_both_rails' (2690227) panicked at crates/viboceros-smlib/tests/blend_edges.rs:160:14:
+called `Result::unwrap()` on an `Err` value: Kernel("fillet source edges status 1001")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test cylinder_rim_matches_parent_curvature_on_both_rails ... FAILED
+
+thread 'every_original_box_edge_has_quintic_volume_and_g2_planar_rails' (2690228) panicked at crates/viboceros-smlib/tests/blend_edges.rs:52:17:
+normals differ at Point3([10.0, 0.6686594185907395, 0.017375017308485143])
+test every_original_box_edge_has_quintic_volume_and_g2_planar_rails ... FAILED
+test all_edges_and_invalid_sizes_preserve_source has been running for over 60 seconds
+all edges: 26 faces
+test all_edges_and_invalid_sizes_preserve_source ... ok
+
+failures:
+
+failures:
+    cylinder_rim_matches_parent_curvature_on_both_rails
+    every_original_box_edge_has_quintic_volume_and_g2_planar_rails
+
+test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 445.22s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test blend_edges`

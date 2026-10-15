@@ -1,24 +1,31 @@
-//! Shared original-edge picking and confirmation for native fillets and chamfers.
+//! Shared original-edge picking and confirmation for native fillets, chamfers and G2 blends.
 use super::*;
+use viboceros_command::blend_edge::{BlendOptions, BlendRailType};
 use viboceros_command::chamfer_edge::{ChamferOptions, ChamferRailType};
 use viboceros_command::{ComponentSelectionKind, EdgeBlendSelection};
 #[derive(Clone, Copy, Debug)]
+enum Kind {
+    Fillet,
+    Chamfer(ChamferRailType),
+    Curvature(BlendRailType),
+}
+#[derive(Clone, Copy, Debug)]
 pub(super) struct Prompt {
     radius: f64,
-    chamfer: Option<ChamferRailType>,
+    kind: Kind,
     tolerance: Tolerance,
     awaiting_value: bool,
 }
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
-        if self.chamfer.is_some() {
-            "ChamferEdge"
-        } else {
-            "FilletEdge"
+        match self.kind {
+            Kind::Fillet => "FilletEdge",
+            Kind::Chamfer(_) => "ChamferEdge",
+            Kind::Curvature(_) => "BlendEdge",
         }
     }
     fn parameter(self) -> &'static str {
-        if self.chamfer.is_some() {
+        if matches!(self.kind, Kind::Chamfer(_)) {
             "Distance"
         } else {
             "Radius"
@@ -26,21 +33,34 @@ impl Prompt {
     }
     pub(super) fn hint(self) -> &'static str {
         if self.awaiting_value {
-            if self.chamfer.is_some() {
+            if matches!(self.kind, Kind::Chamfer(_)) {
                 "Enter chamfer distance with optional units"
             } else {
-                "Enter fillet radius with optional units"
+                "Enter edge radius with optional units"
             }
-        } else if self.chamfer.is_some() {
-            "Select edges; Distance=value / RailType=DistBetweenRails|RollingBall; Enter applies, Esc cancels"
         } else {
-            "Select edges; Radius=value changes the radius; Enter applies, Esc cancels"
+            match self.kind {
+                Kind::Fillet => {
+                    "Select edges; Radius=value changes the radius; Enter applies, Esc cancels"
+                }
+                Kind::Chamfer(_) => {
+                    "Select edges; Distance=value / RailType=DistBetweenRails|RollingBall; Enter applies, Esc cancels"
+                }
+                Kind::Curvature(_) => {
+                    "Select edges; Radius=value / RailType=RollingBall|DistBetweenRails; Enter applies, Esc cancels"
+                }
+            }
         }
     }
     fn options(self) -> String {
-        match self.chamfer {
-            Some(rail) => format!("Distance={} RailType={}", self.radius, rail.token()),
-            None => format!("Radius={}", self.radius),
+        match self.kind {
+            Kind::Fillet => format!("Radius={}", self.radius),
+            Kind::Chamfer(rail) | Kind::Curvature(rail) => format!(
+                "{}={} RailType={}",
+                self.parameter(),
+                self.radius,
+                rail.token()
+            ),
         }
     }
 }
@@ -51,7 +71,8 @@ impl VibocerosApp {
             return false;
         };
         let chamfer = name.eq_ignore_ascii_case("ChamferEdge");
-        if !chamfer && !name.eq_ignore_ascii_case("FilletEdge") {
+        let curvature = name.eq_ignore_ascii_case("BlendEdge");
+        if !chamfer && !curvature && !name.eq_ignore_ascii_case("FilletEdge") {
             return false;
         }
         let descriptor = match self.commands.component_selection_prompt(input) {
@@ -77,20 +98,27 @@ impl VibocerosApp {
             self.push_log("Error: select polysurface edge components".into());
             return true;
         }
-        let rail = if chamfer {
+        let kind = if chamfer {
             let mut o = ChamferOptions::default();
             if let Err(e) = o.update(&words.collect::<Vec<_>>()) {
                 self.push_log(format!("Error: {e}"));
                 return true;
             }
-            Some(o.rail)
+            Kind::Chamfer(o.rail)
+        } else if curvature {
+            let mut o = BlendOptions::default();
+            if let Err(e) = o.update(&words.collect::<Vec<_>>()) {
+                self.push_log(format!("Error: {e}"));
+                return true;
+            }
+            Kind::Curvature(o.rail)
         } else {
-            None
+            Kind::Fillet
         };
         self.cancel_interactive_command(false);
         let prompt = Prompt {
             radius: descriptor.numbers[0].value,
-            chamfer: rail,
+            kind,
             tolerance: self.document.tolerance(),
             awaiting_value: false,
         };
@@ -164,14 +192,23 @@ impl VibocerosApp {
             }
         }
         let words = words.iter().map(String::as_str).collect::<Vec<_>>();
-        let result = if let Some(rail) = prompt.chamfer {
+        let result = if let Kind::Chamfer(rail) = prompt.kind {
             let mut options = ChamferOptions {
                 distance: prompt.radius,
                 rail,
             };
             options.update(&words).map(|()| {
                 prompt.radius = options.distance;
-                prompt.chamfer = Some(options.rail);
+                prompt.kind = Kind::Chamfer(options.rail);
+            })
+        } else if let Kind::Curvature(rail) = prompt.kind {
+            let mut options = BlendOptions {
+                radius: prompt.radius,
+                rail,
+            };
+            options.update(&words).map(|()| {
+                prompt.radius = options.radius;
+                prompt.kind = Kind::Curvature(options.rail);
             })
         } else {
             self.commands
@@ -222,14 +259,22 @@ impl VibocerosApp {
                     .into_iter()
                     .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
                     .map(|p| (p.object, p.index));
-                match prompt.chamfer {
-                    Some(rail) => EdgeBlendSelection::prepare_chamfer(
+                match prompt.kind {
+                    Kind::Chamfer(rail) => EdgeBlendSelection::prepare_chamfer(
                         &self.document,
                         picks,
                         prompt.radius,
                         rail,
                     ),
-                    None => EdgeBlendSelection::prepare(&self.document, picks, prompt.radius),
+                    Kind::Curvature(rail) => EdgeBlendSelection::prepare_curvature(
+                        &self.document,
+                        picks,
+                        prompt.radius,
+                        rail,
+                    ),
+                    Kind::Fillet => {
+                        EdgeBlendSelection::prepare(&self.document, picks, prompt.radius)
+                    }
                 }
                 .map_err(|e| e.to_string())
             })

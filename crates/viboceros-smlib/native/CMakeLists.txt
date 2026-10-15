@@ -142,6 +142,25 @@ endif()
 list(REMOVE_ITEM KERNEL_SOURCES "${DROP_SOURCE}")
 list(APPEND KERNEL_SOURCES "${DROP_PATCHED}")
 
+# Keep G2 rail/corner repairs in generated copies of the pinned source.
+foreach(repair IN ITEMS
+    "SmFilletStandardSolver.cpp|usd-brep-g2-blend-rail-parameterization.patch"
+    "SmFilletCorner.cpp|usd-brep-closed-fillet-corner-state.patch")
+    string(REPLACE "|" ";" repair_parts "${repair}")
+    list(GET repair_parts 0 repair_source_name)
+    list(GET repair_parts 1 repair_patch_name)
+    set(repair_source "${USD_BREP_ROOT}/source/SMLib/src/${repair_source_name}")
+    set(repair_patch "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/patches/${repair_patch_name}")
+    set(repair_output "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched/${repair_source_name}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${repair_source}" "${repair_patch}")
+    execute_process(COMMAND "${PATCH_EXECUTABLE}" --batch --fuzz=0 -o "${repair_output}" "${repair_source}" "${repair_patch}" RESULT_VARIABLE repair_status)
+    if(NOT repair_status EQUAL 0)
+        message(FATAL_ERROR "usd-brep repair ${repair_patch_name} failed; review the pinned source")
+    endif()
+    list(REMOVE_ITEM KERNEL_SOURCES "${repair_source}")
+    list(APPEND KERNEL_SOURCES "${repair_output}")
+endforeach()
+
 add_library(SMLib STATIC ${KERNEL_SOURCES})
 target_include_directories(SMLib BEFORE PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/usd-brep-patched")
 target_compile_definitions(SMLib PUBLIC VIBOCEROS_CURVE_INTERSECTION_DISTANCE_PATCH=1)

@@ -80,8 +80,6 @@
     "crates/viboceros-command/src/shell.rs": "d0a0e0547f08b79443317dd3102751ddaf33561d8d51dd1615362e76e5d7b153",
     "crates/viboceros-command/src/shell/tests.rs": "01b2e072b6b760f893b04d33884a3d92aa1914332e88d86653dc2e1b5a7ad7c7",
     "crates/viboceros-oracle/src/shell.rs": "cce2bc70953f2a53217218674a7f843bf6b2361112a1cc1653e741905b9d8bb9",
-    "crates/viboceros-smlib/build.rs": "80914510c366cc3cc3deffed5ed039eace93d2fadc57e6f359710878bce341da",
-    "crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b",
     "crates/viboceros-smlib/native/brep_data.h": "6b5bb2a3319a8f0e074dbd850682720243cbf13ba3e8299ae074007d34519f03",
     "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
     "crates/viboceros-smlib/src/native/shell.rs": "9816e73fb176677fa8f0ab7fde9520badd8a423e01b0fb6f1e58e409fd6759cc",
@@ -123,6 +121,8 @@
     "78d92776d42a198ee3a68e238041a8259848ee65:src/app.rs": "169bde36e63688a88a781e4d12abeacdb7a384e8abb20dcf2bbc2aa4b9d4c15b",
     "78d92776d42a198ee3a68e238041a8259848ee65:src/app/command_line.rs": "e825215efccabb86ae8859306de43b1f5210c44e0cd1fa97f056b3a37cf8313e",
     "78d92776d42a198ee3a68e238041a8259848ee65:tools/rhino_oracle/client.py": "31adabdab99a4e8914935373992f62ed1837a88cb590085807d3c0d2631ad726",
-    "78d92776d42a198ee3a68e238041a8259848ee65:tools/rhino_oracle/rhino_worker.py": "daa6ac7a085f3cd330c1062f23d202b79b16681d08b5a511dc6705d2a60cc673"
+    "78d92776d42a198ee3a68e238041a8259848ee65:tools/rhino_oracle/rhino_worker.py": "daa6ac7a085f3cd330c1062f23d202b79b16681d08b5a511dc6705d2a60cc673",
+    "0aecdcd8b107b85d2026207490fabb10704ac491:crates/viboceros-smlib/build.rs": "80914510c366cc3cc3deffed5ed039eace93d2fadc57e6f359710878bce341da",
+    "0aecdcd8b107b85d2026207490fabb10704ac491:crates/viboceros-smlib/native/CMakeLists.txt": "f2b5e03af385814fb7311af49e4d2ee927fd6e2b834f3f0e84260109096b187b"
   }
 }

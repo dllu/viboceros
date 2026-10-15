@@ -13403,6 +13403,10 @@ def _execute(operation, iterations, tolerance):
         from surface_apex_extrusion_probe import run
         return run(operation, globals(), iterations, tolerance)
 
+    if kind == 'blend_edge':
+        from blend_edge_probe import run
+        return run(operation, globals(), iterations, tolerance)
+
     if kind == 'chamfer_edge':
         from chamfer_edge_probe import run
         return run(operation, globals(), iterations, tolerance)

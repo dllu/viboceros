@@ -1,0 +1,26 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.41s
+     Running tests/blend_edges.rs (target/debug/deps/blend_edges-67ef0f141a580eba)
+
+running 1 test
+original box edge 0, RollingBall
+original box edge 1, RollingBall
+original box edge 2, RollingBall
+original box edge 3, RollingBall
+original box edge 4, RollingBall
+original box edge 5, RollingBall
+original box edge 6, RollingBall
+
+thread 'every_original_box_edge_has_quintic_volume_and_g2_planar_rails' (2706798) panicked at crates/viboceros-smlib/tests/blend_edges.rs:93:18:
+called `Result::unwrap()` on an `Err` value: Kernel("Fillet output is not a manifold solid")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test every_original_box_edge_has_quintic_volume_and_g2_planar_rails ... FAILED
+
+failures:
+
+failures:
+    every_original_box_edge_has_quintic_volume_and_g2_planar_rails
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 26.21s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test blend_edges`

@@ -9970,6 +9970,7 @@ mod tests {
     mod area;
     mod bend;
     mod bezier_selection;
+    mod blend_edge;
     mod blend_surface;
     mod block_manager;
     mod blocks;

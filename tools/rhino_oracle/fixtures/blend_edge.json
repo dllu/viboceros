@@ -1,0 +1,166 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-06,
+    "relative": 1e-12,
+    "angular": 1e-08
+  },
+  "operations": [
+    {
+      "op": "blend_edge",
+      "id": "blend_width",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "rail_type": "DistBetweenRails",
+      "radius": 1.0
+    },
+    {
+      "op": "blend_edge",
+      "id": "blend_rolling",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "rail_type": "RollingBall",
+      "radius": 1.0
+    },
+    {
+      "op": "blend_edge",
+      "id": "blend_parallel",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          0,
+          0,
+          0
+        ],
+        "max": [
+          10,
+          8,
+          6
+        ]
+      },
+      "edge_points": [
+        [
+          0,
+          0,
+          3
+        ],
+        [
+          10,
+          8,
+          3
+        ]
+      ],
+      "rail_type": "DistBetweenRails",
+      "radius": 1.0
+    },
+    {
+      "op": "blend_edge",
+      "id": "blend_shifted",
+      "source": {
+        "type": "box_brep",
+        "min": [
+          10000,
+          -30000,
+          50000
+        ],
+        "max": [
+          10010,
+          -29992,
+          50006
+        ]
+      },
+      "edge_points": [
+        [
+          10000,
+          -30000,
+          50003
+        ]
+      ],
+      "rail_type": "DistBetweenRails",
+      "radius": 1.0
+    },
+    {
+      "op": "blend_edge",
+      "id": "blend_cylinder_width",
+      "source": {
+        "type": "cylinder_brep",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5.0,
+        "height": 8.0
+      },
+      "edge_points": [
+        [
+          0,
+          5,
+          8
+        ]
+      ],
+      "rail_type": "DistBetweenRails",
+      "radius": 1.0
+    },
+    {
+      "op": "blend_edge",
+      "id": "blend_cylinder_rolling",
+      "source": {
+        "type": "cylinder_brep",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "radius": 5.0,
+        "height": 8.0
+      },
+      "edge_points": [
+        [
+          0,
+          5,
+          8
+        ]
+      ],
+      "rail_type": "RollingBall",
+      "radius": 1.0
+    }
+  ]
+}

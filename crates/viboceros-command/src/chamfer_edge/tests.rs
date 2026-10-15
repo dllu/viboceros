@@ -9,8 +9,8 @@ fn chamfer_options_are_atomic_and_metadata_requires_edges() {
             .is_err()
     );
     assert_eq!(o, original);
-    assert!(Input::parse(&["Distance=1", "distance=2"]).is_err());
-    assert!(Input::parse(&["All=Yes", "1", "0"]).is_err());
+    assert!(parse(&["Distance=1", "distance=2"]).is_err());
+    assert!(parse(&["All=Yes", "1", "0"]).is_err());
     let r = CommandRegistry::with_builtins();
     let p = r
         .component_selection_prompt("ChamferEdge 2 RailType=RollingBall")

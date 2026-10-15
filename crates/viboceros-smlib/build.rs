@@ -23,6 +23,12 @@ fn build_native() {
     );
     println!("cargo:rerun-if-changed=native");
     println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-closed-fillet-corner-state.patch"
+    );
+    println!(
+        "cargo:rerun-if-changed=../../third_party/patches/usd-brep-g2-blend-rail-parameterization.patch"
+    );
+    println!(
         "cargo:rerun-if-changed=../../third_party/patches/usd-brep-surface-drop-start-normal.patch"
     );
     for patch in [

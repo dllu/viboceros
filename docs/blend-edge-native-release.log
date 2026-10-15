@@ -1,0 +1,61 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 6.51s
+     Running tests/blend_edges.rs (target/release/deps/blend_edges-2789c33663aa7231)
+
+running 4 tests
+original box edge 0, RollingBall
+original box edge 1, RollingBall
+original box edge 2, RollingBall
+test cylinder_rim_matches_parent_curvature_on_both_rails ... ok
+test concave_notch_adds_the_independent_quintic_wedge ... ok
+original box edge 3, RollingBall
+original box edge 4, RollingBall
+original box edge 5, RollingBall
+original box edge 6, RollingBall
+original box edge 7, RollingBall
+original box edge 8, RollingBall
+original box edge 9, RollingBall
+original box edge 10, RollingBall
+original box edge 11, RollingBall
+original box edge 0, DistanceBetweenRails
+original box edge 1, DistanceBetweenRails
+original box edge 2, DistanceBetweenRails
+original box edge 3, DistanceBetweenRails
+original box edge 4, DistanceBetweenRails
+original box edge 5, DistanceBetweenRails
+original box edge 6, DistanceBetweenRails
+original box edge 7, DistanceBetweenRails
+original box edge 8, DistanceBetweenRails
+original box edge 9, DistanceBetweenRails
+original box edge 10, DistanceBetweenRails
+original box edge 11, DistanceBetweenRails
+test every_original_box_edge_has_quintic_volume_and_g2_planar_rails ... ok
+all edges: 26 faces
+test all_edges_and_invalid_sizes_preserve_source ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.45s
+
+     Running tests/chamfer_edges.rs (target/release/deps/chamfer_edges-fbd55ae84ca4cad4)
+
+running 6 tests
+abs=0.000000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_all_edges_and_invalid_sizes_preserve_source ... ok
+abs=0.000000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_acute_and_obtuse_prism_edges_match_independent_cross_sections ... ok
+test chamfer_concave_notch_adds_the_expected_wedge_without_changing_source ... ok
+test chamfer_cylinder_rim_matches_conical_revolution_volume ... ok
+abs=0.000001, normal=false, result=Ok((4, Ok(620.8347893006186)))
+abs=0.000001, normal=true, result=Ok((4, Ok(620.8347893006186)))
+test chamfer_cylinder_tolerance_and_seam_frames ... ok
+test chamfer_every_original_box_edge_matches_width_and_rolling_ball_volumes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.08s
+
+     Running tests/fillet_edges.rs (target/release/deps/fillet_edges-5d0f2b61f4f34d43)
+
+running 3 tests
+test invalid_or_oversized_fillet_requests_leave_the_source_unchanged ... ok
+test all_edges_transfer_as_a_closed_rounded_box ... ok
+test single_original_edge_rounds_with_analytic_volume_and_source_preservation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.31s

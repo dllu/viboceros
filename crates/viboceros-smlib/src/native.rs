@@ -9,10 +9,10 @@ use viboceros_geometry::{
     WeightedPoint3,
 };
 mod brep;
-mod chamfer_edges;
 mod construction;
+mod edge_blends;
 mod shell;
-pub use chamfer_edges::ChamferRailType;
+pub use edge_blends::{ChamferRailType, EdgeBlendRailType};
 
 mod boundary_extension;
 mod curve_blend;

@@ -1,0 +1,39 @@
+Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `release` profile [optimized] target(s) in 1m 06s
+     Running tests/blend_edges.rs (target/release/deps/blend_edges-2789c33663aa7231)
+
+running 5 tests
+original box edge 0, RollingBall
+original box edge 1, RollingBall
+coarse native zone=0.00001, RollingBall: ideal volume error=0.00005306177342845331, threshold=0.024
+original box edge 2, RollingBall
+coarse native zone=0.00001, DistanceBetweenRails: ideal volume error=0.000031760303954797564, threshold=0.024
+test native_primitive_notch_respects_declared_topology_accuracy ... ok
+test cylinder_rim_matches_parent_curvature_on_both_rails ... ok
+test concave_notch_adds_the_independent_quintic_wedge ... ok
+original box edge 3, RollingBall
+original box edge 4, RollingBall
+original box edge 5, RollingBall
+original box edge 6, RollingBall
+original box edge 7, RollingBall
+original box edge 8, RollingBall
+original box edge 9, RollingBall
+original box edge 10, RollingBall
+original box edge 11, RollingBall
+original box edge 0, DistanceBetweenRails
+original box edge 1, DistanceBetweenRails
+original box edge 2, DistanceBetweenRails
+original box edge 3, DistanceBetweenRails
+original box edge 4, DistanceBetweenRails
+original box edge 5, DistanceBetweenRails
+original box edge 6, DistanceBetweenRails
+all edges: 26 faces
+test all_edges_and_invalid_sizes_preserve_source ... ok
+original box edge 7, DistanceBetweenRails
+original box edge 8, DistanceBetweenRails
+original box edge 9, DistanceBetweenRails
+original box edge 10, DistanceBetweenRails
+original box edge 11, DistanceBetweenRails
+test every_original_box_edge_has_quintic_volume_and_g2_planar_rails ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 34.51s

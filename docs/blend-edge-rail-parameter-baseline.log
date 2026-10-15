@@ -1,0 +1,22 @@
+Blocking waiting for file lock on artifact directory
+   Compiling viboceros-smlib v0.1.0 (/home/dllu/proj/viboceros/crates/viboceros-smlib)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 37.19s
+     Running tests/blend_edges.rs (target/debug/deps/blend_edges-67ef0f141a580eba)
+
+running 1 test
+rail 0 u=8.6874 dom=0,25.1321 /0,1 p=-2.8278,4.12353,7 low=-2.78855,4.15018,7 high=-2.23084,3.32014,8
+rail 1 u=8.6874 dom=0,25.1321 /0,1 p=-2.26224,3.29883,8 low=-2.78855,4.15018,7 high=-2.23084,3.32014,8
+
+thread 'cylinder_rim_matches_parent_curvature_on_both_rails' (2729168) panicked at crates/viboceros-smlib/tests/blend_edges.rs:162:14:
+called `Result::unwrap()` on an `Err` value: Kernel("Edge blend failed (1001): Fillet Surface Computation Failure: Unable to Trim Rail Curve")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test cylinder_rim_matches_parent_curvature_on_both_rails ... FAILED
+
+failures:
+
+failures:
+    cylinder_rim_matches_parent_curvature_on_both_rails
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.17s
+
+error: test failed, to rerun pass `-p viboceros-smlib --test blend_edges`

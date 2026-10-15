@@ -1,0 +1,56 @@
+warning: Missing auto-load script at offset 0 in section .debug_gdb_scripts
+of file /home/dllu/proj/viboceros/target/debug/deps/blend_edges-67ef0f141a580eba.
+Use `info auto-load python-scripts [REGEXP]' to list them.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+
+running 1 test
+[New Thread 0xfffff7a4e480 (LWP 2732255)]
+
+Thread 2 "cylinder_rim_ma" received signal SIGSEGV, Segmentation fault.
+[Switching to Thread 0xfffff7a4e480 (LWP 2732255)]
+0x0000aaaaab0328d8 in SmFilletNx1ClosedCorner::AdjustTangentCorner() ()
+
+Thread 2 (Thread 0xfffff7a4e480 (LWP 2732255) "cylinder_rim_ma"):
+#0  0x0000aaaaab0328d8 in SmFilletNx1ClosedCorner::AdjustTangentCorner() ()
+#1  0x0000aaaaaacdf1c4 in SmFilletExecutive::CreateFilletBrep(SmFilletErrorInfo*) ()
+#2  0x0000aaaaaacdfe70 in SmFilletExecutive::DoFilleting(SmFilletErrorInfo*) ()
+#3  0x0000aaaaaab65c8c in (anonymous namespace)::blend_imported_edges(VbSolid*, unsigned long const*, unsigned long, double, double, (anonymous namespace)::EdgeBlend, bool) ()
+#4  0x0000aaaaaab66620 in vb_imported_solid_blend_edges ()
+#5  0x0000aaaaaafe2dfc in viboceros_smlib::native::edge_blends::{impl#0}::edge_blend_brep_edges::{closure#1} (error=0xfffff7a4c368, capacity=512) at crates/viboceros-smlib/src/native/edge_blends.rs:81
+#6  0x0000aaaaaab52db8 in viboceros_smlib::native::call<viboceros_smlib::native::edge_blends::{impl#0}::edge_blend_brep_edges::{closure_env#1}> (function=...) at crates/viboceros-smlib/src/native.rs:195
+#7  0x0000aaaaaab48e7c in viboceros_smlib::native::Solid::edge_blend_brep_edges (brep=0xfffff7a4cd88, edges=..., distance=1, rail=viboceros_smlib::native::edge_blends::EdgeBlendRailType::RollingBall, tolerance=..., curvature=true) at crates/viboceros-smlib/src/native/edge_blends.rs:80
+#8  0x0000aaaaaab48ae4 in viboceros_smlib::native::Solid::blend_brep_edges (brep=0xfffff7a4cd88, edges=..., radius=1, rail=viboceros_smlib::native::edge_blends::EdgeBlendRailType::RollingBall, tolerance=...) at crates/viboceros-smlib/src/native/edge_blends.rs:52
+#9  0x0000aaaaaab0ff44 in blend_edges::cylinder_rim_matches_parent_curvature_on_both_rails () at crates/viboceros-smlib/tests/blend_edges.rs:161
+#10 0x0000aaaaaab0a000 in blend_edges::cylinder_rim_matches_parent_curvature_on_both_rails::{closure#0} () at crates/viboceros-smlib/tests/blend_edges.rs:136
+#11 0x0000aaaaaab0d504 in core::ops::function::FnOnce::call_once<blend_edges::cylinder_rim_matches_parent_curvature_on_both_rails::{closure_env#0}, ()> () at /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:250
+#12 0x0000aaaaaab15cc8 in core::ops::function::FnOnce::call_once<fn() -> core::result::Result<(), alloc::string::String>, ()> () at library/core/src/ops/function.rs:250
+#13 test::__rust_begin_short_backtrace<core::result::Result<(), alloc::string::String>, fn() -> core::result::Result<(), alloc::string::String>> () at library/test/src/lib.rs:663
+#14 0x0000aaaaaab1fdf8 in test::run_test_in_process::{closure#0} () at library/test/src/lib.rs:686
+#15 core::panic::unwind_safe::{impl#25}::call_once<core::result::Result<(), alloc::string::String>, test::run_test_in_process::{closure_env#0}> () at library/core/src/panic/unwind_safe.rs:274
+#16 std::panicking::catch_unwind::do_call<core::panic::unwind_safe::AssertUnwindSafe<test::run_test_in_process::{closure_env#0}>, core::result::Result<(), alloc::string::String>> () at library/std/src/panicking.rs:581
+#17 std::panicking::catch_unwind<core::result::Result<(), alloc::string::String>, core::panic::unwind_safe::AssertUnwindSafe<test::run_test_in_process::{closure_env#0}>> () at library/std/src/panicking.rs:544
+#18 std::panic::catch_unwind<core::panic::unwind_safe::AssertUnwindSafe<test::run_test_in_process::{closure_env#0}>, core::result::Result<(), alloc::string::String>> () at library/std/src/panic.rs:359
+#19 test::run_test_in_process () at library/test/src/lib.rs:686
+
+Thread 1 (Thread 0xfffff7fef020 (LWP 2732253) "blend_edges-67e"):
+#0  syscall () at ../sysdeps/unix/sysv/linux/aarch64/syscall.S:38
+#1  0x0000aaaaab2423e8 in std::sys::pal::unix::futex::futex_wait () at library/std/src/sys/pal/unix/futex.rs:73
+#2  std::sys::sync::thread_parking::futex::Parker::park_timeout () at library/std/src/sys/sync/thread_parking/futex.rs:75
+#3  std::thread::thread::Thread::park_timeout () at library/std/src/thread/thread.rs:132
+#4  0x0000aaaaaab208f0 in std::sync::mpmc::context::Context::wait_until () at library/std/src/sync/mpmc/context.rs:133
+#5  std::sync::mpmc::list::{impl#3}::recv::{closure#1}<test::event::CompletedTest> () at library/std/src/sync/mpmc/list.rs:453
+#6  0x0000aaaaaab28ebc in std::sync::mpmc::context::{impl#0}::with::{closure#0}<std::sync::mpmc::list::{impl#3}::recv::{closure_env#1}<test::event::CompletedTest>, ()> () at library/std/src/sync/mpmc/context.rs:49
+#7  std::sync::mpmc::context::{impl#0}::with::{closure#1}<std::sync::mpmc::list::{impl#3}::recv::{closure_env#1}<test::event::CompletedTest>, ()> () at library/std/src/sync/mpmc/context.rs:57
+#8  std::thread::local::LocalKey::try_with<core::cell::Cell<core::option::Option<std::sync::mpmc::context::Context>>, std::sync::mpmc::context::{impl#0}::with::{closure_env#1}<std::sync::mpmc::list::{impl#3}::recv::{closure_env#1}<test::event::CompletedTest>, ()>, ()> () at library/std/src/thread/local.rs:513
+#9  std::sync::mpmc::context::Context::with<std::sync::mpmc::list::{impl#3}::recv::{closure_env#1}<test::event::CompletedTest>, ()> () at library/std/src/sync/mpmc/context.rs:53
+#10 std::sync::mpmc::list::Channel::recv<test::event::CompletedTest> () at library/std/src/sync/mpmc/list.rs:442
+#11 0x0000aaaaaab33058 in std::sync::mpmc::Receiver::recv_deadline<test::event::CompletedTest> () at library/std/src/sync/mpmc/mod.rs:1120
+#12 std::sync::mpmc::Receiver::recv_timeout<test::event::CompletedTest> () at library/std/src/sync/mpmc/mod.rs:1052
+#13 std::sync::mpsc::Receiver::recv_timeout<test::event::CompletedTest> () at library/std/src/sync/mpsc.rs:909
+#14 test::run_tests<test::console::run_tests_console::{closure_env#2}> () at library/test/src/lib.rs:456
+#15 test::console::run_tests_console () at library/test/src/console.rs:327
+#16 0x0000aaaaaab24ba4 in test::test_main_with_exit_callback<test::test_main::{closure_env#0}> () at library/test/src/lib.rs:160
+#17 test::test_main () at library/test/src/lib.rs:101
+#18 0x0000aaaaaab22db0 in test::test_main_static () at library/test/src/lib.rs:183
+#19 0x0000aaaaaab0f964 in blend_edges::main () at crates/viboceros-smlib/tests/blend_edges.rs:1

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "blend_edge_implemented": true,
+  "full_rhino_parity": false,
+  "native_getter_parity": false,
+  "continuous_g2_certificate": false,
+  "performance_qualified": false,
+  "fresh_rhino_captures": 0,
+  "kernel_revision": "c9c5979f04cea8c38213004d4f04df0dcfb40d05",
+  "recipes": 6,
+  "scope_notes": [
+    "BlendEdge uses the existing usd-brep selected-edge executive with SM_FSG_BLEND_CURVE, continuity two and unit blend scale. Circular fillets, chamfers and G2 blends share the owned original-index import, C ABI executive, document staging and UI picker. ChamferEdge and BlendEdge share strict option/index parsing, Rust oracle edge-point resolution, and the public SDK Python implementation; their public defaults and parameter names stay separate.",
+    "A finite positive constant Radius applies to the entire selected edge set. The defaults are Radius=1 and RailType=RollingBall; DistBetweenRails is also supported. Scripted original id/index pairs and selected objects with All=Yes are supported. Duplicate indices are processed once. Inputs and outputs require closed manifold B-reps; the inherited full boundary validator limits a body to 362 faces. Working absolute tolerance remains min(document tolerance, value*1e-9), with declared source topology tolerances intact.",
+    "Every source and geometry result stages before edits. Source IDs, attributes and group membership survive, selection reflects the results, and one Undo/Redo transaction covers a batch. Later geometry failures preserve prior geometry and Redo; prepared commits reject stale source snapshots and changed tolerances. The UI supports preselected edge components, click/window picking and ambiguity choices, unit-aware numeric entry, atomic radius/rail updates, retry after errors and cancellation.",
+    "For a right-angle straight edge the rail setback s is r in RollingBall mode or d/sqrt(2) in DistBetweenRails mode. Independent quintic Hermite controls have zero endpoint second derivatives and endpoint tangent magnitude D=3*(2-sqrt(2))*s. Exact integration of x dy gives removed cross-section s*s*(13*(D/s)^2-110*(D/s)+210)/420 = s*s*(3/5-23*sqrt(2)/70). Native tests check that volume for all twelve box edges in both modes, plus sampled points, normals and curvatures at the original-surface rails. This is independent analytic/jet evidence, not licensed Rhino shape equality or a continuous G2 certificate. For a radius-five, height-eight cylinder the independent missing-volume formula is 2*pi*(5*s*s*A-s*s*s*M), with A=3/5-23*sqrt(2)/70 and first inward moment M=-10121/30030+731*sqrt(2)/2860. Native tests check that volume and signed principal curvatures and principal directions at both rails, for both distance modes and cylinder seam frames. Concave notch tests check independently added quintic wedges.",
+    "An otherwise valid original box edge failed native manifold admission with global merge enabled. Keeping the native optional global merge disabled for curvature blends makes all original box edges pass in both modes, without relaxing source/output topology or boundary validation. Circular fillets and chamfers retain their prior merge behavior.",
+    "The native G2 revolution shortcut originally generated a new circle parameterization while keeping approximated tracing rails and parent UV curves, so a cylinder rim failed TrimRailCurves. The generated repair keeps the existing analytic revolution, extracts its isoparametric rails and uses the native DropCurve API to regenerate parent UV curves. No custom loft, revolution or projection engine was added. A related closed-corner guard rejects missing vertex/geometry/surface state before dereferencing it; a failed prototype surface exposed the unchecked null access, retained in the debugger baseline log. Pinned upstream files remain unchanged. Experimental changes to general skinning, circle sweep bases and requested executive accuracy were removed after they failed additional checks.",
+    "Native primitive boxes declare topology zones of 1e-5. Their Boolean notch blend differs from the ideal constant quintic by about 5.31e-5 in rolling mode and 3.18e-5 in width mode, while retaining G2 rail witnesses. A separate regression keeps these inputs and checks their scale-dependent volume tolerance (600*4*declared zone), explicitly not a continuous volume-error certificate. A strict concave regression imports Rust boxes with topology zones at 1e-9 and matches the ideal volume within 1e-5. Declared source tolerances are retained rather than silently replaced.",
+    "The initial all-edge native case succeeds with 26 faces. Most debug runtime was inside Rust exact rational trim certification, confirmed with a debugger-launched stack sample. The optimized test harness completes the same corner case in 14.24 seconds versus about 445 seconds for the initial debug three-test run. The code retains that exact certificate; these harness observations do not establish comparative Rhino performance.",
+    "Public SDK recipes call Brep.CreateFilletEdges with BlendType.Blend, explicit RailType, typed original edge-index and constant start/end radius arrays, setbackFillets=False and document distance/angular tolerances. Edge points resolve independently in each engine. Mocks check SDK routing, typed arrays, ambiguity, invalid/null results, and cleanup; they are not licensed parity evidence. Local actual-command fixtures cover both rail modes, opposite parallel edges, a source translated to (10000,-30000,50000), and both cylinder-rim modes.",
+    "Licensed Rhino capture remains pending the recorded Wine SSPI startup blocker. Variable per-edge/along-edge handles, DistFromEdge, open polysurfaces, TrimAndJoin=No, previous edge sets, chain/face selection, preview, History editing and native saved defaults remain future work. General collapsing offsets, self-intersections and blend-to-blend corner continuity need broader qualification. Historical source SHA maps move matching original hashes to immutable Git blobs; previously unverifiable records are unchanged.",
+    "All five blend, six chamfer and three fillet native tests pass under full native AddressSanitizer instrumentation in the optimized harness, with leak detection and optional stack-use-after-return detection disabled. The 13-test normal release suite precedes only the additional coarse native-zone case, which passed separately in a normal debug build. No production geometry or validation check was removed or loosened for instrumentation. The final analytic revolution now also has a temporary owner so a failed rail pullback releases its surface. All five blend sanitizer regressions passed again after this failure-path ownership cleanup."
+  ],
+  "validation": {
+    "cargo test -p viboceros-command -p viboceros blend_edge:: --quiet": {
+      "passed": 4,
+      "command": 2,
+      "ui": 2
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib blend_edge:: --quiet": {
+      "passed": 5,
+      "command": 3,
+      "ui": 2
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib chamfer_edge:: --quiet": {
+      "passed": 5,
+      "command": 3,
+      "ui": 2
+    },
+    "cargo test -p viboceros-oracle --features native-smlib --lib blend_edge:: --quiet": {
+      "passed": 1,
+      "recipes": 4,
+      "note": "before adding cylinder recipes; final six-recipe CLI output checked independently"
+    },
+    "python3 -m unittest tools.rhino_oracle.test_chamfer_edge tools.rhino_oracle.test_blend_edge tools.rhino_oracle.test_shell tools.rhino_oracle.test_fillet_edge_probe tools.rhino_oracle.test_client -q": {
+      "passed": 31
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros --all-targets -- -D warnings": "passed before final native repairs",
+    "local_cli_capture": {
+      "observation": "tools/rhino_oracle/observations/blend_edge_viboceros_native.json",
+      "recipes_completed": 6,
+      "analytic_volume_errors": {
+        "blend_width": 1.7633396964811254e-09,
+        "blend_rolling": 1.951150352397235e-09,
+        "blend_parallel": 4.747562343254685e-09,
+        "blend_shifted": 1.7693082554615103e-09,
+        "blend_cylinder_width": 5.996309937472688e-08,
+        "blend_cylinder_rolling": 7.872642981965328e-08
+      },
+      "all_outputs_solid": true
+    },
+    "cargo test --release -p viboceros-smlib --features native --test blend_edges --test chamfer_edges --test fillet_edges -- --nocapture": {
+      "passed": 13,
+      "blend": 4,
+      "chamfer": 6,
+      "fillet": 3,
+      "note": "before separately added coarse native-zone case",
+      "log": "docs/blend-edge-native-release.log"
+    },
+    "cargo test -p viboceros-smlib --features native --test blend_edges native_primitive_notch -- --nocapture": {
+      "passed": 1,
+      "log": "docs/blend-edge-coarse-native.log"
+    },
+    "cargo test -p viboceros-command reports_sorted_help --quiet": {
+      "passed": 1
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib fillet_edge:: --quiet": {
+      "passed": 5
+    },
+    "cargo test -p viboceros-command -p viboceros --features native-smlib edge_fillet:: --quiet": {
+      "passed": 2
+    },
+    "cargo clippy -p viboceros-command -p viboceros-oracle -p viboceros -p viboceros-smlib --all-targets --features native-smlib -- -D warnings": "passed",
+    "cargo fmt --all -- --check": "passed",
+    "native_sanitizer": {
+      "status": "passed",
+      "log": "docs/blend-edge-asan-release.log",
+      "instrumentation": "VIBOCEROS_SMLIB_ASAN=1 instruments both complete native libraries and the C ABI",
+      "options": "ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0",
+      "leak_detection": false,
+      "stack_use_after_return_detection": false,
+      "passed": 14,
+      "blend": 5,
+      "chamfer": 6,
+      "fillet": 3,
+      "command": "VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test blend_edges --test chamfer_edges --test fillet_edges -- --nocapture",
+      "note": "The 14-test run precedes the final failure-path surface owner. All five blend tests passed again after that ownership cleanup; circular/chamfer branches are unchanged."
+    },
+    "native_sanitizer_final_ownership": {
+      "passed": 5,
+      "options": "ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0",
+      "command": "VIBOCEROS_SMLIB_ASAN=1 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER='env LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libasan.so.8 ASAN_OPTIONS=detect_leaks=0:malloc_context_size=12:detect_stack_use_after_return=0' cargo test --release -p viboceros-smlib --features native --test blend_edges -- --nocapture",
+      "log": "docs/blend-edge-asan-ownership.log"
+    }
+  },
+  "source_sha256": {
+    "README.md": "7dd5dcbc4be238639e4042bea6f16830c36d09c1f189bb92bef8dcfd53de325a",
+    "crates/viboceros-command/src/blend_edge.rs": "98539f38ea62ebb960ff46b473f4a121af7016812b72769dc9165578d3aa9543",
+    "crates/viboceros-command/src/blend_edge/tests.rs": "476a2bf7385e88e0a340030e805018406942062a5a40841888f3be6dd7130e37",
+    "crates/viboceros-command/src/chamfer_edge.rs": "b57d732ee482a3896303fc23a24d6deb67c5ad3a128d2b1d79a61f987421e0c7",
+    "crates/viboceros-command/src/chamfer_edge/tests.rs": "a0e843ad2b387db9befa39b21e7c3e333934ae8cb36fd8b60b88f1e00ca7ad0d",
+    "crates/viboceros-command/src/edge_blend_input.rs": "a1c5b0c007276963284c7003e0276051e597382f55b055b681bdfc1eaa19d845",
+    "crates/viboceros-command/src/fillet_edge.rs": "6573ef6caeb7c45bb3e8804fd6393d827ab9ef0158fb0cf17898d1edb965f0d8",
+    "crates/viboceros-command/src/lib.rs": "51cfd730e237878612232a159737188aa6537c1978378cc61a9a726312aa5d3e",
+    "crates/viboceros-oracle/src/blend_edge.rs": "da4a6cac291f01e94845c1ad6cad7b8f658557328a3f62b84183a757818cb3d3",
+    "crates/viboceros-oracle/src/chamfer_edge.rs": "08957c0c4e7ce1344a17e37e18def62b9fa45253640766ca027a41812cc2f9ef",
+    "crates/viboceros-oracle/src/edge_blend.rs": "1e277b939e0c2e9f66b01e5ed6de7e2605c5fdc616a21b3124fcc61c34ae85a4",
+    "crates/viboceros-oracle/src/lib.rs": "b581db98ba5e2d1b58df070b419922d65176fbfec4604eba8add7886c21672f3",
+    "crates/viboceros-smlib/build.rs": "5e872cf88a1a23aad6d9206f8b614ec86e8b2d875ef42f02b0b4414e5c9433cb",
+    "crates/viboceros-smlib/native/CMakeLists.txt": "afc52aeccda6d5beb3f5a98831fc53887e4b100a0a5932549cc801eaa5a257bb",
+    "crates/viboceros-smlib/native/boundary_validation.cpp": "e3a535b60d2315d66996eee3376188380f1534d9e12ca3864962b99ea83730c8",
+    "crates/viboceros-smlib/native/brep_export.cpp": "6b40815be4f70c09f31233a4cbc4e3a7032f4947d26be18a9ff48e4081cddc26",
+    "crates/viboceros-smlib/native/brep_import.cpp": "80f131960dc7332b583ce0df9181c1676a45d229ff9a1b82a7340c11d0a9d742",
+    "crates/viboceros-smlib/native/bridge.cpp": "71ae3c11aac6575ff849a164dd64c42bdbe109f02471d22335b82ad256ba65af",
+    "crates/viboceros-smlib/native/bridge.h": "c793ea8ef0c9c93436e7224957b4543b0713ef7caccdc1fcec56aaeb4d8d6c00",
+    "crates/viboceros-smlib/src/lib.rs": "f9f0b7c20a0fca59d0a49d80f4945ea92024cd9950b2e8e19b43bbcebac26347",
+    "crates/viboceros-smlib/src/native.rs": "ffd54e99d36f18648d15941a19b78bf014ca24e45388eff8f5ba59b40ba5718d",
+    "crates/viboceros-smlib/src/native/edge_blends.rs": "5cd75e948928dbef5a892d6c7c71dfb20918bcdac5096460627f669c36d713a6",
+    "crates/viboceros-smlib/tests/blend_edges.rs": "8aae6ec39a30d23dfe912885a7bd009e0cfa40aec84b2a4288595ead018329a0",
+    "docs/commands/README.md": "f96003b34e278c67aa63a616bf70c91e949a5e8e116df98a8631ae49699489e6",
+    "docs/commands/blend-edge.md": "2d7b5b8bbfde918cd79a45dde97b1a8c91b712ca5627627a0dd04382ce556b92",
+    "src/app.rs": "ec40ff1d30b7801bd0eb65ce68e54d877a5751a8ae7e8e66d976dfa04791c27a",
+    "src/app/edge_fillet.rs": "6743d6852ae9bcd456ebcf9d8787810a1ce537ae90879a5d2cc28c49c60ff768",
+    "src/app/tests/blend_edge.rs": "a1ded62ce3d0994939b4d960ff4d2270af747f9bd23db0d008c3421e1de5e9b2",
+    "third_party/patches/usd-brep-closed-fillet-corner-state.patch": "d70c6dc5dd1c4d06da469d844706060c1f08a736170a35d2071a94f47c038dd1",
+    "third_party/patches/usd-brep-g2-blend-rail-parameterization.patch": "58086c44341acc50cbb5ee2db18b6d2657dc88a6d1a0d4e5f44b37c965a64ff0",
+    "third_party/usd-brep/source/SMLib/inc/SmFilletExecutive.h": "0f919f96da4d3b400734d3971dddd49535365da7451a61e346772572fb8de632",
+    "third_party/usd-brep/source/SMLib/inc/SmFilletSolver.h": "0a0d060bbedd98735db0964e317dd88ce913df76effd4746426ec2cfc7db8649",
+    "third_party/usd-brep/source/SMLib/inc/SmSurface.h": "36277a74e9508d0670bbf62098f93b9548e366ad049e73ab8f2cb0e09dc4ff0c",
+    "third_party/usd-brep/source/SMLib/src/SmBSplineCurve.cpp": "93c905a12c4124f6761f63ca9dbe2e2ffe400eb32b493c3d514be42de2c41138",
+    "third_party/usd-brep/source/SMLib/src/SmFilletCorner.cpp": "b7c51b6a57237ed3cd92489c272b3897d074c3615c6d782915e0a84955211acc",
+    "third_party/usd-brep/source/SMLib/src/SmFilletExecutive.cpp": "b747e04cd9f2c760bd9cdd06b7d82222828dba043531bfc489e4711ce68c567c",
+    "third_party/usd-brep/source/SMLib/src/SmFilletStandardSolver.cpp": "14837a8f3a279906470ab9c67478dc2fba316952c8ee41043ec67d8662af175f",
+    "tools/rhino_oracle/blend_edge_probe.py": "b008ef5985ca79c4655f84d071a3d155de243765f866c667392c7af03116f471",
+    "tools/rhino_oracle/chamfer_edge_probe.py": "ec57cdb42de043e5185e37884f0a038c548ddacfc8d6bcc89d0866ebcc424530",
+    "tools/rhino_oracle/client.py": "3698030689edf250a474f95d3aa7f3c2cbcf87fae6d826d9c62a42fd4cd1278f",
+    "tools/rhino_oracle/edge_blend_probe.py": "bc837ebdd6a2ba2e0ef2d3656df7111ad2e55c76b93f55b22a580f59cae3c380",
+    "tools/rhino_oracle/fixtures/blend_edge.json": "bfe1869a9b6b906aa4a68e4626714298a384749192a9b40b4b92e8d43eede1b7",
+    "tools/rhino_oracle/observations/blend_edge_viboceros_native.json": "b93e4373892943b9fdccbba3dfceae9e1c92de7377636873359fb7d304a0380e",
+    "tools/rhino_oracle/rhino_worker.py": "2f0acc418c35f937daf165a518e491dea386157ce43a01957d8e21ee48130a88",
+    "tools/rhino_oracle/test_blend_edge.py": "660445e1069b4d765160963c6be69213848526c76abca80ef24f9e950187a3e9"
+  },
+  "evidence_sha256": {
+    "docs/blend-edge-box-native.log": "5d4e899ba58934a13fdd12718bf718789c48f477b62ee23a5184402c01f5e849",
+    "docs/blend-edge-closed-corner-baseline.log": "8764994c6f06f720d610872312fb99dde771feaa51c44533819ca01ddce7771f",
+    "docs/blend-edge-coarse-native.log": "2ec9f5cb05379cc3ad488ce1bb66e629d22037400df5862bfa56e1394bfa4394",
+    "docs/blend-edge-corners-release.log": "f2e2663266da7b127c0260c2062c2d217c9ec3ed20dd9928f798607dbea995a6",
+    "docs/blend-edge-global-merge-baseline.log": "ab0967bec799b9260235af1133dab270cca56c3b353d25dc068c9dcd20f8ae0e",
+    "docs/blend-edge-native-baseline.log": "b33007718146bf6a87b0cf6ade4695a7d5d55c53ab3b8b3ceb12f56895da9f67",
+    "docs/blend-edge-native-release.log": "30fe02e7861985c171668264cbb18a98b95f8ba988f9a373a37ae34625245cb9",
+    "docs/blend-edge-rail-parameter-baseline.log": "2f752084aa2c4785f710c2ea20626f4b0ab5b12fc753aa6677d51ebdad77b368",
+    "docs/blend-edge-asan-release.log": "59daf4a1e1d931f19aad5eb1c8d457f317c8d1e0b2128ff8222a3fb3dd5926d6",
+    "docs/blend-edge-asan-ownership.log": "4a31bfc57971e5855cf7bf41741c43450f4390ff7d91068de63d137da1936cca"
+  }
+}

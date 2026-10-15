@@ -20,6 +20,7 @@ Rhino's complete command set is still a work in progress.
 - [Two-curve fillets](fillet.md)
 - [Two-curve chamfers](chamfer.md)
 - [Polysurface edge chamfers](chamfer-edge.md)
+- [Curvature-continuous edge blends](blend-edge.md)
 - [Connect two curves](connect.md)
 - [Blend two curves](blend.md)
 - [Blend complete surface edges](blend-srf.md)

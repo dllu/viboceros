@@ -1,0 +1,49 @@
+--- a/source/SMLib/src/SmFilletStandardSolver.cpp
++++ b/source/SMLib/src/SmFilletStandardSolver.cpp
+@@ -9,6 +9,7 @@
+ **********************************************************************/
+ 
+ #include "StdAfx.h"
++#include <memory>
+ 
+ #ifndef __SMFILLETSTANDARDSOLVER_H__
+ #include <SmFilletStandardSolver.h>
+@@ -4396,11 +4397,37 @@
+         if (bRevolve) {
+             SmBSplineCurve *pGenCurve = sCrossSections[0];
+             SER(SmBSplineSurface::CreateSurfOfRevolution(crContext,pGenCurve,
+-                sRefFrame.GetOriginRef(),sRefFrame.GetZAxis(),dEndAng,pFilletSurface));
++                sRefFrame.GetOriginRef(),sRefFrame.GetZAxis(),dEndAng-dStartAng,pFilletSurface));
++            std::unique_ptr<SmBSplineSurface> sSurfaceOwner(pFilletSurface);
+             SmExtent1d sIvl = rRail1Curve.GetNaturalInterval();
+             SmExtent2d sDomain(SmPoint2d(sIvl.GetMin(),0.0),
+                 SmPoint2d(sIvl.GetMax(),1.0));
+             SER(pFilletSurface->Reparameterize(sDomain));
++            // A fresh analytic revolution uses its own circular parameterization.
++            // Regenerate both rails from that surface and pull them back to the
++            // parents; affine reparameterization alone cannot synchronize them
++            // with the original approximated tracing curves.
++            SmBSplineCurve *pRails[2] = { NULL, NULL };
++            SER(pFilletSurface->CreateIsoParametricCurve(crContext,SM_SP_V,0.0,0.0,pRails[0]));
++            SmObjDelete sCleanRail0(pRails[0]);
++            SER(pFilletSurface->CreateIsoParametricCurve(crContext,SM_SP_V,1.0,0.0,pRails[1]));
++            SmObjDelete sCleanRail1(pRails[1]);
++            SmSurface *pParents[2] = {pSurf1,pSurf2};
++            SmBSplineCurve *pUVs[2] = {pUV1,pUV2};
++            SmBSplineCurve *pOriginalRails[2] = {&rRail1Curve,&rRail2Curve};
++            for (ULONG rail=0;rail<2;++rail) {
++                NER(pParents[rail]); NER(pUVs[rail]);
++                SmTArray<SmBSplineCurve*> sDropped;
++                SmObjsDelete<SmBSplineCurve*> sCleanDropped(&sDropped);
++                double dDrop,dApprox;
++                SER(pParents[rail]->DropCurve(crContext,pParents[rail]->GetNaturalUVDomain(),
++                    *pRails[rail],pRails[rail]->GetNaturalInterval(),dThisApproxTol3d,
++                    dDrop,dApprox,sDropped));
++                if (sDropped.GetSize()!=1) SER(SM_ERR);
++                SER(pOriginalRails[rail]->SetFromGwNurb(0,pRails[rail]->GetOrCreateGwNurbPointer()));
++                SER(pUVs[rail]->SetFromGwNurb(0,sDropped[0]->GetOrCreateGwNurbPointer()));
++            }
++            sSurfaceOwner.release(); // transferred to rpFilletSurface below
+         }
+         else {
+             SmBSplineSurface * pDerivSurfs[2] = { NULL, NULL };

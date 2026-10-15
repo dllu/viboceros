@@ -305,6 +305,9 @@ class OracleClient:
             elif op.get('op') == 'surface_apex_extrusion':
                 from .surface_apex_extrusion_probe import validate
                 validate(op)
+            elif op.get('op') == 'blend_edge':
+                from .blend_edge_probe import validate
+                validate(op)
             elif op.get('op') == 'chamfer_edge':
                 from .chamfer_edge_probe import validate
                 validate(op)
@@ -1321,6 +1324,10 @@ class OracleClient:
                 shutil.copyfile(worker_source.with_name('surface_path_extrusion_probe.py'), job_path/'surface_path_extrusion_probe.py')
             if any(op.get('op') == 'surface_apex_extrusion' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('surface_apex_extrusion_probe.py'), job_path/'surface_apex_extrusion_probe.py')
+            if any(op.get('op') in ('chamfer_edge','blend_edge') for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('edge_blend_probe.py'), job_path/'edge_blend_probe.py')
+            if any(op.get('op') == 'blend_edge' for op in request.get('operations', [])):
+                shutil.copyfile(worker_source.with_name('blend_edge_probe.py'), job_path/'blend_edge_probe.py')
             if any(op.get('op') == 'chamfer_edge' for op in request.get('operations', [])):
                 shutil.copyfile(worker_source.with_name('chamfer_edge_probe.py'), job_path/'chamfer_edge_probe.py')
             if any(op.get('op') == 'shell' for op in request.get('operations', [])):

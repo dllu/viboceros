@@ -1,0 +1,158 @@
+{
+  "protocol_version": 1,
+  "engine": "viboceros",
+  "engine_version": "0.1.0",
+  "iterations": 1,
+  "results": [
+    {
+      "id": "blend_width",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 479.5940105097187
+          }
+        ]
+      },
+      "elapsed_ns": 10862126703
+    },
+    {
+      "id": "blend_rolling",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -2.3003821070238768e-17
+              ],
+              [
+                10.0,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 479.18802102101296
+          }
+        ]
+      },
+      "elapsed_ns": 5884913763
+    },
+    {
+      "id": "blend_parallel",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -1.861621967691472e-16
+              ],
+              [
+                10.000000000000002,
+                8.0,
+                6.0
+              ]
+            ],
+            "face_count": 8,
+            "is_solid": true,
+            "volume": 479.18802101821655
+          }
+        ]
+      },
+      "elapsed_ns": 18970598714
+    },
+    {
+      "id": "blend_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                10000.0,
+                -30000.0,
+                50000.0
+              ],
+              [
+                10010.0,
+                -29992.0,
+                50006.0
+              ]
+            ],
+            "face_count": 7,
+            "is_solid": true,
+            "volume": 479.59401050971275
+          }
+        ]
+      },
+      "elapsed_ns": 9345203378
+    },
+    {
+      "id": "blend_cylinder_width",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -5.0,
+                -5.0,
+                0.0
+              ],
+              [
+                5.0,
+                5.000000000000001,
+                8.000000000000655
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 626.2470565619655
+          }
+        ]
+      },
+      "elapsed_ns": 1133820322
+    },
+    {
+      "id": "blend_cylinder_rolling",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -5.0,
+                -5.0,
+                0.0
+              ],
+              [
+                5.000000000000001,
+                5.000000001198044,
+                8.000000000000002
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 624.2205510412962
+          }
+        ]
+      },
+      "elapsed_ns": 617997704
+    }
+  ]
+}
