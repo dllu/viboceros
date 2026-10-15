@@ -4,6 +4,7 @@ use crate::plane_transforms::{plane_angle, shear_map, shear_reference_angle};
 
 #[derive(Clone, Copy, Debug)]
 pub enum PointTransform {
+    SetPoint(crate::set_point::SetPointOptions),
     Scale {
         center: Point3,
         reference: Point3,
@@ -64,6 +65,7 @@ impl PointTransform {
         tolerance: Tolerance,
     ) -> Result<AffineTransform3, CommandError> {
         match self {
+            Self::SetPoint(options) => options.transform_at(target, plane),
             Self::ScaleByPlane {
                 origin,
                 reference,

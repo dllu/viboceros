@@ -1,4 +1,4 @@
-//! Read-only instances for point-driven Scale, Rotate, Rotate3D, and Shear.
+//! Read-only instances for point-driven affine transforms and SetPt.
 use super::object_preview::TransformedObjects;
 use super::*;
 use viboceros_command::point_transform::PointTransform;
@@ -9,7 +9,7 @@ pub(crate) struct AffinePreview<'a> {
     pub sources: &'a [ObjectId],
     pub grips: &'a [viboceros_document::ControlPointId],
     pub definition: PointTransform,
-    /// Scale2D uses the destination viewport; the other planar transforms retain their start plane.
+    /// Scale2D and SetPt use the destination viewport; other planar transforms retain their start plane.
     pub frame: Option<Frame3>,
     pub copy: bool,
     pub last_transform: Option<AffineTransform3>,
@@ -26,8 +26,9 @@ impl<'a> AffinePreview<'a> {
         Option<TransformedObjects<'a>>,
         Option<Option<AffineTransform3>>,
     ) {
-        // Native point transforms display identity at an invalid final reference,
-        // while leaving the prompt active. Leaving the viewport retains the map.
+        // SetPt retains its last valid target. Other point transforms display
+        // identity at an invalid final reference. Leaving a viewport retains
+        // the last map for every command.
         let update = cursor.map(|point| {
             self.definition
                 .transform_at(self.frame.unwrap_or(frame), point, tolerance)
@@ -38,12 +39,19 @@ impl<'a> AffinePreview<'a> {
                             self.definition,
                             PointTransform::Scale1DDirection { factor: 0., .. }
                                 | PointTransform::ScaleNU { .. }
+                                | PointTransform::SetPoint(_)
                         )
                         || map.orientation_reversing().is_ok()
                 })
-                .unwrap_or_else(AffineTransform3::identity)
+                .or_else(|| {
+                    if matches!(self.definition, PointTransform::SetPoint(_)) {
+                        self.last_transform
+                    } else {
+                        Some(AffineTransform3::identity())
+                    }
+                })
         });
-        let transform = update.or(self.last_transform);
+        let transform = update.flatten().or(self.last_transform);
         (
             transform.map(|transform| TransformedObjects {
                 sources: self
@@ -83,18 +91,32 @@ impl Viewport {
             && resolved.1.is_some()
         {
             let mut cache = self.display_cache.borrow_mut();
-            let valid = objects
-                .grips
-                .iter()
-                .map(|id| id.object)
-                .collect::<std::collections::BTreeSet<_>>()
-                .iter()
-                .all(|id| {
-                    document.object(*id).is_some_and(|object| {
-                        self.grip_preview_geometry(object, objects, document)
-                            .is_some()
+            let valid = (!matches!(preview.definition, PointTransform::SetPoint(_))
+                || objects
+                    .sources
+                    .iter()
+                    .filter(|id| !objects.grips.iter().any(|p| p.object == **id))
+                    .all(|id| {
+                        document.object(*id).is_some_and(|object| {
+                            self.whole_edit_preview_is_valid(
+                                object,
+                                objects.transform,
+                                document.tolerance(),
+                            )
+                        })
+                    }))
+                && objects
+                    .grips
+                    .iter()
+                    .map(|id| id.object)
+                    .collect::<std::collections::BTreeSet<_>>()
+                    .iter()
+                    .all(|id| {
+                        document.object(*id).is_some_and(|object| {
+                            self.grip_preview_geometry(object, objects, document)
+                                .is_some()
+                        })
                     })
-                })
                 && objects
                     .sources
                     .iter()
@@ -227,6 +249,8 @@ impl Viewport {
     }
 }
 
+#[cfg(test)]
+mod set_point_tests;
 #[cfg(test)]
 pub(crate) mod tests;
 

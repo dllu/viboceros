@@ -22,6 +22,28 @@ impl Default for SetPointOptions {
 }
 
 impl SetPointOptions {
+    /// Shared by committed edits and read-only viewport previews.
+    pub fn transform_at(
+        self,
+        target: Point3,
+        plane: Frame3,
+    ) -> Result<AffineTransform3, CommandError> {
+        if !self.axes.contains(&true) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let frame = if self.align_to_cplane {
+            plane
+        } else {
+            CommandContext::default().construction_plane
+        }
+        .with_origin(target);
+        Ok(AffineTransform3::try_frame_mapping(
+            frame,
+            frame,
+            self.axes.map(|enabled| if enabled { 0. } else { 1. }),
+        )?)
+    }
+
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
         Self::parse_with_copy_default(arguments, false)
     }
@@ -120,17 +142,7 @@ impl Command for SetPointCommand {
         let options = SetPointOptions::parse(&option_arguments)?;
         let (target, consumed) = parse_point(&positional)?;
         require_consumed(&positional, consumed, USAGE)?;
-        let frame = if options.align_to_cplane {
-            context.construction_plane
-        } else {
-            CommandContext::default().construction_plane
-        }
-        .with_origin(target);
-        let transform = AffineTransform3::try_frame_mapping(
-            frame,
-            frame,
-            options.axes.map(|enabled| if enabled { 0.0 } else { 1.0 }),
-        )?;
+        let transform = options.transform_at(target, context.construction_plane)?;
         let (transformed, copied) = if selected.grips.is_empty() {
             apply_transform_or_copy(document, &selected.ids, transform, options.copy)?
         } else {

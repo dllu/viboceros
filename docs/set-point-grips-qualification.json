@@ -48,17 +48,14 @@
     }
   },
   "source_sha256": {
-    "crates/viboceros-command/src/set_point.rs": "2d44c3d18027c9c52f476dd2c160deda6a581d05e946d384f1e4c25f875faace",
     "crates/viboceros-command/src/set_point/tests/grips.rs": "9db8b02f26fd43618608c752169be8b9fa48d55827232aa4a228d805a3366f16",
     "crates/viboceros-command/src/history_policy.rs": "e17120aff28b76b3cc52a57bc3f6f3d1a2610c64b865ea64cacefad61b73d89e",
     "crates/viboceros-document/src/control_points.rs": "6557829447efca2a34003bc85127f5c188329243ebfb202a28b752de5d418d6e",
     "crates/viboceros-document/src/control_points/geometry.rs": "2229e7ffc828d64d606f3576eb16f404b1ce724599385811206dc215ba383097",
     "crates/viboceros-document/src/control_points/transform.rs": "77d0c8605f33e22ffb2c7b7d508b7aed0e439b9b54602cc0a62ad5e0889b7175",
     "crates/viboceros-geometry/src/curve_edit_points.rs": "8b80112816cca67852196406029b80ece5559160cc08839464ecf79fa8205ad4",
-    "src/app/set_point.rs": "2a2e3462abb979ec9cc111b4dec3957577d19bfcfb0ec0178d639993eb90eb95",
     "src/app/transform_sources.rs": "75ffaec0947e4cad87249176ea10ca31f1e7b6cfd6db0e2cc80d97817819f87e",
     "src/app/tests/set_point.rs": "0a1ce2fe1acb9bca33e3086e4b90e399b1db9600eee7cbd114ee9c26a24437d0",
-    "docs/commands/set-point.md": "22b651ae2d6cdfe1c65fca2184d8d22e092a13f31f3968fa0af0eec9aba023a8",
     "docs/commands/transforms.md": "abddddb8c597bb4a569fb99baca4d4961a8d325bc39f852aad460be22591a9f4",
     "docs/plane-transforms.md": "f37dcc76569d9469be9ba32c5aca8390cd615ff0b9ffb5c86f4d35d7c976590d",
     "tools/rhino_oracle/fixtures/set_point_grips.json": "dc52def5ee21c428df9a05c9a056c1b1cc42b2ab921de7570c41f841437b534e"
@@ -67,6 +64,9 @@
     "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:README.md": "377ba2eeb5fb8ab2ffa3efbbf5bec950968580e05ce8647233010c3ab4cde5f8",
     "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:src/app.rs": "d080bfe4be8f21ee45b09bcb1e5337438e69ceba47dd92e5f7a5f51d016c2c70",
     "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:tools/rhino_oracle/grip_transform_probe.py": "f69856ff870d4b41db5594c9ffd579c9efbd5389b1bfc3bb01ac2e3cedae629b",
-    "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:tools/rhino_oracle/test_grip_transform.py": "d18376118a084f16387b5941e4b7514cf162540b8878e97cb1d0604ced416e78"
+    "c8bffda2cf9a7b18b1c9e052c599f0f691cf22fa:tools/rhino_oracle/test_grip_transform.py": "d18376118a084f16387b5941e4b7514cf162540b8878e97cb1d0604ced416e78",
+    "426a0042edb6d3207dc9177ed891c07a4c72fceb:crates/viboceros-command/src/set_point.rs": "2d44c3d18027c9c52f476dd2c160deda6a581d05e946d384f1e4c25f875faace",
+    "426a0042edb6d3207dc9177ed891c07a4c72fceb:src/app/set_point.rs": "2a2e3462abb979ec9cc111b4dec3957577d19bfcfb0ec0178d639993eb90eb95",
+    "426a0042edb6d3207dc9177ed891c07a4c72fceb:docs/commands/set-point.md": "22b651ae2d6cdfe1c65fca2184d8d22e092a13f31f3968fa0af0eec9aba023a8"
   }
 }

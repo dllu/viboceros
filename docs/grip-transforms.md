@@ -21,6 +21,8 @@ the original frozen source identities and grip indices, and share one Undo
 entry. Move/Copy and affine point prompts show partial geometry previews in
 all four viewports. Preview generation uses the same control-edit operation as
 committed edits and leaves document geometry/history untouched.
+SetPt also shares partial preview geometry and retains its separate Undo entry
+for each accepted placement.
 
 ## Geometry and history
 

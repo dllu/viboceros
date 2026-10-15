@@ -288,8 +288,21 @@ fn gpu_affine_preview_renders_deformed_faces_points_and_source_styles() {
                         },
                         point(18., 0., 0.),
                     ),
+                    (
+                        PointTransform::SetPoint(viboceros_command::set_point::SetPointOptions {
+                            axes: [false, false, true],
+                            copy,
+                            ..Default::default()
+                        }),
+                        point(0., 0., 6.),
+                    ),
                 ] {
-                    let mut view = Viewport::new(ViewKind::Top);
+                    let mut view =
+                        Viewport::new(if matches!(definition, PointTransform::SetPoint(_)) {
+                            ViewKind::Perspective
+                        } else {
+                            ViewKind::Top
+                        });
                     view.pixels_per_unit = 20.;
                     view.display_mode = mode;
                     let sources = [id, face];

@@ -9155,6 +9155,11 @@ impl eframe::App for VibocerosApp {
                     self.document.tolerance(),
                 )
             })
+            .or_else(|| {
+                self.set_point_sources
+                    .as_ref()
+                    .and_then(|sources| sources.affine_preview(self.active_command))
+            })
             .filter(|_| model_input_active && self.plane_prompt.is_none());
         let insert_surface_pick = model_input_active
             && matches!(
@@ -9842,6 +9847,7 @@ mod tests {
     mod scale_positions;
     mod section;
     mod set_point;
+    mod set_point_preview;
     mod set_view;
     mod shrink_trimmed;
     mod single_span_selection;

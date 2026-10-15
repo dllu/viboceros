@@ -19,18 +19,59 @@ struct Entry {
     geometry: Rc<DisplayGeometry>,
 }
 
+struct WholeValidation {
+    source: GeometrySnapshot,
+    transform: AffineTransform3,
+    tolerance: Tolerance,
+    valid: bool,
+}
+
 #[derive(Default)]
 pub(super) struct GripPreviewCache {
     entries: BTreeMap<ObjectId, Entry>,
+    whole: BTreeMap<ObjectId, WholeValidation>,
 }
 
 impl GripPreviewCache {
     pub(super) fn retain_visible(&mut self, visible: &HashSet<ObjectId>) {
         self.entries.retain(|id, _| visible.contains(id));
+        self.whole.retain(|id, _| visible.contains(id));
     }
 }
 
 impl Viewport {
+    /// Singular SetPt maps must pass the same geometry edit as a commit. Cache
+    /// success and failure across all views without preparing display meshes.
+    pub(super) fn whole_edit_preview_is_valid(
+        &self,
+        object: &Object,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> bool {
+        let mut cache = self.grip_preview_cache.borrow_mut();
+        let stale = cache.whole.get(&object.id()).is_none_or(|entry| {
+            !entry.source.shares_storage_with(object.geometry_snapshot())
+                || entry.transform != transform
+                || entry.tolerance != tolerance
+        });
+        if stale {
+            let valid = object
+                .geometry()
+                .transformed_for_edit(transform, tolerance)
+                .is_ok();
+            cache.whole.insert(
+                object.id(),
+                WholeValidation {
+                    source: object.geometry_snapshot().clone(),
+                    transform,
+                    tolerance,
+                    valid,
+                },
+            );
+        }
+        cache.whole[&object.id()].valid
+    }
+
     pub(super) fn grip_preview_geometry(
         &self,
         object: &Object,
@@ -85,6 +126,45 @@ mod tests {
     use super::*;
     use viboceros_document::ControlPointId;
     use viboceros_geometry::Vector3;
+
+    #[test]
+    fn set_point_whole_validity_cache_refreshes_geometry_and_is_shared_and_pruned() {
+        let mut doc = Document::default();
+        let p = |x| Point3::try_new(x, 0., 0.).unwrap();
+        let id = doc
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(p(0.), p(1.), doc.tolerance()).unwrap(),
+            ))
+            .unwrap();
+        let transform = viboceros_command::set_point::SetPointOptions::default()
+            .transform_at(
+                p(5.),
+                viboceros_command::CommandContext::default().construction_plane,
+            )
+            .unwrap();
+        let views = Viewport::standard_views();
+        for view in &views {
+            assert!(!view.whole_edit_preview_is_valid(
+                doc.object(id).unwrap(),
+                transform,
+                doc.tolerance()
+            ));
+            assert_eq!(view.grip_preview_cache.borrow().whole.len(), 1);
+        }
+        doc.replace_object_geometries([(id, Geometry::Point(p(2.)))])
+            .unwrap();
+        assert!(views[1].whole_edit_preview_is_valid(
+            doc.object(id).unwrap(),
+            transform,
+            doc.tolerance()
+        ));
+        assert!(views[0].grip_preview_cache.borrow().whole[&id].valid);
+        views[2]
+            .grip_preview_cache
+            .borrow_mut()
+            .retain_visible(&HashSet::new());
+        assert!(views[0].grip_preview_cache.borrow().whole.is_empty());
+    }
 
     #[test]
     fn partial_preview_reuses_geometry_across_views_and_invalidates_edits() {

@@ -261,6 +261,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn affine_preview(&self) -> Option<crate::viewport::AffinePreview<'_>> {
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::SetPoint { .. })
+        ) {
+            return self.set_point_preview();
+        }
         self.transform_session.as_ref()?.affine_preview(
             self.active_command,
             self.drafting_plane
@@ -273,6 +279,12 @@ impl VibocerosApp {
         &mut self,
         preview: Option<viboceros_geometry::AffineTransform3>,
     ) -> bool {
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::SetPoint { .. })
+        ) {
+            return self.update_set_point_preview(preview);
+        }
         if self.affine_preview().is_none() {
             return false;
         }

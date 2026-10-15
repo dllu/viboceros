@@ -40,21 +40,49 @@ Redo. A rejected target retains the point prompt for correction. Grip copies
 retain their display mode; Undo/Redo use the existing grip display and selection
 exchange policy.
 
+During target input, moving the cursor previews the geometry and selected grips
+in all four views. Whole objects use affine display instances; partial control
+and edit-grip previews share the same prepared geometry as the existing affine
+commands. Preview and commit use one SetPt coordinate-map function. CPlane
+alignment uses the viewport receiving the target, including when switching views.
+Copy previews retain the originals and use the frozen source identities.
+
+SetPt projections can be singular. The preview validates whole-object and grip
+edits before displaying a candidate batch. Rejected geometry retains the last
+valid preview; with no earlier valid target, only the originals remain. Whole
+geometry validation caches both success and failure by immutable source snapshot,
+map and tolerance across the viewports. It does not build display meshes.
+Changing axes or alignment clears an obsolete map; Copy changes retain its
+geometry while updating display style. Leaving a viewport retains the last map.
+Hover, preview updates and cancellation preserve model geometry, history, saved
+Copy preferences and the last accepted point.
+
 Implementation regressions cover rational control/edit grips, parent precedence,
 ordinary point peers, World/CPlane constraints, original-basis structure,
 unselected points, repeated copies, command-first options, failed targets and
 Undo/Redo. The seven retained [SetPt point-witness comparisons](../plane-transforms.md)
 qualify the coordinate map only. No fresh Rhino grip captures, performance
-qualification, full native grip history/selection equivalence, or SetPt live
-geometry preview is claimed. The pending
+qualification, native mouse-preview appearance or full native grip
+history/selection equivalence is claimed. Mouse hover/click tests independently
+compare the preview and committed target; scene tests cover control/edit grips,
+Copy, all four views and wireframe/shaded/ghosted modes. Additional checks cover
+CPlane changes, singular whole-object rejection, reconstruction overflow,
+last-target retention and cache invalidation. The pending
 [12-recipe control-grip fixture](../../tools/rhino_oracle/fixtures/set_point_grips.json)
 uses the public command/SDK probe and awaits live capture after the recorded
 [Wine SSPI startup issue](../oracle-sspi.md) is resolved. It is not native evidence.
 The [qualification record](../set-point-grips-qualification.json) retains source
 hashes, checks and the limits of this implementation.
 
+An explicit offscreen GPU test checks projected point/mesh previews, Copy source
+styles, wireframe/shaded/ghosted output, two color formats and render-cache reuse.
+It passed on the NVIDIA GB10 Vulkan adapter. This is implementation rendering
+evidence; native preview appearance and performance remain unqualified. See the
+[preview qualification record](../set-point-preview-qualification.json).
+
 ```sh
 cargo test -p viboceros-command set_point
 cargo test -p viboceros set_point
 python3 -m unittest tools.rhino_oracle.test_grip_transform
+cargo test -p viboceros gpu_affine_preview -- --ignored --nocapture
 ```
